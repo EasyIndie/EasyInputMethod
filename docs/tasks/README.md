@@ -30,12 +30,11 @@
 ## 三、派发方式（headless flash 当子代理用）
 
 ```bash
-# 单卡派发
+# 默认：一张卡 = 一个新 worker
 ./scripts/dispatch-task.sh docs/tasks/T-M1-01.md --model deepseek-v4-flash
 
-# 一批小卡复用同一会话（缓存热、更省）
-./scripts/dispatch-task.sh docs/tasks/T-M1-07.md --model <flash> --reuse batch-a
-./scripts/dispatch-task.sh docs/tasks/T-M1-08.md --model <flash> --reuse batch-a
+# 仅当后一卡必须接着前一卡的上下文时，才复用同一会话
+./scripts/dispatch-task.sh docs/tasks/T-M1-02.md --model <flash> --reuse seq-a
 ```
 
 脚本会：读任务卡 → 用指定模型 headless 执行 → 要求跑 `make verify` + 更新 HANDOFF/ROADMAP → 只回简短摘要；**并把本次 token/成本记入 `docs/experiments/runs/usage.jsonl`**。
@@ -45,7 +44,10 @@
 - 结论与判定规则：`docs/experiments/`
 
 > 模型名以 `/model` 或 `pi --model` 实际可用为准；`deepseek-v4-flash` 是占位示例。
-> **派发策略（开新 worker vs 复用持久会话）由实测数据决定**，见 `docs/experiments/session-vs-workers.md`。
+>
+> ⚠️ **实测结论**（`docs/experiments/session-vs-workers.md`）：对**相互独立**的卡，
+> **每卡新 worker 反而比持久会话省**（持久会话会把上一卡历史滚雪球，实测 +76% tokens）。
+> **默认每卡新 worker**；`--reuse` 只用于有真实依赖的任务序列。
 
 ## 四、卡片清单
 

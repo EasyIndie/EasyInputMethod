@@ -83,6 +83,14 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · pi（会话 vs worker 实测）
+- 跑通完整 A/B（模型 `deepseek-v4-flash`，负载 = T-M1-01 + T-M1-02），两臂均成功且产出等价。
+- **结论（反直觉）**：对独立任务，**每卡新 worker 更省**（A 521k vs B 918k tokens，+76%）；
+  B 的 cacheHitRate 更高（96.8%）但上下文滚雪球（任务二 cacheRead 3.4×）。
+- 微基准：固定开销 ≈ 4.3k tokens/次；前缀缓存跨会话共享 → 开新会话 ≠ 冷启动。
+- 默认派发改定：**一张卡 = 一个新 worker**；`--reuse` 仅用于强依赖序列。详见 `docs/experiments/session-vs-workers.md`。
+- 注意：provider 未配计价，`cost`=0；用 token 口径。n=1，方差大。
+
 ### 2026-10-08 · pi（用量量测脚手架）
 - 新增用量量测：`scripts/lib/pi-usage.sh`、`dispatch-task.sh`（支持 `--model/--reuse/--label`）、`usage-report.sh`、`bench-session-vs-workers.sh`（`--micro`/`--tasks`）。
 - 新增 `docs/experiments/`（方法学 + 判定规则 + 结论待实测）。`make usage-report` 可本地汇总（不花 token）。
