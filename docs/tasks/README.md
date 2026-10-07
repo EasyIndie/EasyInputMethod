@@ -45,9 +45,10 @@
 
 > 模型名以 `/model` 或 `pi --model` 实际可用为准；`deepseek-v4-flash` 是占位示例。
 >
-> ⚠️ **实测结论**（`docs/experiments/session-vs-workers.md`）：对**相互独立**的卡，
-> **每卡新 worker 反而比持久会话省**（持久会话会把上一卡历史滚雪球，实测 +76% tokens）。
-> **默认每卡新 worker**；`--reuse` 只用于有真实依赖的任务序列。
+> ⚠️ **实测结论**（`docs/experiments/session-vs-workers.md`，N=5 中位数）：
+> **弱依赖/独立任务 → 每卡新 worker**（reuse 无益或更贵，实测 +15%）；
+> **强依赖序列 → 同一会话 `--reuse`**（实测快 **4.4×**）。
+> 判断法：问“不给上卡对话、只给仓库文件，我能做到吗？”——能→新 worker；不能→reuse。
 
 ## 四、卡片清单
 

@@ -83,6 +83,13 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · pi（重复实验定论）
+- 新增可重复 A/B：`bench-session-vs-workers.sh --workload --repeat`、`usage-compare.sh`（中位数）、`docs/experiments/workloads/`。
+- **N=5 中位数结论**：独立负载 fresh 37.9k vs reuse 43.6k（+15%，分布重叠）；
+  强依赖负载 fresh 230.9k vs reuse 51.9k（**reuse 快 4.4×**，分布不重叠）。
+- **开发约定**：默认每卡新 worker（任务卡保持自包含）；仅“必须接着上卡上下文”的序列用 `--reuse`。
+- 详见 `docs/experiments/session-vs-workers.md`。
+
 ### 2026-10-08 · pi（会话 vs worker 实测）
 - 跑通完整 A/B（模型 `deepseek-v4-flash`，负载 = T-M1-01 + T-M1-02），两臂均成功且产出等价。
 - **结论（反直觉）**：对独立任务，**每卡新 worker 更省**（A 521k vs B 918k tokens，+76%）；
