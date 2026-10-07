@@ -18,10 +18,12 @@
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
-# shellcheck source=lib/pi-usage.sh
-source scripts/lib/pi-usage.sh
+# 必须在 source 之前设定绝对路径：source 会把相对默认值写进变量，
+# 且子 shell 会 cd 进 worktree，相对路径会落在工作树里并被删除。
 export PI_USAGE_LOG="${PI_USAGE_LOG:-$ROOT/docs/experiments/runs/usage.jsonl}"
 export PI_RAW_DIR="${PI_RAW_DIR:-$ROOT/docs/experiments/runs/raw}"
+# shellcheck source=lib/pi-usage.sh
+source scripts/lib/pi-usage.sh
 
 model="${PI_BENCH_MODEL:-deepseek-v4-flash}"
 tasks=""

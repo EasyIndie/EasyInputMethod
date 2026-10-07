@@ -42,6 +42,10 @@ pi_extract_usage() {
 pi_measure() {
   local label="$1" model="$2" mode="$3" sdir="$4" prompt="$5"; shift 5
   local ts raw usage exit_code=0
+  case "$PI_USAGE_LOG" in
+    /*) ;;
+    *) echo "⚠️  PI_USAGE_LOG 非绝对路径，在子目录/shell 下会写错位置: $PI_USAGE_LOG" >&2 ;;
+  esac
   ts="$(date -u +%Y%m%dT%H%M%SZ)"
   mkdir -p "$PI_RAW_DIR" "$(dirname "$PI_USAGE_LOG")"
   [ -n "$sdir" ] && mkdir -p "$sdir"
@@ -54,7 +58,9 @@ pi_measure() {
   fi
   [ -n "$sdir" ] && : > "$sdir/.seen"
 
-  "$PI_CMD" "${args[@]}" "$@" "$prompt" >"$raw" 2>"${raw}.err" || exit_code=$?
+  # 剥离父会话变量，避免嵌套调用污染父会话 / 扭曲观测
+  env -u PI_SESSION_FILE -u PI_SESSION_ID -u PI_SESSION_DIR \
+    "$PI_CMD" "${args[@]}" "$@" "$prompt" >"$raw" 2>"${raw}.err" || exit_code=$?
 
   usage="$(pi_extract_usage "$raw")"
   jq -cn \
