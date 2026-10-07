@@ -71,7 +71,7 @@ EasyInputMethod/
 │   ├── ime-ffi/           # 窄 C ABI（唯一 unsafe 集中地）
 │   └── ime-cli/           # 开发/测试 CLI + REPL + bench
 ├── data/                  # 源数据 + sources.toml（许可登记）
-├── tools/                 # wubi-encoder、码表/词组生成脚本
+├── tools/                 # 数据生成脚本（编码器库在 crates/wubi-encoder）
 ├── platforms/             # macos / windows / linux / android / ios
 ├── packaging/             # 安装包脚本
 ├── scripts/               # 验证/构建/抓包脚本
@@ -116,7 +116,7 @@ make verify     # = fmt-check + lint + test + deny + verify-no-network
 
 ## 6. 工作流（每次任务）
 
-1. **选任务**：从 `ROADMAP.md` 取一个未勾选项（或用户明确指派）。
+1. **选任务**：优先从 `docs/tasks/` 取一张"待认领"任务卡（更细粒度、flash 可执行）；没有卡时从 `ROADMAP.md` 取一个未勾选项（或用户明确指派）。
 2. **确认设计**：阅读相关 `docs/`；若需要任何设计变更或偏离铁律，**先停下来**写 ADR 并在回复中说明。
 3. **实现**：最小改动；遵守 §2 铁律与 §7 约定。
 4. **自测**：`make verify` 全绿。

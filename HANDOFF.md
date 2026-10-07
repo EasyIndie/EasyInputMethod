@@ -83,6 +83,12 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · pi（首次提交 + 任务拆分）
+- 首次提交并推送到 origin/main（commit a699ac1 之前）。
+- 拆分 P1-M1 为 9 张任务卡（docs/tasks/），按 flash/pro 标注；新增 dispatch-task.sh（headless 派发）。
+- 结论：pi 无原生子代理，用 virtual models 或 headless CLI 实现 flash 派发。
+- 遗留：P1-M1 待认领；TBD-4 包名待定。
+
 ### 2026-10-08 · pi（P1-M0 实现）
 - 完成 P1-M0：Rust workspace + `ime-core`（Engine trait/InputMode/会话状态机）+ `ime-table`（排序数组码表）+ `ime-cli`（REPL）。
 - 验证：11 测试通过、clippy -D warnings 干净、`cargo deny` 通过、隐私断言过（22 产物无网络符号）。
