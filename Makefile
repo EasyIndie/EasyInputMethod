@@ -3,7 +3,7 @@
 SHELL := /bin/bash
 CARGO ?= cargo
 
-.PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace
+.PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report
 
 help: ## 列出所有命令
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \
@@ -35,6 +35,9 @@ bootstrap: ## 安装开发依赖（cargo-deny、cargo-fuzz 等）
 
 verify-no-network: ## 断言核心产物与依赖不含网络能力
 	./scripts/verify-no-network.sh
+
+usage-report: ## 汇总用量/成本（纯本地，不花 token）
+	./scripts/usage-report.sh
 
 # verify 是提交前唯一入口：文档阶段只跑隐私断言；编码阶段跑全套。
 verify: ## 提交前全量验证（文档阶段只跑隐私断言）

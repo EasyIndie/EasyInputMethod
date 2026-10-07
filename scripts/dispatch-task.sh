@@ -1,24 +1,49 @@
 #!/usr/bin/env bash
-# 派发任务卡给指定的低成本模型 headless 执行（把 flash 当子代理用）。
+# 派发任务卡给指定模型 headless 执行，并记录 token / 成本。
 #
 # 用法:
-#   ./scripts/dispatch-task.sh <docs/tasks/T-XXX.md> [模型]
+#   ./scripts/dispatch-task.sh <docs/tasks/T-XXX.md> [选项]
 #
-# 模型名以 `/model` 或 `pi --model` 实际可用为准；deepseek-v4-flash 是占位示例。
+# 选项:
+#   --model <名>    使用模型（默认 $PI_BENCH_MODEL 或 deepseek-v4-flash）
+#   --reuse <会话名> 复用同一会话（缓存热）；适合连续派发一批小卡
+#   --label <名>    记录用的标签（默认取任务卡文件名）
+#
+# 用量写入 docs/experiments/runs/usage.jsonl；用 ./scripts/usage-report.sh 汇总。
 
 set -euo pipefail
 
-card="${1:?用法: dispatch-task.sh <docs/tasks/T-XXX.md> [模型]}"
-model="${2:-deepseek-v4-flash}"
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT"
+# shellcheck source=lib/pi-usage.sh
+source scripts/lib/pi-usage.sh
 
+card="${1:?用法: dispatch-task.sh <docs/tasks/T-XXX.md> [--model M] [--reuse 名] [--label 名]}"
+shift
 [ -f "$card" ] || { echo "任务卡不存在: $card"; exit 1; }
+
+model="${PI_BENCH_MODEL:-deepseek-v4-flash}"
+mode="fresh"
+sdir=""
+label="$(basename "$card" .md)"
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --model) model="$2"; shift 2 ;;
+    --reuse) mode="reuse"; sdir="docs/experiments/runs/sessions/$2"; shift 2 ;;
+    --label) label="$2"; shift 2 ;;
+    *) echo "未知参数: $1"; exit 2 ;;
+  esac
+done
 
 prompt="你是萤火虫输入法（EasyInputMethod）仓库的执行代理。
 1. 先读根目录 AGENTS.md（铁律/工作流/约定）与 HANDOFF.md（当前状态）。
 2. 完整阅读并**严格执行**任务卡：$card
 3. 完成后运行 \`make verify\`，确保全绿。
 4. 更新 HANDOFF.md（会话日志追加一条）与 ROADMAP.md（勾选完成项）。
-5. 用简洁格式汇报：改了什么 / 如何验证（贴命令与结果）/ 风险与未决问题。
-注意：一次只做这一张卡，不做卡外的事。"
+5. 只回**简明摘要**（≤15 行）：改了什么 / 如何验证（贴命令与结果）/ 风险与未决问题。
+注意：一次只做这一张卡，不做卡外的事；不要粘贴大段代码或完整 transcript。"
 
-pi --print --model "$model" "$prompt"
+echo "▶ 派发 $card → 模型 ${model}（mode=${mode}）"
+usage="$(pi_measure "$label" "$model" "$mode" "$sdir" "$prompt")"
+echo "💰 本次用量: $usage"

@@ -83,6 +83,12 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · pi（用量量测脚手架）
+- 新增用量量测：`scripts/lib/pi-usage.sh`、`dispatch-task.sh`（支持 `--model/--reuse/--label`）、`usage-report.sh`、`bench-session-vs-workers.sh`（`--micro`/`--tasks`）。
+- 新增 `docs/experiments/`（方法学 + 判定规则 + 结论待实测）。`make usage-report` 可本地汇总（不花 token）。
+- 用途：用真实 token/成本数据判定“持久会话 vs 每次新 worker”。已用 `PI_CMD=echo` 验证管道与合成数据校验汇总数值。
+- 遗留：待用真实模型跑 `bench-session-vs-workers.sh --micro` 采集数据。
+
 ### 2026-10-08 · pi（上下文压缩前交接）
 - 关键上下文已固化到本文件与 docs/；代码无未提交变更（已推 origin/main）。
 - 恢复要点：读本文件 §0–§8 → 按 §4 下一步执行 → 派发任务卡用 `scripts/dispatch-task.sh`。

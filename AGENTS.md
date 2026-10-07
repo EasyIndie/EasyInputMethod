@@ -74,8 +74,8 @@ EasyInputMethod/
 ├── tools/                 # 数据生成脚本（编码器库在 crates/wubi-encoder）
 ├── platforms/             # macos / windows / linux / android / ios
 ├── packaging/             # 安装包脚本
-├── scripts/               # 验证/构建/抓包脚本
-└── docs/                  # 设计与决策文档
+├── scripts/               # 验证/构建/派发/用量统计脚本
+└── docs/                  # 设计与决策文档（tasks/ 任务卡、experiments/ 用量实验）
 ```
 
 **依赖方向（单向，禁止反向）**：
