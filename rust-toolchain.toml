@@ -1,0 +1,6 @@
+# 固定工具链，保证可复现构建。
+# 升级请单独提交 PR，并在 PR 中说明原因（见 AGENTS.md 铁律 6/7）。
+[toolchain]
+channel = "1.98.1"
+profile = "minimal"
+components = ["rustfmt", "clippy"]

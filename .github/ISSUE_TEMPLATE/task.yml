@@ -1,0 +1,40 @@
+name: 任务
+description: 一个明确、可验证的开发/文档任务
+title: "[Task] "
+labels: ["task"]
+body:
+  - type: input
+    id: roadmap
+    attributes:
+      label: 对应 ROADMAP 编号
+      description: 如 P1-M0 / TBD-1 / REV-1。没有就填“新任务”。
+      placeholder: P1-M0
+    validations:
+      required: true
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标（一句话）
+      description: 完成后世界有什么不同？
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 验收标准
+      description: 可客观判定"做完了"的条件。
+      placeholder: |
+        - [ ] ...
+        - [ ] ...
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: 约束 / 不可做的事
+      description: 参考 AGENTS.md 铁律与非目标。
+  - type: textarea
+    id: notes
+    attributes:
+      label: 参考
+      description: 相关文档、ADR、代码位置。

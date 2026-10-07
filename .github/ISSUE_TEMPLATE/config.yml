@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 安全漏洞（私下报告）
+    url: https://github.com/EasyIndie/EasyInputMethod/security/advisories/new
+    about: 请勿公开披露安全细节。
+  - name: 讨论 / 提问
+    url: https://github.com/EasyIndie/EasyInputMethod/discussions
+    about: 设计讨论与使用问题。

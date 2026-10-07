@@ -1,0 +1,10 @@
+[package]
+name = "ime-table"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法码表引擎（五笔）：码表加载与精确/前缀查询"
+
+[dependencies]
+ime-core.workspace = true

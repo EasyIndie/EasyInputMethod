@@ -1,0 +1,67 @@
+# cargo-deny 策略：本项目为 GPL-3.0-or-later，只接受许可兼容的依赖。
+# 运行: make deny
+# 文档: https://embarkstudios.github.io/cargo-deny/
+
+[graph]
+all-features = true
+
+[advisories]
+# 发现安全公告即失败（漏洞依赖不得进入）
+version = 2
+yanked = "deny"
+ignore = []          # 如需临时忽略，必须写 ADR 说明
+
+[licenses]
+version = 2
+# 允许与 GPL-3.0-or-later 兼容的许可。
+# 新增许可前请确认兼容性（见 docs/数据来源与许可.md §5）。
+allow = [
+  "MIT",
+  "MIT-0",
+  "Apache-2.0",
+  "Apache-2.0 WITH LLVM-exception",
+  "BSD-2-Clause",
+  "BSD-3-Clause",
+  "ISC",
+  "Zlib",
+  "0BSD",
+  "Unlicense",
+  "CC0-1.0",
+  "BSL-1.0",
+  "Unicode-3.0",
+  "Unicode-DFS-2016",
+  "MPL-2.0",
+  "LGPL-3.0-only",
+  "LGPL-3.0-or-later",
+  "GPL-3.0-only",
+  "GPL-3.0-or-later",
+]
+confidence-threshold = 0.9
+
+[bans]
+multiple-versions = "warn"
+# 内部 workspace 路径依赖用 `workspace = true` 继承版本，会被误判为通配符；
+# 因此用 warn（外部依赖的真实通配符仍会告警）。
+wildcards = "warn"
+# 禁止把网络/遥测库引入核心 crate（见 AGENTS.md 铁律 1）。
+# 注意：cargo-deny 只能按 crate 名匹配，这里列出常见网络/遥测库作为护栏。
+# 注意：此禁令是 workspace 级。P6 的模型下载器（合法网络点）必须放在 workspace 外
+#（独立工具），否则会触发此禁令（见 docs/reviews/001.md P2-6）。
+deny = [
+  { name = "reqwest" },
+  { name = "hyper" },
+  { name = "ureq" },
+  { name = "isahc" },
+  { name = "curl" },
+  { name = "surf" },
+  { name = "awc" },
+  { name = "tonic" },
+  { name = "sentry" },
+  { name = "opentelemetry" },
+  { name = "mixpanel" },
+  { name = "segment" },
+]
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"

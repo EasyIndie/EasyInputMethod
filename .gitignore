@@ -1,0 +1,20 @@
+# Rust
+/target/
+**/*.rs.bk
+*.pdb
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# pi 本地会话（不提交）
+.pi/sessionDir/
+.pi/sessions/
+
+# 本地构建产物 / 临时数据
+/dist/
+/packaging/out/
+*.log

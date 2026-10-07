@@ -1,0 +1,9 @@
+[package]
+name = "ime-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法核心：引擎抽象与会话状态机（纯逻辑、零 IO、零网络）"
+
+[dependencies]

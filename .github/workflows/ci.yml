@@ -1,0 +1,69 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 文档阶段尚无 Cargo workspace：跳过编译类检查，仅做结构校验。
+      - name: Detect workspace
+        id: ws
+        run: |
+          if [ -f Cargo.toml ]; then echo "exists=true" >> "$GITHUB_OUTPUT";
+          else echo "exists=false" >> "$GITHUB_OUTPUT"; echo "::notice::尚无 Cargo workspace，跳过编译检查"; fi
+
+      - name: Repo structure sanity
+        run: |
+          set -e
+          for f in AGENTS.md HANDOFF.md CONTRIBUTING.md ROADMAP.md Makefile LICENSE \
+                   rust-toolchain.toml deny.toml docs/技术方案.md; do
+            test -f "$f" || { echo "缺少必需文件: $f"; exit 1; }
+          done
+          echo "结构校验通过"
+
+      # 工具链由 rust-toolchain.toml 决定（单一真值，避免漂移），此处不硬编码
+      - uses: dtolnay/rust-toolchain@master
+        if: steps.ws.outputs.exists == 'true'
+        with:
+          components: rustfmt, clippy
+
+      - uses: Swatinem/rust-cache@v2
+        if: steps.ws.outputs.exists == 'true'
+
+      - name: cargo fmt
+        if: steps.ws.outputs.exists == 'true'
+        run: cargo fmt --all -- --check
+
+      - name: cargo clippy
+        if: steps.ws.outputs.exists == 'true'
+        run: cargo clippy --workspace --all-targets -- -D warnings
+
+      - name: cargo test
+        if: steps.ws.outputs.exists == 'true'
+        run: cargo test --workspace
+
+      - uses: taiki-e/install-action@cargo-deny
+        if: steps.ws.outputs.exists == 'true'
+
+      - name: cargo deny
+        if: steps.ws.outputs.exists == 'true'
+        run: cargo deny check
+
+      - name: verify no network (privacy assertion)
+        run: ./scripts/verify-no-network.sh
+
+  # 备注：P1-M3 起需加 macOS runner 构建 Swift/IMK 宿主（docs/reviews/001.md P2-5）；
+  # P3 起需加 Windows runner 构建 TSF 前端。
