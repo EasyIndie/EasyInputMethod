@@ -13,8 +13,8 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M2 进行中（T-M2-01/02/03 完成，剩 T-M2-04 inputx-pinyin spike）** |
-| 当前分支 | `main`（本次 T-M2-03 变更未提交） |
+| 当前阶段 | **P1-M2 全部完成（T-M2-01/02/03/04）** |
+| 当前分支 | `main`（本次 T-M2-04 变更未提交） |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 全绿（fmt+clippy+69 单测+1 doctest+deny+隐私断言） |
 
@@ -22,8 +22,8 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 全部完成；P1-M2 基本完成**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**（`PinyinBackend` trait + 内置轻量兜底 + 混输）；**T-M2-03 完成拼音反查首选读音 + `ime-config` 接入 `ime-cli`**（改 `config.toml` 即时生效 + `:set` 调试命令）。
-- **下一步**：`inputx-pinyin` spike（T-M2-04，只调研出结论）；拼音反查 CLI 展示（可选）；`TBD-4`（英文/包名）；P1-M3。
+- **现在**：**P1-M1、P1-M2 全部完成**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**（`PinyinBackend` trait + 内置轻量兜底 + 混输）；**T-M2-03 完成拼音反查首选读音 + `ime-config` 接入 `ime-cli`**（改 `config.toml` 即时生效 + `:set` 调试命令）；**T-M2-04 `inputx-pinyin` spike 完成，结论「不接入」**（体积否决：core 4.2 MiB / 默认 ~23 MiB，超 0.6 MB 预算）。
+- **下一步**：P1-M3（`ime-ffi` C ABI + macOS IMK 宿主）；`TBD-4`（英文/包名）；拼音反查 CLI 展示（可选）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -43,17 +43,18 @@
 - **P1-M1 / T-M1-09**：`ime-table` 新增 `Table::from_tsv`（`code\ttext\tweight`：注释/空行跳过、缺列/非法权重报错、同码多候选按词频降序）；`ime-cli` 支持 `--table`/`IME_TABLE_PATH` 加载并保留内置回退表；新增 `examples/generate_core.rs` 裁剪出 `data/generated/wubi86-core.tsv`（单字全量 27,823 + 词组按 jieba 词频全局取前 10,000，共 491,854 字节 ≤0.6MB）+ 报告；验收样本 `wq→你`、`kwwl→中华人民共和国`、`gggg` 重码按词频降序通过。
 - **P1-M2 / T-M2-01**：新建 `crates/ime-config`（`arc-swap` + `toml_edit`，零网络、`forbid(unsafe_code)`）：`schema.rs`（v1 七项唯一真值）、`config.rs`（Schema 默认值 + 文件值合并快照）、`persist.rs`（原子写 temp+fsync+rename / 咨询锁 / 迁移占位 / 首份中文注释模板）、`watch.rs`（mtime 轮询 + 防抖 → reload）、`lib.rs`（`ConfigStore` set/get/subscribe/reload）；9 个单测覆盖验收 1–6（含 watcher 外部编辑重载）。
 - **P1-M2 / T-M2-02**：新建 `crates/ime-pinyin`（零外部依赖、`forbid(unsafe_code)`）：`PinyinBackend` trait（`segment`/`convert`/`reverse_lookup`）、`TablePinyinBackend`（内存表兜底：音节切分最长优先+回溯、全拼整词/单音节字、简拼首字母串）、`PinyinEngine`（适配 `Engine`，`source=Pinyin`，绝不自动上屏）；12 个单测。生成 `data/generated/pinyin-chars.tsv`（53,087 行，575 KB，已入库）与 `pinyin-words.tsv`（340,960 行，8.4 MB，gitignore）；D5 由候选转正式（fetch 脚本 + SHA-256 + 登记）。`ime-cli` 支持 `--pinyin-chars`/`--pinyin-words` + 内置回退拼音表，`:mode pinyin`/`mixed` 验收通过（`nihao→你好`、`wo→我`、`nh→你好`、mixed 无五笔结果出拼音候选）。
+- **P1-M2 / T-M2-04**：完成 `inputx-pinyin` spike（只调研不改产品代码）：结论 **Phase 1 不接入**，保留内置兜底，`inputx-pinyin` 降为 P2「观察」候选，终局仍自研 FSA。依据：① 体积（core `pinyin.dict` 4.2 MiB、默认含 bigram/trigram ≈ 22.8 MiB；实测 release 二进制默认 24.2 MB / 仅 core 4.77 MB）远超 0.6 MB 预算；② 20 常用词 hit@1 与内置兜底持平（各 19/20）；③ 单作者、crates.io 1.4.0 滞后、facade 不含简拼/权重（`inputx-core` 未发布）；许可干净。产出 `docs/reviews/002-inputx-pinyin-spike.md` + ADR-008 spike 复核 + T-M2-04 结论。
 
 ## 3. 进行中
 
-**P1-M2（配置 + 拼音 + 混输）收尾中**：T-M2-01（`ime-config`）、T-M2-02（`ime-pinyin`）与 T-M2-03（拼音反查首选读音 + `ime-config` 接入 `ime-cli`）已完成；仅剩 T-M2-04（`inputx-pinyin` spike，flash 调研）。
+无（P1-M2 已全部完成）。下一个里程碑 P1-M3 待 T-M2-04 变更合入后开始。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M2**：`inputx-pinyin` spike（T-M2-04，flash 调研，只出结论不改产品代码）。
+1. **P1-M3**：`ime-ffi` C ABI（会话 + 配置接口 + macOS 宿主 IMKInputController）。
 2. **可选**：拼音反查 CLI 展示命令（`:pinyin <字>`，后端 `reverse_lookup` 已就绪；无任务卡）。
 3. 定 `TBD-4`：英文/包名（REV-4）。
-4. **P1-M3**：`ime-ffi` C ABI + macOS 宿主（IMKInputController）。
+4. **P2**（参考，不阻塞）：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句（T-M2-04 附带发现）。
 
 ## 5. 待决 / 阻塞
 
@@ -97,6 +98,13 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M2-04 inputx-pinyin spike）
+- 仅调研不改产品代码：`inputx-pinyin` 1.4.0（MIT OR Apache-2.0，纯 Rust，单作者）→ **结论「Phase 1 不接入」**，保留内置兜底；P2「观察」候选，终局仍自研 FSA（ADR-008 复核）。
+- 决定性依据（实测）：核心数据 4.2 MiB、默认含 bigram/trigram ≈ 22.8 MiB，release 二进制默认 24.2 MB / 仅 core 4.77 MB，远超 0.6 MB 预算；20 常用词 hit@1 与内置兜底持平（各 19/20）；facade 不含简拼/权重（`inputx-core` 未发布），需自写适配层。
+- 附带发现（留待 P2）：内置兜底贪心最长优先切分把 `mingong` 切成 `ming+o+ng`，超长整句词条漏检。
+- 产出：`docs/reviews/002-inputx-pinyin-spike.md` + ADR-008 spike 复核 + T-M2-04 结论；`make verify` 全绿（纯文档变更，69 单测+1 doctest）。
+- 遗留：无新增接入卡（未推荐接入）；P1-M2 全部完成，下一步 P1-M3。
 
 ### 2026-10-08 · pi（T-M2-03 拼音反查首选读音 + ime-config 接入 ime-cli）
 - `ime-pinyin` 反查改首选读音：`generate.rs` 字表改为「按字分组、D5 首条读音在前」，`reverse_lookup` 据此返回首选（你→ni、的→de、行→xing）；重生成 `pinyin-chars.tsv`（53,087 行，计数不变）；新增反查首选单测。
@@ -154,10 +162,3 @@
 - 逐一核实候选来源许可：**结论无合格来源**（KanjiVG CC BY-SA 3.0 仅 63.8% GB1 覆盖；Arphic Public License 被 FSF 判 GPL 不兼容；CHISE/cjkvi-ids 许可不明确）。
 - 按卡规「停下并写结论」交付：写 **ADR-018** + `docs/数据来源与许可.md` §1.3（候选许可判定表）+ 任务卡结论；未引入任何数据、未退回 D3。
 - 阻塞：T-M1-05（单字码表生成）待找到合格来源；候选路径见 ADR-018。验证：`make verify` 全绿（纯文档变更）。
-
-### 2026-10-08 · pi（T-M1-03 合体字 + 末笔字型识别码）
-- `crates/wubi-encoder` 新增 `recognition_key`（5×3 识别码双射）与 `encode_hechengzi`（≥4 取 1/2/3/末；3/2 字根 + 识别码）+ `TooFewRadicals`；19 个单测（含规范样例 中/和/对/地/要/会）。
-- 新增 `examples/oracle.rs`：从 D3 逐位推导字形→键映射，全量对照 → `data/generated/oracle-report.txt`（全体 99.9784%、GB2312 一级 100%、三码字 100%；仅 6 处歧义字形归因）+ PROVISIONAL 派生 `wubi86-structure-laststroke.tsv`。
-- 调研结论：结构/末笔采用 option 2（从 D3 派生），写 **ADR-017**；新增 `data/generated/gb2312-level1.txt`（GB2312 一级 3755 字）。
-- 验证：`make verify` 全绿（30 测试）。
-- 遗留：可靠拆字数据（字根数/结构/末笔）待引入（T-M1-05 前置，需联网阶段登记新数据源）。

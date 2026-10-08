@@ -46,7 +46,7 @@
 
 - [x] `ime-config`：Schema + `ArcSwap` 快照 + 原子写 + 广播（见 `docs/配置架构.md`）
 - [x] `PinyinBackend` trait + **内置轻量拼音兜底**（音节→高频字词表 + 简拼）
-- [ ] `inputx-pinyin` **spike**：验证 API/质量/体积，决定是否接入（ADR-008）
+- [x] `inputx-pinyin` **spike**：验证 API/质量/体积，决定是否接入（ADR-008）—— 结论 **不接入**（体积否决；见 `docs/reviews/002-inputx-pinyin-spike.md`）
 - [x] 混输合并（五笔优先 + 拼音兜底 + 去重排序）
 - [x] 拼音反查（字→拼音，返回首选读音）
 - [x] **验收**：改 `config.toml` 即时生效；空码自动出拼音候选
