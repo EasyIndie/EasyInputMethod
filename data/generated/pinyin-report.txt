@@ -1,0 +1,12 @@
+# 拼音兜底数据生成报告（T-M2-02）
+#
+# D5  data/sources/pinyin-data.txt
+# D4  data/sources/phrase-pinyin-data-pinyin.txt
+# D10 data/sources/jieba-dict.txt
+
+[summary]
+char_rows = 53087
+word_rows = 340960
+words_derived_from_d5 = 337394
+words_pinyin_overridden_by_d4 = 43546
+words_added_from_d4_only = 3566

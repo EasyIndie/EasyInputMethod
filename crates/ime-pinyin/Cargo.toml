@@ -1,0 +1,10 @@
+[package]
+name = "ime-pinyin"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法拼音引擎：可插拔后端 trait + 内置轻量兜底（零外部依赖）"
+
+[dependencies]
+ime-core.workspace = true

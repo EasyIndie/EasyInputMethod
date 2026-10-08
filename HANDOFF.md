@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M2 进行中（T-M2-01 完成：ime-config 配置子系统）** |
-| 当前分支 | `main`（本次 T-M2-01 变更未提交） |
+| 当前阶段 | **P1-M2 进行中（T-M2-01 ime-config + T-M2-02 ime-pinyin 完成）** |
+| 当前分支 | `main`（本次 T-M2-02 变更未提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+52 单测+1 doctest+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+64 单测+1 doctest+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 全部完成；P1-M2 已开工**。T-M2-01 完成 `ime-config`：Schema 唯一真值（v1 七项）+ `ArcSwap` 快照 + 原子写 + mtime 监听 + 订阅广播；9 个单测覆盖验收 1–6。
-- **下一步**：**P1-M2 剩余**（拼音 + 混输 + spike）与 `TBD-4`（英文/包名）。
+- **现在**：**P1-M1 全部完成；P1-M2 已开工**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**：`PinyinBackend` trait + 内置轻量兜底（音节切分 + 简拼 + 混输），`ime-cli` 的 `:mode pinyin`/`mixed` 可用。
+- **下一步**：`inputx-pinyin` spike（T-M2-03）；把 `ime-config` 接入 `ime-cli`；拼音反查 CLI 集成；`TBD-4`（英文/包名）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -42,16 +42,17 @@
 - **P1-M1 / T-M1-06**：`wubi-encoder` 新增 `encode_phrase`（2 字 `AaAbBaBb` / 3 字 `AaBaCaCb` / 4+ 字 `AaBaCaZa`）+ `TooFewCharacters`/`TooFewCodes`；6 个单测（含写死样本 中华人民共和国→kwwl、输入法→ltif、中文→khyy）+ doctest。新增 `examples/generate_phrases.rs`：读 D4 词表 + `wubi86-single.tsv`，同码按临时权重（组成字临时权重之和）去重 → `data/generated/wubi86-phrases.tsv`（38,220 条，576 KB）。新增 `data/sources/fetch-phrase-pinyin.sh`（D4 MIT，SHA-256 固定）并登记。
 - **P1-M1 / T-M1-09**：`ime-table` 新增 `Table::from_tsv`（`code\ttext\tweight`：注释/空行跳过、缺列/非法权重报错、同码多候选按词频降序）；`ime-cli` 支持 `--table`/`IME_TABLE_PATH` 加载并保留内置回退表；新增 `examples/generate_core.rs` 裁剪出 `data/generated/wubi86-core.tsv`（单字全量 27,823 + 词组按 jieba 词频全局取前 10,000，共 491,854 字节 ≤0.6MB）+ 报告；验收样本 `wq→你`、`kwwl→中华人民共和国`、`gggg` 重码按词频降序通过。
 - **P1-M2 / T-M2-01**：新建 `crates/ime-config`（`arc-swap` + `toml_edit`，零网络、`forbid(unsafe_code)`）：`schema.rs`（v1 七项唯一真值）、`config.rs`（Schema 默认值 + 文件值合并快照）、`persist.rs`（原子写 temp+fsync+rename / 咨询锁 / 迁移占位 / 首份中文注释模板）、`watch.rs`（mtime 轮询 + 防抖 → reload）、`lib.rs`（`ConfigStore` set/get/subscribe/reload）；9 个单测覆盖验收 1–6（含 watcher 外部编辑重载）。
+- **P1-M2 / T-M2-02**：新建 `crates/ime-pinyin`（零外部依赖、`forbid(unsafe_code)`）：`PinyinBackend` trait（`segment`/`convert`/`reverse_lookup`）、`TablePinyinBackend`（内存表兜底：音节切分最长优先+回溯、全拼整词/单音节字、简拼首字母串）、`PinyinEngine`（适配 `Engine`，`source=Pinyin`，绝不自动上屏）；12 个单测。生成 `data/generated/pinyin-chars.tsv`（53,087 行，575 KB，已入库）与 `pinyin-words.tsv`（340,960 行，8.4 MB，gitignore）；D5 由候选转正式（fetch 脚本 + SHA-256 + 登记）。`ime-cli` 支持 `--pinyin-chars`/`--pinyin-words` + 内置回退拼音表，`:mode pinyin`/`mixed` 验收通过（`nihao→你好`、`wo→我`、`nh→你好`、mixed 无五笔结果出拼音候选）。
 
 ## 3. 进行中
 
-**P1-M2（配置 + 拼音 + 混输）进行中**：T-M2-01（`ime-config`）已完成；拼音与混输尚未开工。
+**P1-M2（配置 + 拼音 + 混输）进行中**：T-M2-01（`ime-config`）与 T-M2-02（`ime-pinyin`）已完成；拼音反查 CLI/UI 集成与 `inputx-pinyin` spike 尚未开工。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M2**：`PinyinBackend` trait + 内置轻量拼音兜底 + 混输合并（五笔优先 + 拼音兜底，ADR-008）。
-2. **P1-M2**：`inputx-pinyin` spike（验证 API/质量/体积，ADR-008）。
-3. **P1-M2**：把 `ime-config` 接入 `ime-cli`（读快照 + 监听，验证“改 config.toml 即时生效”）。
+1. **P1-M2**：`inputx-pinyin` spike（验证 API/质量/体积，ADR-008；T-M2-03）。
+2. **P1-M2**：把 `ime-config` 接入 `ime-cli`（读快照 + 监听，验证“改 config.toml 即时生效”）。
+3. **P1-M2**：拼音反查（字→拼音）CLI/UI 集成（后端 `reverse_lookup` 已就绪）。
 4. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 
 ## 5. 待决 / 阻塞
@@ -84,7 +85,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），43 单测 + 1 doctest 通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`/`ime-config`/`ime-pinyin`），64 单测 + 1 doctest 通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -96,6 +97,13 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M2-02 内置轻量拼音引擎 ime-pinyin）
+- 新建 `crates/ime-pinyin`（零外部依赖、`forbid(unsafe_code)`）：`PinyinBackend` trait（签名理由见 backend.rs 注释）+ `TablePinyinBackend`（音节切分最长优先+回溯 / 全拼整词+单音节字 / 简拼首字母串）+ `PinyinEngine`（`source=Pinyin`，永不自动上屏）。
+- 生成 `data/generated/pinyin-chars.tsv`（53,087 行，575 KB，入库）与 `pinyin-words.tsv`（340,960 行，8.4 MB，gitignore）；词表主源 jieba、拼音由 D5 逐字拼接、D4 覆盖多音字词；**D5 转正式**（fetch 脚本 + SHA-256 + `sources.toml`/文档登记）。
+- `ime-cli` 接入 `--pinyin-chars`/`--pinyin-words` + 内置回退表；验收 `nihao→你好`、`wo→我`、`nh→你好`、mixed 无五笔结果自动出拼音候选均通过。
+- 验证：`make verify` 全绿（64 单测 + 1 doctest）；`deny` 有既有 license-allowance 警告但 advisories/bans/licenses/sources 均 ok。
+- 遗留：`reverse_lookup` 单字返回字典序最小读音（非严格首选读音），精化属拼音反查卡；拼音词表 8.4 MB 未裁剪（内置二进制裁剪留后续卡）；`inputx-pinyin` spike（T-M2-03）未做。
 
 ### 2026-10-08 · pi（T-M2-01 ime-config 配置子系统）
 - 新建 `crates/ime-config`：Schema 唯一真值（v1 七项）+ `ArcSwap` 快照 + 原子写（temp+fsync+rename）/咨询锁/迁移占位 + mtime 轮询监听（防抖→reload）+ `set/get/subscribe/reload`。

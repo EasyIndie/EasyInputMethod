@@ -47,6 +47,20 @@ added_at = "2026-10-08"
 notes = "版本 0.19.0；格式 `词: 拼音`，仅取第一列中文词（含非汉字者跳过）；文件下载获取，不入库"
 
 [[source]]
+id = "D5"
+name = "单字拼音表（mozillazg/pinyin-data）"
+path = "data/sources/pinyin-data.txt"
+url = "https://github.com/mozillazg/pinyin-data/blob/master/pinyin.txt"
+upstream = "mozillazg/pinyin-data"
+license = "MIT"
+risk = "low"
+sha256 = "621f8ca9eff8519f47e2b17b564fd318161e13bca07eea8c8e04993cd5d3b52e"
+used_for = ["pinyin-fallback-chars", "pinyin-reverse-lookup"]
+fetch_script = "data/sources/fetch-pinyin-data.sh"
+added_at = "2026-10-08"
+notes = "版本 0.15.0；格式 `U+XXXX: pinyin1,pinyin2  # 字`（带声调）；由 T-M2-02 转正式；文件下载获取，不入库"
+
+[[source]]
 id = "D9"
 name = "五笔86 码表（rime/rime-wubi，验证 oracle #2）"
 path = "data/sources/rime-wubi86.dict.yaml"

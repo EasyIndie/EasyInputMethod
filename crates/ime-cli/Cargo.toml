@@ -8,4 +8,5 @@ description = "萤火虫输入法开发/测试 CLI（不发布）"
 
 [dependencies]
 ime-core.workspace = true
+ime-pinyin.workspace = true
 ime-table.workspace = true
