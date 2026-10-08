@@ -31,3 +31,6 @@ docs/experiments/runs/sessions/
 
 # 派生数据（可由 examples/oracle.rs 复现；PROVISIONAL，不入库，见 ADR-017）
 /data/generated/wubi86-structure-laststroke.tsv
+
+# oracle 派生的对照表（可由 fetch 脚本 + example 复现；含极点 provenance，不入库）
+/data/generated/wubi86-oracle2-single.tsv
