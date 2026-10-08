@@ -65,5 +65,30 @@ jobs:
       - name: verify no network (privacy assertion)
         run: ./scripts/verify-no-network.sh
 
-  # 备注：P1-M3 起需加 macOS runner 构建 Swift/IMK 宿主（docs/reviews/001.md P2-5）；
-  # P3 起需加 Windows runner 构建 TSF 前端。
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-deny
+      - name: Verify Rust and privacy
+        run: make verify
+      - name: Build IMK application
+        run: ./platforms/macos/build.sh
+      - name: Reproduce licensed pinyin data
+        run: |
+          ./data/sources/fetch-pinyin-data.sh
+          ./data/sources/fetch-phrase-pinyin.sh
+          ./data/sources/fetch-jieba-dict.sh
+          cargo run -p ime-pinyin --example generate
+      - name: Build and smoke-test independent preview
+        run: ./platforms/macos/dev-preview.sh --smoke-test
+      - name: Validate app metadata and icons
+        run: |
+          plutil -lint platforms/macos/build/Yinghuo.app/Contents/Info.plist
+          plutil -lint platforms/macos/build/preview/YinghuoPreview.app/Contents/Info.plist
+          cmp assets/icons/yinghuo-icon-v4-app.icns platforms/macos/build/Yinghuo.app/Contents/Resources/Yinghuo.icns

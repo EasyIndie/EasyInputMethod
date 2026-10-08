@@ -41,17 +41,17 @@
 
 ## 3. 进行中
 
-**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；安装发布脚本与 macOS CI 尚未完成。
+**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装发布脚本尚未完成。
 
 - T-M3-05 独立窗口完成：`make macos-preview`；自动检查 `./platforms/macos/dev-preview.sh --smoke-test`。debug 增量构建，不需要公证/安装/重启；仍需正式宿主验证 IMK 系统集成。
-- ADR-023 修正注册标识；新包已 Developer ID 签名、公证并安装系统域。
+- ADR-023 修正注册标识；此前签名、公证、系统安装及实机验收通过。当前已按用户要求卸载，见 §7。
 - 用户重启后，TIS 稳定枚举 1/337，选择返回 0；用户实体键盘确认 TextEdit/Safari 的五笔 `wq→你`、拼音兜底 `nihao→你好` 正常。
 - SIG-2 关闭，经典 `.app` 可用。详细证据及历史失败记录见 T-M3-02 任务卡。
 
 ## 4. 下一步（可执行，按优先级）
 
 1. **T-M3-03**：固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
-2. **T-M3-04**：CI 增加 macOS 编译检查。
+2. **P1-M4**：候选翻页与输入交互；T-M3-04 配置完成，远端检查待 PR。
 3. **P1-M4**：按任务卡完善交互（用户词库存储待定）。
 
 ## 5. 待决 / 阻塞
@@ -61,7 +61,7 @@
 | REV-1…4 | 交叉审核已完成（`docs/reviews/001.md`） | 否 |
 | TBD-1 | 词频数据源 — ✅ 已定 `fxsjy/jieba`（D10，MIT），ADR-021 | 否 |
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
-| TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
+| TBD-3 | 用户词库存储格式 | 只阻塞 P1-M4 用户词库/学习，不阻塞候选交互 |
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；待并入 ADR + `build.sh` 参数化 |
@@ -111,6 +111,17 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · Codex（T-M3-04 macOS CI）
+- 新增独立 macOS job：Rust/隐私验证、正式构建、登记数据复现、独立窗口冒烟、图标校验；不安装或公证。
+- YAML 静态解析、本机等价构建及 make verify 通过；远端实际运行待 PR。
+- 用户授权持续推进 macOS 发布；下一步候选翻页，保留完整 DoD 验收门槛。
+
+### 2026-10-08 · Codex（进度核对与推进建议）
+- M0–M2 核心完成，M3 剩安装发布脚本与 macOS CI；翻页 ABI 仍为 no-op，M4 未完整交付。
+- 建议先补 macOS CI，再在独立窗口完善候选翻页；安装发布脚本原任务卡与实机签名要求冲突，执行前需修订。
+- 文档存在历史状态漂移：README/AGENTS 仍称未编码、T-M1-09 未勾选、ROADMAP 隐私 CI 项已实际接入；后续逐项核对。
+- 本轮仅只读检查及交接纠偏，沿用前一轮完整验证结果。
+
 ### 2026-10-08 · Codex（V4 应用图标）
 - 用户指定 V4 暂作项目及应用图标；README 展示与两个 macOS 构建脚本接入多尺寸 ICNS。
 - V1–V5 全部保留；菜单栏模板图标暂沿用现有资源。未安装系统输入法。
@@ -150,15 +161,3 @@
 - 核查 SDK/Xcode 模板与 Apple 文档，暂缓无公开入口证据的 appex 改造。
 - ADR-023：修正 bundle/mode ID 与连接名，同步本地化；保留接手时未提交改动。
 - 完整 make verify、新包构建/plist/ad-hoc 校验、FFI 冒烟通过；人工装载待重新签名/公证/安装及重登。
-
-### 2026-10-08 · pi（T-M3-02 第二轮：Xcode 机装载，仍未通过 → 交接 Codex）
-- Xcode 机（macOS 27 / arm64）：装 Rust 1.98.1 + 生成数据表；构建 + FFI 冒烟 `wq→你`/`nihao→你好` ✅。
-- 查实：未公证的 Developer ID 被 LaunchServices 判 `is not trusted` → 必须 **hardened runtime + 公证**；已 `Developer ID` 重签、`notarytool` Accepted、`staple`、`spctl`=Notarized Developer ID（SIG-1 结案）。
-- 装系统域 `/Library/Input Methods` + 布尔 `tsInputMode*Key` + `DT*` + LS 去重后**仍不被 TIS 枚举**（`0/335`，`.kbdx` 只收搜狗）→ 新阻塞 **SIG-2**（疑需 ExtensionKit appex）。
-- 未提交：`platforms/macos/Info.plist`（布尔 ts* + DT*）。证据/下一步见 `docs/tasks/T-M3-02.md`「第二轮」与 §4。
-
-### 2026-10-08 · pi（T-M3-02 交接：转 Xcode 机验证）
-- 本机装不了：系统不枚举非 Apple 签发的输入法（ad-hoc / 自签 / 苹果 Ainu 副本均不可见；只有 Developer-ID 的搜狗可见）。
-- 已确认：`.inputmethod` 不被 macOS 13 扫描 → 必须 `.app`；引擎侧 `run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`。
-- **交接要点**：本机 `main` 有 **6 个未推送 commit**；下一步在有 Xcode + 开发者帐号的 Mac 上，用**真实签名**构建、装载、验证。
-- 证据/步骤/待办已写入 `docs/tasks/T-M3-02.md` 与本文件 §3/§4/§5（SIG-1）。

@@ -57,7 +57,7 @@
 - [x] 独立 AppKit 调试窗口（T-M3-05，ADR-024）：复用真实引擎、FFI 与候选窗，脱离系统装载流程
 - [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02 完成；ADR-023 注册修正 + Developer ID/公证/重启后，TextEdit/Safari 实体键盘验收通过
 - [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
-- [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）
+- [x] CI 加 macOS runner（T-M3-04：Rust 验证、宿主构建、独立预览冒烟；远端待 PR 运行）
 - [x] **验收**：TextEdit/Safari 里能五笔打字（2026-10-08，用户实体键盘确认；混输拼音兜底也通过）
 
 ### P1-M4 交互完善

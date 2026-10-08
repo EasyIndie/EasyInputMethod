@@ -151,3 +151,7 @@ make macos-preview
 ## 应用图标
 
 正式宿主和独立调试应用暂用 V4 单线萤火虫图标，构建时从 `assets/icons/yinghuo-icon-v4-app.icns` 复制。项目保留全部设计版本及原图，见 `assets/icons/README.md`。
+
+## CI 覆盖
+
+macOS job 独立运行 Rust 全量验证、正式宿主构建、按登记许可及校验和复现拼音数据、独立窗口冒烟和图标校验。仅本地 ad-hoc 构建校验，不使用 Developer ID、不上传公证、不安装系统输入法。跨应用物理键盘、光标、撤销及长时间稳定性仍需实机验收；远端通过状态以 PR 检查为准。
