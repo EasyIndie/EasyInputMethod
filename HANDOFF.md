@@ -12,9 +12,9 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（T-M3-02 注册标识修正，待新包装载） |
+| 最后更新 | 2026-10-08（T-M3-02 已公证安装；待注销重登验收） |
 | 更新者 | Codex |
-| 当前阶段 | **P1-M3：ADR-023 修正经典 IMK 注册标识；新包构建通过，人工装载待重新签名/公证后验证** |
+| 当前阶段 | **P1-M3：ADR-023 修正经典 IMK 注册标识；新包构建通过，新包 Developer ID/公证/系统域安装通过；TIS 短暂枚举但无法选择，待重登验收** |
 | 当前分支 | `codex/fix-macos-registration`；本轮注册修正及关联交接文档，包含接手时的装载记录与 plist 修正 |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、68 产物零网络符号 |
@@ -24,7 +24,7 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：对 ADR-023 修正后的新包重新 Developer ID 签名/公证并安装，注销/重登后枚举 `org.yinghuo.inputmethod.Yinghuo`，验证 TextEdit/Safari。暂缓 appex 改造（未找到公开入口证据）。详见 `docs/tasks/T-M3-02.md` 第三轮。
+- **下一步**：新包已签名/公证并装系统域；注销/重登后枚举 `org.yinghuo.inputmethod.Yinghuo`，验证 TextEdit/Safari。暂缓 appex 改造（未找到公开入口证据）。详见 `docs/tasks/T-M3-02.md` 第三轮。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -47,11 +47,14 @@
 - 修正 bundle ID、模式 ID、连接名（ADR-023），构建/plist/ad-hoc 校验及 FFI 冒烟通过。
 - Xcode 27 模板无 Input Method Extension；公开 SDK 未将 IMKServer 标弃用。内置 appex 不足以证明第三方必须迁移。
 - 系统日志有拒绝连接名的错误，但对应 bundle ID 隐去；修正是优先实验，尚未证明根因。
-- `/Library/Input Methods/Yinghuo.app` 仍是旧 ID 的已公证包。本轮未替换安装包；沙箱 TIS 诊断有 XPC 错误，不作新的装载结论。
+- 用户明确批准后，Apple 公证 Accepted（submission `e416c923-0dc4-44f4-8aea-6625fb87489e`）；staple、系统域签名/票据/spctl 校验通过。
+- `/Library/Input Methods/Yinghuo.app` 已替换为新 ID；旧包备份在 `/private/tmp/yinghuo-acceptance-backup/Yinghuo.app`。
+- TISRegister 后曾枚举 1/337（已启用），但选择返回 -50；宿主启动后又为 0/335，设置搜索无结果。宿主能运行，不等于可输入。待注销/重登；TextEdit/Safari 打字未验收。
+- 已恢复验收前的搜狗拼音（选择返回 0）；CLI 选择机制有可用基线。
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **T-M3-02**：按 `platforms/macos/README.md` 对新构建包重新签名、公证，替换旧安装包；去除影子登记，注销/重登。枚举新 ID，再验证 TextEdit/Safari。
+1. **T-M3-02**：用户保存工作并注销/重登（或重启）后，重新枚举 `org.yinghuo.inputmethod.Yinghuo.default`，从设置添加并选择，验证 TextEdit/Safari。新包已签名/公证/安装，无需重建。
 2. 若仍失败：获取本次登录的 imklaunchagent 日志，区分注册、信任和连接错误；再考虑干净用户实验。未经公开 API 核验，不改 appex。
 3. **T-M3-03**：验收后固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
 4. **T-M3-04**：CI 增加 macOS 编译检查。
@@ -67,7 +70,7 @@
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；待并入 ADR + `build.sh` 参数化 |
-| **SIG-2** | ADR-023 已修正注册标识，待新包实机装载；经典 IMK 已弃用的假设无公开证据 | **阻塞 T-M3-02 人工验收** |
+| **SIG-2** | ADR-023 新包已公证安装，临时注册可枚举但选择失败；待重登扫描；经典 IMK 已弃用的假设无公开证据 | **阻塞 T-M3-02 人工验收** |
 
 ## 6. 必须知道的坑与硬约束
 
@@ -98,7 +101,7 @@
 | 签名身份 | ✅ `Developer ID Application: Zhizhou Wang (2N62934Y28)` 与 `Apple Development: …`；公证凭据已存钥匙串 profile `yinghuo-notary` |
 | Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
-| 输入法现状 | `/Library/Input Methods/Yinghuo.app`（系统域、已公证、hardened runtime）；用户域副本已清；一次性脚本在 `~/yinghuo-release.command`、`~/yinghuo-notarize.command` |
+| 输入法现状 | `/Library/Input Methods/Yinghuo.app`（新 ID、系统域、已公证、hardened runtime）；旧包备份在 `/private/tmp/yinghuo-acceptance-backup/` |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**82 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
@@ -112,6 +115,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（用户批准公证并实机验收）
+- 公证 Accepted、staple/spctl/严格签名校验通过；新包已装系统域，旧包备份在 /private/tmp。
+- 临时注册曾枚举 1/337，但选择 -50；宿主可启动，之后列表恢复 0/335，系统设置无结果。
+- 已恢复搜狗拼音；待用户保存工作后注销/重登，实际打字验收未通过。
 
 ### 2026-10-08 · Codex（T-M3-02 注册标识排查）
 - 核查 SDK/Xcode 模板与 Apple 文档，暂缓无公开入口证据的 appex 改造。
@@ -164,7 +172,3 @@
 - 编码器全规则 + 单字表（27,823 字，双 oracle GB1 100%）+ 词组多候选表（jieba 词频）+ 内置核心 491,854 B ≤ 0.6MB。
 - 关键决策：ADR-016（自建 + oracle）、ADR-017/018/019（结构/末笔独立来源不可得 → 多 oracle 验证）、ADR-020（字根来源改 D3 拆字）、ADR-021（多候选）。
 - `ime-table`/`ime-cli` 接入正式码表；`wq→你`、`kwwl→中华人民共和国` 实测通过。
-
-### 2026-10-08 · pi（P1-M0 引擎骨架）
-- Rust workspace + `ime-core`（Engine/InputMode/会话状态机）+ `ime-table` + `ime-cli`；11 测试；`make verify` 全绿。
-- 发现 `yada` 无预测搜索 → 改定 `cedarwood`（ADR-015）。
