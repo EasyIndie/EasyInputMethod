@@ -22,7 +22,7 @@
 ./scripts/uninstall.sh --input-source-removed
 ```
 
-系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/yinghuo/uninstalled 备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/yinghuo/`。
+系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/yinghuo/uninstalled 备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/萤火虫/`。
 
 ## 核验与复现
 

@@ -2,6 +2,7 @@
 """Build a deterministic CycloneDX 1.5 inventory from locked offline metadata."""
 import hashlib
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -23,7 +24,7 @@ visit(entry)
 refs = {key: f"pkg:cargo/{packages[key]['name']}@{packages[key]['version']}" for key in reachable}
 components = []
 license_dir = out / 'DEPENDENCY-LICENSES'
-license_dir.mkdir()
+license_dir.mkdir(exist_ok=True)
 for key in sorted(reachable, key=lambda k: refs[k]):
     pkg = packages[key]
     component = {'type': 'library', 'name': pkg['name'], 'version': pkg['version'], 'bom-ref': refs[key], 'purl': refs[key]}
@@ -56,9 +57,21 @@ sbom = {'bomFormat': 'CycloneDX', 'specVersion': '1.5', 'version': 1,
 (out / 'SBOM.cdx.json').write_text(json.dumps(sbom, ensure_ascii=False, indent=2) + '\n')
 # Inspect the staged artifact, never personal config or dictionaries.
 hashes = {}
+links = {}
 for path in sorted(out.rglob('*')):
     if path.is_symlink():
-        raise SystemExit(f"发布附件禁止符号链接：{path}")
+        target = os.readlink(path)
+        resolved = path.resolve()
+        if Path(target).is_absolute() or not resolved.is_relative_to(out) or not resolved.exists():
+            raise SystemExit(f"发布附件禁止外部或损坏符号链接：{path}")
+        links[str(path.relative_to(out))] = target
+        continue
+    if path.name in {'SHA256SUMS', 'SYMLINKS.json'} and path.parent == out:
+        continue
     if path.is_file():
         hashes[str(path.relative_to(out))] = hashlib.sha256(path.read_bytes()).hexdigest()
+if links:
+    link_file = out / 'SYMLINKS.json'
+    link_file.write_text(json.dumps(links, ensure_ascii=False, indent=2) + '\n')
+    hashes['SYMLINKS.json'] = hashlib.sha256(link_file.read_bytes()).hexdigest()
 (out / 'SHA256SUMS').write_text(''.join(f'{digest}  {name}\n' for name, digest in hashes.items()))
