@@ -13,8 +13,8 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04 完成；下一步 T-M1-05）** |
-| 当前分支 | `main`（T-M1-03 改动待提交） |
+| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04 完成；T-M1-05a 结论：暂无合格独立来源 → T-M1-05 阻塞）** |
+| 当前分支 | `main`（本次 T-M1-05a 文档结论未提交） |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 全绿（fmt+clippy+30 测试+deny+隐私断言） |
 
@@ -22,8 +22,8 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整：键名字/成字字根/合体字/末笔字型识别码；oracle 对照 99.98%；30 测试、`make verify` 全绿）。
-- **下一步**：`ROADMAP.md` 的 **P1-M1**（T-M1-05 单字码表生成 + oracle 全量回归；需先引入可靠拆字数据）。
+- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整；oracle 对照 99.98%；30 测试、`make verify` 全绿）。T-M1-05a 调研结论：**暂无 GPL-3 兼容的独立结构/末笔来源**（ADR-018）。
+- **下一步**：`ROADMAP.md` 的 **P1-M1**（T-M1-05 单字码表生成 + oracle 全量回归；**阻塞**，待找到合格的结构/末笔独立来源，见 ADR-018）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -36,14 +36,15 @@
 - **P1-M1 / T-M1-04**：`data/sources.toml` + `data/sources/fetch-wubi-chaizi.sh`（D2 `aardio/wubi-lex`、D3 `huanfeng/WindInput`，均 MIT，SHA-256 固定）；`wubi-encoder/examples/crosscheck.rs` 产出 `data/generated/chaizi-diff.txt`。
 - **P1-M1 / T-M1-03**：`wubi-encoder` 新增 `recognition_key` + `encode_hechengzi`（合体字 + 末笔字型识别码）+ `TooFewRadicals`；`examples/oracle.rs` 与 D3 全量对照（全体 99.9784%、GB2312 一级 100%）；结构/末笔采用 option 2 派生（ADR-017）。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
+- **P1-M1 / T-M1-05a（调研止步）**：逐一核实结构/末笔独立来源许可，结论**暂无合格来源**（KanjiVG CC BY-SA 3.0 但仅 63.8% GB1 覆盖；Arphic Public License 被 FSF 判定 GPL 不兼容；CHISE/cjkvi-ids 许可不明确）→ 写 **ADR-018**，未引入任何数据。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/03/04 已交付；下一步 **T-M1-05**（单字码表生成 + oracle 全量回归）。
+**P1-M1**（自建码表流水线）：T-M1-01/02/03/04 已交付；T-M1-05a 已调研（结论：暂无合格独立来源，ADR-018）；**T-M1-05 阻塞**（单字码表生成 + oracle 全量回归）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01/02/03/04 ✅；下一步 **T-M1-05**（单字码表生成 + oracle 对照回归，pro）。**前置输入**：可靠拆字数据（字根数/结构/末笔；当前 D2 不可靠、D3 不提供），见 ADR-017。
+1. **P1-M1 / 解除 T-M1-05 阻塞**：按 ADR-018「下一步」找合格的结构/末笔独立来源（优先评估 Wiktionary（CC BY-SA）IDS 结构 + KanjiVG 先覆盖 63.8% 常用字末笔），再做 T-M1-05（单字码表生成 + oracle 对照回归）。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -56,6 +57,7 @@
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
 | TBD-4 | 英文/包名 | 否 |
+| TBD-5 | 结构/末笔独立数据源（GPL-3 兼容）——T-M1-05a 结论：暂无合格来源（ADR-018） | 阻塞 T-M1-05 |
 
 ## 6. 必须知道的坑与硬约束（详见 `AGENTS.md` 铁律）
 
@@ -88,6 +90,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-05a 结构/末笔独立数据源调研）
+- 逐一核实候选来源许可：**结论无合格来源**（KanjiVG CC BY-SA 3.0 仅 63.8% GB1 覆盖；Arphic Public License 被 FSF 判 GPL 不兼容；CHISE/cjkvi-ids 许可不明确）。
+- 按卡规「停下并写结论」交付：写 **ADR-018** + `docs/数据来源与许可.md` §1.3（候选许可判定表）+ 任务卡结论；未引入任何数据、未退回 D3。
+- 阻塞：T-M1-05（单字码表生成）待找到合格来源；候选路径见 ADR-018。验证：`make verify` 全绿（纯文档变更）。
 
 ### 2026-10-08 · pi（T-M1-03 合体字 + 末笔字型识别码）
 - `crates/wubi-encoder` 新增 `recognition_key`（5×3 识别码双射）与 `encode_hechengzi`（≥4 取 1/2/3/末；3/2 字根 + 识别码）+ `TooFewRadicals`；19 个单测（含规范样例 中/和/对/地/要/会）。
@@ -144,20 +151,4 @@
 - 用途：用真实 token/成本数据判定“持久会话 vs 每次新 worker”。已用 `PI_CMD=echo` 验证管道与合成数据校验汇总数值。
 - 遗留：待用真实模型跑 `bench-session-vs-workers.sh --micro` 采集数据。
 
-### 2026-10-08 · pi（上下文压缩前交接）
-- 关键上下文已固化到本文件与 docs/；代码无未提交变更（已推 origin/main）。
-- 恢复要点：读本文件 §0–§8 → 按 §4 下一步执行 → 派发任务卡用 `scripts/dispatch-task.sh`。
-- 决策记录在 `docs/决策记录.md`（ADR-001…015）；审核报告 `docs/reviews/001.md`。
-
-### 2026-10-08 · pi（首次提交 + 任务拆分）
-- 首次提交并推送到 origin/main（commit a699ac1 之前）。
-- 拆分 P1-M1 为 9 张任务卡（docs/tasks/），按 flash/pro 标注；新增 dispatch-task.sh（headless 派发）。
-- 结论：pi 无原生子代理，用 virtual models 或 headless CLI 实现 flash 派发。
-- 遗留：P1-M1 待认领；TBD-4 包名待定。
-
-### 2026-10-08 · pi（P1-M0 实现）
-- 完成 P1-M0：Rust workspace + `ime-core`（Engine trait/InputMode/会话状态机）+ `ime-table`（排序数组码表）+ `ime-cli`（REPL）。
-- 验证：11 测试通过、clippy -D warnings 干净、`cargo deny` 通过、隐私断言过（22 产物无网络符号）。
-- 实现期发现：`yada` 无预测搜索 → 弃用，改 `cedarwood`（ADR-015）；Makefile 反引号命令替换 bug 已修。
-- 遗留：P1-M1 开始；TBD-4 包名待定。
 

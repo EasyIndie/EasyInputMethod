@@ -69,3 +69,4 @@
 {"ts":"20261008T013431Z","label":"T-M1-02","model":"deepseek-v4-flash","mode":"fresh","session":"<default>","input":15339,"output":12449,"cacheRead":438272,"cacheWrite":0,"totalTokens":466060,"cost":0,"exit":0}
 {"ts":"20261008T014009Z","label":"T-M1-04","model":"deepseek-v4-flash","mode":"fresh","session":"<default>","input":34134,"output":34174,"cacheRead":1674368,"cacheWrite":0,"totalTokens":1742676,"cost":0,"exit":0}
 {"ts":"20261008T014954Z","label":"T-M1-03","model":"deepseek-v4-pro","mode":"fresh","session":"<default>","input":55501,"output":92690,"cacheRead":5794176,"cacheWrite":0,"totalTokens":5942367,"cost":0,"exit":0}
+{"ts":"20261008T021011Z","label":"T-M1-05a","model":"deepseek-v4-pro","mode":"fresh","session":"<default>","input":70864,"output":59395,"cacheRead":3137152,"cacheWrite":0,"totalTokens":3267411,"cost":0,"exit":0}
