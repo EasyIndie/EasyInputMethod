@@ -40,16 +40,17 @@
 
 ## 3. 进行中
 
-**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）代码完成**（编译 + 打包 + FFI 运行时冒烟均通过），但**人工装载仍未成功**：
-> ⚠️ `.app` 包已在**登录前**就位，但 `TISCreateInputSourceList` 仍枚举不到（系统 282 个输入源里无我们）；`TISFileInterrogator` 报 `inputSourceTableCountSys 0`。已改用标准 IMK plist（双写 `tsInputModeListKey` + `ComponentInputModeDict`、加 `LSBackgroundOnly`）+ ASCII 包名 `Yinghuo.app`，**待再次登录/重启验证**。详见 `docs/tasks/T-M3-02.md` 排查记录。
+**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）代码完成且自测通过**（编译/打包/FFI 冒烟），但**人工装载未通过**：
+> ⛔ 本机 macOS **不枚举任何非 Developer ID 签名的输入法**（我们的 ad-hoc / 自签、甚至苹果原版 Ainu 副本均不可见；只有 Developer-ID 签名的搜狗可见）。`imklaunchagent` 持续报 `TISFileInterrogator … inputSourceTableCountSys 0`。完整证据与结论见 `docs/tasks/T-M3-02.md`「人工验证记录」。
+> **待决策**：Phase 1「不签名」是否需改（Developer ID / 标准 mac 验证）。
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **T-M3-02 人工验证**（`platforms/macos/README.md`）：装载、加输入法、TextEdit 打字；把实际现象/报错回写仓库。
-2. **T-M3-03**：安装脚本 + Gatekeeper/手动装载说明（对应 `docs/tasks/T-M3-03.md`）。
-3. **T-M3-04**：CI 加 macOS runner（编译 `build.sh`，不装载）。
-4. **P1-M3 验收**：TextEdit / Safari 里能五笔打字。
-5. 可选（无卡）：拼音反查 CLI 命令；定 `TBD-4` 英文/包名。
+1. **T-M3-02 装载验收（阻塞）**：需在**标准 macOS** 上用 **Developer ID 签名**验证；或先用一个已知可用的第三方 IME 确认本机能否发现新输入法。结论回写 `docs/tasks/T-M3-02.md`。
+2. **清理由排查引入的本机状态**（自签证书信任、`/Library/Input Methods/Yinghuo.app`；见 `docs/tasks/T-M3-02.md`）。
+3. **决策签名策略**：若确需 Developer ID，更新 ADR / `build.sh` / `docs/技术方案.md`（Phase 1“不签名”前提可能需改）。
+4. **T-M3-03**：安装脚本 + Gatekeeper/手动装载说明（待签名结论明确后）。
+5. **T-M3-04**：CI 加 macOS runner（编译 `build.sh`，不装载）。
 6. **P2 参考**：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句。
 
 ## 5. 待决 / 阻塞
@@ -72,7 +73,8 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **无 Xcode**（仅 CLT）→ **不能用 IB / Asset Catalog**（`actool`/`ibtool` 是 stub）→ **纯代码 UI**。
-- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`）：macOS 13 的 LaunchServices 扫描 `.inputmethod` 报 `-10811`；且更换 bundle 后**必须注销/重登**（只在登录时扫描，`killall TextInputMenuAgent` 无效）。诊断：`platforms/macos/tools/list-input-sources.sh yinghuo`。
+- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），且**换 bundle 后必须注销/重登**（只在登录时扫描，`killall TextInputMenuAgent` 无效）。诊断：`platforms/macos/tools/`。
+- ⛔ **本机 macOS 只枚举 Developer ID 签名的输入法**（ad-hoc / 自签均不可见；连苹果原版 Ainu 副本也不可见）；`security find-identity` 为 0 → 本机无法完成装载验收，需标准 macOS + 真实签名。
 - ⚠️ **IMK Swift 事件方法叫 `handle(_:client:)`**（不是 `handleEvent`；后者在 Swift 3 被重命名）；`Info.plist` 输入模式清单在 `ComponentInputModeDict.tsInputModeListKey`（参照系统输入法实测）。
 - ⚠️ **`pinyin-words.tsv`（8.4MB）不入库**：`build.sh` 缺失时宿主降级（无拼音/单音节），复现见 `platforms/macos/README.md`。
 - ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符（如 `$model（`）会被当变量名 → 一律写 `${var}`。
@@ -102,6 +104,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M3-02 装载验收：环境/签名阻塞）
+- 多次重登/重启后，TIS 仍不枚举我们的 `.app`（ad-hoc 与“自签+系统信任”均试过）。
+- 差分实验：**苹果原版 Ainu 副本**（user 与 /Library）同样不可见；唯一可见的第三方是 **Developer ID 签名**的搜狗；`imklaunchagent` 持续报 `inputSourceTableCountSys 0`。
+- 结论：极可能需 **Developer ID** 签名，或本机（OCLP）发现机制异常；仓库内无法解决。
+- 已把证据/结论写入 `docs/tasks/T-M3-02.md`；新增 `tools/diagnose.sh`；待办含清理自签证书/系统目录副本。
 
 ### 2026-10-08 · pi（T-M3-02 装载排查：`.app` 仍不可见）
 - 用户实测：`.inputmethod` 不认（macOS 13 LaunchServices `-10811`）→ 改 `.app`；修正后的 `.app` 在**登录前**就位仍不被 TIS 枚举。
