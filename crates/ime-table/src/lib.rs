@@ -4,6 +4,9 @@
 
 #![forbid(unsafe_code)]
 
+use std::error::Error;
+use std::fmt;
+
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
 /// 码表词条。
@@ -12,6 +15,30 @@ pub struct Entry {
     pub text: String,
     pub weight: i32,
 }
+
+/// 解析 TSV 码表（`code\ttext\tweight`）时的错误。
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub enum TsvError {
+    /// 行缺列（列数不是 3，或 code/text 为空）。
+    MissingColumn { line: usize },
+    /// weight 不是合法整数。
+    InvalidWeight { line: usize, value: String },
+}
+
+impl fmt::Display for TsvError {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            TsvError::MissingColumn { line } => {
+                write!(f, "第 {line} 行缺列（应为 code\\ttext\\tweight）")
+            }
+            TsvError::InvalidWeight { line, value } => {
+                write!(f, "第 {line} 行权重非法：{value}")
+            }
+        }
+    }
+}
+
+impl Error for TsvError {}
 
 /// 内存码表：按 `code` 字典序排列的数组。
 ///
@@ -41,6 +68,43 @@ impl Table {
                 }],
             )),
         }
+    }
+
+    /// 从 TSV 文本（`code\ttext\tweight`）构建码表。
+    ///
+    /// 解析规则（对不可信输入）：
+    /// - 空行与 `#` 开头的注释行忽略；
+    /// - 每行必须是 3 列且 code/text 非空，否则 [`TsvError::MissingColumn`]；
+    /// - weight 必须可解析为 `i32`，否则 [`TsvError::InvalidWeight`]；
+    /// - 同码多候选全部保留，构建完成后组内按 `weight` 降序（等权按 text 升序）。
+    pub fn from_tsv(input: &str) -> Result<Table, TsvError> {
+        let mut table = Table::new();
+        for (idx, raw) in input.lines().enumerate() {
+            let line_no = idx + 1;
+            let line = raw.trim_start_matches('\u{feff}').trim();
+            if line.is_empty() || line.starts_with('#') {
+                continue;
+            }
+            let fields: Vec<&str> = line.split('\t').collect();
+            if fields.len() != 3 {
+                return Err(TsvError::MissingColumn { line: line_no });
+            }
+            let code = fields[0].trim();
+            let text = fields[1].trim();
+            let weight_str = fields[2].trim();
+            if code.is_empty() || text.is_empty() {
+                return Err(TsvError::MissingColumn { line: line_no });
+            }
+            let weight = weight_str
+                .parse::<i32>()
+                .map_err(|_| TsvError::InvalidWeight {
+                    line: line_no,
+                    value: weight_str.to_string(),
+                })?;
+            table.insert(code, text, weight);
+        }
+        table.finalize();
+        Ok(table)
     }
 
     /// 构建完成后调用一次：组内按权重降序，组间按 code 字典序。
@@ -121,23 +185,25 @@ impl Engine for CodeTableEngine {
             }
         }
 
-        // 前缀预测在后（code 比 input 长）
-        for (code, entry) in self.table.prefix(input, max) {
-            if code == input {
-                continue; // 已在精确匹配中
-            }
-            candidates.push(Candidate {
+        // 前缀预测在后（code 比 input 长）：收集全部前缀候选后按权重降序截断，
+        // 避免按 code 字典序截断而丢掉高频候选（如 wq 前缀下的「你」）。
+        let mut prefixes: Vec<Candidate> = self
+            .table
+            .prefix(input, usize::MAX)
+            .into_iter()
+            .filter(|(code, _)| code != input)
+            .map(|(code, entry)| Candidate {
                 text: entry.text,
                 code,
                 weight: entry.weight,
                 source: CandidateSource::CodeTable,
                 comment: None,
                 is_prefix: true,
-            });
-            if candidates.len() >= max {
-                break;
-            }
-        }
+            })
+            .collect();
+        prefixes.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+        let room = max.saturating_sub(candidates.len());
+        candidates.extend(prefixes.into_iter().take(room));
 
         // 自动上屏：仅当输入为满码长度且精确唯一（"四码唯一自动上屏"的保守实现）。
         let should_commit = if input.len() == self.max_code_len {
@@ -168,59 +234,118 @@ impl Engine for CodeTableEngine {
 mod tests {
     use super::*;
 
-    fn table() -> Table {
-        let mut t = Table::new();
-        t.insert("w", "人", 100);
-        t.insert("wq", "你", 100);
-        t.insert("wqiy", "你", 99);
-        t.insert("kwwl", "中华人民共和国", 100);
-        t.finalize();
-        t
+    /// 真实样本的迷你核心码表（与 `data/generated/wubi86-core.tsv` 同构）。
+    fn core_table() -> Table {
+        Table::from_tsv(
+            "# code\ttext\tweight\n\
+             \n\
+             wqay\t低\t15504\n\
+             wqiy\t你\t234587\n\
+             wqje\t像\t31874\n\
+             kwwl\t中华人民共和国\t9989\n\
+             kwwl\t中集集团\t5\n\
+             gggg\t王\t19704\n\
+             gggg\t龶\t1\n",
+        )
+        .unwrap()
     }
 
     #[test]
-    fn exact_lookup() {
-        let t = table();
-        assert_eq!(t.exact("wq").unwrap()[0].text, "你");
+    fn from_tsv_parses_normal_lines_and_skips_comments_and_blanks() {
+        let t = Table::from_tsv("# comment\n\nwqiy\t你\t234587\n\n").unwrap();
+        assert_eq!(t.len(), 1);
+        assert_eq!(t.exact("wqiy").unwrap()[0].text, "你");
+    }
+
+    #[test]
+    fn from_tsv_rejects_missing_column() {
+        let err = Table::from_tsv("wqiy\t你\n").unwrap_err();
+        assert_eq!(err, TsvError::MissingColumn { line: 1 });
+    }
+
+    #[test]
+    fn from_tsv_rejects_invalid_weight() {
+        let err = Table::from_tsv("wqiy\t你\t很多\n").unwrap_err();
+        assert_eq!(
+            err,
+            TsvError::InvalidWeight {
+                line: 1,
+                value: "很多".to_string()
+            }
+        );
+    }
+
+    #[test]
+    fn from_tsv_rejects_empty_code_or_text() {
+        assert_eq!(
+            Table::from_tsv("\t你\t1\n").unwrap_err(),
+            TsvError::MissingColumn { line: 1 }
+        );
+        assert_eq!(
+            Table::from_tsv("wqiy\t\t1\n").unwrap_err(),
+            TsvError::MissingColumn { line: 1 }
+        );
+    }
+
+    #[test]
+    fn exact_lookup_orders_duplicates_by_weight() {
+        let t = core_table();
+        assert_eq!(t.exact("kwwl").unwrap()[0].text, "中华人民共和国");
+        let gggg: Vec<&str> = t
+            .exact("gggg")
+            .unwrap()
+            .iter()
+            .map(|e| e.text.as_str())
+            .collect();
+        assert_eq!(gggg, ["王", "龶"]);
         assert!(t.exact("nope").is_none());
     }
 
     #[test]
-    fn prefix_lookup() {
-        let t = table();
-        let got: Vec<String> = t
-            .prefix("w", 10)
-            .into_iter()
-            .map(|(code, entry)| format!("{code}:{}", entry.text))
-            .collect();
-        assert!(got.contains(&"w:人".to_string()));
-        assert!(got.contains(&"wq:你".to_string()));
-        assert!(got.contains(&"wqiy:你".to_string()));
+    fn convert_wq_puts_ni_first() {
+        let t = core_table();
+        let engine = CodeTableEngine::new(t, 4);
+        let result = engine.convert("wq", 9);
+        assert_eq!(result.candidates.first().unwrap().text, "你");
+        assert!(result.candidates.first().unwrap().is_prefix);
+    }
+
+    #[test]
+    fn convert_prefix_truncates_by_weight_not_code_order() {
+        let t = core_table();
+        let engine = CodeTableEngine::new(t, 4);
+        // 「低」的 code（wqay）字典序在「你」之前，但权重更低，不应被优先截断进来。
+        let result = engine.convert("wq", 2);
+        let texts: Vec<&str> = result.candidates.iter().map(|c| c.text.as_str()).collect();
+        assert_eq!(texts, ["你", "像"]);
     }
 
     #[test]
     fn auto_commit_only_on_full_unique() {
-        let t = table();
+        let t = core_table();
         let engine = CodeTableEngine::new(t, 4);
+        // wqiy 满码且唯一（样本里仅一个 wqiy 候选）。
         assert_eq!(
-            engine.convert("kwwl", 9).should_commit.as_deref(),
-            Some("中华人民共和国")
+            engine.convert("wqiy", 9).should_commit.as_deref(),
+            Some("你")
         );
+        // kwwl 满码但多候选，不自动上屏。
+        assert_eq!(engine.convert("kwwl", 9).should_commit, None);
         assert_eq!(engine.convert("wq", 9).should_commit, None);
     }
 
     #[test]
     fn convert_marks_prefix() {
-        let t = table();
+        let t = core_table();
         let engine = CodeTableEngine::new(t, 4);
-        let result = engine.convert("w", 9);
-        assert!(result
-            .candidates
-            .iter()
-            .any(|c| c.text == "人" && !c.is_prefix));
+        let result = engine.convert("wq", 9);
         assert!(result
             .candidates
             .iter()
             .any(|c| c.text == "你" && c.is_prefix));
+        assert!(result
+            .candidates
+            .iter()
+            .any(|c| c.text == "像" && c.is_prefix));
     }
 }

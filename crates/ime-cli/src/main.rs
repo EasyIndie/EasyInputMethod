@@ -1,15 +1,22 @@
-//! 萤火虫输入法 CLI：P1-M0 的开发/测试原型。
+//! 萤火虫输入法 CLI：开发/测试原型。
 //!
 //! 演示竖切：五笔码 → 候选 → 上屏 → 模式切换。
+//!
+//! 码表来源（T-M1-09）：优先用 `--table <路径>` / `IME_TABLE_PATH` 指定的 TSV
+//! 数据文件（`code\ttext\tweight`）；未提供时回退到内置最小示例表（供 CI）。
 
 #![forbid(unsafe_code)]
 
 use std::io::{self, Write};
+use std::path::PathBuf;
 
 use ime_core::{InputMode, Session};
 use ime_table::{CodeTableEngine, Table};
 
-/// M0 用小型示例码表验证竖切；正式自建码表在 P1-M1 接入。
+/// 指定码表路径的环境变量名。
+const ENV_TABLE_PATH: &str = "IME_TABLE_PATH";
+
+/// 内置回退表：极小示例（供无数据文件的 CI；正式数据见 `data/generated/wubi86-core.tsv`）。
 fn sample_table() -> Table {
     let singles: &[(&str, &str, i32)] = &[
         ("g", "一", 100),
@@ -66,11 +73,60 @@ fn print_candidates(session: &Session) {
     println!("  {}", shown.join("  "));
 }
 
-fn main() {
-    let mut session = Session::new(InputMode::Mixed);
-    session.set_wubi_engine(Box::new(CodeTableEngine::new(sample_table(), 4)));
+/// 解析码表路径：命令行 `--table` / `-t` > 环境变量 [`ENV_TABLE_PATH`]。
+fn resolve_table_path() -> Option<PathBuf> {
+    let args: Vec<_> = std::env::args_os().skip(1).collect();
+    let mut i = 0;
+    while i < args.len() {
+        let arg = args[i].to_string_lossy();
+        if arg == "--table" || arg == "-t" {
+            if let Some(next) = args.get(i + 1) {
+                return Some(PathBuf::from(next));
+            }
+        } else if let Some(path) = arg.strip_prefix("--table=") {
+            return Some(PathBuf::from(path));
+        }
+        i += 1;
+    }
+    std::env::var_os(ENV_TABLE_PATH).map(PathBuf::from)
+}
 
-    println!("萤火虫输入法 ime-cli（P1-M0 原型）");
+/// 加载码表：数据文件优先，失败则回退到内置示例表；返回 `(table, 来源描述)`。
+fn load_table() -> (Table, String) {
+    let Some(path) = resolve_table_path() else {
+        return (sample_table(), "内置回退码表（未提供数据文件）".to_string());
+    };
+    let text = match std::fs::read_to_string(&path) {
+        Ok(text) => text,
+        Err(e) => {
+            eprintln!("错误：无法读取码表 {}：{e}", path.display());
+            std::process::exit(1);
+        }
+    };
+    match Table::from_tsv(&text) {
+        Ok(table) => {
+            let source = format!(
+                "{}（{} 码，{} 字节）",
+                path.display(),
+                table.len(),
+                text.len()
+            );
+            (table, source)
+        }
+        Err(e) => {
+            eprintln!("错误：码表 {} 解析失败：{e}", path.display());
+            std::process::exit(1);
+        }
+    }
+}
+
+fn main() {
+    let (table, source) = load_table();
+    let mut session = Session::new(InputMode::Mixed);
+    session.set_wubi_engine(Box::new(CodeTableEngine::new(table, 4)));
+
+    println!("萤火虫输入法 ime-cli（P1-M1 正式码表）");
+    println!("  码表：{source}");
     println!(
         "  输入五笔码回车上屏；:lookup <码> 只看候选；:mode [mixed|wubi|pinyin]；:help；:quit"
     );

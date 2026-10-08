@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-06b 完成：jieba 词表 + 真实词频权重）** |
-| 当前分支 | `main`（本次 T-M1-06b 变更未提交） |
+| 当前阶段 | **P1-M1 完成（T-M1-09：正式码表接入 ime-table/ime-cli，体积 ≤0.6MB）** |
+| 当前分支 | `main`（本次 T-M1-09 变更未提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+38 测试+1 doctest+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+43 单测+1 doctest+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**。**T-M1-06b 完成**：改用 `fxsjy/jieba` `dict.txt`（D10，MIT，349,045 词**带词频**）重生成词组码表并统一赋权。`wubi86-single.tsv` 的 `weight` 改为 jieba **真实词频**（缺者默认 1）；`wubi86-phrases.tsv` 改为多候选 `code\t词组\tweight`（**337,231 条 / 155,726 码**，5.8 MB），按词频降序（ADR-021）。同卡交付 T-M1-07（ADR-013）。
-- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-08**（数据登记收尾）→ **T-M1-09**（正式码表接入 `ime-table`/`ime-cli`）。
+- **现在**：**P1-M1 全部完成**。T-M1-09 已把正式自建码表接入 `ime-table`/`ime-cli`：新增 TSV 加载器（同码多候选按词频降序）+ `--table`/`IME_TABLE_PATH` 加载 + 内置核心表 `wubi86-core.tsv`（491,854 字节 ≤0.6MB）。
+- **下一步**：**P1-M2**（配置 + 拼音 + 混输）与 `TBD-4`（英文/包名）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -40,16 +40,16 @@
 - **P1-M1 / T-M1-04b**：新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，**LGPL-3**，SHA-256 固定）；登记 **D9**（`role=validation-oracle` / `ship=false` / 风险中）；`wubi-encoder/examples/oracle2.rs` → `data/generated/wubi86-oracle2-single.tsv`（70,370 字；抽样 5 字正确；与 D3 全体 98.78%、GB2312 一级 100%）。
 - **P1-M1 / T-M1-05**：新增 `wubi-encoder/examples/generate.rs`（生成 + 双 oracle 回归，一条命令可复现）→ `data/generated/wubi86-single.tsv`（27,823 字，471 KB，CC-BY-SA-4.0）与 `wubi86-regression.txt`；发布路径用编码器对 D3 拆字逐字生成（ADR-020），vs D3 99.9784%/GB1 100%、vs rime 98.77%/GB1 100%，三方不一致 0 条；D2 交叉检查 GB1 91.66%（量化其字形记法歧义）。修正 `encode_chengzi`（1/2/≥3 笔成字字根标准）。
 - **P1-M1 / T-M1-06**：`wubi-encoder` 新增 `encode_phrase`（2 字 `AaAbBaBb` / 3 字 `AaBaCaCb` / 4+ 字 `AaBaCaZa`）+ `TooFewCharacters`/`TooFewCodes`；6 个单测（含写死样本 中华人民共和国→kwwl、输入法→ltif、中文→khyy）+ doctest。新增 `examples/generate_phrases.rs`：读 D4 词表 + `wubi86-single.tsv`，同码按临时权重（组成字临时权重之和）去重 → `data/generated/wubi86-phrases.tsv`（38,220 条，576 KB）。新增 `data/sources/fetch-phrase-pinyin.sh`（D4 MIT，SHA-256 固定）并登记。
-- **P1-M1 / T-M1-06b**（同时交付 T-M1-07）：新增 `data/sources/fetch-jieba-dict.sh` + 登记 **D10**（`fxsjy/jieba` `dict.txt`，MIT，349,046 行）；`generate.rs` 单字 `weight` 改 jieba 真实词频（缺者 1）；`generate_phrases.rs` 改从 jieba 生成、过滤纯汉字/长度 2–10、输出多候选 `wubi86-phrases.tsv`（337,231 条 / 155,726 码）+ `wubi86-phrases-report.txt`；必需样本 8 词齐全（生成器断言 中华人民共和国→kwwl）。新增 **ADR-021**（多候选 + jieba 词频）。验证：`make verify` 全绿。
+- **P1-M1 / T-M1-09**：`ime-table` 新增 `Table::from_tsv`（`code\ttext\tweight`：注释/空行跳过、缺列/非法权重报错、同码多候选按词频降序）；`ime-cli` 支持 `--table`/`IME_TABLE_PATH` 加载并保留内置回退表；新增 `examples/generate_core.rs` 裁剪出 `data/generated/wubi86-core.tsv`（单字全量 27,823 + 词组按 jieba 词频全局取前 10,000，共 491,854 字节 ≤0.6MB）+ 报告；验收样本 `wq→你`、`kwwl→中华人民共和国`、`gggg` 重码按词频降序通过。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b/05/06/06b（含 T-M1-07）已交付；下一步 **T-M1-08（数据登记收尾）**。
+**P1-M1（自建码表流水线）已全部完成**；下一阶段 **P1-M2（配置 + 拼音 + 混输）**。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1 / T-M1-08**：数据登记收尾（`docs/数据来源与许可.md` + `sources.toml` 全量 CI 校验）。
-2. **P1-M1 / T-M1-09**：正式码表接入 `ime-table`/`ime-cli`（`.imedict` 编译；内置核心选 ~10k 高频词组，见 `技术方案.md` §7.2）。
+1. **P1-M2**：`ime-config`（Schema + `ArcSwap` 快照 + 原子写 + 广播，见 `docs/配置架构.md`）。
+2. **P1-M2**：`PinyinBackend` trait + 内置轻量拼音兜底 + 混输合并（五笔优先 + 拼音兜底）。
 3. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 
 ## 5. 待决 / 阻塞
@@ -82,7 +82,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），38 个测试 + 1 doctest 通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），43 单测 + 1 doctest 通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -94,6 +94,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-09 正式码表接入 ime-table/ime-cli）
+- `ime-table` 新增 `Table::from_tsv`（`code\ttext\tweight`）：注释/空行跳过、缺列/非法权重报错（`TsvError`）；同码多候选保留并按词频降序；`convert` 前缀候选改为收集后按权重降序截断（修复 `wq→你` 被字典序截断的问题）。
+- `ime-cli` 支持 `--table`/`-t`/`IME_TABLE_PATH` 从数据文件加载，未提供时用内置最小回退表；解析/读取失败退出非零。
+- 新增 `wubi-encoder/examples/generate_core.rs`：单字全量 + 词组按 jieba 词频全局取前 10,000 → `data/generated/wubi86-core.tsv`（37,823 行 / 30,379 码 / **491,854 字节 ≤0.6MB**）+ `wubi86-core-report.txt`（记录裁剪规则与实测体积）；`输入法`(ltif, weight 19) 因词频过低归入可选包 1，报告已注明。
+- 验收：`wq→你`、`kwwl→中华人民共和国`、`gggg`（王→龶 按词频降序）均通过；`make verify` 全绿（43 单测 + 1 doctest）。
 
 ### 2026-10-08 · pi（T-M1-06b jieba 词表 + 词频，含 T-M1-07）
 - 新增 `data/sources/fetch-jieba-dict.sh` + 登记 **D10**（`fxsjy/jieba` `dict.txt`，MIT，349,046 行）；单字 `weight` 改 jieba 真实词频（缺者 1）；词组表改输出 `code\t词组\tweight`（337,231 条 / 155,726 码，5.8 MB）。
