@@ -27,3 +27,9 @@
 `platforms/macos/tests/run-perf.sh 5 --max-user-dictionary` 生成隔离的满容量合成词库，测试普通按键及显式选字学习。共享不可变快照后，五会话稳态22.09MiB、峰值 RSS25.95MiB，2200键 P95 0.775ms、最大9.075ms。五次学习包含原子落盘，最大13.196ms；失焦释放旧快照后物理 footprint27.73MiB。正式宿主激活时预加载快照，失焦时释放，组合状态仍各自独立。
 
 这些数据仍仅覆盖引擎 ABI，不能替代 AppKit 渲染及正式客户端验收。合成数据不含真实用户内容，测试结束自动删除。
+
+## 实际候选窗口预检（2026-10-09）
+
+`bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary`：5 个 Swift 会话、满容量合成词库、2200键，真实 NSPanel 处理 FFI/候选转换/布局/显示调用。首键95.897ms（包含首次窗口与系统字体初始化），后续 P95 4.513ms、最大6.696ms，进程物理 footprint38.47MiB。
+
+该探针没有 IMK 客户端和合成器完成计时，也没有扣除 mmap；38.47MiB 不能作为“排除 mmap 后≤30MB”通过证据。冷启动超16ms与宿主内存仍需分析，正式性能 DoD 不勾选。测试仅使用临时配置/词库，不安装输入法。
