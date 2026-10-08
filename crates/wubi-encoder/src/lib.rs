@@ -42,6 +42,10 @@ pub enum EncodeError {
     TooFewStrokes(usize),
     /// 编码合体字时字根数不足（至少需要 2 个字根），附带实际字根数。
     TooFewRadicals(usize),
+    /// 编码词组时字符数不足（至少需要 2 个字），附带实际字符数。
+    TooFewCharacters(usize),
+    /// 编码词组时某字的全码位数不足，附带该字实际可用的位数。
+    TooFewCodes(usize),
     /// 行格式非法，附带原始行内容。
     ParseError(String),
 }
@@ -57,6 +61,12 @@ impl fmt::Display for EncodeError {
             }
             EncodeError::TooFewRadicals(n) => {
                 write!(f, "字根数不足：{n}（合体字至少需要 2 个字根）")
+            }
+            EncodeError::TooFewCharacters(n) => {
+                write!(f, "字符数不足：{n}（词组至少需要 2 个字）")
+            }
+            EncodeError::TooFewCodes(n) => {
+                write!(f, "全码位数不足：{n}（少于词组规则所需）")
             }
             EncodeError::ParseError(line) => write!(f, "字根表行格式非法：{line}"),
         }
@@ -308,6 +318,62 @@ pub fn encode_hechengzi(
         code.push(recognition_key(last_stroke, structure));
     }
     Ok(code)
+}
+
+/// Encode a Wubi86 phrase (词组) from the per-character full codes.
+///
+/// `char_codes` holds each character's longest (full) code, in order. Standard
+/// rules (do not alter):
+///
+/// - 2 characters: `AaAbBaBb` (the first two codes of each character);
+/// - 3 characters: `AaBaCaCb` (1st, 2nd and 3rd first codes, then the 3rd
+///   character's second code);
+/// - 4 or more characters: `AaBaCaZa` (1st, 2nd and 3rd first codes, then the
+///   last character's first code).
+///
+/// At least two characters are required ([`EncodeError::TooFewCharacters`]);
+/// each character used must provide the needed number of codes
+/// ([`EncodeError::TooFewCodes`]).
+///
+/// ```
+/// use wubi_encoder::encode_phrase;
+/// assert_eq!(encode_phrase(&["khk", "yygy"]), Ok("khyy".to_string()));
+/// assert_eq!(encode_phrase(&["lwgj", "tyi", "ifcy"]), Ok("ltif".to_string()));
+/// ```
+pub fn encode_phrase(char_codes: &[&str]) -> Result<String, EncodeError> {
+    let n = char_codes.len();
+    if n < 2 {
+        return Err(EncodeError::TooFewCharacters(n));
+    }
+
+    // 1-indexed `k`-th code of character `i`.
+    let nth = |i: usize, k: usize| -> Result<char, EncodeError> {
+        let code = char_codes[i];
+        code.chars()
+            .nth(k - 1)
+            .ok_or_else(|| EncodeError::TooFewCodes(code.chars().count()))
+    };
+
+    let mut out = String::with_capacity(4);
+    out.push(nth(0, 1)?);
+    match n {
+        2 => {
+            out.push(nth(0, 2)?);
+            out.push(nth(1, 1)?);
+            out.push(nth(1, 2)?);
+        }
+        3 => {
+            out.push(nth(1, 1)?);
+            out.push(nth(2, 1)?);
+            out.push(nth(2, 2)?);
+        }
+        _ => {
+            out.push(nth(1, 1)?);
+            out.push(nth(2, 1)?);
+            out.push(nth(n - 1, 1)?);
+        }
+    }
+    Ok(out)
 }
 
 /// Parse and validate a key field, reporting the offending whole line on failure.
@@ -667,6 +733,75 @@ g\t一
                 &table
             ),
             Err(EncodeError::UnknownRadical("龘".to_string()))
+        );
+    }
+
+    #[test]
+    fn phrase_known_samples_encode_correctly() {
+        // 以下单字全码取自 data/generated/wubi86-single.tsv（T-M1-05 产物），写死以锁定规则。
+        // 中文 → khyy。
+        assert_eq!(encode_phrase(&["khk", "yygy"]), Ok("khyy".to_string()));
+        // 输入法 → ltif。
+        assert_eq!(
+            encode_phrase(&["lwgj", "tyi", "ifcy"]),
+            Ok("ltif".to_string())
+        );
+        // 中华人民共和国 → kwwl。
+        assert_eq!(
+            encode_phrase(&["khk", "wxfj", "wwww", "nav", "awu", "tkg", "lgyi"]),
+            Ok("kwwl".to_string())
+        );
+    }
+
+    #[test]
+    fn phrase_two_chars_takes_two_codes_each() {
+        // 中(khk) 文(yygy) → kh + yy = khyy。
+        assert_eq!(encode_phrase(&["khk", "yygy"]), Ok("khyy".to_string()));
+    }
+
+    #[test]
+    fn phrase_three_chars_takes_first_three_plus_third_second() {
+        // 输(lwgj) 入(tyi) 法(ifcy) → l + t + i + f = ltif。
+        assert_eq!(
+            encode_phrase(&["lwgj", "tyi", "ifcy"]),
+            Ok("ltif".to_string())
+        );
+    }
+
+    #[test]
+    fn phrase_four_or_more_chars_uses_first_second_third_last() {
+        // 中华人民共和国 → k + w + w + l = kwwl（跳过中间的字）。
+        assert_eq!(
+            encode_phrase(&["khk", "wxfj", "wwww", "nav", "awu", "tkg", "lgyi"]),
+            Ok("kwwl".to_string())
+        );
+        // 恰好 4 字：末字即第 4 字，中 华 人 民 → k + w + w + n = kwwn。
+        assert_eq!(
+            encode_phrase(&["khk", "wxfj", "wwww", "nav"]),
+            Ok("kwwn".to_string())
+        );
+    }
+
+    #[test]
+    fn phrase_requires_at_least_two_characters() {
+        assert_eq!(encode_phrase(&[]), Err(EncodeError::TooFewCharacters(0)));
+        assert_eq!(
+            encode_phrase(&["khk"]),
+            Err(EncodeError::TooFewCharacters(1))
+        );
+    }
+
+    #[test]
+    fn phrase_rejects_insufficient_codes() {
+        // 2 字词需要每字前 2 码；"k" 只有 1 码。
+        assert_eq!(
+            encode_phrase(&["k", "yygy"]),
+            Err(EncodeError::TooFewCodes(1))
+        );
+        // 3 字词需要第 3 字前 2 码；"i" 只有 1 码。
+        assert_eq!(
+            encode_phrase(&["lwgj", "tyi", "i"]),
+            Err(EncodeError::TooFewCodes(1))
         );
     }
 }
