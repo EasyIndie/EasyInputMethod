@@ -56,7 +56,7 @@
 - [x] `ime-ffi`：C ABI（会话 + 配置接口）
 - [x] 独立 AppKit 调试窗口（T-M3-05，ADR-024）：复用真实引擎、FFI 与候选窗，脱离系统装载流程
 - [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02 完成；ADR-023 注册修正 + Developer ID/公证/重启后，TextEdit/Safari 实体键盘验收通过
-- [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
+- [x] 安装/卸载与签名公证脚本 + 可信安装文档（ADR-032；新候选实机流程待完整 DoD）
 - [x] CI 加 macOS runner（T-M3-04：Rust 验证、宿主构建、独立预览冒烟；远端待 PR 运行）
 - [x] **验收**：TextEdit/Safari 里能五笔打字（2026-10-08，用户实体键盘确认；混输拼音兜底也通过）
 
@@ -70,10 +70,10 @@
 
 ### P1-M5 发布工程
 
-- [ ] 打包脚本（`.pkg` 或安装脚本）
-- [ ] `scripts/verify-no-network.sh` 接入 CI
-- [ ] `docs/隐私与安全.md` 配套说明 + SBOM
-- [ ] 可复现构建说明
+- [x] macOS 本地候选打包脚本（源码/vendor/许可/SBOM，签名与上传显式分步）
+- [x] `scripts/verify-no-network.sh` 接入 CI
+- [x] `docs/隐私与安全.md` 配套说明 + CycloneDX SBOM
+- [x] 同环境离线载荷可复现说明及 run-repro.sh（源码包实际重建，去签名二进制/词表逐字节一致）
 - [ ] **验收**：第三方可复现、可抓包验证零外联
 
 ---

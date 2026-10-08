@@ -17,7 +17,7 @@
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：90 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：91 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -43,7 +43,7 @@
 
 - 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；引擎 ABI 探针约 17MiB / P95 0.47ms，不代表完整 GUI DoD。
 
-**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，首个本地候选含完整源码/vendor、约14.3MB；归档构建与路径复现修复中，最终包待重打。
+**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，本地审核包约14.3MB，完整源码/vendor/许可/SBOM/SHA；从实际 ZIP 离线重建的去签名可执行文件和默认数据逐字节一致。
 
 - T-M3-05 独立窗口完成：`make macos-preview`；自动检查 `./platforms/macos/dev-preview.sh --smoke-test`。debug 增量构建，不需要公证/安装/重启；仍需正式宿主验证 IMK 系统集成。
 - ADR-023 修正注册标识；此前签名、公证、系统安装及实机验收通过。当前已按用户要求卸载，见 §7。
@@ -52,7 +52,7 @@
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **T-M3-03 / P1-M5**：生成并核查完整候选包、离线源码构建；真实签名/公证/安装最终验收仍待。
+1. **P1-M4**：正式宿主会话/预编辑边界及多会话/GUI 性能检查；功能确认后重打最终候选。
 2. **P1-M4**：发布候选包的正式 IMK 多应用交互、性能与用户词库验收；T-M3-04 远端检查待 PR。
 3. **P1-M5**：准备可复现构建说明、SBOM、许可附件与零外联证据。
 
@@ -100,7 +100,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**90 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**91 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -112,6 +112,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（反查与源码包验证）
+- ADR-034：现有拼音反查经通用 Engine/Session 与拥有字符串 ABI 接入正式菜单/独立窗口；只读无记录。
+- 单测验证 ABI 生命周期/非法输入/候选不变，两宿主构建与真实预览通过；完整 make verify 通过。
+- 5b232d0 审核 ZIP 14.3MB 从真实归档离线重建成功，去签名程序/数据逐字节一致；新功能完成后再重打最终包。
+- 尚未上传/安装；正式多应用、GUI/多会话内存、动态零外联与新公证仍待。
 
 ### 2026-10-08 · Codex（同环境载荷复现）
 - ADR-033：源码归档不要求 .git，Rust 路径映射、Swift 相对路径/WMO、链接调试信息去除；显式 macOS 13 目标。
@@ -158,9 +164,3 @@
 - 新增独立 macOS job：Rust/隐私验证、正式构建、登记数据复现、独立窗口冒烟、图标校验；不安装或公证。
 - YAML 静态解析、本机等价构建及 make verify 通过；远端实际运行待 PR。
 - 用户授权持续推进 macOS 发布；下一步候选翻页，保留完整 DoD 验收门槛。
-
-### 2026-10-08 · Codex（进度核对与推进建议）
-- M0–M2 核心完成，M3 剩安装发布脚本与 macOS CI；翻页 ABI 仍为 no-op，M4 未完整交付。
-- 建议先补 macOS CI，再在独立窗口完善候选翻页；安装发布脚本原任务卡与实机签名要求冲突，执行前需修订。
-- 文档存在历史状态漂移：README/AGENTS 仍称未编码、T-M1-09 未勾选、ROADMAP 隐私 CI 项已实际接入；后续逐项核对。
-- 本轮仅只读检查及交接纠偏，沿用前一轮完整验证结果。

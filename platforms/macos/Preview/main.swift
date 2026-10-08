@@ -118,7 +118,8 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let add = NSButton(title: "新增词条", target: self, action: #selector(addWord))
         let importButton = NSButton(title: "导入词库", target: self, action: #selector(importWords))
         let exportButton = NSButton(title: "导出词库", target: self, action: #selector(exportWords))
-        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton])
+        let lookup = NSButton(title: "拼音反查", target: self, action: #selector(lookupPinyin))
+        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup])
         controls.orientation = .horizontal
         let stack = NSStackView(views: [hint, controls, scroll, status])
         stack.orientation = .vertical
@@ -149,6 +150,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         session.setMode(["mixed", "wubi", "pinyin"][sender.indexOfSelectedItem])
         window?.makeFirstResponder(input)
     }
+    @objc func lookupPinyin() { LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func addWord() { UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func importWords() { UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func exportWords() { UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
@@ -225,6 +227,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard ImeConfig.int("candidate.count") == 3 else { fputs("配置外部编辑未生效。\n", stderr); exit(1) }
     session.setMode("mixed"); view.clear(); keys("wq")
     guard session.candidates(limit: 9).count == 3 else { exit(1) }
+    guard session.reverseLookup("你好") == "ni hao", session.reverseLookup("🙂") == nil else { exit(1) }
     guard session.addWord(scheme: "wubi", code: "zz", text: "离线测试词") == IME_OK else { exit(1) }
     view.clear(); keys("zz "); check("离线测试词")
     let exported = smokeDirectory.appendingPathComponent("export.tsv")

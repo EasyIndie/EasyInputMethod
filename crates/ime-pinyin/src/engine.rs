@@ -22,6 +22,9 @@ impl PinyinEngine {
 }
 
 impl Engine for PinyinEngine {
+    fn reverse_lookup(&self, text: &str) -> Option<String> {
+        self.backend.reverse_lookup(text)
+    }
     fn configure(&mut self, options: &ime_core::EngineOptions) {
         self.fuzzy = options.fuzzy;
     }

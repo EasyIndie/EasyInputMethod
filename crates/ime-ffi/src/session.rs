@@ -601,6 +601,31 @@ pub extern "C" fn ime_session_page_count(session: *mut ImeSession) -> i32 {
     unsafe { session.as_ref() }.map_or(-1, |s| s.session.page_count() as i32)
 }
 
+/// Read-only reverse lookup; NULL on invalid input, empty on unknown text.
+#[no_mangle]
+pub extern "C" fn ime_session_reverse_lookup(
+    session: *const ImeSession,
+    text: *const c_char,
+) -> ImeString {
+    catch_value(
+        || {
+            // SAFETY: callers supply a live session and a valid NUL-terminated string.
+            let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+            let text = unsafe { cstr_arg(text)? };
+            if text.is_empty() || text.len() > 256 || text.chars().any(char::is_control) {
+                return Err(IME_ERR_INVALID_INPUT);
+            }
+            Ok(owned_string(
+                &s.session.reverse_lookup(text).unwrap_or_default(),
+            ))
+        },
+        ImeString {
+            data: ptr::null(),
+            len: 0,
+        },
+    )
+}
+
 /// 取已上屏文本（库分配，调用方负责 [`ime_string_free`]）。
 #[no_mangle]
 pub extern "C" fn ime_session_commit(session: *mut ImeSession) -> ImeString {
@@ -682,6 +707,34 @@ mod tests {
         }
         // SAFETY：指针来自会话内部字符串，测试期间保持有效。
         unsafe { CStr::from_ptr(ptr) }.to_str().ok()
+    }
+
+    #[test]
+    fn reverse_lookup_is_owned_read_only_and_handles_invalid_input() {
+        let s = ime_session_new();
+        assert!(!s.is_null());
+        assert_eq!(ime_session_key(s, 'w' as u32), IME_KEY_CONSUMED);
+        let before = ime_session_candidates(s);
+        let query = CString::new("你好").unwrap();
+        let reading = ime_session_reverse_lookup(s, query.as_ptr());
+        assert_eq!(unsafe { cstr(reading.data) }, Some("ni hao"));
+        assert_eq!(ime_session_candidates(s).items, before.items);
+        let unknown = CString::new("🙂").unwrap();
+        let empty = ime_session_reverse_lookup(s, unknown.as_ptr());
+        assert_eq!(unsafe { cstr(empty.data) }, Some(""));
+        let invalid = CString::new("a".repeat(257)).unwrap();
+        assert!(ime_session_reverse_lookup(s, invalid.as_ptr())
+            .data
+            .is_null());
+        assert!(ime_session_reverse_lookup(ptr::null(), query.as_ptr())
+            .data
+            .is_null());
+        assert!(ime_session_reverse_lookup(s, ptr::null()).data.is_null());
+        ime_session_free(s);
+        // The owned result remains valid after its session is destroyed.
+        assert_eq!(unsafe { cstr(reading.data) }, Some("ni hao"));
+        ime_string_free(reading);
+        ime_string_free(empty);
     }
 
     #[test]

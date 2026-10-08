@@ -69,7 +69,7 @@ final class YinghuoInputController: IMKInputController {
         item.target = self
         menu.addItem(item)
         for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
-            ("导出用户词库…", #selector(exportWords))] {
+            ("导出用户词库…", #selector(exportWords)), ("拼音反查…", #selector(lookupPinyin))] {
             let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
             entry.target = self; menu.addItem(entry)
         }
@@ -80,6 +80,7 @@ final class YinghuoInputController: IMKInputController {
         return menu
     }
 
+    @objc private func lookupPinyin() { if let session { candidateWindow?.hide(); clearMarked(client() as? IMKTextInput); LookupUI.show(session) } }
     @objc private func addWord() { if let session { candidateWindow?.hide(); UserDictionaryUI.add(session) } }
     @objc private func importWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.importFile(session) } }
     @objc private func exportWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.exportFile(session) } }

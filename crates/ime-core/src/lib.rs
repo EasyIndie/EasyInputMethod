@@ -119,6 +119,10 @@ pub struct EngineOptions {
 
 pub trait Engine: Send {
     fn configure(&mut self, _options: &EngineOptions) {}
+    /// Return the preferred reading when reverse lookup is supported.
+    fn reverse_lookup(&self, _text: &str) -> Option<String> {
+        None
+    }
     fn convert(&self, input: &str, max: usize) -> ConvertResult;
     fn engine_type(&self) -> EngineType;
     fn max_code_length(&self) -> usize;
@@ -229,6 +233,11 @@ impl Session {
             }
         }
         None
+    }
+
+    /// Query the installed reading engine without changing composition.
+    pub fn reverse_lookup(&self, text: &str) -> Option<String> {
+        self.pinyin.as_ref()?.reverse_lookup(text)
     }
 
     pub fn configure_engines(&mut self, options: &EngineOptions) {

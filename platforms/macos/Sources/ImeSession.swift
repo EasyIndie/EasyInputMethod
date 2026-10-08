@@ -135,6 +135,15 @@ final class ImeSession {
     func setPageSize(_ size: Int) { _ = ime_session_set_page_size(handle, Int32(size)) }
     func page(_ delta: Int) { _ = ime_session_page(handle, Int32(delta)) }
 
+    /// Query the installed pinyin data without changing the session.
+    func reverseLookup(_ text: String) -> String? {
+        guard let handle else { return nil }
+        let result = text.withCString { ime_session_reverse_lookup(handle, $0) }
+        defer { ime_string_free(result) }
+        guard let data = result.data, result.len > 0 else { return nil }
+        return String(cString: data)
+    }
+
     /// 取已上屏文本（无内容返回空串）。
     func commit() -> String {
         guard let handle else { return "" }
