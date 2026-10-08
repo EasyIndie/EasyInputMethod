@@ -13,8 +13,8 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04 完成；T-M1-05a 结论：暂无合格独立来源 → T-M1-05 阻塞）** |
-| 当前分支 | `main`（本次 T-M1-05a 文档结论未提交） |
+| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04/04b 完成；T-M1-05 前置已满足，待 pro 执行）** |
+| 当前分支 | `main`（本次 T-M1-04b 变更未提交） |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 全绿（fmt+clippy+30 测试+deny+隐私断言） |
 
@@ -22,8 +22,8 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整；oracle 对照 99.98%；30 测试、`make verify` 全绿）。T-M1-05a 调研结论：**暂无 GPL-3 兼容的独立结构/末笔来源**（ADR-018）。
-- **下一步**：`ROADMAP.md` 的 **P1-M1**（T-M1-05 单字码表生成 + oracle 全量回归；**阻塞**，待找到合格的结构/末笔独立来源，见 ADR-018）。
+- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整；oracle #1 对照 99.98%；30 测试、`make verify` 全绿）。**oracle #2（`rime-wubi`，T-M1-04b）已接入**；ADR-019 以「多 oracle 交叉验证」替代「数据独立」→ **T-M1-05 前置已满足**。
+- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-05**（自建单字码表 + 对 D3 / `rime-wubi` 两个 oracle 全量回归，pro）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -36,15 +36,16 @@
 - **P1-M1 / T-M1-04**：`data/sources.toml` + `data/sources/fetch-wubi-chaizi.sh`（D2 `aardio/wubi-lex`、D3 `huanfeng/WindInput`，均 MIT，SHA-256 固定）；`wubi-encoder/examples/crosscheck.rs` 产出 `data/generated/chaizi-diff.txt`。
 - **P1-M1 / T-M1-03**：`wubi-encoder` 新增 `recognition_key` + `encode_hechengzi`（合体字 + 末笔字型识别码）+ `TooFewRadicals`；`examples/oracle.rs` 与 D3 全量对照（全体 99.9784%、GB2312 一级 100%）；结构/末笔采用 option 2 派生（ADR-017）。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
-- **P1-M1 / T-M1-05a（调研止步）**：逐一核实结构/末笔独立来源许可，结论**暂无合格来源**（KanjiVG CC BY-SA 3.0 但仅 63.8% GB1 覆盖；Arphic Public License 被 FSF 判定 GPL 不兼容；CHISE/cjkvi-ids 许可不明确）→ 写 **ADR-018**，未引入任何数据。
+- **P1-M1 / T-M1-05a / 05b（调研止步）**：逐一核实结构/末笔独立来源许可，结论**暂无合格来源**（ADR-018）；T-M1-05b 尝试自建（Wiktionary dump 1.8 GB）失败 → **ADR-019** 改以「多 oracle 交叉验证」替代「数据独立」，结构/末笔沿用 ADR-017 的 PROVISIONAL 派生数据。
+- **P1-M1 / T-M1-04b**：新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，**LGPL-3**，SHA-256 固定）；登记 **D9**（`role=validation-oracle` / `ship=false` / 风险中）；`wubi-encoder/examples/oracle2.rs` → `data/generated/wubi86-oracle2-single.tsv`（70,370 字；抽样 5 字正确；与 D3 全体 98.78%、GB2312 一级 100%）。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/03/04 已交付；T-M1-05a 已调研（结论：暂无合格独立来源，ADR-018）；**T-M1-05 阻塞**（单字码表生成 + oracle 全量回归）。
+**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b 已交付；**T-M1-05** 前置（T-M1-03/04/04b + 05b 结论）已满足，待 pro 认领。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1 / 解除 T-M1-05 阻塞**：按 ADR-018「下一步」找合格的结构/末笔独立来源（优先评估 Wiktionary（CC BY-SA）IDS 结构 + KanjiVG 先覆盖 63.8% 常用字末笔），再做 T-M1-05（单字码表生成 + oracle 对照回归）。
+1. **P1-M1 / T-M1-05**（pro）：自建单字码表 + 对 D3 与 `rime-wubi` **两个 oracle** 全量对照（ADR-019；一级字一致率均需 ≥99%）。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -57,7 +58,7 @@
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
 | TBD-4 | 英文/包名 | 否 |
-| TBD-5 | 结构/末笔独立数据源（GPL-3 兼容）——T-M1-05a 结论：暂无合格来源（ADR-018） | 阻塞 T-M1-05 |
+| TBD-5 | 结构/末笔独立数据源（GPL-3 兼容）——T-M1-05a/05b 结论：暂无；ADR-019 以多 oracle 交叉验证替代（PROVISIONAL 派生继续） | 否（ADR-019 已解阻） |
 
 ## 6. 必须知道的坑与硬约束（详见 `AGENTS.md` 铁律）
 
@@ -78,7 +79,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），24 个测试通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），30 个测试通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -90,6 +91,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-04b oracle #2：rime-wubi）
+- 新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，LGPL-3，SHA-256 固定）；登记 **D9**（`role=validation-oracle`、`ship=false`、风险中）+ `docs/数据来源与许可.md` §1.4。
+- 新增 `wubi-encoder/examples/oracle2.rs`：Rime 字典 → `data/generated/wubi86-oracle2-single.tsv`（仅单字、同字取最长码、丢弃 z 码；70,370 字）；抽样 5 字全部正确；与 D3 全体 98.78%、GB2312 一级 100%（粗报，正式对照在 T-M1-05）。
+- oracle 数据不入库、不打包（ADR-016/019）。验证：`make verify` 全绿（30 测试）。
 
 ### 2026-10-08 · pi（T-M1-05a 结构/末笔独立数据源调研）
 - 逐一核实候选来源许可：**结论无合格来源**（KanjiVG CC BY-SA 3.0 仅 63.8% GB1 覆盖；Arphic Public License 被 FSF 判 GPL 不兼容；CHISE/cjkvi-ids 许可不明确）。
@@ -144,11 +150,3 @@
 - 微基准：固定开销 ≈ 4.3k tokens/次；前缀缓存跨会话共享 → 开新会话 ≠ 冷启动。
 - 默认派发改定：**一张卡 = 一个新 worker**；`--reuse` 仅用于强依赖序列。详见 `docs/experiments/session-vs-workers.md`。
 - 注意：provider 未配计价，`cost`=0；用 token 口径。n=1，方差大。
-
-### 2026-10-08 · pi（用量量测脚手架）
-- 新增用量量测：`scripts/lib/pi-usage.sh`、`dispatch-task.sh`（支持 `--model/--reuse/--label`）、`usage-report.sh`、`bench-session-vs-workers.sh`（`--micro`/`--tasks`）。
-- 新增 `docs/experiments/`（方法学 + 判定规则 + 结论待实测）。`make usage-report` 可本地汇总（不花 token）。
-- 用途：用真实 token/成本数据判定“持久会话 vs 每次新 worker”。已用 `PI_CMD=echo` 验证管道与合成数据校验汇总数值。
-- 遗留：待用真实模型跑 `bench-session-vs-workers.sh --micro` 采集数据。
-
-

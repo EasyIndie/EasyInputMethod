@@ -31,3 +31,19 @@ used_for = ["wubi86-chaizi-crosscheck"]
 fetch_script = "data/sources/fetch-wubi-chaizi.sh"
 added_at = "2026-10-08"
 notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库"
+
+[[source]]
+id = "D9"
+name = "五笔86 码表（rime/rime-wubi，验证 oracle #2）"
+path = "data/sources/rime-wubi86.dict.yaml"
+url = "https://github.com/rime/rime-wubi/blob/master/wubi86.dict.yaml"
+upstream = "rime/rime-wubi"
+license = "LGPL-3.0"
+risk = "medium"
+sha256 = "f833d86b72341fe82e069a425b6625f29ef85f1bc0f34f6fb7975fe514888b5a"
+used_for = ["wubi86-code-oracle"]
+role = "validation-oracle"
+ship = false
+fetch_script = "data/sources/fetch-wubi-oracle2.sh"
+added_at = "2026-10-08"
+notes = "Rime 字典（text/code/weight/stem）；**仅作验证 oracle，不进入发布产物、不打包**（ADR-016/019）；其表源自极点五笔（Jidian），provenance 风险中等；文件下载获取，不入库"

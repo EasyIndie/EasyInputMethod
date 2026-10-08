@@ -1,0 +1,28 @@
+# 五笔86 验证 oracle #2 报告（T-M1-04b）
+#
+# oracle = data/sources/rime-wubi86.dict.yaml（rime/rime-wubi，LGPL-3.0；⚠️ 仅验证对照，不发布/不打包）
+# 对照   = data/sources/windinput-wubi86-chaizi.txt（D3，MIT）
+# GB1    = data/generated/gb2312-level1.txt
+# 处理：仅单字；同字多码取最长码（并列取最小）；丢弃含 z/非 a–y 的非法码。
+
+[summary]
+rime_data_entries = 136916
+rime_single_entries = 75696
+single_unique_chars = 70944
+dropped_invalid_code = 574
+written_chars = 70370
+d3_chars = 27823
+overall_intersection = 27696
+overall_matched = 27359
+overall_agreement = 98.7832%
+gb2312_level1_intersection = 3755
+gb2312_level1_matched = 3755
+gb2312_level1_agreement = 100.0000%
+
+[samples]
+# char	rime	expected
+的	rqyy	rqyy
+一	ggll	ggll
+你	wqiy	wqiy
+中	khk	khk
+好	vbg	vbg
