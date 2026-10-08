@@ -1,0 +1,11 @@
+[package]
+name = "ime-config"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法配置子系统：Schema 唯一真值 + ArcSwap 快照 + 原子持久化 + 变更广播"
+
+[dependencies]
+arc-swap = "1.9.2"
+toml_edit = "0.22.27"
