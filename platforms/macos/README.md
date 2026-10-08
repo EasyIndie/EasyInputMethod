@@ -188,3 +188,12 @@ Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消
 菜单切模式或打开词库/反查面板前会取消预编辑并隐藏候选，避免残留。模式保存失败不切换。失焦/清空会重新开始引号配对，普通选字仍保持一句内的引号配对（ADR-036）。
 
 长候选超过屏幕宽度时自动竖排；单条超长词显示截断文字、悬停显示完整 tooltip，选字仍插入完整词条。候选面板自身限制在当前屏幕可见区域（ADR-037）。独立冒烟含窄屏/屏幕边缘/超长词条的几何验证。
+
+### 隔离性能预检
+
+```sh
+bash platforms/macos/tests/run-perf.sh 5 --max-user-dictionary
+bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
+```
+
+脚本生成临时满容量合成词库，不读取真实用户词库，不安装输入法。第一项测引擎及选字学习落盘；第二项运行五会话、22000按键，逐段记录窗口内存，并对探针自身采样 IP 连接。GUI 探针按输入序列释放临时对象并排空主循环；计时包含 FFI/候选转换/布局/显示调用，不含正式 IMK 客户端或合成器完成。结论与局限见 `docs/reviews/003-macos-performance.md`。
