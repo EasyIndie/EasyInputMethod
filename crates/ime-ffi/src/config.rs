@@ -30,6 +30,8 @@ const DEFAULT_CONFIG_PATH: &str = "config.toml";
 
 /// 进程级配置存储（唯一实例）。
 static STORE: OnceLock<ConfigStore> = OnceLock::new();
+/// 宿主提供的配置路径（`ime_config_init`；优先于环境变量与默认值）。
+static PATH_OVERRIDE: OnceLock<PathBuf> = OnceLock::new();
 /// 最近一次 `snapshot` 返回的借用；持有 `Arc` 保证指针有效直到下次重取。
 static SNAPSHOT: Mutex<Option<Arc<Config>>> = Mutex::new(None);
 /// 配置 Schema 的 C 布局（一次性构建，指针稳定）。
@@ -95,9 +97,24 @@ thread_local! {
 }
 
 fn config_path() -> PathBuf {
-    std::env::var_os(ENV_CONFIG_PATH)
-        .map(PathBuf::from)
+    PATH_OVERRIDE
+        .get()
+        .cloned()
+        .or_else(|| std::env::var_os(ENV_CONFIG_PATH).map(PathBuf::from))
         .unwrap_or_else(|| PathBuf::from(DEFAULT_CONFIG_PATH))
+}
+
+/// 设定配置文件的平台路径（应由宿主在**任何其他配置调用之前**调用）。
+///
+/// 幂等：重复设置不覆盖首个值；存储已初始化后调用无效。返回错误码。
+#[no_mangle]
+pub extern "C" fn ime_config_init(path: *const c_char) -> i32 {
+    catch_status(|| {
+        // SAFETY：契约见 `cstr_arg`。
+        let path = unsafe { cstr_arg(path)? };
+        let _ = PATH_OVERRIDE.set(PathBuf::from(path));
+        Ok(IME_OK)
+    })
 }
 
 /// 取（或初始化）进程级配置存储。首次加载失败（语法/IO）时降级为内存默认值，

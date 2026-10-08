@@ -31,6 +31,11 @@ extern "C" {
 #define IME_SOURCE_PINYIN     1
 #define IME_SOURCE_PHRASE     2
 
+/* ── ime_session_key 成功时的按键结果 ───────────────── */
+#define IME_KEY_CONSUMED     0  /* 键被消费，候选已更新（== IME_OK） */
+#define IME_KEY_COMMITTED    1  /* 已上屏，随后取 ime_session_commit */
+#define IME_KEY_PASS_THROUGH 2  /* 与本输入法无关，宿主应透传 */
+
 /* ── 不透明句柄 ─────────────────────────────────────── */
 typedef struct ImeSession ImeSession;
 typedef struct ImeConfig ImeConfig;
@@ -57,8 +62,13 @@ typedef struct ImeCandidates {
 
 /* ── 会话 ABI（线程绑定） ────────────────────────────── */
 ImeSession*  ime_session_new(void);
+ImeSession*  ime_session_new_with_data(const char* wubi_path,
+                                       const char* pinyin_chars_path,
+                                       const char* pinyin_words_path);
 void         ime_session_free(ImeSession* session);
-int32_t      ime_session_key(ImeSession* session, uint32_t codepoint);
+int32_t      ime_session_key(ImeSession* session, uint32_t codepoint); /* IME_KEY_* 或负错误码 */
+const char*  ime_session_buffer(ImeSession* session);   /* 借用组合缓冲区（UTF-8） */
+int32_t      ime_session_set_mode(ImeSession* session, const char* mode);
 ImeCandidates ime_session_candidates(ImeSession* session);
 int32_t      ime_session_select(ImeSession* session, int32_t index);
 int32_t      ime_session_page(ImeSession* session, int32_t delta);
@@ -68,6 +78,7 @@ void         ime_session_reset(ImeSession* session);
 void         ime_string_free(ImeString s);
 
 /* ── 配置 ABI（线程安全） ────────────────────────────── */
+int32_t          ime_config_init(const char* path);  /* 宿主设定配置路径，须最先调用 */
 const ImeConfig* ime_config_snapshot(void);   /* 借用；勿释放；set/reload 后重取 */
 const char*      ime_config_get(const char* key); /* 字符串形式；NULL=未知/错误 */
 
