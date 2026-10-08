@@ -10,14 +10,18 @@
 
 ```
 platforms/macos/
-├── build.sh                       # cargo staticlib + swiftc → .inputmethod bundle
+├── build.sh                       # cargo staticlib + swiftc → .app bundle
 ├── Info.plist                     # IMK 键名（参照系统/第三方输入法实测）
+├── Resources/
+│   ├── yinghuo.png / @2x.png      # 菜单图标
+│   └── zh-Hans.lproj/·en.lproj/InfoPlist.strings  # 本地化显示名
 ├── Sources/
 │   ├── main.swift                 # NSApplication + IMKServer 入口
 │   ├── InputController.swift      # IMKInputController 子类（按键 → FFI）
 │   ├── ImeSession.swift           # FFI 会话封装（指针转换）
 │   ├── CandidateWindow.swift      # 纯代码候选窗（NSPanel）
 │   └── Config.swift               # 配置读取 + 平台路径
+├── tools/list-input-sources.sh    # 诊断：系统是否识别到本输入法
 └── tests/
     ├── ffi_smoke.swift            # 真实数据运行时冒烟（不涉及 IMK）
     └── run-ffi-smoke.sh
@@ -35,7 +39,10 @@ platforms/macos/
 ./platforms/macos/build.sh
 ```
 
-产出 `platforms/macos/build/萤火虫.inputmethod`（已做 ad-hoc 签名）。
+产出 `platforms/macos/build/萤火虫.app`（已做 ad-hoc 签名）。
+
+> **必须是 `.app`，不能是 `.inputmethod`。** 本机实测：macOS 13 的 LaunchServices
+> 无法扫描 `.inputmethod`（报 `-10811`），且系统里所有输入法都是 `.app`（见 ADR-022）。
 
 可选：验证「真实数据 + Swift 链接 + 引擎输出」（需要 `data/generated/` 数据文件）：
 
@@ -66,17 +73,27 @@ cargo run -p ime-pinyin --example generate
 > 一键安装/卸载脚本在 **T-M3-03**；本文先给手动步骤。
 
 1. 构建：`./platforms/macos/build.sh`
-2. 拷贝到用户输入法目录：
+2. 拷贝到用户输入法目录（先删旧副本）：
    ```sh
-   cp -R "platforms/macos/build/萤火虫.inputmethod" ~/Library/Input\ Methods/
+   rm -rf ~/Library/Input\ Methods/萤火虫.app ~/Library/Input\ Methods/萤火虫.inputmethod
+   cp -R "platforms/macos/build/萤火虫.app" ~/Library/Input\ Methods/
+   xattr -dr com.apple.quarantine ~/Library/Input\ Methods/萤火虫.app
+   codesign --force --deep --sign - ~/Library/Input\ Methods/萤火虫.app
    ```
-3. 若被 Gatekeeper 阻拦，去掉隔离属性（ad-hoc 签名已在 build.sh 完成）：
-   ```sh
-   xattr -dr com.apple.quarantine ~/Library/Input\ Methods/萤火虫.inputmethod
-   codesign --force --deep --sign - ~/Library/Input\ Methods/萤火虫.inputmethod
-   ```
-4. **注销并重新登录**（或重启），让系统重新扫描输入法。
-5. 系统设置 → 键盘 → 文字输入 → 输入法 → 编辑 → 添加「萤火虫（中文）」。
+3. **注销并重新登录**（或重启）——**这一步不可省**。
+   macOS 只在**登录时**扫描 `~/Library/Input Methods/` 下的输入法 bundle；
+   `killall TextInputMenuAgent` 之类无法可靠触发重扫（本机已验证）。
+4. 系统设置 → 键盘 → 文字输入 → 输入法 → 编辑 → `+` → 简体中文 → **萤火虫**。
+
+### 装好却看不到？先跑诊断
+
+```sh
+./platforms/macos/tools/list-input-sources.sh yinghuo
+```
+
+- 有输出（含 `yinghuo` / `org.yinghuo`）→ 系统已识别，去「系统设置 → 键盘 → 输入法」添加；
+- 无输出 → **没有注销/重登**，或 bundle 不在 `~/Library/Input Methods/` 下、
+  或不是 `.app`（见上）。
 
 ## 验证打字
 
@@ -98,12 +115,8 @@ cargo run -p ime-pinyin --example generate
 - **装载与打字必须由人在真实桌面验证**：无头环境只能保证「编译通过 + 包结构正确 +
   可执行不崩溃」（本仓库已实测到这一步）。
 - 候选窗为 P1-M3 最小实现：无翻页、无亮/暗主题自适应、不跟随光标滚动（属 P1-M4）。
-- `Info.plist` 键名参照本机既有输入法（`/System/Library/Input Methods/*.app`、
-  `/Library/Input Methods/SogouWBInput.app`）编写；若装载后系统设置里看不到「萤火虫」，
-  优先复核 `CFBundleIdentifier` / `InputMethodConnectionName` /
-  `InputMethodServerControllerClass` 与 `ComponentInputModeDict`。
-- `CFBundleIdentifier` 暂用 `org.yinghuo.inputmethod`，最终包名取决于 **TBD-4**。
 - 未做通用二进制（仅当前架构 x86_64）。
+- `CFBundleIdentifier` 暂用 `org.yinghuo.inputmethod`，最终包名取决于 **TBD-4**。
 
 ## 为宿主扩展的 `ime-ffi` 入口（T-M3-02）
 

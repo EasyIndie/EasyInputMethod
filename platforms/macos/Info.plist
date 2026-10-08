@@ -10,6 +10,9 @@
 
   ⚠️ CFBundleIdentifier / 连接名使用暂定值 org.yinghuo.inputmethod，
      最终包名取决于 TBD-4（见 docs/决策记录.md）。
+
+  ⚠️ 必须是 .app bundle（macOS 13 的 LaunchServices 无法扫描 .inputmethod，
+     实测报 -10811）——见 ADR-022 / platforms/macos/README.md。
 -->
 <plist version="1.0">
 <dict>
@@ -22,7 +25,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>萤火虫</string>
+	<string>Yinghuo</string>
 	<key>CFBundleDisplayName</key>
 	<string>萤火虫</string>
 	<key>CFBundlePackageType</key>
@@ -45,6 +48,8 @@
 	<string>YinghuoInputController</string>
 	<key>TISIntendedLanguage</key>
 	<string>zh-Hans</string>
+	<key>tsInputMethodIconFileKey</key>
+	<string>yinghuo.png</string>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>Latn</string>

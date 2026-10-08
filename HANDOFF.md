@@ -72,6 +72,7 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **无 Xcode**（仅 CLT）→ **不能用 IB / Asset Catalog**（`actool`/`ibtool` 是 stub）→ **纯代码 UI**。
+- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`）：macOS 13 的 LaunchServices 扫描 `.inputmethod` 报 `-10811`；且更换 bundle 后**必须注销/重登**（只在登录时扫描，`killall TextInputMenuAgent` 无效）。诊断：`platforms/macos/tools/list-input-sources.sh yinghuo`。
 - ⚠️ **IMK Swift 事件方法叫 `handle(_:client:)`**（不是 `handleEvent`；后者在 Swift 3 被重命名）；`Info.plist` 输入模式清单在 `ComponentInputModeDict.tsInputModeListKey`（参照系统输入法实测）。
 - ⚠️ **`pinyin-words.tsv`（8.4MB）不入库**：`build.sh` 缺失时宿主降级（无拼音/单音节），复现见 `platforms/macos/README.md`。
 - ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符（如 `$model（`）会被当变量名 → 一律写 `${var}`。
@@ -103,10 +104,11 @@
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
 ### 2026-10-08 · pi（T-M3-02 Swift/IMK 宿主）
-- 新建 `platforms/macos/`：`main.swift`/`InputController.swift`/`CandidateWindow.swift`（纯代码 `NSPanel`）/`ImeSession.swift`/`Config.swift` + `build.sh` + `Info.plist` + README + FFI 冒烟。
+- 新建 `platforms/macos/`：`main.swift`/`InputController.swift`/`CandidateWindow.swift`（纯代码 `NSPanel`）/`ImeSession.swift`/`Config.swift` + `build.sh` + `Info.plist` + README + 诊断工具 + FFI 冒烟。
 - 扩展 `ime-ffi`（ADR-022）：`ime_session_new_with_data` / `_buffer` / `_set_mode` / `ime_config_init`；`ime_session_key` 成功返回 `IME_KEY_*`。
-- 验证：`build.sh` 产出并 ad-hoc 签名 `.inputmethod`（`plutil -lint` OK、可执行不崩溃）；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`；`make verify` 全绿（82 单测）。
-- 遗留：**装载 + TextEdit 打字须人工验证**（本会话无 GUI 装载）；`TBD-4` 包名仍暂定。
+- 验证：`build.sh` 产出并 ad-hoc 签名；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`；`make verify` 全绿（82 单测）。
+- **人工装载发现**：`.inputmethod` 不被 macOS 13 扫描（LaunchServices `-10811`）→ 改产 **`.app`**（+ `PkgInfo`/图标/本地化），且换 bundle 必须**注销/重登**。
+- 遗留：注销/重登后的实际添加 + TextEdit 打字仍待人工确认；`TBD-4` 包名暂定。
 
 ### 2026-10-08 · pi（T-M3-01 `ime-ffi` C ABI）
 - 新建 `crates/ime-ffi`（cdylib+staticlib）：会话 ABI + 配置 ABI；入口全部 `catch_unwind`、坏输入返回错误码。

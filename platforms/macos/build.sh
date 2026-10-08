@@ -2,18 +2,20 @@
 # 萤火虫输入法 · macOS 宿主构建脚本
 #
 # 纯命令行构建（本机无 Xcode 亦可）：
-#   cargo 构建 ime-ffi staticlib → swiftc 编译 Swift 宿主 → 拼装 .inputmethod bundle。
+#   cargo 构建 ime-ffi staticlib → swiftc 编译 Swift 宿主 → 拼装 .app bundle。
 #
 # 用法：./platforms/macos/build.sh
 #
-# 产物：platforms/macos/build/萤火虫.inputmethod
+# 产物：platforms/macos/build/萤火虫.app
+#
+# ⚠️ 必须是 .app：macOS 13 的 LaunchServices 无法扫描 .inputmethod（实测 -10811）。
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build"
 APP_NAME="萤火虫"
-APP_DIR="${BUILD_DIR}/${APP_NAME}.inputmethod"
+APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
 EXECUTABLE="Yinghuo"
 
 LIB="${ROOT}/target/release/libime_ffi.a"
@@ -31,6 +33,14 @@ echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
 cp "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
+# PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
+printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
+# 图标 + 本地化显示名
+cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
+for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
+  [ -d "${lproj}" ] || continue
+  cp -R "${lproj}" "${APP_DIR}/Contents/Resources/"
+done
 
 echo "▶ 3/5 复制数据文件（缺失的给出复现提示）"
 copy_data() {
@@ -71,5 +81,5 @@ fi
 
 echo
 echo "✅ 构建完成：${APP_DIR}"
-echo "   装载：cp -R \"${APP_DIR}\" ~/Library/Input\\ Methods/ && killall Yinghuo 2>/dev/null || true"
-echo "   然后注销/重登，在 系统设置 → 键盘 → 输入法 添加「萤火虫」。详见 platforms/macos/README.md。"
+echo "   装载：cp -R \"${APP_DIR}\" ~/Library/Input\\ Methods/ 然后【注销/重登】（必须）"
+echo "   然后在 系统设置 → 键盘 → 文字输入 → 输入法 添加「萤火虫」。详见 platforms/macos/README.md。"
