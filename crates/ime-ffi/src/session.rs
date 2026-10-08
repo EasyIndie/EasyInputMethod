@@ -86,6 +86,59 @@ fn source_to_int(source: CandidateSource) -> i32 {
     }
 }
 
+/// Select user entries without cloning the whole prefix result.
+fn user_candidates(
+    entries: &ime_dict::Entries,
+    buffer: &str,
+    mode: InputMode,
+    max: usize,
+) -> Vec<ime_core::Candidate> {
+    use std::cmp::Reverse;
+    use std::collections::BinaryHeap;
+    if max == 0 {
+        return Vec::new();
+    }
+    let mut best = BinaryHeap::with_capacity(max);
+    for ((scheme, code, text), count) in entries {
+        let wubi = scheme == "wubi";
+        if !code.starts_with(buffer)
+            || (mode == InputMode::WubiOnly && !wubi)
+            || (mode == InputMode::PinyinOnly && wubi)
+        {
+            continue;
+        }
+        let rank = (
+            wubi,
+            code == buffer,
+            *count,
+            Reverse(text.as_str()),
+            Reverse(code.as_str()),
+        );
+        if best.len() < max {
+            best.push(Reverse(rank));
+        } else if best.peek().is_some_and(|lowest| rank > lowest.0) {
+            best.pop();
+            best.push(Reverse(rank));
+        }
+    }
+    best.into_iter()
+        .map(|Reverse((wubi, exact, _, Reverse(text), Reverse(code)))| {
+            let mut c = ime_core::Candidate::new(
+                text,
+                code,
+                0,
+                if wubi {
+                    CandidateSource::CodeTable
+                } else {
+                    CandidateSource::Pinyin
+                },
+            );
+            c.is_prefix = !exact;
+            c
+        })
+        .collect()
+}
+
 impl ImeSession {
     /// 用内置样本引擎创建会话（供 CLI 冒烟 / 无数据文件场景）。
     fn new() -> Box<ImeSession> {
@@ -145,30 +198,7 @@ impl ImeSession {
         }
         let mode = self.session.mode();
         let buffer = self.session.buffer();
-        let extra = store
-            .entries()
-            .iter()
-            .filter(|((scheme, code, _), _)| {
-                code.starts_with(buffer)
-                    && (mode == InputMode::Mixed
-                        || (mode == InputMode::WubiOnly && scheme == "wubi")
-                        || (mode == InputMode::PinyinOnly && scheme == "pinyin"))
-            })
-            .map(|((scheme, code, text), _)| {
-                let mut c = ime_core::Candidate::new(
-                    text,
-                    code,
-                    0,
-                    if scheme == "wubi" {
-                        CandidateSource::CodeTable
-                    } else {
-                        CandidateSource::Pinyin
-                    },
-                );
-                c.is_prefix = code != buffer;
-                c
-            })
-            .collect();
+        let extra = user_candidates(store.entries(), buffer, mode, 256);
         self.session.personalize(extra, |c| {
             let scheme = if c.source == CandidateSource::Pinyin {
                 "pinyin"
@@ -695,6 +725,26 @@ mod tests {
         }
         // SAFETY：指针来自会话内部字符串，测试期间保持有效。
         unsafe { CStr::from_ptr(ptr) }.to_str().ok()
+    }
+
+    #[test]
+    fn user_candidates_keep_source_exact_and_frequency_priority_with_a_bound() {
+        let mut entries = ime_dict::Entries::new();
+        for i in 0..1000 {
+            entries.insert(("wubi".into(), "ab".into(), format!("词{i}")), i + 1);
+        }
+        entries.insert(("wubi".into(), "a".into(), "精确".into()), 1);
+        entries.insert(("pinyin".into(), "a".into(), "拼音".into()), u32::MAX);
+        let selected = user_candidates(&entries, "a", InputMode::Mixed, 3);
+        assert_eq!(selected.len(), 3);
+        assert!(selected.iter().any(|c| c.text == "精确"));
+        assert!(selected.iter().any(|c| c.text == "词999"));
+        assert!(selected.iter().any(|c| c.text == "词998"));
+        assert_eq!(
+            user_candidates(&entries, "a", InputMode::PinyinOnly, 3)[0].text,
+            "拼音"
+        );
+        assert!(user_candidates(&entries, "a", InputMode::Mixed, 0).is_empty());
     }
 
     #[test]

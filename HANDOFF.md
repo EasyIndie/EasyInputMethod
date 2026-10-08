@@ -17,7 +17,7 @@
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：94 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：96 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -100,7 +100,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**94 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**96 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -112,6 +112,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 · Codex（最大词库查询边界）
+- ADR-038：用户前缀最多256个借用条目后再分配，频次每候选只计算一次；排序优先级与精确命中保留。
+- 10000条/1.98MB合成词库五会话：最大按键从19.43降至10.86ms；稳态仍36.67MiB，下一步共享用户词库快照。
+- 96单测、两宿主构建/独立冒烟、make verify 全绿；性能 DoD 仍不勾选。
 
 ### 2026-10-09 · Codex（长候选边界）
 - ADR-037：超宽候选自动竖排，长词截断/tooltip；整窗尺寸及原点限制于可见屏幕，选字文本完整。
@@ -159,8 +164,3 @@
 - ADR-028：核心统一标点/成对引号/全角；新增两项 Schema；共享快捷键消费。
 - 核心回归、Swift 实际适配器快捷键/标点冒烟、两宿主构建、make verify 通过。
 - M4 交互项完成实现；用户词库与学习、跨应用完整 DoD、发布工程尚未完成。
-
-### 2026-10-08 · Codex（引擎选项消费）
-- ADR-027：已有 auto_commit、z_key、fuzzy 选项通过共享 FFI 按键前读取快照，接入真实引擎。
-- 专项开关/通配/模糊音回归、两宿主构建、预览冒烟、make verify 通过。
-- 下一步中英切换、标点、全半角；用户词库与发布工程未完成。

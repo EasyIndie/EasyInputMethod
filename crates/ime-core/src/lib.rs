@@ -289,17 +289,29 @@ impl Session {
     /// Merge local user entries and rank within each engine source.
     pub fn personalize(&mut self, extra: Vec<Candidate>, score: impl Fn(&Candidate) -> u32) {
         self.candidates.extend(extra);
+        let mut scored: Vec<_> = self
+            .candidates
+            .drain(..)
+            .map(|c| {
+                let frequency = score(&c);
+                (c, frequency)
+            })
+            .collect();
         let rank = |c: &Candidate| usize::from(c.source == CandidateSource::Pinyin);
-        self.candidates.sort_by(|a, b| {
+        scored.sort_by(|(a, a_score), (b, b_score)| {
             rank(a)
                 .cmp(&rank(b))
                 .then_with(|| a.is_prefix.cmp(&b.is_prefix))
-                .then_with(|| score(b).cmp(&score(a)))
+                .then_with(|| b_score.cmp(a_score))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
         });
         let mut seen = std::collections::HashSet::new();
-        self.candidates.retain(|c| seen.insert(c.text.clone()));
+        self.candidates = scored
+            .into_iter()
+            .map(|(c, _)| c)
+            .filter(|c| seen.insert(c.text.clone()))
+            .collect();
         self.page = self.page.min(self.page_count().saturating_sub(1));
     }
 
@@ -626,6 +638,22 @@ mod tests {
         s.focus_out();
         assert!(s.english());
         assert_eq!(s.handle_key('A'), KeyOutcome::Committed("Ａ".into()));
+    }
+
+    #[test]
+    fn personalization_evaluates_each_frequency_once() {
+        use std::cell::Cell;
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.handle_key('a');
+        let original = s.candidates.len();
+        let extra = vec![Candidate::new("新增", "a", 0, CandidateSource::CodeTable)];
+        let calls = Cell::new(0);
+        s.personalize(extra, |c| {
+            calls.set(calls.get() + 1);
+            u32::from(c.text == "新增")
+        });
+        assert_eq!(calls.get(), original + 1);
+        assert_eq!(s.candidates[0].text, "新增");
     }
 
     #[test]
