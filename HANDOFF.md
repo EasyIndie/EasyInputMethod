@@ -12,11 +12,11 @@
 | 项 | 值 |
 |---|---|
 | 最后更新 | 2026-10-08 |
-| 更新者 | pi（压缩前交接） |
-| 当前阶段 | **P1-M0 完成；下一步 P1-M1（任务卡已就绪，未开始）** |
+| 更新者 | pi |
+| 当前阶段 | **P1-M1 进行中（T-M1-01 完成；下一步 T-M1-02/03/04）** |
 | 当前分支 | `main`（已推送 origin/main） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+11 测试+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+17 测试+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
@@ -31,15 +31,16 @@
 - 竞品调研、架构选型；**码表自建可行性已验证**（词组码 99.90% 可由单字码推导）。
 - 权威方案 `docs/技术方案.md` + 配套文档；交叉审核（`docs/reviews/001.md`）已确认并落地行动项。
 - **P1-M0**：Rust workspace、`ime-core`（Engine/InputMode/会话状态机）、`ime-table`（码表引擎）、`ime-cli`（REPL）。
+- **P1-M1 / T-M1-01**：新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv` + `radical_to_key`，`Stroke`/`Structure`/`EncodeError`；6 个单测。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
 
 ## 3. 进行中
 
-**无。**（P1-M1 任务卡已就绪于 `docs/tasks/`，尚未认领）
+**P1-M1**（自建码表流水线）：T-M1-01 已交付；T-M1-02/03/04 待认领（码表生成器骨架已就绪，尚无编码逻辑）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1**：从 `docs/tasks/` 取卡执行（T-M1-01..09，已按 flash/pro 标注）。先发无依赖的 **T-M1-01**（字根表骨架）、**T-M1-04**（拆字交叉校验），**T-M1-03**（合体字+识别码）由 pro 把关。
+1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅；未完成项：**T-M1-02**（键名字+成字字根，flash，依赖 T-M1-01）、**T-M1-04**（拆字交叉校验，flash，无依赖）可并行；**T-M1-03**（合体字+识别码，pro，依赖 T-M1-02）。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -70,7 +71,7 @@
 | Rust | 1.98.1（由 `rust-toolchain.toml` 固定） |
 | 构建 | `make` 可用；`just` 不可用（故用 Makefile） |
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`），11 个测试通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），17 个测试通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -82,6 +83,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-01 字根表骨架）
+- 新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv`/`radical_to_key` + `Stroke`/`Structure`/`EncodeError`。
+- 仅字根→键查询，**不含编码逻辑**（留给 T-M1-02/03）；未改动 `ime-core`/`ime-table`/`ime-cli`。
+- 验证：`cargo test -p wubi-encoder` 6 通过；`make verify` 全绿（17 测试、clippy、deny、隐私断言）。
+- 卡外无改动；`ime-cli` 冒烟行为不变。
 
 ### 2026-10-08 · pi（重复实验定论）
 - 新增可重复 A/B：`bench-session-vs-workers.sh --workload --repeat`、`usage-compare.sh`（中位数）、`docs/experiments/workloads/`。

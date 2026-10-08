@@ -15,6 +15,9 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+# 绝对路径须在 source 之前（source 会写入相对默认值）。
+export PI_USAGE_LOG="${PI_USAGE_LOG:-$ROOT/docs/experiments/runs/usage.jsonl}"
+export PI_RAW_DIR="${PI_RAW_DIR:-$ROOT/docs/experiments/runs/raw}"
 # shellcheck source=lib/pi-usage.sh
 source scripts/lib/pi-usage.sh
 

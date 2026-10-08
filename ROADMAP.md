@@ -34,7 +34,7 @@
 
 ### P1-M1 自建码表流水线
 
-- [ ] `crates/wubi-encoder`：五笔86 编码器（键名字/成字字根/合体字/末笔字型识别码）—— 细卡见 `docs/tasks/T-M1-01..03`
+- [~] `crates/wubi-encoder`：五笔86 编码器（键名字/成字字根/合体字/末笔字型识别码）—— 细卡见 `docs/tasks/T-M1-01..03`（**T-M1-01 字根表骨架已完成**）
 - [ ] `data/sources.toml` + 拆字数据交叉校验（`wubi-lex` MIT / WindInput MIT）
 - [ ] 单字码表生成 → `.imedict`
 - [ ] 词组码自动生成（词表来自 `phrase-pinyin-data` MIT）

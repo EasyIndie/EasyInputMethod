@@ -1,0 +1,9 @@
+[package]
+name = "wubi-encoder"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法五笔编码器：字根表建模与字根→键查询（零外部依赖）"
+
+[dependencies]
