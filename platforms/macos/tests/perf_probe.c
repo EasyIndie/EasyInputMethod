@@ -23,8 +23,10 @@ static int compare(const void *a, const void *b) {
     return (x > y) - (x < y);
 }
 int main(int argc, char **argv) {
-    if (argc != 5 && argc != 6) return 2;
-    int count = argc == 6 ? atoi(argv[5]) : 1;
+    if (argc < 5 || argc > 7) return 2;
+    int learn_check = argc == 7 && strcmp(argv[6], "--learn-check") == 0;
+    if (argc == 7 && !learn_check) return 2;
+    int count = argc >= 6 ? atoi(argv[5]) : 1;
     if (count < 1 || count > 16 || ime_config_init(argv[4]) != IME_OK) return 2;
     ImeSession *sessions[16];
     for (int i = 0; i < count; i++) {
@@ -58,6 +60,24 @@ int main(int argc, char **argv) {
     printf("keys=%d p50_ms=%.3f p95_ms=%.3f max_ms=%.3f peak_rss_mib=%.2f\n", samples,
            values[samples / 2], values[samples * 95 / 100], values[samples - 1], usage.ru_maxrss / 1048576.0);
     printf("steady_footprint_mib=%.2f\n", footprint());
+    if (learn_check) {
+        if (ime_config_set("wubi.auto_commit", "false") != IME_OK) return 5;
+        for (int i = 0; i < count; i++) ime_session_focus_out(sessions[i]);
+        double slowest = 0;
+        for (int i = 0; i < count; i++) {
+            // Match host activation: load the current snapshot before key handling.
+            if (ime_session_configure(sessions[i]) != IME_OK) return 6;
+            for (const char *key = "aaaa"; *key; key++) ime_session_key(sessions[i], *key);
+            double start = now();
+            if (ime_session_key(sessions[i], ' ') != IME_KEY_COMMITTED ||
+                ime_session_dictionary_error(sessions[i]) != IME_OK) return 7;
+            double elapsed = (now() - start) * 1000;
+            if (elapsed > slowest) slowest = elapsed;
+            ime_session_focus_out(sessions[i]);
+        }
+        printf("learn_samples=%d learn_max_ms=%.3f after_focus_out_footprint_mib=%.2f\n",
+               count, slowest, footprint());
+    }
     for (int i = 0; i < count; i++) ime_session_free(sessions[i]);
     return 0;
 }

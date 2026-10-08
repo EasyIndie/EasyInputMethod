@@ -20,6 +20,7 @@ final class YinghuoInputController: IMKInputController {
         if session == nil {
             session = makeSession()
         }
+        session?.prepare()
     }
 
     override func deactivateServer(_ sender: Any!) {

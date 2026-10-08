@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（多会话共享词表） |
+| 最后更新 | 2026-10-09（用户词库共享快照） |
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：96 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：98 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -41,7 +41,7 @@
 
 ## 3. 进行中
 
-- 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；五会话引擎 ABI 探针约 16.6MiB / P95 0.48ms，不代表完整 GUI DoD。
+- 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；五会话空词库约16.6MiB；满容量合成用户词库共享快照后约22.1MiB / P95 0.775ms，学习最大13.196ms；不代表完整 GUI DoD。
 
 **P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，本地审核包约14.3MB，完整源码/vendor/许可/SBOM/SHA；从实际 ZIP 离线重建的去签名可执行文件和默认数据逐字节一致。
 
@@ -100,7 +100,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**96 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**98 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -112,6 +112,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 · Codex（用户词库共享快照）
+- ADR-039：有界 Weak 快照缓存，写入发布新 Arc，失焦释放旧版本；激活预加载，配置仍唯一。
+- 满容量合成词库/五会话22.09MiB，按键最大9.075ms；学习最大13.196ms，失焦后27.73MiB。
+- 98单测、两宿主构建、真实 AppKit 冒烟与 make verify 全绿；完整 GUI/正式客户端仍待验收。
+- 下一步候选渲染性能与最终候选重打包；未安装、未上传。
 
 ### 2026-10-09 · Codex（最大词库查询边界）
 - ADR-038：用户前缀最多256个借用条目后再分配，频次每候选只计算一次；排序优先级与精确命中保留。
@@ -159,8 +165,3 @@
 - ADR-029：ime-dict 零依赖有界 TSV、原子写与锁、学习排序、新增/导入/导出；两宿主入口接入。
 - 专项并发/坏数据保护、隔离真实预览词条与重建会话保留、两宿主构建、make verify 通过。
 - TBD-3 关闭，M4 功能已实现；下一步性能/发布工程与完整跨应用验收。
-
-### 2026-10-08 · Codex（中英、标点、全半角）
-- ADR-028：核心统一标点/成对引号/全角；新增两项 Schema；共享快捷键消费。
-- 核心回归、Swift 实际适配器快捷键/标点冒烟、两宿主构建、make verify 通过。
-- M4 交互项完成实现；用户词库与学习、跨应用完整 DoD、发布工程尚未完成。

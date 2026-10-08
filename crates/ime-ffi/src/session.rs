@@ -190,9 +190,11 @@ impl ImeSession {
         let Some(store) = self.dictionary.as_mut() else {
             return;
         };
-        if store.refresh().is_err() {
-            self.dictionary_error = IME_ERR_IO;
-        }
+        self.dictionary_error = if store.refresh().is_ok() {
+            IME_OK
+        } else {
+            IME_ERR_IO
+        };
         if !self.session.composing() {
             return;
         }
@@ -666,6 +668,7 @@ pub extern "C" fn ime_session_focus_out(session: *mut ImeSession) {
         // SAFETY：契约见模块注释。
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         s.session.focus_out();
+        s.dictionary = None;
         s.refresh();
         Ok(IME_OK)
     });
@@ -725,6 +728,20 @@ mod tests {
         }
         // SAFETY：指针来自会话内部字符串，测试期间保持有效。
         unsafe { CStr::from_ptr(ptr) }.to_str().ok()
+    }
+
+    #[test]
+    fn focus_out_releases_user_snapshot_but_reset_keeps_active_data() {
+        let path =
+            std::env::temp_dir().join(format!("yinghuo-focus-user-{}.tsv", std::process::id()));
+        let s = ime_session_new();
+        // SAFETY: s is live and exclusively owned by this test.
+        unsafe { (*s).dictionary = Some(ime_dict::Store::load(path).unwrap()) };
+        ime_session_reset(s);
+        assert!(unsafe { (*s).dictionary.is_some() });
+        ime_session_focus_out(s);
+        assert!(unsafe { (*s).dictionary.is_none() });
+        ime_session_free(s);
     }
 
     #[test]

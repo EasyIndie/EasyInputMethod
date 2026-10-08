@@ -99,6 +99,8 @@ final class ImeSession {
         path.withCString { ime_session_dictionary_export(handle, $0) }
     }
 
+    func prepare() { _ = ime_session_configure(handle) }
+
     var isEnglish: Bool { ime_session_is_english(handle) == 1 }
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
