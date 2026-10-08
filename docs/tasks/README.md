@@ -91,3 +91,6 @@
 | ID | 标题 | 模型 | 依赖 |
 |---|---|---|---|
 | [T-M3-01](T-M3-01.md) | `ime-ffi` C ABI（会话 + 配置） | **pro** | P1-M1/M2 |
+| [T-M3-02](T-M3-02.md) | Swift + InputMethodKit 宿主（需人工验证） | **pro** | T-M3-01 |
+| [T-M3-03](T-M3-03.md) | 安装/卸载脚本 + Gatekeeper 说明 | flash | T-M3-02 |
+| [T-M3-04](T-M3-04.md) | CI 加 macOS runner（覆盖 Swift 前端） | flash | T-M3-02 |
