@@ -3,6 +3,7 @@
 use std::collections::{HashMap, HashSet};
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
 use crate::backend::{PinyinBackend, PinyinCandidate};
 use crate::syllable::segment;
@@ -46,15 +47,15 @@ pub struct TablePinyinBackend {
     /// 音节 → [(字, weight)]，组内按权重降序。
     chars: HashMap<String, Vec<(char, i32)>>,
     /// 归一化拼音（空格分隔）→ [(词, weight)]。
-    words: HashMap<String, Vec<(String, i32)>>,
+    words: HashMap<String, Vec<(Arc<str>, i32)>>,
     /// 首字母串（简拼键）→ [(词, weight)]。
-    initials: HashMap<String, Vec<(String, i32)>>,
+    initials: HashMap<String, Vec<(Arc<str>, i32)>>,
     /// 合法音节集合（字与词音节并集）。
     syllables: HashSet<String>,
     /// 反查：字 → 首选读音（TSV 每字首选读音行在前，见 generate.rs）。
-    char_pinyin: HashMap<char, String>,
+    char_pinyin: HashMap<char, Arc<str>>,
     /// 反查：词 → 拼音（空格分隔）。
-    word_pinyin: HashMap<String, String>,
+    word_pinyin: HashMap<Arc<str>, String>,
 }
 
 impl TablePinyinBackend {
@@ -69,6 +70,7 @@ impl TablePinyinBackend {
             ..TablePinyinBackend::default()
         };
 
+        let mut readings: HashMap<&str, Arc<str>> = HashMap::new();
         for (idx, raw) in chars_tsv.lines().enumerate() {
             let line_no = idx + 1;
             let line = raw.trim_start_matches('\u{feff}').trim();
@@ -114,10 +116,12 @@ impl TablePinyinBackend {
                 .or_default()
                 .push((ch, weight));
             backend.syllables.insert(syllable.to_string());
-            backend
-                .char_pinyin
-                .entry(ch)
-                .or_insert_with(|| syllable.to_string());
+            backend.char_pinyin.entry(ch).or_insert_with(|| {
+                readings
+                    .entry(syllable)
+                    .or_insert_with(|| Arc::from(syllable))
+                    .clone()
+            });
         }
 
         for (idx, raw) in words_tsv.lines().enumerate() {
@@ -155,22 +159,23 @@ impl TablePinyinBackend {
                 })?;
 
             let pinyin_joined = syllables.join(" ");
+            let word: Arc<str> = Arc::from(word);
             backend
                 .words
                 .entry(pinyin_joined.clone())
                 .or_default()
-                .push((word.to_string(), weight));
+                .push((word.clone(), weight));
             backend
                 .initials
                 .entry(initials_of(&syllables))
                 .or_default()
-                .push((word.to_string(), weight));
+                .push((word.clone(), weight));
             for s in syllables {
                 backend.syllables.insert(s.to_string());
             }
             backend
                 .word_pinyin
-                .entry(word.to_string())
+                .entry(word)
                 .or_insert_with(|| pinyin_joined.clone());
         }
 
@@ -236,7 +241,7 @@ impl PinyinBackend for TablePinyinBackend {
             if let Some(words) = self.words.get(&key) {
                 for (word, weight) in words {
                     out.push(PinyinCandidate::new(
-                        word.clone(),
+                        word.to_string(),
                         key.clone(),
                         *weight,
                         false,
@@ -261,7 +266,7 @@ impl PinyinBackend for TablePinyinBackend {
         if let Some(words) = self.initials.get(input) {
             for (word, weight) in words {
                 out.push(PinyinCandidate::new(
-                    word.clone(),
+                    word.to_string(),
                     input.to_string(),
                     *weight,
                     true,
@@ -286,7 +291,9 @@ impl PinyinBackend for TablePinyinBackend {
         let mut chars = text.chars();
         let first = chars.next()?;
         if chars.next().is_none() {
-            self.char_pinyin.get(&first).cloned()
+            self.char_pinyin
+                .get(&first)
+                .map(|pinyin| pinyin.to_string())
         } else {
             self.word_pinyin.get(text).cloned()
         }
@@ -379,6 +386,26 @@ mod tests {
         assert!(b.convert(&"z".repeat(100), 9).is_empty());
         // max=0 → 截断为空。
         assert!(b.convert("wo", 0).is_empty());
+    }
+
+    #[test]
+    fn reverse_index_shares_readings_and_preserves_first_pronunciation() {
+        let backend = TablePinyinBackend::from_tsv(
+            "zhong\t中\t100\nzhong\t钟\t80\nchong\t中\t70\n",
+            "",
+            "test",
+        )
+        .unwrap();
+        assert!(Arc::ptr_eq(
+            &backend.char_pinyin[&'中'],
+            &backend.char_pinyin[&'钟']
+        ));
+        assert_eq!(backend.reverse_lookup("中").as_deref(), Some("zhong"));
+        let words = TablePinyinBackend::from_tsv("", "ni hao\t你好\t100\n", "test").unwrap();
+        let full = &words.words["ni hao"][0].0;
+        assert!(Arc::ptr_eq(full, &words.initials["nh"][0].0));
+        assert!(Arc::ptr_eq(full, words.word_pinyin.keys().next().unwrap()));
+        assert_eq!(words.convert("nh", 1)[0].text, "你好");
     }
 
     #[test]

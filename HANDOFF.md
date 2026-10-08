@@ -17,7 +17,7 @@
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 草稿 PR #1：https://github.com/EasyIndie/EasyInputMethod/pull/1；a053314 远端 Linux/macOS 全绿；运行37848182141 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：98 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：99 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -52,7 +52,7 @@
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **P1-M4**：默认候选窗口预检27.05MiB / 首键8.305ms；满容量32.61MiB仍需优化，并进行正式 IMK 多应用/长期验收。
+1. **P1-M4**：ADR-041 后满容量五会话候选窗口预检28.24MiB（29.61MB）、首键6.465ms；补充持续输入/动态零外联，并进行正式 IMK 多应用验收。
 2. **P1-M4**：发布候选包的正式 IMK 多应用交互、性能与用户词库验收；T-M3-04 远端检查已通过。
 3. **P1-M5**：准备可复现构建说明、SBOM、许可附件与零外联证据。
 
@@ -107,7 +107,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**98 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**99 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -119,6 +119,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 · Codex（无凭据性能推进）
+- 收缩词表构建容量；ADR-041 拼音索引共享音节/词文本，公开接口与排序/首选读音不变。
+- 满容量五会话窗口预检28.24MiB、首键6.465ms / 最大6.272ms；99单测、窗口冒烟、make verify 全绿。
+- 无收益借用排序实验保留临时源码/补丁；未加入产品，无新增依赖。
+- 下一步持续输入/动态零外联与新审核包复现；公证等用户重建凭据，未安装或发布。
 
 ### 2026-10-09 · Codex（发布授权与远端验证）
 - 用户明确授权 GitHub 上传/草稿 PR、本次 Apple 公证及临时用户域安装验收后移除；PR #1 已创建。
@@ -163,8 +169,3 @@
 - ADR-033：源码归档不要求 .git，Rust 路径映射、Swift 相对路径/WMO、链接调试信息去除；显式 macOS 13 目标。
 - registry 构建与 vendor 离线重建的 Rust staticlib、完整 ad-hoc 可执行文件逐字节一致；正式包验证脚本 run-repro.sh 接入。
 - 首包约14.3MB；最终干净提交候选需重打并运行归档重建，签名/公证及完整 DoD 仍待。
-
-### 2026-10-08 · Codex（发布流程脚本）
-- ADR-032 取代早期不签名前提；严格构建、可信安装、保留数据卸载、显式签名/公证与本地发布附件实现。
-- CycloneDX、完整源码/vendor、原始依赖与数据许可、SHA 清单；准备脚本要求 clean git，同一源码提交。
-- bash/参数/未签名拒绝、严格宿主构建、make verify 通过；候选打包/离线复现与真实安装验收待完成。
