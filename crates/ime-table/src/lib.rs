@@ -156,6 +156,8 @@ impl Table {
 pub struct CodeTableEngine {
     table: Table,
     max_code_len: usize,
+    auto_commit: bool,
+    z_wildcard: bool,
 }
 
 impl CodeTableEngine {
@@ -163,12 +165,50 @@ impl CodeTableEngine {
         Self {
             table,
             max_code_len,
+            auto_commit: true,
+            z_wildcard: false,
         }
     }
 }
 
 impl Engine for CodeTableEngine {
+    fn configure(&mut self, options: &ime_core::EngineOptions) {
+        self.auto_commit = options.auto_commit;
+        self.z_wildcard = options.z_wildcard;
+    }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
+        if self.z_wildcard && input.contains('z') {
+            let mut candidates: Vec<Candidate> = self
+                .table
+                .entries
+                .iter()
+                .filter(|(code, _)| {
+                    code.len() >= input.len()
+                        && input
+                            .bytes()
+                            .zip(code.bytes())
+                            .all(|(a, b)| a == b'z' || a == b)
+                })
+                .flat_map(|(code, entries)| {
+                    entries.iter().map(move |entry| {
+                        let mut c = Candidate::new(
+                            &entry.text,
+                            code,
+                            entry.weight,
+                            CandidateSource::CodeTable,
+                        );
+                        c.is_prefix = code.len() > input.len();
+                        c
+                    })
+                })
+                .collect();
+            candidates.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+            candidates.truncate(max);
+            return ConvertResult {
+                candidates,
+                should_commit: None,
+            };
+        }
         let mut candidates: Vec<Candidate> = Vec::new();
 
         // 精确匹配在前
@@ -206,7 +246,7 @@ impl Engine for CodeTableEngine {
         candidates.extend(prefixes.into_iter().take(room));
 
         // 自动上屏：仅当输入为满码长度且精确唯一（"四码唯一自动上屏"的保守实现）。
-        let should_commit = if input.len() == self.max_code_len {
+        let should_commit = if self.auto_commit && input.len() == self.max_code_len {
             match self.table.exact(input) {
                 Some(list) if list.len() == 1 => Some(list[0].text.clone()),
                 _ => None,
@@ -248,6 +288,31 @@ mod tests {
              gggg\t龶\t1\n",
         )
         .unwrap()
+    }
+
+    #[test]
+    fn configured_wildcard_and_auto_commit_change_behavior() {
+        let mut t = Table::new();
+        t.insert("abcd", "甲", 10);
+        t.insert("abce", "乙", 9);
+        t.finalize();
+        let mut e = CodeTableEngine::new(t, 4);
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        });
+        assert_eq!(e.convert("abcd", 9).should_commit, None);
+        let r = e.convert("abcz", 9);
+        assert_eq!(r.candidates.len(), 2);
+        assert_eq!(r.should_commit, None);
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: true,
+            z_wildcard: false,
+            fuzzy: false,
+        });
+        assert_eq!(e.convert("abcd", 9).should_commit, Some("甲".into()));
+        assert!(e.convert("abcz", 9).candidates.is_empty());
     }
 
     #[test]

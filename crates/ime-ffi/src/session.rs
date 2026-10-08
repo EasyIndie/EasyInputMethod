@@ -238,6 +238,23 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
     })
 }
 
+/// Apply engine options from the single configuration snapshot.
+#[no_mangle]
+pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
+    catch_status(|| {
+        // SAFETY: the caller owns a live session.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        let cfg = crate::config::snapshot();
+        let boolean = |key| cfg.get(key).and_then(|v| v.as_bool()).unwrap_or(false);
+        s.session.configure_engines(&ime_core::EngineOptions {
+            auto_commit: boolean("wubi.auto_commit"),
+            fuzzy: boolean("pinyin.fuzzy"),
+            z_wildcard: cfg.get("wubi.z_key").and_then(|v| v.as_str()) == Some("wildcard"),
+        });
+        Ok(IME_OK)
+    })
+}
+
 /// Current session mode: mixed=0, wubi=1, pinyin=2.
 #[no_mangle]
 pub extern "C" fn ime_session_mode(session: *mut ImeSession) -> i32 {

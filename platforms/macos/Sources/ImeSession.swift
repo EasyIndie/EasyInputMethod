@@ -72,6 +72,7 @@ final class ImeSession {
     /// 喂入一个 Unicode 码点。
     func feed(_ codepoint: UInt32) -> ImeKeyResult {
         guard let handle else { return .failure(IME_ERR_NULL) }
+        _ = ime_session_configure(handle)
         let code = ime_session_key(handle, codepoint)
         switch code {
         case IME_KEY_COMMITTED:

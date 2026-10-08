@@ -135,6 +135,10 @@ fn store() -> &'static ConfigStore {
     store
 }
 
+pub(crate) fn snapshot() -> Arc<Config> {
+    store().snapshot()
+}
+
 fn config_err_to_code(e: ConfigError) -> i32 {
     match e {
         ConfigError::Io { .. } => IME_ERR_IO,

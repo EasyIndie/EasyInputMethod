@@ -111,7 +111,14 @@ pub struct ConvertResult {
 /// 输入引擎抽象。
 ///
 /// 实现必须纯逻辑：不感知平台、UI、网络、文件系统。
+pub struct EngineOptions {
+    pub auto_commit: bool,
+    pub z_wildcard: bool,
+    pub fuzzy: bool,
+}
+
 pub trait Engine: Send {
+    fn configure(&mut self, _options: &EngineOptions) {}
     fn convert(&self, input: &str, max: usize) -> ConvertResult;
     fn engine_type(&self) -> EngineType;
     fn max_code_length(&self) -> usize;
@@ -160,6 +167,15 @@ impl Session {
 
     pub fn set_pinyin_engine(&mut self, engine: Box<dyn Engine>) {
         self.pinyin = Some(engine);
+    }
+
+    pub fn configure_engines(&mut self, options: &EngineOptions) {
+        if let Some(engine) = self.wubi.as_mut() {
+            engine.configure(options);
+        }
+        if let Some(engine) = self.pinyin.as_mut() {
+            engine.configure(options);
+        }
     }
 
     pub fn mode(&self) -> InputMode {
