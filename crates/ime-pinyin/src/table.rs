@@ -180,12 +180,15 @@ impl TablePinyinBackend {
 
     fn finalize(&mut self) {
         for list in self.chars.values_mut() {
+            list.shrink_to_fit();
             list.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
         }
         for list in self.words.values_mut() {
+            list.shrink_to_fit();
             list.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
         }
         for list in self.initials.values_mut() {
+            list.shrink_to_fit();
             list.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
         }
     }

@@ -114,6 +114,10 @@ impl Table {
             list.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
         }
         self.entries.sort_by(|a, b| a.0.cmp(&b.0));
+        for (_, list) in &mut self.entries {
+            list.shrink_to_fit();
+        }
+        self.entries.shrink_to_fit();
     }
 
     /// 精确查询：返回该码下的候选（按权重降序）。
