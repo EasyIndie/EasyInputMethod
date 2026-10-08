@@ -16,7 +16,7 @@
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
-| 活跃 PR | 草稿 PR #1：https://github.com/EasyIndie/EasyInputMethod/pull/1；a053314 远端 Linux/macOS 全绿；运行37848182141 |
+| 活跃 PR | 草稿 PR #1：https://github.com/EasyIndie/EasyInputMethod/pull/1；66a2d87 远端 Linux/macOS 全绿；运行37851494863 |
 | 最近一次 `make verify` | ✅ 本轮完整通过：99 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
@@ -43,7 +43,7 @@
 
 - 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；五会话空词库约16.6MiB；满容量合成用户词库共享快照后约22.1MiB / P95 0.775ms，学习最大13.196ms；不代表完整 GUI DoD。
 
-**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 本地及远端已通过；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，最新 a9bf912 本地审核包14,337,045字节（packaging/out/candidate-arm64.1R50ro），完整源码/vendor/许可/SBOM/SHA；实际 ZIP 离线重建的去签名程序和默认数据逐字节一致。
+**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 本地及远端已通过；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，最新66a2d87本地审核包14,343,472字节（packaging/out/candidate-arm64.YG35db），完整源码/vendor/许可/SBOM/SHA；实际 ZIP 离线重建的去签名程序和默认数据逐字节一致。
 
 - T-M3-05 独立窗口完成：`make macos-preview`；自动检查 `./platforms/macos/dev-preview.sh --smoke-test`。debug 增量构建，不需要公证/安装/重启；仍需正式宿主验证 IMK 系统集成。
 - ADR-023 修正注册标识；此前签名、公证、系统安装及实机验收通过。当前已按用户要求卸载，见 §7。
@@ -69,10 +69,10 @@
 | **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；ADR-032 与签名/公证脚本已接入；新候选待实际验证 |
 | **SIG-2** | ✅ 已关闭：ADR-023 新包重启后枚举/选择正常，TextEdit/Safari 用户实测通过；经典 IMK `.app` 可用 | 否 |
 
-### 本次候选与待授权操作
+### 本次候选与执行状态
 
-- a9bf912 审核 ZIP SHA-256 `18add86926e82ab5f4d8d06e225e1b98605f7dd4881698f55481924697c19719`；不是已公证发布包。
-- 本机 Developer ID 签名通过；Apple 待上传文件 `packaging/out/candidate-arm64.1R50ro/Yinghuo-signed-for-notarization.zip`，2,827,025字节，SHA-256 `a1deee4e15d259f7a421f465a2ee17537e2f880fbb3ce4afd665f118fb0c70ea`。
+- 当前审核包：`packaging/out/candidate-arm64.YG35db/Yinghuo-0.1.0-arm64.zip`，源码66a2d87，14,343,472字节，SHA-256 `e6fd3bd3cf02095c95250f541a3c8f824459ee3df643f8c929ea98e4d1ed85f3`；unsigned，仅供审核。离线重建逐字节一致。
+- 旧a9bf912已签名公证待传ZIP保留为历史审核资产；已被新的性能优化取代，不应上传旧包作为最新版。凭据恢复后需构建/签名当前版本再公证。
 - 用户2026-10-09明确授权本次公证上传、当前用户临时安装验收后移除。上传因登录钥匙串缺少 yinghuo-notary profile 失败，用户选择先完成其他验收准备，凭据恢复待后续；授权仍有效，系统/用户目录均无 Yinghuo.app。
 - 用户已明确授权 GitHub 上传，分支推送成功并创建草稿 PR #1；HTTP 400 通过固定长度 HTTP 请求解决。未合并或发布。
 
@@ -124,7 +124,7 @@
 - 收缩词表构建容量；ADR-041 拼音索引共享音节/词文本，公开接口与排序/首选读音不变。
 - 满容量五会话窗口预检28.24MiB、首键6.465ms / 最大6.272ms；99单测、窗口冒烟、make verify 全绿。
 - 修正探针主循环/释放池；无收益借用排序与固定视图实验保留临时源码/补丁（ADR-042未采纳），无新增依赖。
-- 持续探针修正整段释放池后22000键稳定27.24MiB、最大8.718ms，IP采样为空；新审核包待重打，公证等凭据。
+- 持续探针修正整段释放池后22000键稳定27.24MiB、最大8.718ms，IP采样为空；新版66a2d87审核包14,343,472字节，离线重建逐字节一致，远端CI全绿；公证等凭据。
 
 ### 2026-10-09 · Codex（发布授权与远端验证）
 - 用户明确授权 GitHub 上传/草稿 PR、本次 Apple 公证及临时用户域安装验收后移除；PR #1 已创建。
