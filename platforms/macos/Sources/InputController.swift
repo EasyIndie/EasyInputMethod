@@ -87,6 +87,11 @@ final class YinghuoInputController: IMKInputController {
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
         }
+        if let mode = ImeConfig.string("mode"), session.mode != mode {
+            session.setMode(mode)
+            clearMarked(client)
+            candidateWindow?.hide()
+        }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {

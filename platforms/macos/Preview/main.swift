@@ -163,7 +163,12 @@ guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-cor
     pinyinWordsPath: data.appendingPathComponent("pinyin-words.tsv").path) else {
     fputs("无法加载真实词典，请检查 data/generated/。\n", stderr); exit(1)
 }
-ime_config_init(ImePaths.configFile())
+let smoke = CommandLine.arguments.contains("--smoke-test")
+let smokeDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("yinghuo-preview-\(UUID().uuidString)")
+if smoke {
+    try FileManager.default.createDirectory(at: smokeDirectory, withIntermediateDirectories: true)
+    ime_config_init(smokeDirectory.appendingPathComponent("config.toml").path)
+} else { ime_config_init(ImePaths.configFile()) }
 let app = NSApplication.shared
 if CommandLine.arguments.contains("--smoke-test") {
     session.setMode("mixed")
@@ -198,6 +203,16 @@ if CommandLine.arguments.contains("--smoke-test") {
     keys("wq\r"); check("你你好像你")
     view.clear(); check("")
     session.setMode("pinyin"); keys("nihao "); check("你好")
+    guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
+    guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
+    let external = smokeDirectory.appendingPathComponent("config.toml")
+    try "mode = \"wubi\"\n[candidate]\ncount = 3\n".write(to: external, atomically: true, encoding: .utf8)
+    let deadline = Date().addingTimeInterval(2)
+    while ImeConfig.int("candidate.count") != 3, Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
+    guard ImeConfig.int("candidate.count") == 3 else { fputs("配置外部编辑未生效。\n", stderr); exit(1) }
+    session.setMode("mixed"); view.clear(); keys("wq")
+    guard session.candidates(limit: 9).count == 3 else { exit(1) }
+    try? FileManager.default.removeItem(at: smokeDirectory)
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字/回车选字、退格/Esc、清空。")
     exit(0)
 }

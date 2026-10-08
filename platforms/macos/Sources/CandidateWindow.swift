@@ -7,6 +7,7 @@ import Cocoa
 final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
+    private var themeTimer: Timer?
 
     init() {
         panel = NSPanel(
@@ -44,10 +45,29 @@ final class CandidateWindow {
             stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -5),
         ])
         panel.contentView = container
+        themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            self?.refreshAppearance()
+        }
     }
 
-    /// 用候选文本刷新内容。
+    deinit { themeTimer?.invalidate() }
+
+    private func refreshAppearance() {
+        switch ImeConfig.string("appearance.theme") {
+        case "light": panel.appearance = NSAppearance(named: .aqua)
+        case "dark": panel.appearance = NSAppearance(named: .darkAqua)
+        default: panel.appearance = nil
+        }
+        panel.effectiveAppearance.performAsCurrentDrawingAppearance {
+            panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+            panel.contentView?.layer?.borderColor = NSColor.separatorColor.cgColor
+        }
+    }
+
+    /// Refresh visible candidates using the current appearance.
     func update(candidates: [String]) {
+        refreshAppearance()
+
         for view in stack.arrangedSubviews {
             view.removeFromSuperview()
         }
@@ -65,7 +85,13 @@ final class CandidateWindow {
 
     /// 在光标矩形上方显示。
     func show(at caret: NSRect) {
-        panel.setFrameOrigin(NSPoint(x: caret.minX, y: caret.maxY + 4))
+        let screen = NSScreen.screens.first { $0.frame.intersects(caret) } ?? NSScreen.main
+        let area = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+        let size = panel.frame.size
+        let x = max(area.minX, min(caret.minX, area.maxX - size.width))
+        let preferredY = caret.maxY + 4
+        let y = preferredY + size.height <= area.maxY ? preferredY : caret.minY - size.height - 4
+        panel.setFrameOrigin(NSPoint(x: x, y: max(area.minY, min(y, area.maxY - size.height))))
         panel.orderFront(nil)
     }
 

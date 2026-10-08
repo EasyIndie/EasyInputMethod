@@ -238,6 +238,23 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
     })
 }
 
+/// Current session mode: mixed=0, wubi=1, pinyin=2.
+#[no_mangle]
+pub extern "C" fn ime_session_mode(session: *mut ImeSession) -> i32 {
+    catch_value(
+        || {
+            // SAFETY: the caller owns a live session.
+            let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+            Ok(match s.session.mode() {
+                InputMode::Mixed => 0,
+                InputMode::WubiOnly => 1,
+                InputMode::PinyinOnly => 2,
+            })
+        },
+        -1,
+    )
+}
+
 /// 取组合缓冲区（借用，NUL 结尾 UTF-8；下次会话变更前有效）。
 /// `NULL` 会话返回 `NULL`。
 #[no_mangle]

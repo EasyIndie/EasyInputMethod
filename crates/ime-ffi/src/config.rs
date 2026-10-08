@@ -16,7 +16,7 @@ use std::path::PathBuf;
 use std::ptr;
 use std::sync::{Arc, Mutex, OnceLock};
 
-use ime_config::{Config, ConfigError, ConfigStore, Scope, ValueType};
+use ime_config::{Config, ConfigError, ConfigStore, FileWatcher, Scope, ValueType};
 
 use crate::error::{
     catch_status, catch_value, cstr_arg, IME_ERR_INVALID_INPUT, IME_ERR_IO, IME_ERR_LOCKED,
@@ -29,7 +29,8 @@ const ENV_CONFIG_PATH: &str = "IME_CONFIG_PATH";
 const DEFAULT_CONFIG_PATH: &str = "config.toml";
 
 /// 进程级配置存储（唯一实例）。
-static STORE: OnceLock<ConfigStore> = OnceLock::new();
+static STORE: OnceLock<Arc<ConfigStore>> = OnceLock::new();
+static WATCHER: OnceLock<FileWatcher> = OnceLock::new();
 /// 宿主提供的配置路径（`ime_config_init`；优先于环境变量与默认值）。
 static PATH_OVERRIDE: OnceLock<PathBuf> = OnceLock::new();
 /// 最近一次 `snapshot` 返回的借用；持有 `Arc` 保证指针有效直到下次重取。
@@ -120,10 +121,18 @@ pub extern "C" fn ime_config_init(path: *const c_char) -> i32 {
 /// 取（或初始化）进程级配置存储。首次加载失败（语法/IO）时降级为内存默认值，
 /// 保留目标路径，后续 `reload` 仍可指向真实文件。
 fn store() -> &'static ConfigStore {
-    STORE.get_or_init(|| {
+    let store = STORE.get_or_init(|| {
         let path = config_path();
-        ConfigStore::load(&path).unwrap_or_else(|_| ConfigStore::with_defaults(&path))
-    })
+        Arc::new(ConfigStore::load(&path).unwrap_or_else(|_| ConfigStore::with_defaults(&path)))
+    });
+    WATCHER.get_or_init(|| {
+        FileWatcher::start(
+            Arc::clone(store),
+            std::time::Duration::from_millis(200),
+            std::time::Duration::from_millis(150),
+        )
+    });
+    store
 }
 
 fn config_err_to_code(e: ConfigError) -> i32 {

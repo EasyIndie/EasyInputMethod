@@ -85,6 +85,7 @@ final class ImeSession {
         }
     }
 
+    var mode: String { ["mixed", "wubi", "pinyin"][max(0, min(2, Int(ime_session_mode(handle))))] }
     var pageIndex: Int { Int(ime_session_page_index(handle)) }
     var pageCount: Int { Int(ime_session_page_count(handle)) }
     func setPageSize(_ size: Int) { _ = ime_session_set_page_size(handle, Int32(size)) }
