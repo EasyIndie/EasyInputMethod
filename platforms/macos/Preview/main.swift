@@ -180,6 +180,14 @@ if smoke {
 } else { ime_config_init(ImePaths.configFile()) }
 let app = NSApplication.shared
 if CommandLine.arguments.contains("--smoke-test") {
+    let geometry = CandidateWindow()
+    let area = NSRect(x: 100, y: 100, width: 320, height: 500)
+    geometry.update(candidates: Array(repeating: String(repeating: "长词条", count: 28), count: 9))
+    geometry.layout(at: NSRect(x: 410, y: 580, width: 1, height: 20), within: area)
+    guard area.contains(geometry.frame), geometry.frame.height > 28 else { exit(1) }
+    geometry.update(candidates: ["你", "好"])
+    geometry.layout(at: NSRect(x: 90, y: 90, width: 1, height: 20), within: area)
+    guard area.contains(geometry.frame), geometry.frame.height < 60 else { exit(1) }
     session.setMode("mixed")
     let view = PreviewInput(session: session)
     func keys(_ text: String, flags: NSEvent.ModifierFlags = []) {

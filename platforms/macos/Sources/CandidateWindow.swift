@@ -1,6 +1,6 @@
 // 候选窗：纯代码绘制的无边框 NSPanel（不使用 Interface Builder）。
 //
-// P1-M3 只做「能显示 + 数字选择」的最小候选窗；亮/暗主题、翻页、竖排等属 P1-M4。
+// 当前页候选共享渲染，超过屏幕宽度时自动竖排。
 
 import Cocoa
 
@@ -8,6 +8,9 @@ final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
     private var themeTimer: Timer?
+    private var widthConstraints: [NSLayoutConstraint] = []
+
+    var frame: NSRect { panel.frame }
 
     init() {
         panel = NSPanel(
@@ -68,6 +71,11 @@ final class CandidateWindow {
     func update(candidates: [String]) {
         refreshAppearance()
 
+        NSLayoutConstraint.deactivate(widthConstraints)
+        widthConstraints = []
+        stack.orientation = .horizontal
+        stack.alignment = .centerY
+        stack.spacing = 14
         for view in stack.arrangedSubviews {
             view.removeFromSuperview()
         }
@@ -75,6 +83,10 @@ final class CandidateWindow {
             let label = NSTextField(labelWithString: "\(i + 1).\(text)")
             label.font = NSFont.systemFont(ofSize: 16)
             label.textColor = .labelColor
+            label.lineBreakMode = .byTruncatingTail
+            label.usesSingleLineMode = true
+            label.toolTip = text
+            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             stack.addArrangedSubview(label)
         }
         panel.contentView?.layoutSubtreeIfNeeded()
@@ -87,12 +99,34 @@ final class CandidateWindow {
     func show(at caret: NSRect) {
         let screen = NSScreen.screens.first { $0.frame.intersects(caret) } ?? NSScreen.main
         let area = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+        layout(at: caret, within: area)
+        panel.orderFront(nil)
+    }
+
+    /// Bound geometry independently of the display server for deterministic checks.
+    func layout(at caret: NSRect, within area: NSRect) {
+        NSLayoutConstraint.deactivate(widthConstraints)
+        widthConstraints = []
+        stack.orientation = .horizontal
+        stack.alignment = .centerY
+        stack.spacing = 14
+        if stack.fittingSize.width + 20 > area.width {
+            stack.orientation = .vertical
+            stack.alignment = .leading
+            widthConstraints = stack.arrangedSubviews.map {
+                $0.widthAnchor.constraint(lessThanOrEqualToConstant: max(1, area.width - 20))
+            }
+            NSLayoutConstraint.activate(widthConstraints)
+        }
+        panel.contentView?.layoutSubtreeIfNeeded()
+        let fitting = stack.fittingSize
+        panel.setContentSize(NSSize(width: min(area.width, max(fitting.width + 20, 44)),
+            height: min(area.height, max(fitting.height + 10, 28))))
         let size = panel.frame.size
         let x = max(area.minX, min(caret.minX, area.maxX - size.width))
         let preferredY = caret.maxY + 4
         let y = preferredY + size.height <= area.maxY ? preferredY : caret.minY - size.height - 4
         panel.setFrameOrigin(NSPoint(x: x, y: max(area.minY, min(y, area.maxY - size.height))))
-        panel.orderFront(nil)
     }
 
     func hide() {
