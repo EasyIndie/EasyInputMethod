@@ -10,9 +10,14 @@ cleanup() {
 }
 if [ "${1:-}" = --cleanup ]; then cleanup; exit 0; fi
 [ "$#" -eq 0 ] || { echo "用法：$0 [--cleanup]" >&2; exit 2; }
+MISSING=()
 for name in MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_SIGNING_IDENTITY ASC_API_KEY_P8_BASE64 ASC_API_KEY_ID ASC_API_ISSUER_ID; do
-  [ -n "${!name:-}" ] || { echo "缺少 CI 配置：${name}；请按 CI-ACCEPTANCE.md 配置" >&2; exit 1; }
+  [ -n "${!name:-}" ] || MISSING+=("${name}")
 done
+if [ "${#MISSING[@]}" -gt 0 ]; then
+  echo "缺少 CI 配置：${MISSING[*]}；请按 CI-ACCEPTANCE.md 一次配置" >&2
+  exit 1
+fi
 [[ "${MACOS_SIGNING_IDENTITY}" == 'Developer ID Application: '* ]] || { echo "需要 Developer ID Application 证书" >&2; exit 1; }
 [ ! -e "${WORK}" ] || { echo "签名临时目录已存在，请先清理" >&2; exit 1; }
 umask 077
