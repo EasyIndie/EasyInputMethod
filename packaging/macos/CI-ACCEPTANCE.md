@@ -33,3 +33,5 @@ Secrets 未配置时会明确报告缺失项；签名、公证或离线重建失
 此包提供真机验收材料，不代表正式 IMK 多应用、长时间稳定或动态零外联已通过。普通PR产物仍不可信安装。Intel/通用包不在当前 arm64 候选验收范围内。
 
 参考：[Apple API 密钥](https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api)、[Apple 公证认证](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)、[GitHub runner 证书安装](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)。
+
+下载并解压 Actions 附件后，进入包含候选 ZIP 的目录运行 `shasum -a 256 -c *.sha256`；校验文件采用相对文件名，不依赖 runner 路径。

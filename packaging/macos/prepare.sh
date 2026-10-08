@@ -60,6 +60,6 @@ ZIP="${WORK}/Yinghuo-0.1.0-${ARCH}.zip"
 ditto -c -k --keepParent "${STAGE}" "${ZIP}"
 BYTES="$(stat -f %z "${ZIP}")"
 [ "${BYTES}" -le 15000000 ] || { echo "包超过 15MB：${BYTES}" >&2; exit 1; }
-shasum -a 256 "${ZIP}" > "${ZIP}.sha256"
+(cd "${WORK}" && shasum -a 256 "$(basename "${ZIP}")" > "$(basename "${ZIP}").sha256")
 echo "本地候选包：${ZIP}（${BYTES} 字节，signed_release=${SIGNED}）"
 if ! ${SIGNED}; then echo "仅供审核；尚未签名/公证，不可对外发布或安装。"; fi

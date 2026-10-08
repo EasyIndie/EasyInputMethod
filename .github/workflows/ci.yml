@@ -114,6 +114,7 @@ jobs:
         run: |
           ./packaging/macos/prepare.sh
           for archive in packaging/out/candidate-*/*.zip; do
+            (cd "$(dirname "$archive")" && shasum -a 256 -c "$(basename "$archive").sha256")
             ./platforms/macos/tests/run-repro.sh "$archive"
           done
       - name: Upload unsigned review archive
