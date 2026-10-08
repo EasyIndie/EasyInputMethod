@@ -35,7 +35,7 @@ if ${STRICT}; then
 fi
 
 echo "▶ 1/5 构建 ime-ffi（staticlib）"
-( cd "${ROOT}" && cargo build --release -p ime-ffi )
+( cd "${ROOT}" && CARGO_ENCODED_RUSTFLAGS="$(python3 "${ROOT}/tools/build-rust-flags.py" "${ROOT}")" cargo build --locked --release -p ime-ffi )
 if [ ! -f "${LIB}" ]; then
   echo "❌ 找不到 staticlib：${LIB}"
   exit 1
@@ -45,7 +45,14 @@ echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
 cp "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
-git -C "${ROOT}" rev-parse HEAD > "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
+REPO_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ "${REPO_ROOT}" = "${ROOT}" ]; then
+  git -C "${ROOT}" rev-parse HEAD > "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
+elif [ -s "${ROOT}/SOURCE-COMMIT" ]; then
+  cp "${ROOT}/SOURCE-COMMIT" "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
+else
+  echo "无法确定对应源码提交" >&2; exit 1
+fi
 # PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
 printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
@@ -74,15 +81,18 @@ if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
 fi
 
 echo "▶ 4/5 编译 Swift 宿主（swiftc）"
-swiftc -O \
+( cd "${ROOT}" && swiftc -O -whole-module-optimization \
+  -target "$(uname -m)-apple-macosx13.0" \
+  -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
+  -file-prefix-map "${ROOT}=/yinghuo-src" \
   -module-name Yinghuo \
-  -I "${INCLUDE_DIR}" \
-  "${SCRIPT_DIR}"/Sources/*.swift \
-  "${LIB}" \
+  -I "crates/ime-ffi/include" \
+  platforms/macos/Sources/*.swift \
+  target/release/libime_ffi.a \
   -framework AppKit \
   -framework InputMethodKit \
   -framework CoreFoundation \
-  -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
+  -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE}" )
 
 echo "▶ 5/5 校验 Info.plist + ad-hoc 签名"
 plutil -lint "${APP_DIR}/Contents/Info.plist"

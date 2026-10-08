@@ -29,6 +29,7 @@ mkdir -p "${STAGE}/SOURCE" "${STAGE}/scripts"
 ditto "${APP}" "${STAGE}/Yinghuo.app"
 # Include locked dependency source; third parties can build without registry access.
 git archive HEAD | tar -x -C "${STAGE}/SOURCE"
+printf '%s\n' "${COMMIT}" > "${STAGE}/SOURCE/SOURCE-COMMIT"
 cargo vendor --locked --offline "${STAGE}/SOURCE/vendor" > "${WORK}/vendor-config.toml"
 mkdir -p "${STAGE}/SOURCE/.cargo"
 cp "${WORK}/vendor-config.toml" "${STAGE}/SOURCE/.cargo/config.toml"

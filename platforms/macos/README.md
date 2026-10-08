@@ -31,7 +31,7 @@ platforms/macos/
 
 - 目标 macOS 13+；本轮 macOS 27 / Apple Silicon，早期 Intel 13.7 编译记录不等于完整发布验收；
 - Xcode **或** Command Line Tools（含 `swiftc`、`clang`、`codesign`）；
-- Rust 工具链（见仓库根 `rust-toolchain.toml`）。
+- Rust 工具链（见仓库根 `rust-toolchain.toml`），Python 3（发布路径归一化/附件生成）。
 
 ## 构建
 
