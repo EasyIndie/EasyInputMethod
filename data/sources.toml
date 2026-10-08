@@ -1,0 +1,33 @@
+# 萤火虫输入法 — 数据来源登记（机器可读）
+#
+# 权威说明见 docs/数据来源与许可.md；任何数据进入 data/ 前必须在此登记
+# （见 AGENTS.md 铁律 4、.agents/skills/add-data-source/SKILL.md）。
+# 大文件由 data/sources/fetch-*.sh 下载，不提交进仓库。
+
+[[source]]
+id = "D2"
+name = "五笔86 字→字根拆分（aardio/wubi-lex）"
+path = "data/sources/wubi-lex-86.txt"
+url = "https://github.com/aardio/wubi-lex/blob/master/sepllingData/86.txt"
+upstream = "aardio/wubi-lex"
+license = "MIT"
+risk = "low"
+sha256 = "da8a20e6af3446348d5d68a89ac71d5e3b9b17b00446d8204ac1e9529626697f"
+used_for = ["wubi86-single-char-code-generation", "chaizi-crosscheck"]
+fetch_script = "data/sources/fetch-wubi-chaizi.sh"
+added_at = "2026-10-08"
+notes = "格式 字\t字根1字根2...（字根逐字符拼接）；文件下载获取，不入库"
+
+[[source]]
+id = "D3"
+name = "五笔86 字→字根拆分（huanfeng/WindInput）"
+path = "data/sources/windinput-wubi86-chaizi.txt"
+url = "https://github.com/huanfeng/WindInput/blob/master/data/schemas/wubi86/wubi86_chaizi.txt"
+upstream = "huanfeng/WindInput"
+license = "MIT"
+risk = "low"
+sha256 = "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6"
+used_for = ["wubi86-chaizi-crosscheck"]
+fetch_script = "data/sources/fetch-wubi-chaizi.sh"
+added_at = "2026-10-08"
+notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库"

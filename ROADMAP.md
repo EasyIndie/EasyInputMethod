@@ -35,7 +35,7 @@
 ### P1-M1 自建码表流水线
 
 - [~] `crates/wubi-encoder`：五笔86 编码器（键名字/成字字根/合体字/末笔字型识别码）—— 细卡见 `docs/tasks/T-M1-01..03`（**T-M1-01 字根表骨架、T-M1-02 键名字+成字字根已完成**）
-- [ ] `data/sources.toml` + 拆字数据交叉校验（`wubi-lex` MIT / WindInput MIT）
+- [x] `data/sources.toml` + 拆字数据交叉校验（`wubi-lex` MIT / WindInput MIT）
 - [ ] 单字码表生成 → `.imedict`
 - [ ] 词组码自动生成（词表来自 `phrase-pinyin-data` MIT）
 - [ ] **词频/默认权重接入（P1-1 必交付，ADR-013）**：公开词频近似，使重码排序可用

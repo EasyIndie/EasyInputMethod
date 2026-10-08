@@ -13,8 +13,8 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01/02 完成；下一步 T-M1-03/04）** |
-| 当前分支 | `main`（已推送 origin/main） |
+| 当前阶段 | **P1-M1 进行中（T-M1-01/02/04 完成；下一步 T-M1-03）** |
+| 当前分支 | `main`（T-M1-04 改动待提交） |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 全绿（fmt+clippy+24 测试+deny+隐私断言） |
 
@@ -22,7 +22,7 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M0 已完成**（Rust workspace + `ime-core` 状态机 + `ime-table` 码表引擎 + `ime-cli` REPL，11 个测试、`make verify` 全绿）。
+- **现在**：**P1-M1 进行中**（`wubi-encoder` 字根骨架 + 键名字/成字字根；拆字数据已登记并完成交叉校验；24 测试、`make verify` 全绿）。
 - **下一步**：`ROADMAP.md` 的 **P1-M1**（自建码表流水线 + 词频权重）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
@@ -33,15 +33,16 @@
 - **P1-M0**：Rust workspace、`ime-core`（Engine/InputMode/会话状态机）、`ime-table`（码表引擎）、`ime-cli`（REPL）。
 - **P1-M1 / T-M1-01**：新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv` + `radical_to_key`，`Stroke`/`Structure`/`EncodeError`；6 个单测。
 - **P1-M1 / T-M1-02**：`RadicalTable::key_name_char`/`is_radical_char` + `encode_key_name`/`stroke_to_key`/`encode_chengzi`（键名字、成字字根）；新增 `TooFewStrokes` 错误；7 个单测。
+- **P1-M1 / T-M1-04**：`data/sources.toml` + `data/sources/fetch-wubi-chaizi.sh`（D2 `aardio/wubi-lex`、D3 `huanfeng/WindInput`，均 MIT，SHA-256 固定）；`wubi-encoder/examples/crosscheck.rs` 产出 `data/generated/chaizi-diff.txt`。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02 已交付（字根表骨架 + 键名字/成字字根编码）；T-M1-03/04 待认领（尚无合体字/识别码逻辑）。
+**P1-M1**（自建码表流水线）：T-M1-01/02/04 已交付；**T-M1-03 待认领**（合体字 + 末笔字型识别码，尚无编码逻辑）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅、T-M1-02 ✅；未完成项：**T-M1-04**（拆字交叉校验，flash，无依赖）可先做；**T-M1-03**（合体字+识别码，pro，依赖 T-M1-02）随后。
+1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅、T-M1-02 ✅、T-M1-04 ✅；下一步 **T-M1-03**（合体字 + 末笔字型识别码，pro，依赖 T-M1-02），随后 T-M1-05（码表生成 + 对照回归，pro，依赖 T-M1-03/04）。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -86,6 +87,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-04 拆字数据交叉校验）
+- 新增 `data/sources/fetch-wubi-chaizi.sh`（下载 D2 aardio/wubi-lex 86.txt、D3 WindInput wubi86_chaizi.txt；SHA-256 固定并校验；源文件不入库）+ `data/sources.toml`（D2/D3 登记）；`docs/数据来源与许可.md` §1.1 补 SHA-256 与脚本路径。
+- 新增 `crates/wubi-encoder/examples/crosscheck.rs`：产出 `data/generated/chaizi-diff.txt`（交集 6862、仅 D3 独有 20961、分歧 6861；D2 可见字根 vs D3 PUA，差异大属预期）。
+- 验证：`make verify` 全绿（24 测试）；未裁定分歧（留 T-M1-05，pro）。
 
 ### 2026-10-08 · pi（T-M1-02 键名字+成字字根）
 - `crates/wubi-encoder`：新增 `key_name_char`（25 键名固定映射）、`is_radical_char`、`encode_key_name`（键连打四次）、`stroke_to_key`（横G竖H撇T捺Y折N）、`encode_chengzi`（键+首次末笔）；新增 `TooFewStrokes` 错误（笔画<2 报错）。
@@ -141,9 +147,3 @@
 - 实现期发现：`yada` 无预测搜索 → 弃用，改 `cedarwood`（ADR-015）；Makefile 反引号命令替换 bug 已修。
 - 遗留：P1-M1 开始；TBD-4 包名待定。
 
-### 2026-10-08 · deepseek-v4-pro（交叉审核）
-- 审核方案与脚手架：结论"有条件通过"，报告见 `docs/reviews/001.md`。
-- 修复 P0：文档阶段 `make verify` 失败 → 重写 Makefile。
-- 关键建议：词频提升为 P1-M1 必交付；inputx-pinyin 先 spike；配置唯一写者；码表重码 postings 需定义；代码 GPL-3 + 数据 CC。
-- 验证：依赖许可全部干净（yada/cedarwood/inputx 等）；`make verify` 现通过。
-- 遗留：待确认行动项后进入 P1-M0。

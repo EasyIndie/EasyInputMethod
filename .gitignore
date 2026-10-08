@@ -23,3 +23,7 @@ docs/experiments/runs/sessions/
 /dist/
 /packaging/out/
 *.log
+
+# 拆字源数据（大文件，用 data/sources/fetch-*.sh 下载，不入库）
+/data/sources/*.txt
+/data/sources/*.tmp
