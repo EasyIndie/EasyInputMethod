@@ -1,0 +1,36 @@
+# 五笔86 合体字 + 末笔字型识别码 oracle 对照报告（T-M1-03）
+#
+# oracle = data/sources/windinput-wubi86-chaizi.txt
+# 方法（ADR-017）：从 D3 逐位推导字形→键映射；三码字按「2 字根 + 识别码」反推 (末笔, 结构)
+# 后重编码对照；四码字按 ≥4 字根规则对照；键名字按 encode_key_name 对照。
+# 本质：规则与 D3 全量**自洽**检验（非独立数据检验）；识别码表本身由单测中的规范样例独立校核。
+# ⚠️ D3 第 2 列是「每码位字形」而非纯拆字，不给出字根数；三码字中混有成字字根，其末位非识别码。
+
+[summary]
+records = 27823
+matched = 27817
+consistency = 99.9784%
+gb2312_level1_consistency = 100.0000% (3755/3755)
+three_code_consistency = 100.0000% (1930/1930)
+distinct_glyphs = 342
+ambiguous_glyphs = 5
+
+[mismatch_reasons]
+ambiguous-glyph = 6
+
+[ambiguous_glyphs]
+# glyph	key_counts
+<U+E005>	g:224 t:2
+<U+E09B>	g:1 k:4740
+<U+E0ED>	d:1 q:366
+<U+E109>	e:116 v:1
+<U+E127>	n:1 q:713
+
+[mismatch_samples]
+# char	oracle	actual	reason
+鿶	qgyv	qgye	ambiguous-glyph
+𫗧	qngi	qnki	ambiguous-glyph
+𬬮	qtay	qgay	ambiguous-glyph
+𫔍	qtol	qgol	ambiguous-glyph
+䶿	wyvn	wyvq	ambiguous-glyph
+𫄨	xqdh	xqqh	ambiguous-glyph

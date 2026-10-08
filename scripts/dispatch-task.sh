@@ -6,6 +6,7 @@
 #
 # 选项:
 #   --model <名>    使用模型（默认 $PI_BENCH_MODEL 或 deepseek-v4-flash）
+#   --provider <名>  指定 provider（当模型名在多 provider 下歧义时必需，如 pro）
 #   --reuse <会话名> 复用同一会话（缓存热）；仅用于强依赖序列
 #   --label <名>    记录用的标签（默认取任务卡文件名）
 #   --jobs <N>      传给 worker 的 CARGO_BUILD_JOBS（控制编译并行度，防 CPU 超订）
@@ -28,6 +29,7 @@ shift
 [ -f "$card" ] || { echo "任务卡不存在: $card"; exit 1; }
 
 model="${PI_BENCH_MODEL:-deepseek-v4-flash}"
+provider=""
 mode="fresh"
 sdir=""
 jobs=""
@@ -37,6 +39,7 @@ label="$(basename "$card" .md)"
 while [ $# -gt 0 ]; do
   case "$1" in
     --model) model="$2"; shift 2 ;;
+    --provider) provider="$2"; shift 2 ;;
     --reuse) mode="reuse"; sdir="docs/experiments/runs/sessions/$2"; shift 2 ;;
     --label) label="$2"; shift 2 ;;
     --jobs) jobs="$2"; shift 2 ;;
@@ -60,6 +63,9 @@ prompt="你是萤火虫输入法（EasyInputMethod）仓库的执行代理。
 5. 只回**简明摘要**（≤15 行）：改了什么 / 如何验证（贴命令与结果）/ 风险与未决问题。
 注意：一次只做这一张卡，不做卡外的事；不要粘贴大段代码或完整 transcript。"
 
-echo "▶ 派发 $card → 模型 ${model}（mode=${mode}）"
-usage="$(pi_measure "$label" "$model" "$mode" "$sdir" "$prompt")"
+pargs=()
+[ -n "$provider" ] && pargs=(--provider "$provider")
+
+echo "▶ 派发 $card → 模型 ${model}（provider=${provider:-默认}，mode=${mode}）"
+usage="$(pi_measure "$label" "$model" "$mode" "$sdir" "$prompt" ${pargs[@]+"${pargs[@]}"})"
 echo "💰 本次用量: $usage"

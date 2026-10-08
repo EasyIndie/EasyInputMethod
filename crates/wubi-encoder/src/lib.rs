@@ -1,8 +1,8 @@
 //! 五笔86 字根表建模与单字编码。
 //!
-//! 提供"字根表 → 字根到键的查询"，以及键名字（[`encode_key_name`]）
-//! 与成字字根（[`encode_chengzi`]）两类单字编码；合体字 / 末笔字型识别码
-//! 属于 T-M1-03。
+//! 提供"字根表 → 字根到键的查询"，以及三类单字编码：键名字（[`encode_key_name`]）、
+//! 成字字根（[`encode_chengzi`]）、合体字（[`encode_hechengzi`]，含末笔字型识别码
+//! [`recognition_key`]）。
 //!
 //! 零外部依赖、零 IO、零网络（见 `AGENTS.md` 铁律 1/2）。
 
@@ -40,6 +40,8 @@ pub enum EncodeError {
     EmptyInput,
     /// 编码成字字根时笔画数不足（至少需要 2 笔），附带实际笔画数。
     TooFewStrokes(usize),
+    /// 编码合体字时字根数不足（至少需要 2 个字根），附带实际字根数。
+    TooFewRadicals(usize),
     /// 行格式非法，附带原始行内容。
     ParseError(String),
 }
@@ -52,6 +54,9 @@ impl fmt::Display for EncodeError {
             EncodeError::EmptyInput => write!(f, "输入为空，未解析到任何字根"),
             EncodeError::TooFewStrokes(n) => {
                 write!(f, "笔画数不足：{n}（成字字根至少需要 2 笔）")
+            }
+            EncodeError::TooFewRadicals(n) => {
+                write!(f, "字根数不足：{n}（合体字至少需要 2 个字根）")
             }
             EncodeError::ParseError(line) => write!(f, "字根表行格式非法：{line}"),
         }
@@ -211,6 +216,86 @@ pub fn encode_chengzi(
     code.push(first);
     code.push(second);
     code.push(last);
+    Ok(code)
+}
+
+/// Return the Wubi86 recognition-code key (末笔字型识别码) for a compound
+/// character, determined by its last stroke and overall structure.
+///
+/// The recognition code combines the last-stroke zone (横竖撇捺折) with the
+/// structure position (左右/上下/杂合):
+///
+/// - 横区(GFDSA)：左右=G 上下=F 杂合=D
+/// - 竖区(HJKLM)：左右=H 上下=J 杂合=K
+/// - 撇区(TREWQ)：左右=T 上下=R 杂合=E
+/// - 捺区(YUIOP)：左右=Y 上下=U 杂合=I
+/// - 折区(NBVCX)：左右=N 上下=B 杂合=V
+pub fn recognition_key(last_stroke: Stroke, structure: Structure) -> char {
+    match (last_stroke, structure) {
+        (Stroke::Heng, Structure::LeftRight) => 'g',
+        (Stroke::Heng, Structure::UpDown) => 'f',
+        (Stroke::Heng, Structure::Mixed) => 'd',
+        (Stroke::Shu, Structure::LeftRight) => 'h',
+        (Stroke::Shu, Structure::UpDown) => 'j',
+        (Stroke::Shu, Structure::Mixed) => 'k',
+        (Stroke::Pie, Structure::LeftRight) => 't',
+        (Stroke::Pie, Structure::UpDown) => 'r',
+        (Stroke::Pie, Structure::Mixed) => 'e',
+        (Stroke::Na, Structure::LeftRight) => 'y',
+        (Stroke::Na, Structure::UpDown) => 'u',
+        (Stroke::Na, Structure::Mixed) => 'i',
+        (Stroke::Zhe, Structure::LeftRight) => 'n',
+        (Stroke::Zhe, Structure::UpDown) => 'b',
+        (Stroke::Zhe, Structure::Mixed) => 'v',
+    }
+}
+
+/// Encode a Wubi86 compound character (合体字).
+///
+/// Rules (standard, do not alter):
+/// - ≥4 radicals: keys of the 1st, 2nd, 3rd, and last radicals;
+/// - 3 radicals: keys of the 1st, 2nd, 3rd radicals + recognition code;
+/// - 2 radicals: keys of the 1st and 2nd radicals + recognition code.
+///
+/// At least two radicals are required; anything else yields
+/// [`EncodeError::TooFewRadicals`]. An unknown radical yields
+/// [`EncodeError::UnknownRadical`].
+pub fn encode_hechengzi(
+    radicals: &[String],
+    structure: Structure,
+    last_stroke: Stroke,
+    table: &RadicalTable,
+) -> Result<String, EncodeError> {
+    let n = radicals.len();
+    if n < 2 {
+        return Err(EncodeError::TooFewRadicals(n));
+    }
+
+    let keys: Vec<char> = radicals
+        .iter()
+        .map(|radical| {
+            table
+                .radical_to_key(radical)
+                .ok_or_else(|| EncodeError::UnknownRadical(radical.clone()))
+        })
+        .collect::<Result<_, _>>()?;
+
+    let mut code = String::with_capacity(4);
+    if n >= 4 {
+        code.push(keys[0]);
+        code.push(keys[1]);
+        code.push(keys[2]);
+        code.push(keys[n - 1]);
+    } else if n == 3 {
+        code.push(keys[0]);
+        code.push(keys[1]);
+        code.push(keys[2]);
+        code.push(recognition_key(last_stroke, structure));
+    } else {
+        code.push(keys[0]);
+        code.push(keys[1]);
+        code.push(recognition_key(last_stroke, structure));
+    }
     Ok(code)
 }
 
@@ -388,6 +473,167 @@ n\t已,己,巳,尸,乙,羽
         let table = RadicalTable::from_tsv(FIXTURE).expect("fixture should parse");
         assert_eq!(
             encode_chengzi("龘", &[Stroke::Heng, Stroke::Shu], &table),
+            Err(EncodeError::UnknownRadical("龘".to_string()))
+        );
+    }
+
+    /// Minimal fixture for compound-character (合体字) encoding tests.
+    const HECHENGZI_FIXTURE: &str = "\
+# 合体字测试夹具（五笔86 部分字根）
+k\t口
+h\t丨
+t\t禾,丿
+c\t又,厶
+f\t土,寸,二
+s\t覀,木
+v\t女
+b\t也
+w\t人
+g\t一
+";
+
+    #[test]
+    fn recognition_key_covers_all_fifteen_combinations() {
+        assert_eq!(recognition_key(Stroke::Heng, Structure::LeftRight), 'g');
+        assert_eq!(recognition_key(Stroke::Heng, Structure::UpDown), 'f');
+        assert_eq!(recognition_key(Stroke::Heng, Structure::Mixed), 'd');
+        assert_eq!(recognition_key(Stroke::Shu, Structure::LeftRight), 'h');
+        assert_eq!(recognition_key(Stroke::Shu, Structure::UpDown), 'j');
+        assert_eq!(recognition_key(Stroke::Shu, Structure::Mixed), 'k');
+        assert_eq!(recognition_key(Stroke::Pie, Structure::LeftRight), 't');
+        assert_eq!(recognition_key(Stroke::Pie, Structure::UpDown), 'r');
+        assert_eq!(recognition_key(Stroke::Pie, Structure::Mixed), 'e');
+        assert_eq!(recognition_key(Stroke::Na, Structure::LeftRight), 'y');
+        assert_eq!(recognition_key(Stroke::Na, Structure::UpDown), 'u');
+        assert_eq!(recognition_key(Stroke::Na, Structure::Mixed), 'i');
+        assert_eq!(recognition_key(Stroke::Zhe, Structure::LeftRight), 'n');
+        assert_eq!(recognition_key(Stroke::Zhe, Structure::UpDown), 'b');
+        assert_eq!(recognition_key(Stroke::Zhe, Structure::Mixed), 'v');
+    }
+
+    #[test]
+    fn hechengzi_two_radicals_appends_recognition_code() {
+        let table = RadicalTable::from_tsv(HECHENGZI_FIXTURE).expect("fixture should parse");
+        let rad = |s: &str| s.to_string();
+        // 中 = 口 + 丨，杂合、末笔竖 → khk。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("口"), rad("丨")],
+                Structure::Mixed,
+                Stroke::Shu,
+                &table
+            ),
+            Ok("khk".to_string())
+        );
+        // 和 = 禾 + 口，左右、末笔横 → tkg。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("禾"), rad("口")],
+                Structure::LeftRight,
+                Stroke::Heng,
+                &table
+            ),
+            Ok("tkg".to_string())
+        );
+        // 对 = 又 + 寸，左右、末笔捺 → cfy。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("又"), rad("寸")],
+                Structure::LeftRight,
+                Stroke::Na,
+                &table
+            ),
+            Ok("cfy".to_string())
+        );
+        // 地 = 土 + 也，左右、末笔折 → fbn。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("土"), rad("也")],
+                Structure::LeftRight,
+                Stroke::Zhe,
+                &table
+            ),
+            Ok("fbn".to_string())
+        );
+        // 要 = 覀 + 女，上下、末笔横 → svf。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("覀"), rad("女")],
+                Structure::UpDown,
+                Stroke::Heng,
+                &table
+            ),
+            Ok("svf".to_string())
+        );
+    }
+
+    #[test]
+    fn hechengzi_three_radicals_appends_recognition_code() {
+        let table = RadicalTable::from_tsv(HECHENGZI_FIXTURE).expect("fixture should parse");
+        let rad = |s: &str| s.to_string();
+        // 会 = 人 + 二 + 厶，上下、末笔捺 → wfcu。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("人"), rad("二"), rad("厶")],
+                Structure::UpDown,
+                Stroke::Na,
+                &table
+            ),
+            Ok("wfcu".to_string())
+        );
+    }
+
+    #[test]
+    fn hechengzi_four_or_more_radicals_uses_first_second_third_last() {
+        let table = RadicalTable::from_tsv(HECHENGZI_FIXTURE).expect("fixture should parse");
+        let rad = |s: &str| s.to_string();
+        // Exactly 4 radicals: 口(k) 一(g) 丿(t) 木(s) → kgts（末 = 第 4）。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("口"), rad("一"), rad("丿"), rad("木")],
+                Structure::Mixed,
+                Stroke::Heng,
+                &table
+            ),
+            Ok("kgts".to_string())
+        );
+        // 5 radicals: 口(k) 一(g) 丿(t) 木(s) 又(c) → kgtc（跳过第 4 个 s，取末 c）。
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("口"), rad("一"), rad("丿"), rad("木"), rad("又")],
+                Structure::Mixed,
+                Stroke::Heng,
+                &table
+            ),
+            Ok("kgtc".to_string())
+        );
+    }
+
+    #[test]
+    fn hechengzi_requires_at_least_two_radicals() {
+        let table = RadicalTable::from_tsv(HECHENGZI_FIXTURE).expect("fixture should parse");
+        let rad = |s: &str| s.to_string();
+        assert_eq!(
+            encode_hechengzi(&[rad("口")], Structure::Mixed, Stroke::Shu, &table),
+            Err(EncodeError::TooFewRadicals(1))
+        );
+        assert_eq!(
+            encode_hechengzi(&[], Structure::Mixed, Stroke::Shu, &table),
+            Err(EncodeError::TooFewRadicals(0))
+        );
+    }
+
+    #[test]
+    fn hechengzi_unknown_radical_is_rejected() {
+        let table = RadicalTable::from_tsv(HECHENGZI_FIXTURE).expect("fixture should parse");
+        let rad = |s: &str| s.to_string();
+        assert_eq!(
+            encode_hechengzi(
+                &[rad("口"), rad("龘")],
+                Structure::Mixed,
+                Stroke::Shu,
+                &table
+            ),
             Err(EncodeError::UnknownRadical("龘".to_string()))
         );
     }

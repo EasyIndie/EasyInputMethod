@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01/02/04 完成；下一步 T-M1-03）** |
-| 当前分支 | `main`（T-M1-04 改动待提交） |
+| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04 完成；下一步 T-M1-05）** |
+| 当前分支 | `main`（T-M1-03 改动待提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+24 测试+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+30 测试+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**（`wubi-encoder` 字根骨架 + 键名字/成字字根；拆字数据已登记并完成交叉校验；24 测试、`make verify` 全绿）。
-- **下一步**：`ROADMAP.md` 的 **P1-M1**（自建码表流水线 + 词频权重）。
+- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整：键名字/成字字根/合体字/末笔字型识别码；oracle 对照 99.98%；30 测试、`make verify` 全绿）。
+- **下一步**：`ROADMAP.md` 的 **P1-M1**（T-M1-05 单字码表生成 + oracle 全量回归；需先引入可靠拆字数据）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -34,15 +34,16 @@
 - **P1-M1 / T-M1-01**：新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv` + `radical_to_key`，`Stroke`/`Structure`/`EncodeError`；6 个单测。
 - **P1-M1 / T-M1-02**：`RadicalTable::key_name_char`/`is_radical_char` + `encode_key_name`/`stroke_to_key`/`encode_chengzi`（键名字、成字字根）；新增 `TooFewStrokes` 错误；7 个单测。
 - **P1-M1 / T-M1-04**：`data/sources.toml` + `data/sources/fetch-wubi-chaizi.sh`（D2 `aardio/wubi-lex`、D3 `huanfeng/WindInput`，均 MIT，SHA-256 固定）；`wubi-encoder/examples/crosscheck.rs` 产出 `data/generated/chaizi-diff.txt`。
+- **P1-M1 / T-M1-03**：`wubi-encoder` 新增 `recognition_key` + `encode_hechengzi`（合体字 + 末笔字型识别码）+ `TooFewRadicals`；`examples/oracle.rs` 与 D3 全量对照（全体 99.9784%、GB2312 一级 100%）；结构/末笔采用 option 2 派生（ADR-017）。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/04 已交付；**T-M1-03 待认领**（合体字 + 末笔字型识别码，尚无编码逻辑）。
+**P1-M1**（自建码表流水线）：T-M1-01/02/03/04 已交付；下一步 **T-M1-05**（单字码表生成 + oracle 全量回归）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅、T-M1-02 ✅、T-M1-04 ✅；下一步 **T-M1-03**（合体字 + 末笔字型识别码，pro，依赖 T-M1-02），随后 T-M1-05（码表生成 + 对照回归，pro，依赖 T-M1-03/04）。
+1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01/02/03/04 ✅；下一步 **T-M1-05**（单字码表生成 + oracle 对照回归，pro）。**前置输入**：可靠拆字数据（字根数/结构/末笔；当前 D2 不可靠、D3 不提供），见 ADR-017。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -87,6 +88,13 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-03 合体字 + 末笔字型识别码）
+- `crates/wubi-encoder` 新增 `recognition_key`（5×3 识别码双射）与 `encode_hechengzi`（≥4 取 1/2/3/末；3/2 字根 + 识别码）+ `TooFewRadicals`；19 个单测（含规范样例 中/和/对/地/要/会）。
+- 新增 `examples/oracle.rs`：从 D3 逐位推导字形→键映射，全量对照 → `data/generated/oracle-report.txt`（全体 99.9784%、GB2312 一级 100%、三码字 100%；仅 6 处歧义字形归因）+ PROVISIONAL 派生 `wubi86-structure-laststroke.tsv`。
+- 调研结论：结构/末笔采用 option 2（从 D3 派生），写 **ADR-017**；新增 `data/generated/gb2312-level1.txt`（GB2312 一级 3755 字）。
+- 验证：`make verify` 全绿（30 测试）。
+- 遗留：可靠拆字数据（字根数/结构/末笔）待引入（T-M1-05 前置，需联网阶段登记新数据源）。
 
 ### 2026-10-08 · pi（ADR-016：码表来源决策）
 - T-M1-04 发现：WindInput 的 `wubi86_chaizi.txt`（MIT）含 **27,823 字已验证五笔86 码**。
