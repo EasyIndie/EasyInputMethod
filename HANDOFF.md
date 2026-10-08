@@ -88,6 +88,12 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · pi（ADR-016：码表来源决策）
+- T-M1-04 发现：WindInput 的 `wubi86_chaizi.txt`（MIT）含 **27,823 字已验证五笔86 码**。
+- **决定（长期正确性）**：发布码表**只能由自建编码器生成**；第三方码表**仅作验证 oracle，不发布** → 新写 **ADR-016**。
+- 影响：T-M1-03（合体字+识别码）**保留且是核心**（现在可与 oracle 全量对照）；T-M1-05 改为“自建码表 + oracle 回归”。
+- 纠正认知：D2/D3 字根表示体系不同，T-M1-04 的拆字 diff **不能用于裁定**；有效对照是“自建码 vs D3 码”。
+
 ### 2026-10-08 · pi（T-M1-04 拆字数据交叉校验）
 - 新增 `data/sources/fetch-wubi-chaizi.sh`（下载 D2 aardio/wubi-lex 86.txt、D3 WindInput wubi86_chaizi.txt；SHA-256 固定并校验；源文件不入库）+ `data/sources.toml`（D2/D3 登记）；`docs/数据来源与许可.md` §1.1 补 SHA-256 与脚本路径。
 - 新增 `crates/wubi-encoder/examples/crosscheck.rs`：产出 `data/generated/chaizi-diff.txt`（交集 6862、仅 D3 独有 20961、分歧 6861；D2 可见字根 vs D3 PUA，差异大属预期）。
