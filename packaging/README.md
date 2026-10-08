@@ -1,16 +1,15 @@
-# packaging/
+# 发布工程
 
-安装包与分发脚本。
+macOS 首个候选：`macos/prepare.sh` 本地准备，`macos/sign.sh` 显式签名/公证，应用安装卸载脚本位于 platforms/macos。正式分发须 Developer ID + hardened runtime + 公证（ADR-032），默认开发使用独立窗口。
 
-| 平台 | 形式 | 阶段 | 签名 |
-|---|---|---|---|
-| macOS | `.pkg` 或安装脚本 | P1 | **P1 不签名**，手动安装 + Gatekeeper 放行说明 |
-| Windows | 安装器 / 便携版 | P3 | 正式阶段 Authenticode |
-| Linux | deb / rpm / AUR / Flatpak | P4 | 包签名 |
-| Android / iOS | apk / ipa | P5 | 正式阶段 |
+```sh
+make verify                            # 完整审计通过后保存提交
+./packaging/macos/prepare.sh             # clean git 源码、本地 ad-hoc 审核包
+./packaging/macos/sign.sh --sign 'Developer ID Application: …'
+./packaging/macos/sign.sh --submit '<钥匙串凭据名>' # 明确上传 Apple
+./packaging/macos/prepare.sh --signed    # 不重建已公证应用，检查同一源码提交
+```
 
-规则：
+候选生成在 packaging/out/ 唯一目录，保留旧包。附件：完整 SOURCE（含 vendor）、GPL LICENSE、依赖许可、数据许可/出处、CycloneDX SBOM、cargo tree、主机与工具链信息、文件及 ZIP 的 SHA-256。包须 ≤15MB；不携带用户配置词库，不自动安装、不上传凭据。
 
-- 安装包**不得**包含任何网络组件或附加推广内容；
-- 每个 release 附 **SBOM** 与可复现构建说明（见 `docs/隐私与安全.md` §4）；
-- 安装/卸载必须干净：不遗留后台进程、不写系统级配置（除输入法注册外）。
+验收门槛见 docs/技术方案.md §12，未满足前只称候选包。第三方复现说明及终端安装/卸载命令随包 README 提供。Windows/Linux/移动端打包尚未开始。

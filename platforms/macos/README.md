@@ -29,7 +29,7 @@ platforms/macos/
 
 ## 前置
 
-- macOS（本机实测 13.7 / Intel x86_64）；
+- 目标 macOS 13+；本轮 macOS 27 / Apple Silicon，早期 Intel 13.7 编译记录不等于完整发布验收；
 - Xcode **或** Command Line Tools（含 `swiftc`、`clang`、`codesign`）；
 - Rust 工具链（见仓库根 `rust-toolchain.toml`）。
 
@@ -69,9 +69,9 @@ cargo run -p ime-pinyin --example generate
 python3 tools/prepare-pinyin-core.py
 ```
 
-## 手动装载（本机 macOS 27 验收通过）
+## 手动装载（历史基础输入验收通过，当前候选待验收）
 
-ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验收：Developer ID 签名、公证、系统域安装、重启后，用户确认 TextEdit/Safari 的 `wq→你`、`nihao→你好` 正常。每次重新构建仍须重新签名/公证；`build.sh` 的 ad-hoc 产物用于开发校验。T-M3-03 将固化安装流程。
+ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验收：Developer ID 签名、公证、系统域安装、重启后，用户确认 TextEdit/Safari 的 `wq→你`、`nihao→你好` 正常。每次重新构建仍须重新签名/公证；`build.sh` 的 ad-hoc 产物用于开发校验。流程已固化在 packaging/macos/ 与 install.sh/uninstall.sh；最终候选安装验收待完成。
 
 1. 构建：`./platforms/macos/build.sh`。
 2. 在 GUI Terminal 里，对构建产物使用自己的 Developer ID 身份重新签名、公证：
@@ -176,3 +176,7 @@ Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消
 格式为 `scheme\tcode\ttext\tcount`，scheme 为 wubi/pinyin，code 为不带空格的小写编码，count 为正整数。最多 10000 条/2MiB；无效导入不覆盖原文件，重复导入合并取最大次数。导出不得覆盖配置或正在使用的词库。跨会话更新在下一次输入前读取；学习读写失败保留已选文字，预览状态/正式输入菜单显示错误。崩溃留下 user-dictionary.lock 时，请先关闭所有萤火虫会话、备份词库，再移除该锁文件后重试。分发包不包含用户词库。
 
 默认正式/预览已改用 pinyin-core.tsv（ADR-031），不加载 340k 全量词表。全量表只用于派生核心词表；生成校验和与规则见 data/generated/pinyin-core-report.json。
+
+## 发布候选
+
+完整打包流程与边界见 ../../packaging/README.md。`build.sh --strict` 在数据缺失时直接失败；发布必须使用严格构建。`install.sh --dry-run` 也要求已签名、公证并通过 Gatekeeper，ad-hoc 构建不能安装。卸载保留词库与设置，先在系统设置移除输入源、关闭宿主；`--system` 仅在明确管理员操作时使用。

@@ -22,6 +22,17 @@ EXECUTABLE="Yinghuo"
 LIB="${ROOT}/target/release/libime_ffi.a"
 INCLUDE_DIR="${ROOT}/crates/ime-ffi/include"
 GENERATED="${ROOT}/data/generated"
+STRICT=false
+case "${1:-}" in
+  "") ;;
+  --strict) STRICT=true ;;
+  *) echo "用法：$0 [--strict]" >&2; exit 2 ;;
+esac
+if ${STRICT}; then
+  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
+    [ -s "${GENERATED}/${name}" ] || { echo "发布构建缺少 ${name}" >&2; exit 1; }
+  done
+fi
 
 echo "▶ 1/5 构建 ime-ffi（staticlib）"
 ( cd "${ROOT}" && cargo build --release -p ime-ffi )
@@ -34,6 +45,7 @@ echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
 cp "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
+git -C "${ROOT}" rev-parse HEAD > "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
 # PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
 printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
@@ -83,5 +95,5 @@ fi
 
 echo
 echo "✅ 构建完成：${APP_DIR}"
-echo "   装载：cp -R \"${APP_DIR}\" ~/Library/Input\\ Methods/ 然后【注销/重登】（必须）"
-echo "   然后在 系统设置 → 键盘 → 文字输入 → 输入法 添加「萤火虫」。详见 platforms/macos/README.md。"
+echo "   此 ad-hoc 构建仅供开发验证；日常运行 make macos-preview。"
+echo "   分发签名/公证及可信安装流程见 packaging/README.md。"
