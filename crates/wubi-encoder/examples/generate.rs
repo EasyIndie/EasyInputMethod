@@ -17,12 +17,16 @@
 //! 结构/末笔（识别码）沿用 ADR-017/019 的 D3 派生数据（PROVISIONAL，不进发布产物）。
 //! oracle 数据仅作测试对照，不打包、不分发（ADR-016）。
 //!
-//! 先运行 `./data/sources/fetch-wubi-chaizi.sh` 与 `./data/sources/fetch-wubi-oracle2.sh`
-//! 下载源数据（不入库）。
+//! 单字码表 `weight` 列（T-M1-06b）取自 jieba `dict.txt`（D10，MIT）中该字的**真实词频**
+//! （ADR-013）；缺者给默认值 [`DEFAULT_WEIGHT`]，同一码内候选按权重降序。
+//!
+//! 先运行 `./data/sources/fetch-wubi-chaizi.sh`、`./data/sources/fetch-wubi-oracle2.sh`
+//! 与 `./data/sources/fetch-jieba-dict.sh` 下载源数据（不入库）。
 //!
 //! 用法（仓库根目录）：
 //!   cargo run -p wubi-encoder --example generate
-//! 可选位置参数覆盖路径：`... -- <d2> <d3> <rime> <gb1> <tsv-out> <report-out>`。
+//! 可选位置参数覆盖路径：
+//!   `... -- <d2> <d3> <rime> <gb1> <jieba> <tsv-out> <report-out>`。
 
 use std::collections::{BTreeMap, BTreeSet};
 use std::error::Error;
@@ -33,6 +37,12 @@ use std::path::{Path, PathBuf};
 use wubi_encoder::{
     encode_chengzi, encode_hechengzi, encode_key_name, EncodeError, RadicalTable, Stroke, Structure,
 };
+
+#[path = "support/jieba.rs"]
+mod jieba;
+
+/// 字在 jieba 词表中缺频次时的默认权重（比 jieba 最小频次 2 更小，保证排在最后）。
+const DEFAULT_WEIGHT: u32 = 1;
 
 /// 键名字（五笔86 固定 25 字），与 `wubi_encoder` 内的键名映射一致。
 const KEY_NAMES: &str = "王土大木工目日口田山禾白月人金言立水火之已子女又纟";
@@ -94,6 +104,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .next()
         .map(PathBuf::from)
         .unwrap_or_else(|| root.join("data/generated/gb2312-level1.txt"));
+    let jieba_path = args
+        .next()
+        .map(PathBuf::from)
+        .unwrap_or_else(|| root.join("data/sources/jieba-dict.txt"));
     let tsv_path = args
         .next()
         .map(PathBuf::from)
@@ -111,11 +125,17 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map_err(|e| format!("读取 Rime 字典失败（{}）：{e}", rime_path.display()))?;
     let gb1_text = fs::read_to_string(&gb1_path)
         .map_err(|e| format!("读取 GB1 失败（{}）：{e}", gb1_path.display()))?;
+    let jieba_text = fs::read_to_string(&jieba_path)
+        .map_err(|e| format!("读取 jieba 词表失败（{}）：{e}", jieba_path.display()))?;
 
     let d3_records = parse_d3(&d3_text)?;
     let d2_records = parse_d2(&d2_text)?;
     let rime = parse_rime(&rime_text)?;
     let gb1 = parse_gb1(&gb1_text);
+    let single_weights = single_char_weights(
+        &jieba::parse(&jieba_text)
+            .map_err(|e| format!("解析 jieba 词表失败（{}）：{e}", jieba_path.display()))?,
+    );
 
     let key_names: BTreeMap<char, char> = KEY_NAMES.chars().zip(KEY_NAME_KEYS.chars()).collect();
 
@@ -131,8 +151,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         d3_records.iter().map(|r| (r.ch, r.code.clone())).collect();
     let d2_codes = generate_d2(&d2_records, &d2_table, &key_names, &d3_codes_for_d2);
 
-    // ---- 输出码表（发布路径） ----
-    write_file(&tsv_path, &render_tsv(&d3_codes, &gb1))?;
+    // ---- 输出码表（发布路径；weight 为 jieba 真实词频） ----
+    write_file(&tsv_path, &render_tsv(&d3_codes, &single_weights))?;
 
     // ---- 对照回归 + 差异分析 ----
     let d3_oracle: BTreeMap<char, String> =
@@ -263,6 +283,23 @@ fn parse_rime(input: &str) -> Result<BTreeMap<char, String>, Box<dyn Error>> {
         return Err("Rime 字典缺少 YAML 文档结束标记 `...`".into());
     }
     Ok(map)
+}
+
+/// 从 jieba 词表提取「单字 → 频次」（同字取最大频次）。
+fn single_char_weights(entries: &[jieba::Entry]) -> BTreeMap<char, u32> {
+    let mut map = BTreeMap::new();
+    for entry in entries {
+        let mut chars = entry.word.chars();
+        let Some(ch) = chars.next() else { continue };
+        if chars.next().is_some() || !jieba::is_han(ch) {
+            continue;
+        }
+        let slot = map.entry(ch).or_insert(0u32);
+        if entry.freq > *slot {
+            *slot = entry.freq;
+        }
+    }
+    map
 }
 
 /// 解析 GB2312 一级字表（一行一字）。
@@ -528,8 +565,8 @@ fn stroke_of_glyph(glyph: char, table: &RadicalTable) -> Option<Stroke> {
 // 输出
 // ---------------------------------------------------------------------------
 
-/// 渲染单字码表：`code\tchar\tweight`（一级字优先，其余按码点作临时稳定排序）。
-fn render_tsv(codes: &BTreeMap<char, String>, gb1: &BTreeSet<char>) -> String {
+/// 渲染单字码表：`code\tchar\tweight`（同码内按权重降序）。
+fn render_tsv(codes: &BTreeMap<char, String>, weights: &BTreeMap<char, u32>) -> String {
     let mut out = String::new();
     let _ = writeln!(
         out,
@@ -545,15 +582,15 @@ fn render_tsv(codes: &BTreeMap<char, String>, gb1: &BTreeSet<char>) -> String {
     );
     let _ = writeln!(
         out,
-        "# weight 为临时排序权重（一级字 > 二级字 > 其它，同层按码点稳定排序）；"
+        "# weight 为该字在 jieba dict.txt（MIT）中的真实词频（ADR-013）；缺者给默认值 {DEFAULT_WEIGHT}。"
     );
-    let _ = writeln!(out, "# 正式词频权重待 D7（ADR-013）接入后替换。");
+    let _ = writeln!(out, "# 同一码内候选按 weight 降序。");
     let _ = writeln!(out, "# code\tchar\tweight");
 
     // (code, char) 升序按码，同码内按权重降序。
     let mut rows: Vec<(String, char, u32)> = codes
         .iter()
-        .map(|(ch, code)| (code.clone(), *ch, weight_of(*ch, gb1)))
+        .map(|(ch, code)| (code.clone(), *ch, weight_of(*ch, weights)))
         .collect();
     rows.sort_by(|a, b| a.0.cmp(&b.0).then(b.2.cmp(&a.2)));
 
@@ -563,17 +600,9 @@ fn render_tsv(codes: &BTreeMap<char, String>, gb1: &BTreeSet<char>) -> String {
     out
 }
 
-/// 临时权重：一级字 = 2 层、二级字（CJK 统一表意文字区，非一级）= 1 层、其它 = 0 层；
-/// 同层按码点稳定排序（码点升序 = 权重更高，作为笔画数的临时近似）。
-fn weight_of(ch: char, gb1: &BTreeSet<char>) -> u32 {
-    let tier = if gb1.contains(&ch) {
-        2
-    } else if ('\u{4E00}'..='\u{9FFF}').contains(&ch) {
-        1
-    } else {
-        0
-    };
-    tier * 1_000_000 + (0x10FFFF - (ch as u32))
+/// 字在 jieba 词表中的真实词频；缺失时返回 [`DEFAULT_WEIGHT`]。
+fn weight_of(ch: char, weights: &BTreeMap<char, u32>) -> u32 {
+    weights.get(&ch).copied().unwrap_or(DEFAULT_WEIGHT)
 }
 
 // ---------------------------------------------------------------------------

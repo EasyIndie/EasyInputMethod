@@ -1,0 +1,28 @@
+# 五笔86 词组码表生成报告（T-M1-06b）
+#
+# 词表/词频：data/sources/jieba-dict.txt（D10，MIT）
+# 单字码表：data/generated/wubi86-single.tsv（T-M1-05）
+# 输出：data/generated/wubi86-phrases.tsv
+
+[summary]
+jieba_entries = 349045
+words_kept = 337231
+skipped_single_char = 11580
+skipped_too_long = 163
+skipped_non_chinese = 71
+skipped_missing_chars = 0
+phrases_generated = 337231
+codes_unique = 155726
+codes_with_multi_candidates = 74115
+rows_written = 337231
+
+[required_samples]
+# word	code	weight
+世界	anlw	34387
+人民	wwna	43719
+中文	khyy	1755
+输入法	ltif	19
+计算机	ytsm	6396
+经济学	xiip	1544
+图书馆	lnqn	1551
+中华人民共和国	kwwl	9989

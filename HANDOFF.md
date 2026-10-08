@@ -13,8 +13,8 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-06 完成：词组码表已生成）** |
-| 当前分支 | `main`（本次 T-M1-06 变更未提交） |
+| 当前阶段 | **P1-M1 进行中（T-M1-06b 完成：jieba 词表 + 真实词频权重）** |
+| 当前分支 | `main`（本次 T-M1-06b 变更未提交） |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 全绿（fmt+clippy+38 测试+1 doctest+deny+隐私断言） |
 
@@ -22,8 +22,8 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**。**T-M1-06 完成**：`data/generated/wubi86-phrases.tsv`（38,220 条，576 KB，CC-BY-SA-4.0）已由 `wubi-encoder/examples/generate_phrases.rs` 按五笔词组规则（2/3/4+）从 D4 词表 + T-M1-05 单字码表生成；`encode_phrase` 新增至 `wubi-encoder` 并有写死样本单测。
-- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-07**（词频权重，ADR-013；前置 = T-M1-05/06）。
+- **现在**：**P1-M1 进行中**。**T-M1-06b 完成**：改用 `fxsjy/jieba` `dict.txt`（D10，MIT，349,045 词**带词频**）重生成词组码表并统一赋权。`wubi86-single.tsv` 的 `weight` 改为 jieba **真实词频**（缺者默认 1）；`wubi86-phrases.tsv` 改为多候选 `code\t词组\tweight`（**337,231 条 / 155,726 码**，5.8 MB），按词频降序（ADR-021）。同卡交付 T-M1-07（ADR-013）。
+- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-08**（数据登记收尾）→ **T-M1-09**（正式码表接入 `ime-table`/`ime-cli`）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -40,15 +40,16 @@
 - **P1-M1 / T-M1-04b**：新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，**LGPL-3**，SHA-256 固定）；登记 **D9**（`role=validation-oracle` / `ship=false` / 风险中）；`wubi-encoder/examples/oracle2.rs` → `data/generated/wubi86-oracle2-single.tsv`（70,370 字；抽样 5 字正确；与 D3 全体 98.78%、GB2312 一级 100%）。
 - **P1-M1 / T-M1-05**：新增 `wubi-encoder/examples/generate.rs`（生成 + 双 oracle 回归，一条命令可复现）→ `data/generated/wubi86-single.tsv`（27,823 字，471 KB，CC-BY-SA-4.0）与 `wubi86-regression.txt`；发布路径用编码器对 D3 拆字逐字生成（ADR-020），vs D3 99.9784%/GB1 100%、vs rime 98.77%/GB1 100%，三方不一致 0 条；D2 交叉检查 GB1 91.66%（量化其字形记法歧义）。修正 `encode_chengzi`（1/2/≥3 笔成字字根标准）。
 - **P1-M1 / T-M1-06**：`wubi-encoder` 新增 `encode_phrase`（2 字 `AaAbBaBb` / 3 字 `AaBaCaCb` / 4+ 字 `AaBaCaZa`）+ `TooFewCharacters`/`TooFewCodes`；6 个单测（含写死样本 中华人民共和国→kwwl、输入法→ltif、中文→khyy）+ doctest。新增 `examples/generate_phrases.rs`：读 D4 词表 + `wubi86-single.tsv`，同码按临时权重（组成字临时权重之和）去重 → `data/generated/wubi86-phrases.tsv`（38,220 条，576 KB）。新增 `data/sources/fetch-phrase-pinyin.sh`（D4 MIT，SHA-256 固定）并登记。
+- **P1-M1 / T-M1-06b**（同时交付 T-M1-07）：新增 `data/sources/fetch-jieba-dict.sh` + 登记 **D10**（`fxsjy/jieba` `dict.txt`，MIT，349,046 行）；`generate.rs` 单字 `weight` 改 jieba 真实词频（缺者 1）；`generate_phrases.rs` 改从 jieba 生成、过滤纯汉字/长度 2–10、输出多候选 `wubi86-phrases.tsv`（337,231 条 / 155,726 码）+ `wubi86-phrases-report.txt`；必需样本 8 词齐全（生成器断言 中华人民共和国→kwwl）。新增 **ADR-021**（多候选 + jieba 词频）。验证：`make verify` 全绿。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b/05/06 已交付；下一步 **T-M1-07（词频权重，flash）**。
+**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b/05/06/06b（含 T-M1-07）已交付；下一步 **T-M1-08（数据登记收尾）**。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1 / T-M1-07**（flash）：词频权重接入（公开词频，ADR-013；回填单字 + 词组码表）。
-2. 之后 **P1-M1 / T-M1-08**（数据登记收尾）、**T-M1-09**（正式码表接入 `ime-table`/`ime-cli`）。
+1. **P1-M1 / T-M1-08**：数据登记收尾（`docs/数据来源与许可.md` + `sources.toml` 全量 CI 校验）。
+2. **P1-M1 / T-M1-09**：正式码表接入 `ime-table`/`ime-cli`（`.imedict` 编译；内置核心选 ~10k 高频词组，见 `技术方案.md` §7.2）。
 3. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 
 ## 5. 待决 / 阻塞
@@ -56,7 +57,7 @@
 | 编号 | 问题 | 是否阻塞 |
 |---|---|---|
 | REV-1…4 | 交叉审核已**完成**（`docs/reviews/001.md`），结论有条件通过 | 否 |
-| TBD-1 | 词频数据源（ADR-013 已定为 P1-M1 必交付；具体数据源仍待选） | 阻塞 P1-M1 |
+| TBD-1 | 词频数据源 — ✅ 已定：`fxsjy/jieba` `dict.txt`（D10，MIT）；见 ADR-021、T-M1-06b | 否 |
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
 | TBD-4 | 英文/包名 | 否 |
@@ -93,6 +94,13 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-06b jieba 词表 + 词频，含 T-M1-07）
+- 新增 `data/sources/fetch-jieba-dict.sh` + 登记 **D10**（`fxsjy/jieba` `dict.txt`，MIT，349,046 行）；单字 `weight` 改 jieba 真实词频（缺者 1）；词组表改输出 `code\t词组\tweight`（337,231 条 / 155,726 码，5.8 MB）。
+- 关键决策 **ADR-021**：卡步骤 3「同码保留权重最高者」会挤掉验收样本 `输入法`（ltif 19 < 加德满都 66）→ 改为与 `技术方案.md` §6.2 一致的多候选（按词频降序）。
+- 生成器断言必需样本 8 词齐全（世界 anlw / 人民 wwna / 中文 khyy / 输入法 ltif / 计算机 ytsm / 经济学 xiip / 图书馆 lnqn / 中华人民共和国 kwwl）。
+- 验证：`make verify` 全绿（fmt+clippy+38 测试+1 doctest+deny+隐私断言）。
+- 遗留：词组表 5.8 MB；T-M1-09 编译内置码表时按词频挑 ~10k（`技术方案.md` §7.2）。
 
 ### 2026-10-08 · pi（T-M1-06 词组码自动生成）
 - `wubi-encoder` 新增 `encode_phrase`（2 字 `AaAbBaBb`、3 字 `AaBaCaCb`、4+ 字 `AaBaCaZa`）+ `TooFewCharacters`/`TooFewCodes` 错误；6 个单测（写死样本 中华人民共和国→kwwl、输入法→ltif、中文→khyy）+ doctest。

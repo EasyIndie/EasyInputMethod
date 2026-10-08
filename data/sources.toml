@@ -61,3 +61,17 @@ ship = false
 fetch_script = "data/sources/fetch-wubi-oracle2.sh"
 added_at = "2026-10-08"
 notes = "Rime 字典（text/code/weight/stem）；**仅作验证 oracle，不进入发布产物、不打包**（ADR-016/019）；其表源自极点五笔（Jidian），provenance 风险中等；文件下载获取，不入库"
+
+[[source]]
+id = "D10"
+name = "中文词表 + 词频（fxsjy/jieba dict.txt）"
+path = "data/sources/jieba-dict.txt"
+url = "https://github.com/fxsjy/jieba/blob/master/jieba/dict.txt"
+upstream = "fxsjy/jieba"
+license = "MIT"
+risk = "low"
+sha256 = "7197c3211ddd98962b036cdf40324d1ea2bfaa12bd028e68faa70111a88e12a8"
+used_for = ["wubi86-wordlist", "wubi86-frequency"]
+fetch_script = "data/sources/fetch-jieba-dict.sh"
+added_at = "2026-10-08"
+notes = "MIT（Copyright (c) 2013 Sun Junyi）；格式 `词 频次 词性`（空格分隔，共 349,046 行）；仅用词表 + 词频，不发布原文件；词频为 jieba 语料统计（provenance 为开放语料，非商业输入法码表）；文件下载获取，不入库"
