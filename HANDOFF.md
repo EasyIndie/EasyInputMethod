@@ -12,18 +12,19 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08 |
-| 更新者 | pi |
-| 当前阶段 | **P1-M3：T-M3-01 ✅；T-M3-02 代码 ✅，装载验收移交「有 Xcode + 开发者帐号」的另一台设备** |
-| 当前分支 | `main`（⚠️ **有本轮未推送 commit**，见 `git log --oneline origin/main..HEAD`；接手前先 push 或迁移仓库） |
+| 最后更新 | 2026-10-08（T-M3-02 注册标识修正，待新包装载） |
+| 更新者 | Codex |
+| 当前阶段 | **P1-M3：ADR-023 修正经典 IMK 注册标识；新包构建通过，人工装载待重新签名/公证后验证** |
+| 当前分支 | `codex/fix-macos-registration`；本轮注册修正及关联交接文档，包含接手时的装载记录与 plist 修正 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt + clippy -D warnings + **82 单测 + 1 doctest** + cargo-deny + 隐私断言） |
+| 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、68 产物零网络符号 |
+
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：在**另一台有 Xcode + Apple 开发者帐号的 Mac** 上，用**真实签名**（Developer ID / Apple Development）构建并装载 `platforms/macos/`，验证输入法出现且能打字；结论回写 `docs/tasks/T-M3-02.md`。详见本文件 §4。
+- **下一步**：对 ADR-023 修正后的新包重新 Developer ID 签名/公证并安装，注销/重登后枚举 `org.yinghuo.inputmethod.Yinghuo`，验证 TextEdit/Safari。暂缓 appex 改造（未找到公开入口证据）。详见 `docs/tasks/T-M3-02.md` 第三轮。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -40,25 +41,20 @@
 
 ## 3. 进行中
 
-**P1-M3**：`ime-ffi` ✅；**T-M3-02 代码完成且自测通过**（编译/打包；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`），**装载验收已移交到另一台设备**。
-> ⛔ 本机（macOS 13.7.8 / 仅 CLT / **0 个签名身份**）**无法完成装载**：系统不枚举非 Apple 签发的输入法（我们的 ad-hoc、自签+系统信任、甚至苹果原版 Ainu 副本都不出现；只有 Developer-ID 签名的搜狗可见）。完整证据/结论见 `docs/tasks/T-M3-02.md`「人工验证记录」。
-> ⚠️ **接手前必须先拿到本轮 commit**（push 到 origin，或直接拷整个仓库到验证机）——见 §4 第 1 条。
+**P1-M3**：`ime-ffi` ✅；**T-M3-02 代码完成且自测通过**（编译/打包；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`）。
+
+**T-M3-02 装载验收（第三轮 · Codex）**：
+- 修正 bundle ID、模式 ID、连接名（ADR-023），构建/plist/ad-hoc 校验及 FFI 冒烟通过。
+- Xcode 27 模板无 Input Method Extension；公开 SDK 未将 IMKServer 标弃用。内置 appex 不足以证明第三方必须迁移。
+- 系统日志有拒绝连接名的错误，但对应 bundle ID 隐去；修正是优先实验，尚未证明根因。
+- `/Library/Input Methods/Yinghuo.app` 仍是旧 ID 的已公证包。本轮未替换安装包；沙箱 TIS 诊断有 XPC 错误，不作新的装载结论。
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **【交接第一优先】拿到本轮 commit**：本机 `main` 领先 `origin/main`（`git log --oneline origin/main..HEAD`）。在验证机上 `git fetch/pull` 后，确认 T-M3-02 这组 commit 都在（`feat(ffi): load real data…`、`feat(macos): add Swift InputMethodKit host…`、`fix(macos): ship .app bundle…`、`fix(macos): use standard IMK plist…`、`docs(macos): record T-M3-02 install blocker…`、`docs(handoff): hand T-M3-02 install verification…`）。
-2. **T-M3-02 装载验收（在「有 Xcode + 开发者帐号」的 Mac 上）**：
-   - `./platforms/macos/build.sh` → 产 `build/Yinghuo.app`（当前默认 ad-hoc 签名）；
-   - **改用真实身份签名**（不要 ad-hoc）：`codesign --force --deep --sign "Developer ID Application: <你的名字/团队>" build/Yinghuo.app`（或 `Apple Development:`）；
-   - 拷到 `~/Library/Input Methods/`（或 `/Library/Input Methods/`），注销/重登；**确保同一 bundle id 只有一份**（别把 `build/` 里的副本也留在机器上被 LaunchServices 登记）；
-   - 系统设置 → 键盘 → 文字输入 → 输入法 → 添加「萤火虫」；TextEdit 试 `wq→你`、`nihao→你好`；
-   - 佐证：`./platforms/macos/tools/diagnose.sh yinghuo`（看有无 `yinghuo`）；
-   - **判定目标**：换真实签名后能否出现 → 确认是否“必须 Apple 签发证书”。
-3. **回写结论**：`docs/tasks/T-M3-02.md`；若确需签名 → 新增/更新 ADR（签名策略）、`build.sh`（签名身份可配）、`docs/技术方案.md`。
-4. **清理本机残留（当前机器）**：`/Library/Input Methods/` 已只剩 Sogou（无需清）；自签证书信任可能仍在系统钥匙串：`sudo security delete-certificate -c "Yinghuo Local Dev" /Library/Keychains/System.keychain`。
-5. **T-M3-03**：安装脚本 + Gatekeeper/手动装载说明（待签名结论明确后）。
-6. **T-M3-04**：CI 加 macOS runner（编译 `build.sh`，不装载）。
-7. **P2 参考**：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句。
+1. **T-M3-02**：按 `platforms/macos/README.md` 对新构建包重新签名、公证，替换旧安装包；去除影子登记，注销/重登。枚举新 ID，再验证 TextEdit/Safari。
+2. 若仍失败：获取本次登录的 imklaunchagent 日志，区分注册、信任和连接错误；再考虑干净用户实验。未经公开 API 核验，不改 appex。
+3. **T-M3-03**：验收后固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
+4. **T-M3-04**：CI 增加 macOS 编译检查。
 
 ## 5. 待决 / 阻塞
 
@@ -70,7 +66,8 @@
 | TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
-| **SIG-1** | **输入法签名要求**：本机实测非 Apple 签发签名不被枚举；是否必须 Developer ID / Apple Development？ | **阻塞 T-M3-02 装载验收 / Phase 1「不签名」前提** |
+| **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；待并入 ADR + `build.sh` 参数化 |
+| **SIG-2** | ADR-023 已修正注册标识，待新包实机装载；经典 IMK 已弃用的假设无公开证据 | **阻塞 T-M3-02 人工验收** |
 
 ## 6. 必须知道的坑与硬约束
 
@@ -80,9 +77,11 @@
 
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
-- ⚠️ **无 Xcode**（仅 CLT）→ **不能用 IB / Asset Catalog**（`actool`/`ibtool` 是 stub）→ **纯代码 UI**。
-- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），且**换 bundle 后必须注销/重登**（只在登录时扫描，`killall TextInputMenuAgent` 无效）。诊断：`platforms/macos/tools/`。
-- ⛔ **当前机器实测：macOS 只枚举 Apple 签发的输入法**（ad-hoc / 自签均不可见；连苹果原版 Ainu 副本也不可见），而 Developer-ID 签名的搜狗可见；本机 `security find-identity -v -p codesigning` 为 0。**→ 换到有开发者帐号的机器验证（见 §4），不要再在当前机器上反复重试**。
+- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），且**换 bundle 后必须注销/重启**——只在登录时扫描；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。诊断：`platforms/macos/tools/`。
+- ⛔ **Xcode 机实测（macOS 27）**：即便 **Developer ID + hardened runtime + 公证 + 系统域 `/Library/Input Methods` + 布尔 plist + LS 单一登记**，扫描器重建的 `.kbdx` 缓存仍**只收搜狗不收我们** → 不能断言经典机制失效；先验 ADR-023 注册修正（§5 SIG-2 / T-M3-02 卡）。
+- ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定用 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403 A required agreement is missing` → 需 Account Holder 在 App Store Connect 接受协议。
+- ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`（钥匙串锁定或不在 GUI 会话）；需在 GUI Terminal 跑一次并点“始终允许”。
+- ⚠️ **LS 影子副本**：同一 bundle id 若在 `build/`、DerivedData 或已删路径有残留登记，Text Input 会绑定影子副本导致静默失败；装完务必 `lsregister -dump` 去重。
 - ⚠️ **IMK Swift 事件方法叫 `handle(_:client:)`**（不是 `handleEvent`；后者在 Swift 3 被重命名）；`Info.plist` 输入模式清单在 `ComponentInputModeDict.tsInputModeListKey`（参照系统输入法实测）。
 - ⚠️ **`pinyin-words.tsv`（8.4MB）不入库**：`build.sh` 缺失时宿主降级（无拼音/单音节），复现见 `platforms/macos/README.md`。
 - ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符（如 `$model（`）会被当变量名 → 一律写 `${var}`。
@@ -95,11 +94,12 @@
 
 | 项 | 值 |
 |---|---|
-| 硬件（当前机，已阻塞装载） | macOS **13.7.8**、**Intel x86_64**；2 物理核 / 4 逻辑核，16 GB 内存；**仅 CLT、无 Xcode、0 签名身份** |
-| 验证机（接收方） | **有 Xcode + Apple 开发者帐号**（可签发 Apple Development / Developer ID） |
-| Rust | 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` |
-| 宿主工具链 | 当前机：Swift 5.8.1 + InputMethodKit 可编译/链接（实测）；`codesign` ad-hoc 可用；**验证机用 Xcode 自带的 swiftc/codesign** |
-| 构建 | `make` 可用（无 `just`）；`cargo-deny`、`cargo-fuzz` 已装 |
+| 当前/验证机 | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；用户 `joker`（admin） |
+| 签名身份 | ✅ `Developer ID Application: Zhizhou Wang (2N62934Y28)` 与 `Apple Development: …`；公证凭据已存钥匙串 profile `yinghuo-notary` |
+| Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
+| 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
+| 输入法现状 | `/Library/Input Methods/Yinghuo.app`（系统域、已公证、hardened runtime）；用户域副本已清；一次性脚本在 `~/yinghuo-release.command`、`~/yinghuo-notarize.command` |
+| 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**82 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
@@ -112,6 +112,17 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（T-M3-02 注册标识排查）
+- 核查 SDK/Xcode 模板与 Apple 文档，暂缓无公开入口证据的 appex 改造。
+- ADR-023：修正 bundle/mode ID 与连接名，同步本地化；保留接手时未提交改动。
+- 完整 make verify、新包构建/plist/ad-hoc 校验、FFI 冒烟通过；人工装载待重新签名/公证/安装及重登。
+
+### 2026-10-08 · pi（T-M3-02 第二轮：Xcode 机装载，仍未通过 → 交接 Codex）
+- Xcode 机（macOS 27 / arm64）：装 Rust 1.98.1 + 生成数据表；构建 + FFI 冒烟 `wq→你`/`nihao→你好` ✅。
+- 查实：未公证的 Developer ID 被 LaunchServices 判 `is not trusted` → 必须 **hardened runtime + 公证**；已 `Developer ID` 重签、`notarytool` Accepted、`staple`、`spctl`=Notarized Developer ID（SIG-1 结案）。
+- 装系统域 `/Library/Input Methods` + 布尔 `tsInputMode*Key` + `DT*` + LS 去重后**仍不被 TIS 枚举**（`0/335`，`.kbdx` 只收搜狗）→ 新阻塞 **SIG-2**（疑需 ExtensionKit appex）。
+- 未提交：`platforms/macos/Info.plist`（布尔 ts* + DT*）。证据/下一步见 `docs/tasks/T-M3-02.md`「第二轮」与 §4。
 
 ### 2026-10-08 · pi（T-M3-02 交接：转 Xcode 机验证）
 - 本机装不了：系统不枚举非 Apple 签发的输入法（ad-hoc / 自签 / 苹果 Ainu 副本均不可见；只有 Developer-ID 的搜狗可见）。
@@ -157,8 +168,3 @@
 ### 2026-10-08 · pi（P1-M0 引擎骨架）
 - Rust workspace + `ime-core`（Engine/InputMode/会话状态机）+ `ime-table` + `ime-cli`；11 测试；`make verify` 全绿。
 - 发现 `yada` 无预测搜索 → 改定 `cedarwood`（ADR-015）。
-
-### 2026-10-08 · pi（工具链体检 + 派发基建）
-- 设备确认：**仅 CLT、无 Xcode**；Swift + InputMethodKit 可编译链接（实测）→ P1-M3 可在本机做（纯代码 UI）。
-- 量测/派发：`scripts/dispatch-task.sh`、`usage-report.sh`、`bench-session-vs-workers.sh`；`docs/experiments/` 结论——**独立任务用「每卡新 worker」更省**（N=5 中位数：独立 fresh 37.9k vs reuse 43.6k；强依赖 reuse 快 4.4×）。
-- 防护：`--jobs`（CARGO_BUILD_JOBS）+ 磁盘预检（默认 ≥3 GiB）。

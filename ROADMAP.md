@@ -54,7 +54,7 @@
 ### P1-M3 macOS 宿主
 
 - [x] `ime-ffi`：C ABI（会话 + 配置接口）
-- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02（代码完成；**人工装载被签名/环境阻塞**，见卡与 `docs/tasks/T-M3-02.md`）
+- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02（代码完成；**人工装载仍未通过**：SIG-1 签名/公证已定，SIG-2 已修正注册标识（ADR-023），待新包装载，见卡）
 - [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
 - [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）
 - [ ] **验收**：TextEdit/Safari 里能五笔打字

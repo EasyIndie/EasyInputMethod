@@ -68,22 +68,24 @@ platforms/macos/
 cargo run -p ime-pinyin --example generate
 ```
 
-## 手动装载（Phase 1 无签名/公证，见 ADR-010）
+## 手动装载（当前验收未通过）
 
-> 一键安装/卸载脚本在 **T-M3-03**；本文先给手动步骤。
+当前 macOS 27 验证机上的旧包已公证，但仍未被枚举。ADR-023 修正注册标识后，必须重新完成签名与公证；`build.sh` 的 ad-hoc 产物仅用于开发校验，不能视为已可装载。T-M3-03 将固化安装流程。
 
-1. 构建：`./platforms/macos/build.sh`
-2. 拷贝到用户输入法目录（先删旧副本）：
+1. 构建：`./platforms/macos/build.sh`。
+2. 在 GUI Terminal 里，对构建产物使用自己的 Developer ID 身份重新签名、公证：
    ```sh
-   rm -rf ~/Library/Input\ Methods/Yinghuo.app ~/Library/Input\ Methods/萤火虫.inputmethod
-   cp -R "platforms/macos/build/Yinghuo.app" ~/Library/Input\ Methods/
-   xattr -dr com.apple.quarantine ~/Library/Input\ Methods/Yinghuo.app
-   codesign --force --deep --sign - ~/Library/Input\ Methods/Yinghuo.app
+   codesign --force --options runtime --timestamp \
+     --sign "Developer ID Application: <姓名 (TEAMID)>" platforms/macos/build/Yinghuo.app
+   ditto -c -k --keepParent platforms/macos/build/Yinghuo.app /tmp/Yinghuo-notary.zip
+   xcrun notarytool submit /tmp/Yinghuo-notary.zip --keychain-profile "<凭据名>" --wait
+   xcrun stapler staple platforms/macos/build/Yinghuo.app
+   spctl -a -vvv -t exec platforms/macos/build/Yinghuo.app
    ```
-3. **注销并重新登录**（或重启）——**这一步不可省**。
-   macOS 只在**登录时**扫描 `~/Library/Input Methods/` 下的输入法 bundle；
-   `killall TextInputMenuAgent` 之类无法可靠触发重扫（本机已验证）。
-4. 系统设置 → 键盘 → 文字输入 → 输入法 → 编辑 → `+` → 简体中文 → **萤火虫**。
+   公证须为 Accepted，`spctl` 须为 `accepted / Notarized Developer ID`。这些是信任检查，不代表输入法发现已通过。
+3. 用修正后的包替换原安装包，仅保留一个安装位置；清除同 bundle 的 LaunchServices 影子登记。不要修改已签名包的 plist，否则签名和公证失效。
+4. 保存工作后，注销并重新登录（或重启），再运行下面的诊断工具。
+5. 若枚举到新 ID，在系统设置 → 键盘 → 文字输入 → 输入法中添加「萤火虫」，验证 TextEdit/Safari 的 `wq→你`、`nihao→你好`。
 
 ### 装好却看不到？先跑诊断
 
@@ -92,8 +94,7 @@ cargo run -p ime-pinyin --example generate
 ```
 
 - 有输出（含 `yinghuo` / `org.yinghuo`）→ 系统已识别，去「系统设置 → 键盘 → 输入法」添加；
-- 无输出 → **没有注销/重登**，或 bundle 不在 `~/Library/Input Methods/` 下、
-  或不是 `.app`（见上）。
+- 无输出 → 装载未通过。核查新 ID、签名/公证、安装路径和影子登记，并检查 `imklaunchagent` 日志；不能仅凭无输出断言未重登或必须改为 appex。
 
 ## 验证打字
 
@@ -116,7 +117,7 @@ cargo run -p ime-pinyin --example generate
   可执行不崩溃」（本仓库已实测到这一步）。
 - 候选窗为 P1-M3 最小实现：无翻页、无亮/暗主题自适应、不跟随光标滚动（属 P1-M4）。
 - 未做通用二进制（仅当前架构 x86_64）。
-- `CFBundleIdentifier` 暂用 `org.yinghuo.inputmethod`，最终包名取决于 **TBD-4**。
+- `CFBundleIdentifier` 暂用 `org.yinghuo.inputmethod.Yinghuo`，最终包名取决于 **TBD-4**。
 
 ## 为宿主扩展的 `ime-ffi` 入口（T-M3-02）
 

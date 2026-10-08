@@ -10,7 +10,7 @@
 
   ⚠️ 必须是 .app bundle（macOS 13 的 LaunchServices 无法扫描 .inputmethod，
      实测报 -10811）——见 ADR-022 / platforms/macos/README.md。
-  ⚠️ bundle 标识暂用 org.yinghuo.inputmethod，最终包名取决于 TBD-4。
+  ⚠️ bundle 标识暂用 org.yinghuo.inputmethod.Yinghuo，最终包名取决于 TBD-4。
 -->
 <plist version="1.0">
 <dict>
@@ -19,7 +19,7 @@
 	<key>CFBundleExecutable</key>
 	<string>Yinghuo</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.yinghuo.inputmethod</string>
+	<string>org.yinghuo.inputmethod.Yinghuo</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -38,8 +38,26 @@
 	<array>
 		<string>MacOSX</string>
 	</array>
+	<key>BuildMachineOSBuild</key>
+	<string>26A428</string>
+	<key>DTCompiler</key>
+	<string>com.apple.compilers.llvm.clang.1_0</string>
+	<key>DTPlatformBuild</key>
+	<string>26A425</string>
+	<key>DTPlatformName</key>
+	<string>macosx</string>
+	<key>DTPlatformVersion</key>
+	<string>27.0</string>
+	<key>DTSDKBuild</key>
+	<string>26A425</string>
+	<key>DTSDKName</key>
+	<string>macosx27.0</string>
+	<key>DTXcode</key>
+	<string>2700</string>
+	<key>DTXcodeBuild</key>
+	<string>27A266a</string>
 	<key>LSMinimumSystemVersion</key>
-	<string>10.13</string>
+	<string>13.0</string>
 	<key>LSBackgroundOnly</key>
 	<true/>
 	<key>LSUIElement</key>
@@ -49,7 +67,7 @@
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
 	<key>InputMethodConnectionName</key>
-	<string>Yinghuo_InputMethod_Connection</string>
+	<string>org.yinghuo.inputmethod.Yinghuo_Connection</string>
 	<key>InputMethodServerControllerClass</key>
 	<string>YinghuoInputController</string>
 	<key>TISIntendedLanguage</key>
@@ -63,20 +81,20 @@
 	</array>
 	<key>tsInputModeListKey</key>
 	<dict>
-		<key>org.yinghuo.inputmethod.default</key>
+		<key>org.yinghuo.inputmethod.Yinghuo.default</key>
 		<dict>
 			<key>TISInputSourceID</key>
-			<string>org.yinghuo.inputmethod.default</string>
+			<string>org.yinghuo.inputmethod.Yinghuo.default</string>
 			<key>TISIntendedLanguage</key>
 			<string>zh-Hans</string>
 			<key>tsInputModeScriptKey</key>
 			<string>smSimpChinese</string>
 			<key>tsInputModePrimaryInScriptKey</key>
-			<integer>1</integer>
+			<true/>
 			<key>tsInputModeDefaultStateKey</key>
-			<integer>1</integer>
+			<true/>
 			<key>tsInputModeIsVisibleKey</key>
-			<integer>1</integer>
+			<true/>
 			<key>tsInputModeMenuIconFileKey</key>
 			<string>yinghuo.png</string>
 			<key>tsInputModePaletteIconFileKey</key>
@@ -89,20 +107,20 @@
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>org.yinghuo.inputmethod.default</key>
+			<key>org.yinghuo.inputmethod.Yinghuo.default</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>org.yinghuo.inputmethod.default</string>
+				<string>org.yinghuo.inputmethod.Yinghuo.default</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
 				<key>tsInputModeScriptKey</key>
 				<string>smSimpChinese</string>
 				<key>tsInputModePrimaryInScriptKey</key>
-				<integer>1</integer>
+				<true/>
 				<key>tsInputModeDefaultStateKey</key>
-				<integer>1</integer>
+				<true/>
 				<key>tsInputModeIsVisibleKey</key>
-				<integer>1</integer>
+				<true/>
 				<key>tsInputModeMenuIconFileKey</key>
 				<string>yinghuo.png</string>
 				<key>tsInputModePaletteIconFileKey</key>
@@ -111,7 +129,7 @@
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>org.yinghuo.inputmethod.default</string>
+			<string>org.yinghuo.inputmethod.Yinghuo.default</string>
 		</array>
 	</dict>
 </dict>
