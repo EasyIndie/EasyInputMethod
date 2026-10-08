@@ -35,9 +35,16 @@ jobs:
           echo "结构校验通过"
 
       # 工具链由 rust-toolchain.toml 决定（单一真值，避免漂移），此处不硬编码
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@master
         if: steps.ws.outputs.exists == 'true'
         with:
+          toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
 
       - uses: Swatinem/rust-cache@v2
@@ -70,8 +77,15 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@master
         with:
+          toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-deny
