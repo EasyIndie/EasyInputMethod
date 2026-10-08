@@ -3,7 +3,7 @@
 // 验证：swiftc 链接 staticlib → 从 TSV 加载真实数据 → 五笔 `wq`→「你」、
 // 拼音 `nihao`→「你好」。不涉及 IMK，仅验证引擎 + FFI。
 //
-// 用法（见 run-ffi-smoke.sh）：ffi_smoke <wubi.tsv> <pinyin-chars.tsv> <pinyin-words.tsv>
+// 用法（见 run-ffi-smoke.sh）：ffi_smoke <wubi.tsv> <pinyin-chars.tsv> <pinyin-core.tsv>
 
 import Foundation
 import ime
@@ -15,7 +15,7 @@ func fail(_ message: String) -> Never {
 
 let args = CommandLine.arguments
 guard args.count == 4 else {
-    fail("用法：ffi_smoke <wubi.tsv> <pinyin-chars.tsv> <pinyin-words.tsv>")
+    fail("用法：ffi_smoke <wubi.tsv> <pinyin-chars.tsv> <pinyin-core.tsv>")
 }
 let (wubiPath, charsPath, wordsPath) = (args[1], args[2], args[3])
 

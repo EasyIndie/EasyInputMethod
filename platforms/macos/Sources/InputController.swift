@@ -35,7 +35,7 @@ final class YinghuoInputController: IMKInputController {
         if let resources = Bundle.main.resourceURL {
             let wubi = resources.appendingPathComponent("wubi86-core.tsv").path
             let chars = resources.appendingPathComponent("pinyin-chars.tsv").path
-            let words = resources.appendingPathComponent("pinyin-words.tsv").path
+            let words = resources.appendingPathComponent("pinyin-core.tsv").path
             let fm = FileManager.default
             if fm.fileExists(atPath: wubi) {
                 let charsPath = fm.fileExists(atPath: chars) ? chars : nil

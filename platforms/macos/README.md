@@ -59,13 +59,14 @@ platforms/macos/
 |---|---|---|
 | `data/generated/wubi86-core.tsv` | ✅ 已入库 | 宿主回退内置样本引擎 |
 | `data/generated/pinyin-chars.tsv` | ✅ 已入库 | 不启用拼音 |
-| `data/generated/pinyin-words.tsv` | ⛔ 大文件不入库 | 拼音降级为单音节 |
+| `data/generated/pinyin-core.tsv` | ✅ 已入库（256KiB） | 拼音降级为单音节 |
 
 复现大文件：
 
 ```sh
 ./data/sources/fetch-jieba-dict.sh        # 以及 fetch-pinyin-data.sh / fetch-phrase-pinyin.sh
 cargo run -p ime-pinyin --example generate
+python3 tools/prepare-pinyin-core.py
 ```
 
 ## 手动装载（本机 macOS 27 验收通过）
@@ -173,3 +174,5 @@ Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消
 默认在 `~/Library/Application Support/萤火虫/user-dictionary.tsv` 保存词条数据（不是配置）。显式选字按完整编码累加使用次数，精确用户词条优先于前缀预测，同来源候选按本地使用次数排序；没有时间戳、输入历史或联网同步。预览提供新增/导入/导出按钮，正式宿主输入菜单提供对应入口。
 
 格式为 `scheme\tcode\ttext\tcount`，scheme 为 wubi/pinyin，code 为不带空格的小写编码，count 为正整数。最多 10000 条/2MiB；无效导入不覆盖原文件，重复导入合并取最大次数。导出不得覆盖配置或正在使用的词库。跨会话更新在下一次输入前读取；学习读写失败保留已选文字，预览状态/正式输入菜单显示错误。崩溃留下 user-dictionary.lock 时，请先关闭所有萤火虫会话、备份词库，再移除该锁文件后重试。分发包不包含用户词库。
+
+默认正式/预览已改用 pinyin-core.tsv（ADR-031），不加载 340k 全量词表。全量表只用于派生核心词表；生成校验和与规则见 data/generated/pinyin-core-report.json。

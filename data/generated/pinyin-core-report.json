@@ -1,0 +1,14 @@
+{
+  "source_sha256": "96f310a83c26d51cd8cdc13ea99c6232824ec0cff3276ba96ef5f636b77d931f",
+  "output_sha256": "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f",
+  "budget_bytes": 262144,
+  "output_bytes": 262131,
+  "entries": 12403,
+  "order": "weight descending, word ascending, pinyin ascending",
+  "sources": [
+    "D4",
+    "D5",
+    "D10"
+  ],
+  "license": "CC-BY-SA-4.0"
+}

@@ -177,76 +177,51 @@ impl Engine for CodeTableEngine {
         self.z_wildcard = options.z_wildcard;
     }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
-        if self.z_wildcard && input.contains('z') {
-            let mut candidates: Vec<Candidate> = self
-                .table
-                .entries
-                .iter()
-                .filter(|(code, _)| {
-                    code.len() >= input.len()
-                        && input
-                            .bytes()
-                            .zip(code.bytes())
-                            .all(|(a, b)| a == b'z' || a == b)
-                })
-                .flat_map(|(code, entries)| {
-                    entries.iter().map(move |entry| {
-                        let mut c = Candidate::new(
-                            &entry.text,
-                            code,
-                            entry.weight,
-                            CandidateSource::CodeTable,
-                        );
-                        c.is_prefix = code.len() > input.len();
-                        c
-                    })
-                })
-                .collect();
-            candidates.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
-            candidates.truncate(max);
-            return ConvertResult {
-                candidates,
-                should_commit: None,
+        use std::cmp::Reverse;
+        use std::collections::BinaryHeap;
+        let wildcard = self.z_wildcard && input.contains('z');
+        let mut top = BinaryHeap::new();
+        for (code, entries) in &self.table.entries {
+            let matches = if wildcard {
+                code.len() >= input.len()
+                    && input
+                        .bytes()
+                        .zip(code.bytes())
+                        .all(|(a, b)| a == b'z' || a == b)
+            } else {
+                code.starts_with(input)
             };
-        }
-        let mut candidates: Vec<Candidate> = Vec::new();
-
-        // 精确匹配在前
-        if let Some(list) = self.table.exact(input) {
-            for entry in list {
-                candidates.push(Candidate {
-                    text: entry.text.clone(),
-                    code: input.to_string(),
-                    weight: entry.weight,
-                    source: CandidateSource::CodeTable,
-                    comment: None,
-                    is_prefix: false,
-                });
+            if !matches {
+                continue;
+            }
+            for entry in entries {
+                let rank = (
+                    code == input,
+                    entry.weight,
+                    Reverse(entry.text.as_str()),
+                    Reverse(code.as_str()),
+                );
+                if top.len() < max {
+                    top.push(Reverse(rank));
+                } else if top.peek().is_some_and(|worst| rank > worst.0) {
+                    top.pop();
+                    top.push(Reverse(rank));
+                }
             }
         }
-
-        // 前缀预测在后（code 比 input 长）：收集全部前缀候选后按权重降序截断，
-        // 避免按 code 字典序截断而丢掉高频候选（如 wq 前缀下的「你」）。
-        let mut prefixes: Vec<Candidate> = self
-            .table
-            .prefix(input, usize::MAX)
+        let mut ranked: Vec<_> = top.into_iter().map(|r| r.0).collect();
+        ranked.sort_unstable_by(|a, b| b.cmp(a));
+        let candidates = ranked
             .into_iter()
-            .filter(|(code, _)| code != input)
-            .map(|(code, entry)| Candidate {
-                text: entry.text,
-                code,
-                weight: entry.weight,
-                source: CandidateSource::CodeTable,
-                comment: None,
-                is_prefix: true,
+            .map(|(_, weight, Reverse(text), Reverse(code))| {
+                let mut c = Candidate::new(text, code, weight, CandidateSource::CodeTable);
+                c.is_prefix = code.len() > input.len();
+                c
             })
             .collect();
-        prefixes.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
-        let room = max.saturating_sub(candidates.len());
-        candidates.extend(prefixes.into_iter().take(room));
 
         // 自动上屏：仅当输入为满码长度且精确唯一（"四码唯一自动上屏"的保守实现）。
-        let should_commit = if self.auto_commit && input.len() == self.max_code_len {
+        let should_commit = if self.auto_commit && !wildcard && input.len() == self.max_code_len {
             match self.table.exact(input) {
                 Some(list) if list.len() == 1 => Some(list[0].text.clone()),
                 _ => None,
@@ -288,6 +263,40 @@ mod tests {
              gggg\t龶\t1\n",
         )
         .unwrap()
+    }
+
+    #[test]
+    fn bounded_top_k_preserves_best_candidates_for_prefix_and_wildcard() {
+        let mut table = Table::new();
+        for i in 0..1000 {
+            table.insert("abcd", &format!("词{i:04}"), i);
+        }
+        table.finalize();
+        let mut engine = CodeTableEngine::new(table, 4);
+        let expected = ["词0999", "词0998", "词0997"];
+        assert_eq!(
+            engine
+                .convert("ab", 3)
+                .candidates
+                .iter()
+                .map(|c| c.text.as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
+        engine.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        });
+        assert_eq!(
+            engine
+                .convert("zz", 3)
+                .candidates
+                .iter()
+                .map(|c| c.text.as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
     }
 
     #[test]

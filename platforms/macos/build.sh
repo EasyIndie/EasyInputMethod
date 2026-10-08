@@ -56,8 +56,8 @@ copy_data() {
 }
 copy_data "${GENERATED}/wubi86-core.tsv" "wubi86-core.tsv"
 copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
-copy_data "${GENERATED}/pinyin-words.tsv" "pinyin-words.tsv"
-if [ ! -f "${GENERATED}/pinyin-words.tsv" ]; then
+copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
+if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
   echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现）"
 fi
 

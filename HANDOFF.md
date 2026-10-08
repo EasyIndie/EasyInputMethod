@@ -12,19 +12,19 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（图标资产归档，V4 当前首选） |
+| 最后更新 | 2026-10-08（macOS 发布推进：交互、用户词库及性能） |
 | 更新者 | Codex |
-| 当前阶段 | **P1-M3：T-M3-01 / T-M3-02 / T-M3-05 ✅；独立调试窗口可直接迭代。下一项 T-M3-03 安装/签名/公证脚本** |
-| 当前分支 | `codex/fix-macos-registration`；本轮独立 AppKit 调试窗口（ADR-024） |
+| 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
+| 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、71 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：90 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、122 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。用户指定后续开发调试统一运行 `make macos-preview`；未经再次要求不重装系统输入法；经典 IMK 宿主已实机验证，无需 appex 改造。
+- **下一步**：T-M3-03 固化安装/签名/公证流程与 SBOM；T-M3-04 已配置、本地等价验证通过，远端待 PR。用户指定后续开发调试统一运行 `make macos-preview`；未经再次要求不重装系统输入法；经典 IMK 宿主已实机验证，无需 appex 改造。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -41,6 +41,8 @@
 
 ## 3. 进行中
 
+- 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；引擎 ABI 探针约 17MiB / P95 0.47ms，不代表完整 GUI DoD。
+
 **P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装发布脚本尚未完成。
 
 - T-M3-05 独立窗口完成：`make macos-preview`；自动检查 `./platforms/macos/dev-preview.sh --smoke-test`。debug 增量构建，不需要公证/安装/重启；仍需正式宿主验证 IMK 系统集成。
@@ -51,8 +53,8 @@
 ## 4. 下一步（可执行，按优先级）
 
 1. **T-M3-03**：固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
-2. **P1-M4**：候选翻页与输入交互；T-M3-04 配置完成，远端检查待 PR。
-3. **P1-M4**：按任务卡完善交互（用户词库存储待定）。
+2. **P1-M4**：发布候选包的正式 IMK 多应用交互、性能与用户词库验收；T-M3-04 远端检查待 PR。
+3. **P1-M5**：准备可复现构建说明、SBOM、许可附件与零外联证据。
 
 ## 5. 待决 / 阻塞
 
@@ -81,7 +83,7 @@
 - ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`（钥匙串锁定或不在 GUI 会话）；需在 GUI Terminal 跑一次并点“始终允许”。
 - ⚠️ **LS 影子副本**：同一 bundle id 若在 `build/`、DerivedData 或已删路径有残留登记，Text Input 会绑定影子副本导致静默失败；装完务必 `lsregister -dump` 去重。
 - ⚠️ **IMK Swift 事件方法叫 `handle(_:client:)`**（不是 `handleEvent`；后者在 Swift 3 被重命名）；`Info.plist` 输入模式清单在 `ComponentInputModeDict.tsInputModeListKey`（参照系统输入法实测）。
-- ⚠️ **`pinyin-words.tsv`（8.4MB）不入库**：`build.sh` 缺失时宿主降级（无拼音/单音节），复现见 `platforms/macos/README.md`。
+- **默认拼音为 `pinyin-core.tsv`（256KiB）**：全量词表作为生成输入、不默认装载；ADR-031 和 `docs/reviews/003-macos-performance.md` 记录性能边界。发布不得容忍数据缺失降级。
 - ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符（如 `$model（`）会被当变量名 → 一律写 `${var}`。
 - ⚠️ **许可地雷**：`Arphic Public License`（makemeahanzi / hanzi-writer）**GPL 不兼容**；`GPLv2-only` 与 GPL-3 不兼容；**极点五笔 provenance 存疑**（`rime-wubi86-jidian` 仅可测试）。
 - ⚠️ **worker 产出不会自动提交**：派发后必须**人工复核 + `git add/commit/push`**（个别 worker 会自建 commit，要检查 `git log`/`git status`）。
@@ -98,7 +100,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**82 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**90 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -110,6 +112,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（性能预算）
+- ADR-030/031：码表查询改有界 top-k，默认拼音词表 256KiB；保留全量生成输入及登记许可/SHA。
+- 可复现 C ABI 探针：2200 按键、稳态约 17MiB / P95 0.47ms；完整宿主与最大用户词库仍待测。
+- 两宿主构建、预览与 FFI 冒烟、词表复现、make verify 通过；下一步安装/签名/公证与发布附件。
 
 ### 2026-10-08 · Codex（用户词库与学习）
 - ADR-029：ime-dict 零依赖有界 TSV、原子写与锁、学习排序、新增/导入/导出；两宿主入口接入。
@@ -157,7 +164,3 @@
 - V1–V5 原图及提示词统一收录 assets/icons/，补充版本索引与使用场景说明。
 - 用户当前首选 V4 单线风格；其余版本保留，应用资源尚未替换。
 - 原图完整性与文档链接检查通过；无代码或依赖变更。
-
-### 2026-10-08 · Codex（项目图标设计稿）
-- 按用户要求生成简洁萤火虫图标，深蓝/青绿/暖黄配色；原始 PNG 与提示词保存于 assets/icons/yinghuo-icon-concept-v1.*。
-- 已目视检查；新增 V2 几何、V3 立体、V4 单线、V5 纸感四版及提示词（assets/icons/yinghuo-icon-variants.md），用户当前首选 V4；V4 已暂时接入项目 README 及两种 macOS 应用图标，无代码或依赖变更。

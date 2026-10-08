@@ -85,6 +85,8 @@ jobs:
           ./data/sources/fetch-phrase-pinyin.sh
           ./data/sources/fetch-jieba-dict.sh
           cargo run -p ime-pinyin --example generate
+          python3 tools/prepare-pinyin-core.py
+          git diff --exit-code -- data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
       - name: Build and smoke-test independent preview
         run: ./platforms/macos/dev-preview.sh --smoke-test
       - name: Validate app metadata and icons

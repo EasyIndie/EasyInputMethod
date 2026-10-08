@@ -9,7 +9,7 @@ ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 GEN="${ROOT}/data/generated"
 WUBI="${GEN}/wubi86-core.tsv"
 CHARS="${GEN}/pinyin-chars.tsv"
-WORDS="${GEN}/pinyin-words.tsv"
+WORDS="${GEN}/pinyin-core.tsv"
 
 for f in "${WUBI}" "${CHARS}" "${WORDS}"; do
   if [ ! -f "${f}" ]; then

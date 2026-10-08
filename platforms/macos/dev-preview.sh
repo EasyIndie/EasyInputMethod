@@ -12,7 +12,7 @@ case "${1:-}" in
   --smoke-test) RUN=true; ARGS=(--smoke-test) ;;
   *) echo '用法：dev-preview.sh [--build-only|--smoke-test]' >&2; exit 2 ;;
 esac
-for name in wubi86-core.tsv pinyin-chars.tsv pinyin-words.tsv; do
+for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
   [ -f "${DATA}/${name}" ] || { echo "缺少 ${DATA}/${name}，请按 README 生成真实数据。" >&2; exit 1; }
 done
 APP="${BUILD}/YinghuoPreview.app"

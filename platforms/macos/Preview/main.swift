@@ -167,7 +167,7 @@ if CommandLine.arguments.count == 2 || CommandLine.arguments.count == 3 {
 }
 guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
     pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
-    pinyinWordsPath: data.appendingPathComponent("pinyin-words.tsv").path) else {
+    pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else {
     fputs("无法加载真实词典，请检查 data/generated/。\n", stderr); exit(1)
 }
 let smoke = CommandLine.arguments.contains("--smoke-test")
@@ -235,7 +235,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.importDictionary(bad.path) != IME_OK else { exit(1) }
     guard let restored = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
         pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
-        pinyinWordsPath: data.appendingPathComponent("pinyin-words.tsv").path) else { exit(1) }
+        pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else { exit(1) }
     restored.setMode("mixed"); _ = restored.feed(122); _ = restored.feed(122)
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     try? FileManager.default.removeItem(at: smokeDirectory)
