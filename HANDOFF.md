@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M2 进行中（T-M2-01 ime-config + T-M2-02 ime-pinyin 完成）** |
-| 当前分支 | `main`（本次 T-M2-02 变更未提交） |
+| 当前阶段 | **P1-M2 进行中（T-M2-01/02/03 完成，剩 T-M2-04 inputx-pinyin spike）** |
+| 当前分支 | `main`（本次 T-M2-03 变更未提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+64 单测+1 doctest+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+69 单测+1 doctest+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 全部完成；P1-M2 已开工**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**：`PinyinBackend` trait + 内置轻量兜底（音节切分 + 简拼 + 混输），`ime-cli` 的 `:mode pinyin`/`mixed` 可用。
-- **下一步**：`inputx-pinyin` spike（T-M2-03）；把 `ime-config` 接入 `ime-cli`；拼音反查 CLI 集成；`TBD-4`（英文/包名）。
+- **现在**：**P1-M1 全部完成；P1-M2 基本完成**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**（`PinyinBackend` trait + 内置轻量兜底 + 混输）；**T-M2-03 完成拼音反查首选读音 + `ime-config` 接入 `ime-cli`**（改 `config.toml` 即时生效 + `:set` 调试命令）。
+- **下一步**：`inputx-pinyin` spike（T-M2-04，只调研出结论）；拼音反查 CLI 展示（可选）；`TBD-4`（英文/包名）；P1-M3。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -46,14 +46,14 @@
 
 ## 3. 进行中
 
-**P1-M2（配置 + 拼音 + 混输）进行中**：T-M2-01（`ime-config`）与 T-M2-02（`ime-pinyin`）已完成；拼音反查 CLI/UI 集成与 `inputx-pinyin` spike 尚未开工。
+**P1-M2（配置 + 拼音 + 混输）收尾中**：T-M2-01（`ime-config`）、T-M2-02（`ime-pinyin`）与 T-M2-03（拼音反查首选读音 + `ime-config` 接入 `ime-cli`）已完成；仅剩 T-M2-04（`inputx-pinyin` spike，flash 调研）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M2**：`inputx-pinyin` spike（验证 API/质量/体积，ADR-008；T-M2-03）。
-2. **P1-M2**：把 `ime-config` 接入 `ime-cli`（读快照 + 监听，验证“改 config.toml 即时生效”）。
-3. **P1-M2**：拼音反查（字→拼音）CLI/UI 集成（后端 `reverse_lookup` 已就绪）。
-4. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
+1. **P1-M2**：`inputx-pinyin` spike（T-M2-04，flash 调研，只出结论不改产品代码）。
+2. **可选**：拼音反查 CLI 展示命令（`:pinyin <字>`，后端 `reverse_lookup` 已就绪；无任务卡）。
+3. 定 `TBD-4`：英文/包名（REV-4）。
+4. **P1-M3**：`ime-ffi` C ABI + macOS 宿主（IMKInputController）。
 
 ## 5. 待决 / 阻塞
 
@@ -85,7 +85,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`/`ime-config`/`ime-pinyin`），64 单测 + 1 doctest 通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`/`ime-config`/`ime-pinyin`），69 单测 + 1 doctest 通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -97,6 +97,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M2-03 拼音反查首选读音 + ime-config 接入 ime-cli）
+- `ime-pinyin` 反查改首选读音：`generate.rs` 字表改为「按字分组、D5 首条读音在前」，`reverse_lookup` 据此返回首选（你→ni、的→de、行→xing）；重生成 `pinyin-chars.tsv`（53,087 行，计数不变）；新增反查首选单测。
+- `ime-cli` 接入 `ime-config`：`--config`/`-c`/`IME_CONFIG_PATH` 指定路径（默认 `config.toml`，平台路径留 P1-M3）；`mode` 决定初始模式、`candidate.count` 决定每页候选数；`subscribe`+`FileWatcher`（300ms 轮询/150ms 防抖）使外部编辑即时生效（打印 `[config] <key> 已变更`）；新增 `:set <key> <value>` 调试命令走唯一写路径 `ime_config::set`。
+- 新增 ime-cli 2 个单测（mode/candidate.count 读取）。验证：`make verify` 全绿（69 单测 + 1 doctest；advisories/bans/licenses/sources ok；隐私断言通过）；手工冒烟：启动 mode=pinyin、`:set candidate.count 5`、`:set mode wubi`、非法值报错、外部改 mode/count 即时生效均通过。
+- 遗留：`inputx-pinyin` spike（T-M2-04，flash）未做；`reverse_lookup` 尚无 CLI/UI 命令（仅后端）；配置 C ABI 属 P1-M3。
 
 ### 2026-10-08 · pi（T-M2-02 内置轻量拼音引擎 ime-pinyin）
 - 新建 `crates/ime-pinyin`（零外部依赖、`forbid(unsafe_code)`）：`PinyinBackend` trait（签名理由见 backend.rs 注释）+ `TablePinyinBackend`（音节切分最长优先+回溯 / 全拼整词+单音节字 / 简拼首字母串）+ `PinyinEngine`（`source=Pinyin`，永不自动上屏）。
@@ -155,45 +161,3 @@
 - 调研结论：结构/末笔采用 option 2（从 D3 派生），写 **ADR-017**；新增 `data/generated/gb2312-level1.txt`（GB2312 一级 3755 字）。
 - 验证：`make verify` 全绿（30 测试）。
 - 遗留：可靠拆字数据（字根数/结构/末笔）待引入（T-M1-05 前置，需联网阶段登记新数据源）。
-
-### 2026-10-08 · pi（ADR-016：码表来源决策）
-- T-M1-04 发现：WindInput 的 `wubi86_chaizi.txt`（MIT）含 **27,823 字已验证五笔86 码**。
-- **决定（长期正确性）**：发布码表**只能由自建编码器生成**；第三方码表**仅作验证 oracle，不发布** → 新写 **ADR-016**。
-- 影响：T-M1-03（合体字+识别码）**保留且是核心**（现在可与 oracle 全量对照）；T-M1-05 改为“自建码表 + oracle 回归”。
-- 纠正认知：D2/D3 字根表示体系不同，T-M1-04 的拆字 diff **不能用于裁定**；有效对照是“自建码 vs D3 码”。
-
-### 2026-10-08 · pi（T-M1-04 拆字数据交叉校验）
-- 新增 `data/sources/fetch-wubi-chaizi.sh`（下载 D2 aardio/wubi-lex 86.txt、D3 WindInput wubi86_chaizi.txt；SHA-256 固定并校验；源文件不入库）+ `data/sources.toml`（D2/D3 登记）；`docs/数据来源与许可.md` §1.1 补 SHA-256 与脚本路径。
-- 新增 `crates/wubi-encoder/examples/crosscheck.rs`：产出 `data/generated/chaizi-diff.txt`（交集 6862、仅 D3 独有 20961、分歧 6861；D2 可见字根 vs D3 PUA，差异大属预期）。
-- 验证：`make verify` 全绿（24 测试）；未裁定分歧（留 T-M1-05，pro）。
-
-### 2026-10-08 · pi（T-M1-02 键名字+成字字根）
-- `crates/wubi-encoder`：新增 `key_name_char`（25 键名固定映射）、`is_radical_char`、`encode_key_name`（键连打四次）、`stroke_to_key`（横G竖H撇T捺Y折N）、`encode_chengzi`（键+首次末笔）；新增 `TooFewStrokes` 错误（笔画<2 报错）。
-- 未改动其它 crate；未实现合体字/识别码（留 T-M1-03）。
-- 验证：`cargo test -p wubi-encoder` 13 通过；`make verify` 全绿（24 测试）。
-
-### 2026-10-08 · pi（派发防护 + T-M1-01 质检）
-- T-M1-01 已由 flash worker 完成并**人工复核**：质量优秀，`make verify` 全绿（17 测试）。已提交。
-- 派发工具加防护：`--jobs N`（`CARGO_BUILD_JOBS`）+ 磁盘预检（默认 ≥3 GiB，`--min-free-gb N`）。
-- 硬件实测：可用磁盘 14 GiB（每 worktree ≈22 MB，宽裕）；但仅 **2 物理核** → **并行上限建议 2，当前默认顺序派发**。
-
-### 2026-10-08 · pi（T-M1-01 字根表骨架）
-- 新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv`/`radical_to_key` + `Stroke`/`Structure`/`EncodeError`。
-- 仅字根→键查询，**不含编码逻辑**（留给 T-M1-02/03）；未改动 `ime-core`/`ime-table`/`ime-cli`。
-- 验证：`cargo test -p wubi-encoder` 6 通过；`make verify` 全绿（17 测试、clippy、deny、隐私断言）。
-- 卡外无改动；`ime-cli` 冒烟行为不变。
-
-### 2026-10-08 · pi（重复实验定论）
-- 新增可重复 A/B：`bench-session-vs-workers.sh --workload --repeat`、`usage-compare.sh`（中位数）、`docs/experiments/workloads/`。
-- **N=5 中位数结论**：独立负载 fresh 37.9k vs reuse 43.6k（+15%，分布重叠）；
-  强依赖负载 fresh 230.9k vs reuse 51.9k（**reuse 快 4.4×**，分布不重叠）。
-- **开发约定**：默认每卡新 worker（任务卡保持自包含）；仅“必须接着上卡上下文”的序列用 `--reuse`。
-- 详见 `docs/experiments/session-vs-workers.md`。
-
-### 2026-10-08 · pi（会话 vs worker 实测）
-- 跑通完整 A/B（模型 `deepseek-v4-flash`，负载 = T-M1-01 + T-M1-02），两臂均成功且产出等价。
-- **结论（反直觉）**：对独立任务，**每卡新 worker 更省**（A 521k vs B 918k tokens，+76%）；
-  B 的 cacheHitRate 更高（96.8%）但上下文滚雪球（任务二 cacheRead 3.4×）。
-- 微基准：固定开销 ≈ 4.3k tokens/次；前缀缓存跨会话共享 → 开新会话 ≠ 冷启动。
-- 默认派发改定：**一张卡 = 一个新 worker**；`--reuse` 仅用于强依赖序列。详见 `docs/experiments/session-vs-workers.md`。
-- 注意：provider 未配计价，`cost`=0；用 token 口径。n=1，方差大。

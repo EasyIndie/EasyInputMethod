@@ -7,6 +7,7 @@ rust-version.workspace = true
 description = "萤火虫输入法开发/测试 CLI（不发布）"
 
 [dependencies]
+ime-config.workspace = true
 ime-core.workspace = true
 ime-pinyin.workspace = true
 ime-table.workspace = true

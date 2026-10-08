@@ -91,17 +91,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         });
 
     // ---- 字表：音节 → 字 ----
-    let mut char_rows: Vec<(String, char, i32)> = Vec::new();
+    // 每条记录带 primary 标记：D5 首条读音是首选读音（供 reverse_lookup 返回首选）。
+    let mut char_rows: Vec<(String, char, i32, bool)> = Vec::new();
     let mut char_seen: HashSet<(String, char)> = HashSet::new();
     for (ch, readings) in &d5 {
         let weight = char_weight.get(ch).copied().unwrap_or(DEFAULT_WEIGHT);
-        for r in readings {
+        for (idx, r) in readings.iter().enumerate() {
             if char_seen.insert((r.clone(), *ch)) {
-                char_rows.push((r.clone(), *ch, weight));
+                char_rows.push((r.clone(), *ch, weight, idx == 0));
             }
         }
     }
-    char_rows.sort_by(|a, b| a.0.cmp(&b.0).then(b.2.cmp(&a.2)).then(a.1.cmp(&b.1)));
+    // 按字分组；组内首选读音在前、其余按音节升序（反查据此返回首选读音）。
+    char_rows.sort_by(|a, b| {
+        a.1.cmp(&b.1)
+            .then_with(|| b.3.cmp(&a.3))
+            .then_with(|| a.0.cmp(&b.0))
+    });
     write_file(&chars_out, &render_chars(&char_rows))?;
 
     // ---- 词表：拼音 → 词 ----
@@ -295,7 +301,7 @@ fn is_han(c: char) -> bool {
 // 输出
 // ---------------------------------------------------------------------------
 
-fn render_chars(rows: &[(String, char, i32)]) -> String {
+fn render_chars(rows: &[(String, char, i32, bool)]) -> String {
     let mut out = String::new();
     let _ = writeln!(
         out,
@@ -311,10 +317,10 @@ fn render_chars(rows: &[(String, char, i32)]) -> String {
     );
     let _ = writeln!(
         out,
-        "# weight = jieba 单字词频（缺者 {DEFAULT_WEIGHT}）；同音节内按权重降序。"
+        "# weight = jieba 单字词频（缺者 {DEFAULT_WEIGHT}）；每字首选读音（D5 首条）在前。"
     );
     let _ = writeln!(out, "# 音节\t字\tweight");
-    for (syllable, ch, weight) in rows {
+    for (syllable, ch, weight, _primary) in rows {
         let _ = writeln!(out, "{syllable}\t{ch}\t{weight}");
     }
     out

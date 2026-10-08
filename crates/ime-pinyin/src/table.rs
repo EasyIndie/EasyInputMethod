@@ -51,7 +51,7 @@ pub struct TablePinyinBackend {
     initials: HashMap<String, Vec<(String, i32)>>,
     /// 合法音节集合（字与词音节并集）。
     syllables: HashSet<String>,
-    /// 反查：字 → 首个音节（TSV 按音节升序，故为字典序最小读音）。
+    /// 反查：字 → 首选读音（TSV 每字首选读音行在前，见 generate.rs）。
     char_pinyin: HashMap<char, String>,
     /// 反查：词 → 拼音（空格分隔）。
     word_pinyin: HashMap<String, String>,
@@ -384,5 +384,21 @@ mod tests {
         assert_eq!(b.reverse_lookup("我").as_deref(), Some("wo"));
         assert_eq!(b.reverse_lookup("你好").as_deref(), Some("ni hao"));
         assert_eq!(b.reverse_lookup("未知"), None);
+    }
+
+    #[test]
+    fn reverse_lookup_prefers_first_listed_reading() {
+        // 反查约定：每个字的首选读音（D5 首条）行排在前面。
+        let chars = "# 音节\t字\tweight\n\
+                     xing\t行\t22128\n\
+                     hang\t行\t22128\n\
+                     heng\t行\t22128\n\
+                     de\t的\t318825\n\
+                     di\t的\t318825\n\
+                     ni\t你\t234587\n";
+        let b = TablePinyinBackend::from_tsv(chars, "", "t").unwrap();
+        assert_eq!(b.reverse_lookup("你").as_deref(), Some("ni"));
+        assert_eq!(b.reverse_lookup("的").as_deref(), Some("de"));
+        assert_eq!(b.reverse_lookup("行").as_deref(), Some("xing"));
     }
 }
