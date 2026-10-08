@@ -12,19 +12,19 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（T-M3-02 TextEdit/Safari 实机验收通过） |
+| 最后更新 | 2026-10-08（T-M3-05 独立调试窗口完成） |
 | 更新者 | Codex |
-| 当前阶段 | **P1-M3：T-M3-01 / T-M3-02 ✅；TextEdit/Safari 实体键盘候选及上屏通过。下一项 T-M3-03 安装/签名/公证脚本** |
-| 当前分支 | `codex/fix-macos-registration`；本轮注册修正及关联交接文档，包含接手时的装载记录与 plist 修正 |
+| 当前阶段 | **P1-M3：T-M3-01 / T-M3-02 / T-M3-05 ✅；独立调试窗口可直接迭代。下一项 T-M3-03 安装/签名/公证脚本** |
+| 当前分支 | `codex/fix-macos-registration`；本轮独立 AppKit 调试窗口（ADR-024） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、68 产物零网络符号 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、71 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。经典 IMK 宿主已实机验证，无需 appex 改造。
+- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。日常功能开发运行 `make macos-preview`；经典 IMK 宿主已实机验证，无需 appex 改造。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -41,8 +41,9 @@
 
 ## 3. 进行中
 
-**P1-M3**：T-M3-01、T-M3-02 已完成；安装发布脚本与 macOS CI 尚未完成。
+**P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；安装发布脚本与 macOS CI 尚未完成。
 
+- T-M3-05 独立窗口完成：`make macos-preview`；自动检查 `./platforms/macos/dev-preview.sh --smoke-test`。debug 增量构建，不需要公证/安装/重启；仍需正式宿主验证 IMK 系统集成。
 - ADR-023 修正注册标识；新包已 Developer ID 签名、公证并安装系统域。
 - 用户重启后，TIS 稳定枚举 1/337，选择返回 0；用户实体键盘确认 TextEdit/Safari 的五笔 `wq→你`、拼音兜底 `nihao→你好` 正常。
 - SIG-2 关闭，经典 `.app` 可用。详细证据及历史失败记录见 T-M3-02 任务卡。
@@ -74,7 +75,7 @@
 
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
-- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），且**换 bundle 后必须注销/重启**——只在登录时扫描；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。诊断：`platforms/macos/tools/`。
+- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024），无需该流程。诊断：`platforms/macos/tools/`。
 - ✅ **注册标识**：bundle ID 必须采用带 `.inputmethod.` 的形式；当前为 `org.yinghuo.inputmethod.Yinghuo`，连接名为 `${bundleID}_Connection`（ADR-023）。组合修正及重启后实机通过；不要再据早期失败推断必须 appex。
 - ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定用 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403 A required agreement is missing` → 需 Account Holder 在 App Store Connect 接受协议。
 - ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`（钥匙串锁定或不在 GUI 会话）；需在 GUI Terminal 跑一次并点“始终允许”。
@@ -109,6 +110,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（T-M3-05 独立调试窗口）
+- ADR-024：普通 AppKit 应用复用真实引擎、FFI 与候选窗，debug 构建直跑，无系统安装/公证/重启。
+- 五笔/拼音、选字、退格/Esc、清空及模式切换桌面验证通过；自动预览冒烟、完整 make verify 通过。
+- 本机缓存后构建约 4.25 秒；IMK 系统集成仍走正式宿主验收。下一项 T-M3-03。
 
 ### 2026-10-08 · Codex（T-M3-02 实机验收完成）
 - 重启后枚举/选择正常；用户实体键盘确认 TextEdit/Safari 的「你」「你好」候选和上屏正常。
@@ -161,8 +167,3 @@
 - `include/ime.h` + `module.modulemap`；C 冒烟（clang 链 staticlib）+ Swift `import ime` typecheck 均通过。
 - 真实 `unsafe` 严格只在 `ime-ffi`（其余 crate `forbid`）。`make verify` 全绿（78 单测；135 产物零网络符号）。
 - 遗留：FFI 会话暂用内置样本引擎（真实数据路径留 T-M3-02）；`ime_session_page` 为 no-op（翻页属 P1-M4）。
-
-### 2026-10-08 · pi（P1-M2 完成：T-M2-01…04）
-- `ime-config`（配置子系统，四条铁律 R1–R4）+ `ime-pinyin`（`PinyinBackend` + 内置兜底）+ 反查首选 + `ime-config` 接入 `ime-cli`（改 config 即时生效）。
-- `inputx-pinyin` spike：**不接入**（体积 4.2–22.8 MiB ≫ 0.6 MB 预算），终局自研 FSA（ADR-008 复核）；报告 `docs/reviews/002`。
-- 验收通过：`nihao→你好`、`wo→我`、`nh→你好`、`wq→你`（混输）；`make verify` 全绿。

@@ -96,6 +96,23 @@ ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验
 - 有输出（含 `yinghuo` / `org.yinghuo`）→ 系统已识别，去「系统设置 → 键盘 → 输入法」添加；
 - 无输出 → 装载未通过。核查新 ID、签名/公证、安装路径和影子登记，并检查 `imklaunchagent` 日志；不能仅凭无输出断言未重登或必须改为 appex。
 
+## 日常开发：独立调试窗口
+
+在仓库根目录运行：
+
+```sh
+make macos-preview
+# 仅构建，或运行自动冒烟检查：
+./platforms/macos/dev-preview.sh --build-only
+./platforms/macos/dev-preview.sh --smoke-test
+```
+
+需要 Rust、Xcode/Swift 和本页所述三份 `data/generated/` 真实词典。脚本增量构建 debug `ime-ffi`，链接普通 AppKit 应用到 `platforms/macos/build/preview/YinghuoPreview.app`，直接运行；无需 Developer ID 签名、公证上传、系统目录安装、输入源注册或重启。Apple Silicon 链接器生成的本地签名不涉及开发者证书。词典通过资源符号链接读取，不复制大表。修改代码后关闭窗口，重新运行命令即可；本机缓存后构建一次约 4.25 秒（非性能保证）。
+
+窗口直接接收原始按键，复用正式宿主的 `ImeSession`、`ime-ffi` 与 `CandidateWindow`。支持末尾输入、组合串、五笔/拼音/混输、空格/数字/回车选字、退格删码、Esc 取消和清空。它是输入测试区，暂不支持任意光标位置编辑或完整文本编辑快捷键。启动通过 `ime-config` 读取同一配置路径；模式下拉框只改变当前会话，不保存配置。
+
+自动冒烟检查覆盖真实词典、文本渲染和上述按键流程；窗口可用于大多数引擎及候选窗迭代。IMK 事件分发、跨应用光标定位、输入源注册和系统生命周期仍需在已安装的输入法中验收。调试应用使用独立标识，不替换系统中的 `Yinghuo.app`。设计见 ADR-024。
+
 ## 验证打字
 
 1. 打开 TextEdit，切换到「萤火虫」输入法。
