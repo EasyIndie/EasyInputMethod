@@ -33,7 +33,10 @@ final class PreviewInput: NSTextView {
             return
         }
         guard let text = event.charactersIgnoringModifiers, let scalar = text.unicodeScalars.first else { return }
-        if scalar == "\r" || scalar == "\n" {
+        if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
+        if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
+            session.page(scalar.value == 0xF72C ? -1 : 1)
+        } else if scalar == "\r" || scalar == "\n" {
             if session.isComposing {
                 if let selected = session.select(0) { committed += selected }
             } else { committed += "\n" }
@@ -66,8 +69,8 @@ final class PreviewInput: NSTextView {
         ]))
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
-        let values = session.candidates(limit: 7)
-        status?("组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
+        let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
+        status?("页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
         if session.isComposing, !values.isEmpty, window != nil {
             candidates.update(candidates: values.map(\.text))
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
@@ -181,6 +184,12 @@ if CommandLine.arguments.contains("--smoke-test") {
         }
     }
     keys("wq"); check("wq")
+    guard session.pageCount > 1 else { fputs("缺少分页候选。\n", stderr); exit(1) }
+    let firstPage = session.candidates(limit: 9).map(\.text)
+    keys("=")
+    guard session.pageIndex == 1, session.candidates(limit: 9).map(\.text) != firstPage else { exit(1) }
+    keys("-")
+    guard session.pageIndex == 0 else { exit(1) }
     guard session.candidates(limit: 1).first?.text == "你" else { exit(1) }
     keys(" nihao "); check("你你好")
     keys("wq\u{7f}"); check("你你好w")

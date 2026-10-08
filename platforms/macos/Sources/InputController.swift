@@ -95,11 +95,20 @@ final class YinghuoInputController: IMKInputController {
         guard let chars = event.charactersIgnoringModifiers, let scalar = chars.unicodeScalars.first
         else { return false }
 
+        if let count = ImeConfig.int("candidate.count") {
+            candidateCount = count
+            session.setPageSize(count)
+        }
+        if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
+            session.page(scalar.value == 0xF72C ? -1 : 1)
+            showCandidates(client, session: session)
+            return true
+        }
         // 回车：组合中则上屏首选候选
         if scalar == "\r" || scalar == "\n" {
             guard session.isComposing else { return false }
-            if session.select(0) != nil {
-                clearMarked(client)
+            if let text = session.select(0) {
+                commit(text, to: client)
                 candidateWindow?.hide()
             }
             return true

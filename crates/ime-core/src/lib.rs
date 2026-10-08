@@ -141,12 +141,15 @@ pub struct Session {
     buffer: String,
     candidates: Vec<Candidate>,
     committed: String,
+    page: usize,
+    page_size: usize,
 }
 
 impl Session {
     pub fn new(mode: InputMode) -> Self {
         Self {
             mode,
+            page_size: 9,
             ..Self::default()
         }
     }
@@ -182,7 +185,31 @@ impl Session {
     }
 
     pub fn candidates(&self) -> &[Candidate] {
-        &self.candidates
+        let size = self.page_size.max(1);
+        let start = (self.page * size).min(self.candidates.len());
+        &self.candidates[start..(start + size).min(self.candidates.len())]
+    }
+
+    /// Set page length without changing the composition.
+    pub fn set_page_size(&mut self, size: usize) {
+        let size = size.clamp(3, 9);
+        if self.page_size != size {
+            self.page_size = size;
+            self.page = 0;
+        }
+    }
+
+    pub fn page_index(&self) -> usize {
+        self.page
+    }
+
+    pub fn page_count(&self) -> usize {
+        self.candidates.len().div_ceil(self.page_size.max(1))
+    }
+
+    pub fn page(&mut self, delta: i32) {
+        self.page = (self.page as i64 + i64::from(delta))
+            .clamp(0, self.page_count().saturating_sub(1) as i64) as usize;
     }
 
     pub fn committed(&self) -> &str {
@@ -233,7 +260,7 @@ impl Session {
                 self.recompute()
             }
             ' ' => {
-                if let Some(first) = self.candidates.first() {
+                if let Some(first) = self.candidates().first() {
                     let text = first.text.clone();
                     self.commit(&text);
                     KeyOutcome::Committed(text)
@@ -244,13 +271,17 @@ impl Session {
             }
             '1'..='9' => {
                 let idx = (key as u8 - b'1') as usize;
-                if let Some(c) = self.candidates.get(idx) {
+                if let Some(c) = self.candidates().get(idx) {
                     let text = c.text.clone();
                     self.commit(&text);
                     KeyOutcome::Committed(text)
                 } else {
                     KeyOutcome::Consumed
                 }
+            }
+            '-' | '+' | '=' => {
+                self.page(if key == '-' { -1 } else { 1 });
+                KeyOutcome::Consumed
             }
             '\u{8}' | '\u{7f}' => {
                 // 退格
@@ -273,7 +304,7 @@ impl Session {
 
     /// 选择第 `index` 个候选并上屏，返回上屏文本。
     pub fn select(&mut self, index: usize) -> Option<String> {
-        let text = self.candidates.get(index)?.text.clone();
+        let text = self.candidates().get(index)?.text.clone();
         self.commit(&text);
         Some(text)
     }
@@ -283,6 +314,7 @@ impl Session {
         self.composing = false;
         self.buffer.clear();
         self.candidates.clear();
+        self.page = 0;
     }
 
     fn commit(&mut self, text: &str) {
@@ -296,7 +328,7 @@ impl Session {
         let mut auto: Option<String> = None;
 
         for engine in self.active_engines() {
-            let result = engine.convert(&self.buffer, 9);
+            let result = engine.convert(&self.buffer, 256);
             if result.should_commit.is_some() && auto.is_none() {
                 auto = result.should_commit;
             }
@@ -308,6 +340,7 @@ impl Session {
         let mut seen = std::collections::HashSet::new();
         merged.retain(|c| seen.insert(c.text.clone()));
         self.candidates = merged;
+        self.page = 0;
 
         if let Some(text) = auto {
             self.commit(&text);
@@ -352,6 +385,62 @@ mod tests {
         let mut s = Session::new(mode);
         s.set_wubi_engine(Box::new(MockEngine));
         s
+    }
+
+    struct ManyEngine;
+    impl Engine for ManyEngine {
+        fn convert(&self, input: &str, max: usize) -> ConvertResult {
+            ConvertResult {
+                candidates: (0..20)
+                    .take(max)
+                    .map(|i| {
+                        Candidate::new(
+                            format!("词{i:02}"),
+                            input,
+                            100 - i,
+                            CandidateSource::CodeTable,
+                        )
+                    })
+                    .collect(),
+                should_commit: None,
+            }
+        }
+        fn engine_type(&self) -> EngineType {
+            EngineType::CodeTable
+        }
+        fn max_code_length(&self) -> usize {
+            4
+        }
+    }
+
+    #[test]
+    fn pagination_selects_visible_candidates_and_resets_on_edit() {
+        let mut s = Session::new(InputMode::WubiOnly);
+        s.set_wubi_engine(Box::new(ManyEngine));
+        s.set_page_size(7);
+        s.handle_key('a');
+        assert_eq!(s.page_count(), 3);
+        s.page(-1);
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        assert_eq!(s.candidates()[0].text, "词07");
+        assert_eq!(s.handle_key('2'), KeyOutcome::Committed("词08".into()));
+        s.handle_key('a');
+        s.page(i32::MAX);
+        assert_eq!(s.page_index(), 2);
+        assert_eq!(s.candidates().len(), 6);
+        s.handle_key('b');
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        s.handle_key('\u{7f}');
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        s.set_page_size(3);
+        assert_eq!(s.page_index(), 0);
+        assert_eq!(s.page_count(), 7);
+        s.page(1);
+        assert_eq!(s.select(0), Some("词03".into()));
+        assert_eq!(s.page_count(), 0);
     }
 
     #[test]

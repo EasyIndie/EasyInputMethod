@@ -73,6 +73,7 @@ pub struct ImeSession {
     ffi_candidates: Vec<ImeCandidate>,
     /// 组合缓冲区的 NUL 结尾视图（借用给 C/Swift），随会话变更刷新。
     ffi_buffer: Option<CString>,
+    ffi_strings: Vec<(Option<CString>, Option<CString>)>,
 }
 
 fn source_to_int(source: CandidateSource) -> i32 {
@@ -109,6 +110,7 @@ impl ImeSession {
             session,
             ffi_candidates: Vec::new(),
             ffi_buffer: None,
+            ffi_strings: Vec::new(),
         });
         s.refresh();
         s
@@ -116,11 +118,22 @@ impl ImeSession {
 
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
     fn refresh(&mut self) {
+        self.ffi_strings = self
+            .session
+            .candidates()
+            .iter()
+            .map(|c| {
+                (
+                    CString::new(c.text.as_str()).ok(),
+                    CString::new(c.code.as_str()).ok(),
+                )
+            })
+            .collect();
         let mut view: Vec<ImeCandidate> = Vec::with_capacity(self.session.candidates().len());
-        for c in self.session.candidates() {
+        for (c, (text, code)) in self.session.candidates().iter().zip(&self.ffi_strings) {
             view.push(ImeCandidate {
-                text: c.text.as_ptr() as *const c_char,
-                code: c.code.as_ptr() as *const c_char,
+                text: text.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
+                code: code.as_ref().map_or(ptr::null(), |s| s.as_ptr()),
                 weight: c.weight,
                 source: source_to_int(c.source),
                 is_prefix: i32::from(c.is_prefix),
@@ -293,16 +306,42 @@ pub extern "C" fn ime_session_select(session: *mut ImeSession, index: i32) -> i3
     })
 }
 
-/// 候选翻页。候选窗翻页状态属宿主（P1-M4）；`ime-core` 目前固定每页
-/// 最多 9 条候选、无跨页状态，故本入口保留 ABI 稳定、暂为 no-op。
+/// Move by a signed page delta; clamp at both ends.
 #[no_mangle]
-pub extern "C" fn ime_session_page(session: *mut ImeSession, _delta: i32) -> i32 {
+pub extern "C" fn ime_session_page(session: *mut ImeSession, delta: i32) -> i32 {
     catch_status(|| {
-        // SAFETY：契约见模块注释。
+        // SAFETY: the caller owns a live, thread-bound session.
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
-        let _ = s;
+        s.session.page(delta);
+        s.refresh();
         Ok(IME_OK)
     })
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_set_page_size(session: *mut ImeSession, size: i32) -> i32 {
+    catch_status(|| {
+        if !(3..=9).contains(&size) {
+            return Err(IME_ERR_INVALID_INPUT);
+        }
+        // SAFETY: the caller owns a live, thread-bound session.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.session.set_page_size(size as usize);
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_page_index(session: *mut ImeSession) -> i32 {
+    // SAFETY: a non-null pointer must be a live session, per the ABI contract.
+    unsafe { session.as_ref() }.map_or(-1, |s| s.session.page_index() as i32)
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_page_count(session: *mut ImeSession) -> i32 {
+    // SAFETY: a non-null pointer must be a live session, per the ABI contract.
+    unsafe { session.as_ref() }.map_or(-1, |s| s.session.page_count() as i32)
 }
 
 /// 取已上屏文本（库分配，调用方负责 [`ime_string_free`]）。
@@ -449,7 +488,52 @@ mod tests {
     }
 
     #[test]
-    fn page_is_safe_noop_for_now() {
+    fn candidate_strings_are_terminated_and_owned_across_pages() {
+        let mut table = Table::new();
+        for i in 0..20 {
+            table.insert("ab", &format!("候选词语{i:02}"), 100 - i);
+        }
+        table.finalize();
+        let boxed = ImeSession::from_engines(
+            InputMode::WubiOnly,
+            Some(Box::new(CodeTableEngine::new(table, 4))),
+            None,
+        );
+        let s = Box::into_raw(boxed);
+        assert_eq!(ime_session_set_page_size(s, 7), IME_OK);
+        assert_eq!(ime_session_set_page_size(s, 10), IME_ERR_INVALID_INPUT);
+        ime_session_key(s, 'a' as u32);
+        ime_session_key(s, 'b' as u32);
+        assert_eq!(ime_session_page_count(s), 3);
+        assert_eq!(ime_session_page(s, 1), IME_OK);
+        let list = ime_session_candidates(s);
+        assert_eq!(list.len, 7);
+        // SAFETY: list strings are borrowed from a live session until the next mutation.
+        let first = unsafe { &*list.items };
+        assert_eq!(
+            unsafe { std::ffi::CStr::from_ptr(first.text) }
+                .to_str()
+                .unwrap(),
+            "候选词语07"
+        );
+        assert_eq!(
+            unsafe { std::ffi::CStr::from_ptr(first.code) }.to_bytes(),
+            b"ab"
+        );
+        assert_eq!(ime_session_select(s, 1), IME_OK);
+        let committed = ime_session_commit(s);
+        assert_eq!(
+            unsafe { std::ffi::CStr::from_ptr(committed.data) }
+                .to_str()
+                .unwrap(),
+            "候选词语08"
+        );
+        ime_string_free(committed);
+        ime_session_free(s);
+    }
+
+    #[test]
+    fn page_without_composition_is_safe() {
         let s = ime_session_new();
         assert_eq!(ime_session_page(s, 1), IME_OK);
         assert_eq!(ime_session_page(s, -1), IME_OK);

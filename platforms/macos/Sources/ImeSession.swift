@@ -85,6 +85,11 @@ final class ImeSession {
         }
     }
 
+    var pageIndex: Int { Int(ime_session_page_index(handle)) }
+    var pageCount: Int { Int(ime_session_page_count(handle)) }
+    func setPageSize(_ size: Int) { _ = ime_session_set_page_size(handle, Int32(size)) }
+    func page(_ delta: Int) { _ = ime_session_page(handle, Int32(delta)) }
+
     /// 取已上屏文本（无内容返回空串）。
     func commit() -> String {
         guard let handle else { return "" }
