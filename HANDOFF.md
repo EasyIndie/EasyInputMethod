@@ -40,8 +40,8 @@
 
 ## 3. 进行中
 
-**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）✅ 代码完成**（编译 + 打包 + FFI 运行时冒烟均通过）。
-> ⚠️ T-M3-02 的**验收**必须人工做：`./platforms/macos/build.sh` → 装到 `~/Library/Input Methods/` → 注销/重登 → TextEdit 试打 `wq`→你、`nihao`→你好（步骤见 `platforms/macos/README.md`）。
+**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）代码完成**（编译 + 打包 + FFI 运行时冒烟均通过），但**人工装载仍未成功**：
+> ⚠️ `.app` 包已在**登录前**就位，但 `TISCreateInputSourceList` 仍枚举不到（系统 282 个输入源里无我们）；`TISFileInterrogator` 报 `inputSourceTableCountSys 0`。已改用标准 IMK plist（双写 `tsInputModeListKey` + `ComponentInputModeDict`、加 `LSBackgroundOnly`）+ ASCII 包名 `Yinghuo.app`，**待再次登录/重启验证**。详见 `docs/tasks/T-M3-02.md` 排查记录。
 
 ## 4. 下一步（可执行，按优先级）
 
@@ -102,6 +102,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M3-02 装载排查：`.app` 仍不可见）
+- 用户实测：`.inputmethod` 不认（macOS 13 LaunchServices `-10811`）→ 改 `.app`；修正后的 `.app` 在**登录前**就位仍不被 TIS 枚举。
+- 证据：`TISCreateInputSourceList` 282 源含 Sogou，唯独无我们；`TISFileInterrogator` 报 `inputSourceTableCountSys 0`；系统内 IME 均为 `.app` + Developer ID。
+- 本次改：`Info.plist` 双写顶层 `tsInputModeListKey` + `ComponentInputModeDict`、加 `LSBackgroundOnly`、per-mode 图标；bundle 名改 ASCII `Yinghuo.app`。
+- 待验证：重启/重登后能否出现；否则下一步试 `/Library/Input Methods/`（sudo）。
 
 ### 2026-10-08 · pi（T-M3-02 Swift/IMK 宿主）
 - 新建 `platforms/macos/`：`main.swift`/`InputController.swift`/`CandidateWindow.swift`（纯代码 `NSPanel`）/`ImeSession.swift`/`Config.swift` + `build.sh` + `Info.plist` + README + 诊断工具 + FFI 冒烟。

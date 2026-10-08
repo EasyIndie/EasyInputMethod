@@ -6,15 +6,16 @@
 #
 # 用法：./platforms/macos/build.sh
 #
-# 产物：platforms/macos/build/萤火虫.app
+# 产物：platforms/macos/build/Yinghuo.app
 #
 # ⚠️ 必须是 .app：macOS 13 的 LaunchServices 无法扫描 .inputmethod（实测 -10811）。
+# ⚠️ bundle 名与 CFBundleName 用 ASCII（Yinghuo）；中文显示名由 InfoPlist.strings 提供。
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build"
-APP_NAME="萤火虫"
+APP_NAME="Yinghuo"
 APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
 EXECUTABLE="Yinghuo"
 

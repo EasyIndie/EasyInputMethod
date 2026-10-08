@@ -3,16 +3,14 @@
 <!--
   萤火虫输入法 · macOS 宿主 Info.plist
 
-  键名依据本机既有 IMK 输入法（/System/Library/Input Methods/*.app 与
-  /Library/Input Methods/SogouWBInput.app）实测结构：输入模式清单放在
-  ComponentInputModeDict 下的 tsInputModeListKey，可见顺序在
-  tsVisibleInputModeOrderedArrayKey。
-
-  ⚠️ CFBundleIdentifier / 连接名使用暂定值 org.yinghuo.inputmethod，
-     最终包名取决于 TBD-4（见 docs/决策记录.md）。
+  为最大化兼容，同时提供两种输入模式清单写法：
+    - 顶层 tsInputModeListKey（第三方 IMK 惯例，Squirrel 等）
+    - ComponentInputModeDict.tsInputModeListKey（Apple 内建 IME / Sogou 使用）
+  键名依据本机实测（/System/Library/Input Methods/*.app 与 SogouWBInput.app）。
 
   ⚠️ 必须是 .app bundle（macOS 13 的 LaunchServices 无法扫描 .inputmethod，
      实测报 -10811）——见 ADR-022 / platforms/macos/README.md。
+  ⚠️ bundle 标识暂用 org.yinghuo.inputmethod，最终包名取决于 TBD-4。
 -->
 <plist version="1.0">
 <dict>
@@ -36,12 +34,20 @@
 	<string>0.1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleSupportedPlatforms</key>
+	<array>
+		<string>MacOSX</string>
+	</array>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.13</string>
+	<key>LSBackgroundOnly</key>
+	<true/>
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
+	<key>NSSupportsSuddenTermination</key>
+	<true/>
 	<key>InputMethodConnectionName</key>
 	<string>Yinghuo_InputMethod_Connection</string>
 	<key>InputMethodServerControllerClass</key>
@@ -55,6 +61,30 @@
 		<string>Latn</string>
 		<string>Hans</string>
 	</array>
+	<key>tsInputModeListKey</key>
+	<dict>
+		<key>org.yinghuo.inputmethod.default</key>
+		<dict>
+			<key>TISInputSourceID</key>
+			<string>org.yinghuo.inputmethod.default</string>
+			<key>TISIntendedLanguage</key>
+			<string>zh-Hans</string>
+			<key>tsInputModeScriptKey</key>
+			<string>smSimpChinese</string>
+			<key>tsInputModePrimaryInScriptKey</key>
+			<integer>1</integer>
+			<key>tsInputModeDefaultStateKey</key>
+			<integer>1</integer>
+			<key>tsInputModeIsVisibleKey</key>
+			<integer>1</integer>
+			<key>tsInputModeMenuIconFileKey</key>
+			<string>yinghuo.png</string>
+			<key>tsInputModePaletteIconFileKey</key>
+			<string>yinghuo.png</string>
+			<key>tsInputModeAlternateMenuIconFileKey</key>
+			<string>yinghuo.png</string>
+		</dict>
+	</dict>
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
@@ -73,6 +103,10 @@
 				<integer>1</integer>
 				<key>tsInputModeIsVisibleKey</key>
 				<integer>1</integer>
+				<key>tsInputModeMenuIconFileKey</key>
+				<string>yinghuo.png</string>
+				<key>tsInputModePaletteIconFileKey</key>
+				<string>yinghuo.png</string>
 			</dict>
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>

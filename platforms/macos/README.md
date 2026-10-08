@@ -39,7 +39,7 @@ platforms/macos/
 ./platforms/macos/build.sh
 ```
 
-产出 `platforms/macos/build/萤火虫.app`（已做 ad-hoc 签名）。
+产出 `platforms/macos/build/Yinghuo.app`（已做 ad-hoc 签名）。
 
 > **必须是 `.app`，不能是 `.inputmethod`。** 本机实测：macOS 13 的 LaunchServices
 > 无法扫描 `.inputmethod`（报 `-10811`），且系统里所有输入法都是 `.app`（见 ADR-022）。
@@ -75,10 +75,10 @@ cargo run -p ime-pinyin --example generate
 1. 构建：`./platforms/macos/build.sh`
 2. 拷贝到用户输入法目录（先删旧副本）：
    ```sh
-   rm -rf ~/Library/Input\ Methods/萤火虫.app ~/Library/Input\ Methods/萤火虫.inputmethod
-   cp -R "platforms/macos/build/萤火虫.app" ~/Library/Input\ Methods/
-   xattr -dr com.apple.quarantine ~/Library/Input\ Methods/萤火虫.app
-   codesign --force --deep --sign - ~/Library/Input\ Methods/萤火虫.app
+   rm -rf ~/Library/Input\ Methods/Yinghuo.app ~/Library/Input\ Methods/萤火虫.inputmethod
+   cp -R "platforms/macos/build/Yinghuo.app" ~/Library/Input\ Methods/
+   xattr -dr com.apple.quarantine ~/Library/Input\ Methods/Yinghuo.app
+   codesign --force --deep --sign - ~/Library/Input\ Methods/Yinghuo.app
    ```
 3. **注销并重新登录**（或重启）——**这一步不可省**。
    macOS 只在**登录时**扫描 `~/Library/Input Methods/` 下的输入法 bundle；
