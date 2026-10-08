@@ -68,9 +68,9 @@ platforms/macos/
 cargo run -p ime-pinyin --example generate
 ```
 
-## 手动装载（当前验收未通过）
+## 手动装载（本机 macOS 27 验收通过）
 
-当前 macOS 27 验证机上的旧包已公证，但仍未被枚举。ADR-023 修正注册标识后，必须重新完成签名与公证；`build.sh` 的 ad-hoc 产物仅用于开发校验，不能视为已可装载。T-M3-03 将固化安装流程。
+ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验收：Developer ID 签名、公证、系统域安装、重启后，用户确认 TextEdit/Safari 的 `wq→你`、`nihao→你好` 正常。每次重新构建仍须重新签名/公证；`build.sh` 的 ad-hoc 产物用于开发校验。T-M3-03 将固化安装流程。
 
 1. 构建：`./platforms/macos/build.sh`。
 2. 在 GUI Terminal 里，对构建产物使用自己的 Developer ID 身份重新签名、公证：

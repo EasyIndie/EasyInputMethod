@@ -12,9 +12,9 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（T-M3-02 已公证安装；待注销重登验收） |
+| 最后更新 | 2026-10-08（T-M3-02 TextEdit/Safari 实机验收通过） |
 | 更新者 | Codex |
-| 当前阶段 | **P1-M3：ADR-023 修正经典 IMK 注册标识；新包构建通过，新包 Developer ID/公证/系统域安装通过；TIS 短暂枚举但无法选择，待重登验收** |
+| 当前阶段 | **P1-M3：T-M3-01 / T-M3-02 ✅；TextEdit/Safari 实体键盘候选及上屏通过。下一项 T-M3-03 安装/签名/公证脚本** |
 | 当前分支 | `codex/fix-macos-registration`；本轮注册修正及关联交接文档，包含接手时的装载记录与 plist 修正 |
 | 活跃 PR | 无 |
 | 最近一次 `make verify` | ✅ 本轮完整通过：82 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、68 产物零网络符号 |
@@ -24,7 +24,7 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：新包已签名/公证并装系统域；注销/重登后枚举 `org.yinghuo.inputmethod.Yinghuo`，验证 TextEdit/Safari。暂缓 appex 改造（未找到公开入口证据）。详见 `docs/tasks/T-M3-02.md` 第三轮。
+- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。经典 IMK 宿主已实机验证，无需 appex 改造。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -41,23 +41,17 @@
 
 ## 3. 进行中
 
-**P1-M3**：`ime-ffi` ✅；**T-M3-02 代码完成且自测通过**（编译/打包；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`）。
+**P1-M3**：T-M3-01、T-M3-02 已完成；安装发布脚本与 macOS CI 尚未完成。
 
-**T-M3-02 装载验收（第三轮 · Codex）**：
-- 修正 bundle ID、模式 ID、连接名（ADR-023），构建/plist/ad-hoc 校验及 FFI 冒烟通过。
-- Xcode 27 模板无 Input Method Extension；公开 SDK 未将 IMKServer 标弃用。内置 appex 不足以证明第三方必须迁移。
-- 系统日志有拒绝连接名的错误，但对应 bundle ID 隐去；修正是优先实验，尚未证明根因。
-- 用户明确批准后，Apple 公证 Accepted（submission `e416c923-0dc4-44f4-8aea-6625fb87489e`）；staple、系统域签名/票据/spctl 校验通过。
-- `/Library/Input Methods/Yinghuo.app` 已替换为新 ID；旧包备份在 `/private/tmp/yinghuo-acceptance-backup/Yinghuo.app`。
-- TISRegister 后曾枚举 1/337（已启用），但选择返回 -50；宿主启动后又为 0/335，设置搜索无结果。宿主能运行，不等于可输入。待注销/重登；TextEdit/Safari 打字未验收。
-- 已恢复验收前的搜狗拼音（选择返回 0）；CLI 选择机制有可用基线。
+- ADR-023 修正注册标识；新包已 Developer ID 签名、公证并安装系统域。
+- 用户重启后，TIS 稳定枚举 1/337，选择返回 0；用户实体键盘确认 TextEdit/Safari 的五笔 `wq→你`、拼音兜底 `nihao→你好` 正常。
+- SIG-2 关闭，经典 `.app` 可用。详细证据及历史失败记录见 T-M3-02 任务卡。
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **T-M3-02**：用户保存工作并注销/重登（或重启）后，重新枚举 `org.yinghuo.inputmethod.Yinghuo.default`，从设置添加并选择，验证 TextEdit/Safari。新包已签名/公证/安装，无需重建。
-2. 若仍失败：获取本次登录的 imklaunchagent 日志，区分注册、信任和连接错误；再考虑干净用户实验。未经公开 API 核验，不改 appex。
-3. **T-M3-03**：验收后固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
-4. **T-M3-04**：CI 增加 macOS 编译检查。
+1. **T-M3-03**：固化安装/签名/公证流程；将 SIG-1 策略并入 ADR 与总方案。
+2. **T-M3-04**：CI 增加 macOS 编译检查。
+3. **P1-M4**：按任务卡完善交互（用户词库存储待定）。
 
 ## 5. 待决 / 阻塞
 
@@ -70,7 +64,7 @@
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；待并入 ADR + `build.sh` 参数化 |
-| **SIG-2** | ADR-023 新包已公证安装，临时注册可枚举但选择失败；待重登扫描；经典 IMK 已弃用的假设无公开证据 | **阻塞 T-M3-02 人工验收** |
+| **SIG-2** | ✅ 已关闭：ADR-023 新包重启后枚举/选择正常，TextEdit/Safari 用户实测通过；经典 IMK `.app` 可用 | 否 |
 
 ## 6. 必须知道的坑与硬约束
 
@@ -81,7 +75,7 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），且**换 bundle 后必须注销/重启**——只在登录时扫描；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。诊断：`platforms/macos/tools/`。
-- ⛔ **Xcode 机实测（macOS 27）**：即便 **Developer ID + hardened runtime + 公证 + 系统域 `/Library/Input Methods` + 布尔 plist + LS 单一登记**，扫描器重建的 `.kbdx` 缓存仍**只收搜狗不收我们** → 不能断言经典机制失效；先验 ADR-023 注册修正（§5 SIG-2 / T-M3-02 卡）。
+- ✅ **注册标识**：bundle ID 必须采用带 `.inputmethod.` 的形式；当前为 `org.yinghuo.inputmethod.Yinghuo`，连接名为 `${bundleID}_Connection`（ADR-023）。组合修正及重启后实机通过；不要再据早期失败推断必须 appex。
 - ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定用 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403 A required agreement is missing` → 需 Account Holder 在 App Store Connect 接受协议。
 - ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`（钥匙串锁定或不在 GUI 会话）；需在 GUI Terminal 跑一次并点“始终允许”。
 - ⚠️ **LS 影子副本**：同一 bundle id 若在 `build/`、DerivedData 或已删路径有残留登记，Text Input 会绑定影子副本导致静默失败；装完务必 `lsregister -dump` 去重。
@@ -115,6 +109,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（T-M3-02 实机验收完成）
+- 重启后枚举/选择正常；用户实体键盘确认 TextEdit/Safari 的「你」「你好」候选和上屏正常。
+- T-M3-02 完成，SIG-2 关闭；保留经典 IMK .app；同步 ROADMAP/任务卡/README。
+- 本轮仅文档收尾，沿用此前完整 make verify 通过结果；下一项 T-M3-03。
 
 ### 2026-10-08 · Codex（用户批准公证并实机验收）
 - 公证 Accepted、staple/spctl/严格签名校验通过；新包已装系统域，旧包备份在 /private/tmp。
@@ -167,8 +166,3 @@
 - `ime-config`（配置子系统，四条铁律 R1–R4）+ `ime-pinyin`（`PinyinBackend` + 内置兜底）+ 反查首选 + `ime-config` 接入 `ime-cli`（改 config 即时生效）。
 - `inputx-pinyin` spike：**不接入**（体积 4.2–22.8 MiB ≫ 0.6 MB 预算），终局自研 FSA（ADR-008 复核）；报告 `docs/reviews/002`。
 - 验收通过：`nihao→你好`、`wo→我`、`nh→你好`、`wq→你`（混输）；`make verify` 全绿。
-
-### 2026-10-08 · pi（P1-M1 完成：自建码表）
-- 编码器全规则 + 单字表（27,823 字，双 oracle GB1 100%）+ 词组多候选表（jieba 词频）+ 内置核心 491,854 B ≤ 0.6MB。
-- 关键决策：ADR-016（自建 + oracle）、ADR-017/018/019（结构/末笔独立来源不可得 → 多 oracle 验证）、ADR-020（字根来源改 D3 拆字）、ADR-021（多候选）。
-- `ime-table`/`ime-cli` 接入正式码表；`wq→你`、`kwwl→中华人民共和国` 实测通过。

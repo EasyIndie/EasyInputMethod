@@ -54,10 +54,10 @@
 ### P1-M3 macOS 宿主
 
 - [x] `ime-ffi`：C ABI（会话 + 配置接口）
-- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02（代码完成；**人工装载仍未通过**：SIG-1 签名/公证已定，SIG-2 已修正注册标识（ADR-023），新包已公证安装，待重登装载验收，见卡）
+- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02 完成；ADR-023 注册修正 + Developer ID/公证/重启后，TextEdit/Safari 实体键盘验收通过
 - [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
 - [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）
-- [ ] **验收**：TextEdit/Safari 里能五笔打字
+- [x] **验收**：TextEdit/Safari 里能五笔打字（2026-10-08，用户实体键盘确认；混输拼音兜底也通过）
 
 ### P1-M4 交互完善
 
