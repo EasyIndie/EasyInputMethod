@@ -71,7 +71,7 @@ final class PreviewInput: NSTextView {
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
-        status?("页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
+        status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
         if session.isComposing, !values.isEmpty, window != nil {
             candidates.update(candidates: values.map(\.text))
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
@@ -115,7 +115,10 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         mode.selectItem(at: ["mixed", "wubi", "pinyin"].firstIndex(of: initial) ?? 0)
         session.setMode(initial)
         let clear = NSButton(title: "清空", target: self, action: #selector(clearInput))
-        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear])
+        let add = NSButton(title: "新增词条", target: self, action: #selector(addWord))
+        let importButton = NSButton(title: "导入词库", target: self, action: #selector(importWords))
+        let exportButton = NSButton(title: "导出词库", target: self, action: #selector(exportWords))
+        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton])
         controls.orientation = .horizontal
         let stack = NSStackView(views: [hint, controls, scroll, status])
         stack.orientation = .vertical
@@ -146,6 +149,9 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         session.setMode(["mixed", "wubi", "pinyin"][sender.indexOfSelectedItem])
         window?.makeFirstResponder(input)
     }
+    @objc func addWord() { UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func importWords() { UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func exportWords() { UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func clearInput() { input?.clear(); window?.makeFirstResponder(input) }
     func windowDidResignKey(_ notification: Notification) { input?.cancelComposition() }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
@@ -219,6 +225,19 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard ImeConfig.int("candidate.count") == 3 else { fputs("配置外部编辑未生效。\n", stderr); exit(1) }
     session.setMode("mixed"); view.clear(); keys("wq")
     guard session.candidates(limit: 9).count == 3 else { exit(1) }
+    guard session.addWord(scheme: "wubi", code: "zz", text: "离线测试词") == IME_OK else { exit(1) }
+    view.clear(); keys("zz "); check("离线测试词")
+    let exported = smokeDirectory.appendingPathComponent("export.tsv")
+    guard session.exportDictionary(exported.path) == IME_OK else { exit(1) }
+    guard session.importDictionary(exported.path) == IME_OK else { exit(1) }
+    let bad = smokeDirectory.appendingPathComponent("bad.tsv")
+    try "broken".write(to: bad, atomically: true, encoding: .utf8)
+    guard session.importDictionary(bad.path) != IME_OK else { exit(1) }
+    guard let restored = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
+        pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
+        pinyinWordsPath: data.appendingPathComponent("pinyin-words.tsv").path) else { exit(1) }
+    restored.setMode("mixed"); _ = restored.feed(122); _ = restored.feed(122)
+    guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字/回车选字、退格/Esc、清空。")
     exit(0)

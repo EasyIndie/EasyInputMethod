@@ -86,6 +86,19 @@ final class ImeSession {
         }
     }
 
+    var dictionaryError: Int32 { ime_session_dictionary_error(handle) }
+    func addWord(scheme: String, code: String, text: String) -> Int32 {
+        scheme.withCString { a in code.withCString { b in text.withCString { c in
+            ime_session_dictionary_add(handle, a, b, c)
+        } } }
+    }
+    func importDictionary(_ path: String) -> Int32 {
+        path.withCString { ime_session_dictionary_import(handle, $0) }
+    }
+    func exportDictionary(_ path: String) -> Int32 {
+        path.withCString { ime_session_dictionary_export(handle, $0) }
+    }
+
     var isEnglish: Bool { ime_session_is_english(handle) == 1 }
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }

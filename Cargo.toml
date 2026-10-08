@@ -10,6 +10,7 @@ rust-version = "1.98"
 description = "萤火虫输入法：跨平台、离线、只做核心输入的中文输入法"
 
 [workspace.dependencies]
+ime-dict = { path = "crates/ime-dict" }
 ime-config = { path = "crates/ime-config" }
 ime-core = { path = "crates/ime-core" }
 ime-pinyin = { path = "crates/ime-pinyin" }

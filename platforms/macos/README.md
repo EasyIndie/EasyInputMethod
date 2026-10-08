@@ -167,3 +167,9 @@ macOS job 独立运行 Rust 全量验证、正式宿主构建、按登记许可�
 ## 输入交互
 
 Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。
+
+## 用户词库与学习
+
+默认在 `~/Library/Application Support/萤火虫/user-dictionary.tsv` 保存词条数据（不是配置）。显式选字按完整编码累加使用次数，精确用户词条优先于前缀预测，同来源候选按本地使用次数排序；没有时间戳、输入历史或联网同步。预览提供新增/导入/导出按钮，正式宿主输入菜单提供对应入口。
+
+格式为 `scheme\tcode\ttext\tcount`，scheme 为 wubi/pinyin，code 为不带空格的小写编码，count 为正整数。最多 10000 条/2MiB；无效导入不覆盖原文件，重复导入合并取最大次数。导出不得覆盖配置或正在使用的词库。跨会话更新在下一次输入前读取；学习读写失败保留已选文字，预览状态/正式输入菜单显示错误。崩溃留下 user-dictionary.lock 时，请先关闭所有萤火虫会话、备份词库，再移除该锁文件后重试。分发包不包含用户词库。

@@ -277,6 +277,23 @@ impl Session {
         }
     }
 
+    /// Merge local user entries and rank within each engine source.
+    pub fn personalize(&mut self, extra: Vec<Candidate>, score: impl Fn(&Candidate) -> u32) {
+        self.candidates.extend(extra);
+        let rank = |c: &Candidate| usize::from(c.source == CandidateSource::Pinyin);
+        self.candidates.sort_by(|a, b| {
+            rank(a)
+                .cmp(&rank(b))
+                .then_with(|| a.is_prefix.cmp(&b.is_prefix))
+                .then_with(|| score(b).cmp(&score(a)))
+                .then_with(|| b.weight.cmp(&a.weight))
+                .then_with(|| a.text.cmp(&b.text))
+        });
+        let mut seen = std::collections::HashSet::new();
+        self.candidates.retain(|c| seen.insert(c.text.clone()));
+        self.page = self.page.min(self.page_count().saturating_sub(1));
+    }
+
     pub fn page_index(&self) -> usize {
         self.page
     }
@@ -441,7 +458,12 @@ impl Session {
         }
 
         // 去重：同 text 保留权重最高者；再按权重降序。
-        merged.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+        merged.sort_by(|a, b| {
+            usize::from(a.source == CandidateSource::Pinyin)
+                .cmp(&usize::from(b.source == CandidateSource::Pinyin))
+                .then_with(|| b.weight.cmp(&a.weight))
+                .then_with(|| a.text.cmp(&b.text))
+        });
         let mut seen = std::collections::HashSet::new();
         merged.retain(|c| seen.insert(c.text.clone()));
         self.candidates = merged;

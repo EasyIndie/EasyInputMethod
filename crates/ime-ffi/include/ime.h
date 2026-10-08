@@ -71,6 +71,10 @@ const char*  ime_session_buffer(ImeSession* session);   /* 借用组合缓冲区
 int32_t      ime_session_toggle_english(ImeSession* session);
 int32_t      ime_session_toggle_width(ImeSession* session);
 int32_t      ime_session_is_english(ImeSession* session);
+int32_t      ime_session_dictionary_error(ImeSession* session);
+int32_t      ime_session_dictionary_add(ImeSession* session, const char* scheme, const char* code, const char* text);
+int32_t      ime_session_dictionary_import(ImeSession* session, const char* path);
+int32_t      ime_session_dictionary_export(ImeSession* session, const char* path);
 int32_t      ime_session_configure(ImeSession* session);
 int32_t      ime_session_mode(ImeSession* session); /* mixed=0 wubi=1 pinyin=2 */
 int32_t      ime_session_set_mode(ImeSession* session, const char* mode);

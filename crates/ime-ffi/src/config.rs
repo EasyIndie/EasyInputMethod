@@ -135,6 +135,14 @@ fn store() -> &'static ConfigStore {
     store
 }
 
+pub(crate) fn user_dictionary_path() -> PathBuf {
+    store()
+        .path()
+        .parent()
+        .unwrap_or(std::path::Path::new("."))
+        .join("user-dictionary.tsv")
+}
+
 pub(crate) fn snapshot() -> Arc<Config> {
     store().snapshot()
 }

@@ -41,6 +41,7 @@ swiftc -g -Onone -module-name YinghuoPreview \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \
   "${SCRIPT_DIR}/Sources/CandidateWindow.swift" \
   "${SCRIPT_DIR}/Sources/Config.swift" \
+  "${SCRIPT_DIR}/Sources/UserDictionary.swift" \
   "${ROOT}/target/debug/libime_ffi.a" \
   -framework AppKit -o "${BIN}"
 echo "调试窗口构建完成：${BIN}"

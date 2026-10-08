@@ -73,6 +73,8 @@ pub struct ImeSession {
     ffi_candidates: Vec<ImeCandidate>,
     /// 组合缓冲区的 NUL 结尾视图（借用给 C/Swift），随会话变更刷新。
     ffi_buffer: Option<CString>,
+    dictionary: Option<ime_dict::Store>,
+    dictionary_error: i32,
     ffi_strings: Vec<(Option<CString>, Option<CString>)>,
 }
 
@@ -110,10 +112,95 @@ impl ImeSession {
             session,
             ffi_candidates: Vec::new(),
             ffi_buffer: None,
+            dictionary: None,
+            dictionary_error: IME_OK,
             ffi_strings: Vec::new(),
         });
         s.refresh();
         s
+    }
+
+    fn ensure_dictionary(&mut self) {
+        if self.dictionary.is_none() {
+            match ime_dict::Store::load(crate::config::user_dictionary_path()) {
+                Ok(store) => {
+                    self.dictionary = Some(store);
+                    self.dictionary_error = IME_OK;
+                }
+                Err(_) => {
+                    self.dictionary_error = IME_ERR_IO;
+                }
+            }
+        }
+    }
+    fn personalize(&mut self) {
+        let Some(store) = self.dictionary.as_mut() else {
+            return;
+        };
+        if store.refresh().is_err() {
+            self.dictionary_error = IME_ERR_IO;
+        }
+        if !self.session.composing() {
+            return;
+        }
+        let mode = self.session.mode();
+        let buffer = self.session.buffer();
+        let extra = store
+            .entries()
+            .iter()
+            .filter(|((scheme, code, _), _)| {
+                code.starts_with(buffer)
+                    && (mode == InputMode::Mixed
+                        || (mode == InputMode::WubiOnly && scheme == "wubi")
+                        || (mode == InputMode::PinyinOnly && scheme == "pinyin"))
+            })
+            .map(|((scheme, code, text), _)| {
+                let mut c = ime_core::Candidate::new(
+                    text,
+                    code,
+                    0,
+                    if scheme == "wubi" {
+                        CandidateSource::CodeTable
+                    } else {
+                        CandidateSource::Pinyin
+                    },
+                );
+                c.is_prefix = code != buffer;
+                c
+            })
+            .collect();
+        self.session.personalize(extra, |c| {
+            let scheme = if c.source == CandidateSource::Pinyin {
+                "pinyin"
+            } else {
+                "wubi"
+            };
+            let code: String = c.code.chars().filter(|c| !c.is_whitespace()).collect();
+            store
+                .entries()
+                .get(&(scheme.into(), code, c.text.clone()))
+                .copied()
+                .unwrap_or(0)
+        });
+    }
+    fn learn(&mut self, candidate: Option<ime_core::Candidate>) {
+        let Some(c) = candidate else {
+            return;
+        };
+        let Some(store) = self.dictionary.as_mut() else {
+            return;
+        };
+        let scheme = if c.source == CandidateSource::Pinyin {
+            "pinyin"
+        } else {
+            "wubi"
+        };
+        let code: String = c.code.chars().filter(|c| !c.is_whitespace()).collect();
+        self.dictionary_error = if store.learn(scheme, &code, &c.text).is_ok() {
+            IME_OK
+        } else {
+            IME_ERR_IO
+        };
     }
 
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
@@ -228,7 +315,20 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
         // SAFETY：契约见模块注释（仅单线程使用）。
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         let ch = char::from_u32(codepoint).ok_or(IME_ERR_INVALID_INPUT)?;
+        let selected = match ch {
+            ' ' => s.session.candidates().first().cloned(),
+            '1'..='9' => s
+                .session
+                .candidates()
+                .get((ch as u8 - b'1') as usize)
+                .cloned(),
+            _ => None,
+        };
         let outcome = s.session.handle_key(ch);
+        if matches!(outcome, KeyOutcome::Committed(_)) {
+            s.learn(selected);
+        }
+        s.personalize();
         s.refresh();
         Ok(match outcome {
             KeyOutcome::Consumed => IME_KEY_CONSUMED,
@@ -244,6 +344,7 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
     catch_status(|| {
         // SAFETY: the caller owns a live session.
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.ensure_dictionary();
         let cfg = crate::config::snapshot();
         let boolean = |key| cfg.get(key).and_then(|v| v.as_bool()).unwrap_or(false);
         s.session.set_input_options(
@@ -368,10 +469,96 @@ pub extern "C" fn ime_session_select(session: *mut ImeSession, index: i32) -> i3
         if index < 0 {
             return Err(IME_ERR_INVALID_INPUT);
         }
+        let selected = s.session.candidates().get(index as usize).cloned();
         if s.session.select(index as usize).is_none() {
             return Err(IME_ERR_INVALID_INPUT);
         }
+        s.learn(selected);
         s.refresh();
+        Ok(IME_OK)
+    })
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_dictionary_error(session: *mut ImeSession) -> i32 {
+    catch_value(
+        || {
+            // SAFETY: the caller owns a live session.
+            Ok(unsafe { session.as_ref().ok_or(IME_ERR_NULL)? }.dictionary_error)
+        },
+        IME_ERR_NULL,
+    )
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_dictionary_add(
+    session: *mut ImeSession,
+    scheme: *const c_char,
+    code: *const c_char,
+    text: *const c_char,
+) -> i32 {
+    catch_status(|| {
+        // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        let (scheme, code, text) = unsafe { (cstr_arg(scheme)?, cstr_arg(code)?, cstr_arg(text)?) };
+        ime_dict::validate(scheme, code, text).map_err(|_| IME_ERR_INVALID_INPUT)?;
+        s.ensure_dictionary();
+        s.dictionary
+            .as_mut()
+            .ok_or(IME_ERR_IO)?
+            .learn(scheme, code, text)
+            .map_err(|_| IME_ERR_IO)?;
+        s.personalize();
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+#[no_mangle]
+pub extern "C" fn ime_session_dictionary_import(
+    session: *mut ImeSession,
+    path: *const c_char,
+) -> i32 {
+    catch_status(|| {
+        // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        let path = std::path::Path::new(unsafe { cstr_arg(path)? });
+        if !path.is_file() {
+            return Err(IME_ERR_IO);
+        }
+        s.ensure_dictionary();
+        s.dictionary
+            .as_mut()
+            .ok_or(IME_ERR_IO)?
+            .import(path)
+            .map_err(|_| IME_ERR_IO)?;
+        s.personalize();
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+#[no_mangle]
+pub extern "C" fn ime_session_dictionary_export(
+    session: *mut ImeSession,
+    path: *const c_char,
+) -> i32 {
+    catch_status(|| {
+        // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        let path = std::path::Path::new(unsafe { cstr_arg(path)? });
+        let profile = crate::config::user_dictionary_path();
+        let config = profile.with_file_name("config.toml");
+        if path == config
+            || path == profile
+            || (path.exists()
+                && (path.canonicalize().ok() == config.canonicalize().ok()
+                    || path.canonicalize().ok() == profile.canonicalize().ok()))
+        {
+            return Err(IME_ERR_INVALID_INPUT);
+        }
+        s.ensure_dictionary();
+        let store = s.dictionary.as_mut().ok_or(IME_ERR_IO)?;
+        store.refresh().map_err(|_| IME_ERR_IO)?;
+        store.export(path).map_err(|_| IME_ERR_IO)?;
         Ok(IME_OK)
     })
 }

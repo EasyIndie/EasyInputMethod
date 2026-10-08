@@ -68,8 +68,21 @@ final class YinghuoInputController: IMKInputController {
             keyEquivalent: "")
         item.target = self
         menu.addItem(item)
+        for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
+            ("导出用户词库…", #selector(exportWords))] {
+            let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
+            entry.target = self; menu.addItem(entry)
+        }
+        if let session, session.dictionaryError != IME_OK {
+            let status = NSMenuItem(title: "用户词库读写失败，请检查权限或文件格式", action: nil, keyEquivalent: "")
+            menu.addItem(status)
+        }
         return menu
     }
+
+    @objc private func addWord() { if let session { candidateWindow?.hide(); UserDictionaryUI.add(session) } }
+    @objc private func importWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.importFile(session) } }
+    @objc private func exportWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.exportFile(session) } }
 
     @objc private func cycleMode(_ sender: Any?) {
         let order = ["mixed", "wubi", "pinyin"]

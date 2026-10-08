@@ -61,7 +61,7 @@
 | REV-1…4 | 交叉审核已完成（`docs/reviews/001.md`） | 否 |
 | TBD-1 | 词频数据源 — ✅ 已定 `fxsjy/jieba`（D10，MIT），ADR-021 | 否 |
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
-| TBD-3 | 用户词库存储格式 | 只阻塞 P1-M4 用户词库/学习，不阻塞候选交互 |
+| TBD-3 | ✅ ADR-029：有界 TSV v1，用户词库与学习已实现 | 否 |
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；待并入 ADR + `build.sh` 参数化 |
@@ -111,6 +111,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-08 · Codex（用户词库与学习）
+- ADR-029：ime-dict 零依赖有界 TSV、原子写与锁、学习排序、新增/导入/导出；两宿主入口接入。
+- 专项并发/坏数据保护、隔离真实预览词条与重建会话保留、两宿主构建、make verify 通过。
+- TBD-3 关闭，M4 功能已实现；下一步性能/发布工程与完整跨应用验收。
+
 ### 2026-10-08 · Codex（中英、标点、全半角）
 - ADR-028：核心统一标点/成对引号/全角；新增两项 Schema；共享快捷键消费。
 - 核心回归、Swift 实际适配器快捷键/标点冒烟、两宿主构建、make verify 通过。
@@ -156,9 +161,3 @@
 ### 2026-10-08 · Codex（项目图标设计稿）
 - 按用户要求生成简洁萤火虫图标，深蓝/青绿/暖黄配色；原始 PNG 与提示词保存于 assets/icons/yinghuo-icon-concept-v1.*。
 - 已目视检查；新增 V2 几何、V3 立体、V4 单线、V5 纸感四版及提示词（assets/icons/yinghuo-icon-variants.md），用户当前首选 V4；V4 已暂时接入项目 README 及两种 macOS 应用图标，无代码或依赖变更。
-
-### 2026-10-08 · Codex（移除系统输入源）
-- 按用户要求在系统设置移除萤火虫输入源，保留 ABC/搜狗；停止系统宿主。
-- 后续开发调试统一使用 make macos-preview，未经再次要求不重装系统输入法。
-- 后续只读复查确认安装包已移至 /private/tmp/yinghuo-uninstalled；系统/用户目录均无包，TIS 0/335，无系统宿主。
-- 仅更新交接，无代码变更；沿用上一轮完整验证结果。
