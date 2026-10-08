@@ -24,9 +24,10 @@ docs/experiments/runs/sessions/
 /packaging/out/
 *.log
 
-# 拆字源数据（大文件，用 data/sources/fetch-*.sh 下载，不入库）
-/data/sources/*.txt
-/data/sources/*.tmp
+# data/sources/ 下只提交抓取脚本；其余数据大文件一律不入库
+/data/sources/*
+!/data/sources/*.sh
+!/data/sources/README.md
 
 # 派生数据（可由 examples/oracle.rs 复现；PROVISIONAL，不入库，见 ADR-017）
 /data/generated/wubi86-structure-laststroke.tsv
