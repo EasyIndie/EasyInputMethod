@@ -13,10 +13,10 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01 完成；下一步 T-M1-02/03/04）** |
+| 当前阶段 | **P1-M1 进行中（T-M1-01/02 完成；下一步 T-M1-03/04）** |
 | 当前分支 | `main`（已推送 origin/main） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+17 测试+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+24 测试+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
@@ -32,15 +32,16 @@
 - 权威方案 `docs/技术方案.md` + 配套文档；交叉审核（`docs/reviews/001.md`）已确认并落地行动项。
 - **P1-M0**：Rust workspace、`ime-core`（Engine/InputMode/会话状态机）、`ime-table`（码表引擎）、`ime-cli`（REPL）。
 - **P1-M1 / T-M1-01**：新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv` + `radical_to_key`，`Stroke`/`Structure`/`EncodeError`；6 个单测。
+- **P1-M1 / T-M1-02**：`RadicalTable::key_name_char`/`is_radical_char` + `encode_key_name`/`stroke_to_key`/`encode_chengzi`（键名字、成字字根）；新增 `TooFewStrokes` 错误；7 个单测。
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01 已交付；T-M1-02/03/04 待认领（码表生成器骨架已就绪，尚无编码逻辑）。
+**P1-M1**（自建码表流水线）：T-M1-01/02 已交付（字根表骨架 + 键名字/成字字根编码）；T-M1-03/04 待认领（尚无合体字/识别码逻辑）。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅；未完成项：**T-M1-02**（键名字+成字字根，flash，依赖 T-M1-01）、**T-M1-04**（拆字交叉校验，flash，无依赖）可并行；**T-M1-03**（合体字+识别码，pro，依赖 T-M1-02）。
+1. **P1-M1**：按 `docs/tasks/` 取卡执行。T-M1-01 ✅、T-M1-02 ✅；未完成项：**T-M1-04**（拆字交叉校验，flash，无依赖）可先做；**T-M1-03**（合体字+识别码，pro，依赖 T-M1-02）随后。
 2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
 
@@ -73,7 +74,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），17 个测试通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），24 个测试通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -85,6 +86,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-02 键名字+成字字根）
+- `crates/wubi-encoder`：新增 `key_name_char`（25 键名固定映射）、`is_radical_char`、`encode_key_name`（键连打四次）、`stroke_to_key`（横G竖H撇T捺Y折N）、`encode_chengzi`（键+首次末笔）；新增 `TooFewStrokes` 错误（笔画<2 报错）。
+- 未改动其它 crate；未实现合体字/识别码（留 T-M1-03）。
+- 验证：`cargo test -p wubi-encoder` 13 通过；`make verify` 全绿（24 测试）。
 
 ### 2026-10-08 · pi（派发防护 + T-M1-01 质检）
 - T-M1-01 已由 flash worker 完成并**人工复核**：质量优秀，`make verify` 全绿（17 测试）。已提交。
@@ -141,9 +147,3 @@
 - 关键建议：词频提升为 P1-M1 必交付；inputx-pinyin 先 spike；配置唯一写者；码表重码 postings 需定义；代码 GPL-3 + 数据 CC。
 - 验证：依赖许可全部干净（yada/cedarwood/inputx 等）；`make verify` 现通过。
 - 遗留：待确认行动项后进入 P1-M0。
-
-### 2026-10-08 · pi
-- 完成竞品调研、技术方案（v0.1→v1.0 收敛）、配套文档、AI 辅助开发结构、许可证与命名落地。
-- 关键结论：五笔词组码可自建；默认混输；GPL-3.0；产品名萤火虫。
-- 验证：`make verify` 通过（文档阶段跳过编译项）；`scripts/verify-no-network.sh` 通过。
-- 遗留：等待交叉审核；4 个 TBD 待定。
