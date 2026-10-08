@@ -163,3 +163,7 @@ macOS job 独立运行 Rust 全量验证、正式宿主构建、按登记许可�
 配置实时生效使用 ime-config 的 FileWatcher 和唯一快照；预览冒烟使用隔离的临时配置，不写用户偏好。独立窗口模式下拉框仍是临时会话状态。
 
 已有引擎配置现已接入：`wubi.auto_commit` 控制四码唯一自动上屏，`wubi.z_key` 控制 z 单字通配，`pinyin.fuzzy` 提供首音节 zh/z、ch/c、sh/s、n/l 模糊匹配。组合模糊音与整句预测留在 P2。
+
+## 输入交互
+
+Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。

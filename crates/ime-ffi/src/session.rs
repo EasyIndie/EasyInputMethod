@@ -246,6 +246,10 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         let cfg = crate::config::snapshot();
         let boolean = |key| cfg.get(key).and_then(|v| v.as_bool()).unwrap_or(false);
+        s.session.set_input_options(
+            boolean("input.full_width"),
+            cfg.get("input.punctuation").and_then(|v| v.as_str()) == Some("chinese"),
+        );
         s.session.configure_engines(&ime_core::EngineOptions {
             auto_commit: boolean("wubi.auto_commit"),
             fuzzy: boolean("pinyin.fuzzy"),
@@ -253,6 +257,38 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
         });
         Ok(IME_OK)
     })
+}
+
+#[no_mangle]
+pub extern "C" fn ime_session_toggle_english(session: *mut ImeSession) -> i32 {
+    catch_status(|| {
+        // SAFETY: the caller owns a live session.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.session.toggle_english();
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+#[no_mangle]
+pub extern "C" fn ime_session_toggle_width(session: *mut ImeSession) -> i32 {
+    catch_status(|| {
+        // SAFETY: the caller owns a live session.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.session.toggle_width();
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+#[no_mangle]
+pub extern "C" fn ime_session_is_english(session: *mut ImeSession) -> i32 {
+    catch_value(
+        || {
+            // SAFETY: the caller owns a live session.
+            let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+            Ok(i32::from(s.session.english()))
+        },
+        -1,
+    )
 }
 
 /// Current session mode: mixed=0, wubi=1, pinyin=2.

@@ -92,6 +92,9 @@ final class YinghuoInputController: IMKInputController {
             clearMarked(client)
             candidateWindow?.hide()
         }
+        if session.shortcut(event, persistMode: true) {
+            clearMarked(client); candidateWindow?.hide(); return true
+        }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
@@ -142,6 +145,7 @@ final class YinghuoInputController: IMKInputController {
     private func feedCodepoint(_ scalar: Unicode.Scalar, shift: Bool, session: ImeSession)
         -> UInt32?
     {
+        if session.isEnglish { return scalar.value }
         if scalar.isASCII, scalar.properties.isAlphabetic {
             if shift, !session.isComposing {
                 return nil

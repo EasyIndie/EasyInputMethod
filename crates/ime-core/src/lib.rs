@@ -150,6 +150,12 @@ pub struct Session {
     committed: String,
     page: usize,
     page_size: usize,
+    english: bool,
+    full_width: bool,
+    width_override: Option<bool>,
+    chinese_punctuation: bool,
+    double_quote_open: bool,
+    single_quote_open: bool,
 }
 
 impl Session {
@@ -167,6 +173,62 @@ impl Session {
 
     pub fn set_pinyin_engine(&mut self, engine: Box<dyn Engine>) {
         self.pinyin = Some(engine);
+    }
+
+    pub fn set_input_options(&mut self, full_width: bool, chinese_punctuation: bool) {
+        self.full_width = full_width;
+        self.chinese_punctuation = chinese_punctuation;
+    }
+    pub fn english(&self) -> bool {
+        self.english
+    }
+    pub fn toggle_english(&mut self) {
+        self.english = !self.english;
+        self.cancel();
+    }
+    pub fn toggle_width(&mut self) {
+        self.width_override = Some(!self.width_override.unwrap_or(self.full_width));
+        self.cancel();
+    }
+    fn translate(&mut self, key: char) -> Option<String> {
+        if !self.english && self.chinese_punctuation {
+            let mapped = match key {
+                '.' => Some('。'),
+                ',' => Some('，'),
+                '?' => Some('？'),
+                '!' => Some('！'),
+                ':' => Some('：'),
+                ';' => Some('；'),
+                '(' => Some('（'),
+                ')' => Some('）'),
+                '[' => Some('「'),
+                ']' => Some('」'),
+                '<' => Some('《'),
+                '>' => Some('》'),
+                '\\' => Some('、'),
+                '"' => {
+                    self.double_quote_open = !self.double_quote_open;
+                    Some(if self.double_quote_open { '“' } else { '”' })
+                }
+                '\'' => {
+                    self.single_quote_open = !self.single_quote_open;
+                    Some(if self.single_quote_open { '‘' } else { '’' })
+                }
+                _ => None,
+            };
+            if let Some(value) = mapped {
+                return Some(value.to_string());
+            }
+        }
+        if self.width_override.unwrap_or(self.full_width) {
+            if key == ' ' {
+                return Some("　".into());
+            }
+            if ('!'..='~').contains(&key) {
+                return char::from_u32(key as u32 + 0xfee0).map(|c| c.to_string());
+            }
+        }
+        None
     }
 
     pub fn configure_engines(&mut self, options: &EngineOptions) {
@@ -260,12 +322,23 @@ impl Session {
 
     /// 处理一个按键。
     pub fn handle_key(&mut self, key: char) -> KeyOutcome {
+        if self.english {
+            if let Some(text) = self.translate(key) {
+                self.commit(&text);
+                return KeyOutcome::Committed(text);
+            }
+            return KeyOutcome::PassThrough;
+        }
         if !self.composing {
             if key.is_ascii_lowercase() {
                 self.composing = true;
                 self.buffer.clear();
                 self.buffer.push(key);
                 return self.recompute();
+            }
+            if let Some(text) = self.translate(key) {
+                self.commit(&text);
+                return KeyOutcome::Committed(text);
             }
             return KeyOutcome::PassThrough;
         }
@@ -281,8 +354,9 @@ impl Session {
                     self.commit(&text);
                     KeyOutcome::Committed(text)
                 } else {
-                    self.cancel();
-                    KeyOutcome::Consumed
+                    let text = self.buffer.clone();
+                    self.commit(&text);
+                    KeyOutcome::Committed(text)
                 }
             }
             '1'..='9' => {
@@ -314,7 +388,22 @@ impl Session {
                 self.cancel();
                 KeyOutcome::Consumed
             }
-            _ => KeyOutcome::PassThrough,
+            _ => {
+                if let Some(punctuation) = self.translate(key) {
+                    let text = format!(
+                        "{}{}",
+                        self.candidates()
+                            .first()
+                            .map(|c| c.text.as_str())
+                            .unwrap_or(&self.buffer),
+                        punctuation
+                    );
+                    self.commit(&text);
+                    KeyOutcome::Committed(text)
+                } else {
+                    KeyOutcome::PassThrough
+                }
+            }
         }
     }
 
@@ -457,6 +546,26 @@ mod tests {
         s.page(1);
         assert_eq!(s.select(0), Some("词03".into()));
         assert_eq!(s.page_count(), 0);
+    }
+
+    #[test]
+    fn punctuation_quotes_width_and_english_are_session_state() {
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.set_input_options(false, true);
+        s.handle_key('a');
+        assert_eq!(s.handle_key(','), KeyOutcome::Committed("甲，".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("”".into()));
+        s.toggle_english();
+        assert_eq!(s.handle_key('a'), KeyOutcome::PassThrough);
+        assert_eq!(s.handle_key('.'), KeyOutcome::PassThrough);
+        s.toggle_width();
+        assert_eq!(s.handle_key('A'), KeyOutcome::Committed("Ａ".into()));
+        assert_eq!(s.handle_key(' '), KeyOutcome::Committed("　".into()));
+        s.toggle_width();
+        s.toggle_english();
+        s.handle_key('x');
+        assert_eq!(s.handle_key(' '), KeyOutcome::Committed("x".into()));
     }
 
     #[test]

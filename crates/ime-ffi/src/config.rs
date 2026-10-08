@@ -390,7 +390,7 @@ mod tests {
     #[test]
     fn schema_layout_matches_v1() {
         let layout = build_schema();
-        assert_eq!(layout.view.len, 7);
+        assert_eq!(layout.view.len, 9);
         let first = layout._options[0];
         // SAFETY：指针由 build_schema 的 CString/Vec 持有，测试期间有效。
         unsafe {

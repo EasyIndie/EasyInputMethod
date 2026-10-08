@@ -463,7 +463,7 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 7);
+        assert_eq!(schema().len(), 9);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -475,6 +475,8 @@ mod tests {
                 "candidate.count",
                 "appearance.theme",
                 "hotkey.toggle_mode",
+                "input.punctuation",
+                "input.full_width",
             ]
         );
     }

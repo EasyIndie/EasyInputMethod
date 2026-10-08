@@ -27,6 +27,7 @@ final class PreviewInput: NSTextView {
     override var inputContext: NSTextInputContext? { nil }
 
     override func keyDown(with event: NSEvent) {
+        if session.shortcut(event, persistMode: false) { refresh(); return }
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             super.keyDown(with: event)
@@ -41,7 +42,7 @@ final class PreviewInput: NSTextView {
                 if let selected = session.select(0) { committed += selected }
             } else { committed += "\n" }
         } else {
-            let input = scalar.isASCII && scalar.properties.isAlphabetic
+            let input = !session.isEnglish && scalar.isASCII && scalar.properties.isAlphabetic
                 ? String(scalar).lowercased().unicodeScalars.first?.value : scalar.value
             guard let input else { return }
             if flags.contains(.shift), scalar.properties.isAlphabetic, !session.isComposing {
@@ -173,9 +174,9 @@ let app = NSApplication.shared
 if CommandLine.arguments.contains("--smoke-test") {
     session.setMode("mixed")
     let view = PreviewInput(session: session)
-    func keys(_ text: String) {
+    func keys(_ text: String, flags: NSEvent.ModifierFlags = []) {
         for scalar in text.unicodeScalars {
-            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
                 timestamp: 0, windowNumber: 0, context: nil, characters: String(scalar),
                 charactersIgnoringModifiers: String(scalar), isARepeat: false, keyCode: 0) else {
                 fputs("无法创建测试按键。\n", stderr); exit(1)
@@ -203,6 +204,12 @@ if CommandLine.arguments.contains("--smoke-test") {
     keys("wq\r"); check("你你好像你")
     view.clear(); check("")
     session.setMode("pinyin"); keys("nihao "); check("你好")
+    view.clear(); keys("\".\""); check("“。”")
+    keys(" ", flags: [.control, .shift]); view.clear(); keys("nihao"); check("nihao")
+    keys(" ", flags: [.shift]); view.clear(); keys("A1"); check("Ａ１")
+    keys(" ", flags: [.shift]); keys(" ", flags: [.control, .shift])
+    keys("m", flags: [.control, .shift])
+    guard session.mode == "mixed" else { exit(1) }
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
     let external = smokeDirectory.appendingPathComponent("config.toml")

@@ -68,6 +68,9 @@ ImeSession*  ime_session_new_with_data(const char* wubi_path,
 void         ime_session_free(ImeSession* session);
 int32_t      ime_session_key(ImeSession* session, uint32_t codepoint); /* IME_KEY_* 或负错误码 */
 const char*  ime_session_buffer(ImeSession* session);   /* 借用组合缓冲区（UTF-8） */
+int32_t      ime_session_toggle_english(ImeSession* session);
+int32_t      ime_session_toggle_width(ImeSession* session);
+int32_t      ime_session_is_english(ImeSession* session);
 int32_t      ime_session_configure(ImeSession* session);
 int32_t      ime_session_mode(ImeSession* session); /* mixed=0 wubi=1 pinyin=2 */
 int32_t      ime_session_set_mode(ImeSession* session, const char* mode);
