@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（macOS 发布推进：交互、用户词库及性能） |
+| 最后更新 | 2026-10-09（多会话共享词表） |
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
 | 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：91 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：93 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -41,7 +41,7 @@
 
 ## 3. 进行中
 
-- 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；引擎 ABI 探针约 17MiB / P95 0.47ms，不代表完整 GUI DoD。
+- 交互功能已实现：分页、实时配置、中文标点/全半角、用户词库与学习（ADR-025…029）。默认核心词表和有界查询降低内存；五会话引擎 ABI 探针约 16.6MiB / P95 0.48ms，不代表完整 GUI DoD。
 
 **P1-M3**：T-M3-01、T-M3-02、T-M3-05 已完成；macOS CI 已配置并本地验证；安装/卸载及签名、公证、源码/SBOM 打包脚本已实现并通过静态/拒绝路径检查，本地审核包约14.3MB，完整源码/vendor/许可/SBOM/SHA；从实际 ZIP 离线重建的去签名可执行文件和默认数据逐字节一致。
 
@@ -100,7 +100,7 @@
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
 | 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**91 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**93 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -112,6 +112,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 · Codex（多会话内存）
+- ADR-035：Arc 共享默认只读词表，FFI 最多4组 Weak 缓存；组合/选项/用户词库独立。
+- 五会话稳态从65.89降至16.64MiB；2200键 P95 0.481ms。快照更新、选项隔离与释放测试通过。
+- 两宿主构建/真实预览及 make verify 全绿；CLI 临时文件隔离修复单独提交。
+- 下一步正式宿主预编辑边界与 GUI 性能；完整 DoD 未完成，未重新安装或上传。
 
 ### 2026-10-08 · Codex（反查与源码包验证）
 - ADR-034：现有拼音反查经通用 Engine/Session 与拥有字符串 ABI 接入正式菜单/独立窗口；只读无记录。
@@ -159,8 +165,3 @@
 - 修正 IMK 回车未插入选中文字；FFI 候选改用会话持有的 NUL 终止 CString，避免越界读取。
 - 核心/FFI 分页与字符串回归、真实预览冒烟、两宿主构建、完整 make verify 通过。
 - 下一步配置实时生效及输入交互；完整发布 DoD 尚未完成。
-
-### 2026-10-08 · Codex（T-M3-04 macOS CI）
-- 新增独立 macOS job：Rust/隐私验证、正式构建、登记数据复现、独立窗口冒烟、图标校验；不安装或公证。
-- YAML 静态解析、本机等价构建及 make verify 通过；远端实际运行待 PR。
-- 用户授权持续推进 macOS 发布；下一步候选翻页，保留完整 DoD 验收门槛。

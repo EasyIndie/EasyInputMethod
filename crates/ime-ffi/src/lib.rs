@@ -11,6 +11,7 @@
 #![deny(unsafe_op_in_unsafe_fn)]
 
 mod config;
+mod data;
 mod error;
 mod samples;
 mod session;

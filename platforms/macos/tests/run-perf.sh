@@ -9,4 +9,4 @@ clang -O2 -I "${ROOT}/crates/ime-ffi/include" \
   "${ROOT}/platforms/macos/tests/perf_probe.c" "${ROOT}/target/release/libime_ffi.a" \
   -framework CoreFoundation -framework Security -liconv -o "${WORK}/probe"
 "${WORK}/probe" "${ROOT}/data/generated/wubi86-core.tsv" \
-  "${ROOT}/data/generated/pinyin-chars.tsv" "${ROOT}/data/generated/pinyin-core.tsv" "${WORK}/config.toml"
+  "${ROOT}/data/generated/pinyin-chars.tsv" "${ROOT}/data/generated/pinyin-core.tsv" "${WORK}/config.toml" "${1:-1}"

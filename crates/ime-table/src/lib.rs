@@ -6,6 +6,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
@@ -154,7 +155,7 @@ impl Table {
 
 /// 码表引擎：把 [`Table`] 适配到 [`Engine`] trait。
 pub struct CodeTableEngine {
-    table: Table,
+    table: Arc<Table>,
     max_code_len: usize,
     auto_commit: bool,
     z_wildcard: bool,
@@ -162,6 +163,11 @@ pub struct CodeTableEngine {
 
 impl CodeTableEngine {
     pub fn new(table: Table, max_code_len: usize) -> Self {
+        Self::new_shared(Arc::new(table), max_code_len)
+    }
+
+    /// Share immutable table data while retaining independent engine options.
+    pub fn new_shared(table: Arc<Table>, max_code_len: usize) -> Self {
         Self {
             table,
             max_code_len,

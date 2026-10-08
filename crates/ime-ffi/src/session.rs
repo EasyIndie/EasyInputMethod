@@ -11,12 +11,12 @@ use std::ffi::{c_char, CString};
 use std::ptr;
 
 use ime_core::{CandidateSource, Engine, InputMode, KeyOutcome, Session};
-use ime_pinyin::{PinyinEngine, TablePinyinBackend};
-use ime_table::{CodeTableEngine, Table};
+use ime_pinyin::PinyinEngine;
+use ime_table::CodeTableEngine;
 
 use crate::error::{
     catch_ptr, catch_status, catch_value, cstr_arg, IME_ERR_INVALID_INPUT, IME_ERR_IO,
-    IME_ERR_NULL, IME_ERR_PARSE, IME_OK,
+    IME_ERR_NULL, IME_OK,
 };
 use crate::samples;
 
@@ -231,22 +231,6 @@ impl ImeSession {
     }
 }
 
-/// 从 TSV 文件加载五笔码表（`code\ttext\tweight`）。
-fn load_wubi(path: &str) -> Result<Table, i32> {
-    let text = std::fs::read_to_string(path).map_err(|_| IME_ERR_IO)?;
-    Table::from_tsv(&text).map_err(|_| IME_ERR_PARSE)
-}
-
-/// 从两份 TSV 文件加载拼音后端（字表；词表可选，缺失时只留单字）。
-fn load_pinyin(chars_path: &str, words_path: Option<&str>) -> Result<TablePinyinBackend, i32> {
-    let chars = std::fs::read_to_string(chars_path).map_err(|_| IME_ERR_IO)?;
-    let words = match words_path {
-        Some(p) => std::fs::read_to_string(p).map_err(|_| IME_ERR_IO)?,
-        None => String::new(),
-    };
-    TablePinyinBackend::from_tsv(&chars, &words, "内置轻量拼音").map_err(|_| IME_ERR_PARSE)
-}
-
 /// 创建会话（内置样本引擎，`Mixed` 模式）；失败返回 `NULL`。
 #[no_mangle]
 pub extern "C" fn ime_session_new() -> *mut ImeSession {
@@ -269,7 +253,10 @@ pub extern "C" fn ime_session_new_with_data(
     catch_ptr(|| {
         // SAFETY：契约见 `cstr_arg`。
         let wubi_path = unsafe { cstr_arg(wubi_path)? };
-        let wubi: Box<dyn Engine> = Box::new(CodeTableEngine::new(load_wubi(wubi_path)?, 4));
+        let wubi: Box<dyn Engine> = Box::new(CodeTableEngine::new_shared(
+            crate::data::wubi(wubi_path)?,
+            4,
+        ));
         let pinyin: Option<Box<dyn Engine>> = if pinyin_chars_path.is_null() {
             None
         } else {
@@ -281,8 +268,8 @@ pub extern "C" fn ime_session_new_with_data(
                 // SAFETY：同上。
                 Some(unsafe { cstr_arg(pinyin_words_path)? })
             };
-            Some(Box::new(PinyinEngine::new(
-                Box::new(load_pinyin(chars, words)?),
+            Some(Box::new(PinyinEngine::new_shared(
+                crate::data::pinyin(chars, words)?,
                 32,
             )))
         };
@@ -698,6 +685,7 @@ fn owned_string(text: &str) -> ImeString {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use ime_table::Table;
     use std::ffi::CStr;
 
     /// 测试辅助：把候选 `text` 指针读成 `&str`（内部使用，仅测试）。

@@ -3,16 +3,22 @@
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
 use crate::backend::PinyinBackend;
+use std::sync::Arc;
 
 /// 拼音引擎：把任意 [`PinyinBackend`] 适配到核心 [`Engine`] trait。
 pub struct PinyinEngine {
-    backend: Box<dyn PinyinBackend>,
+    backend: Arc<dyn PinyinBackend>,
     max_code_len: usize,
     fuzzy: bool,
 }
 
 impl PinyinEngine {
     pub fn new(backend: Box<dyn PinyinBackend>, max_code_len: usize) -> Self {
+        Self::new_shared(Arc::from(backend), max_code_len)
+    }
+
+    /// Share an immutable backend without sharing per-session options.
+    pub fn new_shared(backend: Arc<dyn PinyinBackend>, max_code_len: usize) -> Self {
         Self {
             backend,
             max_code_len,
