@@ -21,6 +21,7 @@ final class YinghuoInputController: IMKInputController {
             session = makeSession()
         }
         session?.prepare()
+        if candidateWindow == nil { candidateWindow = CandidateWindow() }
     }
 
     override func deactivateServer(_ sender: Any!) {

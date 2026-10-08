@@ -16,4 +16,4 @@ swiftc -O -whole-module-optimization -target "$(uname -m)-apple-macosx13.0" \
   "${ROOT}/platforms/macos/Sources/CandidateWindow.swift" \
   "${ROOT}/platforms/macos/Sources/Config.swift" \
   "${ROOT}/target/release/libime_ffi.a" -framework Cocoa -o "${WORK}/probe"
-"${WORK}/probe" "${ROOT}/data/generated" "${WORK}/config.toml"
+"${WORK}/probe" "${ROOT}/data/generated" "${WORK}/config.toml" ${2:+"$2"}

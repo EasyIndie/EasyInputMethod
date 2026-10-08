@@ -8,6 +8,7 @@ final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
     private var themeTimer: Timer?
+    private var labels: [NSTextField] = []
     private var widthConstraints: [NSLayoutConstraint] = []
 
     var frame: NSRect { panel.frame }
@@ -51,6 +52,9 @@ final class CandidateWindow {
         themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
             self?.refreshAppearance()
         }
+        // Warm Chinese font/layout while hidden, before the first input event.
+        update(candidates: ["萤火虫"])
+        update(candidates: [])
     }
 
     deinit { themeTimer?.invalidate() }
@@ -80,7 +84,9 @@ final class CandidateWindow {
             view.removeFromSuperview()
         }
         for (i, text) in candidates.enumerated() {
-            let label = NSTextField(labelWithString: "\(i + 1).\(text)")
+            if i == labels.count { labels.append(NSTextField(labelWithString: "")) }
+            let label = labels[i]
+            label.stringValue = "\(i + 1).\(text)"
             label.font = NSFont.systemFont(ofSize: 16)
             label.textColor = .labelColor
             label.lineBreakMode = .byTruncatingTail

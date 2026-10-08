@@ -33,3 +33,5 @@
 `bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary`：5 个 Swift 会话、满容量合成词库、2200键，真实 NSPanel 处理 FFI/候选转换/布局/显示调用。首键95.897ms（包含首次窗口与系统字体初始化），后续 P95 4.513ms、最大6.696ms，进程物理 footprint38.47MiB。
 
 该探针没有 IMK 客户端和合成器完成计时，也没有扣除 mmap；38.47MiB 不能作为“排除 mmap 后≤30MB”通过证据。冷启动超16ms与宿主内存仍需分析，正式性能 DoD 不勾选。测试仅使用临时配置/词库，不安装输入法。
+
+复用候选标签后，满词库同场景 footprint32.55MiB（原38.61），稳态 P95 4.084ms。ADR-040 将隐藏窗口/字体初始化移到激活阶段后，窗口预热24.949ms，首键5.968ms，后续P95 4.356ms、最大5.682ms，footprint32.61MiB。vmmap 显示主要为堆分配及碎片，不能据此扣除所有系统框架开销；内存预算及正式 IMK 仍待验收。可追加 `--inspect-memory` 对探针自身执行 vmmap，检查期间额外内存开销不纳入前述 footprint。

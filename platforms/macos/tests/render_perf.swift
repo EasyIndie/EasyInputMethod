@@ -17,7 +17,7 @@ struct RenderPerformance {
 
     static func main() {
         let args = CommandLine.arguments
-        guard args.count == 3 else { fatalError("需要数据目录和隔离配置路径") }
+        guard args.count == 3 || (args.count == 4 && args[3] == "--inspect-memory") else { fatalError("需要数据目录和隔离配置路径") }
         let app = NSApplication.shared
         app.setActivationPolicy(.accessory)
         guard let screen = NSScreen.main else { fatalError("没有可用显示器，不能执行 GUI 性能检查") }
@@ -30,7 +30,10 @@ struct RenderPerformance {
         for session in sessions { session.prepare() }
         let area = screen.visibleFrame
         let caret = NSRect(x: area.midX, y: area.midY, width: 1, height: 20)
-        var window: CandidateWindow?
+        let activationStart = DispatchTime.now().uptimeNanoseconds
+        var window: CandidateWindow? = CandidateWindow()
+        let activationMs = Double(DispatchTime.now().uptimeNanoseconds - activationStart) / 1e6
+        print(String(format: "window_activation_ms=%.3f", activationMs))
         var samples: [Double] = []
         for round in 0..<100 {
             for input in ["wq", "nihao", "zhongguo", "zz", "a", "kwwl"] {
@@ -55,6 +58,13 @@ struct RenderPerformance {
         let sorted = samples.dropFirst().sorted()
         print(String(format: "keys=%d cold_ms=%.3f warm_p95_ms=%.3f warm_max_ms=%.3f footprint_mib=%.2f",
             samples.count, cold, sorted[Int(Double(sorted.count - 1) * 0.95)], sorted.last!, footprint()))
+        if args.count == 4 {
+            let inspect = Process()
+            inspect.executableURL = URL(fileURLWithPath: "/usr/bin/vmmap")
+            inspect.arguments = ["-summary", String(ProcessInfo.processInfo.processIdentifier)]
+            do { try inspect.run(); inspect.waitUntilExit() }
+            catch { fatalError("无法检查探针内存：\(error)") }
+        }
         for session in sessions { session.focusOut() }
         window?.hide()
         // This measures synchronous FFI/layout/show, not IMK dispatch or compositor completion.
