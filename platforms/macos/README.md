@@ -147,3 +147,7 @@ make macos-preview
 | `ime_config_init(path)` | 宿主设定唯一配置路径（须最先调用） |
 
 全部入口仍 `catch_unwind` 兜底、坏输入返回错误码；真实 `unsafe` 只存在于 `ime-ffi`。
+
+## 应用图标
+
+正式宿主和独立调试应用暂用 V4 单线萤火虫图标，构建时从 `assets/icons/yinghuo-icon-v4-app.icns` 复制。项目保留全部设计版本及原图，见 `assets/icons/README.md`。

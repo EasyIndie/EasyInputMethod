@@ -24,6 +24,8 @@
 	<string>6.0</string>
 	<key>CFBundleName</key>
 	<string>Yinghuo</string>
+	<key>CFBundleIconFile</key>
+	<string>Yinghuo.icns</string>
 	<key>CFBundleDisplayName</key>
 	<string>萤火虫</string>
 	<key>CFBundlePackageType</key>

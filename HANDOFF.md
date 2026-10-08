@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-08（T-M3-05 独立调试窗口完成） |
+| 最后更新 | 2026-10-08（图标资产归档，V4 当前首选） |
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3：T-M3-01 / T-M3-02 / T-M3-05 ✅；独立调试窗口可直接迭代。下一项 T-M3-03 安装/签名/公证脚本** |
 | 当前分支 | `codex/fix-macos-registration`；本轮独立 AppKit 调试窗口（ADR-024） |
@@ -24,7 +24,7 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。日常功能开发运行 `make macos-preview`；经典 IMK 宿主已实机验证，无需 appex 改造。
+- **下一步**：T-M3-03 固化安装/签名/公证流程；T-M3-04 增加 macOS 构建 CI。用户指定后续开发调试统一运行 `make macos-preview`；未经再次要求不重装系统输入法；经典 IMK 宿主已实机验证，无需 appex 改造。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -96,7 +96,7 @@
 | 签名身份 | ✅ `Developer ID Application: Zhizhou Wang (2N62934Y28)` 与 `Apple Development: …`；公证凭据已存钥匙串 profile `yinghuo-notary` |
 | Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
-| 输入法现状 | `/Library/Input Methods/Yinghuo.app`（新 ID、系统域、已公证、hardened runtime）；旧包备份在 `/private/tmp/yinghuo-acceptance-backup/` |
+| 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**82 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
@@ -110,6 +110,26 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · Codex（V4 应用图标）
+- 用户指定 V4 暂作项目及应用图标；README 展示与两个 macOS 构建脚本接入多尺寸 ICNS。
+- V1–V5 全部保留；菜单栏模板图标暂沿用现有资源。未安装系统输入法。
+- 两应用构建、预览冒烟、ICNS 回读与资源一致性、完整 make verify 均通过。
+
+### 2026-10-08 · Codex（图标资产归档）
+- V1–V5 原图及提示词统一收录 assets/icons/，补充版本索引与使用场景说明。
+- 用户当前首选 V4 单线风格；其余版本保留，应用资源尚未替换。
+- 原图完整性与文档链接检查通过；无代码或依赖变更。
+
+### 2026-10-08 · Codex（项目图标设计稿）
+- 按用户要求生成简洁萤火虫图标，深蓝/青绿/暖黄配色；原始 PNG 与提示词保存于 assets/icons/yinghuo-icon-concept-v1.*。
+- 已目视检查；新增 V2 几何、V3 立体、V4 单线、V5 纸感四版及提示词（assets/icons/yinghuo-icon-variants.md），用户当前首选 V4；V4 已暂时接入项目 README 及两种 macOS 应用图标，无代码或依赖变更。
+
+### 2026-10-08 · Codex（移除系统输入源）
+- 按用户要求在系统设置移除萤火虫输入源，保留 ABC/搜狗；停止系统宿主。
+- 后续开发调试统一使用 make macos-preview，未经再次要求不重装系统输入法。
+- 后续只读复查确认安装包已移至 /private/tmp/yinghuo-uninstalled；系统/用户目录均无包，TIS 0/335，无系统宿主。
+- 仅更新交接，无代码变更；沿用上一轮完整验证结果。
 
 ### 2026-10-08 · Codex（T-M3-05 独立调试窗口）
 - ADR-024：普通 AppKit 应用复用真实引擎、FFI 与候选窗，debug 构建直跑，无系统安装/公证/重启。
@@ -142,28 +162,3 @@
 - 已确认：`.inputmethod` 不被 macOS 13 扫描 → 必须 `.app`；引擎侧 `run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`。
 - **交接要点**：本机 `main` 有 **6 个未推送 commit**；下一步在有 Xcode + 开发者帐号的 Mac 上，用**真实签名**构建、装载、验证。
 - 证据/步骤/待办已写入 `docs/tasks/T-M3-02.md` 与本文件 §3/§4/§5（SIG-1）。
-
-### 2026-10-08 · pi（T-M3-02 装载验收：环境/签名阻塞）
-- 多次重登/重启后，TIS 仍不枚举我们的 `.app`（ad-hoc 与“自签+系统信任”均试过）。
-- 差分实验：**苹果原版 Ainu 副本**（user 与 /Library）同样不可见；唯一可见的第三方是 **Developer ID 签名**的搜狗；`imklaunchagent` 持续报 `inputSourceTableCountSys 0`。
-- 结论：极可能需 **Developer ID** 签名，或本机（OCLP）发现机制异常；仓库内无法解决。
-- 已把证据/结论写入 `docs/tasks/T-M3-02.md`；新增 `tools/diagnose.sh`；待办含清理自签证书/系统目录副本。
-
-### 2026-10-08 · pi（T-M3-02 装载排查：`.app` 仍不可见）
-- 用户实测：`.inputmethod` 不认（macOS 13 LaunchServices `-10811`）→ 改 `.app`；修正后的 `.app` 在**登录前**就位仍不被 TIS 枚举。
-- 证据：`TISCreateInputSourceList` 282 源含 Sogou，唯独无我们；`TISFileInterrogator` 报 `inputSourceTableCountSys 0`；系统内 IME 均为 `.app` + Developer ID。
-- 本次改：`Info.plist` 双写顶层 `tsInputModeListKey` + `ComponentInputModeDict`、加 `LSBackgroundOnly`、per-mode 图标；bundle 名改 ASCII `Yinghuo.app`。
-- 待验证：重启/重登后能否出现；否则下一步试 `/Library/Input Methods/`（sudo）。
-
-### 2026-10-08 · pi（T-M3-02 Swift/IMK 宿主）
-- 新建 `platforms/macos/`：`main.swift`/`InputController.swift`/`CandidateWindow.swift`（纯代码 `NSPanel`）/`ImeSession.swift`/`Config.swift` + `build.sh` + `Info.plist` + README + 诊断工具 + FFI 冒烟。
-- 扩展 `ime-ffi`（ADR-022）：`ime_session_new_with_data` / `_buffer` / `_set_mode` / `ime_config_init`；`ime_session_key` 成功返回 `IME_KEY_*`。
-- 验证：`build.sh` 产出并 ad-hoc 签名；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`；`make verify` 全绿（82 单测）。
-- **人工装载发现**：`.inputmethod` 不被 macOS 13 扫描（LaunchServices `-10811`）→ 改产 **`.app`**（+ `PkgInfo`/图标/本地化），且换 bundle 必须**注销/重登**。
-- 遗留：注销/重登后的实际添加 + TextEdit 打字仍待人工确认；`TBD-4` 包名暂定。
-
-### 2026-10-08 · pi（T-M3-01 `ime-ffi` C ABI）
-- 新建 `crates/ime-ffi`（cdylib+staticlib）：会话 ABI + 配置 ABI；入口全部 `catch_unwind`、坏输入返回错误码。
-- `include/ime.h` + `module.modulemap`；C 冒烟（clang 链 staticlib）+ Swift `import ime` typecheck 均通过。
-- 真实 `unsafe` 严格只在 `ime-ffi`（其余 crate `forbid`）。`make verify` 全绿（78 单测；135 产物零网络符号）。
-- 遗留：FFI 会话暂用内置样本引擎（真实数据路径留 T-M3-02）；`ime_session_page` 为 no-op（翻页属 P1-M4）。

@@ -25,10 +25,12 @@ cat > "${APP}/Contents/Info.plist" <<'PLIST'
 <key>CFBundleIdentifier</key><string>org.yinghuo.debugpreview</string>
 <key>CFBundleExecutable</key><string>YinghuoPreview</string>
 <key>CFBundleName</key><string>YinghuoPreview</string>
+<key>CFBundleIconFile</key><string>Yinghuo.icns</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>NSPrincipalClass</key><string>NSApplication</string>
 </dict></plist>
 PLIST
+cp "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns" "${APP}/Contents/Resources/Yinghuo.icns"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
