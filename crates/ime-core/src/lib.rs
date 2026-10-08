@@ -440,6 +440,13 @@ impl Session {
         Some(text)
     }
 
+    /// End an input context while retaining its mode and transient preferences.
+    pub fn focus_out(&mut self) {
+        self.cancel();
+        self.double_quote_open = false;
+        self.single_quote_open = false;
+    }
+
     /// 取消当前组合。
     pub fn cancel(&mut self) {
         self.composing = false;
@@ -597,6 +604,28 @@ mod tests {
         s.toggle_english();
         s.handle_key('x');
         assert_eq!(s.handle_key(' '), KeyOutcome::Committed("x".into()));
+    }
+
+    #[test]
+    fn focus_out_resets_quotes_without_resetting_mode_or_width() {
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        s.set_input_options(false, true);
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        s.cancel();
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("”".into()));
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        s.handle_key('a');
+        s.focus_out();
+        assert!(!s.composing());
+        assert!(s.buffer().is_empty());
+        assert_eq!(s.mode(), InputMode::WubiOnly);
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        s.toggle_english();
+        s.toggle_width();
+        s.focus_out();
+        assert!(s.english());
+        assert_eq!(s.handle_key('A'), KeyOutcome::Committed("Ａ".into()));
     }
 
     #[test]

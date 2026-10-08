@@ -80,19 +80,42 @@ final class YinghuoInputController: IMKInputController {
         return menu
     }
 
-    @objc private func lookupPinyin() { if let session { candidateWindow?.hide(); clearMarked(client() as? IMKTextInput); LookupUI.show(session) } }
-    @objc private func addWord() { if let session { candidateWindow?.hide(); UserDictionaryUI.add(session) } }
-    @objc private func importWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.importFile(session) } }
-    @objc private func exportWords() { if let session { candidateWindow?.hide(); UserDictionaryUI.exportFile(session) } }
+    private func cancelClientComposition() {
+        clearMarked(client() as? IMKTextInput)
+        session?.focusOut()
+        candidateWindow?.hide()
+    }
+
+    @objc private func lookupPinyin() {
+        guard let session else { return }
+        cancelClientComposition(); LookupUI.show(session)
+    }
+    @objc private func addWord() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.add(session)
+    }
+    @objc private func importWords() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.importFile(session)
+    }
+    @objc private func exportWords() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.exportFile(session)
+    }
 
     @objc private func cycleMode(_ sender: Any?) {
         let order = ["mixed", "wubi", "pinyin"]
         let current = ImeConfig.string("mode") ?? "mixed"
         let next = order[((order.firstIndex(of: current) ?? -1) + 1) % order.count]
-        // 唯一写入路径：写回 config.toml（失败则仅本次会话内生效）
-        ImeConfig.setString("mode", next)
+        guard ImeConfig.setString("mode", next) else {
+            let alert = NSAlert()
+            alert.messageText = "无法保存输入模式"
+            alert.informativeText = "请检查配置文件权限。当前输入模式保持不变。"
+            alert.runModal()
+            return
+        }
+        cancelClientComposition()
         session?.setMode(next)
-        candidateWindow?.hide()
     }
 
     // MARK: - 按键处理

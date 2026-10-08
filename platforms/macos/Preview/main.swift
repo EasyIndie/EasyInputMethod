@@ -150,10 +150,10 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         session.setMode(["mixed", "wubi", "pinyin"][sender.indexOfSelectedItem])
         window?.makeFirstResponder(input)
     }
-    @objc func lookupPinyin() { LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func addWord() { UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func importWords() { UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func exportWords() { UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func addWord() { input?.cancelComposition(); UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func importWords() { input?.cancelComposition(); UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func exportWords() { input?.cancelComposition(); UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func clearInput() { input?.clear(); window?.makeFirstResponder(input) }
     func windowDidResignKey(_ notification: Notification) { input?.cancelComposition() }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
@@ -213,6 +213,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     view.clear(); check("")
     session.setMode("pinyin"); keys("nihao "); check("你好")
     view.clear(); keys("\".\""); check("“。”")
+    session.focusOut(); view.clear(); keys("\""); check("“")
     keys(" ", flags: [.control, .shift]); view.clear(); keys("nihao"); check("nihao")
     keys(" ", flags: [.shift]); view.clear(); keys("A1"); check("Ａ１")
     keys(" ", flags: [.shift]); keys(" ", flags: [.control, .shift])

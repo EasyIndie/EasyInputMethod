@@ -635,7 +635,7 @@ pub extern "C" fn ime_session_focus_out(session: *mut ImeSession) {
     let _ = catch_status(|| {
         // SAFETY：契约见模块注释。
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
-        s.session.cancel();
+        s.session.focus_out();
         s.refresh();
         Ok(IME_OK)
     });
@@ -647,7 +647,7 @@ pub extern "C" fn ime_session_reset(session: *mut ImeSession) {
     let _ = catch_status(|| {
         // SAFETY：契约见模块注释。
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
-        s.session.cancel();
+        s.session.focus_out();
         s.refresh();
         Ok(IME_OK)
     });
