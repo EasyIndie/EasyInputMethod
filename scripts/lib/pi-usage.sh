@@ -17,6 +17,21 @@ PI_CMD="${PI_CMD:-pi}"
 PI_USAGE_LOG="${PI_USAGE_LOG:-docs/experiments/runs/usage.jsonl}"
 PI_RAW_DIR="${PI_RAW_DIR:-docs/experiments/runs/raw}"
 
+# 磁盘余量预检：$1 = 需要的最小 GiB（默认 3）。不足返回 1。
+# 用于防止并行/多次编译耗尽磁盘（Rust target/ 会随依赖显著增大）。
+require_disk_headroom() {
+  local need_gb="${1:-3}" avail_kb avail_gb
+  avail_kb="$(df -Pk . 2>/dev/null | awk 'NR==2 {print $4}')"
+  [ -n "$avail_kb" ] || { echo "⚠️  无法读取磁盘余量，跳过预检" >&2; return 0; }
+  avail_gb=$(( avail_kb / 1048576 ))
+  if [ "$avail_gb" -lt "$need_gb" ]; then
+    echo "❌ 磁盘余量不足：${avail_gb} GiB < 需要 ${need_gb} GiB。请清理后重试。" >&2
+    return 1
+  fi
+  echo "💾 磁盘余量 ${avail_gb} GiB（阈值 ${need_gb} GiB，通过）" >&2
+  return 0
+}
+
 # 从 `pi --mode json` 事件流提取累计用量。
 # 计费口径：assistant 的 message_end.usage + type=="usage" 条目（二者不重叠）。
 pi_extract_usage() {

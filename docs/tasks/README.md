@@ -42,6 +42,9 @@
 - 汇总用量：`./scripts/usage-report.sh`
 - 受控对比（花 token）：`./scripts/bench-session-vs-workers.sh --micro`
 - 结论与判定规则：`docs/experiments/`
+- **磁盘预检**：默认要求 ≥ 3 GiB 余量，不足即拒绝（`--min-free-gb N` 可调）。
+- **编译并行度**：`--jobs N` 设 `CARGO_BUILD_JOBS`，防多 worker 抢核。
+  ⚠️ 本机仅 **2 物理核**：磁盘够但 CPU 是瓶颈 → **默认顺序派发**，不要盲目并行。
 
 > 模型名以 `/model` 或 `pi --model` 实际可用为准；`deepseek-v4-flash` 是占位示例。
 >

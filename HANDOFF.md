@@ -71,6 +71,8 @@
 | Rust | 1.98.1（由 `rust-toolchain.toml` 固定） |
 | 构建 | `make` 可用；`just` 不可用（故用 Makefile） |
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
+| 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
+| 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
 | 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），17 个测试通过 |
 
 ## 8. 接手清单（新会话开始时）
@@ -83,6 +85,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（派发防护 + T-M1-01 质检）
+- T-M1-01 已由 flash worker 完成并**人工复核**：质量优秀，`make verify` 全绿（17 测试）。已提交。
+- 派发工具加防护：`--jobs N`（`CARGO_BUILD_JOBS`）+ 磁盘预检（默认 ≥3 GiB，`--min-free-gb N`）。
+- 硬件实测：可用磁盘 14 GiB（每 worktree ≈22 MB，宽裕）；但仅 **2 物理核** → **并行上限建议 2，当前默认顺序派发**。
 
 ### 2026-10-08 · pi（T-M1-01 字根表骨架）
 - 新建 `crates/wubi-encoder`（零外部依赖、`forbid(unsafe_code)`）：`RadicalTable::from_tsv`/`radical_to_key` + `Stroke`/`Structure`/`EncodeError`。

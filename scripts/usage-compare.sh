@@ -10,7 +10,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
 LOG="${PI_USAGE_LOG:-docs/experiments/runs/usage.jsonl}"
-[ -f "$LOG" ] || { echo "ℹ️  无数据（$LOG）"; exit 0; }
+[ -f "$LOG" ] || { echo "ℹ️  无数据（${LOG}）"; exit 0; }
 
 wl="${1:-}"
 rows="$(jq -s --arg wl "$wl" '

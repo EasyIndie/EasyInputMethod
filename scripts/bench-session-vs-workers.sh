@@ -23,7 +23,7 @@ export PI_RAW_DIR="${PI_RAW_DIR:-$ROOT/docs/experiments/runs/raw}"
 source scripts/lib/pi-usage.sh
 
 model="${PI_BENCH_MODEL:-deepseek-v4-flash}"
-tasks="" ; workload="" ; repeat=1 ; micro=0 ; wname=""
+tasks="" ; workload="" ; repeat=1 ; micro=0 ; wname="" ; jobs="" ; min_free_gb=3
 while [ $# -gt 0 ]; do
   case "$1" in
     --model) model="$2"; shift 2 ;;
@@ -31,6 +31,8 @@ while [ $# -gt 0 ]; do
     --workload) workload="$2"; shift 2 ;;
     --repeat) repeat="$2"; shift 2 ;;
     --name) wname="$2"; shift 2 ;;
+    --jobs) jobs="$2"; shift 2 ;;
+    --min-free-gb) min_free_gb="$2"; shift 2 ;;
     --micro) micro=1; shift ;;
     *) echo "未知参数: $1"; exit 2 ;;
   esac
@@ -52,12 +54,16 @@ elif [ -n "$tasks" ]; then
   wname="${wname:-cards}"
   for c in $tasks; do
     [ -f "$c" ] || { echo "任务卡不存在: $c"; exit 1; }
-    prompts+=("严格执行任务卡 $c：先读 AGENTS.md 与 HANDOFF.md，按卡执行，完成后跑 make verify，只回简明摘要（≤15 行）。")
+    prompts+=("严格执行任务卡 ${c}：先读 AGENTS.md 与 HANDOFF.md，按卡执行，完成后跑 make verify，只回简明摘要（≤15 行）。")
   done
 else
   echo "需要 --micro / --workload <文件> / --tasks \"<卡...>\" 之一"; exit 2
 fi
 [ "${#prompts[@]}" -gt 0 ] || { echo "负载为空"; exit 1; }
+
+# 预检：磁盘余量（worktree + 编译占盘）
+require_disk_headroom "$min_free_gb" || exit 1
+[ -n "$jobs" ] && { export CARGO_BUILD_JOBS="$jobs"; echo "🔧 CARGO_BUILD_JOBS=$jobs"; }
 
 ts="$(date -u +%Y%m%dT%H%M%SZ)"
 rundir="$ROOT/docs/experiments/runs/bench-$ts-${wname}"

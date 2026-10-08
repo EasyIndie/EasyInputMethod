@@ -6,8 +6,10 @@
 #
 # 选项:
 #   --model <名>    使用模型（默认 $PI_BENCH_MODEL 或 deepseek-v4-flash）
-#   --reuse <会话名> 复用同一会话（缓存热）；适合连续派发一批小卡
+#   --reuse <会话名> 复用同一会话（缓存热）；仅用于强依赖序列
 #   --label <名>    记录用的标签（默认取任务卡文件名）
+#   --jobs <N>      传给 worker 的 CARGO_BUILD_JOBS（控制编译并行度，防 CPU 超订）
+#   --min-free-gb <N> 磁盘余量下限（默认 3 GiB），不足则拒绝派发
 #
 # 用量写入 docs/experiments/runs/usage.jsonl；用 ./scripts/usage-report.sh 汇总。
 
@@ -28,6 +30,8 @@ shift
 model="${PI_BENCH_MODEL:-deepseek-v4-flash}"
 mode="fresh"
 sdir=""
+jobs=""
+min_free_gb=3
 label="$(basename "$card" .md)"
 
 while [ $# -gt 0 ]; do
@@ -35,9 +39,18 @@ while [ $# -gt 0 ]; do
     --model) model="$2"; shift 2 ;;
     --reuse) mode="reuse"; sdir="docs/experiments/runs/sessions/$2"; shift 2 ;;
     --label) label="$2"; shift 2 ;;
+    --jobs) jobs="$2"; shift 2 ;;
+    --min-free-gb) min_free_gb="$2"; shift 2 ;;
     *) echo "未知参数: $1"; exit 2 ;;
   esac
 done
+
+# 派发前预检：磁盘余量（Rust 编译会显著占盘）
+require_disk_headroom "$min_free_gb" || exit 1
+if [ -n "$jobs" ]; then
+  export CARGO_BUILD_JOBS="$jobs"
+  echo "🔧 CARGO_BUILD_JOBS=${jobs}（限制 worker 编译并行度）"
+fi
 
 prompt="你是萤火虫输入法（EasyInputMethod）仓库的执行代理。
 1. 先读根目录 AGENTS.md（铁律/工作流/约定）与 HANDOFF.md（当前状态）。
