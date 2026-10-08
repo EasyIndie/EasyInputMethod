@@ -85,3 +85,9 @@
 | [T-M2-02](T-M2-02.md) | 内置轻量拼音引擎 `ime-pinyin` | **pro** | T-M2-01 |
 | [T-M2-03](T-M2-03.md) | 拼音反查 + `ime-config` 接入 CLI | **pro** | T-M2-01, T-M2-02 |
 | [T-M2-04](T-M2-04.md) | `inputx-pinyin` spike | flash | — |
+
+### P1-M3（macOS 宿主）
+
+| ID | 标题 | 模型 | 依赖 |
+|---|---|---|---|
+| [T-M3-01](T-M3-01.md) | `ime-ffi` C ABI（会话 + 配置） | **pro** | P1-M1/M2 |

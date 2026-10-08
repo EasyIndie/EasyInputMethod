@@ -86,6 +86,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
+| macOS/宿主 | macOS 13.7.8 **Intel x86_64**；**仅 CLT、无 Xcode**；Swift 5.8.1 + InputMethodKit 可编译/链接（已实测）；**不能用 IB/AssetCatalog**（actool/ibtool 为 stub）→ 纯代码 UI；ad-hoc 签名可用 |
 | 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`/`ime-config`/`ime-pinyin`），69 单测 + 1 doctest 通过 |
 
 ## 8. 接手清单（新会话开始时）
