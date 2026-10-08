@@ -83,3 +83,5 @@
 |---|---|---|---|
 | [T-M2-01](T-M2-01.md) | `ime-config` 配置子系统 | **pro** | 无 |
 | [T-M2-02](T-M2-02.md) | 内置轻量拼音引擎 `ime-pinyin` | **pro** | T-M2-01 |
+| [T-M2-03](T-M2-03.md) | 拼音反查 + `ime-config` 接入 CLI | **pro** | T-M2-01, T-M2-02 |
+| [T-M2-04](T-M2-04.md) | `inputx-pinyin` spike | flash | — |
