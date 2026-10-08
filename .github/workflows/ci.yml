@@ -114,3 +114,12 @@ jobs:
           for archive in packaging/out/candidate-*/*.zip; do
             ./platforms/macos/tests/run-repro.sh "$archive"
           done
+      - name: Upload unsigned review archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yinghuo-macos-review-${{ github.sha }}
+          path: |
+            packaging/out/candidate-*/*.zip
+            packaging/out/candidate-*/*.zip.sha256
+          if-no-files-found: error
+          retention-days: 14

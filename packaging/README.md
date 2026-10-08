@@ -15,3 +15,5 @@ make verify                            # 完整审计通过后保存提交
 验收门槛见 docs/技术方案.md §12，未满足前只称候选包。第三方复现说明及终端安装/卸载命令随包 README 提供。Windows/Linux/移动端打包尚未开始。
 
 同环境离线载荷复现：`./platforms/macos/tests/run-repro.sh <候选ZIP>`，在临时目录核验 SHA/软链后，从包内 SOURCE/vendor 离线构建；去签名可执行文件及默认词表须逐字节一致，不安装应用。正式构建通过 ADR-033 归一化编译路径和目标版本；需要相同架构、Rust、Swift/SDK 与编译选项。
+
+自动验收出包采用 GitHub Actions + App Store Connect 团队 API 密钥，凭据一次配置后由 CI 签名/公证/上传附件，见 [CI-ACCEPTANCE.md](macos/CI-ACCEPTANCE.md)。普通 PR 自动提供无凭据审核包。
