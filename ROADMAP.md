@@ -53,7 +53,7 @@
 
 ### P1-M3 macOS 宿主
 
-- [ ] `ime-ffi`：C ABI（会话 + 配置接口）
+- [x] `ime-ffi`：C ABI（会话 + 配置接口）
 - [ ] Swift + InputMethodKit 宿主（`IMKInputController`）
 - [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
 - [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）

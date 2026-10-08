@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M2 全部完成（T-M2-01/02/03/04）** |
-| 当前分支 | `main`（本次 T-M2-04 变更未提交） |
+| 当前阶段 | **P1-M3 进行中：T-M3-01（ime-ffi C ABI）完成** |
+| 当前分支 | `main`（T-M3-01 变更未提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+69 单测+1 doctest+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+78 单测+1 doctest+deny+隐私断言；C/Swift 冒烟通过） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1、P1-M2 全部完成**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**（`PinyinBackend` trait + 内置轻量兜底 + 混输）；**T-M2-03 完成拼音反查首选读音 + `ime-config` 接入 `ime-cli`**（改 `config.toml` 即时生效 + `:set` 调试命令）；**T-M2-04 `inputx-pinyin` spike 完成，结论「不接入」**（体积否决：core 4.2 MiB / 默认 ~23 MiB，超 0.6 MB 预算）。
-- **下一步**：P1-M3（`ime-ffi` C ABI + macOS IMK 宿主）；`TBD-4`（英文/包名）；拼音反查 CLI 展示（可选）。
+- **现在**：**P1-M1、P1-M2 全部完成；P1-M3 开始，T-M3-01（`ime-ffi` C ABI）已完成**。T-M2-01 完成 `ime-config`（Schema/快照/原子写/监听/广播）；**T-M2-02 完成 `ime-pinyin`**（`PinyinBackend` trait + 内置轻量兜底 + 混输）；**T-M2-03 完成拼音反查首选读音 + `ime-config` 接入 `ime-cli`**（改 `config.toml` 即时生效 + `:set` 调试命令）；**T-M2-04 `inputx-pinyin` spike 完成，结论「不接入」**（体积否决：core 4.2 MiB / 默认 ~23 MiB，超 0.6 MB 预算）。
+- **下一步**：P1-M3 Swift + InputMethodKit 宿主（`IMKInputController`，含把真实数据文件接给 FFI 会话）；`TBD-4`（英文/包名）；拼音反查 CLI 展示（可选）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -44,17 +44,19 @@
 - **P1-M2 / T-M2-01**：新建 `crates/ime-config`（`arc-swap` + `toml_edit`，零网络、`forbid(unsafe_code)`）：`schema.rs`（v1 七项唯一真值）、`config.rs`（Schema 默认值 + 文件值合并快照）、`persist.rs`（原子写 temp+fsync+rename / 咨询锁 / 迁移占位 / 首份中文注释模板）、`watch.rs`（mtime 轮询 + 防抖 → reload）、`lib.rs`（`ConfigStore` set/get/subscribe/reload）；9 个单测覆盖验收 1–6（含 watcher 外部编辑重载）。
 - **P1-M2 / T-M2-02**：新建 `crates/ime-pinyin`（零外部依赖、`forbid(unsafe_code)`）：`PinyinBackend` trait（`segment`/`convert`/`reverse_lookup`）、`TablePinyinBackend`（内存表兜底：音节切分最长优先+回溯、全拼整词/单音节字、简拼首字母串）、`PinyinEngine`（适配 `Engine`，`source=Pinyin`，绝不自动上屏）；12 个单测。生成 `data/generated/pinyin-chars.tsv`（53,087 行，575 KB，已入库）与 `pinyin-words.tsv`（340,960 行，8.4 MB，gitignore）；D5 由候选转正式（fetch 脚本 + SHA-256 + 登记）。`ime-cli` 支持 `--pinyin-chars`/`--pinyin-words` + 内置回退拼音表，`:mode pinyin`/`mixed` 验收通过（`nihao→你好`、`wo→我`、`nh→你好`、mixed 无五笔结果出拼音候选）。
 - **P1-M2 / T-M2-04**：完成 `inputx-pinyin` spike（只调研不改产品代码）：结论 **Phase 1 不接入**，保留内置兜底，`inputx-pinyin` 降为 P2「观察」候选，终局仍自研 FSA。依据：① 体积（core `pinyin.dict` 4.2 MiB、默认含 bigram/trigram ≈ 22.8 MiB；实测 release 二进制默认 24.2 MB / 仅 core 4.77 MB）远超 0.6 MB 预算；② 20 常用词 hit@1 与内置兜底持平（各 19/20）；③ 单作者、crates.io 1.4.0 滞后、facade 不含简拼/权重（`inputx-core` 未发布）；许可干净。产出 `docs/reviews/002-inputx-pinyin-spike.md` + ADR-008 spike 复核 + T-M2-04 结论。
+- **P1-M3 / T-M3-01**：新建 `crates/ime-ffi`（`cdylib`+`staticlib`，`deny(unsafe_op_in_unsafe_fn)`，唯一 unsafe 集中地）：会话 ABI（`new/free/key/candidates/select/page/commit/focus_out/reset` + `ime_string_free`，不透明 `ImeSession`）+ 配置 ABI（`snapshot/get/schema/set/reload/subscribe/unsubscribe`，进程级单例 `ConfigStore`）；所有入口 `catch_unwind` 兜底、坏输入返回错误码。`ime-config` 新增 `ConfigStore::with_defaults`（加载失败降级内存默认值）；`include/ime.h` + `module.modulemap`；C 冒烟（clang 链 staticlib 运行）+ Swift `import ime` typecheck 均通过。
 
 ## 3. 进行中
 
-无（P1-M2 已全部完成）。下一个里程碑 P1-M3 待 T-M2-04 变更合入后开始。
+**P1-M3**：T-M3-01（`ime-ffi` C ABI）已完成；下一步 Swift + InputMethodKit 宿主（`IMKInputController`），尚未开始。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M3**：`ime-ffi` C ABI（会话 + 配置接口 + macOS 宿主 IMKInputController）。
-2. **可选**：拼音反查 CLI 展示命令（`:pinyin <字>`，后端 `reverse_lookup` 已就绪；无任务卡）。
-3. 定 `TBD-4`：英文/包名（REV-4）。
-4. **P2**（参考，不阻塞）：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句（T-M2-04 附带发现）。
+1. **P1-M3**：Swift + InputMethodKit 宿主（`IMKInputController`）；把真实数据文件（`wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`）接给 FFI 会话（当前 FFI 用内置样本引擎）。
+2. **P1-M4**：候选窗翻页（`ime_session_page` 当前为 no-op，依赖候选窗/跨页状态）。
+3. **可选**：拼音反查 CLI 展示命令（`:pinyin <字>`，后端 `reverse_lookup` 已就绪；无任务卡）。
+4. 定 `TBD-4`：英文/包名（REV-4）。
+5. **P2**（参考，不阻塞）：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句（T-M2-04 附带发现）。
 
 ## 5. 待决 / 阻塞
 
@@ -99,6 +101,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M3-01 ime-ffi C ABI）
+- 新建 `crates/ime-ffi`（`cdylib`+`staticlib`，`deny(unsafe_op_in_unsafe_fn)`，唯一 unsafe 集中地）：会话 ABI（`new/free/key/candidates/select/page/commit/focus_out/reset` + `ime_string_free`，不透明 `ImeSession`）+ 配置 ABI（`snapshot/get/schema/set/reload/subscribe/unsubscribe`，进程级单例 `ConfigStore`）；所有入口 `catch_unwind` 兜底、坏输入（NULL/非法 UTF-8/非法码点/越界）返回错误码。
+- `ime-config` 新增 `ConfigStore::with_defaults`（首次加载失败降级内存默认值，保留真实路径）；`include/ime.h` + `module.modulemap`；C 冒烟（clang 链 staticlib 运行）+ Swift `import ime` typecheck 均通过。
+- 验证：`make verify` 全绿（78 单测 + 1 doctest；deny advisories/bans/licenses/sources ok；隐私断言 135 产物零网络符号）；`run-c-smoke.sh` 输出 candidates[你|wq]→commit 你、config mode=mixed、schema 7 项。
+- 遗留：FFI 会话暂用内置样本引擎（真实数据文件路径留 P1-M3 Swift 宿主）；`ime_session_page` 为 no-op（翻页状态属 P1-M4 候选窗，ime-core 固定 ≤9 候选）；配置路径暂为 `IME_CONFIG_PATH`/`config.toml`（平台路径留宿主）。
 
 ### 2026-10-08 · pi（T-M2-04 inputx-pinyin spike）
 - 仅调研不改产品代码：`inputx-pinyin` 1.4.0（MIT OR Apache-2.0，纯 Rust，单作者）→ **结论「Phase 1 不接入」**，保留内置兜底；P2「观察」候选，终局仍自研 FSA（ADR-008 复核）。

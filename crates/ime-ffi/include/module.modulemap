@@ -1,0 +1,4 @@
+module ime {
+    header "ime.h"
+    export *
+}

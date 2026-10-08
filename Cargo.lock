@@ -46,6 +46,16 @@ name = "ime-core"
 version = "0.1.0"
 
 [[package]]
+name = "ime-ffi"
+version = "0.1.0"
+dependencies = [
+ "ime-config",
+ "ime-core",
+ "ime-pinyin",
+ "ime-table",
+]
+
+[[package]]
 name = "ime-pinyin"
 version = "0.1.0"
 dependencies = [

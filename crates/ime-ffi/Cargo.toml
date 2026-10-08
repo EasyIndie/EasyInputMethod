@@ -1,0 +1,16 @@
+[package]
+name = "ime-ffi"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+rust-version.workspace = true
+description = "萤火虫输入法窄 C ABI（会话 + 配置），唯一 unsafe 集中地"
+
+[lib]
+crate-type = ["cdylib", "staticlib"]
+
+[dependencies]
+ime-core.workspace = true
+ime-table.workspace = true
+ime-pinyin.workspace = true
+ime-config.workspace = true

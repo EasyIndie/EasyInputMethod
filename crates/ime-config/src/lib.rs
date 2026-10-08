@@ -125,6 +125,20 @@ impl ConfigStore {
         })
     }
 
+    /// 以 Schema 默认值构造，不读取文件。
+    ///
+    /// 供 FFI 等宿主在“首次加载失败（语法错误 / IO 错误）”时降级：
+    /// 保留目标路径，让后续 `reload` 仍可指向真实文件。
+    pub fn with_defaults(path: impl Into<PathBuf>) -> ConfigStore {
+        ConfigStore {
+            path: path.into(),
+            snapshot: ArcSwap::from_pointee(Config::defaults()),
+            subscribers: Mutex::new(Vec::new()),
+            next_token: AtomicUsize::new(0),
+            last_unknown_keys: Mutex::new(Vec::new()),
+        }
+    }
+
     pub fn path(&self) -> &Path {
         &self.path
     }
