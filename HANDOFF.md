@@ -13,17 +13,17 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1-M1 进行中（T-M1-01/02/03/04/04b 完成；T-M1-05 前置已满足，待 pro 执行）** |
-| 当前分支 | `main`（本次 T-M1-04b 变更未提交） |
+| 当前阶段 | **P1-M1 进行中（T-M1-05 完成：单字码表已生成 + 双 oracle 回归 GB1 100%）** |
+| 当前分支 | `main`（本次 T-M1-05 变更未提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+30 测试+deny+隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt+clippy+32 测试+deny+隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。
 - **技术**：Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：**P1-M1 进行中**（`wubi-encoder` 编码器完整；oracle #1 对照 99.98%；30 测试、`make verify` 全绿）。**oracle #2（`rime-wubi`，T-M1-04b）已接入**；ADR-019 以「多 oracle 交叉验证」替代「数据独立」→ **T-M1-05 前置已满足**。
-- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-05**（自建单字码表 + 对 D3 / `rime-wubi` 两个 oracle 全量回归，pro）。
+- **现在**：**P1-M1 进行中**。**T-M1-05 完成**：`data/generated/wubi86-single.tsv`（27,823 字）已由自建编码器生成；对 D3（99.9784%/GB1 100%）与 rime（98.77%/GB1 100%）双 oracle 回归达标（ADR-019）；另修正 `encode_chengzi` 成字字根规则（ADR-020）。
+- **下一步**：`ROADMAP.md` 的 **P1-M1 / T-M1-06**（词组码自动生成，flash；前置 = T-M1-05 单字码表）。
 - ⛔ 继续遵循铁律：核心不联网、`forbid(unsafe_code)`、数据登记许可。
 
 ## 2. 已完成
@@ -38,16 +38,17 @@
 - 实现阶段发现 `yada` 不支持预测搜索 → 改定 `cedarwood`（ADR-015）。
 - **P1-M1 / T-M1-05a / 05b（调研止步）**：逐一核实结构/末笔独立来源许可，结论**暂无合格来源**（ADR-018）；T-M1-05b 尝试自建（Wiktionary dump 1.8 GB）失败 → **ADR-019** 改以「多 oracle 交叉验证」替代「数据独立」，结构/末笔沿用 ADR-017 的 PROVISIONAL 派生数据。
 - **P1-M1 / T-M1-04b**：新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，**LGPL-3**，SHA-256 固定）；登记 **D9**（`role=validation-oracle` / `ship=false` / 风险中）；`wubi-encoder/examples/oracle2.rs` → `data/generated/wubi86-oracle2-single.tsv`（70,370 字；抽样 5 字正确；与 D3 全体 98.78%、GB2312 一级 100%）。
+- **P1-M1 / T-M1-05**：新增 `wubi-encoder/examples/generate.rs`（生成 + 双 oracle 回归，一条命令可复现）→ `data/generated/wubi86-single.tsv`（27,823 字，471 KB，CC-BY-SA-4.0）与 `wubi86-regression.txt`；发布路径用编码器对 D3 拆字逐字生成（ADR-020），vs D3 99.9784%/GB1 100%、vs rime 98.77%/GB1 100%，三方不一致 0 条；D2 交叉检查 GB1 91.66%（量化其字形记法歧义）。修正 `encode_chengzi`（1/2/≥3 笔成字字根标准）。
 
 ## 3. 进行中
 
-**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b 已交付；**T-M1-05** 前置（T-M1-03/04/04b + 05b 结论）已满足，待 pro 认领。
+**P1-M1**（自建码表流水线）：T-M1-01/02/03/04/04b/05 已交付；下一步 **T-M1-06（词组码自动生成，flash）**。
 
 ## 4. 下一步（优先级排序）
 
-1. **P1-M1 / T-M1-05**（pro）：自建单字码表 + 对 D3 与 `rime-wubi` **两个 oracle** 全量对照（ADR-019；一级字一致率均需 ≥99%）。
-2. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
-3. 之后 **P1-M2**：`ime-config` + 拼音兜底 + 混输合并。
+1. **P1-M1 / T-M1-06**（flash）：词组码自动生成（词表 `phrase-pinyin-data` MIT，规则见 `docs/tasks/T-M1-06.md`；需先登记 D4）。
+2. 之后 **P1-M1 / T-M1-07**（词频权重，ADR-013）、**T-M1-08**（数据登记收尾）、**T-M1-09**（正式码表接入 `ime-table`/`ime-cli`）。
+3. 定 `TBD-4`：英文/包名（`yinghuo` vs `lampyris`）。
 
 ## 5. 待决 / 阻塞
 
@@ -58,7 +59,7 @@
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | 用户词库存储格式 | 阻塞 P1-M4 |
 | TBD-4 | 英文/包名 | 否 |
-| TBD-5 | 结构/末笔独立数据源（GPL-3 兼容）——T-M1-05a/05b 结论：暂无；ADR-019 以多 oracle 交叉验证替代（PROVISIONAL 派生继续） | 否（ADR-019 已解阻） |
+| TBD-5 | 结构/末笔独立数据源（GPL-3 兼容）——T-M1-05a/05b 结论：暂无；ADR-019 以多 oracle 交叉验证替代；T-M1-05 实际以 D3 拆字为字根来源（ADR-020） | 否 |
 
 ## 6. 必须知道的坑与硬约束（详见 `AGENTS.md` 铁律）
 
@@ -79,7 +80,7 @@
 | 依赖工具 | `cargo-deny`、`cargo-fuzz` 已安装 |
 | 硬件 | **2 物理核 / 4 逻辑核，16 GB 内存，14 GiB 可用磁盘** |
 | 编译成本 | 全量冷编译 ≈ 4 秒，`target/` ≈ 22 MB（当前零依赖；加依赖后会涨） |
-| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），30 个测试通过 |
+| 代码 | ✅ Rust workspace 就绪（`ime-core`/`ime-table`/`ime-cli`/`wubi-encoder`），32 个测试通过 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -91,6 +92,14 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M1-05 单字码表生成 + 双 oracle 回归）
+- 新增 `wubi-encoder/examples/generate.rs`：发布路径用编码器对 D3 第 2 列（干净拆字）逐字生成全码，输出 `data/generated/wubi86-single.tsv`（27,823 字，471 KB，CC-BY-SA-4.0）+ `wubi86-regression.txt`；D2 降级为交叉检查（GB1 91.66%，量化字形记法歧义）。
+- 双 oracle 回归（ADR-019）：vs D3 全体 99.9784%/GB1 100%；vs rime 全体 98.77%/GB1 100%；三方两两不一致 0 条（无需人工裁定）。
+- 修正 `encode_chengzi`：1 笔=键+首笔+LL、2 笔=键+首笔+次笔、≥3 笔=键+首笔+次笔+末笔（原实现把 2 笔成字字根错编为 4 键）；新增/更新单测，wubi-encoder 现 21 测试。
+- 写 **ADR-020**（字根来源改 D3 拆字 + 成字字根规则补全）+ `docs/数据来源与许可.md` §1.5 + T-M1-05 结论。
+- 验证：`make verify` 全绿（fmt + clippy -D warnings + 32 测试 + deny + 隐私断言）。
+- 遗留：D1 码表由 D3 拆字生成（ADR-020），将来若获得许可明确的独立拆字/结构数据可替换；`.imedict` 编译留待 T-M1-09。
 
 ### 2026-10-08 · pi（T-M1-04b oracle #2：rime-wubi）
 - 新增 `data/sources/fetch-wubi-oracle2.sh`（`rime/rime-wubi` `wubi86.dict.yaml`，LGPL-3，SHA-256 固定）；登记 **D9**（`role=validation-oracle`、`ship=false`、风险中）+ `docs/数据来源与许可.md` §1.4。

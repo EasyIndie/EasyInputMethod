@@ -38,7 +38,7 @@ pub enum EncodeError {
     UnknownKey(char),
     /// 输入为空，未解析到任何有效条目。
     EmptyInput,
-    /// 编码成字字根时笔画数不足（至少需要 2 笔），附带实际笔画数。
+    /// 编码成字字根时笔画数为空（至少需要 1 笔），附带实际笔画数。
     TooFewStrokes(usize),
     /// 编码合体字时字根数不足（至少需要 2 个字根），附带实际字根数。
     TooFewRadicals(usize),
@@ -53,7 +53,7 @@ impl fmt::Display for EncodeError {
             EncodeError::UnknownKey(key) => write!(f, "非法键位：{key}（应为 a–y）"),
             EncodeError::EmptyInput => write!(f, "输入为空，未解析到任何字根"),
             EncodeError::TooFewStrokes(n) => {
-                write!(f, "笔画数不足：{n}（成字字根至少需要 2 笔）")
+                write!(f, "笔画数不足：{n}（成字字根至少需要 1 笔）")
             }
             EncodeError::TooFewRadicals(n) => {
                 write!(f, "字根数不足：{n}（合体字至少需要 2 个字根）")
@@ -190,32 +190,43 @@ pub fn encode_key_name(key: char) -> String {
     std::iter::repeat_n(key, 4).collect()
 }
 
-/// Encode a Wubi86 "chengzi" radical (成字字根) as `key + first + second + last`.
+/// Encode a Wubi86 "chengzi" radical (成字字根).
 ///
-/// At least two strokes are required; shorter input yields
-/// [`EncodeError::TooFewStrokes`]. An unknown radical yields
-/// [`EncodeError::UnknownRadical`].
+/// Standard rules (do not alter):
+/// - ≥3 strokes: `key + first + second + last`;
+/// - 2 strokes: `key + first + second` (the second stroke doubles as the last);
+/// - 1 stroke (一/乙): `key + first + L + L` (`l` is the standard padding key).
+///
+/// An empty stroke list yields [`EncodeError::TooFewStrokes`]; an unknown
+/// radical yields [`EncodeError::UnknownRadical`].
 pub fn encode_chengzi(
     radical: &str,
     strokes: &[Stroke],
     table: &RadicalTable,
 ) -> Result<String, EncodeError> {
-    if strokes.len() < 2 {
-        return Err(EncodeError::TooFewStrokes(strokes.len()));
+    if strokes.is_empty() {
+        return Err(EncodeError::TooFewStrokes(0));
     }
     let key = table
         .radical_to_key(radical)
         .ok_or_else(|| EncodeError::UnknownRadical(radical.to_string()))?;
 
-    let first = stroke_to_key(strokes[0]);
-    let second = stroke_to_key(strokes[1]);
-    let last = stroke_to_key(strokes[strokes.len() - 1]);
-
     let mut code = String::with_capacity(4);
     code.push(key);
-    code.push(first);
-    code.push(second);
-    code.push(last);
+    code.push(stroke_to_key(strokes[0]));
+    match strokes.len() {
+        1 => {
+            code.push('l');
+            code.push('l');
+        }
+        2 => {
+            code.push(stroke_to_key(strokes[1]));
+        }
+        _ => {
+            code.push(stroke_to_key(strokes[1]));
+            code.push(stroke_to_key(strokes[strokes.len() - 1]));
+        }
+    }
     Ok(code)
 }
 
@@ -445,15 +456,36 @@ n\t已,己,巳,尸,乙,羽
     }
 
     #[test]
-    fn chengzi_requires_at_least_two_strokes() {
+    fn chengzi_requires_at_least_one_stroke() {
         let table = RadicalTable::from_tsv(FIXTURE).expect("fixture should parse");
-        assert_eq!(
-            encode_chengzi("一", &[Stroke::Heng], &table),
-            Err(EncodeError::TooFewStrokes(1))
-        );
         assert_eq!(
             encode_chengzi("一", &[], &table),
             Err(EncodeError::TooFewStrokes(0))
+        );
+    }
+
+    #[test]
+    fn chengzi_single_stroke_uses_l_padding() {
+        let table = RadicalTable::from_tsv(FIXTURE).expect("fixture should parse");
+        // 一 (key g, stroke 一) → g + g + l + l = ggll.
+        assert_eq!(
+            encode_chengzi("一", &[Stroke::Heng], &table),
+            Ok("ggll".to_string())
+        );
+        // 乙 (key n, stroke 折) → n + n + l + l = nnll.
+        assert_eq!(
+            encode_chengzi("乙", &[Stroke::Zhe], &table),
+            Ok("nnll".to_string())
+        );
+    }
+
+    #[test]
+    fn chengzi_two_strokes_omits_last() {
+        let table = RadicalTable::from_tsv(FIXTURE).expect("fixture should parse");
+        // 二 (key f, strokes 一 一) → f + g + g = fgg.
+        assert_eq!(
+            encode_chengzi("二", &[Stroke::Heng, Stroke::Heng], &table),
+            Ok("fgg".to_string())
         );
     }
 

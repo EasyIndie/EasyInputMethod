@@ -1,0 +1,244 @@
+# 五笔86 单字码表生成 + 多 oracle 对照回归（T-M1-05）
+#
+# 发布路径（primary）= data/sources/windinput-wubi86-chaizi.txt（D3 拆字，MIT；经编码器生成，见文件头）
+# 交叉检查路径（D2）  = data/sources/wubi-lex-86.txt（MIT；量化 D2 字形记法歧义）
+# oracle #2（rime-wubi）= data/sources/rime-wubi86.dict.yaml（LGPL-3；⚠️ 仅测试对照，不打包/不分发）
+# 识别码表由单测规范样例独立校核；结构/末笔为 D3 派生（PROVISIONAL，ADR-017/019）。
+
+[summary]
+primary_chars = 27823
+d2_chars = 6835
+d3_glyph_keys = 342
+d2_glyph_keys = 286
+
+[agreement]
+# path	oracle	overall%	gb1%
+primary	D3	overall=99.9784% (27817/27823)	gb1=100.0000% (3755/3755)
+primary	rime	overall=98.7697% (27376/27717)	gb1=100.0000% (3755/3755)
+d2	D3	overall=90.8413% (6209/6835)	gb1=91.6555% (3427/3739)
+d2	rime	overall=90.8120% (6207/6835)	gb1=91.6555% (3427/3739)
+
+[primary_vs_oracles]
+# 发布路径（primary）与各 oracle 的差异（全体，非仅 GB1）。
+# --- primary vs D3（差异 6 条，最多显示 200）---
+# char	primary	D3
+䶿	wyvq	wyvn
+鿶	qgye	qgyv
+𫄨	xqqh	xqdh
+𫔍	qgol	qtol
+𫗧	qnki	qngi
+𬬮	qgay	qtay
+# --- primary vs rime（差异 200 条，最多显示 200）---
+# char	primary	rime
+㓁	pwu	pqb
+㔳	awym	ayvm
+㣺	nyi	nhty
+㯺	ahns	shns
+㼵	jghn	jggn
+䋴	xcbs	xdbs
+䏓	mufq	efqn
+䑃	muae	eape
+䖠	jmyy	jnyy
+䖰	jrey	frey
+䙚	wvge	tvge
+䥂	qpge	qpfe
+䦸	ujmy	ujmc
+䬼	wyve	wvye
+䭝	wyvj	wvyj
+䭤	wyvp	wvyp
+䯖	meye	mtye
+亞	ghgg	gfgd
+亹	ywfg	yvmg
+俹	wghg	wgfg
+僫	wghn	wgfn
+儍	wqot	wobt
+儕	wyvf	wyjg
+冑	mmff	mef
+冡	pgeu	pfeu
+劑	yvuj	yjjh
+匁	qqi	qtyi
+卌	glk	fjfh
+卍	nhgh	hghn
+卐	nghg	ghgn
+叀	gmcu	gjhc
+啞	kghg	kgfg
+嘯	kvhh	kvfj
+噁	kghn	kgfn
+嚌	kyvf	kyjg
+嚙	khwb	khbh
+嚳	wfqk	vqqk
+囬	mjdd	ljfd
+埀	tguf	tfuf
+埡	fghg	fgfg
+堊	ghgf	gfgf
+塜	fpge	fpfe
+壆	wfqf	vqqf
+壺	fphg	fpfg
+奫	dith	dijg
+婣	vthh	vjgg
+婭	vghg	vgfg
+嬩	vwfw	vvgw
+嬹	vwfw	vvmw
+孲	bghg	bgfg
+學	wfqb	vqqb
+嶨	wfqm	vqqm
+嶼	mwfw	mvgw
+彇	xvhh	xvfj
+惡	ghgn	gfgn
+懙	nwfw	nvgw
+懠	nyvf	nyjg
+戉	anyt	anty
+挿	rtgh	rtfj
+掗	rghg	rgfg
+擠	ryvf	ryjg
+擧	wfgr	vgnr
+攑	rwfh	rvgh
+攪	rwfq	rvqq
+斅	wfqc	vqqc
+斆	wfqt	vqqt
+斖	ywfg	yvmg
+斲	nngr	anjr
+旟	ytww	ytvw
+曺	gmjf	gjhj
+桟	sdxy	sdny
+棩	sthh	sjgg
+椏	sghg	sgfg
+樮	ssoy	sgjo
+橚	svhh	svfj
+檇	swym	swyn
+櫅	syvf	syjg
+櫸	swfh	svgh
+欅	swfr	svgr
+歗	vhtw	vfjw
+歟	wfgw	vgnw
+氋	apgn	apfn
+淵	ithh	ijgg
+潀	ilwy	ilwu
+潚	ivhh	ivfj
+澩	wfqi	vqqi
+濟	iyvf	iyjg
+灚	iwfq	ivqq
+熽	ovhh	ovfj
+燢	wfqo	vqqo
+爂	wfmo	vmgo
+琧	ghgy	gfgy
+璛	gvhh	gvfj
+璵	gwfw	gvgw
+璾	gyvf	gyjg
+瘂	ughg	ugfg
+癋	ughn	ugfn
+癠	uyvf	uyjd
+眾	lwwy	lwwu
+瞗	hwvo	htvo
+礐	wfqd	vqqd
+礖	dwfw	dvgw
+礜	wfgd	vgnd
+稏	tghg	tgfg
+穂	tgmn	tgjn
+穥	twfw	tvgw
+穧	tyvf	tyjg
+簫	tvhh	tvfj
+籂	twyh	twph
+籅	twfw	tvgw
+糭	oqot	oobt
+絏	xjxt	xjnt
+繡	xvhh	xvfj
+纃	xyvf	xyjg
+纛	gxfi	gxgi
+肅	vhth	vfjk
+肦	muwv	ewvn
+胊	muqk	eqkg
+胐	mubm	ebmh
+脁	muiq	eiqn
+脧	muct	ecwt
+膧	muuf	eujf
+臍	eyvf	eyjg
+臖	wfme	vmge
+臮	thwy	thwu
+與	wfgw	vgnw
+興	wfmw	vmgw
+舉	wfgh	vgnh
+舋	wfmg	vmgg
+蔻	apfc	apfl
+蕭	avhh	avfj
+薺	ayvf	ayjf
+藇	awfw	avgw
+虀	ayvg	aydg
+虁	adht	auht
+虋	awfv	avmv
+蜵	jthh	jjgg
+蝁	ghgj	gfgj
+蝕	wyvj	wpjy
+蟰	jvhh	jvfj
+蠐	jyvf	jyjg
+裫	puth	pujg
+襷	puwr	puvr
+覺	wfqq	vqqq
+觷	wfqe	vqqe
+譽	wfgy	vgny
+輿	wflw	vlgw
+轝	wfgl	vgnl
+釁	wfmv	vmgv
+錏	qghg	qgfg
+鏽	qvhh	qvfj
+鐚	qghn	qgfn
+鑁	qqot	qobt
+鑇	qyvf	qyjg
+鑡	qhwb	qhbh
+閸	ughg	ugfg
+隮	byvf	byjg
+雤	wfqy	vqqy
+霥	fpge	fpfe
+霽	fyvf	fyjf
+靥	dddd	dddl
+韲	yvug	ydjg
+飢	wyvm	wpmn
+飣	wyvs	wpsh
+飤	wyvw	wpwy
+飥	wyva	wpta
+飦	wyvf	wpfh
+飩	wyvn	wpgn
+飪	wyvf	wptf
+飫	wyvd	wptd
+飭	wyvl	wptl
+飯	wyvc	wprc
+飰	wyvh	wpyh
+飲	wyvw	wpqw
+飳	wyvg	wpyg
+飴	wyvk	wpck
+飵	wyvf	wptf
+飶	wyvt	wpnt
+飷	wyvg	wpeg
+飹	wyvb	wpqb
+飻	wyve	wpwe
+飼	wyvk	wpnk
+飽	wyvn	wpqn
+飾	wyvh	wpth
+飿	wyvm	wpbm
+餀	wyvq	wpaq
+餁	wyvf	wpwf
+餂	wyvd	wptd
+餃	wyvq	wpuq
+餄	wyvk	wpwk
+餅	wyva	wpua
+餆	wyvq	wpiq
+餇	wyvk	wpmk
+餉	wyvk	wptk
+餌	wyvb	wpbg
+餎	wyvk	wptk
+餏	wyve	wpye
+餑	wyvb	wpfb
+餒	wyvv	wpev
+餓	wyvt	wptt
+
+[three_way_disagreement]
+# 三方（primary / D3 / rime）两两均不一致的条目，需按五笔86 规范人工裁定（ADR-019）。
+# char	primary	D3	rime
+# （无：primary 与 D3 仅有 6 处歧义字形差异，且这些字在 rime 中缺失或与 D3 一致，故不存在三方两两不一致条目。）
+
+[d2_limitation]
+# D2 交叉检查路径的一致率显著低于发布路径，归因于 D2 字形记法的歧义（ADR-017）：
+# 同一 PUA/通配字形（如 U+F001E、U+F0013）在不同字中代表不同字根；
+# 马/幺等字根在 D2 中被拆成多字形且形式不统一；
+# 少量条目残缺（如 伐/代 仅存首字根）。
+# 因此发布码表采用 D3 第 2 列的干净拆字（每码位一字形）作为字根来源，D2 仅用于交叉检查。

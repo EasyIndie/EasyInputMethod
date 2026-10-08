@@ -36,7 +36,7 @@
 
 - [x] `crates/wubi-encoder`：五笔86 编码器（键名字/成字字根/合体字/末笔字型识别码）—— 细卡见 `docs/tasks/T-M1-01..03`（T-M1-01 字根表、T-M1-02 键名字+成字字根、T-M1-03 合体字+识别码 已完成；oracle 对照 99.98%）
 - [x] `data/sources.toml` + 拆字数据交叉校验（`wubi-lex` MIT / WindInput MIT）—— 另接入 **oracle #2** `rime/rime-wubi`（LGPL-3，T-M1-04b，仅验证不发布）
-- [ ] 单字码表生成 → `.imedict`（T-M1-05；ADR-019 改以**多 oracle 交叉验证**，前置已满足）
+- [x] 单字码表生成（T-M1-05：`wubi86-single.tsv` 已生成 + 双 oracle 回归 GB1 100%；`.imedict` 编译留待 T-M1-09 接入）
 - [ ] 词组码自动生成（词表来自 `phrase-pinyin-data` MIT）
 - [ ] **词频/默认权重接入（P1-1 必交付，ADR-013）**：公开词频近似，使重码排序可用
 - [ ] `docs/数据来源与许可.md` 登记全部数据
