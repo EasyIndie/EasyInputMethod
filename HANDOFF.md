@@ -14,16 +14,16 @@
 |---|---|
 | 最后更新 | 2026-10-08 |
 | 更新者 | pi |
-| 当前阶段 | **P1 前半（M0/M1/M2）全部完成；P1-M3（macOS 宿主）进行中：T-M3-01 完成，待做 T-M3-02** |
-| 当前分支 | `main`（**已全部推送 origin，无未提交改动**） |
+| 当前阶段 | **P1 前半（M0/M1/M2）完成；P1-M3：T-M3-01/02 完成，Swift 宿主待人工装载验证** |
+| 当前分支 | `main`（已全部推送 origin；本轮改动待提交） |
 | 活跃 PR | 无 |
-| 最近一次 `make verify` | ✅ 全绿（fmt + clippy -D warnings + **78 单测 + 1 doctest** + cargo-deny + 隐私断言） |
+| 最近一次 `make verify` | ✅ 全绿（fmt + clippy -D warnings + **82 单测 + 1 doctest** + cargo-deny + 隐私断言） |
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi` C ABI，**下一步写 Swift/InputMethodKit 宿主**。
-- **下一步卡**：`docs/tasks/T-M3-02.md`（Swift 宿主，**需人工在本机装载验证**）。
+- **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
+- **下一步卡**：`docs/tasks/T-M3-02.md` 的**人工装载验证**（由人做）；随后 **T-M3-03**（安装脚本 + Gatekeeper 文档）。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -34,22 +34,22 @@
 | **P1-M0** | workspace + `ime-core`（Engine/InputMode/会话状态机）+ `ime-table` + `ime-cli` | — |
 | **P1-M1** 自建码表 | `crates/wubi-encoder`（五笔86 全规则）+ `data/` 流水线；单字表 **27,823 字**（vs D3 99.98% / vs rime 98.77%，**GB2312 一级均 100%**）；词组多候选表；内置核心 `wubi86-core.tsv` **491,854 B ≤ 0.6MB** | ADR-016…021 |
 | **P1-M2** 配置+拼音+混输 | `crates/ime-config`（Schema/`ArcSwap` 快照/原子写/广播）+ `crates/ime-pinyin`（`PinyinBackend` + 内置兜底）；混输（`ime-core` 已实现合并）。实测 `nihao→你好`、`wq→你` | `docs/配置架构.md`、ADR-008/009 |
-| **P1-M3**（进行中） | `crates/ime-ffi`（会话 + 配置 C ABI，唯一 `unsafe` 集中地） | `docs/技术方案.md` §5.3、`docs/配置架构.md` §9 |
+| **P1-M3**（进行中） | `crates/ime-ffi`（会话 + 配置 C ABI）+ **`platforms/macos/` Swift 宿主**（纯代码 AppKit，可编译/打包，`build.sh` 产 `.inputmethod` bundle） | `platforms/macos/README.md`、ADR-022、`docs/技术方案.md` §5.3、`docs/配置架构.md` §9 |
 
 > 实验数据：`docs/experiments/`（派发策略：独立任务用「每卡新 worker」，整批实测省 token）。
 
 ## 3. 进行中
 
-**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）未开始**。
-> ⚠️ T-M3-02 的**验证**必须人工做：装 bundle 到 `~/Library/Input Methods/` → 注销/重登 → 在 TextEdit 试打。
+**P1-M3**：`ime-ffi` ✅；**T-M3-02（Swift/IMK 宿主）✅ 代码完成**（编译 + 打包 + FFI 运行时冒烟均通过）。
+> ⚠️ T-M3-02 的**验收**必须人工做：`./platforms/macos/build.sh` → 装到 `~/Library/Input Methods/` → 注销/重登 → TextEdit 试打 `wq`→你、`nihao`→你好（步骤见 `platforms/macos/README.md`）。
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **T-M3-02**（`docs/tasks/T-M3-02.md`）：Swift `IMKInputController` 宿主 + `build.sh`/打包脚本；**把真实数据接给 FFI 会话**（当前 FFI 用内置样本引擎）。产出后由**人**在本机装载验证。
-2. **T-M3-03**：安装脚本 + Gatekeeper/手动装载说明。
-3. **T-M3-04**：CI 加 macOS runner（对应 `docs/reviews/001.md` P2-5）。
+1. **T-M3-02 人工验证**（`platforms/macos/README.md`）：装载、加输入法、TextEdit 打字；把实际现象/报错回写仓库。
+2. **T-M3-03**：安装脚本 + Gatekeeper/手动装载说明（对应 `docs/tasks/T-M3-03.md`）。
+3. **T-M3-04**：CI 加 macOS runner（编译 `build.sh`，不装载）。
 4. **P1-M3 验收**：TextEdit / Safari 里能五笔打字。
-5. 可选（无卡）：拼音反查 CLI 命令（后端 `reverse_lookup` 已就绪）；定 `TBD-4` 英文/包名。
+5. 可选（无卡）：拼音反查 CLI 命令；定 `TBD-4` 英文/包名。
 6. **P2 参考**：自研 FSA 拼音引擎（ADR-008 终局）；修复内置兜底贪心切分漏检超长整句。
 
 ## 5. 待决 / 阻塞
@@ -72,6 +72,8 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **无 Xcode**（仅 CLT）→ **不能用 IB / Asset Catalog**（`actool`/`ibtool` 是 stub）→ **纯代码 UI**。
+- ⚠️ **IMK Swift 事件方法叫 `handle(_:client:)`**（不是 `handleEvent`；后者在 Swift 3 被重命名）；`Info.plist` 输入模式清单在 `ComponentInputModeDict.tsInputModeListKey`（参照系统输入法实测）。
+- ⚠️ **`pinyin-words.tsv`（8.4MB）不入库**：`build.sh` 缺失时宿主降级（无拼音/单音节），复现见 `platforms/macos/README.md`。
 - ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符（如 `$model（`）会被当变量名 → 一律写 `${var}`。
 - ⚠️ **许可地雷**：`Arphic Public License`（makemeahanzi / hanzi-writer）**GPL 不兼容**；`GPLv2-only` 与 GPL-3 不兼容；**极点五笔 provenance 存疑**（`rime-wubi86-jidian` 仅可测试）。
 - ⚠️ **worker 产出不会自动提交**：派发后必须**人工复核 + `git add/commit/push`**（个别 worker 会自建 commit，要检查 `git log`/`git status`）。
@@ -99,6 +101,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-08 · pi（T-M3-02 Swift/IMK 宿主）
+- 新建 `platforms/macos/`：`main.swift`/`InputController.swift`/`CandidateWindow.swift`（纯代码 `NSPanel`）/`ImeSession.swift`/`Config.swift` + `build.sh` + `Info.plist` + README + FFI 冒烟。
+- 扩展 `ime-ffi`（ADR-022）：`ime_session_new_with_data` / `_buffer` / `_set_mode` / `ime_config_init`；`ime_session_key` 成功返回 `IME_KEY_*`。
+- 验证：`build.sh` 产出并 ad-hoc 签名 `.inputmethod`（`plutil -lint` OK、可执行不崩溃）；`run-ffi-smoke.sh` 实测 `wq→你`、`nihao→你好`；`make verify` 全绿（82 单测）。
+- 遗留：**装载 + TextEdit 打字须人工验证**（本会话无 GUI 装载）；`TBD-4` 包名仍暂定。
 
 ### 2026-10-08 · pi（T-M3-01 `ime-ffi` C ABI）
 - 新建 `crates/ime-ffi`（cdylib+staticlib）：会话 ABI + 配置 ABI；入口全部 `catch_unwind`、坏输入返回错误码。

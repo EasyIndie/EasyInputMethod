@@ -1,0 +1,142 @@
+// 会话 FFI 的 Swift 封装。
+//
+// 只做「指针 <> Swift 类型」的转换，不承载任何引擎逻辑（业务全在 Rust 侧）。
+// 线程绑定：一个 ImeSession 只在主线程使用（IMK 控制器回调都在主线程）。
+
+import Foundation
+import ime
+
+/// 单个候选。
+struct ImeCandidate {
+    let text: String
+    let code: String
+    let isPrefix: Bool
+}
+
+/// `ime_session_key` 的结果。
+enum ImeKeyResult {
+    case consumed
+    case committed(String)
+    case passThrough
+    case failure(Int32)
+}
+
+/// 不透明会话句柄的封装。
+final class ImeSession {
+    private var handle: OpaquePointer?
+
+    /// 从真实数据文件创建；加载失败返回 `nil`。
+    init?(wubiPath: String, pinyinCharsPath: String?, pinyinWordsPath: String?) {
+        let created: OpaquePointer? = wubiPath.withCString { wubi in
+            if let chars = pinyinCharsPath {
+                return chars.withCString { charsPtr in
+                    if let words = pinyinWordsPath {
+                        return words.withCString { wordsPtr in
+                            ime_session_new_with_data(wubi, charsPtr, wordsPtr)
+                        }
+                    }
+                    return ime_session_new_with_data(wubi, charsPtr, nil)
+                }
+            }
+            return ime_session_new_with_data(wubi, nil, nil)
+        }
+        guard let created else { return nil }
+        self.handle = created
+    }
+
+    /// 内置样本引擎（数据文件缺失时的兜底，保证宿主仍可启动）。
+    static func sample() -> ImeSession? {
+        guard let handle = ime_session_new() else { return nil }
+        let session = ImeSession(handle: handle)
+        return session
+    }
+
+    private init(handle: OpaquePointer) {
+        self.handle = handle
+    }
+
+    deinit {
+        if let handle {
+            ime_session_free(handle)
+        }
+    }
+
+    /// 组合缓冲区（预编辑串）；无组合时为空串。
+    var buffer: String {
+        guard let handle, let ptr = ime_session_buffer(handle) else { return "" }
+        return String(cString: ptr)
+    }
+
+    var isComposing: Bool { !buffer.isEmpty }
+
+    /// 喂入一个 Unicode 码点。
+    func feed(_ codepoint: UInt32) -> ImeKeyResult {
+        guard let handle else { return .failure(IME_ERR_NULL) }
+        let code = ime_session_key(handle, codepoint)
+        switch code {
+        case IME_KEY_COMMITTED:
+            return .committed(commit())
+        case IME_KEY_CONSUMED:
+            return .consumed
+        case IME_KEY_PASS_THROUGH:
+            return .passThrough
+        default:
+            return .failure(code)
+        }
+    }
+
+    /// 取已上屏文本（无内容返回空串）。
+    func commit() -> String {
+        guard let handle else { return "" }
+        let s = ime_session_commit(handle)
+        defer { ime_string_free(s) }
+        guard let data = s.data else { return "" }
+        return String(cString: data)
+    }
+
+    /// 取当前候选（最多 `limit` 个）。
+    func candidates(limit: Int) -> [ImeCandidate] {
+        guard let handle else { return [] }
+        let list = ime_session_candidates(handle)
+        guard list.len > 0, let items = list.items else { return [] }
+        var out: [ImeCandidate] = []
+        let count = min(Int(list.len), limit)
+        for i in 0..<count {
+            let item = items[i]
+            out.append(
+                ImeCandidate(
+                    text: item.text.map { String(cString: $0) } ?? "",
+                    code: item.code.map { String(cString: $0) } ?? "",
+                    isPrefix: item.is_prefix != 0
+                )
+            )
+        }
+        return out
+    }
+
+    /// 选择第 `index` 个候选并上屏；返回上屏文本。
+    @discardableResult
+    func select(_ index: Int) -> String? {
+        guard let handle else { return nil }
+        guard ime_session_select(handle, Int32(index)) == IME_OK else { return nil }
+        return commit()
+    }
+
+    /// 切换输入模式（"mixed" / "wubi" / "pinyin"）。
+    func setMode(_ mode: String) {
+        guard let handle else { return }
+        _ = mode.withCString { ime_session_set_mode(handle, $0) }
+    }
+
+    /// 取消当前组合。
+    func reset() {
+        guard let handle else { return }
+        ime_session_reset(handle)
+    }
+
+    /// 失焦：取消当前组合。
+    func focusOut() {
+        guard let handle else { return }
+        ime_session_focus_out(handle)
+    }
+}

@@ -22,6 +22,7 @@ docs/experiments/runs/sessions/
 # 本地构建产物 / 临时数据
 /dist/
 /packaging/out/
+/platforms/macos/build/
 *.log
 
 # data/sources/ 下只提交抓取脚本；其余数据大文件一律不入库

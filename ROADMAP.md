@@ -54,7 +54,7 @@
 ### P1-M3 macOS 宿主
 
 - [x] `ime-ffi`：C ABI（会话 + 配置接口）
-- [ ] Swift + InputMethodKit 宿主（`IMKInputController`）
+- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02（编译/打包/FFI 冒烟通过；**装载与打字待人工验证**）
 - [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
 - [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）
 - [ ] **验收**：TextEdit/Safari 里能五笔打字
