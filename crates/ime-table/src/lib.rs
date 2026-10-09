@@ -157,6 +157,38 @@ impl Table {
     }
 }
 
+/// 候选排序键：精确命中优先 → 权重降序 → 文本升序 → 码升序。
+type Rank<'a> = (
+    bool,
+    i32,
+    std::cmp::Reverse<&'a str>,
+    std::cmp::Reverse<&'a str>,
+);
+
+/// 把 `code` 下的条目按 [`Rank`] 有界并入 top-k 堆（只保留最好的 `max` 个）。
+fn push_ranked<'a>(
+    top: &mut std::collections::BinaryHeap<std::cmp::Reverse<Rank<'a>>>,
+    input: &str,
+    code: &'a str,
+    entries: &'a [Entry],
+    max: usize,
+) {
+    for entry in entries {
+        let rank: Rank<'a> = (
+            code == input,
+            entry.weight,
+            std::cmp::Reverse(entry.text.as_str()),
+            std::cmp::Reverse(code),
+        );
+        if top.len() < max {
+            top.push(std::cmp::Reverse(rank));
+        } else if top.peek().is_some_and(|worst| rank > worst.0) {
+            top.pop();
+            top.push(std::cmp::Reverse(rank));
+        }
+    }
+}
+
 /// 码表引擎：把 [`Table`] 适配到 [`Engine`] trait。
 pub struct CodeTableEngine {
     table: Arc<Table>,
@@ -190,33 +222,38 @@ impl Engine for CodeTableEngine {
         use std::cmp::Reverse;
         use std::collections::BinaryHeap;
         let wildcard = self.z_wildcard && input.contains('z');
-        let mut top = BinaryHeap::new();
-        for (code, entries) in &self.table.entries {
-            let matches = if wildcard {
-                code.len() >= input.len()
+        let mut top: BinaryHeap<Reverse<Rank<'_>>> = BinaryHeap::new();
+        if wildcard {
+            // 首个 'z' 之前的字面前缀即所有匹配码的公共前缀；z 在首位时只能扫全表。
+            let head = input.split('z').next().unwrap_or("");
+            let start = self
+                .table
+                .entries
+                .partition_point(|(code, _)| code.as_str() < head);
+            for (code, entries) in &self.table.entries[start..] {
+                if !head.is_empty() && !code.starts_with(head) {
+                    break;
+                }
+                let matches = code.len() >= input.len()
                     && input
                         .bytes()
                         .zip(code.bytes())
-                        .all(|(a, b)| a == b'z' || a == b)
-            } else {
-                code.starts_with(input)
-            };
-            if !matches {
-                continue;
-            }
-            for entry in entries {
-                let rank = (
-                    code == input,
-                    entry.weight,
-                    Reverse(entry.text.as_str()),
-                    Reverse(code.as_str()),
-                );
-                if top.len() < max {
-                    top.push(Reverse(rank));
-                } else if top.peek().is_some_and(|worst| rank > worst.0) {
-                    top.pop();
-                    top.push(Reverse(rank));
+                        .all(|(a, b)| a == b'z' || a == b);
+                if matches {
+                    push_ranked(&mut top, input, code, entries, max);
                 }
+            }
+        } else {
+            // 同前缀的码在排序后连续：二分定位起点，命中即区间扫描（不再全表）。
+            let start = self
+                .table
+                .entries
+                .partition_point(|(code, _)| code.as_str() < input);
+            for (code, entries) in &self.table.entries[start..] {
+                if !code.starts_with(input) {
+                    break;
+                }
+                push_ranked(&mut top, input, code, entries, max);
             }
         }
         let mut ranked: Vec<_> = top.into_iter().map(|r| r.0).collect();
@@ -332,6 +369,125 @@ mod tests {
         });
         assert_eq!(e.convert("abcd", 9).should_commit, Some("甲".into()));
         assert!(e.convert("abcz", 9).candidates.is_empty());
+    }
+
+    #[test]
+    fn convert_matches_full_scan_reference() {
+        // 暴力参考实现（旧的全表扫描语义），用于逐条对照优化后的区间扫描。
+        fn reference(
+            table: &Table,
+            input: &str,
+            max: usize,
+            wildcard: bool,
+        ) -> Vec<(String, i32, bool)> {
+            use std::cmp::Reverse;
+            let mut items: Vec<(bool, i32, Reverse<&str>, Reverse<&str>)> = Vec::new();
+            for (code, entries) in &table.entries {
+                let matches = if wildcard && input.contains('z') {
+                    code.len() >= input.len()
+                        && input
+                            .bytes()
+                            .zip(code.bytes())
+                            .all(|(a, b)| a == b'z' || a == b)
+                } else {
+                    code.starts_with(input)
+                };
+                if !matches {
+                    continue;
+                }
+                for e in entries {
+                    items.push((
+                        code == input,
+                        e.weight,
+                        Reverse(e.text.as_str()),
+                        Reverse(code.as_str()),
+                    ));
+                }
+            }
+            items.sort_unstable_by(|a, b| b.cmp(a));
+            items
+                .into_iter()
+                .take(max)
+                .map(|(_, weight, Reverse(text), Reverse(code))| {
+                    (text.to_string(), weight, code.len() > input.len())
+                })
+                .collect()
+        }
+
+        let mut table = Table::new();
+        let alphabet = ["a", "b", "z"];
+        let mut n = 0;
+        for c0 in alphabet {
+            for c1 in alphabet {
+                for c2 in alphabet {
+                    for _ in 0..3 {
+                        table.insert(&format!("{c0}{c1}{c2}"), &format!("词{n:03}"), (n * 7) % 50);
+                        n += 1;
+                    }
+                }
+            }
+        }
+        table.finalize();
+        let mut engine = CodeTableEngine::new(table, 3);
+        for wildcard in [false, true] {
+            engine.configure(&ime_core::EngineOptions {
+                auto_commit: false,
+                z_wildcard: wildcard,
+                fuzzy: false,
+            });
+            for input in [
+                "a", "ab", "az", "za", "zz", "azb", "zbz", "aaa", "bbb", "zzz",
+            ] {
+                for max in [0usize, 1, 3, 9] {
+                    let got: Vec<(String, i32, bool)> = engine
+                        .convert(input, max)
+                        .candidates
+                        .into_iter()
+                        .map(|c| (c.text, c.weight, c.is_prefix))
+                        .collect();
+                    assert_eq!(
+                        got,
+                        reference(&engine.table, input, max, wildcard),
+                        "input={input} max={max} wildcard={wildcard}"
+                    );
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn wildcard_head_range_preserves_matching() {
+        fn texts(engine: &CodeTableEngine, input: &str) -> Vec<String> {
+            engine
+                .convert(input, 9)
+                .candidates
+                .into_iter()
+                .map(|c| c.text)
+                .collect()
+        }
+        let mut t = Table::new();
+        t.insert("aacd", "甲", 10);
+        t.insert("abcd", "乙", 9);
+        t.insert("zbcd", "丙", 8);
+        t.insert("bbcd", "丁", 7);
+        t.finalize();
+        let mut e = CodeTableEngine::new(t, 4);
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        });
+        // 'z' 在第 2 位：字面前缀为 "a"，只应在 a* 区间内匹配。
+        assert_eq!(texts(&e, "azcd"), ["甲", "乙"]);
+        // 'z' 在首位：退化为整表，按模式匹配；码恰好等于输入者（zbcd）仍优先。
+        assert_eq!(texts(&e, "zbcd"), ["丙", "乙", "丁"]);
+        // 未开启通配：按字面前缀处理，无匹配。
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: false,
+            fuzzy: false,
+        });
+        assert!(texts(&e, "azcd").is_empty());
     }
 
     #[test]

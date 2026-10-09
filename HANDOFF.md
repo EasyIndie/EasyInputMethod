@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（MVP-01/12 数据结构决策闭环，ADR-060） |
+| 最后更新 | 2026-10-09（T-M1-10 `convert` 去全表扫描完成；ADR-060 数据结构决策） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
 | 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
-| 最近一次 `make verify` | ✅ 全绿：104 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源/配置刷新/错误断言）、universal 构建、离线重建均通过 |
+| 最近一次 `make verify` | ✅ 全绿：106 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源/配置刷新/错误断言）、universal 构建、离线重建均通过 |
 
 
 ## 1. 三十秒摘要
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ T-M1-10 完成（2026-10-09，pi）**：`CodeTableEngine::convert` 由全表线性扫描改为同前缀区间扫描（`partition_point`），`z` 通配只在首个 `z` 前的字面前缀区间内扫描；新增差分测试与旧语义逐条对照。实测 p50 0.46–0.50ms → 0.21–0.25ms。见 ADR-060。
 - **✅ MVP-04 完成（ADR-059，2026-10-09，pi）**：`ConfigStore` 记录首启/重载失败原因（含行号），`reload` 错误状态变化广播哨兵键 `*error`；FFI 增 `ime_config_last_error`；宿主菜单常驻「配置错误」条目 + 同一错误只弹一次 NSAlert，修复后复位。坏文件沿用上一份有效快照，绝不改写用户文件。
 - **✅ MVP-03 完成（ADR-058，2026-10-09，pi）**：新增全进程单例 `ConfigWatcher`（仅 `ime_config_subscribe` 一次；回调可能在文件监视线程，统一 `DispatchQueue.main.async` 派发）；`candidate.count`/`mode` 外部变更无需按键即刷新会话与候选窗；`deactivateServer` 按身份解绑，避免重复订阅/泄漏。另修正 ADR-056 遗漏：应用支持目录改为 ASCII `…/Lampyris/`。
 - **✅ MVP-02 完成（ADR-057，2026-10-09，pi）**：候选来源由 `ime-ffi`（已带 `source`）贯穿到 Swift `ImeCandidate` 与候选窗；当前页出现多种来源时，在候选后标注小号次要色「五笔／拼／词」，单一来源页不标注。去重/排序/学习归属仍由 `ime-core` 依 `source` 处理，未改；预览冒烟新增来源断言，另修 `run-render-perf.sh` 的 WMO 静态链接坑。
@@ -54,9 +55,8 @@
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **T-M1-10**：`CodeTableEngine::convert` 去全表线性扫描（改二分 + 前缀区间，`z` 通配独立分支）；先加回归测试再改。见 `docs/tasks/T-M1-10.md`。
-2. **MVP-06…10**：解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，避免操作真实词库。
-3. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
+1. **MVP-06…10**：解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，避免操作真实词库。
+2. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
 
 ## 5. 待决 / 阻塞
 
@@ -124,6 +124,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：T-M1-10 `convert` 去全表扫描
+- `convert` 非通配路径改为 `partition_point` 同前缀区间扫描；`z` 通配仅扫首个 `z` 前字面前缀的区间。
+- 新增差分测试（与旧全表语义逐条对照）+ 通配边界测试；`make verify` 全绿（106 单测）。
+- 实测 p50 0.46–0.50ms → 0.21–0.25ms，p95 1.47–1.63 → 1.24–1.38ms（本机 Intel/OLP，取多次）。
 
 ### 2026-10-09 / pi：MVP-01/12 词典数据结构决策（ADR-060）
 - 事实核对：仓库无 cedarwood 依赖，`ime-table` 一直排序 `Vec`，`ime-dict` 仅有界 TSV；文档却写 cedarwood/`.imedict`/mmap。
