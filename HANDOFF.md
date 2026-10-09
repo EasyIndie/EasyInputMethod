@@ -12,10 +12,10 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（MVP-02/03/04 体验与配置承诺闭环，ADR-057/058/059） |
+| 最后更新 | 2026-10-09（MVP-01/12 数据结构决策闭环，ADR-060） |
 | 更新者 | pi |
-| 当前阶段 | **macOS 首版收尾：MVP-01…14 待办中；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
-| 当前分支 | `main`（含本轮未推送 commit，见 `git log --oneline origin/main..HEAD`） |
+| 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
+| 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
 | 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
 | 最近一次 `make verify` | ✅ 全绿：104 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源/配置刷新/错误断言）、universal 构建、离线重建均通过 |
 
@@ -24,7 +24,7 @@
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：读 `docs/reviews/006-macos-mvp-gap-review.md`；先闭环 TSV/排序数组与原设计差异（MVP-01）+ 文档状态（MVP-12），再按序补候选来源显示、配置即时刷新、错误反馈（MVP-02/03/04）。用户已在本机（macOS 13 Intel）完成实体输入验收，后续聚焦**输入体验打磨**。
+- **下一步**：MVP-01/02/03/04/12 已闭环（ADR-057…060）；接着做 T-M1-10（`convert` 去全表扫描）与 MVP-06…10（鲁棒性/验证链路）。详见 `docs/reviews/006-macos-mvp-gap-review.md`。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -46,24 +46,23 @@
 - **✅ MVP-02 完成（ADR-057，2026-10-09，pi）**：候选来源由 `ime-ffi`（已带 `source`）贯穿到 Swift `ImeCandidate` 与候选窗；当前页出现多种来源时，在候选后标注小号次要色「五笔／拼／词」，单一来源页不标注。去重/排序/学习归属仍由 `ime-core` 依 `source` 处理，未改；预览冒烟新增来源断言，另修 `run-render-perf.sh` 的 WMO 静态链接坑。
 - **✅ SIG-1 澄清 + 本机验收通过（2026-10-09，pi）**：macOS 13.7.8（Intel、无签名身份）上，ad-hoc + 正确 bundle ID 的构建被系统枚举（`enabled/selectCapable=true`，共 284 源），**用户已实体输入验收通过**（ADR-055）。之前“必须公证”的结论混入了 ADR-023 的 bundle ID bug；**macOS 13 本地迭代无需签名机**，分发/macOS 26+ 仍按 ADR-032。
 - **✅ CI 现在出 universal 候选**（arm64 + x86_64）：`build.sh --universal`、`prepare.sh`、`run-repro.sh` 与两个 workflow 已接入；本机离线重建逐字节一致。顺手修了 Swift 5.8 的 WMO 静态链接坑（ADR-055）。
-- 官方图标/6d7e8435候选已定稿；用户确认实体输入、图标及分页/取消/失焦/原码回车等正常。签名公证、11.25MB包体、实际ZIP离线复现已通过，无正式Release。
-- 核心功能已实现不等于首版完整验收；新增MVP-01…14待办见报告006，重点是候选来源显示、配置即时刷新/错误反馈、数据结构约定及解析器fuzz缺口。
-- 完整verify最近通过100单测+1 doctest、125产物扫描；满容量五会话22000键AppKit预检最大13.331ms、结束27.86MiB，非正式IMK端到端结果。
-- 用户已安排词库/重启/长时间多应用等实机验收稍后进行；候选暂留用户域，验收结束移除，日常开发仍独立窗口。
+- **✅ MVP-01/12 完成（ADR-060，2026-10-09，pi）**：数据结构决策成文——文本 TSV 真值 + 排序数组为当前实现，cedarwood/二进制/mmap 降级为带触发条件的可选优化；同步 `技术方案.md`/`ROADMAP.md`/`T-M1-09` 等。实现债（`convert` 去全表扫描）另立 T-M1-10。
+- 首版尚未整体验收：剩余 MVP-05…11 见报告 006（实机 DoD、解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计、发布材料）。
+- 用户已安排词库/重启/长时间多应用等实机验收稍后进行；本机用户域 ad-hoc 安装验收后可移除，日常开发仍用独立窗口（ADR-024）。
 
 ## 4. 下一步（可执行，按优先级）
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **MVP-01/12**：对照报告 006 与 ADR-015 明确实际 TSV/排序数组是否保留（`ime-config`/`ime-table` 现状），追加决策并同步方案；不要先迁移引擎或直接勾选 .imedict 交付。
+1. **T-M1-10**：`CodeTableEngine::convert` 去全表线性扫描（改二分 + 前缀区间，`z` 通配独立分支）；先加回归测试再改。见 `docs/tasks/T-M1-10.md`。
 2. **MVP-06…10**：解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，避免操作真实词库。
-4. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
+3. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
 
 ## 5. 待决 / 阻塞
 
 | 编号 | 问题 | 是否阻塞 |
 |---|---|---|
-| REV-1…3 | 交叉审核有条件通过；REV-4/TBD-4名称仍未正式关闭 | 否 |
+| REV-1…3 | 交叉审核有条件通过；TBD-4 名称已由 ADR-056 关闭 | 否 |
 | TBD-1 | 词频数据源 — ✅ 已定 `fxsjy/jieba`（D10，MIT），ADR-021 | 否 |
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | ✅ ADR-029：有界 TSV v1，用户词库与学习已实现 | 否 |
@@ -74,10 +73,9 @@
 
 ### 本次候选与执行状态
 
-- 当前正式验收包：CI37918189811，源码6d7e8435，11,251,870字节；SHA-256 `16b8105382d43780e7dbe35fe3b1a78386ab52b96f92475858bb5b882d75a3b2`。签名/staple/Gatekeeper与离线复现通过，ditto保留0755，用户域安装、重新添加并选中，安装当轮PID4838运行，图标一致/IP采样为空；旧包备份bundle.iOIE1M。用户确认实体输入和图标正常；未单独明确亮暗模式逐项结果。
-- 旧a9bf912已签名公证待传ZIP保留为历史审核资产；已被新的性能优化取代，不应上传旧包作为最新版。用户改用 GitHub Actions 团队 API 密钥，按 CI-ACCEPTANCE.md 一次配置后在 main 自动构建/签名/公证当前版本。
-- 用户2026-10-09明确授权本次公证上传、当前用户临时安装验收后移除。用户指定不采用 App 专用密码，改用 CI 的团队 API 密钥，仓库Secrets已生效；授权仍有效，当前仅用户目录临时安装6d7e8435，验收结束须移除。
-- 用户已明确授权 GitHub 上传，分支推送成功并创建草稿 PR #1；HTTP 400 通过固定长度 HTTP 请求解决。PR #1–4已合并，未公开Release。
+- 当前 CI 公证候选：`Lampyris-macos-acceptance-<sha>`（universal，约 11.5 MB）；签名/staple/Gatekeeper 与离线复现通过。
+- 本机（macOS 13 Intel）为**用户域 ad-hoc 临时安装**（`cn.jokerhub.inputmethod.Lampyris`），用户已实体输入验收；验收结束可移除。
+- 仓库保持 private，无公开 Release；CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
 
 ## 6. 必须知道的坑与硬约束
 
@@ -126,6 +124,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：MVP-01/12 词典数据结构决策（ADR-060）
+- 事实核对：仓库无 cedarwood 依赖，`ime-table` 一直排序 `Vec`，`ime-dict` 仅有界 TSV；文档却写 cedarwood/`.imedict`/mmap。
+- ADR-060：文本 TSV 为可审计真值 + 排序数组内存索引为当前实现；cedarwood/二进制/mmap 降级为**带触发条件的可选优化**；给出迁移触发条件与“可复现编译 + SHA + 校验器”前提。
+- 同步 `技术方案.md` §4/§6.2/§7/§11、`ROADMAP.md`、`T-M1-09`（追认完成）、`参考与致谢`/`数据来源与许可`/`backlog`；实现债另立 T-M1-10。
 
 ### 2026-10-09 / pi：MVP-04 配置错误反馈（ADR-059）
 - `ime-config` 新增 `ConfigStore::last_error`/`load_or_defaults`（首启坏文件降级且记录含行号错误）；`reload` 在错误状态变化时广播哨兵键 `*error`。

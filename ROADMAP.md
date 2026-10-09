@@ -27,7 +27,7 @@
 
 - [x] 创建 Cargo workspace、`rust-toolchain.toml`、`deny.toml`
 - [x] `ime-core`：`Engine` trait、`InputMode`、`Candidate`/`ConvertResult`、会话状态机（`forbid(unsafe_code)`）
-- [x] `ime-table`：码表加载 + 精确/前缀查询（M0 排序数组验证；M1 换 `cedarwood`，ADR-015）
+- [x] `ime-table`：码表加载 + 精确/前缀查询（**排序数组 + 文本 TSV**；cedarwood/mmap 为带触发条件的可选优化，ADR-060）
 - [x] `ime-core`：模式切换（`mixed`/`wubi`/`pinyin`）与多引擎合并骨架
 - [x] `ime-cli`：REPL，能输入码→候选→选字上屏→切模式
 - [x] 单测（11 个）+ `cargo clippy -D warnings` + `cargo deny` 通过
@@ -37,7 +37,7 @@
 
 - [x] `crates/wubi-encoder`：五笔86 编码器（键名字/成字字根/合体字/末笔字型识别码）—— 细卡见 `docs/tasks/T-M1-01..03`（T-M1-01 字根表、T-M1-02 键名字+成字字根、T-M1-03 合体字+识别码 已完成；oracle 对照 99.98%）
 - [x] `data/sources.toml` + 拆字数据交叉校验（`wubi-lex` MIT / WindInput MIT）—— 另接入 **oracle #2** `rime/rime-wubi`（LGPL-3，T-M1-04b，仅验证不发布）
-- [x] 单字码表生成（T-M1-05：`wubi86-single.tsv` 已生成 + 双 oracle 回归 GB1 100%；`.imedict` 编译留待 T-M1-09 接入）
+- [x] 单字码表生成（T-M1-05：`wubi86-single.tsv` 已生成 + 双 oracle 回归 GB1 100%；**不引入 .imedict**，文本 TSV 为交付格式，ADR-060）
 - [x] 词组码自动生成（T-M1-06：`wubi86-phrases.tsv` 已生成；词表来自 `phrase-pinyin-data` MIT）
 - [x] **词频/默认权重接入（P1-1 必交付，ADR-013）**：T-M1-06b 用 `fxsjy/jieba`（D10，MIT）真实词频给单字/词组赋权；词组码表改为多候选（ADR-021）
 - [x] `docs/数据来源与许可.md` 登记全部数据（D1–D10，均含 SHA-256 与 fetch 脚本，T-M1-08）
