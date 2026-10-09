@@ -4,7 +4,12 @@ set -euo pipefail
 : "${RUNNER_TEMP:?需要 GitHub runner 临时目录}"
 WORK="${RUNNER_TEMP}/yinghuo-signing"
 KEYCHAIN="${WORK}/signing.keychain-db"
+ORIGINAL_KEYCHAINS=()
+SEARCH_LIST_CHANGED=0
 cleanup() {
+  if [ "${SEARCH_LIST_CHANGED}" -eq 1 ]; then
+    security list-keychains -d user -s "${ORIGINAL_KEYCHAINS[@]}" >/dev/null 2>&1 || true
+  fi
   if [ -f "${KEYCHAIN}" ]; then security delete-keychain "${KEYCHAIN}" >/dev/null 2>&1 || true; fi
   if [ -d "${WORK}" ]; then rm -rf "${WORK}"; fi
 }
@@ -31,16 +36,23 @@ else
   printf '%s' "${ASC_API_KEY_P8}" | base64 --decode > "${WORK}/api-key.p8"
 fi
 KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
+while IFS= read -r keychain; do
+  [ -n "${keychain}" ] && ORIGINAL_KEYCHAINS+=("${keychain}")
+done < <(security list-keychains -d user | sed 's/^[[:space:]]*"//;s/"[[:space:]]*$//')
 security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
 security set-keychain-settings -lut 21600 "${KEYCHAIN}"
 security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
 security import "${WORK}/certificate.p12" -P "${MACOS_CERTIFICATE_PASSWORD}" -k "${KEYCHAIN}" -T /usr/bin/codesign
 security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}" >/dev/null
+SEARCH_LIST_CHANGED=1
+security list-keychains -d user -s "${KEYCHAIN}" "${ORIGINAL_KEYCHAINS[@]}"
 # Public certificate names, fingerprints and validation errors only; no key export.
 security find-identity -p codesigning "${KEYCHAIN}"
+IDENTITY_HASH="$(security find-identity -v -p codesigning "${KEYCHAIN}" | awk -F '"' -v name="${MACOS_SIGNING_IDENTITY}" '$2 == name {split($1, fields, /[[:space:]]+/); for (i in fields) if (fields[i] ~ /^[0-9A-Fa-f]+$/ && length(fields[i]) == 40) print fields[i]}')"
+[[ "${IDENTITY_HASH}" =~ ^[0-9A-Fa-f]{40}$ ]] || { echo "找不到唯一有效签名身份，请检查证书名称/有效性" >&2; exit 1; }
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP="${ROOT}/platforms/macos/build/Yinghuo.app"
-codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${MACOS_SIGNING_IDENTITY}" "${APP}"
+codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${APP}"
 codesign --verify --strict "${APP}"
 ditto -c -k --keepParent "${APP}" "${WORK}/notarization.zip"
 xcrun notarytool submit "${WORK}/notarization.zip" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m

@@ -24,6 +24,13 @@ with tempfile.TemporaryDirectory(prefix="yinghuo-ci-sign-test-") as directory:
 set -eu
 case "$(basename "$0")" in
 security)
+ if [ "$1" = list-keychains ]; then
+   if [ "$#" = 3 ]; then echo '"/fixture/login.keychain-db"';
+   else printf '%s\n' "$*" >> "$RUNNER_TEMP/search-list.log"; fi
+ fi
+ if [ "$1" = find-identity ] && [ "${MOCK_NO_IDENTITY:-0}" = 0 ]; then
+   echo '  1) 0123456789ABCDEF0123456789ABCDEF01234567 "Developer ID Application: Fixture"'
+ fi
  if [ "$1" = create-keychain ]; then touch "${!#}"; fi
  if [ "$1" = delete-keychain ]; then rm -f "${!#}"; fi;;
 ditto) touch "${!#}";;
@@ -46,6 +53,11 @@ esac
             env=dict(env, MOCK_NOTARY_FAIL=failure), capture_output=True, text=True)
         assert result.returncode == expected, result.stderr
         assert not (root / "yinghuo-signing").exists()
+        assert (root / "search-list.log").read_text().splitlines()[-1] == "list-keychains -d user -s /fixture/login.keychain-db"
+    result = subprocess.run(["bash", str(SCRIPT)],
+        env=dict(env, MOCK_NO_IDENTITY="1"), capture_output=True, text=True)
+    assert result.returncode == 1 and "找不到唯一有效签名身份" in result.stderr
+    assert not (root / "yinghuo-signing").exists()
     pem = "-----BEGIN PRIVATE KEY-----\nfixture\n-----END PRIVATE KEY-----"
     result = subprocess.run(["bash", str(SCRIPT)],
         env=dict(env, ASC_API_KEY_P8=pem), capture_output=True, text=True)
