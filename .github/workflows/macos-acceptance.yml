@@ -36,12 +36,12 @@ jobs:
         run: python3 packaging/macos/tests/test-ci-sign.py
       - name: Sign and notarize with team API key
         env:
-          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.MACOS_CERTIFICATE_P12_BASE64 }}
-          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
           MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
-          ASC_API_KEY_P8_BASE64: ${{ secrets.ASC_API_KEY_P8_BASE64 }}
-          ASC_API_KEY_ID: ${{ secrets.ASC_API_KEY_ID }}
-          ASC_API_ISSUER_ID: ${{ secrets.ASC_API_ISSUER_ID }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         run: bash packaging/macos/ci-sign.sh
       - name: Prepare and reproduce acceptance archive
         run: |

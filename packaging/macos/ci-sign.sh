@@ -10,8 +10,9 @@ cleanup() {
 }
 if [ "${1:-}" = --cleanup ]; then cleanup; exit 0; fi
 [ "$#" -eq 0 ] || { echo "用法：$0 [--cleanup]" >&2; exit 2; }
+ASC_API_KEY_P8="${ASC_API_KEY_P8:-${ASC_API_KEY_P8_BASE64:-}}"
 MISSING=()
-for name in MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_SIGNING_IDENTITY ASC_API_KEY_P8_BASE64 ASC_API_KEY_ID ASC_API_ISSUER_ID; do
+for name in MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_SIGNING_IDENTITY ASC_API_KEY_P8 ASC_API_KEY_ID ASC_API_ISSUER_ID; do
   [ -n "${!name:-}" ] || MISSING+=("${name}")
 done
 if [ "${#MISSING[@]}" -gt 0 ]; then
@@ -24,7 +25,11 @@ umask 077
 mkdir "${WORK}"
 trap cleanup EXIT
 printf '%s' "${MACOS_CERTIFICATE_P12_BASE64}" | base64 --decode > "${WORK}/certificate.p12"
-printf '%s' "${ASC_API_KEY_P8_BASE64}" | base64 --decode > "${WORK}/api-key.p8"
+if [[ "${ASC_API_KEY_P8}" == *'-----BEGIN PRIVATE KEY-----'* ]]; then
+  printf '%s\n' "${ASC_API_KEY_P8}" > "${WORK}/api-key.p8"
+else
+  printf '%s' "${ASC_API_KEY_P8}" | base64 --decode > "${WORK}/api-key.p8"
+fi
 KEYCHAIN_PASSWORD="$(openssl rand -hex 32)"
 security create-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
 security set-keychain-settings -lut 21600 "${KEYCHAIN}"
