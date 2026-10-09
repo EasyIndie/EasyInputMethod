@@ -7,14 +7,14 @@ import Foundation
 import ime
 
 enum ImePaths {
-    /// 应用数据目录：`~/Library/Application Support/萤火虫/`。
+    /// 应用数据目录：`~/Library/Application Support/Lampyris/`（ADR-056）。
     static func supportDirectory() -> URL? {
         guard
             let base = FileManager.default.urls(
                 for: .applicationSupportDirectory, in: .userDomainMask
             ).first
         else { return nil }
-        return base.appendingPathComponent("萤火虫", isDirectory: true)
+        return base.appendingPathComponent("Lampyris", isDirectory: true)
     }
 
     /// 唯一配置文件路径（必要时创建父目录）。
