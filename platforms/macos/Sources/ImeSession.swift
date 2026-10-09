@@ -6,10 +6,27 @@
 import Cocoa
 import ime
 
+/// 候选来源（对应 C 头 `IME_SOURCE_*`）。
+enum CandidateSource: Int32 {
+    case codeTable = 0
+    case pinyin = 1
+    case phrase = 2
+
+    /// 混输来源标签（中文）。
+    var label: String {
+        switch self {
+        case .codeTable: return "五笔"
+        case .pinyin: return "拼"
+        case .phrase: return "词"
+        }
+    }
+}
+
 /// 单个候选。
 struct ImeCandidate {
     let text: String
     let code: String
+    let source: CandidateSource
     let isPrefix: Bool
 }
 
@@ -168,6 +185,7 @@ final class ImeSession {
                 ImeCandidate(
                     text: item.text.map { String(cString: $0) } ?? "",
                     code: item.code.map { String(cString: $0) } ?? "",
+                    source: CandidateSource(rawValue: item.source) ?? .codeTable,
                     isPrefix: item.is_prefix != 0
                 )
             )

@@ -252,7 +252,7 @@ final class LampyrisInputController: IMKInputController {
         }
         let window = candidateWindow ?? CandidateWindow()
         candidateWindow = window
-        window.update(candidates: candidates.map(\.text), pageIndex: session.pageIndex, pageCount: session.pageCount)
+        window.update(candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount)
         window.show(at: caretRect(client))
     }
 

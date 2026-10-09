@@ -71,9 +71,10 @@ final class PreviewInput: NSTextView {
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
-        status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
+        let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
+        status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
-            candidates.update(candidates: values.map(\.text), pageIndex: session.pageIndex, pageCount: session.pageCount)
+            candidates.update(candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount)
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
@@ -182,12 +183,32 @@ let app = NSApplication.shared
 if CommandLine.arguments.contains("--smoke-test") {
     let geometry = CandidateWindow()
     let area = NSRect(x: 100, y: 100, width: 320, height: 500)
-    geometry.update(candidates: Array(repeating: String(repeating: "长词条", count: 28), count: 9))
+    let long = ImeCandidate(
+        text: String(repeating: "长词条", count: 28), code: "", source: .codeTable, isPrefix: false)
+    geometry.update(candidates: Array(repeating: long, count: 9))
     geometry.layout(at: NSRect(x: 410, y: 580, width: 1, height: 20), within: area)
     guard area.contains(geometry.frame), geometry.frame.height > 28 else { exit(1) }
-    geometry.update(candidates: ["你", "好"])
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
+        ImeCandidate(text: "好", code: "hao", source: .codeTable, isPrefix: false),
+    ])
     geometry.layout(at: NSRect(x: 90, y: 90, width: 1, height: 20), within: area)
     guard area.contains(geometry.frame), geometry.frame.height < 60 else { exit(1) }
+    // 候选来源显示（ADR-057）：混合来源页标注中文来源，单一来源页不标注。
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
+        ImeCandidate(text: "尼", code: "ni", source: .pinyin, isPrefix: false),
+    ])
+    let mixedLabels = geometry.displayedCandidateTexts
+    guard mixedLabels.count == 2, mixedLabels[0].contains("五笔"), mixedLabels[1].contains("拼") else {
+        fputs("候选来源标签未按混输显示：\(mixedLabels)\n", stderr); exit(1)
+    }
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)
+    ])
+    guard geometry.displayedCandidateTexts == ["1.你"] else {
+        fputs("单一来源页不应标注来源：\(geometry.displayedCandidateTexts)\n", stderr); exit(1)
+    }
     session.setMode("mixed")
     let view = PreviewInput(session: session)
     func keys(_ text: String, flags: NSEvent.ModifierFlags = []) {
@@ -219,13 +240,21 @@ if CommandLine.arguments.contains("--smoke-test") {
     keys("-")
     guard session.pageIndex == 0 else { exit(1) }
     guard session.candidates(limit: 1).first?.text == "你" else { exit(1) }
+    guard session.candidates(limit: 1).first?.source == .codeTable else {
+        fputs("五笔候选来源未贯穿到宿主。\n", stderr); exit(1)
+    }
     keys(" nihao "); check("你你好")
     keys("wq\u{7f}"); check("你你好w")
     keys("\u{1b}"); check("你你好")
     keys("wq2"); check("你你好像")
     keys("wq\r"); check("你你好像wq")
     view.clear(); check("")
-    session.setMode("pinyin"); keys("nihao "); check("你好")
+    session.setMode("pinyin")
+    keys("nihao")
+    guard session.candidates(limit: 9).first?.source == .pinyin else {
+        fputs("拼音候选来源未贯穿到宿主。\n", stderr); exit(1)
+    }
+    keys(" "); check("你好")
     view.clear(); keys("\".\""); check("“。”")
     session.focusOut(); view.clear(); keys("\""); check("“")
     keys(" ", flags: [.control, .shift]); view.clear(); keys("nihao"); check("nihao")

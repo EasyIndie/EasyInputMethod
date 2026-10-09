@@ -943,6 +943,30 @@ mod tests {
     }
 
     #[test]
+    fn candidates_expose_source_codes() {
+        let s = ime_session_new();
+        // 码表（五笔）候选。
+        assert_eq!(ime_session_key(s, 'w' as u32), IME_KEY_CONSUMED);
+        assert_eq!(ime_session_key(s, 'q' as u32), IME_KEY_CONSUMED);
+        let wubi = ime_session_candidates(s);
+        assert!(wubi.len >= 1);
+        // SAFETY：候选指针借自会话，测试期间保持有效。
+        assert_eq!(unsafe { (*wubi.items).source }, SOURCE_CODE_TABLE);
+
+        // 拼音候选。
+        let pinyin_mode = CString::new("pinyin").unwrap();
+        assert_eq!(ime_session_set_mode(s, pinyin_mode.as_ptr()), IME_OK);
+        for ch in "nihao".chars() {
+            ime_session_key(s, ch as u32);
+        }
+        let pinyin = ime_session_candidates(s);
+        assert!(pinyin.len >= 1);
+        // SAFETY：同上。
+        assert_eq!(unsafe { (*pinyin.items).source }, SOURCE_PINYIN);
+        ime_session_free(s);
+    }
+
+    #[test]
     fn new_with_data_loads_tsv() {
         let dir = std::env::temp_dir();
         let tag = format!("ime-ffi-data-{}", std::process::id());

@@ -10,9 +10,13 @@ final class CandidateWindow {
     private var themeTimer: Timer?
     private let pageLabel = NSTextField(labelWithString: "")
     private var labels: [NSTextField] = []
+    private var renderedCount = 0
     private var widthConstraints: [NSLayoutConstraint] = []
 
     var frame: NSRect { panel.frame }
+
+    /// 当前已渲染的候选文本（含来源标签），供自测断言。
+    var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
 
     init() {
         panel = NSPanel(
@@ -54,7 +58,7 @@ final class CandidateWindow {
             self?.refreshAppearance()
         }
         // Warm Chinese font/layout while hidden, before the first input event.
-        update(candidates: ["萤火虫"])
+        update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
         update(candidates: [])
     }
 
@@ -72,8 +76,30 @@ final class CandidateWindow {
         }
     }
 
+    /// 候选文本 +（可选）来源标签的富文本。
+    private static func render(index: Int, _ candidate: ImeCandidate, showSource: Bool)
+        -> NSAttributedString
+    {
+        let text = NSMutableAttributedString(
+            string: "\(index + 1).\(candidate.text)",
+            attributes: [
+                .font: NSFont.systemFont(ofSize: 16),
+                .foregroundColor: NSColor.labelColor,
+            ])
+        if showSource {
+            text.append(
+                NSAttributedString(
+                    string: " " + candidate.source.label,
+                    attributes: [
+                        .font: NSFont.systemFont(ofSize: 11),
+                        .foregroundColor: NSColor.secondaryLabelColor,
+                    ]))
+        }
+        return text
+    }
+
     /// Refresh visible candidates using the current appearance.
-    func update(candidates: [String], pageIndex: Int = 0, pageCount: Int = 1) {
+    func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1) {
         refreshAppearance()
 
         NSLayoutConstraint.deactivate(widthConstraints)
@@ -84,18 +110,19 @@ final class CandidateWindow {
         for view in stack.arrangedSubviews {
             view.removeFromSuperview()
         }
-        for (i, text) in candidates.enumerated() {
+        // 仅在当前页出现多种来源时标注，避免常态噪声（ADR-057）。
+        let showSources = Set(candidates.map(\.source)).count > 1
+        for (i, candidate) in candidates.enumerated() {
             if i == labels.count { labels.append(NSTextField(labelWithString: "")) }
             let label = labels[i]
-            label.stringValue = "\(i + 1).\(text)"
-            label.font = NSFont.systemFont(ofSize: 16)
-            label.textColor = .labelColor
+            label.attributedStringValue = Self.render(index: i, candidate, showSource: showSources)
             label.lineBreakMode = .byTruncatingTail
             label.usesSingleLineMode = true
-            label.toolTip = text
+            label.toolTip = candidate.text
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             stack.addArrangedSubview(label)
         }
+        renderedCount = candidates.count
         if !candidates.isEmpty, pageCount > 1 {
             pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= 翻页"
             pageLabel.font = NSFont.systemFont(ofSize: 11)

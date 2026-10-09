@@ -48,7 +48,7 @@ struct RenderPerformance {
                             _ = session.feed(scalar.value)
                             if session.isComposing {
                                 if window == nil { window = CandidateWindow() }
-                                window?.update(candidates: session.candidates(limit: 9).map { $0.text })
+                                window?.update(candidates: session.candidates(limit: 9))
                                 window?.show(at: caret)
                             } else { window?.hide() }
                             let elapsed = Double(DispatchTime.now().uptimeNanoseconds - start) / 1e6

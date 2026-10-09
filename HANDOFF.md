@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（macOS 13 本机 ad-hoc 验收通过 + CI 出 universal 候选） |
+| 最后更新 | 2026-10-09（MVP-02 候选来源显示完成，ADR-057） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01…14 待办中；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`（含本轮未推送 commit，见 `git log --oneline origin/main..HEAD`） |
 | 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
-| 最近一次 `make verify` | ✅ 全绿：100 单测 + 1 doctest、fmt、Clippy、deny、152 产物零网络符号；`dev-preview --smoke-test`、universal 构建、离线重建均通过 |
+| 最近一次 `make verify` | ✅ 全绿：101 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源断言）、universal 构建、离线重建均通过 |
 
 
 ## 1. 三十秒摘要
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ MVP-02 完成（ADR-057，2026-10-09，pi）**：候选来源由 `ime-ffi`（已带 `source`）贯穿到 Swift `ImeCandidate` 与候选窗；当前页出现多种来源时，在候选后标注小号次要色「五笔／拼／词」，单一来源页不标注。去重/排序/学习归属仍由 `ime-core` 依 `source` 处理，未改；预览冒烟新增来源断言，另修 `run-render-perf.sh` 的 WMO 静态链接坑。
 - **✅ SIG-1 澄清 + 本机验收通过（2026-10-09，pi）**：macOS 13.7.8（Intel、无签名身份）上，ad-hoc + 正确 bundle ID 的构建被系统枚举（`enabled/selectCapable=true`，共 284 源），**用户已实体输入验收通过**（ADR-055）。之前“必须公证”的结论混入了 ADR-023 的 bundle ID bug；**macOS 13 本地迭代无需签名机**，分发/macOS 26+ 仍按 ADR-032。
 - **✅ CI 现在出 universal 候选**（arm64 + x86_64）：`build.sh --universal`、`prepare.sh`、`run-repro.sh` 与两个 workflow 已接入；本机离线重建逐字节一致。顺手修了 Swift 5.8 的 WMO 静态链接坑（ADR-055）。
 - 官方图标/6d7e8435候选已定稿；用户确认实体输入、图标及分页/取消/失焦/原码回车等正常。签名公证、11.25MB包体、实际ZIP离线复现已通过，无正式Release。
@@ -53,7 +54,7 @@
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
 1. **MVP-01/12**：对照报告006与ADR-015明确实际TSV/排序数组是否保留，追加决策并同步方案；不要先迁移引擎或直接勾选.imedict交付。
-2. **MVP-02→03→04**：逐项补候选来源显示、无按键配置刷新、错误反馈。协议/行为变更先ADR，配置任务读配置Skill；每项独立验证及PR。
+2. **MVP-03→04**：逐项补无按键配置刷新、错误反馈。协议/行为变更先ADR，配置任务读配置Skill；每项独立验证及PR。
 3. **MVP-06…10**：解析器fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI审计完整性；先复现，避免操作真实词库。
 4. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
 
@@ -124,6 +125,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：MVP-02 候选来源显示（ADR-057）
+- FFI 本已暴露 `ImeCandidate.source`，Swift 端此前丢弃；现贯穿到候选窗：`ImeCandidate` 增 `source`，混合来源页在候选文本后追加 11pt 次要色「五笔／拼／词」，单一来源页不标注。
+- 未改引擎：去重/排序/学习归属仍由 `ime-core` 依 `source` 处理；新增 ime-ffi 来源映射回归测试与预览冒烟来源断言。
+- 顺手修复 `run-render-perf.sh` 的 WMO 静态链接坑（`-Xlinker <lib.a>`）；该探针在本机（Intel/OLP）噪声较大，控制性基准仍用 `run-perf.sh`。
 
 ### 2026-10-09 / pi：英文/包名定为 Lampyris（关闭 TBD-4）
 - ADR-056：英文/包名 `Lampyris`（读 /læmˈpɪərɪs/，希腊语“发光的虫”，萤科一属），bundle `cn.jokerhub.inputmethod.Lampyris`（自有域名 jokerhub.cn 反向 DNS）。
