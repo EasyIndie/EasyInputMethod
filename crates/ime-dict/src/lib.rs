@@ -71,7 +71,7 @@ fn read(path: &Path) -> io::Result<Entries> {
 }
 
 fn serialize(entries: &Entries) -> String {
-    let mut data = String::from("# yinghuo-user-dictionary v1\n");
+    let mut data = String::from("# lampyris-user-dictionary v1\n");
     for ((scheme, code, text), count) in entries {
         data.push_str(&format!("{scheme}\t{code}\t{text}\t{count}\n"));
     }
