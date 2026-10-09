@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（仓库 Secrets 已生效，签名身份待核对） |
+| 最后更新 | 2026-10-09（验收反馈修复与图标修订） |
 | 更新者 | Codex |
-| 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，系统输入法未安装** |
-| 当前分支 | `codex/fix-macos-registration`；用户授权持续推进 macOS 发布 |
-| 活跃 PR | PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；签名CI 37873545347第二次运行Secrets生效，p12导入成功但指定Developer ID身份找不到 |
-| 最近一次 `make verify` | ✅ 本轮完整通过：99 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，当前用户临时安装正式候选验收** |
+| 当前分支 | `codex/fix-acceptance-input-boundaries`；用户授权持续推进 macOS 发布 |
+| 活跃 PR | PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；PR #2/#3已合并；main 7d9cf788，验收CI 37877336887全绿，Apple Accepted及Gatekeeper通过 |
+| 最近一次 `make verify` | ✅ 本轮完整通过：100 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
 ## 1. 三十秒摘要
@@ -52,7 +52,7 @@
 
 ## 4. 下一步（可执行，按优先级）
 
-1. **P1-M3**：仓库已在 EasyIndie（private），组织7个APPLE_* Secrets可见，证书/密码已添加；ADR-044映射工作流并兼容p8文本/Base64，已合入main，用户决定保持private并配置仓库Secrets；第二次CI凭据生效、p12导入1个身份，但指定Developer ID Application身份找不到，需核对实际证书名称/有效性。公开初审见 docs/reviews/004-public-readiness.md，未修改可见性。
+1. **P1-M3**：仓库已在 EasyIndie（private），组织7个APPLE_* Secrets可见，证书/密码已添加；ADR-044映射工作流并兼容p8文本/Base64，用户保持private并配置仓库Secrets；ADR-045修复钥匙串搜索/指纹签名后，37877336887自动签名/公证/staple/Gatekeeper/离线重建/附件上传全通过。已临时安装并添加/选中正式候选，宿主启动；用户实体键盘确认TextEdit候选/“你你好”；AX撤销/重做通过；其余多应用及退格/Esc/失焦等待用户测试，见报告005。公开初审见 docs/reviews/004-public-readiness.md，未修改可见性。
 2. **P1-M4**：ADR-041 后满容量五会话22000键预检27.24MiB、首键5.420ms / 最大8.718ms，IP连接采样为空；重打审核包并进行正式 IMK 多应用验收。
 3. **P1-M4**：发布候选包的正式 IMK 多应用交互、性能与用户词库验收；T-M3-04 远端检查已通过。
 4. **P1-M5**：准备可复现构建说明、SBOM、许可附件与零外联证据。
@@ -106,9 +106,9 @@
 | 签名身份 | ✅ `Developer ID Application: Zhizhou Wang (2N62934Y28)` 与 `Apple Development: …`；公证凭据已存钥匙串 profile `yinghuo-notary` |
 | Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
-| 输入法现状 | 已从系统启用列表移除萤火虫并停止系统宿主；ABC/搜狗保留。系统及用户安装目录均无 Yinghuo.app；安装包已移至 `/private/tmp/yinghuo-uninstalled/Yinghuo.app`，TIS 匹配 0/335，无系统宿主进程；独立调试窗口保留 |
+| 输入法现状 | 当前临时安装 ~/Library/Input Methods/Yinghuo.app（7d9cf788），系统设置已添加且选中；宿主PID57928，旧7d9cf788用户确认退格/Esc、多应用、模式、反查通过，失焦失败；修复分支7756082/5faa281已验证，新包待回归。ABC/搜狗保留；验收结束须移除输入源与用户域bundle，保留配置/词库 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**99 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**100 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -120,6 +120,24 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 · Codex（验收缺陷与图标修复）
+- 用户确认退格/Esc、多应用、模式切换、反查通过；失焦失败，回车强制中文，分页不明。
+- ADR-046–048：统一回车提交原码、补组合结束/客户端失活清理、多页页码提示；真实a翻页/回车预览及100单测/make verify通过。
+- ADR-049：V1–V5去白框修订保留原稿，V4 ICNS/透明菜单模板接入，源码归档仅排除非构建图稿。
+- 7756082/5faa281分别提交输入/图标修复，新包待CI及实体回归；旧用户域临时安装仍保留。
+
+### 2026-10-09 · Codex（正式候选临时安装）
+- CI包14,086,071字节，SHA及本机签名/公证/Gatekeeper通过，按授权临时安装用户域。
+- 系统设置添加后TIS选中，正式宿主PID57928启动，初始RSS约27.15MB/IP连接采样空。
+- 用户实体键盘确认TextEdit候选/你你好，AX撤销/重做通过；其余应用待测，报告005。
+- 六次IP采样空，物理占用24.0M/峰24.9M；临时安装保留，结束须移除；未发布。
+
+### 2026-10-09 · Codex（自动公证链路跑通）
+- 诊断确认身份有效；ADR-045扩展临时钥匙串搜索列表并按唯一指纹签名，退出恢复列表。
+- PR #2/#3检查全绿后合并；本地make verify/模拟清理/身份拒绝/恢复测试通过。
+- main7d9cf788 CI37877336887全部成功：Apple Accepted、staple、Gatekeeper、离线逐字节复现及附件上传。
+- 附件11592738352已下载/private/tmp/yinghuo-ci-acceptance-37877336887，SHA通过；private保留，未安装/公开Release。
 
 ### 2026-10-09 · Codex（仓库凭据首验）
 - 用户决定保持private，7项APPLE_*仓库Secrets可见，重跑37873545347。
@@ -160,20 +178,4 @@
 - 公证因钥匙串缺少 yinghuo-notary profile 尚未上传；用户选择先推进其他准备，未安装。
 - 首轮 CI 工具链缺参已修复；a053314 远端 Linux40秒/macOS1分35秒全绿，包含真实 AppKit 冒烟与源码离线重建。
 - 满容量内存与正式 IMK 验收待完成；无合并或公开发布。
-
-### 2026-10-09 · Codex（用户词库共享快照）
-- ADR-039：有界 Weak 快照缓存，写入发布新 Arc，失焦释放旧版本；激活预加载，配置仍唯一。
-- 满容量合成词库/五会话22.09MiB，按键最大9.075ms；学习最大13.196ms，失焦后27.73MiB。
-- 98单测、两宿主构建、真实 AppKit 冒烟与 make verify 全绿；完整 GUI/正式客户端仍待验收。
-- ADR-040 复用标签/激活预热：满词库首键5.968ms、P95 4.356ms / 最大5.682ms、32.61MiB；内存与正式 IMK 待验收，未安装或上传。
-
-### 2026-10-09 · Codex（最大词库查询边界）
-- ADR-038：用户前缀最多256个借用条目后再分配，频次每候选只计算一次；排序优先级与精确命中保留。
-- 10000条/1.98MB合成词库五会话：最大按键从19.43降至10.86ms；稳态仍36.67MiB，下一步共享用户词库快照。
-- 96单测、两宿主构建/独立冒烟、make verify 全绿；性能 DoD 仍不勾选。
-
-### 2026-10-09 · Codex（长候选边界）
-- ADR-037：超宽候选自动竖排，长词截断/tooltip；整窗尺寸及原点限制于可见屏幕，选字文本完整。
-- 真实 AppKit 冒烟通过窄屏/边缘长词与普通横排回退；两宿主构建、make verify 通过。
-- 下一步最大用户词库与候选渲染性能检查，正式客户端 DoD 保持未完成。
 
