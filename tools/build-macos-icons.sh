@@ -11,7 +11,7 @@ for size in 16 32 128 256 512; do
   sips -z "${double}" "${double}" "${ROOT}/assets/icons/yinghuo-icon-v4-fullbleed.png" --out "${SET}/icon_${size}x${size}@2x.png" >/dev/null
 done
 iconutil -c icns "${SET}" -o "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns"
-for spec in '22 YinghuoTemplate.png' '44 YinghuoTemplate@2x.png'; do
+for spec in '18 YinghuoTemplate.png' '36 YinghuoTemplate@2x.png'; do
   read -r size name <<< "${spec}"
   sips -z "${size}" "${size}" "${ROOT}/assets/icons/yinghuo-icon-v4-menu-template.png" --out "${ROOT}/platforms/macos/Resources/${name}" >/dev/null
 done
