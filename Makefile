@@ -52,8 +52,11 @@ verify: ## 提交前全量验证（文档阶段只跑隐私断言）
 		$(CARGO) test --workspace; \
 		if command -v cargo-deny >/dev/null 2>&1; then \
 			$(CARGO) deny check; \
+		elif [ "$${ALLOW_MISSING_DENY:-}" = "1" ]; then \
+			echo "⚠️  降级：cargo-deny 未安装，已跳过依赖/许可审计 —— 此结果不可提交（先 make bootstrap）" >&2; \
 		else \
-			echo "⚠️  cargo-deny 未安装，跳过（运行 make bootstrap 可安装）"; \
+			echo "❌ cargo-deny 未安装，无法完成依赖/许可审计。请运行 make bootstrap；如仅作本地探查可 ALLOW_MISSING_DENY=1 make verify" >&2; \
+			exit 1; \
 		fi; \
 		echo "✅ make verify 全部通过（编码阶段）"; \
 	else \
