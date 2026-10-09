@@ -4,7 +4,7 @@
 
 ## 安装
 
-签名公证的最终包才可安装。终端运行：
+签名公证的最终包才可安装。用 Finder 解压发行 ZIP，或运行 `ditto -x -k Yinghuo-0.1.0-arm64.zip ./unpacked`，进入解压目录。请使用保留 Unix 执行权限的解压工具；安装器会拒绝缺少执行权限的程序。终端运行：
 
 ```sh
 ./scripts/install.sh --app ./Yinghuo.app --dry-run
