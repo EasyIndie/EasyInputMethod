@@ -7,10 +7,9 @@ SIGNED=false
 case "${1:-}" in '') ;; --signed) SIGNED=true ;; *) echo "用法：$0 [--signed]" >&2; exit 2 ;; esac
 [ -z "$(git status --porcelain)" ] || { echo "请先提交已验证的修改，确保源码与包一致" >&2; exit 1; }
 COMMIT="$(git rev-parse HEAD)"
-ARCH="$(uname -m)"
 OUT="${ROOT}/packaging/out"
 mkdir -p "${OUT}"
-WORK="$(mktemp -d "${OUT}/candidate-${ARCH}.XXXXXX")"
+WORK="$(mktemp -d "${OUT}/candidate.XXXXXX")"
 APP="${ROOT}/platforms/macos/build/Yinghuo.app"
 if ${SIGNED}; then
   [ "$(cat "${APP}/Contents/Resources/SOURCE-COMMIT")" = "${COMMIT}" ] || { echo "签名应用与当前源码提交不符，请重新构建" >&2; exit 1; }
@@ -22,8 +21,16 @@ if ${SIGNED}; then
   xcrun stapler validate "${APP}"
   spctl --assess --type execute --verbose=2 "${APP}"
 else
-  CLANG_MODULE_CACHE_PATH="${WORK}/module-cache" ./platforms/macos/build.sh --strict
+  CLANG_MODULE_CACHE_PATH="${WORK}/module-cache" ./platforms/macos/build.sh --strict --universal
 fi
+# 候选包按实际可执行文件标注架构（universal/arm64/x86_64），不依赖宿主 uname。
+APP_ARCHS="$(lipo -archs "${APP}/Contents/MacOS/Yinghuo" 2>/dev/null || uname -m)"
+case " ${APP_ARCHS} " in
+  *" arm64 "*)
+    case " ${APP_ARCHS} " in *" x86_64 "*) ARCH="universal" ;; *) ARCH="arm64" ;; esac ;;
+  *" x86_64 "*) ARCH="x86_64" ;;
+  *) ARCH="${APP_ARCHS// /-}" ;;
+esac
 STAGE="${WORK}/Yinghuo-0.1.0-${ARCH}"
 mkdir -p "${STAGE}/SOURCE" "${STAGE}/scripts"
 ditto "${APP}" "${STAGE}/Yinghuo.app"
@@ -49,7 +56,7 @@ cp docs/数据来源与许可.md "${STAGE}/DATA-SOURCES.md"
 cp data/sources.toml "${STAGE}/data-sources.toml"
 cargo tree --locked --offline -p ime-ffi > "${STAGE}/cargo-tree.txt"
 {
-  printf 'commit=%s\narchitecture=%s\nsigned_release=%s\n' "${COMMIT}" "${ARCH}" "${SIGNED}"
+  printf 'commit=%s\narchitecture=%s\nlipo_archs=%s\nsigned_release=%s\n' "${COMMIT}" "${ARCH}" "${APP_ARCHS}" "${SIGNED}"
   rustc --version
   swiftc --version
   xcrun --show-sdk-version

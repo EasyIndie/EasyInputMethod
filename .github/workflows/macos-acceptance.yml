@@ -25,13 +25,14 @@ jobs:
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-deny
       - name: Verify and build
         run: |
           make verify
           ./platforms/macos/dev-preview.sh --smoke-test
-          ./platforms/macos/build.sh --strict
+          ./platforms/macos/build.sh --strict --universal
       - name: Verify signing cleanup without credentials
         run: |
           python3 packaging/macos/tests/test-ci-sign.py

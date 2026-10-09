@@ -4,7 +4,10 @@
 # 纯命令行构建（本机无 Xcode 亦可）：
 #   cargo 构建 ime-ffi staticlib → swiftc 编译 Swift 宿主 → 拼装 .app bundle。
 #
-# 用法：./platforms/macos/build.sh
+# 用法：./platforms/macos/build.sh [--strict] [--universal]
+#   --strict     发布构建：缺少正式数据文件即失败
+#   --universal  同时构建 arm64 + x86_64，lipo 成通用可执行文件
+#                （需先：rustup target add aarch64-apple-darwin x86_64-apple-darwin）
 #
 # 产物：platforms/macos/build/Yinghuo.app
 #
@@ -19,27 +22,71 @@ APP_NAME="Yinghuo"
 APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
 EXECUTABLE="Yinghuo"
 
-LIB="${ROOT}/target/release/libime_ffi.a"
 INCLUDE_DIR="${ROOT}/crates/ime-ffi/include"
 GENERATED="${ROOT}/data/generated"
 STRICT=false
-case "${1:-}" in
-  "") ;;
-  --strict) STRICT=true ;;
-  *) echo "用法：$0 [--strict]" >&2; exit 2 ;;
-esac
+UNIVERSAL=false
+for arg in "$@"; do
+  case "${arg}" in
+    --strict) STRICT=true ;;
+    --universal) UNIVERSAL=true ;;
+    *) echo "用法：$0 [--strict] [--universal]" >&2; exit 2 ;;
+  esac
+done
+HOST_ARCH="$(uname -m)"
+if ${UNIVERSAL}; then
+  ARCHES=(arm64 x86_64)
+else
+  ARCHES=("${HOST_ARCH}")
+fi
 if ${STRICT}; then
   for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
     [ -s "${GENERATED}/${name}" ] || { echo "发布构建缺少 ${name}" >&2; exit 1; }
   done
 fi
 
-echo "▶ 1/5 构建 ime-ffi（staticlib）"
-( cd "${ROOT}" && CARGO_ENCODED_RUSTFLAGS="$(python3 "${ROOT}/tools/build-rust-flags.py" "${ROOT}")" cargo build --locked --release -p ime-ffi )
-if [ ! -f "${LIB}" ]; then
-  echo "❌ 找不到 staticlib：${LIB}"
-  exit 1
-fi
+echo "▶ 1/5 构建各架构 staticlib + Swift 宿主：${ARCHES[*]}"
+EXE_DIR="${BUILD_DIR}/tmp"
+rm -rf "${EXE_DIR}"
+mkdir -p "${EXE_DIR}"
+build_arch() {
+  local arch="$1" lib_dir triple
+  local -a target_args=()
+  case "${arch}" in
+    arm64) triple="aarch64-apple-darwin" ;;
+    *) triple="${arch}-apple-darwin" ;;
+  esac
+  if [ "${arch}" = "${HOST_ARCH}" ] && ! ${UNIVERSAL}; then
+    lib_dir="target/release"
+  else
+    target_args=(--target "${triple}")
+    lib_dir="target/${triple}/release"
+  fi
+  printf '   • %s\n' "${arch}"
+  (
+    cd "${ROOT}"
+    CARGO_ENCODED_RUSTFLAGS="$(python3 "${ROOT}/tools/build-rust-flags.py" "${ROOT}")" \
+      cargo build --locked --release ${target_args[@]+"${target_args[@]}"} -p ime-ffi
+    if [ ! -f "${lib_dir}/libime_ffi.a" ]; then
+      echo "❌ 找不到 staticlib：${lib_dir}/libime_ffi.a" >&2
+      echo "   （--universal 需先：rustup target add ${triple}）" >&2
+      exit 1
+    fi
+    swiftc -O -whole-module-optimization \
+      -target "${arch}-apple-macosx13.0" \
+      -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
+      -file-prefix-map "${ROOT}=/yinghuo-src" \
+      -module-name Yinghuo \
+      -I "crates/ime-ffi/include" \
+      platforms/macos/Sources/*.swift \
+      -Xlinker "${lib_dir}/libime_ffi.a" \
+      -framework AppKit \
+      -framework InputMethodKit \
+      -framework CoreFoundation \
+      -o "${EXE_DIR}/Yinghuo-${arch}"
+  )
+}
+for arch in "${ARCHES[@]}"; do build_arch "${arch}"; done
 
 echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
@@ -80,19 +127,15 @@ if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
   echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现）"
 fi
 
-echo "▶ 4/5 编译 Swift 宿主（swiftc）"
-( cd "${ROOT}" && swiftc -O -whole-module-optimization \
-  -target "$(uname -m)-apple-macosx13.0" \
-  -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
-  -file-prefix-map "${ROOT}=/yinghuo-src" \
-  -module-name Yinghuo \
-  -I "crates/ime-ffi/include" \
-  platforms/macos/Sources/*.swift \
-  target/release/libime_ffi.a \
-  -framework AppKit \
-  -framework InputMethodKit \
-  -framework CoreFoundation \
-  -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE}" )
+echo "▶ 4/5 合成可执行文件（lipo）"
+exe_inputs=()
+for arch in "${ARCHES[@]}"; do exe_inputs+=("${EXE_DIR}/Yinghuo-${arch}"); done
+if [ "${#exe_inputs[@]}" -eq 1 ]; then
+  cp "${exe_inputs[0]}" "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
+else
+  lipo -create "${exe_inputs[@]}" -output "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
+fi
+printf '   架构：%s\n' "$(lipo -archs "${APP_DIR}/Contents/MacOS/${EXECUTABLE}")"
 
 echo "▶ 5/5 校验 Info.plist + ad-hoc 签名"
 plutil -lint "${APP_DIR}/Contents/Info.plist"

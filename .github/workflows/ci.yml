@@ -87,12 +87,13 @@ jobs:
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@v2
       - uses: taiki-e/install-action@cargo-deny
       - name: Verify Rust and privacy
         run: make verify
-      - name: Build IMK application
-        run: ./platforms/macos/build.sh --strict
+      - name: Build universal IMK application (arm64 + x86_64)
+        run: ./platforms/macos/build.sh --strict --universal
       - name: Reproduce licensed pinyin data
         run: |
           ./data/sources/fetch-pinyin-data.sh
