@@ -106,10 +106,10 @@ jobs:
         run: ./platforms/macos/dev-preview.sh --smoke-test
       - name: Validate app metadata and icons
         run: |
-          plutil -lint platforms/macos/build/Yinghuo.app/Contents/Info.plist
-          plutil -lint platforms/macos/build/preview/YinghuoPreview.app/Contents/Info.plist
-          cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/Yinghuo.app/Contents/Resources/Yinghuo.icns
-          cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/preview/YinghuoPreview.app/Contents/Resources/Yinghuo.icns
+          plutil -lint platforms/macos/build/Lampyris.app/Contents/Info.plist
+          plutil -lint platforms/macos/build/preview/LampyrisPreview.app/Contents/Info.plist
+          cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/Lampyris.app/Contents/Resources/Lampyris.icns
+          cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/preview/LampyrisPreview.app/Contents/Resources/Lampyris.icns
       - name: Verify signing cleanup without credentials
         run: |
           python3 packaging/macos/tests/test-ci-sign.py
@@ -124,7 +124,7 @@ jobs:
       - name: Upload unsigned review archive
         uses: actions/upload-artifact@v4
         with:
-          name: Yinghuo-macos-review-${{ github.sha }}
+          name: Lampyris-macos-review-${{ github.sha }}
           path: |
             packaging/out/candidate-*/*.zip
             packaging/out/candidate-*/*.zip.sha256

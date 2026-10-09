@@ -9,18 +9,18 @@
 #   --universal  同时构建 arm64 + x86_64，lipo 成通用可执行文件
 #                （需先：rustup target add aarch64-apple-darwin x86_64-apple-darwin）
 #
-# 产物：platforms/macos/build/Yinghuo.app
+# 产物：platforms/macos/build/Lampyris.app
 #
 # ⚠️ 必须是 .app：macOS 13 的 LaunchServices 无法扫描 .inputmethod（实测 -10811）。
-# ⚠️ bundle 名与 CFBundleName 用 ASCII（Yinghuo）；中文显示名由 InfoPlist.strings 提供。
+# ⚠️ bundle 名与 CFBundleName 用 ASCII（Lampyris）；中文显示名由 InfoPlist.strings 提供。
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 BUILD_DIR="${SCRIPT_DIR}/build"
-APP_NAME="Yinghuo"
+APP_NAME="Lampyris"
 APP_DIR="${BUILD_DIR}/${APP_NAME}.app"
-EXECUTABLE="Yinghuo"
+EXECUTABLE="Lampyris"
 
 INCLUDE_DIR="${ROOT}/crates/ime-ffi/include"
 GENERATED="${ROOT}/data/generated"
@@ -75,15 +75,15 @@ build_arch() {
     swiftc -O -whole-module-optimization \
       -target "${arch}-apple-macosx13.0" \
       -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
-      -file-prefix-map "${ROOT}=/yinghuo-src" \
-      -module-name Yinghuo \
+      -file-prefix-map "${ROOT}=/lampyris-src" \
+      -module-name Lampyris \
       -I "crates/ime-ffi/include" \
       platforms/macos/Sources/*.swift \
       -Xlinker "${lib_dir}/libime_ffi.a" \
       -framework AppKit \
       -framework InputMethodKit \
       -framework CoreFoundation \
-      -o "${EXE_DIR}/Yinghuo-${arch}"
+      -o "${EXE_DIR}/Lampyris-${arch}"
   )
 }
 for arch in "${ARCHES[@]}"; do build_arch "${arch}"; done
@@ -103,7 +103,7 @@ fi
 # PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
 printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
-cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP_DIR}/Contents/Resources/Yinghuo.icns"
+cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP_DIR}/Contents/Resources/Lampyris.icns"
 cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
 for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
   [ -d "${lproj}" ] || continue
@@ -129,7 +129,7 @@ fi
 
 echo "▶ 4/5 合成可执行文件（lipo）"
 exe_inputs=()
-for arch in "${ARCHES[@]}"; do exe_inputs+=("${EXE_DIR}/Yinghuo-${arch}"); done
+for arch in "${ARCHES[@]}"; do exe_inputs+=("${EXE_DIR}/Lampyris-${arch}"); done
 if [ "${#exe_inputs[@]}" -eq 1 ]; then
   cp "${exe_inputs[0]}" "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
 else

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-WORK="$(mktemp -d -t yinghuo-render-perf)"
+WORK="$(mktemp -d -t lampyris-render-perf)"
 trap 'rm -rf "${WORK}"' EXIT
 case "${1:-}" in
   "") ;;

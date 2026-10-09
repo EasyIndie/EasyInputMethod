@@ -10,9 +10,9 @@ metadata = json.loads(subprocess.check_output(['cargo', 'metadata', '--locked', 
 encoded = os.environ.get('CARGO_ENCODED_RUSTFLAGS')
 flags = encoded.split('\x1f') if encoded is not None else os.environ.get('RUSTFLAGS', '').split()
 flags = [flag for flag in flags if flag]
-flags.append(f'--remap-path-prefix={root}=/yinghuo-src')
+flags.append(f'--remap-path-prefix={root}=/lampyris-src')
 for pkg in sorted(metadata['packages'], key=lambda p: (p['name'], p['version'])):
     if pkg['source']:
         source = Path(pkg['manifest_path']).parent
-        flags.append(f"--remap-path-prefix={source}=/yinghuo-dependencies/{pkg['name']}-{pkg['version']}")
+        flags.append(f"--remap-path-prefix={source}=/lampyris-dependencies/{pkg['name']}-{pkg['version']}")
 sys.stdout.write('\x1f'.join(flags))

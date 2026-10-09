@@ -173,7 +173,7 @@ guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-cor
     fputs("无法加载真实词典，请检查 data/generated/。\n", stderr); exit(1)
 }
 let smoke = CommandLine.arguments.contains("--smoke-test")
-let smokeDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("yinghuo-preview-\(UUID().uuidString)")
+let smokeDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("lampyris-preview-\(UUID().uuidString)")
 if smoke {
     try FileManager.default.createDirectory(at: smokeDirectory, withIntermediateDirectories: true)
     ime_config_init(smokeDirectory.appendingPathComponent("config.toml").path)

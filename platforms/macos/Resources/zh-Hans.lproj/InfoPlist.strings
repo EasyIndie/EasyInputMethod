@@ -1,4 +1,4 @@
 /* 萤火虫输入法 · 本地化显示名（zh-Hans） */
 CFBundleName = "萤火虫";
 CFBundleDisplayName = "萤火虫";
-"org.yinghuo.inputmethod.Yinghuo.default" = "萤火虫";
+"cn.jokerhub.inputmethod.Lampyris.default" = "萤火虫";

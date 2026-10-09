@@ -2,7 +2,7 @@
 # CI credentials only; never enable shell tracing or upload this temporary directory.
 set -euo pipefail
 : "${RUNNER_TEMP:?需要 GitHub runner 临时目录}"
-WORK="${RUNNER_TEMP}/yinghuo-signing"
+WORK="${RUNNER_TEMP}/lampyris-signing"
 KEYCHAIN="${WORK}/signing.keychain-db"
 ORIGINAL_KEYCHAINS=()
 SEARCH_LIST_CHANGED=0
@@ -51,7 +51,7 @@ security find-identity -p codesigning "${KEYCHAIN}"
 IDENTITY_HASH="$(security find-identity -v -p codesigning "${KEYCHAIN}" | awk -F '"' -v name="${MACOS_SIGNING_IDENTITY}" '$2 == name {split($1, fields, /[[:space:]]+/); for (i in fields) if (fields[i] ~ /^[0-9A-Fa-f]+$/ && length(fields[i]) == 40) print fields[i]}')"
 [[ "${IDENTITY_HASH}" =~ ^[0-9A-Fa-f]{40}$ ]] || { echo "找不到唯一有效签名身份，请检查证书名称/有效性" >&2; exit 1; }
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-APP="${ROOT}/platforms/macos/build/Yinghuo.app"
+APP="${ROOT}/platforms/macos/build/Lampyris.app"
 codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${APP}"
 codesign --verify --strict "${APP}"
 ditto -c -k --keepParent "${APP}" "${WORK}/notarization.zip"

@@ -12,7 +12,7 @@ platforms/macos/
 ├── build.sh                       # cargo staticlib + swiftc → .app bundle
 ├── Info.plist                     # IMK 键名（参照系统/第三方输入法实测）
 ├── Resources/
-│   ├── YinghuoTemplate.png / @2x.png # 菜单模板图标
+│   ├── LampyrisTemplate.png / @2x.png # 菜单模板图标
 │   └── zh-Hans.lproj/·en.lproj/InfoPlist.strings  # 本地化显示名
 ├── Sources/
 │   ├── main.swift                 # NSApplication + IMKServer 入口
@@ -38,7 +38,7 @@ platforms/macos/
 ./platforms/macos/build.sh
 ```
 
-产出 `platforms/macos/build/Yinghuo.app`（已做 ad-hoc 签名）。
+产出 `platforms/macos/build/Lampyris.app`（已做 ad-hoc 签名）。
 
 > **必须是 `.app`，不能是 `.inputmethod`。** 本机实测：macOS 13 的 LaunchServices
 > 无法扫描 `.inputmethod`（报 `-10811`），且系统里所有输入法都是 `.app`（见 ADR-022）。
@@ -78,11 +78,11 @@ ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验
 2. 在 GUI Terminal 里，对构建产物使用自己的 Developer ID 身份重新签名、公证：
    ```sh
    codesign --force --options runtime --timestamp \
-     --sign "Developer ID Application: <姓名 (TEAMID)>" platforms/macos/build/Yinghuo.app
-   ditto -c -k --keepParent platforms/macos/build/Yinghuo.app /tmp/Yinghuo-notary.zip
-   xcrun notarytool submit /tmp/Yinghuo-notary.zip --keychain-profile "<凭据名>" --wait
-   xcrun stapler staple platforms/macos/build/Yinghuo.app
-   spctl -a -vvv -t exec platforms/macos/build/Yinghuo.app
+     --sign "Developer ID Application: <姓名 (TEAMID)>" platforms/macos/build/Lampyris.app
+   ditto -c -k --keepParent platforms/macos/build/Lampyris.app /tmp/Lampyris-notary.zip
+   xcrun notarytool submit /tmp/Lampyris-notary.zip --keychain-profile "<凭据名>" --wait
+   xcrun stapler staple platforms/macos/build/Lampyris.app
+   spctl -a -vvv -t exec platforms/macos/build/Lampyris.app
    ```
    公证须为 Accepted，`spctl` 须为 `accepted / Notarized Developer ID`。这些是信任检查，不代表输入法发现已通过。
 3. 用修正后的包替换原安装包，仅保留一个安装位置；清除同 bundle 的 LaunchServices 影子登记。不要修改已签名包的 plist，否则签名和公证失效。
@@ -92,10 +92,10 @@ ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验
 ### 装好却看不到？先跑诊断
 
 ```sh
-./platforms/macos/tools/list-input-sources.sh yinghuo
+./platforms/macos/tools/list-input-sources.sh lampyris
 ```
 
-- 有输出（含 `yinghuo` / `org.yinghuo`）→ 系统已识别，去「系统设置 → 键盘 → 输入法」添加；
+- 有输出（含 `lampyris` / `cn.jokerhub`）→ 系统已识别，去「系统设置 → 键盘 → 输入法」添加；
 - 无输出 → 装载未通过。核查新 ID、签名/公证、安装路径和影子登记，并检查 `imklaunchagent` 日志；不能仅凭无输出断言未重登或必须改为 appex。
 
 ## 日常开发：独立调试窗口
@@ -109,11 +109,11 @@ make macos-preview
 ./platforms/macos/dev-preview.sh --smoke-test
 ```
 
-需要 Rust、Xcode/Swift 和本页所述三份 `data/generated/` 真实词典。脚本增量构建 debug `ime-ffi`，链接普通 AppKit 应用到 `platforms/macos/build/preview/YinghuoPreview.app`，直接运行；无需 Developer ID 签名、公证上传、系统目录安装、输入源注册或重启。Apple Silicon 链接器生成的本地签名不涉及开发者证书。词典通过资源符号链接读取，不复制大表。修改代码后关闭窗口，重新运行命令即可；本机缓存后构建一次约 4.25 秒（非性能保证）。
+需要 Rust、Xcode/Swift 和本页所述三份 `data/generated/` 真实词典。脚本增量构建 debug `ime-ffi`，链接普通 AppKit 应用到 `platforms/macos/build/preview/LampyrisPreview.app`，直接运行；无需 Developer ID 签名、公证上传、系统目录安装、输入源注册或重启。Apple Silicon 链接器生成的本地签名不涉及开发者证书。词典通过资源符号链接读取，不复制大表。修改代码后关闭窗口，重新运行命令即可；本机缓存后构建一次约 4.25 秒（非性能保证）。
 
 窗口直接接收原始按键，复用正式宿主的 `ImeSession`、`ime-ffi` 与 `CandidateWindow`。支持末尾输入、组合串、五笔/拼音/混输、空格/数字/回车选字、退格删码、Esc 取消和清空。它是输入测试区，暂不支持任意光标位置编辑或完整文本编辑快捷键。启动通过 `ime-config` 读取同一配置路径；模式下拉框只改变当前会话，不保存配置。
 
-自动冒烟检查覆盖真实词典、文本渲染和上述按键流程；窗口可用于大多数引擎及候选窗迭代。IMK 事件分发、跨应用光标定位、输入源注册和系统生命周期仍需在已安装的输入法中验收。调试应用使用独立标识，不替换系统中的 `Yinghuo.app`。设计见 ADR-024。
+自动冒烟检查覆盖真实词典、文本渲染和上述按键流程；窗口可用于大多数引擎及候选窗迭代。IMK 事件分发、跨应用光标定位、输入源注册和系统生命周期仍需在已安装的输入法中验收。调试应用使用独立标识，不替换系统中的 `Lampyris.app`。设计见 ADR-024。
 
 ## 验证打字
 
@@ -124,7 +124,7 @@ make macos-preview
 
 ## 配置
 
-- **唯一配置文件**：`~/Library/Application Support/萤火虫/config.toml`
+- **唯一配置文件**：`~/Library/Application Support/Lampyris/config.toml`
   （宿主启动时经 `ime_config_init` 告知引擎，绝不使用 `UserDefaults`，见 `docs/配置架构.md`）；
 - 首次运行前文件可以不存在 → 使用 Schema 默认值；外部修改约 350–550ms 后加载；语法错误保留上一份有效配置。正式宿主下一次按键应用模式/页大小，候选窗主题自动刷新。
 - 切换模式：文本输入菜单里的「切换输入模式」（当前实现；正式交互属 P1-M4），
@@ -171,7 +171,7 @@ Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消
 
 ## 用户词库与学习
 
-默认在 `~/Library/Application Support/萤火虫/user-dictionary.tsv` 保存词条数据（不是配置）。显式选字按完整编码累加使用次数，精确用户词条优先于前缀预测，同来源候选按本地使用次数排序；没有时间戳、输入历史或联网同步。预览提供新增/导入/导出按钮，正式宿主输入菜单提供对应入口。
+默认在 `~/Library/Application Support/Lampyris/user-dictionary.tsv` 保存词条数据（不是配置）。显式选字按完整编码累加使用次数，精确用户词条优先于前缀预测，同来源候选按本地使用次数排序；没有时间戳、输入历史或联网同步。预览提供新增/导入/导出按钮，正式宿主输入菜单提供对应入口。
 
 格式为 `scheme\tcode\ttext\tcount`，scheme 为 wubi/pinyin，code 为不带空格的小写编码，count 为正整数。最多 10000 条/2MiB；无效导入不覆盖原文件，重复导入合并取最大次数。导出不得覆盖配置或正在使用的词库。跨会话更新在下一次输入前读取；学习读写失败保留已选文字，预览状态/正式输入菜单显示错误。崩溃留下 user-dictionary.lock 时，请先关闭所有萤火虫会话、备份词库，再移除该锁文件后重试。分发包不包含用户词库。
 

@@ -15,27 +15,27 @@ esac
 for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
   [ -f "${DATA}/${name}" ] || { echo "缺少 ${DATA}/${name}，请按 README 生成真实数据。" >&2; exit 1; }
 done
-APP="${BUILD}/YinghuoPreview.app"
-BIN="${APP}/Contents/MacOS/YinghuoPreview"
+APP="${BUILD}/LampyrisPreview.app"
+BIN="${APP}/Contents/MacOS/LampyrisPreview"
 mkdir -p "${BUILD}/module-cache" "${APP}/Contents/MacOS" "${APP}/Contents/Resources"
 cat > "${APP}/Contents/Info.plist" <<'PLIST'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
-<key>CFBundleIdentifier</key><string>org.yinghuo.debugpreview</string>
-<key>CFBundleExecutable</key><string>YinghuoPreview</string>
-<key>CFBundleName</key><string>YinghuoPreview</string>
-<key>CFBundleIconFile</key><string>Yinghuo.icns</string>
+<key>CFBundleIdentifier</key><string>cn.jokerhub.lampyris.debugpreview</string>
+<key>CFBundleExecutable</key><string>LampyrisPreview</string>
+<key>CFBundleName</key><string>LampyrisPreview</string>
+<key>CFBundleIconFile</key><string>Lampyris.icns</string>
 <key>CFBundlePackageType</key><string>APPL</string>
 <key>NSPrincipalClass</key><string>NSApplication</string>
 </dict></plist>
 PLIST
-cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Yinghuo.icns"
+cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Lampyris.icns"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
 (cd "${ROOT}" && cargo build -p ime-ffi)
-swiftc -g -Onone -module-name YinghuoPreview \
+swiftc -g -Onone -module-name LampyrisPreview \
   -I "${ROOT}/crates/ime-ffi/include" \
   "${SCRIPT_DIR}/Preview/main.swift" \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \

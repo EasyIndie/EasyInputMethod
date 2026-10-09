@@ -6,7 +6,7 @@ import subprocess
 import tempfile
 
 SCRIPT = Path(__file__).resolve().parents[1] / "ci-sign.sh"
-with tempfile.TemporaryDirectory(prefix="yinghuo-ci-sign-test-") as directory:
+with tempfile.TemporaryDirectory(prefix="lampyris-ci-sign-test-") as directory:
     root = Path(directory)
     env = dict(os.environ, RUNNER_TEMP=directory)
     for name in (
@@ -17,7 +17,7 @@ with tempfile.TemporaryDirectory(prefix="yinghuo-ci-sign-test-") as directory:
         env.pop(name, None)
     result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
     assert result.returncode == 1 and "缺少 CI 配置" in result.stderr
-    assert not (root / "yinghuo-signing").exists()
+    assert not (root / "lampyris-signing").exists()
     binary = root / "bin"
     binary.mkdir()
     fake = '''#!/usr/bin/env bash
@@ -52,16 +52,16 @@ esac
         result = subprocess.run(["bash", str(SCRIPT)],
             env=dict(env, MOCK_NOTARY_FAIL=failure), capture_output=True, text=True)
         assert result.returncode == expected, result.stderr
-        assert not (root / "yinghuo-signing").exists()
+        assert not (root / "lampyris-signing").exists()
         assert (root / "search-list.log").read_text().splitlines()[-1] == "list-keychains -d user -s /fixture/login.keychain-db"
     result = subprocess.run(["bash", str(SCRIPT)],
         env=dict(env, MOCK_NO_IDENTITY="1"), capture_output=True, text=True)
     assert result.returncode == 1 and "找不到唯一有效签名身份" in result.stderr
-    assert not (root / "yinghuo-signing").exists()
+    assert not (root / "lampyris-signing").exists()
     pem = "-----BEGIN PRIVATE KEY-----\nfixture\n-----END PRIVATE KEY-----"
     result = subprocess.run(["bash", str(SCRIPT)],
         env=dict(env, ASC_API_KEY_P8=pem), capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
-    assert not (root / "yinghuo-signing").exists()
+    assert not (root / "lampyris-signing").exists()
     subprocess.run(["bash", str(SCRIPT), "--cleanup"], env=env, check=True)
 print("签名脚本模拟验证通过：缺失配置、成功、失败及清理；未访问真实凭据或Apple")

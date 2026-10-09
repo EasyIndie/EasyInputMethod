@@ -1,7 +1,7 @@
 // 萤火虫输入法 · macOS 宿主入口。
 //
 // IMKServer 按 Info.plist 的 InputMethodConnectionName 建立连接，并按
-// InputMethodServerControllerClass 实例化 YinghuoInputController。
+// InputMethodServerControllerClass 实例化 LampyrisInputController。
 
 import Cocoa
 import InputMethodKit
@@ -13,7 +13,7 @@ ime_config_init(ImePaths.configFile())
 // 2) 启动 IMK 服务器；server 需在整个进程生命周期内保持存活。
 let connectionName =
     (Bundle.main.infoDictionary?["InputMethodConnectionName"] as? String)
-    ?? "org.yinghuo.inputmethod.Yinghuo_Connection"
+    ?? "cn.jokerhub.inputmethod.Lampyris_Connection"
 guard let server = IMKServer(
     name: connectionName, bundleIdentifier: Bundle.main.bundleIdentifier)
 else {

@@ -43,7 +43,7 @@ enum UserDictionaryUI {
     static func exportFile(_ session: ImeSession) {
         session.focusOut()
         let panel = NSSavePanel()
-        panel.nameFieldStringValue = "yinghuo-user-dictionary.tsv"
+        panel.nameFieldStringValue = "lampyris-user-dictionary.tsv"
         panel.allowedContentTypes = [.tabSeparatedText]
         guard panel.runModal() == .OK, let url = panel.url else { return }
         report(session.exportDictionary(url.path))

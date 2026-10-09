@@ -50,9 +50,9 @@ for key in sorted(reachable, key=lambda k: refs[k]):
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(file.read_bytes())
 sbom = {'bomFormat': 'CycloneDX', 'specVersion': '1.5', 'version': 1,
-        'metadata': {'component': {'type': 'application', 'name': 'Yinghuo', 'version': '0.1.0', 'bom-ref': 'Yinghuo', 'licenses': [{'expression': 'GPL-3.0-or-later'}]}},
+        'metadata': {'component': {'type': 'application', 'name': 'Lampyris', 'version': '0.1.0', 'bom-ref': 'Lampyris', 'licenses': [{'expression': 'GPL-3.0-or-later'}]}},
         'components': components,
-        'dependencies': [{'ref': 'Yinghuo', 'dependsOn': [refs[entry]]}] +
+        'dependencies': [{'ref': 'Lampyris', 'dependsOn': [refs[entry]]}] +
         [{'ref': refs[key], 'dependsOn': sorted(refs[d] for d in nodes[key]['dependencies'])} for key in sorted(reachable, key=lambda k: refs[k])]}
 (out / 'SBOM.cdx.json').write_text(json.dumps(sbom, ensure_ascii=False, indent=2) + '\n')
 # Inspect the staged artifact, never personal config or dictionaries.

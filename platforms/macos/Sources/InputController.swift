@@ -7,8 +7,8 @@ import Cocoa
 import InputMethodKit
 import ime
 
-@objc(YinghuoInputController)
-final class YinghuoInputController: IMKInputController {
+@objc(LampyrisInputController)
+final class LampyrisInputController: IMKInputController {
     private var session: ImeSession?
     private var candidateWindow: CandidateWindow?
     private var candidateCount = 7

@@ -3,7 +3,7 @@
 #
 # 用法：
 #   ./platforms/macos/tools/list-input-sources.sh            # 列出所有输入模式
-#   ./platforms/macos/tools/list-input-sources.sh yinghuo   # 只看含关键字者
+#   ./platforms/macos/tools/list-input-sources.sh lampyris   # 只看含关键字者
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

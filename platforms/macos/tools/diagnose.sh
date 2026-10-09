@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # 萤火虫输入法 · macOS 装载诊断（一次性收集所有关键信息）。
 #
-# 用法：./platforms/macos/tools/diagnose.sh [关键字，默认 yinghuo]
+# 用法：./platforms/macos/tools/diagnose.sh [关键字，默认 lampyris]
 # 重启后运行本脚本，把输出整段贴回即可。
 set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
-KEY="${1:-yinghuo}"
+KEY="${1:-lampyris}"
 LSR=/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister
 
 hr() { printf '\n======== %s ========\n' "$1"; }
@@ -36,8 +36,8 @@ hr "6) 用户偏好里的第三方输入源"
 defaults read com.apple.inputsources 2>/dev/null || echo "(无 com.apple.inputsources)"
 
 hr "7) 本项目 bundle 的 plist 关键键"
-if [ -f ~/Documents/EasyInputMethod/platforms/macos/build/Yinghuo.app/Contents/Info.plist ]; then
-  plutil -p ~/Documents/EasyInputMethod/platforms/macos/build/Yinghuo.app/Contents/Info.plist \
+if [ -f ~/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app/Contents/Info.plist ]; then
+  plutil -p ~/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app/Contents/Info.plist \
     | grep -E "CFBundleIdentifier|CFBundleName|tsInputModeListKey|ComponentInputModeDict|LSBackgroundOnly"
 fi
 

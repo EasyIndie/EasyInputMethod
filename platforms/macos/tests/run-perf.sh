@@ -2,7 +2,7 @@
 # Release engine performance only; this does not measure IMK client rendering.
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-WORK="$(mktemp -d -t yinghuo-perf)"
+WORK="$(mktemp -d -t lampyris-perf)"
 trap 'rm -rf "${WORK}"' EXIT
 EXTRA=()
 case "${2:-}" in

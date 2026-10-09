@@ -4,14 +4,14 @@
 
 ## 安装
 
-签名公证的最终包才可安装。用 Finder 解压发行 ZIP，或运行 `ditto -x -k Yinghuo-0.1.0-universal.zip ./unpacked`，进入解压目录。请使用保留 Unix 执行权限的解压工具；安装器会拒绝缺少执行权限的程序。终端运行：
+签名公证的最终包才可安装。用 Finder 解压发行 ZIP，或运行 `ditto -x -k Lampyris-0.1.0-universal.zip ./unpacked`，进入解压目录。请使用保留 Unix 执行权限的解压工具；安装器会拒绝缺少执行权限的程序。终端运行：
 
 ```sh
-./scripts/install.sh --app ./Yinghuo.app --dry-run
-./scripts/install.sh --app ./Yinghuo.app
+./scripts/install.sh --app ./Lampyris.app --dry-run
+./scripts/install.sh --app ./Lampyris.app
 ```
 
-注销/重新登录，在系统设置 → 键盘 → 文字输入添加萤火虫。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Yinghuo.app --system`。同版本重复执行无操作，不同版本先卸载。不要关闭 Gatekeeper；验证失败请停止安装。
+注销/重新登录，在系统设置 → 键盘 → 文字输入添加萤火虫。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Lampyris.app --system`。同版本重复执行无操作，不同版本先卸载。不要关闭 Gatekeeper；验证失败请停止安装。
 
 ## 卸载
 
@@ -22,7 +22,7 @@
 ./scripts/uninstall.sh --input-source-removed
 ```
 
-系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/yinghuo/uninstalled 备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/萤火虫/`。
+系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/Lampyris/uninstalled 备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/Lampyris/`。
 
 ## 核验与复现
 

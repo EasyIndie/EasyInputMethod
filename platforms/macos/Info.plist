@@ -10,22 +10,22 @@
 
   ⚠️ 必须是 .app bundle（macOS 13 的 LaunchServices 无法扫描 .inputmethod，
      实测报 -10811）——见 ADR-022 / platforms/macos/README.md。
-  ⚠️ bundle 标识暂用 org.yinghuo.inputmethod.Yinghuo，最终包名取决于 TBD-4。
+  bundle 标识：cn.jokerhub.inputmethod.Lampyris（ADR-056，自有域名 jokerhub.cn 反向 DNS）。
 -->
 <plist version="1.0">
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>zh_CN</string>
 	<key>CFBundleExecutable</key>
-	<string>Yinghuo</string>
+	<string>Lampyris</string>
 	<key>CFBundleIdentifier</key>
-	<string>org.yinghuo.inputmethod.Yinghuo</string>
+	<string>cn.jokerhub.inputmethod.Lampyris</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Yinghuo</string>
+	<string>Lampyris</string>
 	<key>CFBundleIconFile</key>
-	<string>Yinghuo.icns</string>
+	<string>Lampyris.icns</string>
 	<key>CFBundleDisplayName</key>
 	<string>萤火虫</string>
 	<key>CFBundlePackageType</key>
@@ -69,15 +69,15 @@
 	<key>NSSupportsSuddenTermination</key>
 	<true/>
 	<key>InputMethodConnectionName</key>
-	<string>org.yinghuo.inputmethod.Yinghuo_Connection</string>
+	<string>cn.jokerhub.inputmethod.Lampyris_Connection</string>
 	<key>InputMethodServerControllerClass</key>
-	<string>YinghuoInputController</string>
+	<string>LampyrisInputController</string>
 	<key>TISIntendedLanguage</key>
 	<string>zh-Hans</string>
 	<key>TISIconIsTemplate</key>
 	<true/>
 	<key>tsInputMethodIconFileKey</key>
-	<string>YinghuoTemplate.png</string>
+	<string>LampyrisTemplate.png</string>
 	<key>tsInputMethodCharacterRepertoireKey</key>
 	<array>
 		<string>Latn</string>
@@ -85,10 +85,10 @@
 	</array>
 	<key>tsInputModeListKey</key>
 	<dict>
-		<key>org.yinghuo.inputmethod.Yinghuo.default</key>
+		<key>cn.jokerhub.inputmethod.Lampyris.default</key>
 		<dict>
 			<key>TISInputSourceID</key>
-			<string>org.yinghuo.inputmethod.Yinghuo.default</string>
+			<string>cn.jokerhub.inputmethod.Lampyris.default</string>
 			<key>TISIntendedLanguage</key>
 			<string>zh-Hans</string>
 			<key>tsInputModeScriptKey</key>
@@ -100,21 +100,21 @@
 			<key>tsInputModeIsVisibleKey</key>
 			<true/>
 			<key>tsInputModeMenuIconFileKey</key>
-			<string>YinghuoTemplate.png</string>
+			<string>LampyrisTemplate.png</string>
 			<key>tsInputModePaletteIconFileKey</key>
-			<string>YinghuoTemplate.png</string>
+			<string>LampyrisTemplate.png</string>
 			<key>tsInputModeAlternateMenuIconFileKey</key>
-			<string>YinghuoTemplate.png</string>
+			<string>LampyrisTemplate.png</string>
 		</dict>
 	</dict>
 	<key>ComponentInputModeDict</key>
 	<dict>
 		<key>tsInputModeListKey</key>
 		<dict>
-			<key>org.yinghuo.inputmethod.Yinghuo.default</key>
+			<key>cn.jokerhub.inputmethod.Lampyris.default</key>
 			<dict>
 				<key>TISInputSourceID</key>
-				<string>org.yinghuo.inputmethod.Yinghuo.default</string>
+				<string>cn.jokerhub.inputmethod.Lampyris.default</string>
 				<key>TISIntendedLanguage</key>
 				<string>zh-Hans</string>
 				<key>tsInputModeScriptKey</key>
@@ -126,14 +126,14 @@
 				<key>tsInputModeIsVisibleKey</key>
 				<true/>
 				<key>tsInputModeMenuIconFileKey</key>
-				<string>YinghuoTemplate.png</string>
+				<string>LampyrisTemplate.png</string>
 				<key>tsInputModePaletteIconFileKey</key>
-				<string>YinghuoTemplate.png</string>
+				<string>LampyrisTemplate.png</string>
 			</dict>
 		</dict>
 		<key>tsVisibleInputModeOrderedArrayKey</key>
 		<array>
-			<string>org.yinghuo.inputmethod.Yinghuo.default</string>
+			<string>cn.jokerhub.inputmethod.Lampyris.default</string>
 		</array>
 	</dict>
 </dict>

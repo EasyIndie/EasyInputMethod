@@ -1,8 +1,8 @@
 # macOS 自动验收出包
 
-日常 PR 自动构建并上传 `Yinghuo-macos-review-<commit>` 审核包，不使用任何 Apple 凭据；该包未公证，只用于代码/源码复现审核，不安装系统输入法。
+日常 PR 自动构建并上传 `Lampyris-macos-review-<commit>` 审核包，不使用任何 Apple 凭据；该包未公证，只用于代码/源码复现审核，不安装系统输入法。
 
-专用 `macOS Acceptance Package` 工作流在 main 推送或 Actions 手动运行时生成签名/公证验收包。它先执行完整验证、独立窗口冒烟和严格构建，再签名、API 公证、staple、Gatekeeper 校验、打包和离线重建。成功后在运行页面 Artifacts 下载 `Yinghuo-macos-acceptance-<commit>`，含 ZIP 与 SHA，保留30天。不会创建公开 GitHub Release，不会安装输入法。凭据步骤只允许 main，不对 PR/fork 运行。
+专用 `macOS Acceptance Package` 工作流在 main 推送或 Actions 手动运行时生成签名/公证验收包。它先执行完整验证、独立窗口冒烟和严格构建，再签名、API 公证、staple、Gatekeeper 校验、打包和离线重建。成功后在运行页面 Artifacts 下载 `Lampyris-macos-acceptance-<commit>`，含 ZIP 与 SHA，保留30天。不会创建公开 GitHub Release，不会安装输入法。凭据步骤只允许 main，不对 PR/fork 运行。
 
 ## 一次配置
 

@@ -24,19 +24,19 @@ class InstallerPermissions(unittest.TestCase):
             work = pathlib.Path(directory)
             archive = work / 'candidate.zip'
             with zipfile.ZipFile(archive, 'w') as package:
-                entry = zipfile.ZipInfo('Yinghuo.app/Contents/MacOS/Yinghuo')
+                entry = zipfile.ZipInfo('Lampyris.app/Contents/MacOS/Lampyris')
                 entry.create_system = 3
                 entry.external_attr = 0o100755 << 16
                 package.writestr(entry, '#!/bin/sh\nexit 0\n')
-                package.write(ROOT / 'platforms/macos/Info.plist', 'Yinghuo.app/Contents/Info.plist')
+                package.write(ROOT / 'platforms/macos/Info.plist', 'Lampyris.app/Contents/Info.plist')
             with zipfile.ZipFile(archive) as package:
                 package.extractall(work)
-            self.reject(work / 'Yinghuo.app')
+            self.reject(work / 'Lampyris.app')
 
     def test_executable_symlink(self):
         with tempfile.TemporaryDirectory() as directory:
-            app = pathlib.Path(directory) / 'Yinghuo.app'
-            executable = app / 'Contents/MacOS/Yinghuo'
+            app = pathlib.Path(directory) / 'Lampyris.app'
+            executable = app / 'Contents/MacOS/Lampyris'
             executable.parent.mkdir(parents=True)
             shutil.copy(ROOT / 'platforms/macos/Info.plist', app / 'Contents/Info.plist')
             executable.symlink_to('/bin/sh')
