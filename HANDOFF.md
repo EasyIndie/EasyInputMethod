@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（MVP-12 跨线程契约文档更正；A/B 类 MVP 全部闭环） |
+| 最后更新 | 2026-10-09（MVP-13 完成；A/B 类闭环，C 仅余 MVP-14 待外部环境） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -41,6 +41,8 @@
 
 ## 3. 进行中
 
+- **✅ MVP-13 完成（2026-10-09，pi）**：`from_tsv` 改为排序分组（O(n log n)），核心表冷启动 **3219ms → 41ms**；候选窗主题计时器改为**仅可见时运行**；新增 `ime-cli --example startup_cost` 证据。
+- **⏸ MVP-14未完成（待外部环境）**：universal 包已由 CI 产出；更多 macOS 版本与 Icon Composer 分层外观需其他机器/Xcode 27+设计资源，本机无法关闭。
 - **✅ MVP-12 完成（2026-10-09，pi）**：更正模式/配置跨线程契约文档（`配置架构.md` §9、`技术方案.md` §5.3）：会话句柄**单线程绑定**、配置接口**线程安全只读**；`subscribe` 回调在触发线程同步派发，宿主需自行转主线程（`ConfigWatcher`）；补全 `ime_config_init`/`ime_config_last_error` 签名。
 - **✅ MVP-11 完成（文档部分，2026-10-09，pi）**：新增 `docs/发布说明.md`；`docs/macos-release-checklist.md` 同步、移除已完成的 CI 加固项；用户词库头改为 `lampyris-user-dictionary v1`（注释行，兼容）。**归档最终 ZIP+SHA 与分发渠道/接收范围待用户决定**。
 - **✅ MVP-10 完成（2026-10-09，pi）**：`make verify` 缺 `cargo-deny` 直接失败（`ALLOW_MISSING_DENY=1` 仅本地降级且标注不可提交）；CI 加 `permissions: contents: read`；所有第三方 Actions 固定到审定 commit SHA（附版本注释），升级方法见 `CONTRIBUTING.md` §9；分两个提交。
@@ -63,7 +65,9 @@
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
 1. **MVP-05**：正式实机 DoD 矩阵（**需用户实机**，我不催重启/重装）；MVP-11 的归档与渠道待用户决定。
-2. **MVP-13/14**（C 类可选）：空闲/启动成本、平台与图标扩展；不阻塞首版。
+2. **MVP-14**（C 类）：需其他 macOS 版本机器 / Xcode 27 分层图标资源；不阻塞首版。
+
+> **A/B 类缺口（MVP-01…04、06…13）已全部闭环**（ADR-057…063）；MVP-05/11 的验收/渠道与 MVP-14 依赖用户或外部环境。
 
 ## 5. 待决 / 阻塞
 
@@ -131,6 +135,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：MVP-13 空闲/启动成本
+- 实测 `from_tsv` 逐条线性 insert → 核心表冷启动 3219ms；改为排序分组（O(n log n)）→ **41ms**；新增 `ime-cli --example startup_cost`。
+- 候选窗主题计时器改为**仅可见时运行**（show 启动 / hide 停表），消除隐藏后的 0.2s 空闲轮询。
+- MVP-14（平台/图标扩展）需外部环境，标记为待后续，不阻塞首版。
 
 ### 2026-10-09 / pi：MVP-12 跨线程契约文档更正（A/B 类 MVP 收尾）
 - `配置架构.md` §9 与 `技术方案.md` §5.3：明确**会话句柄单线程绑定**、**配置接口线程安全只读**；`subscribe` 回调在触发线程同步派发，宿主需自行转主线程；补全 `ime_config_init`/`ime_config_last_error`。
