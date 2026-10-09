@@ -1,6 +1,6 @@
 # 萤火虫输入法（EasyInputMethod）
 
-<img src="assets/icons/yinghuo-icon-v4-fullbleed.png" width="160" alt="萤火虫项目图标：V4 单线标志">
+<img src="assets/icons/yinghuo-official-icon.png" width="160" alt="萤火虫官方标识：飞行萤火虫">
 
 > 一款**跨平台、开源可审计、默认离线、只做核心输入**的中文输入法。
 >

@@ -151,7 +151,7 @@ make macos-preview
 
 ## 应用图标
 
-正式宿主和独立调试应用暂用 V4 单线萤火虫图标，构建时从 `assets/icons/yinghuo-icon-v4-app.icns` 复制。项目保留全部设计版本及原图，见 `assets/icons/README.md`。
+正式宿主和独立调试应用使用飞行萤火虫官方图标，构建时从 `assets/icons/yinghuo-official-app.icns` 复制。项目保留全部设计版本及原图，见 `assets/icons/README.md`。
 
 ## CI 覆盖
 
@@ -206,4 +206,4 @@ bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
 
 ### 解压权限与菜单栏外观
 
-发行ZIP使用Finder或 `ditto -x -k <候选.zip> <目录>` 解压，保留程序执行权限。Python zipfile.extractall等丢失权限的解压方式会使输入源可见但宿主无法启动；安装预检拒绝这种候选。菜单栏采用18pt透明单色V4符号与2x资源，Info.plist声明 `TISIconIsTemplate=true`，跟随系统菜单栏亮暗及选中着色；无需新增配置文件。
+发行ZIP使用Finder或 `ditto -x -k <候选.zip> <目录>` 解压，保留程序执行权限。Python zipfile.extractall等丢失权限的解压方式会使输入源可见但宿主无法启动；安装预检拒绝这种候选。菜单栏采用18pt透明单色飞行萤火虫符号与2x资源，Info.plist声明 `TISIconIsTemplate=true`，跟随系统菜单栏亮暗及选中着色；无需新增配置文件。

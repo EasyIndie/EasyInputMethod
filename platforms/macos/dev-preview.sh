@@ -30,7 +30,7 @@ cat > "${APP}/Contents/Info.plist" <<'PLIST'
 <key>NSPrincipalClass</key><string>NSApplication</string>
 </dict></plist>
 PLIST
-cp "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns" "${APP}/Contents/Resources/Yinghuo.icns"
+cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Yinghuo.icns"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
