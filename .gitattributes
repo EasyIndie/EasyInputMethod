@@ -17,3 +17,14 @@
 docs/** linguist-documentation
 *.md linguist-documentation
 data/sources/** linguist-vendored
+
+# Historical / alternative artwork remains in Git; not needed to rebuild macOS.
+assets/icons/yinghuo-icon-concept-v1.png export-ignore
+assets/icons/yinghuo-icon-v2-geometric.png export-ignore
+assets/icons/yinghuo-icon-v3-soft.png export-ignore
+assets/icons/yinghuo-icon-v4-line.png export-ignore
+assets/icons/yinghuo-icon-v5-paper.png export-ignore
+assets/icons/yinghuo-icon-v1-fullbleed.png export-ignore
+assets/icons/yinghuo-icon-v2-fullbleed.png export-ignore
+assets/icons/yinghuo-icon-v3-fullbleed.png export-ignore
+assets/icons/yinghuo-icon-v5-fullbleed.png export-ignore
