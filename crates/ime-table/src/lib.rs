@@ -79,7 +79,9 @@ impl Table {
     /// - weight 必须可解析为 `i32`，否则 [`TsvError::InvalidWeight`]；
     /// - 同码多候选全部保留，构建完成后组内按 `weight` 降序（等权按 text 升序）。
     pub fn from_tsv(input: &str) -> Result<Table, TsvError> {
-        let mut table = Table::new();
+        // 先收集、再按 code 排序分组：避免逐条线性查找的 O(n²)
+        // （MVP-13：37.8k 行逐条 insert 曾需 ~3.2s 冷启动）。
+        let mut rows: Vec<(String, Entry)> = Vec::new();
         for (idx, raw) in input.lines().enumerate() {
             let line_no = idx + 1;
             let line = raw.trim_start_matches('\u{feff}').trim();
@@ -102,8 +104,23 @@ impl Table {
                     line: line_no,
                     value: weight_str.to_string(),
                 })?;
-            table.insert(code, text, weight);
+            rows.push((
+                code.to_string(),
+                Entry {
+                    text: text.to_string(),
+                    weight,
+                },
+            ));
         }
+        rows.sort_by(|a, b| a.0.cmp(&b.0));
+        let mut entries: Vec<(String, Vec<Entry>)> = Vec::new();
+        for (code, entry) in rows {
+            match entries.last_mut() {
+                Some((last, list)) if *last == code => list.push(entry),
+                _ => entries.push((code, vec![entry])),
+            }
+        }
+        let mut table = Table { entries };
         table.finalize();
         Ok(table)
     }
