@@ -8,6 +8,7 @@ final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
     private var themeTimer: Timer?
+    private let pageLabel = NSTextField(labelWithString: "")
     private var labels: [NSTextField] = []
     private var widthConstraints: [NSLayoutConstraint] = []
 
@@ -72,7 +73,7 @@ final class CandidateWindow {
     }
 
     /// Refresh visible candidates using the current appearance.
-    func update(candidates: [String]) {
+    func update(candidates: [String], pageIndex: Int = 0, pageCount: Int = 1) {
         refreshAppearance()
 
         NSLayoutConstraint.deactivate(widthConstraints)
@@ -94,6 +95,12 @@ final class CandidateWindow {
             label.toolTip = text
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             stack.addArrangedSubview(label)
+        }
+        if !candidates.isEmpty, pageCount > 1 {
+            pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= 翻页"
+            pageLabel.font = NSFont.systemFont(ofSize: 11)
+            pageLabel.textColor = .secondaryLabelColor
+            stack.addArrangedSubview(pageLabel)
         }
         panel.contentView?.layoutSubtreeIfNeeded()
         let fitting = stack.fittingSize

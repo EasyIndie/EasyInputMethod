@@ -12,11 +12,25 @@ final class YinghuoInputController: IMKInputController {
     private var session: ImeSession?
     private var candidateWindow: CandidateWindow?
     private var candidateCount = 7
+    private weak var activeClient: (any IMKTextInput)?
+    private var workspaceObserver: NSObjectProtocol?
 
     // MARK: - 生命周期
 
     override func activateServer(_ sender: Any!) {
         super.activateServer(sender)
+        activeClient = (sender as? IMKTextInput) ?? client()
+        if workspaceObserver == nil {
+            workspaceObserver = NSWorkspace.shared.notificationCenter.addObserver(
+                forName: NSWorkspace.didDeactivateApplicationNotification,
+                object: nil, queue: .main
+            ) { [weak self] notification in
+                guard let self, let activeClient = self.activeClient,
+                      let application = notification.userInfo?[NSWorkspace.applicationUserInfoKey] as? NSRunningApplication,
+                      application.bundleIdentifier == activeClient.bundleIdentifier() else { return }
+                self.finishComposition(activeClient)
+            }
+        }
         if session == nil {
             session = makeSession()
         }
@@ -25,10 +39,30 @@ final class YinghuoInputController: IMKInputController {
     }
 
     override func deactivateServer(_ sender: Any!) {
-        clearMarked(sender as? IMKTextInput)
-        session?.focusOut()
-        candidateWindow?.hide()
+        finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
+        activeClient = nil
         super.deactivateServer(sender)
+    }
+
+    deinit {
+        if let workspaceObserver {
+            NSWorkspace.shared.notificationCenter.removeObserver(workspaceObserver)
+        }
+    }
+
+    override func commitComposition(_ sender: Any!) {
+        finishComposition((sender as? IMKTextInput) ?? activeClient ?? client())
+    }
+
+    override func hidePalettes() {
+        candidateWindow?.hide()
+        super.hidePalettes()
+    }
+
+    private func finishComposition(_ textClient: (any IMKTextInput)?) {
+        candidateWindow?.hide()
+        session?.focusOut()
+        clearMarked(textClient)
     }
 
     /// 装配会话：优先真实数据文件，失败回退内置样本；再套用配置。
@@ -126,6 +160,7 @@ final class YinghuoInputController: IMKInputController {
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
         }
+        activeClient = client
         if let mode = ImeConfig.string("mode"), session.mode != mode {
             session.setMode(mode)
             clearMarked(client)
@@ -149,15 +184,6 @@ final class YinghuoInputController: IMKInputController {
         if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
             session.page(scalar.value == 0xF72C ? -1 : 1)
             showCandidates(client, session: session)
-            return true
-        }
-        // 回车：组合中则上屏首选候选
-        if scalar == "\r" || scalar == "\n" {
-            guard session.isComposing else { return false }
-            if let text = session.select(0) {
-                commit(text, to: client)
-                candidateWindow?.hide()
-            }
             return true
         }
 
@@ -226,7 +252,7 @@ final class YinghuoInputController: IMKInputController {
         }
         let window = candidateWindow ?? CandidateWindow()
         candidateWindow = window
-        window.update(candidates: candidates.map(\.text))
+        window.update(candidates: candidates.map(\.text), pageIndex: session.pageIndex, pageCount: session.pageCount)
         window.show(at: caretRect(client))
     }
 

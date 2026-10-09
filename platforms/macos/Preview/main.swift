@@ -39,7 +39,7 @@ final class PreviewInput: NSTextView {
             session.page(scalar.value == 0xF72C ? -1 : 1)
         } else if scalar == "\r" || scalar == "\n" {
             if session.isComposing {
-                if let selected = session.select(0) { committed += selected }
+                if case .committed(let raw) = session.feed(scalar.value) { committed += raw }
             } else { committed += "\n" }
         } else {
             let input = !session.isEnglish && scalar.isASCII && scalar.properties.isAlphabetic
@@ -73,7 +73,7 @@ final class PreviewInput: NSTextView {
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
         status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(values.map(\.text).joined(separator: " · "))")
         if session.isComposing, !values.isEmpty, window != nil {
-            candidates.update(candidates: values.map(\.text))
+            candidates.update(candidates: values.map(\.text), pageIndex: session.pageIndex, pageCount: session.pageCount)
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
@@ -104,7 +104,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         input.isVerticallyResizable = true
         input.autoresizingMask = [.width]
         input.textContainer?.widthTracksTextView = true
-        let hint = NSTextField(wrappingLabelWithString: "在下方末尾输入：wq → 你，nihao → 你好。空格/数字/回车选字，退格删码，Esc 取消。\n用于引擎、FFI 和候选窗调试；系统 IMK 集成仍需实机验收。")
+        let hint = NSTextField(wrappingLabelWithString: "在下方末尾输入：wq → 你，nihao → 你好。空格/数字选字，回车提交字母，退格删码，Esc 取消。\n用于引擎、FFI 和候选窗调试；系统 IMK 集成仍需实机验收。")
         let status = NSTextField(wrappingLabelWithString: "组合：（空）")
         input.status = { status.stringValue = $0 }
         let mode = NSPopUpButton()
@@ -205,6 +205,12 @@ if CommandLine.arguments.contains("--smoke-test") {
             fputs("预览冒烟失败：预期 \(expected)，实际 \(view.string)\n", stderr); exit(1)
         }
     }
+    keys("a")
+    let aFirstPage = session.candidates(limit: 9).map(\.text)
+    guard session.pageCount > 1 else { fputs("a应有多页候选。\n", stderr); exit(1) }
+    keys("=")
+    guard session.pageIndex == 1, session.candidates(limit: 9).map(\.text) != aFirstPage else { exit(1) }
+    view.clear()
     keys("wq"); check("wq")
     guard session.pageCount > 1 else { fputs("缺少分页候选。\n", stderr); exit(1) }
     let firstPage = session.candidates(limit: 9).map(\.text)
@@ -217,7 +223,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     keys("wq\u{7f}"); check("你你好w")
     keys("\u{1b}"); check("你你好")
     keys("wq2"); check("你你好像")
-    keys("wq\r"); check("你你好像你")
+    keys("wq\r"); check("你你好像wq")
     view.clear(); check("")
     session.setMode("pinyin"); keys("nihao "); check("你好")
     view.clear(); keys("\".\""); check("“。”")
@@ -251,7 +257,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     restored.setMode("mixed"); _ = restored.feed(122); _ = restored.feed(122)
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     try? FileManager.default.removeItem(at: smokeDirectory)
-    print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字/回车选字、退格/Esc、清空。")
+    print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
     exit(0)
 }
 app.setActivationPolicy(.regular)

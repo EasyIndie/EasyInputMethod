@@ -397,6 +397,11 @@ impl Session {
                     KeyOutcome::Committed(text)
                 }
             }
+            '\r' | '\n' => {
+                let text = self.buffer.clone();
+                self.commit(&text);
+                KeyOutcome::Committed(text)
+            }
             '1'..='9' => {
                 let idx = (key as u8 - b'1') as usize;
                 if let Some(c) = self.candidates().get(idx) {
@@ -565,6 +570,20 @@ mod tests {
         }
         fn max_code_length(&self) -> usize {
             4
+        }
+    }
+
+    #[test]
+    fn return_commits_raw_composition_and_passes_through_when_idle() {
+        for key in ['\r', '\n'] {
+            let mut s = session_with_wubi(InputMode::Mixed);
+            assert_eq!(s.handle_key(key), KeyOutcome::PassThrough);
+            s.handle_key('a');
+            assert_eq!(s.handle_key(key), KeyOutcome::Committed("a".into()));
+            assert_eq!(s.committed(), "a");
+            assert!(s.buffer().is_empty());
+            assert!(s.candidates().is_empty());
+            assert_eq!(s.handle_key(key), KeyOutcome::PassThrough);
         }
     }
 
