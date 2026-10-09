@@ -1,8 +1,10 @@
 # 萤火虫输入法（EasyInputMethod）
 
+<img src="assets/icons/yinghuo-icon-v4-line.png" width="160" alt="萤火虫项目图标：V4 单线标志">
+
 > 一款**跨平台、开源可审计、默认离线、只做核心输入**的中文输入法。
 >
-> **状态：方案已冻结，待交叉审核后进入实现。** 现在是"文档 + 脚手架"阶段，尚无功能代码。
+> **状态：macOS 开发版已完成基础输入与实机验收，正在完善交互和发布工程。** 日常调试运行 `make macos-preview`；尚未达到正式发布验收。
 
 ## 这是什么
 
@@ -73,3 +75,7 @@ platforms/ data/ tools/ packaging/ scripts/
 
 GPL-3.0-or-later，见 [LICENSE](./LICENSE)。
 项目名称与 Logo 保留权利；fork 版本请改名。
+
+## 项目图标
+
+[图标资产目录](assets/icons/README.md)保留 V1–V5；当前首选 **V4 单线标志**，以简洁线条表达项目定位。

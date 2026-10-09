@@ -111,7 +111,18 @@ pub struct ConvertResult {
 /// 输入引擎抽象。
 ///
 /// 实现必须纯逻辑：不感知平台、UI、网络、文件系统。
+pub struct EngineOptions {
+    pub auto_commit: bool,
+    pub z_wildcard: bool,
+    pub fuzzy: bool,
+}
+
 pub trait Engine: Send {
+    fn configure(&mut self, _options: &EngineOptions) {}
+    /// Return the preferred reading when reverse lookup is supported.
+    fn reverse_lookup(&self, _text: &str) -> Option<String> {
+        None
+    }
     fn convert(&self, input: &str, max: usize) -> ConvertResult;
     fn engine_type(&self) -> EngineType;
     fn max_code_length(&self) -> usize;
@@ -141,12 +152,21 @@ pub struct Session {
     buffer: String,
     candidates: Vec<Candidate>,
     committed: String,
+    page: usize,
+    page_size: usize,
+    english: bool,
+    full_width: bool,
+    width_override: Option<bool>,
+    chinese_punctuation: bool,
+    double_quote_open: bool,
+    single_quote_open: bool,
 }
 
 impl Session {
     pub fn new(mode: InputMode) -> Self {
         Self {
             mode,
+            page_size: 9,
             ..Self::default()
         }
     }
@@ -157,6 +177,76 @@ impl Session {
 
     pub fn set_pinyin_engine(&mut self, engine: Box<dyn Engine>) {
         self.pinyin = Some(engine);
+    }
+
+    pub fn set_input_options(&mut self, full_width: bool, chinese_punctuation: bool) {
+        self.full_width = full_width;
+        self.chinese_punctuation = chinese_punctuation;
+    }
+    pub fn english(&self) -> bool {
+        self.english
+    }
+    pub fn toggle_english(&mut self) {
+        self.english = !self.english;
+        self.cancel();
+    }
+    pub fn toggle_width(&mut self) {
+        self.width_override = Some(!self.width_override.unwrap_or(self.full_width));
+        self.cancel();
+    }
+    fn translate(&mut self, key: char) -> Option<String> {
+        if !self.english && self.chinese_punctuation {
+            let mapped = match key {
+                '.' => Some('。'),
+                ',' => Some('，'),
+                '?' => Some('？'),
+                '!' => Some('！'),
+                ':' => Some('：'),
+                ';' => Some('；'),
+                '(' => Some('（'),
+                ')' => Some('）'),
+                '[' => Some('「'),
+                ']' => Some('」'),
+                '<' => Some('《'),
+                '>' => Some('》'),
+                '\\' => Some('、'),
+                '"' => {
+                    self.double_quote_open = !self.double_quote_open;
+                    Some(if self.double_quote_open { '“' } else { '”' })
+                }
+                '\'' => {
+                    self.single_quote_open = !self.single_quote_open;
+                    Some(if self.single_quote_open { '‘' } else { '’' })
+                }
+                _ => None,
+            };
+            if let Some(value) = mapped {
+                return Some(value.to_string());
+            }
+        }
+        if self.width_override.unwrap_or(self.full_width) {
+            if key == ' ' {
+                return Some("　".into());
+            }
+            if ('!'..='~').contains(&key) {
+                return char::from_u32(key as u32 + 0xfee0).map(|c| c.to_string());
+            }
+        }
+        None
+    }
+
+    /// Query the installed reading engine without changing composition.
+    pub fn reverse_lookup(&self, text: &str) -> Option<String> {
+        self.pinyin.as_ref()?.reverse_lookup(text)
+    }
+
+    pub fn configure_engines(&mut self, options: &EngineOptions) {
+        if let Some(engine) = self.wubi.as_mut() {
+            engine.configure(options);
+        }
+        if let Some(engine) = self.pinyin.as_mut() {
+            engine.configure(options);
+        }
     }
 
     pub fn mode(&self) -> InputMode {
@@ -182,7 +272,60 @@ impl Session {
     }
 
     pub fn candidates(&self) -> &[Candidate] {
-        &self.candidates
+        let size = self.page_size.max(1);
+        let start = (self.page * size).min(self.candidates.len());
+        &self.candidates[start..(start + size).min(self.candidates.len())]
+    }
+
+    /// Set page length without changing the composition.
+    pub fn set_page_size(&mut self, size: usize) {
+        let size = size.clamp(3, 9);
+        if self.page_size != size {
+            self.page_size = size;
+            self.page = 0;
+        }
+    }
+
+    /// Merge local user entries and rank within each engine source.
+    pub fn personalize(&mut self, extra: Vec<Candidate>, score: impl Fn(&Candidate) -> u32) {
+        self.candidates.extend(extra);
+        let mut scored: Vec<_> = self
+            .candidates
+            .drain(..)
+            .map(|c| {
+                let frequency = score(&c);
+                (c, frequency)
+            })
+            .collect();
+        let rank = |c: &Candidate| usize::from(c.source == CandidateSource::Pinyin);
+        scored.sort_by(|(a, a_score), (b, b_score)| {
+            rank(a)
+                .cmp(&rank(b))
+                .then_with(|| a.is_prefix.cmp(&b.is_prefix))
+                .then_with(|| b_score.cmp(a_score))
+                .then_with(|| b.weight.cmp(&a.weight))
+                .then_with(|| a.text.cmp(&b.text))
+        });
+        let mut seen = std::collections::HashSet::new();
+        self.candidates = scored
+            .into_iter()
+            .map(|(c, _)| c)
+            .filter(|c| seen.insert(c.text.clone()))
+            .collect();
+        self.page = self.page.min(self.page_count().saturating_sub(1));
+    }
+
+    pub fn page_index(&self) -> usize {
+        self.page
+    }
+
+    pub fn page_count(&self) -> usize {
+        self.candidates.len().div_ceil(self.page_size.max(1))
+    }
+
+    pub fn page(&mut self, delta: i32) {
+        self.page = (self.page as i64 + i64::from(delta))
+            .clamp(0, self.page_count().saturating_sub(1) as i64) as usize;
     }
 
     pub fn committed(&self) -> &str {
@@ -217,12 +360,23 @@ impl Session {
 
     /// 处理一个按键。
     pub fn handle_key(&mut self, key: char) -> KeyOutcome {
+        if self.english {
+            if let Some(text) = self.translate(key) {
+                self.commit(&text);
+                return KeyOutcome::Committed(text);
+            }
+            return KeyOutcome::PassThrough;
+        }
         if !self.composing {
             if key.is_ascii_lowercase() {
                 self.composing = true;
                 self.buffer.clear();
                 self.buffer.push(key);
                 return self.recompute();
+            }
+            if let Some(text) = self.translate(key) {
+                self.commit(&text);
+                return KeyOutcome::Committed(text);
             }
             return KeyOutcome::PassThrough;
         }
@@ -233,24 +387,29 @@ impl Session {
                 self.recompute()
             }
             ' ' => {
-                if let Some(first) = self.candidates.first() {
+                if let Some(first) = self.candidates().first() {
                     let text = first.text.clone();
                     self.commit(&text);
                     KeyOutcome::Committed(text)
                 } else {
-                    self.cancel();
-                    KeyOutcome::Consumed
+                    let text = self.buffer.clone();
+                    self.commit(&text);
+                    KeyOutcome::Committed(text)
                 }
             }
             '1'..='9' => {
                 let idx = (key as u8 - b'1') as usize;
-                if let Some(c) = self.candidates.get(idx) {
+                if let Some(c) = self.candidates().get(idx) {
                     let text = c.text.clone();
                     self.commit(&text);
                     KeyOutcome::Committed(text)
                 } else {
                     KeyOutcome::Consumed
                 }
+            }
+            '-' | '+' | '=' => {
+                self.page(if key == '-' { -1 } else { 1 });
+                KeyOutcome::Consumed
             }
             '\u{8}' | '\u{7f}' => {
                 // 退格
@@ -267,15 +426,37 @@ impl Session {
                 self.cancel();
                 KeyOutcome::Consumed
             }
-            _ => KeyOutcome::PassThrough,
+            _ => {
+                if let Some(punctuation) = self.translate(key) {
+                    let text = format!(
+                        "{}{}",
+                        self.candidates()
+                            .first()
+                            .map(|c| c.text.as_str())
+                            .unwrap_or(&self.buffer),
+                        punctuation
+                    );
+                    self.commit(&text);
+                    KeyOutcome::Committed(text)
+                } else {
+                    KeyOutcome::PassThrough
+                }
+            }
         }
     }
 
     /// 选择第 `index` 个候选并上屏，返回上屏文本。
     pub fn select(&mut self, index: usize) -> Option<String> {
-        let text = self.candidates.get(index)?.text.clone();
+        let text = self.candidates().get(index)?.text.clone();
         self.commit(&text);
         Some(text)
+    }
+
+    /// End an input context while retaining its mode and transient preferences.
+    pub fn focus_out(&mut self) {
+        self.cancel();
+        self.double_quote_open = false;
+        self.single_quote_open = false;
     }
 
     /// 取消当前组合。
@@ -283,6 +464,7 @@ impl Session {
         self.composing = false;
         self.buffer.clear();
         self.candidates.clear();
+        self.page = 0;
     }
 
     fn commit(&mut self, text: &str) {
@@ -296,7 +478,7 @@ impl Session {
         let mut auto: Option<String> = None;
 
         for engine in self.active_engines() {
-            let result = engine.convert(&self.buffer, 9);
+            let result = engine.convert(&self.buffer, 256);
             if result.should_commit.is_some() && auto.is_none() {
                 auto = result.should_commit;
             }
@@ -304,10 +486,16 @@ impl Session {
         }
 
         // 去重：同 text 保留权重最高者；再按权重降序。
-        merged.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+        merged.sort_by(|a, b| {
+            usize::from(a.source == CandidateSource::Pinyin)
+                .cmp(&usize::from(b.source == CandidateSource::Pinyin))
+                .then_with(|| b.weight.cmp(&a.weight))
+                .then_with(|| a.text.cmp(&b.text))
+        });
         let mut seen = std::collections::HashSet::new();
         merged.retain(|c| seen.insert(c.text.clone()));
         self.candidates = merged;
+        self.page = 0;
 
         if let Some(text) = auto {
             self.commit(&text);
@@ -352,6 +540,120 @@ mod tests {
         let mut s = Session::new(mode);
         s.set_wubi_engine(Box::new(MockEngine));
         s
+    }
+
+    struct ManyEngine;
+    impl Engine for ManyEngine {
+        fn convert(&self, input: &str, max: usize) -> ConvertResult {
+            ConvertResult {
+                candidates: (0..20)
+                    .take(max)
+                    .map(|i| {
+                        Candidate::new(
+                            format!("词{i:02}"),
+                            input,
+                            100 - i,
+                            CandidateSource::CodeTable,
+                        )
+                    })
+                    .collect(),
+                should_commit: None,
+            }
+        }
+        fn engine_type(&self) -> EngineType {
+            EngineType::CodeTable
+        }
+        fn max_code_length(&self) -> usize {
+            4
+        }
+    }
+
+    #[test]
+    fn pagination_selects_visible_candidates_and_resets_on_edit() {
+        let mut s = Session::new(InputMode::WubiOnly);
+        s.set_wubi_engine(Box::new(ManyEngine));
+        s.set_page_size(7);
+        s.handle_key('a');
+        assert_eq!(s.page_count(), 3);
+        s.page(-1);
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        assert_eq!(s.candidates()[0].text, "词07");
+        assert_eq!(s.handle_key('2'), KeyOutcome::Committed("词08".into()));
+        s.handle_key('a');
+        s.page(i32::MAX);
+        assert_eq!(s.page_index(), 2);
+        assert_eq!(s.candidates().len(), 6);
+        s.handle_key('b');
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        s.handle_key('\u{7f}');
+        assert_eq!(s.page_index(), 0);
+        s.page(1);
+        s.set_page_size(3);
+        assert_eq!(s.page_index(), 0);
+        assert_eq!(s.page_count(), 7);
+        s.page(1);
+        assert_eq!(s.select(0), Some("词03".into()));
+        assert_eq!(s.page_count(), 0);
+    }
+
+    #[test]
+    fn punctuation_quotes_width_and_english_are_session_state() {
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.set_input_options(false, true);
+        s.handle_key('a');
+        assert_eq!(s.handle_key(','), KeyOutcome::Committed("甲，".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("”".into()));
+        s.toggle_english();
+        assert_eq!(s.handle_key('a'), KeyOutcome::PassThrough);
+        assert_eq!(s.handle_key('.'), KeyOutcome::PassThrough);
+        s.toggle_width();
+        assert_eq!(s.handle_key('A'), KeyOutcome::Committed("Ａ".into()));
+        assert_eq!(s.handle_key(' '), KeyOutcome::Committed("　".into()));
+        s.toggle_width();
+        s.toggle_english();
+        s.handle_key('x');
+        assert_eq!(s.handle_key(' '), KeyOutcome::Committed("x".into()));
+    }
+
+    #[test]
+    fn focus_out_resets_quotes_without_resetting_mode_or_width() {
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        s.set_input_options(false, true);
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        s.cancel();
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("”".into()));
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        s.handle_key('a');
+        s.focus_out();
+        assert!(!s.composing());
+        assert!(s.buffer().is_empty());
+        assert_eq!(s.mode(), InputMode::WubiOnly);
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        assert_eq!(s.handle_key('"'), KeyOutcome::Committed("“".into()));
+        s.toggle_english();
+        s.toggle_width();
+        s.focus_out();
+        assert!(s.english());
+        assert_eq!(s.handle_key('A'), KeyOutcome::Committed("Ａ".into()));
+    }
+
+    #[test]
+    fn personalization_evaluates_each_frequency_once() {
+        use std::cell::Cell;
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.handle_key('a');
+        let original = s.candidates.len();
+        let extra = vec![Candidate::new("新增", "a", 0, CandidateSource::CodeTable)];
+        let calls = Cell::new(0);
+        s.personalize(extra, |c| {
+            calls.set(calls.get() + 1);
+            u32::from(c.text == "新增")
+        });
+        assert_eq!(calls.get(), original + 1);
+        assert_eq!(s.candidates[0].text, "新增");
     }
 
     #[test]

@@ -54,25 +54,26 @@
 ### P1-M3 macOS 宿主
 
 - [x] `ime-ffi`：C ABI（会话 + 配置接口）
-- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02（代码完成；**人工装载被签名/环境阻塞**，见卡与 `docs/tasks/T-M3-02.md`）
-- [ ] 安装脚本 + 手动安装/Gatekeeper 放行文档
-- [ ] CI 加 macOS runner（覆盖 Swift 前端，P2-5）
-- [ ] **验收**：TextEdit/Safari 里能五笔打字
+- [x] 独立 AppKit 调试窗口（T-M3-05，ADR-024）：复用真实引擎、FFI 与候选窗，脱离系统装载流程
+- [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02 完成；ADR-023 注册修正 + Developer ID/公证/重启后，TextEdit/Safari 实体键盘验收通过
+- [x] 安装/卸载与签名公证脚本 + 可信安装文档（ADR-032；新候选实机流程待完整 DoD）
+- [x] CI 加 macOS runner（T-M3-04：Rust 验证、宿主构建、独立预览冒烟；远端待 PR 运行）
+- [x] **验收**：TextEdit/Safari 里能五笔打字（2026-10-08，用户实体键盘确认；混输拼音兜底也通过）
 
 ### P1-M4 交互完善
 
-- [ ] 候选窗（自绘 `NSPanel`，亮/暗主题）
-- [ ] 翻页/选择/退格/Esc
-- [ ] 中英切换、标点（含成对匹配）、全半角
-- [ ] 用户词库 + 词频学习（本地持久化，可导出/导入）
+- [x] 候选窗（自绘 `NSPanel`，亮/暗主题；屏幕边界限制已接入）
+- [x] 翻页/选择/退格/Esc（核心分页与两宿主冒烟回归）
+- [x] 中英切换、标点（含成对引号）、全半角（ADR-028）
+- [x] 用户词库 + 词频学习（ADR-029：有界 TSV、原子持久化、新增/导出/导入，隔离重建会话验证）
 - [ ] **验收**：达到 `docs/技术方案.md` §12 DoD
 
 ### P1-M5 发布工程
 
-- [ ] 打包脚本（`.pkg` 或安装脚本）
-- [ ] `scripts/verify-no-network.sh` 接入 CI
-- [ ] `docs/隐私与安全.md` 配套说明 + SBOM
-- [ ] 可复现构建说明
+- [x] macOS 本地候选打包脚本（源码/vendor/许可/SBOM，签名与上传显式分步）
+- [x] `scripts/verify-no-network.sh` 接入 CI
+- [x] `docs/隐私与安全.md` 配套说明 + CycloneDX SBOM
+- [x] 同环境离线载荷可复现说明及 run-repro.sh（源码包实际重建，去签名二进制/词表逐字节一致）
 - [ ] **验收**：第三方可复现、可抓包验证零外联
 
 ---
@@ -82,7 +83,7 @@
 - [ ] 整句/长词（n-gram）
 - [ ] 模糊音、简拼优化
 - [ ] 自研 FSA 拼音引擎替换 `inputx-pinyin`（保持 trait）
-- [ ] `TBD-3` 定用户词库存储格式
+- [x] `TBD-3` 用户词库采用 TSV v1（ADR-029）
 
 ## P3 — Windows
 
@@ -112,7 +113,7 @@
 
 ## 待调研（不阻塞 P1）
 
-- [ ] `TBD-1` 词频数据源（许可明确）
+- [x] `TBD-1` 已定 jieba MIT（ADR-021）
 - [ ] `TBD-2` 五笔98 / 新世纪 / 郑码数据源
 - [ ] `TBD-3` 用户词库存储格式
 - [ ] `TBD-4` 英文/包名最终形

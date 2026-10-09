@@ -1,4 +1,4 @@
 /* 萤火虫输入法 · display names (English) */
 CFBundleName = "Yinghuo";
 CFBundleDisplayName = "Yinghuo (Firefly)";
-"org.yinghuo.inputmethod.default" = "Yinghuo";
+"org.yinghuo.inputmethod.Yinghuo.default" = "Yinghuo";

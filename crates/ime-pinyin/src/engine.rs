@@ -3,28 +3,51 @@
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
 use crate::backend::PinyinBackend;
+use std::sync::Arc;
 
 /// 拼音引擎：把任意 [`PinyinBackend`] 适配到核心 [`Engine`] trait。
 pub struct PinyinEngine {
-    backend: Box<dyn PinyinBackend>,
+    backend: Arc<dyn PinyinBackend>,
     max_code_len: usize,
+    fuzzy: bool,
 }
 
 impl PinyinEngine {
     pub fn new(backend: Box<dyn PinyinBackend>, max_code_len: usize) -> Self {
+        Self::new_shared(Arc::from(backend), max_code_len)
+    }
+
+    /// Share an immutable backend without sharing per-session options.
+    pub fn new_shared(backend: Arc<dyn PinyinBackend>, max_code_len: usize) -> Self {
         Self {
             backend,
             max_code_len,
+            fuzzy: false,
         }
     }
 }
 
 impl Engine for PinyinEngine {
+    fn reverse_lookup(&self, text: &str) -> Option<String> {
+        self.backend.reverse_lookup(text)
+    }
+    fn configure(&mut self, options: &ime_core::EngineOptions) {
+        self.fuzzy = options.fuzzy;
+    }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
-        let candidates = self
-            .backend
-            .convert(input, max)
-            .into_iter()
+        let mut forms = vec![input.to_string()];
+        if self.fuzzy {
+            for (a, b) in [("zh", "z"), ("ch", "c"), ("sh", "s"), ("n", "l")] {
+                for (from, to) in [(a, b), (b, a)] {
+                    if let Some(tail) = input.strip_prefix(from) {
+                        forms.push(format!("{to}{tail}"));
+                    }
+                }
+            }
+        }
+        let mut candidates: Vec<Candidate> = forms
+            .iter()
+            .flat_map(|form| self.backend.convert(form, max))
             .map(|pc| Candidate {
                 text: pc.text,
                 code: pc.pinyin,
@@ -34,6 +57,10 @@ impl Engine for PinyinEngine {
                 is_prefix: false,
             })
             .collect();
+        candidates.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+        let mut seen = std::collections::HashSet::new();
+        candidates.retain(|c| seen.insert(c.text.clone()));
+        candidates.truncate(max);
         // 拼音绝不自动上屏（自动上屏仅限五笔精确唯一，见 技术方案 §2.3）。
         ConvertResult {
             candidates,
@@ -62,6 +89,19 @@ mod tests {
             Box::new(TablePinyinBackend::from_tsv(chars, words, "t").unwrap()),
             32,
         )
+    }
+
+    #[test]
+    fn fuzzy_is_opt_in_and_deduplicated() {
+        let backend = TablePinyinBackend::from_tsv("zang\t脏\t10\n", "", "fuzzy").unwrap();
+        let mut e = PinyinEngine::new(Box::new(backend), 32);
+        assert!(e.convert("zhang", 9).candidates.is_empty());
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: false,
+            fuzzy: true,
+        });
+        assert_eq!(e.convert("zhang", 9).candidates[0].text, "脏");
     }
 
     #[test]

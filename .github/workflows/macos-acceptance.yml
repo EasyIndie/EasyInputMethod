@@ -1,0 +1,64 @@
+name: macOS Acceptance Package
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: macos-acceptance-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  acceptance:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-deny
+      - name: Verify and build
+        run: |
+          make verify
+          ./platforms/macos/dev-preview.sh --smoke-test
+          ./platforms/macos/build.sh --strict
+      - name: Verify signing cleanup without credentials
+        run: python3 packaging/macos/tests/test-ci-sign.py
+      - name: Sign and notarize with team API key
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        run: bash packaging/macos/ci-sign.sh
+      - name: Prepare and reproduce acceptance archive
+        run: |
+          ./packaging/macos/prepare.sh --signed
+          for archive in packaging/out/candidate-*/*.zip; do
+            (cd "$(dirname "$archive")" && shasum -a 256 -c "$(basename "$archive").sha256")
+            ./platforms/macos/tests/run-repro.sh "$archive"
+          done
+      - name: Upload acceptance archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yinghuo-macos-acceptance-${{ github.sha }}
+          path: |
+            packaging/out/candidate-*/*.zip
+            packaging/out/candidate-*/*.zip.sha256
+          if-no-files-found: error
+          retention-days: 30
+      - name: Remove signing material
+        if: always()
+        run: bash packaging/macos/ci-sign.sh --cleanup

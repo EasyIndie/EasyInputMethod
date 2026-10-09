@@ -22,9 +22,20 @@ EXECUTABLE="Yinghuo"
 LIB="${ROOT}/target/release/libime_ffi.a"
 INCLUDE_DIR="${ROOT}/crates/ime-ffi/include"
 GENERATED="${ROOT}/data/generated"
+STRICT=false
+case "${1:-}" in
+  "") ;;
+  --strict) STRICT=true ;;
+  *) echo "用法：$0 [--strict]" >&2; exit 2 ;;
+esac
+if ${STRICT}; then
+  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
+    [ -s "${GENERATED}/${name}" ] || { echo "发布构建缺少 ${name}" >&2; exit 1; }
+  done
+fi
 
 echo "▶ 1/5 构建 ime-ffi（staticlib）"
-( cd "${ROOT}" && cargo build --release -p ime-ffi )
+( cd "${ROOT}" && CARGO_ENCODED_RUSTFLAGS="$(python3 "${ROOT}/tools/build-rust-flags.py" "${ROOT}")" cargo build --locked --release -p ime-ffi )
 if [ ! -f "${LIB}" ]; then
   echo "❌ 找不到 staticlib：${LIB}"
   exit 1
@@ -34,9 +45,18 @@ echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
 cp "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
+REPO_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel 2>/dev/null || true)"
+if [ "${REPO_ROOT}" = "${ROOT}" ]; then
+  git -C "${ROOT}" rev-parse HEAD > "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
+elif [ -s "${ROOT}/SOURCE-COMMIT" ]; then
+  cp "${ROOT}/SOURCE-COMMIT" "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"
+else
+  echo "无法确定对应源码提交" >&2; exit 1
+fi
 # PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
 printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
+cp "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns" "${APP_DIR}/Contents/Resources/Yinghuo.icns"
 cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
 for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
   [ -d "${lproj}" ] || continue
@@ -55,21 +75,24 @@ copy_data() {
 }
 copy_data "${GENERATED}/wubi86-core.tsv" "wubi86-core.tsv"
 copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
-copy_data "${GENERATED}/pinyin-words.tsv" "pinyin-words.tsv"
-if [ ! -f "${GENERATED}/pinyin-words.tsv" ]; then
+copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
+if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
   echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现）"
 fi
 
 echo "▶ 4/5 编译 Swift 宿主（swiftc）"
-swiftc -O \
+( cd "${ROOT}" && swiftc -O -whole-module-optimization \
+  -target "$(uname -m)-apple-macosx13.0" \
+  -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
+  -file-prefix-map "${ROOT}=/yinghuo-src" \
   -module-name Yinghuo \
-  -I "${INCLUDE_DIR}" \
-  "${SCRIPT_DIR}"/Sources/*.swift \
-  "${LIB}" \
+  -I "crates/ime-ffi/include" \
+  platforms/macos/Sources/*.swift \
+  target/release/libime_ffi.a \
   -framework AppKit \
   -framework InputMethodKit \
   -framework CoreFoundation \
-  -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
+  -o "${APP_DIR}/Contents/MacOS/${EXECUTABLE}" )
 
 echo "▶ 5/5 校验 Info.plist + ad-hoc 签名"
 plutil -lint "${APP_DIR}/Contents/Info.plist"
@@ -82,5 +105,5 @@ fi
 
 echo
 echo "✅ 构建完成：${APP_DIR}"
-echo "   装载：cp -R \"${APP_DIR}\" ~/Library/Input\\ Methods/ 然后【注销/重登】（必须）"
-echo "   然后在 系统设置 → 键盘 → 文字输入 → 输入法 添加「萤火虫」。详见 platforms/macos/README.md。"
+echo "   此 ad-hoc 构建仅供开发验证；日常运行 make macos-preview。"
+echo "   分发签名/公证及可信安装流程见 packaging/README.md。"

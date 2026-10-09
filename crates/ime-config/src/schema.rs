@@ -38,7 +38,7 @@ pub struct OptionSpec {
     pub scope: Scope,
 }
 
-/// v1 七项配置。数组顺序即生成文件时的书写顺序。
+/// v1 配置。数组顺序即生成文件时的书写顺序。
 pub static SCHEMA: &[OptionSpec] = &[
     OptionSpec {
         key: "mode",
@@ -95,9 +95,25 @@ pub static SCHEMA: &[OptionSpec] = &[
         doc_zh: "循环切换 混合 → 五笔 → 拼音",
         scope: Scope::Hotkey,
     },
+    OptionSpec {
+        key: "input.punctuation",
+        value_type: ValueType::Enum {
+            values: &["chinese", "english"],
+        },
+        default: "\"chinese\"",
+        doc_zh: "标点：chinese = 中文 | english = 英文",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
+        key: "input.full_width",
+        value_type: ValueType::Bool,
+        default: "false",
+        doc_zh: "全角 ASCII（Shift+Space 可临时切换）",
+        scope: Scope::Engine,
+    },
 ];
 
-/// 按键名查找选项（线性扫描，v1 仅 7 项）。
+/// 按键名查找选项（线性扫描，v1 选项）。
 pub fn find(key: &str) -> Option<&'static OptionSpec> {
     SCHEMA.iter().find(|spec| spec.key == key)
 }

@@ -6,6 +6,7 @@
 
 use std::error::Error;
 use std::fmt;
+use std::sync::Arc;
 
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
@@ -113,6 +114,10 @@ impl Table {
             list.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
         }
         self.entries.sort_by(|a, b| a.0.cmp(&b.0));
+        for (_, list) in &mut self.entries {
+            list.shrink_to_fit();
+        }
+        self.entries.shrink_to_fit();
     }
 
     /// 精确查询：返回该码下的候选（按权重降序）。
@@ -154,59 +159,79 @@ impl Table {
 
 /// 码表引擎：把 [`Table`] 适配到 [`Engine`] trait。
 pub struct CodeTableEngine {
-    table: Table,
+    table: Arc<Table>,
     max_code_len: usize,
+    auto_commit: bool,
+    z_wildcard: bool,
 }
 
 impl CodeTableEngine {
     pub fn new(table: Table, max_code_len: usize) -> Self {
+        Self::new_shared(Arc::new(table), max_code_len)
+    }
+
+    /// Share immutable table data while retaining independent engine options.
+    pub fn new_shared(table: Arc<Table>, max_code_len: usize) -> Self {
         Self {
             table,
             max_code_len,
+            auto_commit: true,
+            z_wildcard: false,
         }
     }
 }
 
 impl Engine for CodeTableEngine {
+    fn configure(&mut self, options: &ime_core::EngineOptions) {
+        self.auto_commit = options.auto_commit;
+        self.z_wildcard = options.z_wildcard;
+    }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
-        let mut candidates: Vec<Candidate> = Vec::new();
-
-        // 精确匹配在前
-        if let Some(list) = self.table.exact(input) {
-            for entry in list {
-                candidates.push(Candidate {
-                    text: entry.text.clone(),
-                    code: input.to_string(),
-                    weight: entry.weight,
-                    source: CandidateSource::CodeTable,
-                    comment: None,
-                    is_prefix: false,
-                });
+        use std::cmp::Reverse;
+        use std::collections::BinaryHeap;
+        let wildcard = self.z_wildcard && input.contains('z');
+        let mut top = BinaryHeap::new();
+        for (code, entries) in &self.table.entries {
+            let matches = if wildcard {
+                code.len() >= input.len()
+                    && input
+                        .bytes()
+                        .zip(code.bytes())
+                        .all(|(a, b)| a == b'z' || a == b)
+            } else {
+                code.starts_with(input)
+            };
+            if !matches {
+                continue;
+            }
+            for entry in entries {
+                let rank = (
+                    code == input,
+                    entry.weight,
+                    Reverse(entry.text.as_str()),
+                    Reverse(code.as_str()),
+                );
+                if top.len() < max {
+                    top.push(Reverse(rank));
+                } else if top.peek().is_some_and(|worst| rank > worst.0) {
+                    top.pop();
+                    top.push(Reverse(rank));
+                }
             }
         }
-
-        // 前缀预测在后（code 比 input 长）：收集全部前缀候选后按权重降序截断，
-        // 避免按 code 字典序截断而丢掉高频候选（如 wq 前缀下的「你」）。
-        let mut prefixes: Vec<Candidate> = self
-            .table
-            .prefix(input, usize::MAX)
+        let mut ranked: Vec<_> = top.into_iter().map(|r| r.0).collect();
+        ranked.sort_unstable_by(|a, b| b.cmp(a));
+        let candidates = ranked
             .into_iter()
-            .filter(|(code, _)| code != input)
-            .map(|(code, entry)| Candidate {
-                text: entry.text,
-                code,
-                weight: entry.weight,
-                source: CandidateSource::CodeTable,
-                comment: None,
-                is_prefix: true,
+            .map(|(_, weight, Reverse(text), Reverse(code))| {
+                let mut c = Candidate::new(text, code, weight, CandidateSource::CodeTable);
+                c.is_prefix = code.len() > input.len();
+                c
             })
             .collect();
-        prefixes.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
-        let room = max.saturating_sub(candidates.len());
-        candidates.extend(prefixes.into_iter().take(room));
 
         // 自动上屏：仅当输入为满码长度且精确唯一（"四码唯一自动上屏"的保守实现）。
-        let should_commit = if input.len() == self.max_code_len {
+        let should_commit = if self.auto_commit && !wildcard && input.len() == self.max_code_len {
             match self.table.exact(input) {
                 Some(list) if list.len() == 1 => Some(list[0].text.clone()),
                 _ => None,
@@ -248,6 +273,65 @@ mod tests {
              gggg\t龶\t1\n",
         )
         .unwrap()
+    }
+
+    #[test]
+    fn bounded_top_k_preserves_best_candidates_for_prefix_and_wildcard() {
+        let mut table = Table::new();
+        for i in 0..1000 {
+            table.insert("abcd", &format!("词{i:04}"), i);
+        }
+        table.finalize();
+        let mut engine = CodeTableEngine::new(table, 4);
+        let expected = ["词0999", "词0998", "词0997"];
+        assert_eq!(
+            engine
+                .convert("ab", 3)
+                .candidates
+                .iter()
+                .map(|c| c.text.as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
+        engine.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        });
+        assert_eq!(
+            engine
+                .convert("zz", 3)
+                .candidates
+                .iter()
+                .map(|c| c.text.as_str())
+                .collect::<Vec<_>>(),
+            expected
+        );
+    }
+
+    #[test]
+    fn configured_wildcard_and_auto_commit_change_behavior() {
+        let mut t = Table::new();
+        t.insert("abcd", "甲", 10);
+        t.insert("abce", "乙", 9);
+        t.finalize();
+        let mut e = CodeTableEngine::new(t, 4);
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        });
+        assert_eq!(e.convert("abcd", 9).should_commit, None);
+        let r = e.convert("abcz", 9);
+        assert_eq!(r.candidates.len(), 2);
+        assert_eq!(r.should_commit, None);
+        e.configure(&ime_core::EngineOptions {
+            auto_commit: true,
+            z_wildcard: false,
+            fuzzy: false,
+        });
+        assert_eq!(e.convert("abcd", 9).should_commit, Some("甲".into()));
+        assert!(e.convert("abcz", 9).candidates.is_empty());
     }
 
     #[test]

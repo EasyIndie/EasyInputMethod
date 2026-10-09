@@ -68,10 +68,24 @@ ImeSession*  ime_session_new_with_data(const char* wubi_path,
 void         ime_session_free(ImeSession* session);
 int32_t      ime_session_key(ImeSession* session, uint32_t codepoint); /* IME_KEY_* 或负错误码 */
 const char*  ime_session_buffer(ImeSession* session);   /* 借用组合缓冲区（UTF-8） */
+int32_t      ime_session_toggle_english(ImeSession* session);
+int32_t      ime_session_toggle_width(ImeSession* session);
+int32_t      ime_session_is_english(ImeSession* session);
+int32_t      ime_session_dictionary_error(ImeSession* session);
+int32_t      ime_session_dictionary_add(ImeSession* session, const char* scheme, const char* code, const char* text);
+int32_t      ime_session_dictionary_import(ImeSession* session, const char* path);
+int32_t      ime_session_dictionary_export(ImeSession* session, const char* path);
+int32_t      ime_session_configure(ImeSession* session);
+int32_t      ime_session_mode(ImeSession* session); /* mixed=0 wubi=1 pinyin=2 */
 int32_t      ime_session_set_mode(ImeSession* session, const char* mode);
 ImeCandidates ime_session_candidates(ImeSession* session);
 int32_t      ime_session_select(ImeSession* session, int32_t index);
 int32_t      ime_session_page(ImeSession* session, int32_t delta);
+int32_t      ime_session_set_page_size(ImeSession* session, int32_t size);
+int32_t      ime_session_page_index(ImeSession* session);
+int32_t      ime_session_page_count(ImeSession* session);
+/* 只读反查：有效文本 <=256 UTF-8 字节；未知为空，非法/NULL 返回 NULL；string_free 释放。 */
+ImeString    ime_session_reverse_lookup(const ImeSession* session, const char* text);
 ImeString    ime_session_commit(ImeSession* session);
 void         ime_session_focus_out(ImeSession* session);
 void         ime_session_reset(ImeSession* session);

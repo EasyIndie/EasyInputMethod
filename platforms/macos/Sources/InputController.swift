@@ -20,6 +20,8 @@ final class YinghuoInputController: IMKInputController {
         if session == nil {
             session = makeSession()
         }
+        session?.prepare()
+        if candidateWindow == nil { candidateWindow = CandidateWindow() }
     }
 
     override func deactivateServer(_ sender: Any!) {
@@ -35,7 +37,7 @@ final class YinghuoInputController: IMKInputController {
         if let resources = Bundle.main.resourceURL {
             let wubi = resources.appendingPathComponent("wubi86-core.tsv").path
             let chars = resources.appendingPathComponent("pinyin-chars.tsv").path
-            let words = resources.appendingPathComponent("pinyin-words.tsv").path
+            let words = resources.appendingPathComponent("pinyin-core.tsv").path
             let fm = FileManager.default
             if fm.fileExists(atPath: wubi) {
                 let charsPath = fm.fileExists(atPath: chars) ? chars : nil
@@ -68,17 +70,54 @@ final class YinghuoInputController: IMKInputController {
             keyEquivalent: "")
         item.target = self
         menu.addItem(item)
+        for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
+            ("导出用户词库…", #selector(exportWords)), ("拼音反查…", #selector(lookupPinyin))] {
+            let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
+            entry.target = self; menu.addItem(entry)
+        }
+        if let session, session.dictionaryError != IME_OK {
+            let status = NSMenuItem(title: "用户词库读写失败，请检查权限或文件格式", action: nil, keyEquivalent: "")
+            menu.addItem(status)
+        }
         return menu
+    }
+
+    private func cancelClientComposition() {
+        clearMarked(client() as? IMKTextInput)
+        session?.focusOut()
+        candidateWindow?.hide()
+    }
+
+    @objc private func lookupPinyin() {
+        guard let session else { return }
+        cancelClientComposition(); LookupUI.show(session)
+    }
+    @objc private func addWord() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.add(session)
+    }
+    @objc private func importWords() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.importFile(session)
+    }
+    @objc private func exportWords() {
+        guard let session else { return }
+        cancelClientComposition(); UserDictionaryUI.exportFile(session)
     }
 
     @objc private func cycleMode(_ sender: Any?) {
         let order = ["mixed", "wubi", "pinyin"]
         let current = ImeConfig.string("mode") ?? "mixed"
         let next = order[((order.firstIndex(of: current) ?? -1) + 1) % order.count]
-        // 唯一写入路径：写回 config.toml（失败则仅本次会话内生效）
-        ImeConfig.setString("mode", next)
+        guard ImeConfig.setString("mode", next) else {
+            let alert = NSAlert()
+            alert.messageText = "无法保存输入模式"
+            alert.informativeText = "请检查配置文件权限。当前输入模式保持不变。"
+            alert.runModal()
+            return
+        }
+        cancelClientComposition()
         session?.setMode(next)
-        candidateWindow?.hide()
     }
 
     // MARK: - 按键处理
@@ -86,6 +125,14 @@ final class YinghuoInputController: IMKInputController {
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
+        }
+        if let mode = ImeConfig.string("mode"), session.mode != mode {
+            session.setMode(mode)
+            clearMarked(client)
+            candidateWindow?.hide()
+        }
+        if session.shortcut(event, persistMode: true) {
+            clearMarked(client); candidateWindow?.hide(); return true
         }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
@@ -95,11 +142,20 @@ final class YinghuoInputController: IMKInputController {
         guard let chars = event.charactersIgnoringModifiers, let scalar = chars.unicodeScalars.first
         else { return false }
 
+        if let count = ImeConfig.int("candidate.count") {
+            candidateCount = count
+            session.setPageSize(count)
+        }
+        if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
+            session.page(scalar.value == 0xF72C ? -1 : 1)
+            showCandidates(client, session: session)
+            return true
+        }
         // 回车：组合中则上屏首选候选
         if scalar == "\r" || scalar == "\n" {
             guard session.isComposing else { return false }
-            if session.select(0) != nil {
-                clearMarked(client)
+            if let text = session.select(0) {
+                commit(text, to: client)
                 candidateWindow?.hide()
             }
             return true
@@ -128,6 +184,7 @@ final class YinghuoInputController: IMKInputController {
     private func feedCodepoint(_ scalar: Unicode.Scalar, shift: Bool, session: ImeSession)
         -> UInt32?
     {
+        if session.isEnglish { return scalar.value }
         if scalar.isASCII, scalar.properties.isAlphabetic {
             if shift, !session.isComposing {
                 return nil

@@ -10,6 +10,7 @@ description = "萤火虫输入法窄 C ABI（会话 + 配置），唯一 unsafe 
 crate-type = ["cdylib", "staticlib"]
 
 [dependencies]
+ime-dict.workspace = true
 ime-core.workspace = true
 ime-table.workspace = true
 ime-pinyin.workspace = true

@@ -13,7 +13,7 @@ ime_config_init(ImePaths.configFile())
 // 2) 启动 IMK 服务器；server 需在整个进程生命周期内保持存活。
 let connectionName =
     (Bundle.main.infoDictionary?["InputMethodConnectionName"] as? String)
-    ?? "Yinghuo_InputMethod_Connection"
+    ?? "org.yinghuo.inputmethod.Yinghuo_Connection"
 guard let server = IMKServer(
     name: connectionName, bundleIdentifier: Bundle.main.bundleIdentifier)
 else {

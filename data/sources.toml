@@ -89,3 +89,12 @@ used_for = ["wubi86-wordlist", "wubi86-frequency"]
 fetch_script = "data/sources/fetch-jieba-dict.sh"
 added_at = "2026-10-08"
 notes = "MIT（Copyright (c) 2013 Sun Junyi）；格式 `词 频次 词性`（空格分隔，共 349,046 行）；仅用词表 + 词频，不发布原文件；词频为 jieba 语料统计（provenance 为开放语料，非商业输入法码表）；文件下载获取，不入库"
+
+[[derived]]
+id = "pinyin-core-v1"
+path = "data/generated/pinyin-core.tsv"
+source_ids = ["D4", "D5", "D10"]
+license = "CC-BY-SA-4.0"
+sha256 = "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f"
+generator = "tools/prepare-pinyin-core.py"
+notes = "ADR-031；按词频降序/词及拼音升序裁剪，包含注释不超过 256KiB；输入全量词表来自既有登记来源"

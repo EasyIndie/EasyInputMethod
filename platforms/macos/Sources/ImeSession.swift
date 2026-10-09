@@ -3,7 +3,7 @@
 // 只做「指针 <> Swift 类型」的转换，不承载任何引擎逻辑（业务全在 Rust 侧）。
 // 线程绑定：一个 ImeSession 只在主线程使用（IMK 控制器回调都在主线程）。
 
-import Foundation
+import Cocoa
 import ime
 
 /// 单个候选。
@@ -72,6 +72,7 @@ final class ImeSession {
     /// 喂入一个 Unicode 码点。
     func feed(_ codepoint: UInt32) -> ImeKeyResult {
         guard let handle else { return .failure(IME_ERR_NULL) }
+        _ = ime_session_configure(handle)
         let code = ime_session_key(handle, codepoint)
         switch code {
         case IME_KEY_COMMITTED:
@@ -83,6 +84,66 @@ final class ImeSession {
         default:
             return .failure(code)
         }
+    }
+
+    var dictionaryError: Int32 { ime_session_dictionary_error(handle) }
+    func addWord(scheme: String, code: String, text: String) -> Int32 {
+        scheme.withCString { a in code.withCString { b in text.withCString { c in
+            ime_session_dictionary_add(handle, a, b, c)
+        } } }
+    }
+    func importDictionary(_ path: String) -> Int32 {
+        path.withCString { ime_session_dictionary_import(handle, $0) }
+    }
+    func exportDictionary(_ path: String) -> Int32 {
+        path.withCString { ime_session_dictionary_export(handle, $0) }
+    }
+
+    func prepare() { _ = ime_session_configure(handle) }
+
+    var isEnglish: Bool { ime_session_is_english(handle) == 1 }
+    func toggleEnglish() { _ = ime_session_toggle_english(handle) }
+    func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
+
+    func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
+        let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
+        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
+        if key == " ", flags == [.control, .shift] { toggleEnglish(); return true }
+        if key == " ", flags == [.shift] { toggleWidth(); return true }
+        guard let configured = ImeConfig.string("hotkey.toggle_mode") else { return false }
+        let parts = configured.lowercased().split(separator: "+").map(String.init)
+        guard let last = parts.last, last == key else { return false }
+        var expected: NSEvent.ModifierFlags = []
+        for modifier in parts.dropLast() {
+            switch modifier {
+            case "ctrl": expected.insert(.control)
+            case "shift": expected.insert(.shift)
+            case "alt": expected.insert(.option)
+            case "cmd": expected.insert(.command)
+            default: return false
+            }
+        }
+        guard flags == expected else { return false }
+        let order = ["mixed", "wubi", "pinyin"]
+        let next = order[((order.firstIndex(of: mode) ?? 0) + 1) % 3]
+        if persistMode, !ImeConfig.setString("mode", next) { return false }
+        setMode(next)
+        return true
+    }
+
+    var mode: String { ["mixed", "wubi", "pinyin"][max(0, min(2, Int(ime_session_mode(handle))))] }
+    var pageIndex: Int { Int(ime_session_page_index(handle)) }
+    var pageCount: Int { Int(ime_session_page_count(handle)) }
+    func setPageSize(_ size: Int) { _ = ime_session_set_page_size(handle, Int32(size)) }
+    func page(_ delta: Int) { _ = ime_session_page(handle, Int32(delta)) }
+
+    /// Query the installed pinyin data without changing the session.
+    func reverseLookup(_ text: String) -> String? {
+        guard let handle else { return nil }
+        let result = text.withCString { ime_session_reverse_lookup(handle, $0) }
+        defer { ime_string_free(result) }
+        guard let data = result.data, result.len > 0 else { return nil }
+        return String(cString: data)
     }
 
     /// 取已上屏文本（无内容返回空串）。

@@ -3,7 +3,10 @@
 SHELL := /bin/bash
 CARGO ?= cargo
 
-.PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report
+.PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview
+
+macos-preview: ## 构建并启动 macOS 独立调试窗口
+	./platforms/macos/dev-preview.sh
 
 help: ## 列出所有命令
 	@grep -hE '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) \

@@ -35,9 +35,16 @@ jobs:
           echo "结构校验通过"
 
       # 工具链由 rust-toolchain.toml 决定（单一真值，避免漂移），此处不硬编码
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@master
         if: steps.ws.outputs.exists == 'true'
         with:
+          toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
 
       - uses: Swatinem/rust-cache@v2
@@ -65,5 +72,57 @@ jobs:
       - name: verify no network (privacy assertion)
         run: ./scripts/verify-no-network.sh
 
-  # 备注：P1-M3 起需加 macOS runner 构建 Swift/IMK 宿主（docs/reviews/001.md P2-5）；
-  # P3 起需加 Windows runner 构建 TSF 前端。
+  macos:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+          components: rustfmt, clippy
+      - uses: Swatinem/rust-cache@v2
+      - uses: taiki-e/install-action@cargo-deny
+      - name: Verify Rust and privacy
+        run: make verify
+      - name: Build IMK application
+        run: ./platforms/macos/build.sh --strict
+      - name: Reproduce licensed pinyin data
+        run: |
+          ./data/sources/fetch-pinyin-data.sh
+          ./data/sources/fetch-phrase-pinyin.sh
+          ./data/sources/fetch-jieba-dict.sh
+          cargo run -p ime-pinyin --example generate
+          python3 tools/prepare-pinyin-core.py
+          git diff --exit-code -- data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
+      - name: Build and smoke-test independent preview
+        run: ./platforms/macos/dev-preview.sh --smoke-test
+      - name: Validate app metadata and icons
+        run: |
+          plutil -lint platforms/macos/build/Yinghuo.app/Contents/Info.plist
+          plutil -lint platforms/macos/build/preview/YinghuoPreview.app/Contents/Info.plist
+          cmp assets/icons/yinghuo-icon-v4-app.icns platforms/macos/build/Yinghuo.app/Contents/Resources/Yinghuo.icns
+      - name: Verify signing cleanup without credentials
+        run: python3 packaging/macos/tests/test-ci-sign.py
+      - name: Prepare and reproduce local release candidate
+        run: |
+          ./packaging/macos/prepare.sh
+          for archive in packaging/out/candidate-*/*.zip; do
+            (cd "$(dirname "$archive")" && shasum -a 256 -c "$(basename "$archive").sha256")
+            ./platforms/macos/tests/run-repro.sh "$archive"
+          done
+      - name: Upload unsigned review archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: Yinghuo-macos-review-${{ github.sha }}
+          path: |
+            packaging/out/candidate-*/*.zip
+            packaging/out/candidate-*/*.zip.sha256
+          if-no-files-found: error
+          retention-days: 14
