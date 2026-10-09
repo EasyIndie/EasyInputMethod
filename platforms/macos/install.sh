@@ -16,6 +16,10 @@ done
 APP="$(cd "$(dirname "${APP}")" && pwd)/$(basename "${APP}")"
 IDENTIFIER="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "${APP}/Contents/Info.plist")"
 [ "${IDENTIFIER}" = org.yinghuo.inputmethod.Yinghuo ] || { echo "输入法标识不符" >&2; exit 1; }
+EXECUTABLE="${APP}/Contents/MacOS/Yinghuo"
+[ -f "${EXECUTABLE}" ] && [ ! -L "${EXECUTABLE}" ] && [ -x "${EXECUTABLE}" ] || {
+  echo "输入法程序缺少执行权限或不是普通文件；请用 Finder 或 ditto 重新解压原始发行 ZIP" >&2; exit 1
+}
 codesign --verify --strict "${APP}"
 DETAILS="$(codesign -dv --verbose=4 "${APP}" 2>&1)"
 [[ "${DETAILS}" == *"Authority=Developer ID Application:"* ]] || { echo "需要 Developer ID 签名的正式候选；ad-hoc 构建不可安装" >&2; exit 1; }
@@ -25,7 +29,7 @@ spctl --assess --type execute --verbose=2 "${APP}"
 DEST="${DOMAIN}/Yinghuo.app"
 [ ! -L "${DOMAIN}" ] && [ ! -L "${DEST}" ] || { echo "拒绝通过符号链接安装" >&2; exit 1; }
 if [ -e "${DEST}" ]; then
-  if diff -qr "${APP}" "${DEST}" >/dev/null; then echo "已安装相同版本"; exit 0; fi
+  if [ -x "${DEST}/Contents/MacOS/Yinghuo" ] && [ ! -L "${DEST}/Contents/MacOS/Yinghuo" ] && diff -qr "${APP}" "${DEST}" >/dev/null; then echo "已安装相同版本"; exit 0; fi
   echo "已有不同版本，请先切换输入源并卸载备份" >&2; exit 1
 fi
 if ${DRY}; then echo "预检通过；将安装到 ${DEST}"; exit 0; fi
@@ -37,6 +41,7 @@ mkdir -p "${DOMAIN}"
 STAGE="$(mktemp -d "${DOMAIN}/.yinghuo-install.XXXXXX")"
 trap 'rm -rf "${STAGE}"' EXIT
 ditto "${APP}" "${STAGE}/Yinghuo.app"
+[ -x "${STAGE}/Yinghuo.app/Contents/MacOS/Yinghuo" ] || { echo "安装副本缺少执行权限，未安装" >&2; exit 1; }
 codesign --verify --strict "${STAGE}/Yinghuo.app"
 mv -n "${STAGE}/Yinghuo.app" "${DEST}"
 [ ! -e "${STAGE}/Yinghuo.app" ] || { echo "目标安装路径已被占用，未覆盖" >&2; exit 1; }

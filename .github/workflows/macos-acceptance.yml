@@ -33,7 +33,9 @@ jobs:
           ./platforms/macos/dev-preview.sh --smoke-test
           ./platforms/macos/build.sh --strict
       - name: Verify signing cleanup without credentials
-        run: python3 packaging/macos/tests/test-ci-sign.py
+        run: |
+          python3 packaging/macos/tests/test-ci-sign.py
+          python3 platforms/macos/tests/test-install.py
       - name: Sign and notarize with team API key
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
