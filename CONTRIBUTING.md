@@ -74,4 +74,24 @@ Signed-off-by: Your Name <you@example.com>
 
 - **小 PR 优于大 PR**；能拆就拆。
 - **删代码优于加代码**（见 `AGENTS.md` §11）。
-- 拒绝"顺手重构"与范围外改动。
+- 拒绝“顺手重构”与范围外改动。
+
+## 9. CI Actions 与依赖升级
+
+**第三方 Actions 必须固定到审定过的 commit SHA**（附可读版本注释），禁止 `@vN` / `@master` 等浮动引用——否则上游被篡改会影响我们的构建链：
+
+```yaml
+- uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+```
+
+**升级步骤**（单独一个 `ci: bump ...` 提交，说明里附来源）：
+
+1. 在**官方仓库**查该 tag/branch 当前指向的 commit：
+   ```sh
+   gh api repos/<owner>/<repo>/commits/<tag-or-branch> --jq .sha
+   ```
+2. 核验来源（官方 org / release notes），替换 SHA，更新 `# 版本注释`；
+3. 每个 workflow 顶层声明**最小权限**（默认 `contents: read`）；
+4. 升级后至少等一次 CI 全绿再合并。
+
+**依赖审计是提交门槛**：`make verify` 在缺少 `cargo-deny` 时会**直接失败**（用 `make bootstrap` 安装）；仅 `ALLOW_MISSING_DENY=1 make verify` 可作本地探查，且该结果**不可提交**。新增依赖须过 `cargo deny check` 并在 PR 说明理由（见 §5）。

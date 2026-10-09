@@ -5,6 +5,10 @@ on:
     branches: [main]
   pull_request:
 
+# 第三方 Actions 固定到审定 commit（见 CONTRIBUTING.md「CI Actions 升级」）；本工作流只读。
+permissions:
+  contents: read
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -16,7 +20,7 @@ jobs:
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       # 文档阶段尚无 Cargo workspace：跳过编译类检查，仅做结构校验。
       - name: Detect workspace
@@ -41,13 +45,13 @@ jobs:
           channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
           test -n "$channel"
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
         if: steps.ws.outputs.exists == 'true'
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
 
-      - uses: Swatinem/rust-cache@v2
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         if: steps.ws.outputs.exists == 'true'
 
       - name: cargo fmt
@@ -62,7 +66,7 @@ jobs:
         if: steps.ws.outputs.exists == 'true'
         run: cargo test --workspace
 
-      - uses: taiki-e/install-action@cargo-deny
+      - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
         if: steps.ws.outputs.exists == 'true'
 
       - name: cargo deny
@@ -76,20 +80,20 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - name: Read pinned Rust toolchain
         id: rust
         run: |
           channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
           test -n "$channel"
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
-      - uses: dtolnay/rust-toolchain@master
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
           targets: aarch64-apple-darwin, x86_64-apple-darwin
-      - uses: Swatinem/rust-cache@v2
-      - uses: taiki-e/install-action@cargo-deny
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+      - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
       - name: Verify Rust and privacy
         run: make verify
       - name: Build universal IMK application (arm64 + x86_64)
@@ -122,7 +126,7 @@ jobs:
             ./platforms/macos/tests/run-repro.sh "$archive"
           done
       - name: Upload unsigned review archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Lampyris-macos-review-${{ github.sha }}
           path: |
