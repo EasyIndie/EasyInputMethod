@@ -16,7 +16,7 @@
 | `APPLE_ASC_API_KEY_ID` | API Key ID |
 | `APPLE_ASC_ISSUER_ID` | 团队 Issuer ID |
 
-同页 Variables 创建 `MACOS_SIGNING_IDENTITY`，本项目当前值为 `Developer ID Application: Zhizhou Wang (2N62934Y28)`。
+同页 Variables 创建 `MACOS_SIGNING_IDENTITY`，填入实际证书完整名称，格式为 `Developer ID Application: <证书名称> (<Team ID>)`。
 
 证书从本机“钥匙串访问 → 我的证书”导出：选择 Developer ID Application 及其私钥，导出为 p12 并设置密码。仅有 `.cer` 不足以签名；API 密钥也不能代替签名私钥。
 
@@ -28,7 +28,7 @@
 
 工作流合入 main 后，每次 main 更新会自动出包；也可在 Actions → macOS Acceptance Package → Run workflow 选择 main。无需维护本机 notarytool profile。runner 创建临时钥匙串并导入 p12，API 私钥仅存在 runner 临时目录，退出/失败 always 清理；仅上传候选 ZIP/SHA，不上传临时目录或整个工作空间。
 
-Secrets 未配置时会明确报告缺失项；签名、公证或离线重建失败时不上传验收包。组织凭据名称已确认对仓库开放；实际内容不可通过 API 读取，真实签名/公证链路仍待首次 CI 验证。证书过期、API 密钥撤销、Apple 协议更新仍可能要求维护；正常迭代无需反复输入凭据。
+Secrets 未配置时会明确报告缺失项；签名、公证或离线重建失败时不上传验收包。仓库凭据已完成实际签名、公证和离线复现验证；最近定稿候选为 main `6d7e8435`，运行 [37918189811](https://github.com/EasyIndie/EasyInputMethod/actions/runs/37918189811)。证书过期、API 密钥撤销、Apple 协议更新仍可能要求维护；正常迭代无需反复输入凭据。
 
 此包提供真机验收材料，不代表正式 IMK 多应用、长时间稳定或动态零外联已通过。普通PR产物仍不可信安装。Intel/通用包不在当前 arm64 候选验收范围内。
 
