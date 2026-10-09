@@ -1,6 +1,6 @@
 # 萤火虫项目图标资产
 
-保留 V1–V5 原始图像及无白边修订，供项目文档、应用图标及宣传页面等场景选择。**当前首选 V4 无白边修订（单线标志）**：用户倾向以线条表达简洁。此偏好不删除其他版本；已暂时用于项目 README、macOS 正式应用及独立调试应用的图标。
+保留 V1–V5 原始图像及无白边修订，供项目文档、应用图标及宣传页面等场景选择。**当前官方标识为菜单V5飞行萤火虫轮廓**，应用/项目采用官方配色衍生，见本文末。历史V4及其他版本全部保留。
 
 | 版本 | 原始资产 | 风格 | 建议场景 |
 |---|---|---|---|
@@ -25,18 +25,18 @@
 | V1 | [无白边](yinghuo-icon-v1-fullbleed.png) |
 | V2 | [无白边](yinghuo-icon-v2-fullbleed.png) |
 | V3 | [无白边](yinghuo-icon-v3-fullbleed.png) |
-| **V4** | [无白边，当前应用/项目标识](yinghuo-icon-v4-fullbleed.png) |
+| **V4** | [无白边，历史应用标识](yinghuo-icon-v4-fullbleed.png) |
 | V5 | [无白边](yinghuo-icon-v5-fullbleed.png) |
 
 修订保留萤火虫主体、姿态、配色和材质，移除外部白框及预制圆角边界，背景延展至方形画布四边。上述原稿为历史参考；新增使用优先选 fullbleed。
 
 ## 当前应用资源
 
-`yinghuo-icon-v4-app.icns` 由 V4 fullbleed 生成；正式与独立调试窗口共用。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/YinghuoTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
+`yinghuo-official-app.icns` 由官方飞行萤火虫母版生成；正式与独立调试窗口共用，原V4 ICNS保留为历史资产。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/YinghuoTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
 
 运行 `./tools/build-macos-icons.sh` 用系统 sips/iconutil 重建 ICNS 与菜单栏资源。原图及修订提示词：保留既有主体和内部背景，去掉外部白框，内部背景延展到四边；菜单版保留V4轮廓，简化为透明底黑色线条，不含发光和底色。
 
-完整历史与备选资产保留于Git仓库。发布源码归档通过 export-ignore 排除非构建所需的历史/备选PNG；保留当前应用V4 fullbleed、菜单V5母版、ICNS及生成脚本，第三方仍可离线重建当前应用及图标。归档内指向备选图稿的链接可能不含对应文件。
+完整历史与备选资产保留于Git仓库。发布源码归档通过 export-ignore 排除非构建所需的历史/备选PNG；保留官方应用母版、菜单V5母版、官方ICNS及生成脚本，第三方仍可离线重建当前应用及图标。归档内指向备选图稿的链接可能不含对应文件。
 
 ## 菜单栏精修 V2（设计候选）
 
@@ -51,3 +51,9 @@
 ## 菜单图标比选 V2–V5
 
 [统一亮暗对比](menu-comparison-v2-v5.png)：上排浅色、下排深色；每格含放大轮廓及18pt实际尺寸。V2为既有精修，V3舒展叶形双翼与独立光点、V4收翼实心轮廓、V5斜向飞行与尾端星光。每版母版与18/36px资源单独保存到 `menu-v3/`、`menu-v4/`、`menu-v5/`；由imagegen分别生成。菜单编号独立于应用图标V1–V5。用户已选择菜单V5并接入构建资源，其他版本为备选；已安装公证包尚未更新。亮暗图是同一alpha轮廓黑白着色的AppKit预览，不代表系统实际显示验收。
+
+## 官方统一标识（2026-10-09）
+
+用户指定当前菜单V5飞行轮廓为官方标识。[官方应用母版](yinghuo-official-icon.png)采用相同姿态的深蓝底、米白主体、暖金尾部；[官方ICNS](yinghuo-official-app.icns)由生成脚本衍生，项目README/正式应用/独立预览均已接入。菜单使用menu-v5单色透明母版与系统模板着色，保持同一品牌轮廓。此前应用V4与所有备选均保留为历史资产。
+
+应用母版由imagegen以菜单V5为唯一几何参考生成；菜单亮暗模式不改变姿态，仅由系统适配前景着色。已安装包的菜单资源与仓库一致、TISIconIsTemplate=true；用户反馈暗黑模式样式不变，颜色对比是否异常尚待明确，不判定着色验收通过。

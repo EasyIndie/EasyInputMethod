@@ -56,7 +56,7 @@ fi
 # PkgInfo：IMK/LaunchServices 期望的 8 字节类型/签名
 printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
-cp "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns" "${APP_DIR}/Contents/Resources/Yinghuo.icns"
+cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP_DIR}/Contents/Resources/Yinghuo.icns"
 cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
 for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
   [ -d "${lproj}" ] || continue
