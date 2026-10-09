@@ -19,7 +19,7 @@
 
 **萤火虫** —— 小、自带微光（不依赖云端）、安静不打扰。
 
-英文/包名不使用 `Firefly`（与 Adobe Firefly 等冲突），使用 `yinghuo` / `lampyris`。
+英文/包名 **`Lampyris`**（读 /læmˈpɪərɪs/，希腊语“发光的虫”，萤科一属；寓意“自带微光”）。不使用 `Firefly`（与 Adobe Firefly 等冲突）。bundle 标识 `cn.jokerhub.inputmethod.Lampyris`，见 ADR-056。
 
 ## 目录
 

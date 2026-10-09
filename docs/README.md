@@ -44,4 +44,4 @@
 - TBD-1 词频数据源
 - TBD-2 五笔98/新世纪/郑码数据源
 - TBD-3 用户词库存储格式
-- TBD-4 英文/包名最终形（`yinghuo` vs `lampyris`）
+- TBD-4 ✅ 英文/包名定为 `Lampyris`（ADR-056）

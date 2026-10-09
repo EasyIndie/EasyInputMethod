@@ -32,7 +32,7 @@
 
 ## 当前应用资源
 
-`yinghuo-official-app.icns` 由官方飞行萤火虫母版生成；正式与独立调试窗口共用，原V4 ICNS保留为历史资产。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/YinghuoTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
+`yinghuo-official-app.icns` 由官方飞行萤火虫母版生成；正式与独立调试窗口共用，原V4 ICNS保留为历史资产。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/LampyrisTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
 
 运行 `./tools/build-macos-icons.sh` 用系统 sips/iconutil 重建 ICNS 与菜单栏资源。原图及修订提示词：保留既有主体和内部背景，去掉外部白框，内部背景延展到四边；菜单版保留V4轮廓，简化为透明底黑色线条，不含发光和底色。
 

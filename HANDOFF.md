@@ -35,7 +35,7 @@
 | **P1-M0** | workspace + `ime-core`（Engine/InputMode/会话状态机）+ `ime-table` + `ime-cli` | — |
 | **P1-M1** 自建码表 | `crates/wubi-encoder`（五笔86 全规则）+ `data/` 流水线；单字表 **27,823 字**（vs D3 99.98% / vs rime 98.77%，**GB2312 一级均 100%**）；词组多候选表；内置核心 `wubi86-core.tsv` **491,854 B ≤ 0.6MB** | ADR-016…021 |
 | **P1-M2** 配置+拼音+混输 | `crates/ime-config`（Schema/`ArcSwap` 快照/原子写/广播）+ `crates/ime-pinyin`（`PinyinBackend` + 内置兜底）；混输（`ime-core` 已实现合并）。实测 `nihao→你好`、`wq→你` | `docs/配置架构.md`、ADR-008/009 |
-| **P1-M3**（进行中） | `crates/ime-ffi`（会话 + 配置 C ABI）+ **`platforms/macos/` Swift 宿主**（纯代码 AppKit，可编译/打包，`build.sh` 产 `Yinghuo.app`） | `platforms/macos/README.md`、ADR-022、`docs/技术方案.md` §5.3、`docs/配置架构.md` §9 |
+| **P1-M3**（进行中） | `crates/ime-ffi`（会话 + 配置 C ABI）+ **`platforms/macos/` Swift 宿主**（纯代码 AppKit，可编译/打包，`build.sh` 产 `Lampyris.app`） | `platforms/macos/README.md`、ADR-022、`docs/技术方案.md` §5.3、`docs/配置架构.md` §9 |
 
 > 实验数据：`docs/experiments/`（派发策略：独立任务用「每卡新 worker」，整批实测省 token）。
 
@@ -65,7 +65,7 @@
 | TBD-1 | 词频数据源 — ✅ 已定 `fxsjy/jieba`（D10，MIT），ADR-021 | 否 |
 | TBD-2 | 五笔98 / 新世纪 / 郑码数据源 | 否 |
 | TBD-3 | ✅ ADR-029：有界 TSV v1，用户词库与学习已实现 | 否 |
-| TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
+| TBD-4 | ✅ ADR-056：英文/包名定为 `Lampyris`，bundle `cn.jokerhub.inputmethod.Lampyris` | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已澄清（ADR-055）—— macOS 13 本地 ad-hoc 即可（用户已验收）；分发与 macOS 26/27 仍强制 Developer ID + hardened runtime + 公证 | 不再阻塞；本地迭代无需签名机 |
 | **SIG-2** | ✅ 已关闭：ADR-023 新包重启后枚举/选择正常，TextEdit/Safari 用户实测通过；经典 IMK `.app` 可用 | 否 |
@@ -88,7 +88,7 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024），无需该流程。诊断：`platforms/macos/tools/`。
-- ✅ **注册标识**：bundle ID 必须采用带 `.inputmethod.` 的形式；当前为 `org.yinghuo.inputmethod.Yinghuo`，连接名为 `${bundleID}_Connection`（ADR-023）。组合修正及重启后实机通过；不要再据早期失败推断必须 appex。
+- ✅ **注册标识**：bundle ID 必须采用带 `.inputmethod.` 的形式；当前为 `cn.jokerhub.inputmethod.Lampyris`，连接名为 `${bundleID}_Connection`（ADR-023/056）。组合修正及重启后实机通过；不要再据早期失败推断必须 appex。
 - ⚙️ **Swift/Swift 链接坑**：`-whole-module-optimization` 下不能把 `.a` 作位置参数（Swift 5.8 当源码）也不能用 `-L … -lime_ffi`（会链到 cdylib 并把绝对构建路径写进 `LC_LOAD_DYLIB`）；必须 `-Xlinker <lib.a>`。见 ADR-055。
 - ⚙️ **universal 构建**：需 `rustup target add aarch64-apple-darwin x86_64-apple-darwin`，再 `./platforms/macos/build.sh --strict --universal`（注意 Rust 用 `aarch64`、Apple 用 `arm64`）。
 - ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定用 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403 A required agreement is missing` → 需 Account Holder 在 App Store Connect 接受协议。
@@ -110,7 +110,7 @@
 | 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据 |
 | Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
 | 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
-| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`org.yinghuo.inputmethod.Yinghuo`），用户已实体输入验收；分发/公证候选由 CI 出 universal |
+| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），用户已实体输入验收；分发/公证候选由 CI 出 universal |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-core.tsv`（词表 8.4MB 不入库，可由 fetch 脚本复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**100 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
@@ -124,6 +124,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：英文/包名定为 Lampyris（关闭 TBD-4）
+- ADR-056：英文/包名 `Lampyris`（读 /læmˈpɪərɪs/，希腊语“发光的虫”，萤科一属），bundle `cn.jokerhub.inputmethod.Lampyris`（自有域名 jokerhub.cn 反向 DNS）。
+- 全量改名：可执行/App、控制器类、连接/模式 ID、bundle 资源、安装/卸载校验、发布物/CI/SBOM 名、应用支持目录 `…/Lampyris/`；历史记录（experiments/archive/reviews）与 `assets/icons/yinghuo-*` 设计稿名保留。
+- 本机已换装并重新枚举通过（`cn.jokerhub.inputmethod.Lampyris.default`）；旧配置目录已迁移至 `…/Lampyris/`。
 
 ### 2026-10-09 / pi：macOS 13 本机 ad-hoc 验收通过 + universal 候选
 - 关键发现：之前“非 Apple 签名不被枚举”的结论混入了 ADR-023 的 bundle ID bug；修正后 macOS 13（Intel、无签名身份）上 ad-hoc 构建被系统枚举且用户实体输入通过（ADR-055）。

@@ -46,4 +46,4 @@
 
 - TBD-2 五笔98/新世纪/郑码数据源
 - TBD-3 已由ADR-029关闭：有界TSV v1
-- TBD-4 英文/包名（yinghuo / lampyris）
+- TBD-4 ✅ ADR-056：英文/包名定为 Lampyris
