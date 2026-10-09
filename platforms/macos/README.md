@@ -3,8 +3,7 @@
 平台薄壳：捕获按键 → 调用 `ime-ffi` C ABI → 渲染候选窗并上屏。
 **引擎与业务逻辑 100% 在 Rust（`crates/`）**，本目录不含输入逻辑。
 
-> ⚠️ 本机**仅装 Command Line Tools、无 Xcode**，因此**不使用 Interface Builder /
-> Asset Catalog**（`actool`/`ibtool` 是 stub）；所有 UI 为纯代码 AppKit。
+所有 UI 使用纯代码 AppKit；构建无需 Interface Builder。正式候选使用 Developer ID 签名与 Apple 公证，日常开发使用独立调试窗口。
 
 ## 目录
 
@@ -13,7 +12,7 @@ platforms/macos/
 ├── build.sh                       # cargo staticlib + swiftc → .app bundle
 ├── Info.plist                     # IMK 键名（参照系统/第三方输入法实测）
 ├── Resources/
-│   ├── yinghuo.png / @2x.png      # 菜单图标
+│   ├── YinghuoTemplate.png / @2x.png # 菜单模板图标
 │   └── zh-Hans.lproj/·en.lproj/InfoPlist.strings  # 本地化显示名
 ├── Sources/
 │   ├── main.swift                 # NSApplication + IMKServer 入口
@@ -52,6 +51,8 @@ platforms/macos/
 ```
 
 ### 数据文件
+
+下表是普通开发构建的降级行为；发布与 CI 使用 `--strict`，缺失任一默认数据立即失败。
 
 `build.sh` 会把这些文件打进 bundle 的 `Contents/Resources/`：
 
@@ -131,11 +132,10 @@ make macos-preview
 
 ## 已知限制 / 待人工验证
 
-- **装载与打字必须由人在真实桌面验证**：无头环境只能保证「编译通过 + 包结构正确 +
-  可执行不崩溃」（本仓库已实测到这一步）。
-- 候选窗为 P1-M3 最小实现：无翻页、无亮/暗主题自适应、不跟随光标滚动（属 P1-M4）。
-- 未做通用二进制（仅当前架构 x86_64）。
-- `CFBundleIdentifier` 暂用 `org.yinghuo.inputmethod.Yinghuo`，最终包名取决于 **TBD-4**。
+- 正式候选已在 macOS 27 / Apple Silicon 通过实体输入、分页、退格/Esc、失焦清理、回车原码、模式切换、拼音反查及图标显示复核，详见 `docs/reviews/005-macos-formal-acceptance.md`。
+- 候选窗支持分页、亮暗主题和屏幕边界限制；真实客户端长时间使用、光标定位与撤销行为仍需按发布清单逐项验收。
+- 当前公证候选为 arm64；尚未提供 Intel 或通用发行包。目标 macOS 13+ 不代表所有版本均经实机验收。
+- 用户词库菜单和重启保留、完整 IMK 端到端性能及长时间多应用验收仍待完成，见 `docs/macos-release-checklist.md`。
 
 ## 为宿主扩展的 `ime-ffi` 入口（T-M3-02）
 

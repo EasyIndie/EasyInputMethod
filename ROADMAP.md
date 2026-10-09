@@ -3,6 +3,7 @@
 > 任务清单。**AI 代理从这里取任务**（见 `AGENTS.md` §6）。
 > 完成一项就勾选 `[x]`，并在 PR 中引用对应编号。
 > 详细说明见 `docs/技术方案.md` §12。
+> macOS首版差距与执行队列见 [报告006](docs/reviews/006-macos-mvp-gap-review.md)，MVP-01…14未完成；实现复选框不代表完整DoD通过。
 
 图例：`[ ]` 未开始 · `[~]` 进行中 · `[x]` 完成
 
@@ -57,7 +58,7 @@
 - [x] 独立 AppKit 调试窗口（T-M3-05，ADR-024）：复用真实引擎、FFI 与候选窗，脱离系统装载流程
 - [x] Swift + InputMethodKit 宿主（`IMKInputController`）—— T-M3-02 完成；ADR-023 注册修正 + Developer ID/公证/重启后，TextEdit/Safari 实体键盘验收通过
 - [x] 安装/卸载与签名公证脚本 + 可信安装文档（ADR-032；新候选实机流程待完整 DoD）
-- [x] CI 加 macOS runner（T-M3-04：Rust 验证、宿主构建、独立预览冒烟；远端待 PR 运行）
+- [x] CI 加 macOS runner（T-M3-04：Rust 验证、宿主构建、独立预览冒烟；本地及远端检查已通过）
 - [x] **验收**：TextEdit/Safari 里能五笔打字（2026-10-08，用户实体键盘确认；混输拼音兜底也通过）
 
 ### P1-M4 交互完善
@@ -115,5 +116,5 @@
 
 - [x] `TBD-1` 已定 jieba MIT（ADR-021）
 - [ ] `TBD-2` 五笔98 / 新世纪 / 郑码数据源
-- [ ] `TBD-3` 用户词库存储格式
+- [x] `TBD-3` ADR-029：用户词库TSV v1
 - [ ] `TBD-4` 英文/包名最终形
