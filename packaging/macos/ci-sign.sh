@@ -36,6 +36,8 @@ security set-keychain-settings -lut 21600 "${KEYCHAIN}"
 security unlock-keychain -p "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}"
 security import "${WORK}/certificate.p12" -P "${MACOS_CERTIFICATE_PASSWORD}" -k "${KEYCHAIN}" -T /usr/bin/codesign
 security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "${KEYCHAIN_PASSWORD}" "${KEYCHAIN}" >/dev/null
+# Public certificate names, fingerprints and validation errors only; no key export.
+security find-identity -p codesigning "${KEYCHAIN}"
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 APP="${ROOT}/platforms/macos/build/Yinghuo.app"
 codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${MACOS_SIGNING_IDENTITY}" "${APP}"
