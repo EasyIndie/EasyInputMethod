@@ -140,6 +140,12 @@ pub enum KeyOutcome {
     PassThrough,
 }
 
+/// 组合缓冲区字符数硬上限（ADR-062）。
+///
+/// 覆盖所有引擎的合法码长：五笔 4、拼音 32、用户词库编码 64（ADR-029）。
+/// 达到上限后忽略后续字母键，避免长串触发超线性代价。
+pub const MAX_COMPOSE_LEN: usize = 64;
+
 /// 会话状态机。
 ///
 /// 持有注册的引擎，按 [`InputMode`] 分派，维护组合缓冲与候选。
@@ -383,6 +389,10 @@ impl Session {
 
         match key {
             'a'..='z' => {
+                // 达上限后忽略字母（ADR-062）：不改缓冲、不误上屏。
+                if self.buffer.len() >= MAX_COMPOSE_LEN {
+                    return KeyOutcome::Consumed;
+                }
                 self.buffer.push(key);
                 self.recompute()
             }
@@ -483,6 +493,10 @@ impl Session {
         let mut auto: Option<String> = None;
 
         for engine in self.active_engines() {
+            // 引擎只处理不超过其声明码长的输入（五笔 4 / 拼音 32），避免长码无用功（ADR-062）。
+            if self.buffer.len() > engine.max_code_length() {
+                continue;
+            }
             let result = engine.convert(&self.buffer, 256);
             if result.should_commit.is_some() && auto.is_none() {
                 auto = result.should_commit;
@@ -673,6 +687,60 @@ mod tests {
         });
         assert_eq!(calls.get(), original + 1);
         assert_eq!(s.candidates[0].text, "新增");
+    }
+
+    #[test]
+    fn compose_buffer_is_bounded_and_backspace_recovers() {
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        for _ in 0..MAX_COMPOSE_LEN {
+            assert_eq!(s.handle_key('a'), KeyOutcome::Consumed);
+        }
+        assert_eq!(s.buffer().len(), MAX_COMPOSE_LEN);
+        // 超限字母被忽略：不改变组合、不误上屏。
+        assert_eq!(s.handle_key('b'), KeyOutcome::Consumed);
+        assert_eq!(s.buffer().len(), MAX_COMPOSE_LEN);
+        assert_eq!(s.committed(), "");
+        // 退格后恢复可输入。
+        assert_eq!(s.handle_key('\u{7f}'), KeyOutcome::Consumed);
+        assert_eq!(s.buffer().len(), MAX_COMPOSE_LEN - 1);
+        s.handle_key('b');
+        assert_eq!(s.buffer().len(), MAX_COMPOSE_LEN);
+    }
+
+    #[test]
+    fn engines_are_skipped_beyond_declared_code_length() {
+        use std::sync::atomic::{AtomicUsize, Ordering};
+        use std::sync::Arc;
+
+        struct CountingEngine(Arc<AtomicUsize>);
+        impl Engine for CountingEngine {
+            fn convert(&self, input: &str, _max: usize) -> ConvertResult {
+                self.0.fetch_add(1, Ordering::SeqCst);
+                ConvertResult {
+                    candidates: vec![Candidate::new("甲", input, 1, CandidateSource::CodeTable)],
+                    should_commit: None,
+                }
+            }
+            fn engine_type(&self) -> EngineType {
+                EngineType::CodeTable
+            }
+            fn max_code_length(&self) -> usize {
+                2
+            }
+        }
+
+        let calls = Arc::new(AtomicUsize::new(0));
+        let mut s = Session::new(InputMode::WubiOnly);
+        s.set_wubi_engine(Box::new(CountingEngine(Arc::clone(&calls))));
+        s.handle_key('a');
+        s.handle_key('b');
+        assert_eq!(calls.load(Ordering::SeqCst), 2);
+        // 超出引擎声明码长后不再调用引擎（ADR-062）。
+        s.handle_key('c');
+        s.handle_key('d');
+        assert_eq!(calls.load(Ordering::SeqCst), 2);
+        assert_eq!(s.buffer(), "abcd");
+        assert!(s.candidates().is_empty());
     }
 
     #[test]
