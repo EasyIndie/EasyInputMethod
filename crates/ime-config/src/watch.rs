@@ -79,7 +79,7 @@ fn watch_loop(
         if let Some(deadline) = pending {
             if Instant::now() >= deadline {
                 pending = None;
-                // 解析失败时 reload 内部保留上一份快照，这里忽略错误即可。
+                // 解析失败时 reload 内部保留上一份快照，并通过 CONFIG_ERROR_KEY 通知宿主。
                 let _ = store.reload();
             }
         }

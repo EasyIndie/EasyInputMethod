@@ -49,6 +49,13 @@ enum ImeConfig {
             }
         }
     }
+
+    /// 最近一次配置加载/重载失败原因（含行号）；无错误返回 nil（ADR-059）。
+    static func errorMessage() -> String? {
+        guard let ptr = ime_config_last_error() else { return nil }
+        let message = String(cString: ptr)
+        return message.isEmpty ? nil : message
+    }
 }
 
 /// `ime_config_subscribe` 的 C 回调：不在回调线程触碰 AppKit，一律转交主线程。

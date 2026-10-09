@@ -294,6 +294,18 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard pump(until: { session.mode == "wubi" }) else {
         fputs("模式未即时刷新。\n", stderr); exit(1)
     }
+    // 配置错误：保留上一份有效设置、暴露可读错误；修好后清除（ADR-059 / MVP-04）。
+    try "mode = [oops\n".write(to: external, atomically: true, encoding: .utf8)
+    guard pump(until: { ImeConfig.errorMessage() != nil }) else {
+        fputs("坏配置未产生可见错误。\n", stderr); exit(1)
+    }
+    guard ImeConfig.string("mode") == "wubi" else {
+        fputs("坏配置应保留上一份有效设置。\n", stderr); exit(1)
+    }
+    try "mode = \"mixed\"\n[candidate]\ncount = 3\n".write(to: external, atomically: true, encoding: .utf8)
+    guard pump(until: { ImeConfig.errorMessage() == nil }) else {
+        fputs("修复后配置错误未清除。\n", stderr); exit(1)
+    }
     session.setMode("mixed"); view.clear(); keys("wq")
     guard session.candidates(limit: 9).count == 3 else { exit(1) }
     guard session.reverseLookup("你好") == "ni hao", session.reverseLookup("🙂") == nil else { exit(1) }

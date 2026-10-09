@@ -14,6 +14,7 @@ final class LampyrisInputController: IMKInputController {
     private var candidateCount = 7
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
+    private var lastAlertedConfigError: String?
 
     // MARK: - 生命周期
 
@@ -39,6 +40,7 @@ final class LampyrisInputController: IMKInputController {
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in
             self?.configChanged(key)
         }
+        presentConfigError()
     }
 
     override func deactivateServer(_ sender: Any!) {
@@ -101,6 +103,7 @@ final class LampyrisInputController: IMKInputController {
 
     /// 配置在无按键时变更（外部编辑或菜单写入）后，即时应用到会话与候选窗（ADR-058）。
     func configChanged(_ key: String) {
+        presentConfigError()
         guard let session else { return }
         session.prepare()
         if let count = ImeConfig.int("candidate.count"), (3...9).contains(count) {
@@ -116,6 +119,23 @@ final class LampyrisInputController: IMKInputController {
         if session.isComposing, let client = activeClient {
             updateMarked(client, session.buffer)
             showCandidates(client, session: session)
+        }
+    }
+
+    /// 配置错误在宿主中可见；同一错误只提示一次，修复后自动复位（ADR-059）。
+    private func presentConfigError() {
+        guard let message = ImeConfig.errorMessage() else {
+            lastAlertedConfigError = nil
+            return
+        }
+        guard message != lastAlertedConfigError else { return }
+        lastAlertedConfigError = message
+        NSLog("萤火虫：\(message)")
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "配置文件有误，已沿用上一份有效设置"
+            alert.informativeText = message
+            alert.runModal()
         }
     }
 
@@ -135,6 +155,11 @@ final class LampyrisInputController: IMKInputController {
         }
         if let session, session.dictionaryError != IME_OK {
             let status = NSMenuItem(title: "用户词库读写失败，请检查权限或文件格式", action: nil, keyEquivalent: "")
+            menu.addItem(status)
+        }
+        if let message = ImeConfig.errorMessage() {
+            let status = NSMenuItem(title: "配置错误：\(message)", action: nil, keyEquivalent: "")
+            status.isEnabled = false
             menu.addItem(status)
         }
         return menu

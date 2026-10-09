@@ -95,6 +95,8 @@ struct SchemaLayout {
 thread_local! {
     /// `ime_config_get` 的线程本地缓冲（下次调用前有效）。
     static GET_BUF: RefCell<Option<CString>> = const { RefCell::new(None) };
+    /// `ime_config_last_error` 的线程本地缓冲（下次调用前有效）。
+    static ERROR_BUF: RefCell<Option<CString>> = const { RefCell::new(None) };
 }
 
 fn config_path() -> PathBuf {
@@ -121,10 +123,7 @@ pub extern "C" fn ime_config_init(path: *const c_char) -> i32 {
 /// 取（或初始化）进程级配置存储。首次加载失败（语法/IO）时降级为内存默认值，
 /// 保留目标路径，后续 `reload` 仍可指向真实文件。
 fn store() -> &'static ConfigStore {
-    let store = STORE.get_or_init(|| {
-        let path = config_path();
-        Arc::new(ConfigStore::load(&path).unwrap_or_else(|_| ConfigStore::with_defaults(&path)))
-    });
+    let store = STORE.get_or_init(|| Arc::new(ConfigStore::load_or_defaults(config_path())));
     WATCHER.get_or_init(|| {
         FileWatcher::start(
             Arc::clone(store),
@@ -204,6 +203,22 @@ pub extern "C" fn ime_config_get(key: *const c_char) -> *const c_char {
         }),
         Ok(Err(_)) | Err(_) => ptr::null(),
     }
+}
+
+/// 最近一次配置加载/重载失败原因（UTF-8，仍含行号）；无错误返回空串。
+/// 借用指针，下次调用前有效；绝不返回 NULL。
+#[no_mangle]
+pub extern "C" fn ime_config_last_error() -> *const c_char {
+    let message = match catch_unwind(AssertUnwindSafe(|| store().last_error())) {
+        Ok(Some(message)) => message,
+        _ => String::new(),
+    };
+    ERROR_BUF.with(|buf| {
+        let c = CString::new(message).unwrap_or_default();
+        let ptr = c.as_ptr();
+        *buf.borrow_mut() = Some(c);
+        ptr
+    })
 }
 
 /// 取配置 Schema（供设置界面动态渲染，界面零硬编码）。
@@ -426,6 +441,14 @@ mod tests {
         set_impl(&store, "mode", "pinyin").unwrap();
         assert_eq!(hits.load(Ordering::SeqCst), 1);
         let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn last_error_is_empty_without_config_error() {
+        let ptr = ime_config_last_error();
+        assert!(!ptr.is_null());
+        // SAFETY：指针借用自线程本地缓冲，下次调用前有效。
+        assert_eq!(unsafe { CStr::from_ptr(ptr) }.to_str().unwrap(), "");
     }
 
     /// 测试辅助：解析 NUL 分隔的字符串列表（复制为 `String`）。

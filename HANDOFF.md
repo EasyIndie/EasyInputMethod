@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（MVP-02 候选来源显示、MVP-03 配置无按键即时刷新完成） |
+| 最后更新 | 2026-10-09（MVP-02/03/04 体验与配置承诺闭环，ADR-057/058/059） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01…14 待办中；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`（含本轮未推送 commit，见 `git log --oneline origin/main..HEAD`） |
 | 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
-| 最近一次 `make verify` | ✅ 全绿：101 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源断言）、universal 构建、离线重建均通过 |
+| 最近一次 `make verify` | ✅ 全绿：104 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源/配置刷新/错误断言）、universal 构建、离线重建均通过 |
 
 
 ## 1. 三十秒摘要
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ MVP-04 完成（ADR-059，2026-10-09，pi）**：`ConfigStore` 记录首启/重载失败原因（含行号），`reload` 错误状态变化广播哨兵键 `*error`；FFI 增 `ime_config_last_error`；宿主菜单常驻「配置错误」条目 + 同一错误只弹一次 NSAlert，修复后复位。坏文件沿用上一份有效快照，绝不改写用户文件。
 - **✅ MVP-03 完成（ADR-058，2026-10-09，pi）**：新增全进程单例 `ConfigWatcher`（仅 `ime_config_subscribe` 一次；回调可能在文件监视线程，统一 `DispatchQueue.main.async` 派发）；`candidate.count`/`mode` 外部变更无需按键即刷新会话与候选窗；`deactivateServer` 按身份解绑，避免重复订阅/泄漏。另修正 ADR-056 遗漏：应用支持目录改为 ASCII `…/Lampyris/`。
 - **✅ MVP-02 完成（ADR-057，2026-10-09，pi）**：候选来源由 `ime-ffi`（已带 `source`）贯穿到 Swift `ImeCandidate` 与候选窗；当前页出现多种来源时，在候选后标注小号次要色「五笔／拼／词」，单一来源页不标注。去重/排序/学习归属仍由 `ime-core` 依 `source` 处理，未改；预览冒烟新增来源断言，另修 `run-render-perf.sh` 的 WMO 静态链接坑。
 - **✅ SIG-1 澄清 + 本机验收通过（2026-10-09，pi）**：macOS 13.7.8（Intel、无签名身份）上，ad-hoc + 正确 bundle ID 的构建被系统枚举（`enabled/selectCapable=true`，共 284 源），**用户已实体输入验收通过**（ADR-055）。之前“必须公证”的结论混入了 ADR-023 的 bundle ID bug；**macOS 13 本地迭代无需签名机**，分发/macOS 26+ 仍按 ADR-032。
@@ -54,9 +55,8 @@
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **MVP-01/12**：对照报告006与ADR-015明确实际TSV/排序数组是否保留，追加决策并同步方案；不要先迁移引擎或直接勾选.imedict交付。
-2. **MVP-04**：配置错误反馈（保留上一份有效快照 + 可读取错误含行号/原因，宿主可见且不反复弹窗）。行为变更先 ADR，读配置 Skill；独立验证及 PR。
-3. **MVP-06…10**：解析器fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI审计完整性；先复现，避免操作真实词库。
+1. **MVP-01/12**：对照报告 006 与 ADR-015 明确实际 TSV/排序数组是否保留（`ime-config`/`ime-table` 现状），追加决策并同步方案；不要先迁移引擎或直接勾选 .imedict 交付。
+2. **MVP-06…10**：解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，避免操作真实词库。
 4. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
 
 ## 5. 待决 / 阻塞
@@ -126,6 +126,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：MVP-04 配置错误反馈（ADR-059）
+- `ime-config` 新增 `ConfigStore::last_error`/`load_or_defaults`（首启坏文件降级且记录含行号错误）；`reload` 在错误状态变化时广播哨兵键 `*error`。
+- `ime-ffi` 暴露 `ime_config_last_error()`；宿主菜单常驻「配置错误」条目 + 同一错误只弹一次 NSAlert，修复后自动复位；坏文件全程沿用上一份有效快照，不改写用户文件。
+- 测试：ime-config/FFI 单测覆盖首启与运行中坏文件、快照保留、错误键广播；预览冒烟覆盖「坏配置→可见错误→修复清除」。
 
 ### 2026-10-09 / pi：MVP-03 配置无按键即时刷新（ADR-058）
 - 新增全进程单例 `ConfigWatcher`：`ime_config_subscribe` 只订阅一次，回调可能在 `ime-config` 文件监视线程，统一转主线程；`activateServer` 注册、`deactivateServer` 按身份解绑。

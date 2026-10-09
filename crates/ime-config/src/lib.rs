@@ -25,6 +25,9 @@ pub use config::{Config, ConfigValue};
 pub use schema::{OptionSpec, Scope, ValueType, SCHEMA};
 pub use watch::FileWatcher;
 
+/// 错误状态的通知键（不会与 Schema 键冲突）；宿主据此刷新错误显示。
+pub const CONFIG_ERROR_KEY: &str = "*error";
+
 /// 配置错误。
 #[derive(Debug)]
 pub enum ConfigError {
@@ -103,6 +106,7 @@ pub struct ConfigStore {
     subscribers: Mutex<Vec<(usize, Callback)>>,
     next_token: AtomicUsize,
     last_unknown_keys: Mutex<Vec<String>>,
+    last_error: Mutex<Option<String>>,
 }
 
 impl ConfigStore {
@@ -122,7 +126,22 @@ impl ConfigStore {
             subscribers: Mutex::new(Vec::new()),
             next_token: AtomicUsize::new(0),
             last_unknown_keys: Mutex::new(unknown),
+            last_error: Mutex::new(None),
         })
+    }
+
+    /// 从文件加载；失败（语法/IO 错误）时**降级为 Schema 默认值**，
+    /// 并把可读错误保存在 [`last_error`](Self::last_error) 供宿主显示。
+    pub fn load_or_defaults(path: impl Into<PathBuf>) -> ConfigStore {
+        let path = path.into();
+        match Self::load(&path) {
+            Ok(store) => store,
+            Err(err) => {
+                let store = Self::with_defaults(path);
+                store.set_last_error(Some(err.to_string()));
+                store
+            }
+        }
     }
 
     /// 以 Schema 默认值构造，不读取文件。
@@ -136,6 +155,18 @@ impl ConfigStore {
             subscribers: Mutex::new(Vec::new()),
             next_token: AtomicUsize::new(0),
             last_unknown_keys: Mutex::new(Vec::new()),
+            last_error: Mutex::new(None),
+        }
+    }
+
+    /// 最近一次加载/重载失败的人类可读原因（含行号）；文件正常时为 `None`。
+    pub fn last_error(&self) -> Option<String> {
+        self.last_error.lock().ok().and_then(|guard| guard.clone())
+    }
+
+    fn set_last_error(&self, message: Option<String>) {
+        if let Ok(mut guard) = self.last_error.lock() {
+            *guard = message;
         }
     }
 
@@ -179,8 +210,20 @@ impl ConfigStore {
 
     /// 强制从文件重载；语法错误时保留上一份快照并返回错误。
     ///
-    /// 返回本次发生变化的键。
+    /// 返回本次发生变化的键。错误状态发生变化时，额外广播
+    /// [`CONFIG_ERROR_KEY`]，供宿主即时刷新「配置错误」提示。
     pub fn reload(&self) -> Result<Vec<String>, ConfigError> {
+        let previous = self.last_error();
+        let result = self.reload_inner();
+        let current = result.as_ref().err().map(|e| e.to_string());
+        self.set_last_error(current.clone());
+        if previous != current {
+            self.notify(CONFIG_ERROR_KEY);
+        }
+        result
+    }
+
+    fn reload_inner(&self) -> Result<Vec<String>, ConfigError> {
         let (next, unknown) = match persist::read_text(&self.path)? {
             Some(text) => {
                 let doc = persist::migrate(persist::parse_document(&text)?);
@@ -376,6 +419,60 @@ mod tests {
         assert!(err.line().is_some());
         // 保留上一份可用快照。
         assert_eq!(store.get("mode"), Some(ConfigValue::String("wubi".into())));
+    }
+
+    #[test]
+    fn load_or_defaults_records_error_and_reload_clears_it() {
+        let tmp = TempFile::new("bad-load");
+        write(tmp.path(), "mode = [oops\n");
+        let store = ConfigStore::load_or_defaults(tmp.path());
+
+        // 坏文件降级为默认值，但错误可读。
+        assert_eq!(store.get("mode"), Some(ConfigValue::String("mixed".into())));
+        let message = store.last_error().expect("应记录初始错误");
+        assert!(message.contains("配置语法错误"));
+
+        // 修好后 reload 清除错误。
+        write(tmp.path(), "mode = \"wubi\"\n");
+        assert!(store.reload().is_ok());
+        assert!(store.last_error().is_none());
+        assert_eq!(store.get("mode"), Some(ConfigValue::String("wubi".into())));
+    }
+
+    #[test]
+    fn reload_error_notifies_error_key_and_keeps_snapshot() {
+        let tmp = TempFile::new("bad-reload");
+        write(tmp.path(), "mode = \"wubi\"\n");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let seen_clone = Arc::clone(&seen);
+        store.subscribe(move |key, _config| {
+            seen_clone.lock().unwrap().push(key.to_string());
+        });
+
+        write(tmp.path(), "mode = [oops\n");
+        assert!(store.reload().is_err());
+        assert!(store.last_error().is_some());
+        // 保留上一份可用快照。
+        assert_eq!(store.get("mode"), Some(ConfigValue::String("wubi".into())));
+        assert!(
+            seen.lock().unwrap().iter().any(|k| k == CONFIG_ERROR_KEY),
+            "错误状态变化应广播 CONFIG_ERROR_KEY"
+        );
+
+        // 错误状态未变时不重复广播。
+        let before = seen.lock().unwrap().len();
+        assert!(store.reload().is_err());
+        assert_eq!(seen.lock().unwrap().len(), before);
+
+        // 修好后错误清除并再次广播。
+        write(tmp.path(), "mode = \"pinyin\"\n");
+        assert!(store.reload().is_ok());
+        assert!(store.last_error().is_none());
+        assert_eq!(
+            store.get("mode"),
+            Some(ConfigValue::String("pinyin".into()))
+        );
     }
 
     #[test]

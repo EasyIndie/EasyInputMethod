@@ -95,6 +95,7 @@ void         ime_string_free(ImeString s);
 int32_t          ime_config_init(const char* path);  /* 宿主设定配置路径，须最先调用 */
 const ImeConfig* ime_config_snapshot(void);   /* 借用；勿释放；set/reload 后重取 */
 const char*      ime_config_get(const char* key); /* 字符串形式；NULL=未知/错误 */
+const char*      ime_config_last_error(void);      /* 最近一次加载/重载失败原因；空串=无错误；借用 */
 
 /* Schema：供设置界面动态渲染（界面零硬编码） */
 typedef struct ImeConfigSchemaOption {
