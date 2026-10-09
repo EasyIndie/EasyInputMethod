@@ -13,5 +13,5 @@ done
 iconutil -c icns "${SET}" -o "${ROOT}/assets/icons/yinghuo-icon-v4-app.icns"
 for spec in '18 YinghuoTemplate.png' '36 YinghuoTemplate@2x.png'; do
   read -r size name <<< "${spec}"
-  sips -z "${size}" "${size}" "${ROOT}/assets/icons/yinghuo-icon-v4-menu-template.png" --out "${ROOT}/platforms/macos/Resources/${name}" >/dev/null
+  sips -z "${size}" "${size}" "${ROOT}/assets/icons/menu-v5/yinghuo-menu-v5-master.png" --out "${ROOT}/platforms/macos/Resources/${name}" >/dev/null
 done

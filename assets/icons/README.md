@@ -32,8 +32,22 @@
 
 ## 当前应用资源
 
-`yinghuo-icon-v4-app.icns` 由 V4 fullbleed 生成；正式与独立调试窗口共用。菜单栏采用 [V4 透明单色模板](yinghuo-icon-v4-menu-template.png)，18pt/36px Retina衍生为 platforms/macos/Resources/YinghuoTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
+`yinghuo-icon-v4-app.icns` 由 V4 fullbleed 生成；正式与独立调试窗口共用。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/YinghuoTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
 
 运行 `./tools/build-macos-icons.sh` 用系统 sips/iconutil 重建 ICNS 与菜单栏资源。原图及修订提示词：保留既有主体和内部背景，去掉外部白框，内部背景延展到四边；菜单版保留V4轮廓，简化为透明底黑色线条，不含发光和底色。
 
-完整历史与备选资产保留于Git仓库。发布源码归档通过 export-ignore 排除非构建所需的历史/备选PNG；保留当前V4 fullbleed、菜单模板、ICNS及生成脚本，第三方仍可离线重建当前应用及图标。归档内指向备选图稿的链接可能不含对应文件。
+完整历史与备选资产保留于Git仓库。发布源码归档通过 export-ignore 排除非构建所需的历史/备选PNG；保留当前应用V4 fullbleed、菜单V5母版、ICNS及生成脚本，第三方仍可离线重建当前应用及图标。归档内指向备选图稿的链接可能不含对应文件。
+
+## 菜单栏精修 V2（设计候选）
+
+2026-10-09用户确认输入及翻页正常，要求强化菜单图案记忆点。新增 `menu-v2/`，独立保存原模板，暂未替换正式资源或已安装公证包。
+
+- [透明母版](menu-v2/yinghuo-menu-v2-master.png)：圆弧触角、舒展双翼、水滴形腹部及留白光带，两道短光芒强调萤火虫身份；单色圆端线条，沿用V4简洁风格。
+- [亮暗及实际尺寸预览](menu-v2/preview-light-dark.png)：上方放大轮廓，下方18pt小图；预览为本地绘制，不代表已验收系统菜单效果。
+- `menu-v2/YinghuoTemplate.png`（18×18）与 `YinghuoTemplate@2x.png`（36×36），供后续接入现有TIS模板着色机制。
+
+来源：内置imagegen，以现有V4菜单模板为参考；真透明背景。设计提示强调1.2pt级圆端线条、80%主体占比、单色尾部留白光带，避免颜色/阴影/背景及过密细节。预览通过AppKit在亮暗背景渲染同一alpha轮廓。
+
+## 菜单图标比选 V2–V5
+
+[统一亮暗对比](menu-comparison-v2-v5.png)：上排浅色、下排深色；每格含放大轮廓及18pt实际尺寸。V2为既有精修，V3舒展叶形双翼与独立光点、V4收翼实心轮廓、V5斜向飞行与尾端星光。每版母版与18/36px资源单独保存到 `menu-v3/`、`menu-v4/`、`menu-v5/`；由imagegen分别生成。菜单编号独立于应用图标V1–V5。用户已选择菜单V5并接入构建资源，其他版本为备选；已安装公证包尚未更新。亮暗图是同一alpha轮廓黑白着色的AppKit预览，不代表系统实际显示验收。
