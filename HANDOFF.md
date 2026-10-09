@@ -12,11 +12,11 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（V5已显示，官方品牌统一，暗黑反馈待明确） |
+| 最后更新 | 2026-10-09（官方配色及macOS导出优化，菜单暗黑未验收） |
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，当前用户临时安装正式候选验收** |
 | 当前分支 | `codex/fix-acceptance-input-boundaries`；用户授权持续推进 macOS 发布 |
-| 活跃 PR | PR #6已合并，main bd7162d5，V5公证CI37912811458全绿；PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；PR #2/#3已合并；main 7d9cf788，验收CI 37877336887全绿，Apple Accepted及Gatekeeper通过 |
+| 活跃 PR | PR #7官方品牌统一待合入；PR #6已合并，main bd7162d5，V5公证CI37912811458全绿；PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；PR #2/#3已合并；main 7d9cf788，验收CI 37877336887全绿，Apple Accepted及Gatekeeper通过 |
 | 最近一次 `make verify` | ✅ 本轮完整通过：100 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
@@ -123,6 +123,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-09 / Codex：官方配色与macOS导出
+- ADR-054采用深松石绿/浅玉白/柔金，保留旧深蓝；官方1024不透明母版及透明外围macOS导出分开保存。
+- 生成脚本/ICNS/图标文档同步；完整verify及两宿主构建冒烟通过，PR #7更新；未替换已安装包。
+- 配色参照Apple HIG；Icon Composer分层外观资源未交付，菜单实际暗黑着色仍未验收。
+
 ### 2026-10-09 / Codex：官方标识统一
 - 用户确认状态栏V5已刷新，要求其成为官方标识；ADR-053统一项目/两宿主图标，历史版本保留。
 - 安装包菜单字节一致及模板标记true；暗黑样式不变的颜色/对比细节已询问，尚不判定故障或验收通过。
@@ -168,11 +173,3 @@
 - 系统设置添加后TIS选中，正式宿主PID57928启动，初始RSS约27.15MB/IP连接采样空。
 - 用户实体键盘确认TextEdit候选/你你好，AX撤销/重做通过；其余应用待测，报告005。
 - 六次IP采样空，物理占用24.0M/峰24.9M；临时安装保留，结束须移除；未发布。
-
-### 2026-10-09 · Codex（自动公证链路跑通）
-- 诊断确认身份有效；ADR-045扩展临时钥匙串搜索列表并按唯一指纹签名，退出恢复列表。
-- PR #2/#3检查全绿后合并；本地make verify/模拟清理/身份拒绝/恢复测试通过。
-- main7d9cf788 CI37877336887全部成功：Apple Accepted、staple、Gatekeeper、离线逐字节复现及附件上传。
-- 附件11592738352已下载/private/tmp/yinghuo-ci-acceptance-37877336887，SHA通过；private保留，未安装/公开Release。
-
-菜单亮暗核对：已通过系统设置从深色切换浅色再恢复深色，AX确认切换；工具截图仅应用窗口，ControlCenter/SystemUIServer读取超时，无法获取全局菜单栏图像。未判定着色正常或故障。官方图标完整verify、正式构建、独立预览冒烟通过。
