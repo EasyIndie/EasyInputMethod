@@ -324,6 +324,69 @@ mod tests {
         fs::remove_dir_all(dir).unwrap();
     }
 
+    fn unique_dir(tag: &str) -> std::path::PathBuf {
+        std::env::temp_dir().join(format!(
+            "yinghuo-isolate-{tag}-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ))
+    }
+
+    #[test]
+    fn stale_lock_blocks_writes_preserves_data_and_manual_recovery_works() {
+        let dir = unique_dir("stale-lock");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        let mut store = Store::load(&path).unwrap();
+        store.learn("wubi", "ab", "词甲").unwrap();
+        let before = fs::read(&path).unwrap();
+        // 模拟异常退出遗留的锁文件。
+        fs::write(path.with_extension("lock"), "").unwrap();
+        assert!(store.learn("wubi", "ab", "词乙").is_err());
+        // 原数据一字未动。
+        assert_eq!(fs::read(&path).unwrap(), before);
+        // 手工恢复（确认无活动写者后删除残留锁）后写入恢复正常。
+        fs::remove_file(path.with_extension("lock")).unwrap();
+        store.learn("wubi", "ab", "词乙").unwrap();
+        assert_eq!(
+            store.entries()[&("wubi".into(), "ab".into(), "词乙".into())],
+            1
+        );
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
+    #[test]
+    fn capacity_limits_are_enforced() {
+        let at_limit: String = (0..MAX_ENTRIES)
+            .map(|i| format!("wubi\tab\t词{i}\t1\n"))
+            .collect();
+        assert!(parse(&at_limit).is_ok());
+        let over_limit: String = (0..=MAX_ENTRIES)
+            .map(|i| format!("wubi\tab\t词{i}\t1\n"))
+            .collect();
+        assert!(parse(&over_limit).is_err());
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn read_only_directory_preserves_existing_data() {
+        use std::os::unix::fs::PermissionsExt;
+        let dir = unique_dir("readonly");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        let mut store = Store::load(&path).unwrap();
+        store.learn("wubi", "ab", "词甲").unwrap();
+        let before = fs::read(&path).unwrap();
+        fs::set_permissions(&dir, fs::Permissions::from_mode(0o500)).unwrap();
+        assert!(store.learn("wubi", "ab", "词乙").is_err());
+        assert_eq!(fs::read(&path).unwrap(), before);
+        fs::set_permissions(&dir, fs::Permissions::from_mode(0o700)).unwrap();
+        fs::remove_dir_all(&dir).unwrap();
+    }
+
     #[test]
     fn rejects_untrusted_rows() {
         for bad in [
