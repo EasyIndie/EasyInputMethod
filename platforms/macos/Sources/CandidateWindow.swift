@@ -54,15 +54,26 @@ final class CandidateWindow {
             stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -5),
         ])
         panel.contentView = container
-        themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
-            self?.refreshAppearance()
-        }
+        // 空闲不轮询：主题计时器只在候选窗可见时运行（MVP-13）。
         // Warm Chinese font/layout while hidden, before the first input event.
         update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
         update(candidates: [])
     }
 
     deinit { themeTimer?.invalidate() }
+
+    /// 可见期间刷新主题；隐藏时停表，避免空闲唤醒（MVP-13）。
+    private func startThemeTimer() {
+        guard themeTimer == nil else { return }
+        themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            self?.refreshAppearance()
+        }
+    }
+
+    private func stopThemeTimer() {
+        themeTimer?.invalidate()
+        themeTimer = nil
+    }
 
     func refreshAppearance() {
         switch ImeConfig.string("appearance.theme") {
@@ -137,6 +148,8 @@ final class CandidateWindow {
 
     /// 在光标矩形上方显示。
     func show(at caret: NSRect) {
+        refreshAppearance()
+        startThemeTimer()
         let screen = NSScreen.screens.first { $0.frame.intersects(caret) } ?? NSScreen.main
         let area = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
         layout(at: caret, within: area)
@@ -170,6 +183,7 @@ final class CandidateWindow {
     }
 
     func hide() {
+        stopThemeTimer()
         panel.orderOut(nil)
     }
 }
