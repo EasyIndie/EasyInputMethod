@@ -12,11 +12,11 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（验收反馈修复与图标修订） |
+| 最后更新 | 2026-10-09（恢复宿主执行权限，菜单模板适配推进） |
 | 更新者 | Codex |
 | 当前阶段 | **P1-M3 发布工程 + P1-M4 最终验收；日常独立窗口调试，当前用户临时安装正式候选验收** |
 | 当前分支 | `codex/fix-acceptance-input-boundaries`；用户授权持续推进 macOS 发布 |
-| 活跃 PR | PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；PR #2/#3已合并；main 7d9cf788，验收CI 37877336887全绿，Apple Accepted及Gatekeeper通过 |
+| 活跃 PR | PR #4已合并，main c447760d，CI37880942501全绿；PR #1 已按用户授权合并：https://github.com/EasyIndie/EasyInputMethod/pull/1；main efa4b59；PR #2/#3已合并；main 7d9cf788，验收CI 37877336887全绿，Apple Accepted及Gatekeeper通过 |
 | 最近一次 `make verify` | ✅ 本轮完整通过：100 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
 
 
@@ -72,16 +72,18 @@
 
 ### 本次候选与执行状态
 
-- 当前审核包：`packaging/out/candidate-arm64.YG35db/Yinghuo-0.1.0-arm64.zip`，源码66a2d87，14,343,472字节，SHA-256 `e6fd3bd3cf02095c95250f541a3c8f824459ee3df643f8c929ea98e4d1ed85f3`；unsigned，仅供审核。离线重建逐字节一致。
+- 当前正式验收包：CI37880942501，源码c447760d，8,369,098字节，SHA-256 `2e751fbd9001f08786b7f99978cb1edbcb3651e477087d9172620c6c67e900f7`；已公证/离线复现通过；上次Python解压丢失执行权限导致重启仍无法输入，已恢复0755且宿主PID2380启动，实体键盘待确认。
 - 旧a9bf912已签名公证待传ZIP保留为历史审核资产；已被新的性能优化取代，不应上传旧包作为最新版。用户改用 GitHub Actions 团队 API 密钥，按 CI-ACCEPTANCE.md 一次配置后在 main 自动构建/签名/公证当前版本。
-- 用户2026-10-09明确授权本次公证上传、当前用户临时安装验收后移除。用户指定不采用 App 专用密码，改用 CI 的团队 API 密钥，仓库配置待完成；授权仍有效，系统/用户目录均无 Yinghuo.app。
-- 用户已明确授权 GitHub 上传，分支推送成功并创建草稿 PR #1；HTTP 400 通过固定长度 HTTP 请求解决。未合并或发布。
+- 用户2026-10-09明确授权本次公证上传、当前用户临时安装验收后移除。用户指定不采用 App 专用密码，改用 CI 的团队 API 密钥，仓库Secrets已生效；授权仍有效，当前仅用户目录临时安装c447760d，验收结束须移除。
+- 用户已明确授权 GitHub 上传，分支推送成功并创建草稿 PR #1；HTTP 400 通过固定长度 HTTP 请求解决。PR #1–4已合并，未公开Release。
 
 ## 6. 必须知道的坑与硬约束
 
 **铁律（见 `AGENTS.md` §2）**：核心不联网；`forbid(unsafe_code)`（仅 `ime-ffi`）；配置只走 `ime-config`（禁 `UserDefaults`/注册表/第二文件）；任何数据先登记许可。
 
 **实操坑（本轮踩过，务必记住）**：
+
+- ⚠️ 发行ZIP必须用Finder/ditto保留执行权限；Python zipfile.extractall把程序变0644，签名仍通过但无法启动。安装器现拒绝损坏权限。
 
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
@@ -106,7 +108,7 @@
 | 签名身份 | ✅ `Developer ID Application: Zhizhou Wang (2N62934Y28)` 与 `Apple Development: …`；公证凭据已存钥匙串 profile `yinghuo-notary` |
 | Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
 | 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
-| 输入法现状 | 当前临时安装 ~/Library/Input Methods/Yinghuo.app（7d9cf788），系统设置已添加且选中；宿主PID57928，旧7d9cf788用户确认退格/Esc、多应用、模式、反查通过，失焦失败；修复分支7756082/5faa281已验证，新包待回归。ABC/搜狗保留；验收结束须移除输入源与用户域bundle，保留配置/词库 |
+| 输入法现状 | 当前临时安装 ~/Library/Input Methods/Yinghuo.app（c447760d），系统设置已重新添加并选中，旧宿主已停止，新宿主未自动启动，需重登/重启；旧7d9cf788用户确认退格/Esc、多应用、模式、反查通过，失焦失败；修复7756082/5faa281经PR #4合并，CI37880942501全绿，c447760d已安装待重登回归。ABC/搜狗保留；验收结束须移除输入源与用户域bundle，保留配置/词库 |
 | 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**100 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
@@ -120,6 +122,16 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / Codex：恢复执行权限与菜单模板
+- 重启失败根因为程序0644；恢复0755并启动PID2380，签名有效且无IP连接，实体输入待确认。
+- ADR-050安装权限防护、ADR-051原生模板/18pt菜单图标；完整verify通过，实机亮暗回归待新候选。
+
+### 2026-10-09 · Codex（修复候选等待重登）
+- PR #4本地/远端验证及审核ZIP离线复现通过，合入main c447760d；签名公证CI37880942501全绿。
+- 新ZIP8,369,098字节/SHA核验通过；旧源移除/旧宿主停止并备份，新包用户域安装/重新添加。
+- 版本/ICNS/菜单PNG一致；热替换后宿主未启动，无新项目崩溃报告，需用户重登/重启后实体回归。
+- 当前暂留安装，复测失焦/回车字母/a分页/菜单标志；结束移除，private保留，无Release。
 
 ### 2026-10-09 · Codex（验收缺陷与图标修复）
 - 用户确认退格/Esc、多应用、模式切换、反查通过；失焦失败，回车强制中文，分页不明。
@@ -172,10 +184,4 @@
 - 满容量五会话窗口预检28.24MiB、首键6.465ms / 最大6.272ms；99单测、窗口冒烟、make verify 全绿。
 - 修正探针主循环/释放池；无收益借用排序与固定视图实验保留临时源码/补丁（ADR-042未采纳），无新增依赖。
 - 持续探针修正整段释放池后22000键稳定27.24MiB、最大8.718ms，IP采样为空；新版66a2d87审核包14,343,472字节，离线重建逐字节一致，远端CI全绿；公证等凭据。
-
-### 2026-10-09 · Codex（发布授权与远端验证）
-- 用户明确授权 GitHub 上传/草稿 PR、本次 Apple 公证及临时用户域安装验收后移除；PR #1 已创建。
-- 公证因钥匙串缺少 yinghuo-notary profile 尚未上传；用户选择先推进其他准备，未安装。
-- 首轮 CI 工具链缺参已修复；a053314 远端 Linux40秒/macOS1分35秒全绿，包含真实 AppKit 冒烟与源码离线重建。
-- 满容量内存与正式 IMK 验收待完成；无合并或公开发布。
 

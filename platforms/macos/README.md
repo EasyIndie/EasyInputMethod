@@ -203,3 +203,7 @@ bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
 正式宿主在组合结束、输入源停用及当前客户端应用失活时取消未选组合，清空预编辑并隐藏候选；不自动提交未选择文字。
 
 多页候选显示“当前页/总页数”，用 `-`/`=` 或 Page Up/Page Down 翻页；每页默认七项，数字键选当前页候选。
+
+### 解压权限与菜单栏外观
+
+发行ZIP使用Finder或 `ditto -x -k <候选.zip> <目录>` 解压，保留程序执行权限。Python zipfile.extractall等丢失权限的解压方式会使输入源可见但宿主无法启动；安装预检拒绝这种候选。菜单栏采用18pt透明单色V4符号与2x资源，Info.plist声明 `TISIconIsTemplate=true`，跟随系统菜单栏亮暗及选中着色；无需新增配置文件。
