@@ -30,7 +30,7 @@
 
 Secrets 未配置时会明确报告缺失项；签名、公证或离线重建失败时不上传验收包。仓库凭据已完成实际签名、公证和离线复现验证；最近定稿候选为 main `6d7e8435`，运行 [37918189811](https://github.com/EasyIndie/EasyInputMethod/actions/runs/37918189811)。证书过期、API 密钥撤销、Apple 协议更新仍可能要求维护；正常迭代无需反复输入凭据。
 
-此包提供真机验收材料，不代表正式 IMK 多应用、长时间稳定或动态零外联已通过。普通PR产物仍不可信安装。Intel/通用包不在当前 arm64 候选验收范围内。
+此包提供真机验收材料，不代表正式 IMK 多应用、长时间稳定或动态零外联已通过。普通PR产物仍不可信安装。候选为 universal（arm64 + x86_64）；CI 先安装两个 rustup target 再以 `build.sh --universal` 构建。
 
 参考：[Apple API 密钥](https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api)、[Apple 公证认证](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)、[GitHub runner 证书安装](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)。
 

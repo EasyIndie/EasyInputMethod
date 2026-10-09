@@ -12,19 +12,19 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（首版实现全面梳理完成，新增待办与交接） |
-| 更新者 | Codex |
-| 当前阶段 | **macOS首版收尾：报告006发现需求/实现差距，先按待办补齐；实机验收由用户稍后安排** |
-| 当前分支 | `codex/fix-acceptance-input-boundaries`；用户授权持续推进 macOS 发布 |
-| 活跃 PR | PR #7已合并；main `6d7e8435`；定稿公证CI `37918189811`全绿；仓库保持private，无公开Release |
-| 最近一次 `make verify` | ✅ 本轮完整通过：100 单测 + 1 doctest、fmt、Clippy、deny（公告/依赖/许可/来源）、125 产物零网络符号；Swift 预览构建/按键冒烟及桌面交互通过 |
+| 最后更新 | 2026-10-09（macOS 13 本机 ad-hoc 验收通过 + CI 出 universal 候选） |
+| 更新者 | pi |
+| 当前阶段 | **macOS 首版收尾：MVP-01…14 待办中；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
+| 当前分支 | `main`（含本轮未推送 commit，见 `git log --oneline origin/main..HEAD`） |
+| 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
+| 最近一次 `make verify` | ✅ 全绿：100 单测 + 1 doctest、fmt、Clippy、deny、152 产物零网络符号；`dev-preview --smoke-test`、universal 构建、离线重建均通过 |
 
 
 ## 1. 三十秒摘要
 
 - **萤火虫**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
 - **现在**：P1-M0（引擎骨架）、P1-M1（自建码表）、P1-M2（配置 + 拼音 + 混输）**全部完成**；P1-M3 已完成 `ime-ffi`（C ABI）与 **Swift/InputMethodKit 宿主**（编译/打包/FFI 冒烟通过）。
-- **下一步**：读 `docs/reviews/006-macos-mvp-gap-review.md`；先闭环TSV/排序数组与原设计差异（MVP-01），再按顺序补候选来源、配置即时刷新与错误反馈。用户本轮要求先记录待办和交接，之后继续实施。
+- **下一步**：读 `docs/reviews/006-macos-mvp-gap-review.md`；先闭环 TSV/排序数组与原设计差异（MVP-01）+ 文档状态（MVP-12），再按序补候选来源显示、配置即时刷新、错误反馈（MVP-02/03/04）。用户已在本机（macOS 13 Intel）完成实体输入验收，后续聚焦**输入体验打磨**。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -41,12 +41,16 @@
 
 ## 3. 进行中
 
+- **✅ SIG-1 澄清 + 本机验收通过（2026-10-09，pi）**：macOS 13.7.8（Intel、无签名身份）上，ad-hoc + 正确 bundle ID 的构建被系统枚举（`enabled/selectCapable=true`，共 284 源），**用户已实体输入验收通过**（ADR-055）。之前“必须公证”的结论混入了 ADR-023 的 bundle ID bug；**macOS 13 本地迭代无需签名机**，分发/macOS 26+ 仍按 ADR-032。
+- **✅ CI 现在出 universal 候选**（arm64 + x86_64）：`build.sh --universal`、`prepare.sh`、`run-repro.sh` 与两个 workflow 已接入；本机离线重建逐字节一致。顺手修了 Swift 5.8 的 WMO 静态链接坑（ADR-055）。
 - 官方图标/6d7e8435候选已定稿；用户确认实体输入、图标及分页/取消/失焦/原码回车等正常。签名公证、11.25MB包体、实际ZIP离线复现已通过，无正式Release。
 - 核心功能已实现不等于首版完整验收；新增MVP-01…14待办见报告006，重点是候选来源显示、配置即时刷新/错误反馈、数据结构约定及解析器fuzz缺口。
 - 完整verify最近通过100单测+1 doctest、125产物扫描；满容量五会话22000键AppKit预检最大13.331ms、结束27.86MiB，非正式IMK端到端结果。
 - 用户已安排词库/重启/长时间多应用等实机验收稍后进行；候选暂留用户域，验收结束移除，日常开发仍独立窗口。
 
 ## 4. 下一步（可执行，按优先级）
+
+**本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
 1. **MVP-01/12**：对照报告006与ADR-015明确实际TSV/排序数组是否保留，追加决策并同步方案；不要先迁移引擎或直接勾选.imedict交付。
 2. **MVP-02→03→04**：逐项补候选来源显示、无按键配置刷新、错误反馈。协议/行为变更先ADR，配置任务读配置Skill；每项独立验证及PR。
@@ -63,7 +67,7 @@
 | TBD-3 | ✅ ADR-029：有界 TSV v1，用户词库与学习已实现 | 否 |
 | TBD-4 | 英文/包名（`yinghuo` vs `lampyris`） | 否 |
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
-| **SIG-1** | **签名/公证要求**：✅ 已定 —— macOS 26/27 强制「Developer ID + hardened runtime + 公证」；未公证的 Developer ID 被 LaunchServices 判 `is not trusted`、TIS 静默不显示（Phase 1「不签名」前提不成立） | 不再阻塞；ADR-032 与签名/公证脚本已接入；新候选待实际验证 |
+| **SIG-1** | **签名/公证要求**：✅ 已澄清（ADR-055）—— macOS 13 本地 ad-hoc 即可（用户已验收）；分发与 macOS 26/27 仍强制 Developer ID + hardened runtime + 公证 | 不再阻塞；本地迭代无需签名机 |
 | **SIG-2** | ✅ 已关闭：ADR-023 新包重启后枚举/选择正常，TextEdit/Safari 用户实测通过；经典 IMK `.app` 可用 | 否 |
 
 ### 本次候选与执行状态
@@ -85,6 +89,8 @@
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024），无需该流程。诊断：`platforms/macos/tools/`。
 - ✅ **注册标识**：bundle ID 必须采用带 `.inputmethod.` 的形式；当前为 `org.yinghuo.inputmethod.Yinghuo`，连接名为 `${bundleID}_Connection`（ADR-023）。组合修正及重启后实机通过；不要再据早期失败推断必须 appex。
+- ⚙️ **Swift/Swift 链接坑**：`-whole-module-optimization` 下不能把 `.a` 作位置参数（Swift 5.8 当源码）也不能用 `-L … -lime_ffi`（会链到 cdylib 并把绝对构建路径写进 `LC_LOAD_DYLIB`）；必须 `-Xlinker <lib.a>`。见 ADR-055。
+- ⚙️ **universal 构建**：需 `rustup target add aarch64-apple-darwin x86_64-apple-darwin`，再 `./platforms/macos/build.sh --strict --universal`（注意 Rust 用 `aarch64`、Apple 用 `arm64`）。
 - ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定用 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403 A required agreement is missing` → 需 Account Holder 在 App Store Connect 接受协议。
 - ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`（钥匙串锁定或不在 GUI 会话）；需在 GUI Terminal 跑一次并点“始终允许”。
 - ⚠️ **LS 影子副本**：同一 bundle id 若在 `build/`、DerivedData 或已删路径有残留登记，Text Input 会绑定影子副本导致静默失败；装完务必 `lsregister -dump` 去重。
@@ -100,12 +106,12 @@
 
 | 项 | 值 |
 |---|---|
-| 当前/验证机 | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a） |
-| 签名身份 | ✅ `Developer ID Application: <证书名称> (<Team ID>)` ；CI仓库Secrets签名/API公证已验证，本机profile不作为依赖 |
-| Rust | ✅ 已装 rustup + **1.98.1**（`rust-toolchain.toml` 固定）；target `aarch64-apple-darwin` |
-| 宿主工具链 | Xcode 27 的 `swiftc`/`codesign`/`xcrun notarytool 1.1.3`/`stapler`；`make` 可用 |
-| 输入法现状 | 用户域临时安装6d7e8435；用户确认实体输入和图标正常，上一轮采样PID1007；PID会随重启变化。ABC/搜狗保留；验收结束移除临时输入源与bundle，保留配置/词库 |
-| 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-words.tsv`（8.4MB 不入库；可由 fetch 脚本 + `ime-pinyin --example generate` 复现） |
+| 本机 A（本地迭代/真机验收） | macOS **13.7.8**、**Intel x86_64**；仅 CLT（Swift 5.8.1、无 Xcode）；`security find-identity` 为 0；已加 `aarch64-apple-darwin` + `x86_64-apple-darwin` target |
+| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据 |
+| Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
+| 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
+| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`org.yinghuo.inputmethod.Yinghuo`），用户已实体输入验收；分发/公证候选由 CI 出 universal |
+| 数据 | `data/generated/` 已生成 `wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-core.tsv`（词表 8.4MB 不入库，可由 fetch 脚本复现） |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**100 单测 + 1 doctest**；`platforms/macos/` Swift 宿主 |
 
 ## 8. 接手清单（新会话开始时）
@@ -118,6 +124,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：macOS 13 本机 ad-hoc 验收通过 + universal 候选
+- 关键发现：之前“非 Apple 签名不被枚举”的结论混入了 ADR-023 的 bundle ID bug；修正后 macOS 13（Intel、无签名身份）上 ad-hoc 构建被系统枚举且用户实体输入通过（ADR-055）。
+- 依此把本地开发/真机验收从签名机解绑；日常用 ADR-024 独立窗口，阶段用用户域 ad-hoc 安装。
+- 新增 `build.sh --universal`（arm64+x86_64）、`prepare.sh`/`run-repro.sh`/两个 workflow 的 universal 支持；本机离线重建逐字节一致。
+- 修坑：WMO 下必须 `-Xlinker <lib.a>` 静态链接（`-L/-l` 会链 cdylib 并把绝对路径写进二进制）。
 
 ### 2026-10-09 / Codex：文档提交前敏感信息检查
 - 本次11份文档未发现密钥/令牌；扫描708个本地历史blob的命中均为格式判断或fixture，未发现实际凭据。

@@ -134,7 +134,7 @@ make macos-preview
 
 - 正式候选已在 macOS 27 / Apple Silicon 通过实体输入、分页、退格/Esc、失焦清理、回车原码、模式切换、拼音反查及图标显示复核，详见 `docs/reviews/005-macos-formal-acceptance.md`。
 - 候选窗支持分页、亮暗主题和屏幕边界限制；真实客户端长时间使用、光标定位与撤销行为仍需按发布清单逐项验收。
-- 当前公证候选为 arm64；尚未提供 Intel 或通用发行包。目标 macOS 13+ 不代表所有版本均经实机验收。
+- 候选为 **universal（arm64 + x86_64）**，由 CI 构建；macOS 13（Intel）已用 ad-hoc 在本机完成实体输入验收（ADR-055）。目标 macOS 13+ 不代表所有版本均经实机验收。
 - 用户词库菜单和重启保留、完整 IMK 端到端性能及长时间多应用验收仍待完成，见 `docs/macos-release-checklist.md`。
 
 ## 为宿主扩展的 `ime-ffi` 入口（T-M3-02）
