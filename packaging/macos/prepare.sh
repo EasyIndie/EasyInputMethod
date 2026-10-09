@@ -9,7 +9,7 @@ case "${1:-}" in '') ;; --signed) SIGNED=true ;; *) echo "用法：$0 [--signed]
 COMMIT="$(git rev-parse HEAD)"
 OUT="${ROOT}/packaging/out"
 mkdir -p "${OUT}"
-WORK="$(mktemp -d "${OUT}/candidate.XXXXXX")"
+WORK="$(mktemp -d "${OUT}/candidate-XXXXXX")"
 APP="${ROOT}/platforms/macos/build/Yinghuo.app"
 if ${SIGNED}; then
   [ "$(cat "${APP}/Contents/Resources/SOURCE-COMMIT")" = "${COMMIT}" ] || { echo "签名应用与当前源码提交不符，请重新构建" >&2; exit 1; }
