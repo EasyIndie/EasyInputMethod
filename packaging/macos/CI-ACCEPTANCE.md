@@ -6,7 +6,7 @@
 
 ## 一次配置
 
-EasyIndie 组织 Settings → Secrets and variables → Actions，创建以下 Organization secrets，并授权 EasyInputMethod 仓库：
+当前仓库保持 private，使用仓库 Settings → Secrets and variables → Actions 的 Repository secrets。GitHub Free 的私有仓库不能使用组织 Secrets；组织升级后可用同名组织凭据共享。配置如下：
 
 | 名称 | 内容 |
 |---|---|
@@ -35,3 +35,5 @@ Secrets 未配置时会明确报告缺失项；签名、公证或离线重建失
 参考：[Apple API 密钥](https://developer.apple.com/documentation/appstoreconnectapi/creating-api-keys-for-app-store-connect-api)、[Apple 公证认证](https://developer.apple.com/documentation/technotes/tn3147-migrating-to-the-latest-notarization-tool)、[GitHub runner 证书安装](https://docs.github.com/en/actions/how-tos/deploy/deploy-to-third-party-platforms/sign-xcode-applications)。
 
 下载并解压 Actions 附件后，进入包含候选 ZIP 的目录运行 `shasum -a 256 -c *.sha256`；校验文件采用相对文件名，不依赖 runner 路径。
+
+签名前输出临时钥匙串的代码签名身份诊断，仅含公开证书名称/指纹和有效性错误，不导出私钥。若 p12 导入成功而身份找不到，先核对诊断中的有效期、信任链及签名策略结果。
