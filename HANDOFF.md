@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-09（T-M1-10 `convert` 去全表扫描完成；ADR-060 数据结构决策） |
+| 最后更新 | 2026-10-09（MVP-06 解析器 fuzz 完成） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
 | 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
-| 最近一次 `make verify` | ✅ 全绿：106 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`（含来源/配置刷新/错误断言）、universal 构建、离线重建均通过 |
+| 最近一次 `make verify` | ✅ 全绿：109 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`、universal 构建、离线重建均通过；`make fuzz FUZZ_SECONDS=10` 三目标无崩溃 |
 
 
 ## 1. 三十秒摘要
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ MVP-06 完成（ADR-061，2026-10-09，pi）**：新增独立 `fuzz/`（cargo-fuzz）三个有界目标（用户 TSV / 码表 TSV / 拼音 TSV，256 KiB 上限）；主 workspace 加确定性边界语料单测，随 `make verify` 运行；`make fuzz` 限时跑三目标，本地短时无崩溃。
 - **✅ T-M1-10 完成（2026-10-09，pi）**：`CodeTableEngine::convert` 由全表线性扫描改为同前缀区间扫描（`partition_point`），`z` 通配只在首个 `z` 前的字面前缀区间内扫描；新增差分测试与旧语义逐条对照。实测 p50 0.46–0.50ms → 0.21–0.25ms。见 ADR-060。
 - **✅ MVP-04 完成（ADR-059，2026-10-09，pi）**：`ConfigStore` 记录首启/重载失败原因（含行号），`reload` 错误状态变化广播哨兵键 `*error`；FFI 增 `ime_config_last_error`；宿主菜单常驻「配置错误」条目 + 同一错误只弹一次 NSAlert，修复后复位。坏文件沿用上一份有效快照，绝不改写用户文件。
 - **✅ MVP-03 完成（ADR-058，2026-10-09，pi）**：新增全进程单例 `ConfigWatcher`（仅 `ime_config_subscribe` 一次；回调可能在文件监视线程，统一 `DispatchQueue.main.async` 派发）；`candidate.count`/`mode` 外部变更无需按键即刷新会话与候选窗；`deactivateServer` 按身份解绑，避免重复订阅/泄漏。另修正 ADR-056 遗漏：应用支持目录改为 ASCII `…/Lampyris/`。
@@ -55,7 +56,7 @@
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **MVP-06…10**：解析器 fuzz、组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，避免操作真实词库。
+1. **MVP-07…10**：组合长度/资源边界、词库锁恢复、正式数据加载诊断、CI 审计完整性；先复现，需要新行为时先 ADR，避免操作真实词库。
 2. **MVP-11/05**：发布材料与长期保管；实机DoD由用户安排稍后。C级兼容/空闲优化不扩首版范围。
 
 ## 5. 待决 / 阻塞
@@ -124,6 +125,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-09 / pi：MVP-06 解析器 fuzz（ADR-061）
+- 新增独立 `fuzz/` cargo-fuzz workspace（不属主 workspace，libfuzzer-sys 仅 dev 依赖）：`dict_parser`/`table_parser`/`pinyin_parser` 三个有界目标（256 KiB 上限）。
+- 主 workspace 每个解析器加确定性边界语料单测（截断/缺列/CRLF/BOM/NUL/非 BMP/超范围数字/超长行），随 `make verify` 每次运行；`make fuzz` 扩展为限时跑三目标（`FUZZ_SECONDS`）。
+- 本地 `make fuzz FUZZ_SECONDS=10` 三目标均无崩溃；README 记录复现方式。
 
 ### 2026-10-09 / pi：T-M1-10 `convert` 去全表扫描
 - `convert` 非通配路径改为 `partition_point` 同前缀区间扫描；`z` 通配仅扫首个 `z` 前字面前缀的区间。
