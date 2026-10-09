@@ -50,3 +50,42 @@ enum ImeConfig {
         }
     }
 }
+
+/// `ime_config_subscribe` 的 C 回调：不在回调线程触碰 AppKit，一律转交主线程。
+private func configChangedBridge(_ key: UnsafePointer<CChar>?, _ user: UnsafeMutableRawPointer?) {
+    let changed = key.map { String(cString: $0) } ?? ""
+    DispatchQueue.main.async { ConfigWatcher.shared.deliver(changed) }
+}
+
+/// 配置变更观察者：全进程只订阅一次，回调在主线程派发给当前所有者。
+///
+/// 见 ADR-058 / `docs/配置架构.md` §4、§11：外部改 `config.toml` 保存后，
+/// 正在输入的候选窗应即时刷新，无需再按键。
+final class ConfigWatcher {
+    static let shared = ConfigWatcher()
+    private var token: Int32 = -1
+    private weak var owner: AnyObject?
+    private var handler: ((String) -> Void)?
+
+    private init() {}
+
+    /// 由 `owner` 接管回调；重复调用只替换处理器，不重复订阅。
+    func observe(owner: AnyObject, _ handler: @escaping (String) -> Void) {
+        self.owner = owner
+        self.handler = handler
+        if token < 0 {
+            token = ime_config_subscribe(configChangedBridge, nil)
+        }
+    }
+
+    /// 仅当 `owner` 是当前所有者时解绑（避免多控制器互相误清）。
+    func clear(owner: AnyObject) {
+        guard self.owner === owner else { return }
+        self.owner = nil
+        self.handler = nil
+    }
+
+    fileprivate func deliver(_ key: String) {
+        handler?(key)
+    }
+}

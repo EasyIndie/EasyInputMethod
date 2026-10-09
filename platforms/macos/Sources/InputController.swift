@@ -36,10 +36,14 @@ final class LampyrisInputController: IMKInputController {
         }
         session?.prepare()
         if candidateWindow == nil { candidateWindow = CandidateWindow() }
+        ConfigWatcher.shared.observe(owner: self) { [weak self] key in
+            self?.configChanged(key)
+        }
     }
 
     override func deactivateServer(_ sender: Any!) {
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
+        ConfigWatcher.shared.clear(owner: self)
         activeClient = nil
         super.deactivateServer(sender)
     }
@@ -94,6 +98,26 @@ final class LampyrisInputController: IMKInputController {
     }
 
     // MARK: - 输入菜单（模式切换；正式交互属 P1-M4）
+
+    /// 配置在无按键时变更（外部编辑或菜单写入）后，即时应用到会话与候选窗（ADR-058）。
+    func configChanged(_ key: String) {
+        guard let session else { return }
+        session.prepare()
+        if let count = ImeConfig.int("candidate.count"), (3...9).contains(count) {
+            candidateCount = count
+            session.setPageSize(count)
+        }
+        if let mode = ImeConfig.string("mode"), session.mode != mode {
+            session.setMode(mode)
+            if let client = activeClient { clearMarked(client) }
+            candidateWindow?.hide()
+        }
+        candidateWindow?.refreshAppearance()
+        if session.isComposing, let client = activeClient {
+            updateMarked(client, session.buffer)
+            showCandidates(client, session: session)
+        }
+    }
 
     override func menu() -> NSMenu! {
         let menu = NSMenu()

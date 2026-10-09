@@ -82,6 +82,14 @@ final class PreviewInput: NSTextView {
 
     func cancelComposition() { session.focusOut(); refresh() }
     func clear() { session.reset(); committed = ""; refresh() }
+
+    /// 无按键的配置变更：即时应用到会话与候选窗（ADR-058）。
+    func configChanged(_ key: String) {
+        session.prepare()
+        if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
+        if let mode = ImeConfig.string("mode"), session.mode != mode { session.setMode(mode) }
+        refresh()
+    }
 }
 
 final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
@@ -211,6 +219,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     }
     session.setMode("mixed")
     let view = PreviewInput(session: session)
+    ConfigWatcher.shared.observe(owner: view) { [weak view] key in view?.configChanged(key) }
     func keys(_ text: String, flags: NSEvent.ModifierFlags = []) {
         for scalar in text.unicodeScalars {
             guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
@@ -264,11 +273,27 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.mode == "mixed" else { exit(1) }
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
+    func pump(until condition: () -> Bool, timeout: TimeInterval = 5) -> Bool {
+        let deadline = Date().addingTimeInterval(timeout)
+        while !condition(), Date() < deadline {
+            RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
+        }
+        return condition()
+    }
+    // 外部改配置：正在输入的候选窗即时按新设置变化，无需再按键（ADR-058 / MVP-03）。
     let external = smokeDirectory.appendingPathComponent("config.toml")
+    view.clear(); keys("a")
+    guard session.isComposing, session.candidates(limit: 9).count > 3 else {
+        fputs("默认候选数应大于 3。\n", stderr); exit(1)
+    }
+    try "[candidate]\ncount = 3\n".write(to: external, atomically: true, encoding: .utf8)
+    guard pump(until: { session.candidates(limit: 9).count == 3 }) else {
+        fputs("候选数未即时刷新。\n", stderr); exit(1)
+    }
     try "mode = \"wubi\"\n[candidate]\ncount = 3\n".write(to: external, atomically: true, encoding: .utf8)
-    let deadline = Date().addingTimeInterval(2)
-    while ImeConfig.int("candidate.count") != 3, Date() < deadline { Thread.sleep(forTimeInterval: 0.05) }
-    guard ImeConfig.int("candidate.count") == 3 else { fputs("配置外部编辑未生效。\n", stderr); exit(1) }
+    guard pump(until: { session.mode == "wubi" }) else {
+        fputs("模式未即时刷新。\n", stderr); exit(1)
+    }
     session.setMode("mixed"); view.clear(); keys("wq")
     guard session.candidates(limit: 9).count == 3 else { exit(1) }
     guard session.reverseLookup("你好") == "ni hao", session.reverseLookup("🙂") == nil else { exit(1) }

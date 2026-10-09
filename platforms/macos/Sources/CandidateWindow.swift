@@ -64,7 +64,7 @@ final class CandidateWindow {
 
     deinit { themeTimer?.invalidate() }
 
-    private func refreshAppearance() {
+    func refreshAppearance() {
         switch ImeConfig.string("appearance.theme") {
         case "light": panel.appearance = NSAppearance(named: .aqua)
         case "dark": panel.appearance = NSAppearance(named: .darkAqua)
