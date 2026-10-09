@@ -217,6 +217,14 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard geometry.displayedCandidateTexts == ["1.你"] else {
         fputs("单一来源页不应标注来源：\(geometry.displayedCandidateTexts)\n", stderr); exit(1)
     }
+    // 数据加载失败可诊断：缺文件必须返回 nil，而不是静默样本兜底（ADR-063）。
+    guard
+        ImeSession(
+            wubiPath: "/nonexistent-lampyris.tsv", pinyinCharsPath: nil, pinyinWordsPath: nil)
+            == nil
+    else {
+        fputs("缺失码表应返回 nil。\n", stderr); exit(1)
+    }
     session.setMode("mixed")
     let view = PreviewInput(session: session)
     ConfigWatcher.shared.observe(owner: view) { [weak view] key in view?.configChanged(key) }

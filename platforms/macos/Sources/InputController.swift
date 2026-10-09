@@ -15,6 +15,8 @@ final class LampyrisInputController: IMKInputController {
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
     private var lastAlertedConfigError: String?
+    private var dataLoadError: String?
+    private var lastAlertedDataError: String?
 
     // MARK: - 生命周期
 
@@ -41,6 +43,7 @@ final class LampyrisInputController: IMKInputController {
             self?.configChanged(key)
         }
         presentConfigError()
+        presentDataError()
     }
 
     override func deactivateServer(_ sender: Any!) {
@@ -71,9 +74,10 @@ final class LampyrisInputController: IMKInputController {
         clearMarked(textClient)
     }
 
-    /// 装配会话：优先真实数据文件，失败回退内置样本；再套用配置。
+    /// 装配会话：优先真实数据文件，失败回退内置样本；再套用配置（ADR-063）。
     private func makeSession() -> ImeSession? {
         var session: ImeSession?
+        var failure: String?
         if let resources = Bundle.main.resourceURL {
             let wubi = resources.appendingPathComponent("wubi86-core.tsv").path
             let chars = resources.appendingPathComponent("pinyin-chars.tsv").path
@@ -84,10 +88,20 @@ final class LampyrisInputController: IMKInputController {
                 let wordsPath = (charsPath != nil && fm.fileExists(atPath: words)) ? words : nil
                 session = ImeSession(
                     wubiPath: wubi, pinyinCharsPath: charsPath, pinyinWordsPath: wordsPath)
+                if session == nil {
+                    failure = "码表损坏或无法解析：\(wubi)"
+                } else if charsPath == nil {
+                    failure = "缺少拼音字表，混输的拼音兜底不可用：\(chars)"
+                }
+            } else {
+                failure = "缺少码表：\(wubi)"
             }
+        } else {
+            failure = "找不到应用资源目录，无法加载数据文件"
         }
+        dataLoadError = failure
         if session == nil {
-            NSLog("萤火虫：未找到数据文件，回退内置样本引擎")
+            NSLog("萤火虫：\(failure ?? "数据加载失败")，回退内置样本引擎")
             session = ImeSession.sample()
         }
         if let mode = ImeConfig.string("mode") {
@@ -139,6 +153,23 @@ final class LampyrisInputController: IMKInputController {
         }
     }
 
+    /// 数据文件异常在宿主中可见；同一错误只提示一次（ADR-063）。
+    private func presentDataError() {
+        guard let message = dataLoadError else {
+            lastAlertedDataError = nil
+            return
+        }
+        guard message != lastAlertedDataError else { return }
+        lastAlertedDataError = message
+        NSLog("萤火虫：\(message)")
+        DispatchQueue.main.async {
+            let alert = NSAlert()
+            alert.messageText = "数据文件异常"
+            alert.informativeText = message + "\n\n请重新安装完整包；排查步骤见文档「故障恢复」。"
+            alert.runModal()
+        }
+    }
+
     override func menu() -> NSMenu! {
         let menu = NSMenu()
         let current = ImeConfig.string("mode") ?? "mixed"
@@ -159,6 +190,11 @@ final class LampyrisInputController: IMKInputController {
         }
         if let message = ImeConfig.errorMessage() {
             let status = NSMenuItem(title: "配置错误：\(message)", action: nil, keyEquivalent: "")
+            status.isEnabled = false
+            menu.addItem(status)
+        }
+        if let message = dataLoadError {
+            let status = NSMenuItem(title: "数据文件错误：\(message)", action: nil, keyEquivalent: "")
             status.isEnabled = false
             menu.addItem(status)
         }
