@@ -275,6 +275,33 @@ impl Store {
 mod tests {
     use super::*;
     #[test]
+    fn adversarial_corpus_is_handled_without_panicking() {
+        let long_number = "9".repeat(1000);
+        let cases: Vec<String> = vec![
+            String::new(),
+            "\n\n".into(),
+            "# only comment\n".into(),
+            "\u{feff}wubi\tab\t词\t1\n".into(),
+            "wubi\tab\t词\t1\r\n".into(),
+            "wubi\tab\t词\n".into(),
+            "wubi\t\t词\t1\n".into(),
+            "\tab\t词\t1\n".into(),
+            "wubi\tab\t词\t0\n".into(),
+            "wubi\tab\t词\t-1\n".into(),
+            format!("wubi\tab\t词\t{long_number}\n"),
+            "wubi\tab\t词\tx\n".into(),
+            "wubi\tAB\t词\t1\n".into(),
+            "wubi\tab\t🦄\t1\n".into(),
+            "wubi\tab\t词\t1\t2\n".into(),
+            "a".repeat(100_000),
+        ];
+        for case in cases {
+            // 只要求“不 panic”；合法/非法由既有单测断言。
+            let _ = parse(&case);
+        }
+    }
+
+    #[test]
     fn snapshots_share_data_refresh_atomically_and_export_latest_version() {
         let dir = std::env::temp_dir().join(format!("yinghuo-shared-user-{}", std::process::id()));
         fs::create_dir_all(&dir).unwrap();

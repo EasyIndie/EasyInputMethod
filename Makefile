@@ -2,6 +2,7 @@
 # 用法: make help
 SHELL := /bin/bash
 CARGO ?= cargo
+FUZZ_SECONDS ?= 30
 
 .PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview
 
@@ -60,8 +61,10 @@ verify: ## 提交前全量验证（文档阶段只跑隐私断言）
 	fi
 	@$(MAKE) verify-no-network
 
-fuzz: check-workspace ## 解析器 fuzz（需 nightly）
-	$(CARGO) +nightly fuzz run dict_parser
+fuzz: check-workspace ## 解析器 fuzz（需 nightly + cargo-fuzz；FUZZ_SECONDS 可调）
+	$(CARGO) +nightly fuzz run dict_parser -- -max_total_time=$(FUZZ_SECONDS)
+	$(CARGO) +nightly fuzz run table_parser -- -max_total_time=$(FUZZ_SECONDS)
+	$(CARGO) +nightly fuzz run pinyin_parser -- -max_total_time=$(FUZZ_SECONDS)
 
 clean: ## 清理构建产物
 	$(CARGO) clean || true

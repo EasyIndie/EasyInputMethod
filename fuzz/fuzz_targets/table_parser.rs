@@ -1,0 +1,15 @@
+// 系统码表 TSV 解析器（`ime-table::Table::from_tsv`）的有界 fuzz 目标。
+#![no_main]
+
+use libfuzzer_sys::fuzz_target;
+
+const MAX_LEN: usize = 256 * 1024;
+
+fuzz_target!(|data: &[u8]| {
+    if data.len() > MAX_LEN {
+        return;
+    }
+    if let Ok(text) = std::str::from_utf8(data) {
+        let _ = ime_table::Table::from_tsv(text);
+    }
+});

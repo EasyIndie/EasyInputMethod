@@ -296,6 +296,29 @@ impl Engine for CodeTableEngine {
 mod tests {
     use super::*;
 
+    #[test]
+    fn adversarial_corpus_is_handled_without_panicking() {
+        let long_number = "9".repeat(1000);
+        let cases: Vec<String> = vec![
+            String::new(),
+            "\n\n".into(),
+            "# only comment\n".into(),
+            "\u{feff}wq\t你\t1\n".into(),
+            "wq\t你\t1\r\n".into(),
+            "wq\t你\n".into(),
+            "wq\t\t1\n".into(),
+            "\t你\t1\n".into(),
+            format!("wq\t你\t{long_number}\n"),
+            "wq\t你\tx\n".into(),
+            "wq\t你\t1\textra\n".into(),
+            "wq\t🦄\t1\n".into(),
+            "a".repeat(100_000),
+        ];
+        for case in cases {
+            let _ = Table::from_tsv(&case);
+        }
+    }
+
     /// 真实样本的迷你核心码表（与 `data/generated/wubi86-core.tsv` 同构）。
     fn core_table() -> Table {
         Table::from_tsv(

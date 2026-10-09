@@ -1,0 +1,38 @@
+[package]
+name = "lampyris-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2021"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "0.4"
+ime-dict = { path = "../crates/ime-dict" }
+ime-table = { path = "../crates/ime-table" }
+ime-pinyin = { path = "../crates/ime-pinyin" }
+
+[[bin]]
+name = "dict_parser"
+path = "fuzz_targets/dict_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "table_parser"
+path = "fuzz_targets/table_parser.rs"
+test = false
+doc = false
+bench = false
+
+[[bin]]
+name = "pinyin_parser"
+path = "fuzz_targets/pinyin_parser.rs"
+test = false
+doc = false
+bench = false
+
+# 独立 workspace：不加入主 workspace，避免把 nightly/dev 依赖带入发布构建。
+[workspace]

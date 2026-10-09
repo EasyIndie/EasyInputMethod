@@ -409,6 +409,32 @@ mod tests {
     }
 
     #[test]
+    fn adversarial_corpus_is_handled_without_panicking() {
+        let long_number = "9".repeat(1000);
+        let cases: Vec<String> = vec![
+            String::new(),
+            "\n\n".into(),
+            "# only comment\n".into(),
+            "\u{feff}ni\t你\t1\n".into(),
+            "ni\t你\t1\r\n".into(),
+            "ni\t你\n".into(),
+            "NI\t你\t1\n".into(),
+            "ni\t你你\t1\n".into(),
+            format!("ni\t你\t{long_number}\n"),
+            "ni\t你\tx\n".into(),
+            "ni hao\t你好\t1\n".into(),
+            "ni  hao\t你好\t1\n".into(),
+            "ni\thao\t1\n".into(),
+            "ni\t你\t1\nni hao\t你好\t2\n".into(),
+            "a".repeat(100_000),
+        ];
+        for case in cases {
+            // 同一份输入同时充当字表与词表。
+            let _ = TablePinyinBackend::from_tsv(&case, &case, "corpus");
+        }
+    }
+
+    #[test]
     fn reverse_lookup_char_and_word() {
         let b = sample();
         assert_eq!(b.reverse_lookup("我").as_deref(), Some("wo"));
