@@ -5,9 +5,26 @@
 
 import Cocoa
 
-/// 可点击的候选标签：单击即选中该候选。
+/// 可点击的候选标签：单击即选中该候选；鼠标悬停时高亮（体验打磨）。
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
+    private(set) var isHovered = false
+    private var hoverTrackingArea: NSTrackingArea?
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        setUpLayer()
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        setUpLayer()
+    }
+
+    private func setUpLayer() {
+        wantsLayer = true
+        layer?.cornerRadius = 4
+    }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
@@ -17,6 +34,32 @@ final class CandidateLabel: NSTextField {
 
     override func resetCursorRects() {
         addCursorRect(bounds, cursor: .pointingHand)
+    }
+
+    /// 悬停跟踪：`.inVisibleRect` 让系统在标签被复用/移动后自动更新区域。
+    override func updateTrackingAreas() {
+        super.updateTrackingAreas()
+        if let hoverTrackingArea { removeTrackingArea(hoverTrackingArea) }
+        let area = NSTrackingArea(
+            rect: .zero,
+            options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect],
+            owner: self, userInfo: nil)
+        addTrackingArea(area)
+        hoverTrackingArea = area
+    }
+
+    override func mouseEntered(with event: NSEvent) { setHovered(true) }
+    override func mouseExited(with event: NSEvent) { setHovered(false) }
+
+    /// 切换悬停高亮；重复设置同一状态不触发重绘。
+    func setHovered(_ hovered: Bool) {
+        guard isHovered != hovered else { return }
+        isHovered = hovered
+        guard wantsLayer else { return }
+        layer?.backgroundColor =
+            hovered
+            ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
+            : nil
     }
 }
 
@@ -172,6 +215,8 @@ final class CandidateWindow {
             label.usesSingleLineMode = true
             label.toolTip = candidate.text
             label.onClick = { [weak self] in self?.onSelect?(i) }
+            // 内容变化后复位悬停，避免旧高亮残留（标签会被复用）。
+            label.setHovered(false)
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             stack.addArrangedSubview(label)
         }
@@ -191,11 +236,52 @@ final class CandidateWindow {
         onSelect?(index)
     }
 
+    /// 供自测：模拟鼠标悬停第 `index` 个候选（不经过真实鼠标事件）。
+    func simulateHover(at index: Int, _ hovered: Bool) {
+        guard index >= 0, index < renderedCount else { return }
+        labels[index].setHovered(hovered)
+    }
+
+    /// 供自测：第 `index` 个候选当前是否处于悬停高亮。
+    func isHovered(at index: Int) -> Bool {
+        guard index >= 0, index < renderedCount else { return false }
+        return labels[index].isHovered
+    }
+
+    /// 供自测：第 `index` 个候选是否具备可渲染高亮的图层（防止高亮静默失效）。
+    func isHoverRenderable(at index: Int) -> Bool {
+        guard index >= 0, index < renderedCount else { return false }
+        return labels[index].wantsLayer
+    }
+
+    /// 从多个屏幕 frame 中选出与光标最相关的一个：
+    /// 优先相交面积最大者（副屏可为负坐标）；退而取包含光标中心的屏幕；再退回第一个。
+    /// 独立于 `NSScreen` 实例，便于隔离几何测试（多屏 / 负坐标 / 高分屏）。
+    static func bestScreenIndex(for caret: NSRect, among frames: [NSRect]) -> Int? {
+        guard !frames.isEmpty else { return nil }
+        var bestIndex: Int?
+        var bestOverlap: CGFloat = 0
+        for (index, frame) in frames.enumerated() where frame.intersects(caret) {
+            let overlap = frame.intersection(caret)
+            let area = overlap.isNull ? 0 : overlap.width * overlap.height
+            if bestIndex == nil || area > bestOverlap {
+                bestIndex = index
+                bestOverlap = area
+            }
+        }
+        if let bestIndex { return bestIndex }
+        let center = NSPoint(x: caret.midX, y: caret.midY)
+        return frames.firstIndex { $0.contains(center) } ?? 0
+    }
+
     /// 在光标矩形上方显示。
     func show(at caret: NSRect) {
         refreshAppearance()
         startThemeTimer()
-        let screen = NSScreen.screens.first { $0.frame.intersects(caret) } ?? NSScreen.main
+        // 用 frame 选屏、visibleFrame 钳制，避免跨屏/菜单栏区域错位（体验打磨）。
+        let screens = NSScreen.screens
+        let index = Self.bestScreenIndex(for: caret, among: screens.map(\.frame))
+        let screen = index.flatMap { $0 < screens.count ? screens[$0] : nil } ?? NSScreen.main
         let area = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
         layout(at: caret, within: area)
         panel.orderFront(nil)
