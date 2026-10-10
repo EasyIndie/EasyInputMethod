@@ -200,6 +200,11 @@ impl Session {
         self.width_override = Some(!self.width_override.unwrap_or(self.full_width));
         self.cancel();
     }
+
+    /// 当前是否全角（含临时切换覆盖）。
+    pub fn is_full_width(&self) -> bool {
+        self.width_override.unwrap_or(self.full_width)
+    }
     fn translate(&mut self, key: char) -> Option<String> {
         if !self.english && self.chinese_punctuation {
             let mapped = match key {
@@ -741,6 +746,22 @@ mod tests {
         assert_eq!(calls.load(Ordering::SeqCst), 2);
         assert_eq!(s.buffer(), "abcd");
         assert!(s.candidates().is_empty());
+    }
+
+    #[test]
+    fn full_width_reflects_options_and_override() {
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_input_options(false, false);
+        assert!(!s.is_full_width());
+        s.toggle_width();
+        assert!(s.is_full_width());
+        s.toggle_width();
+        assert!(!s.is_full_width());
+        s.set_input_options(true, false);
+        // set_input_options 只更新基线；Shift+Space 的临时覆盖仍生效。
+        assert!(!s.is_full_width());
+        s.toggle_width();
+        assert!(s.is_full_width());
     }
 
     #[test]

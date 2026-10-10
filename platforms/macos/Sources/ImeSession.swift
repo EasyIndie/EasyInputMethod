@@ -119,6 +119,8 @@ final class ImeSession {
     func prepare() { _ = ime_session_configure(handle) }
 
     var isEnglish: Bool { ime_session_is_english(handle) == 1 }
+    /// 当前是否全角（含 Shift+Space 临时切换）。
+    var isFullWidth: Bool { ime_session_is_full_width(handle) == 1 }
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 

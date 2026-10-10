@@ -172,9 +172,8 @@ final class LampyrisInputController: IMKInputController {
 
     override func menu() -> NSMenu! {
         let menu = NSMenu()
-        let current = ImeConfig.string("mode") ?? "mixed"
         let item = NSMenuItem(
-            title: "切换输入模式（当前：\(current)）",
+            title: "切换输入模式（当前：\(stateDescription())）",
             action: #selector(cycleMode(_:)),
             keyEquivalent: "")
         item.target = self
@@ -225,6 +224,24 @@ final class LampyrisInputController: IMKInputController {
     @objc private func exportWords() {
         guard let session else { return }
         cancelClientComposition(); UserDictionaryUI.exportFile(session)
+    }
+
+    /// 模式显示名（混输/五笔/拼）。
+    private func modeName() -> String {
+        let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
+        return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][raw] ?? "混输"
+    }
+
+    /// 菜单里的完整状态：模式 · 中/英 · 半角/全角（T-MVP-06）。
+    private func stateDescription() -> String {
+        let language = (session?.isEnglish ?? false) ? "英" : "中"
+        let width = (session?.isFullWidth ?? false) ? "全角" : "半角"
+        return "\(modeName())·\(language)·\(width)"
+    }
+
+    /// 候选窗内的紧凑状态徽标：模式（+ 全）。
+    private func statusBadge() -> String {
+        (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
     }
 
     @objc private func showAbout() {
@@ -356,7 +373,16 @@ final class LampyrisInputController: IMKInputController {
         }
         let window = candidateWindow ?? CandidateWindow()
         candidateWindow = window
-        window.update(candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount)
+        window.onSelect = { [weak self] index in
+            guard let self, let client = self.activeClient, let session = self.session else { return }
+            if let text = session.select(index) {
+                self.commit(text, to: client)
+            }
+            self.candidateWindow?.hide()
+        }
+        window.update(
+            candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
+            status: statusBadge())
         window.show(at: caretRect(client))
     }
 

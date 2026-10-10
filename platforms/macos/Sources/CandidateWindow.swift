@@ -1,19 +1,45 @@
 // 候选窗：纯代码绘制的无边框 NSPanel（不使用 Interface Builder）。
 //
 // 当前页候选共享渲染，超过屏幕宽度时自动竖排。
+// 候选支持鼠标点选；可显示一个紧凑状态徽标（模式/中英/全角，T-MVP-06）。
 
 import Cocoa
+
+/// 可点击的候选标签：单击即选中该候选。
+final class CandidateLabel: NSTextField {
+    var onClick: (() -> Void)?
+
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+
+    override func mouseDown(with event: NSEvent) {
+        onClick?()
+    }
+
+    override func resetCursorRects() {
+        addCursorRect(bounds, cursor: .pointingHand)
+    }
+}
 
 final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
     private var themeTimer: Timer?
     private let pageLabel = NSTextField(labelWithString: "")
-    private var labels: [NSTextField] = []
+    private let statusLabel = NSTextField(labelWithString: "")
+    private let separatorLabel = NSTextField(labelWithString: "│")
+    private var labels: [CandidateLabel] = []
     private var renderedCount = 0
     private var widthConstraints: [NSLayoutConstraint] = []
 
+    /// 点击第 `index` 个候选时回调（由宿主执行选字/上屏）。
+    var onSelect: ((Int) -> Void)?
+
     var frame: NSRect { panel.frame }
+
+    /// 当前显示的状态徽标（无则为 nil），供自测断言。
+    var displayedStatus: String? {
+        stack.arrangedSubviews.contains(statusLabel) ? statusLabel.stringValue : nil
+    }
 
     /// 当前已渲染的候选文本（含来源标签），供自测断言。
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
@@ -55,6 +81,10 @@ final class CandidateWindow {
         ])
         panel.contentView = container
         // 空闲不轮询：主题计时器只在候选窗可见时运行（MVP-13）。
+        for label in [pageLabel, statusLabel, separatorLabel] {
+            label.font = NSFont.systemFont(ofSize: 11)
+            label.textColor = .secondaryLabelColor
+        }
         // Warm Chinese font/layout while hidden, before the first input event.
         update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
         update(candidates: [])
@@ -110,7 +140,11 @@ final class CandidateWindow {
     }
 
     /// Refresh visible candidates using the current appearance.
-    func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1) {
+    ///
+    /// `status`（可选）为紧凑状态徽标（模式/中英/全角），仅在非空时显示。
+    func update(
+        candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1, status: String? = nil
+    ) {
         refreshAppearance()
 
         NSLayoutConstraint.deactivate(widthConstraints)
@@ -121,29 +155,40 @@ final class CandidateWindow {
         for view in stack.arrangedSubviews {
             view.removeFromSuperview()
         }
+        // 状态徽标：模式/中英/全角（T-MVP-06）。
+        if let status, !status.isEmpty {
+            statusLabel.stringValue = status
+            statusLabel.toolTip = status
+            stack.addArrangedSubview(statusLabel)
+            stack.addArrangedSubview(separatorLabel)
+        }
         // 仅在当前页出现多种来源时标注，避免常态噪声（ADR-057）。
         let showSources = Set(candidates.map(\.source)).count > 1
         for (i, candidate) in candidates.enumerated() {
-            if i == labels.count { labels.append(NSTextField(labelWithString: "")) }
+            if i == labels.count { labels.append(CandidateLabel(labelWithString: "")) }
             let label = labels[i]
             label.attributedStringValue = Self.render(index: i, candidate, showSource: showSources)
             label.lineBreakMode = .byTruncatingTail
             label.usesSingleLineMode = true
             label.toolTip = candidate.text
+            label.onClick = { [weak self] in self?.onSelect?(i) }
             label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
             stack.addArrangedSubview(label)
         }
         renderedCount = candidates.count
         if !candidates.isEmpty, pageCount > 1 {
             pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= 翻页"
-            pageLabel.font = NSFont.systemFont(ofSize: 11)
-            pageLabel.textColor = .secondaryLabelColor
             stack.addArrangedSubview(pageLabel)
         }
         panel.contentView?.layoutSubtreeIfNeeded()
         let fitting = stack.fittingSize
         panel.setContentSize(
             NSSize(width: max(fitting.width + 20, 44), height: max(fitting.height + 10, 28)))
+    }
+
+    /// 供自测：模拟点击第 `index` 个候选（不经过真实鼠标事件）。
+    func simulateClick(at index: Int) {
+        onSelect?(index)
     }
 
     /// 在光标矩形上方显示。

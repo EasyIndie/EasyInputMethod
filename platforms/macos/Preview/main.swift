@@ -20,6 +20,12 @@ final class PreviewInput: NSTextView {
         isRichText = false
         textContainerInset = NSSize(width: 16, height: 16)
         setAccessibilityLabel("调试输入区")
+        // 鼠标点选候选（T-MVP-06）。
+        candidates.onSelect = { [weak self] index in
+            guard let self, let text = self.session.select(index) else { return }
+            self.committed += text
+            self.refresh()
+        }
     }
     required init?(coder: NSCoder) { return nil }
 
@@ -74,7 +80,10 @@ final class PreviewInput: NSTextView {
         let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
         status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
-            candidates.update(candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount)
+            let badge = ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][session.mode] ?? session.mode
+            candidates.update(
+                candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
+                status: session.isFullWidth ? "\(badge)·全" : badge)
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
@@ -217,6 +226,23 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard geometry.displayedCandidateTexts == ["1.你"] else {
         fputs("单一来源页不应标注来源：\(geometry.displayedCandidateTexts)\n", stderr); exit(1)
     }
+    // 状态徽标 + 鼠标点选（T-MVP-06）。
+    geometry.update(
+        candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)],
+        status: "五笔·全")
+    guard geometry.displayedStatus == "五笔·全" else {
+        fputs("状态徽标未显示。\n", stderr); exit(1)
+    }
+    geometry.update(candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)])
+    guard geometry.displayedStatus == nil else { fputs("无状态时不应显示徽标。\n", stderr); exit(1) }
+    var picked = -1
+    geometry.onSelect = { picked = $0 }
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
+        ImeCandidate(text: "尼", code: "ni", source: .pinyin, isPrefix: false),
+    ])
+    geometry.simulateClick(at: 1)
+    guard picked == 1 else { fputs("鼠标点选回调索引错误：\(picked)\n", stderr); exit(1) }
     // 数据加载失败可诊断：缺文件必须返回 nil，而不是静默样本兜底（ADR-063）。
     guard
         ImeSession(

@@ -411,6 +411,19 @@ pub extern "C" fn ime_session_is_english(session: *mut ImeSession) -> i32 {
     )
 }
 
+/// 当前是否全角（含 Shift+Space 临时切换）；非法/空会话返回 -1。
+#[no_mangle]
+pub extern "C" fn ime_session_is_full_width(session: *mut ImeSession) -> i32 {
+    catch_value(
+        || {
+            // SAFETY: the caller owns a live session.
+            let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+            Ok(i32::from(s.session.is_full_width()))
+        },
+        -1,
+    )
+}
+
 /// Current session mode: mixed=0, wubi=1, pinyin=2.
 #[no_mangle]
 pub extern "C" fn ime_session_mode(session: *mut ImeSession) -> i32 {
@@ -816,6 +829,18 @@ mod tests {
         }
         ime_string_free(committed);
 
+        ime_session_free(s);
+    }
+
+    #[test]
+    fn full_width_accessor_tracks_toggle() {
+        let s = ime_session_new();
+        assert_eq!(ime_session_is_full_width(s), 0);
+        ime_session_toggle_width(s);
+        assert_eq!(ime_session_is_full_width(s), 1);
+        ime_session_toggle_width(s);
+        assert_eq!(ime_session_is_full_width(s), 0);
+        assert_eq!(ime_session_is_full_width(ptr::null_mut()), -1);
         ime_session_free(s);
     }
 
