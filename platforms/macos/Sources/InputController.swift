@@ -178,21 +178,13 @@ final class LampyrisInputController: IMKInputController {
             keyEquivalent: "")
         item.target = self
         menu.addItem(item)
-        let english = NSMenuItem(
-            title: "临时中英切换（当前：\((session?.isEnglish ?? false) ? "英文" : "中文")）",
-            action: #selector(toggleEnglishMode), keyEquivalent: "")
-        english.target = self
-        menu.addItem(english)
-        let width = NSMenuItem(
-            title: "临时全/半角（当前：\((session?.isFullWidth ?? false) ? "全角" : "半角")）",
-            action: #selector(toggleWidthMode), keyEquivalent: "")
-        width.target = self
-        menu.addItem(width)
+        menu.addItem(NSMenuItem.separator())
         for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
             ("导出用户词库…", #selector(exportWords)), ("拼音反查…", #selector(lookupPinyin))] {
             let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
             entry.target = self; menu.addItem(entry)
         }
+        menu.addItem(NSMenuItem.separator())
         let about = NSMenuItem(title: "关于 Lampyris…", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
@@ -268,16 +260,6 @@ final class LampyrisInputController: IMKInputController {
         alert.messageText = "萤火虫 Lampyris \(version)（构建 \(build)）"
         alert.informativeText = "源码提交：\(commit)\nGPL-3.0-or-later · 默认离线、零遥测、无账号"
         alert.runModal()
-    }
-
-    @objc private func toggleEnglishMode() {
-        cancelClientComposition()
-        session?.toggleEnglish()
-    }
-
-    @objc private func toggleWidthMode() {
-        cancelClientComposition()
-        session?.toggleWidth()
     }
 
     @objc private func cycleMode(_ sender: Any?) {
