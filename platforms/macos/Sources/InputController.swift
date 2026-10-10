@@ -184,6 +184,9 @@ final class LampyrisInputController: IMKInputController {
             let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
             entry.target = self; menu.addItem(entry)
         }
+        let about = NSMenuItem(title: "关于 Lampyris…", action: #selector(showAbout), keyEquivalent: "")
+        about.target = self
+        menu.addItem(about)
         if let session, session.dictionaryError != IME_OK {
             let status = NSMenuItem(title: "用户词库读写失败，请检查权限或文件格式", action: nil, keyEquivalent: "")
             menu.addItem(status)
@@ -222,6 +225,22 @@ final class LampyrisInputController: IMKInputController {
     @objc private func exportWords() {
         guard let session else { return }
         cancelClientComposition(); UserDictionaryUI.exportFile(session)
+    }
+
+    @objc private func showAbout() {
+        cancelClientComposition()
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        var commit = "未知"
+        if let url = Bundle.main.resourceURL?.appendingPathComponent("SOURCE-COMMIT"),
+           let text = try? String(contentsOf: url, encoding: .utf8) {
+            commit = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        let alert = NSAlert()
+        alert.messageText = "萤火虫 Lampyris \(version)（构建 \(build)）"
+        alert.informativeText = "源码提交：\(commit)\nGPL-3.0-or-later · 默认离线、零遥测、无账号"
+        alert.runModal()
     }
 
     @objc private func cycleMode(_ sender: Any?) {
