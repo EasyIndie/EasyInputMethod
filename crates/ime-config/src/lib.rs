@@ -512,6 +512,17 @@ mod tests {
         assert_eq!(read(tmp.path()), before);
     }
 
+    #[cfg(unix)]
+    #[test]
+    fn written_config_is_owner_only() {
+        use std::os::unix::fs::PermissionsExt;
+        let tmp = TempFile::new("mode");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        store.set("candidate.count", "5").unwrap();
+        let mode = std::fs::metadata(tmp.path()).unwrap().permissions().mode() & 0o777;
+        assert_eq!(mode, 0o600, "配置应为仅属主可读写（SEC-02）");
+    }
+
     #[test]
     fn enum_and_bool_literals_accept_quoted_and_bare_forms() {
         let tmp = TempFile::new("literals");

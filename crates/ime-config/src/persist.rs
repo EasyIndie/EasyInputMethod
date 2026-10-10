@@ -13,7 +13,10 @@ use crate::config::{Config, ConfigValue};
 use crate::schema::{self, ValueType};
 use crate::ConfigError;
 
-/// 锁文件陈旧阈值：超过视为 crash 残留（唯一写者 = IME 进程，此锁仅作底层防护）。
+/// 锁文件陈旧阈值：超过视为 crash 残留并自动回收。
+///
+/// 配置写入是毫秒级、内容是**可重建的偏好**，故允许 30s 后自动回收；
+/// 用户词库是**用户数据**，采用更保守的策略（**不自动删锁**，见 `docs/故障恢复.md`）。
 const STALE_LOCK_TIMEOUT: Duration = Duration::from_secs(30);
 
 /// 读取文件全文；文件不存在返回 `Ok(None)`。
@@ -183,7 +186,15 @@ pub(crate) fn atomic_write(path: &Path, contents: &str) -> Result<(), ConfigErro
     let tmp_path = dir.join(format!(".{file_name}.tmp.{}", std::process::id()));
 
     let result = (|| -> std::io::Result<()> {
-        let mut file = File::create(&tmp_path)?;
+        let mut options = OpenOptions::new();
+        options.write(true).create(true).truncate(true);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            // 与用户词库一致：配置文件也仅属主可读写（SEC-02）。
+            options.mode(0o600);
+        }
+        let mut file = options.open(&tmp_path)?;
         file.write_all(contents.as_bytes())?;
         file.sync_all()?;
         drop(file);
