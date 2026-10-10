@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（偏好设置面板 ADR-070、用户反馈入口 ADR-071；候选窗体验打磨 A/C） |
+| 最后更新 | 2026-10-11（设置面板 ADR-070、反馈入口 ADR-071、候选窗 A/C 已合并 main 并通过统一验收） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ 三 PR 已合并 main 并通过统一验收（2026-10-11，pi）**：#9 候选窗 A/C → #10 设置面板 → #11 反馈入口依次合并（合并 commit）；`make verify`、预览冒烟、完整宿主 `build.sh`、main push 的 CI 与 macOS Acceptance Package 均成功。**下一步：实机重装 main 构建做统一真机验收**。
 - **✅ 用户反馈入口（T-P2-03，ADR-071，2026-10-11，pi）**：输入法菜单「反馈问题与建议…」→ AppKit 提示 + 本地诊断信息（版本/构建/提交/系统/架构，不含隐私），用户可「复制」或**主动**用系统浏览器打开公开 GitHub Issues；App 自身**零网络、不预填 URL、不上报**；敏感漏洞指向 `SECURITY.md` 私下渠道。
 - **✅ 偏好设置面板（T-P2-02，ADR-070，2026-10-11，pi）**：`platforms/macos/Sources/Settings.swift` 非模态 `NSPanel`，**完全由 `ime_config_schema()` 驱动**（零硬编码）；入口＝输入法菜单「偏好设置…」(⌘,)。`OptionSpec`/C ABI 追加 `title_zh`/`enum_labels_zh`；写入只经 `ime_config_set`；`ConfigWatcher` 支持多观察者。顺带修正 enum 列表“空串终止”约定。
 - **✅ 体验打磨 A/C（2026-10-11，pi）**：候选窗选屏改为「相交面积最大 → 光标中心 → 首屏」兜底（`CandidateWindow.bestScreenIndex`），修正副屏（负坐标）/跨屏/边缘定位；候选标签加**鼠标悬停高亮**（`CandidateLabel` + `NSTrackingArea`）；两者均补入预览冒烟隔离断言。**B（首次激活轻量引导）未做**，见 §4。
@@ -129,6 +130,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：三 PR 合并 + main 统一验收
+- #9（候选窗 A/C）→ #10（设置面板 ADR-070）→ #11（反馈入口 ADR-071）依次以 merge commit 合并；堆叠分支同步 main 后 CI（check/macos/fuzz）全绿。
+- main 统一验收：`make verify` ✅、预览冒烟 ✅、完整宿主 `build.sh` ✅；main push 的 CI 与 macOS Acceptance Package 均 success。
+- 遗留：本机安装仍是旧构建；需重装 main 产物做**真机验收**（菜单入口/面板/反馈）。
 
 ### 2026-10-11 / pi：用户反馈入口（T-P2-03，ADR-071）
 - 输入法菜单加「反馈问题与建议…」→ `platforms/macos/Sources/Feedback.swift`：展示本地诊断信息（版本/构建/提交/系统/架构，不含隐私），可复制或**主动**用浏览器打开公开 GitHub Issues；敏感漏洞指向 `SECURITY.md`。
