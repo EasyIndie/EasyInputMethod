@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-10（MVP-11 二进制不含源码包，ADR-064） |
+| 最后更新 | 2026-10-10（发布渠道 GitHub Release + Pages，ADR-065） |
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -45,6 +45,7 @@
 - **✅ MVP-13 完成（2026-10-09，pi）**：`from_tsv` 改为排序分组（O(n log n)），核心表冷启动 **3219ms → 41ms**；候选窗主题计时器改为**仅可见时运行**；新增 `ime-cli --example startup_cost` 证据。
 - **⏸ MVP-14未完成（待外部环境）**：universal 包已由 CI 产出；更多 macOS 版本与 Icon Composer 分层外观需其他机器/Xcode 27+设计资源，本机无法关闭。
 - **✅ MVP-12 完成（2026-10-09，pi）**：更正模式/配置跨线程契约文档（`配置架构.md` §9、`技术方案.md` §5.3）：会话句柄**单线程绑定**、配置接口**线程安全只读**；`subscribe` 回调在触发线程同步派发，宿主需自行转主线程（`ConfigWatcher`）；补全 `ime_config_init`/`ime_config_last_error` 签名。
+- **✅ 发布渠道确定（ADR-065，2026-10-10，pi）**：GitHub **Release**（产物）+ **Pages**（指引）。新增 `.github/workflows/release.yml`（仅 tag/手动；二进制+源码**同页**）与 `pages.yml`（初期手动）+ `site/` 落地页；`SOURCE.txt` 同时指向同页源码包与公开仓库 tag。**不自动发布**；转公开后打 `v0.1.0` 即生效。
 - **✅ MVP-11 完成（2026-10-10，pi）**：新增 `docs/发布说明.md` 与发布清单；打包按 **GPL-3.0 §6(d)（ADR-064）** 改为**二进制包不含源码**（`prepare.sh` 同时产 `Lampyris-0.1.0-source.tar.gz`），二进制包 11.5MB→**2.95MB**，`run-repro.sh` 用源码包离线重建逐字节一致，CI 两个 workflow 均上传两份。归档到长期位置与分发渠道/接收范围仍待用户操作。
 - **✅ MVP-10 完成（2026-10-09，pi）**：`make verify` 缺 `cargo-deny` 直接失败（`ALLOW_MISSING_DENY=1` 仅本地降级且标注不可提交）；CI 加 `permissions: contents: read`；所有第三方 Actions 固定到审定 commit SHA（附版本注释），升级方法见 `CONTRIBUTING.md` §9；分两个提交。
 - **✅ MVP-09 完成（ADR-063，2026-10-09，pi）**：`makeSession()` 区分真实加载与降级并记录可读原因；降级时菜单常驻「数据文件错误」条目 + 同一错误只弹一次 NSAlert；样本引擎仅作安全网；`docs/故障恢复.md` §4 给恢复步骤；预览冒烟断言缺文件返回 nil。
@@ -65,10 +66,10 @@
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **MVP-05**：正式实机 DoD 矩阵（**需用户实机**，我不催重启/重装）；**MVP-11** 的归档位置与分发渠道/接收范围待用户操作（打包机制已就绪）。
+1. **MVP-05**：正式实机 DoD 矩阵（**需用户实机**，我不催重启/重装）。**发布**：转公开（先做 `docs/reviews/004` 公开前复核）→ 打 `v0.1.0` tag 触发 `release.yml` → 启用 Pages 并手动跑 `pages.yml`。
 2. **MVP-14**（C 类）：需其他 macOS 版本机器 / Xcode 27 分层图标资源；不阻塞首版。
 
-> **A/B 类缺口（MVP-01…04、06…13）已全部闭环**（ADR-057…064）；MVP-05 验收与 MVP-14 依赖用户或外部环境。
+> **A/B 类缺口（MVP-01…04、06…13）与 MVP-11 已全部闭环**（ADR-057…065）；MVP-05 验收与 MVP-14 依赖用户或外部环境。
 
 ## 5. 待决 / 阻塞
 
@@ -136,6 +137,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-10 / pi：发布渠道 GitHub Release + Pages（ADR-065）
+- 新增 `.github/workflows/release.yml`（仅 tag `v*`/手动；用 CI 已签名公证的产物建 Release，**二进制 + 源码同页**）与 `pages.yml`（初期手动，公开后放开 push）+ `site/index.html` 落地页。
+- `SOURCE.txt` 增补指向公开仓库对应 tag；`docs/发布说明`§8、`发布清单`、`README` 同步。**不自动发布**；转公开后打 tag 即生效。
+- 待用户：公开前复核（004）→ 转公开 → 打 `v0.1.0` → 部署 Pages。
 
 ### 2026-10-10 / pi：MVP-11 二进制不含源码包（ADR-064）
 - 按 GPL-3.0 §6(d)：`prepare.sh` 同时产出二进制包（不含 `SOURCE/`）与 `Lampyris-0.1.0-source.tar.gz`；二进制包内 `SOURCE.txt` 指向源码；二进制 11.5MB→**2.95MB**（源码包 8.4MB）。

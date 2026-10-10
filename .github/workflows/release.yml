@@ -1,0 +1,88 @@
+name: Release
+
+# 仅由 tag（v*）或手动触发；不随 push 自动发布（ADR-065）。
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "已存在的 tag（如 v0.1.0）"
+        required: true
+
+# 仅本工作流需要写权限（创建 Release）；其余工作流保持 contents: read。
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve tag and commit
+        id: meta
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            tag="${{ inputs.tag }}"
+          else
+            tag="${GITHUB_REF_NAME}"
+          fi
+          git rev-parse --verify "refs/tags/${tag}" >/dev/null
+          sha="$(git rev-list -n1 "${tag}")"
+          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
+          echo "sha=${sha}" >> "$GITHUB_OUTPUT"
+
+      - name: Fetch the signed/notarized acceptance package for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          sha="${{ steps.meta.outputs.sha }}"
+          run_id="$(gh run list -w macos-acceptance.yml --commit "${sha}" --status success \
+            --limit 1 --json databaseId -q '.[0].databaseId')"
+          if [ -z "${run_id}" ] || [ "${run_id}" = "null" ]; then
+            echo "未找到提交 ${sha} 的成功验收产物；请先让 main 的 macOS Acceptance 流程成功产出候选包。" >&2
+            exit 1
+          fi
+          gh run download "${run_id}" --dir dist
+          find dist -type f | sort
+
+      - name: Create the GitHub Release (binary + corresponding source, same page)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          tag="${{ steps.meta.outputs.tag }}"
+          mapfile -t assets < <(find dist -type f \( \
+            -name 'Lampyris-0.1.0-*.zip' -o -name 'Lampyris-0.1.0-*.zip.sha256' \
+            -o -name '*-source.tar.gz' -o -name '*-source.tar.gz.sha256' \) | sort)
+          printf '%s\n' "${assets[@]}"
+          # GPL-3.0 §6(d)：二进制与对应源码必须同页发布。
+          printf '%s\n' "${assets[@]}" | grep -q 'source.tar.gz$' \
+            || { echo "缺少对应源码包，拒绝发布（GPL §6(d)）" >&2; exit 1; }
+          printf '%s\n' "${assets[@]}" | grep -q '\.zip$' \
+            || { echo "缺少二进制包。" >&2; exit 1; }
+          notes="$(mktemp)"
+          cat > "${notes}" <<EOF
+          Lampyris ${tag} — 默认离线的五笔/拼音混合输入法（macOS，GPL-3.0-or-later）。
+
+          - **安装**：解压 \`Lampyris-0.1.0-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
+          - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-0.1.0-source.tar.gz\`（与本页同一位置）。
+          - **校验**：附件 \`.sha256\`。
+          - **兼容**：universal（arm64 + x86_64），支持 macOS 13+；仅已记录环境经验证。
+          EOF
+          if gh release view "${tag}" >/dev/null 2>&1; then
+            gh release upload "${tag}" "${assets[@]}" --clobber
+          else
+            gh release create "${tag}" "${assets[@]}" \
+              --title "Lampyris ${tag}" --notes-file "${notes}"
+          fi

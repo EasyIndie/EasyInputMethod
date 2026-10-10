@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>萤火虫 Lampyris — 默认离线的中文输入法</title>
+<meta name="description" content="萤火虫（Lampyris）：跨平台、开源可审计、默认离线的中文输入法。五笔优先、拼音兜底。">
+<style>
+  :root { color-scheme: light dark; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 3rem 1.25rem 5rem;
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
+    color: #1c1c1e; background: #fafafa;
+  }
+  @media (prefers-color-scheme: dark) { body { color: #e8e8ea; background: #17181a; } }
+  main { max-width: 44rem; margin: 0 auto; }
+  h1 { font-size: 2rem; margin: 0 0 .25rem; }
+  h1 small { font-size: 1rem; font-weight: 400; opacity: .6; margin-left: .5rem; }
+  .tag { opacity: .75; margin: 0 0 2rem; }
+  h2 { font-size: 1.1rem; margin: 2.25rem 0 .5rem; }
+  a { color: #0a7d5a; }
+  @media (prefers-color-scheme: dark) { a { color: #4ec9a0; } }
+  .buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0; }
+  .btn {
+    display: inline-block; padding: .6rem 1.1rem; border-radius: 8px; text-decoration: none;
+    border: 1px solid #0a7d5a; color: #0a7d5a; font-weight: 600;
+  }
+  .btn.primary { background: #0a7d5a; color: #fff; }
+  @media (prefers-color-scheme: dark) {
+    .btn { border-color: #4ec9a0; color: #4ec9a0; }
+    .btn.primary { background: #4ec9a0; color: #10231d; }
+  }
+  ul { padding-left: 1.2rem; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em;
+         background: rgba(127,127,127,.16); padding: .1em .35em; border-radius: 4px; }
+  footer { margin-top: 3rem; font-size: .85rem; opacity: .6; }
+</style>
+</head>
+<body>
+<main>
+  <h1>萤火虫 <small>Lampyris</small></h1>
+  <p class="tag">默认离线的中文输入法 · 五笔优先，拼音兜底 · GPL-3.0-or-later</p>
+
+  <div class="buttons">
+    <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest">下载最新版</a>
+    <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases">全部版本 / 对应源码</a>
+    <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod">源码仓库</a>
+  </div>
+
+  <h2>安装（macOS 13+，universal）</h2>
+  <ul>
+    <li>从 Release 下载 <code>Lampyris-0.1.0-universal.zip</code>，用 Finder 或 <code>ditto -x -k</code> 解压（保留执行权限）。</li>
+    <li>见包内 <code>README.md</code> 运行安装脚本；注销/重新登录。</li>
+    <li>「系统设置 → 键盘 → 文字输入」添加「萤火虫 / Lampyris」。</li>
+    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.0-source.tar.gz</code>。</li>
+  </ul>
+
+  <h2>特性</h2>
+  <ul>
+    <li>默认<strong>混输</strong>：五笔能打则快，空码自动出拼音候选。</li>
+    <li>零网络、零遥测、无账号、无广告、无云同步。</li>
+    <li>配置唯一（<code>config.toml</code>）且改动即时生效；用户词库本地、可导出/导入。</li>
+    <li>轻量：核心码表约 0.5&nbsp;MB，安装包 &lt; 15&nbsp;MB。</li>
+  </ul>
+
+  <h2>故障与恢复</h2>
+  <p>配置写坏、词库残留锁、数据文件缺失等，见仓库文档 <a href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/故障恢复.md">故障恢复</a>。</p>
+
+  <footer>
+    本页不加载任何第三方资源、不收集数据。项目以 GPL-3.0-or-later 发布；「萤火虫 / Lampyris」名称与图标保留权利。
+  </footer>
+</main>
+</body>
+</html>

@@ -21,6 +21,15 @@
 
 英文/包名 **`Lampyris`**（读 /læmˈpɪərɪs/，希腊语“发光的虫”，萤科一属；寓意“自带微光”）。不使用 `Firefly`（与 Adobe Firefly 等冲突）。bundle 标识 `cn.jokerhub.inputmethod.Lampyris`，见 ADR-056。
 
+## 下载与发布
+
+发布渠道为 **GitHub Release（产物）+ GitHub Pages（下载指引）**（ADR-065）：
+
+- 下载最新版：<https://github.com/EasyIndie/EasyInputMethod/releases/latest> —— 同一 Release 含二进制包与**对应源码包**（GPL-3.0 §6(d)）。
+- 项目主页（GitHub Pages）：由 `site/` 部署，见仓库 Settings → Pages。
+
+> ⚠️ 当前仓库为 **private**，以上链接对公众尚不可用；**转公开后生效**。发布由 tag `v*` 触发（**不自动发布**）。
+
 ## 目录
 
 ```

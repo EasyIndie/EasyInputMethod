@@ -52,8 +52,9 @@ cargo tree --locked --offline -p ime-ffi > "${STAGE}/cargo-tree.txt"
 cat > "${STAGE}/SOURCE.txt" <<'TXT'
 本安装包按 GPL-3.0-or-later 分发，但**不含源码**（第 6(d) 条）。
 
-Corresponding Source（对应源码）：与本包发布在同一位置的
-  Lampyris-0.1.0-source.tar.gz
+Corresponding Source（对应源码）：
+  1) 与本包发布在同一位置的 Lampyris-0.1.0-source.tar.gz；
+  2) 公开仓库对应版本：https://github.com/EasyIndie/EasyInputMethod （该 tag 的源码与构建脚本）
 若本包被转发到其它位置，转发者须在旁注明等价的源码获取地址；
 源码与本包一样免费可得，构建方式见源码包内 platforms/macos/README.md。
 TXT
