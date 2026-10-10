@@ -196,7 +196,7 @@ bash platforms/macos/tests/run-perf.sh 5 --max-user-dictionary
 bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
 ```
 
-脚本生成临时满容量合成词库，不读取真实用户词库，不安装输入法。第一项测引擎及选字学习落盘；第二项运行五会话、22000按键，逐段记录窗口内存，并对探针自身采样 IP 连接。GUI 探针按输入序列释放临时对象并排空主循环；计时包含 FFI/候选转换/布局/显示调用，不含正式 IMK 客户端或合成器完成。结论与局限见 `docs/reviews/003-macos-performance.md`。
+脚本生成临时满容量合成词库，不读取真实用户词库，不安装输入法。第一项测引擎及选字学习落盘；第二项运行五会话、22000按键，逐段记录窗口内存，并对探针自身采样 IP 连接。GUI 探针按输入序列释放临时对象并排空主循环；计时包含 FFI/候选转换/布局/显示调用，不含正式 IMK 客户端或合成器完成。**基线口径（T-MVP-09）**：以 `run-perf.sh`（引擎层、C 探针）为**稳定回归基线**；`run-render-perf.sh`（含 AppKit 同步调用）在本机（Intel/OLP）波动大（p95 9–27ms），仅作**参考**，不作为回归判据。结论与局限见 `docs/reviews/003-macos-performance.md`。
 
 组合中按 Return/Enter 提交原始字母，空格或数字键提交中文候选；非组合态回车交由当前应用处理。
 
