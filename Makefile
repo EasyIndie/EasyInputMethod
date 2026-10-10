@@ -4,7 +4,7 @@ SHELL := /bin/bash
 CARGO ?= cargo
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview hooks
 
 macos-preview: ## 构建并启动 macOS 独立调试窗口
 	./platforms/macos/dev-preview.sh
@@ -29,6 +29,14 @@ lint: check-workspace ## Clippy（warnings 视为错误）
 
 test: check-workspace ## 运行全部测试
 	$(CARGO) test --workspace
+
+fast: check-workspace ## 内环快检（fmt-check + clippy + test；不含依赖/隐私断言）
+	$(CARGO) fmt --all -- --check
+	$(CARGO) clippy --workspace --all-targets -- -D warnings
+	$(CARGO) test --workspace
+
+hooks: ## 安装本地 git hooks（pre-push 自动跑 make verify）
+	./scripts/install-hooks.sh
 
 deny: check-workspace ## 依赖许可 / 漏洞 / 重复依赖检查
 	$(CARGO) deny check

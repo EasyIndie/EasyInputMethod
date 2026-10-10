@@ -52,6 +52,7 @@ platforms/ data/ tools/ packaging/ scripts/
 |---|---|
 | [技术方案.md](docs/技术方案.md) | 权威总方案 |
 | [配置架构.md](docs/配置架构.md) | 配置子系统（真值唯一 / 实时生效） |
+| [开发工作流.md](docs/开发工作流.md) | 迭代与 CI 分层（单人 / 团队） |
 | [数据来源与许可.md](docs/数据来源与许可.md) | 数据合规 |
 | [隐私与安全.md](docs/隐私与安全.md) | 安全工程 |
 | [决策记录.md](docs/决策记录.md) | ADR |

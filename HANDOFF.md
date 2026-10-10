@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（设置面板 ADR-070、反馈入口 ADR-071、候选窗 A/C 已合并 main 并通过统一验收） |
+| 最后更新 | 2026-10-11（开发工作流：分层 CI + DCO + 本地 hooks，ADR-072） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -130,6 +130,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：开发工作流（分层 CI + DCO + 本地 hooks；ADR-072）
+- 新增 `docs/开发工作流.md` + ADR-072；`ci.yml` 分层：`check` 恒跑，`macos`/`fuzz` 仅⾜代码相关变更执行（job 仍上报，避免必需检查卡住）。
+- 新增 `make fast` / `make hooks`（pre-push→verify）、`scripts/ci-detect-code-changes.sh`、`.github/workflows/dco.yml`（Signed-off-by，**可见不阻断**）。
+- 团队化（CODEOWNERS / 必需 review / merge queue / 覆盖率与基准门禁）**延后**到 MVP 后或首个外部贡献者；未改动现有必需检查与分支保护。
 
 ### 2026-10-11 / pi：三 PR 合并 + main 统一验收
 - #9（候选窗 A/C）→ #10（设置面板 ADR-070）→ #11（反馈入口 ADR-071）依次以 merge commit 合并；堆叠分支同步 main 后 CI（check/macos/fuzz）全绿。
