@@ -297,6 +297,13 @@ final class LampyrisInputController: IMKInputController {
 
     // MARK: - 按键处理
 
+    /// 让 IMK 额外转发修饰键变化（单独 Shift 必需）与鼠标按下（顶替默认的点击外部提交）。
+    override func recognizedEvents(_ sender: Any!) -> UInt {
+        NSEvent.EventTypeMask.keyDown.rawValue
+            | NSEvent.EventTypeMask.flagsChanged.rawValue
+            | NSEvent.EventTypeMask.leftMouseDown.rawValue
+    }
+
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
         guard let event else { return false }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
@@ -304,6 +311,13 @@ final class LampyrisInputController: IMKInputController {
             if let session, session.shiftTransition(isDown: event.modifierFlags.contains(.shift)) {
                 if let client = activeClient ?? (sender as? IMKTextInput) { clearMarked(client) }
                 candidateWindow?.hide()
+            }
+            return false
+        }
+        // 鼠标按下：保留“点击组合外则结束当前组合”（IMK 默认行为）；事件继续透传客户端。
+        if event.type == .leftMouseDown {
+            if let session, session.isComposing {
+                finishComposition(activeClient ?? (sender as? IMKTextInput))
             }
             return false
         }
