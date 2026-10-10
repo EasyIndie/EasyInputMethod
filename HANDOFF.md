@@ -141,6 +141,12 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：MVP 收敛（T-MVP-07）
+- **基准**：`cargo run --release -p ime-dict --example learn_cost` → 每次 learn 平均 **25.6ms**、最坏 164ms（目录 fsync 8ms + 文件 fsync 15ms）。
+- **T-MVP-07**（ADR-066）：写入路径只 `write+rename`（不 fsync），新增 `Store::flush()` 在会话结束（Drop/focus_out）与导出时 fsync；实测 25.6ms → **~4ms**。配置写入仍保留 fsync。
+- 用户候选由“全表扫描”改为 **BTreeMap 前缀 range**（`(scheme, code, text)` 键），选择性前缀更快；探针：10k 条目单次 ~0.95ms（可接受）。
+- `docs/故障恢复.md` 补充耐久性说明；`make verify` 120 passed。
+
 ### 2026-10-10 / pi：MVP 收敛（T-MVP-06）
 - 候选窗**鼠标点选**（点候选项即选字/上屏，非激活面板 `acceptsFirstMouse`）+ 预览同回调；
 - 新增**状态徽标**（候选窗内模式 + `全`；输入菜单标题改为“混输·中·半角”）；为此新增 `ime_session_is_full_width()` + `ImeSession.isFullWidth` 与 Rust 测试；
