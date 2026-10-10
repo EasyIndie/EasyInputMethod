@@ -9,6 +9,10 @@ on:
       tag:
         description: "已存在的 tag（如 v0.1.0）"
         required: true
+      dry_run:
+        description: "只演练：下载产物并校验附件，不创建 Release"
+        type: boolean
+        default: false
 
 # 仅本工作流需要写权限（创建 Release）；其余工作流保持 contents: read。
 permissions:
@@ -80,6 +84,11 @@ jobs:
           - **校验**：附件 \`.sha256\`。
           - **兼容**：universal（arm64 + x86_64），支持 macOS 13+；仅已记录环境经验证。
           EOF
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            echo "dry_run：附件已就绪，跳过创建 Release："
+            printf '%s\n' "${assets[@]}"
+            exit 0
+          fi
           if gh release view "${tag}" >/dev/null 2>&1; then
             gh release upload "${tag}" "${assets[@]}" --clobber
           else
