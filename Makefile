@@ -33,9 +33,9 @@ test: check-workspace ## 运行全部测试
 deny: check-workspace ## 依赖许可 / 漏洞 / 重复依赖检查
 	$(CARGO) deny check
 
-bootstrap: ## 安装开发依赖（cargo-deny、cargo-fuzz 等）
-	cargo install cargo-deny --locked
-	cargo install cargo-fuzz || true
+bootstrap: ## 安装开发依赖（版本固定，见 MVP 审计 SEC-07）
+	cargo install cargo-deny --version 0.20.2 --locked
+	cargo install cargo-fuzz --version 0.13.2 --locked
 
 verify-no-network: ## 断言核心产物与依赖不含网络能力
 	./scripts/verify-no-network.sh
