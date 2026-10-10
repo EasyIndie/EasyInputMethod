@@ -5,7 +5,7 @@
 //!
 //! 契约：
 //! - [`ime_config_snapshot`] 返回**借用**指针，调用方不得释放；任何 `set`/`reload`
-//!   之后应重新获取；
+//!   之后应重新获取。借用**按线程各自保留**，在该线程下次调用前有效；
 //! - [`ime_config_get`] 返回的字符串在下次 `get`/`set`/`reload` 前有效（线程本地缓冲）；
 //! - `subscribe` 回调在触发 `set`/`reload` 的线程同步派发，调用方需自行同步。
 
@@ -14,7 +14,7 @@ use std::ffi::{c_char, c_void, CString};
 use std::panic::{catch_unwind, AssertUnwindSafe};
 use std::path::PathBuf;
 use std::ptr;
-use std::sync::{Arc, Mutex, OnceLock};
+use std::sync::{Arc, OnceLock};
 
 use ime_config::{Config, ConfigError, ConfigStore, FileWatcher, Scope, ValueType};
 
@@ -33,8 +33,6 @@ static STORE: OnceLock<Arc<ConfigStore>> = OnceLock::new();
 static WATCHER: OnceLock<FileWatcher> = OnceLock::new();
 /// 宿主提供的配置路径（`ime_config_init`；优先于环境变量与默认值）。
 static PATH_OVERRIDE: OnceLock<PathBuf> = OnceLock::new();
-/// 最近一次 `snapshot` 返回的借用；持有 `Arc` 保证指针有效直到下次重取。
-static SNAPSHOT: Mutex<Option<Arc<Config>>> = Mutex::new(None);
 /// 配置 Schema 的 C 布局（一次性构建，指针稳定）。
 static SCHEMA_LAYOUT: OnceLock<SchemaLayout> = OnceLock::new();
 
@@ -97,6 +95,9 @@ thread_local! {
     static GET_BUF: RefCell<Option<CString>> = const { RefCell::new(None) };
     /// `ime_config_last_error` 的线程本地缓冲（下次调用前有效）。
     static ERROR_BUF: RefCell<Option<CString>> = const { RefCell::new(None) };
+    /// `ime_config_snapshot` 的借用：**按线程各自持有**，指针在该线程下次调用前有效。
+    /// （原实现为全局单槽，并发调用会互相覆盖导致悬垂；见 T-MVP-01。）
+    static SNAPSHOT_BUF: RefCell<Option<Arc<Config>>> = const { RefCell::new(None) };
 }
 
 fn config_path() -> PathBuf {
@@ -179,9 +180,8 @@ pub extern "C" fn ime_config_snapshot() -> *const ImeConfig {
         || {
             let arc = store().snapshot();
             let ptr = Arc::as_ptr(&arc) as *const ImeConfig;
-            if let Ok(mut guard) = SNAPSHOT.lock() {
-                *guard = Some(arc);
-            }
+            // 借用按线程各自保留：并发调用互不干扰，避免全局单槽被覆盖而悬垂（T-MVP-01）。
+            SNAPSHOT_BUF.with(|buf| *buf.borrow_mut() = Some(arc));
             Ok(ptr)
         },
         ptr::null(),
@@ -441,6 +441,23 @@ mod tests {
         set_impl(&store, "mode", "pinyin").unwrap();
         assert_eq!(hits.load(Ordering::SeqCst), 1);
         let _ = std::fs::remove_file(&path);
+    }
+
+    #[test]
+    fn concurrent_snapshots_do_not_share_a_single_slot() {
+        // T-MVP-01：并发取快照按线程各自保留，不再互相覆盖。
+        let handles: Vec<_> = (0..4)
+            .map(|_| {
+                std::thread::spawn(|| {
+                    for _ in 0..500 {
+                        assert!(!ime_config_snapshot().is_null());
+                    }
+                })
+            })
+            .collect();
+        for handle in handles {
+            handle.join().unwrap();
+        }
     }
 
     #[test]
