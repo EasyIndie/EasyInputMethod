@@ -141,6 +141,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：对齐主流：中英标点 Ctrl+. 与 ,/. 翻页（ADR-068）
+- 新增可配 `hotkey.toggle_punctuation`（默认 `ctrl+.`，切换 `input.punctuation` 并写回）与 `candidate.page_with_comma`（默认 true，组合态 `,`/`.` 翻页）。
+- 中英（单独 Shift）/全半角（Shift+空格）已与搜狗/微软/微信/RIME 一致；配置项现共 13 个。
+- 预览冒烟新增断言；`make verify` 120 passed、App 构建通过。刷新后已重装。
+
 ### 2026-10-10 / pi：中英「单独 Shift」真机确认修好（recognizedEvents）
 - **根因**：IMK 默认只转发 `keyDown`；`flagsChanged` 必须在 `IMKInputController.recognizedEvents` 中**显式声明**（默认 mask 仅 keyDown），否则 `handle` 收不到修饰键变化。
 - 另修：`recognizedEvents` 的 Swift 返回类型为 `Int`（上次误写 `UInt` 导致编译失败、装成旧包）；同时接管 `leftMouseDown` 保留“点击组合外结束组合”。

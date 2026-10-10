@@ -357,6 +357,14 @@ final class LampyrisInputController: IMKInputController {
             showCandidates(client, session: session)
             return true
         }
+        // 组合态下 , / . 翻页（对齐搜狗/微信，可配）。
+        if session.isComposing, ImeConfig.bool("candidate.page_with_comma"),
+            scalar == "," || scalar == "."
+        {
+            session.page(scalar == "," ? -1 : 1)
+            showCandidates(client, session: session)
+            return true
+        }
 
         let codepoint = feedCodepoint(scalar, shift: flags.contains(.shift), session: session)
         guard let codepoint else { return false }

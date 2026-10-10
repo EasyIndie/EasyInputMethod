@@ -124,6 +124,15 @@ final class ImeSession {
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 
+    /// 中英标点切换：翻转 `input.punctuation` 并写回配置（对齐搜狗/微软 `Ctrl+.`）。
+    func togglePunctuation() {
+        let next =
+            (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese"
+            ? "english" : "chinese"
+        guard ImeConfig.setString("input.punctuation", next) else { return }
+        prepare()
+    }
+
     // 单独 Shift 切换中英（对齐搜狗/微信）：需要 flagsChanged 的按下/抬起。
     private var shiftDown = false
     private var shiftUsedByKey = false
@@ -180,6 +189,10 @@ final class ImeSession {
     func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
         if matches(ImeConfig.string("hotkey.toggle_english"), event) { toggleEnglish(); return true }
         if matches(ImeConfig.string("hotkey.toggle_width"), event) { toggleWidth(); return true }
+        if matches(ImeConfig.string("hotkey.toggle_punctuation"), event) {
+            togglePunctuation()
+            return true
+        }
         guard let configured = ImeConfig.string("hotkey.toggle_mode"), matches(configured, event)
         else { return false }
         let order = ["mixed", "wubi", "pinyin"]

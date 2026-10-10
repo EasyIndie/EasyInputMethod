@@ -39,6 +39,10 @@ enum ImeConfig {
         return Int(value)
     }
 
+    static func bool(_ key: String) -> Bool {
+        string(key) == "true"
+    }
+
     /// 按 Schema 校验后写入（唯一写入路径）；`mode` 等枚举值以 TOML 字面量传入。
     @discardableResult
     static func setString(_ key: String, _ value: String) -> Bool {

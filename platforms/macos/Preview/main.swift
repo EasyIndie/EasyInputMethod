@@ -44,6 +44,10 @@ final class PreviewInput: NSTextView {
         if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
         if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
             session.page(scalar.value == 0xF72C ? -1 : 1)
+        } else if session.isComposing, ImeConfig.bool("candidate.page_with_comma"),
+            scalar == "," || scalar == "."
+        {
+            session.page(scalar == "," ? -1 : 1)
         } else if scalar == "\r" || scalar == "\n" {
             if session.isComposing {
                 if case .committed(let raw) = session.feed(scalar.value) { committed += raw }
@@ -323,6 +327,22 @@ if CommandLine.arguments.contains("--smoke-test") {
     // 模式：默认 ctrl+shift+m。
     keys("m", flags: [.control, .shift])
     guard session.mode == "mixed" else { exit(1) }
+    // 中英标点：默认 ctrl+.（写回配置）。
+    let punctuationBefore = ImeConfig.string("input.punctuation")
+    keys(".", flags: [.control])
+    guard ImeConfig.string("input.punctuation") != punctuationBefore else {
+        fputs("Ctrl+. 未切换中英标点。\n", stderr); exit(1)
+    }
+    keys(".", flags: [.control])
+    guard ImeConfig.string("input.punctuation") == punctuationBefore else { exit(1) }
+    // 组合态 , / . 翻页（对齐搜狗/微信）。
+    session.setMode("mixed"); view.clear(); keys("a")
+    guard session.pageCount > 1 else { fputs("a 应有多页候选。\n", stderr); exit(1) }
+    let aPage = session.candidates(limit: 9).map(\.text)
+    keys(".")
+    guard session.pageIndex == 1, session.candidates(limit: 9).map(\.text) != aPage else { exit(1) }
+    keys(",")
+    guard session.pageIndex == 0 else { exit(1) }
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
     func pump(until condition: () -> Bool, timeout: TimeInterval = 5) -> Bool {

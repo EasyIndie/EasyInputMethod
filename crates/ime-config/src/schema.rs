@@ -80,6 +80,13 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
+        key: "candidate.page_with_comma",
+        value_type: ValueType::Bool,
+        default: "true",
+        doc_zh: "组合态下用 , / . 翻页（对齐搜狗/微信）",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
         key: "appearance.theme",
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],
@@ -107,6 +114,13 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::String,
         default: "\"shift+space\"",
         doc_zh: "全/半角切换：组合键如 shift+space（默认，对齐搜狗/微信） | none = 关闭",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
+        key: "hotkey.toggle_punctuation",
+        value_type: ValueType::String,
+        default: "\"ctrl+.\"",
+        doc_zh: "中英标点切换：组合键如 ctrl+.（默认，对齐搜狗/微软） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
