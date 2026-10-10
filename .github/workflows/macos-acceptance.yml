@@ -61,6 +61,8 @@ jobs:
           path: |
             packaging/out/candidate-*/*.zip
             packaging/out/candidate-*/*.zip.sha256
+            packaging/out/candidate-*/*-source.tar.gz
+            packaging/out/candidate-*/*-source.tar.gz.sha256
           if-no-files-found: error
           retention-days: 30
       - name: Remove signing material

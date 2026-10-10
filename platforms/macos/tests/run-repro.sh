@@ -1,11 +1,20 @@
 #!/usr/bin/env bash
-# Rebuild a locally prepared release archive. Never installs its application.
+# Rebuild a locally prepared release archive from its paired source package.
+# Never installs its application.
 set -euo pipefail
 [ "$#" -eq 1 ] || { echo "用法：$0 <本项目候选 ZIP>" >&2; exit 2; }
+ZIP="$1"
+# 对应源码包与二进制同处发布（GPL-3.0 §6(d)，ADR-064）。
+SRC="$(dirname "${ZIP}")/Lampyris-0.1.0-source.tar.gz"
+[ -f "${SRC}" ] || { echo "找不到对应源码包：${SRC}" >&2; exit 1; }
 WORK="$(mktemp -d -t lampyris-repro)"
 trap 'rm -rf "${WORK}"' EXIT
-ditto -x -k "$1" "${WORK}"
-PACKAGE="$(find "${WORK}" -maxdepth 1 -type d -name 'Lampyris-0.1.0-*' | head -1)"
+(cd "$(dirname "${SRC}")" && shasum -a 256 -c "$(basename "${SRC}").sha256")
+tar -xzf "${SRC}" -C "${WORK}"
+SOURCE="${WORK}/Lampyris-0.1.0-source"
+[ -d "${SOURCE}" ] || { echo "源码包结构异常" >&2; exit 1; }
+ditto -x -k "${ZIP}" "${WORK}/zip"
+PACKAGE="$(find "${WORK}/zip" -maxdepth 1 -type d -name 'Lampyris-0.1.0-*' | head -1)"
 [ -n "${PACKAGE}" ] || { echo "解包后找不到 Lampyris-0.1.0-* 候选目录" >&2; exit 1; }
 python3 - "${PACKAGE}" <<'PY'
 import hashlib, json, os, sys
@@ -26,9 +35,9 @@ if links.exists():
             raise SystemExit(f'软链错误：{name}')
 print('候选文件校验通过')
 PY
-(cd "${PACKAGE}/SOURCE" && CARGO_NET_OFFLINE=true \
+(cd "${SOURCE}" && CARGO_NET_OFFLINE=true \
   CLANG_MODULE_CACHE_PATH="${WORK}/module-cache" ./platforms/macos/build.sh --strict --universal)
-BUILT="${PACKAGE}/SOURCE/platforms/macos/build/Lampyris.app"
+BUILT="${SOURCE}/platforms/macos/build/Lampyris.app"
 cp "${PACKAGE}/Lampyris.app/Contents/MacOS/Lampyris" "${WORK}/expected"
 cp "${BUILT}/Contents/MacOS/Lampyris" "${WORK}/rebuilt"
 codesign --remove-signature "${WORK}/expected"

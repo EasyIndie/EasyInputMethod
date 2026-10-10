@@ -32,22 +32,8 @@ case " ${APP_ARCHS} " in
   *) ARCH="${APP_ARCHS// /-}" ;;
 esac
 STAGE="${WORK}/Lampyris-0.1.0-${ARCH}"
-mkdir -p "${STAGE}/SOURCE" "${STAGE}/scripts"
+mkdir -p "${STAGE}/scripts"
 ditto "${APP}" "${STAGE}/Lampyris.app"
-# Include locked dependency source; third parties can build without registry access.
-git archive HEAD | tar -x -C "${STAGE}/SOURCE"
-printf '%s\n' "${COMMIT}" > "${STAGE}/SOURCE/SOURCE-COMMIT"
-cargo vendor --locked --offline "${STAGE}/SOURCE/vendor" > "${WORK}/vendor-config.toml"
-mkdir -p "${STAGE}/SOURCE/.cargo"
-cp "${WORK}/vendor-config.toml" "${STAGE}/SOURCE/.cargo/config.toml"
-# cargo vendor emits the supplied absolute path; make the archive relocatable.
-python3 - "${STAGE}/SOURCE/.cargo/config.toml" <<'PY'
-import sys
-from pathlib import Path
-p = Path(sys.argv[1])
-s = p.read_text().splitlines()
-p.write_text('\n'.join('directory = "vendor"' if line.startswith('directory = ') else line for line in s) + '\n')
-PY
 cp LICENSE "${STAGE}/LICENSE"
 cp packaging/macos/RELEASE-README.md "${STAGE}/README.md"
 cp platforms/macos/install.sh platforms/macos/uninstall.sh "${STAGE}/scripts/"
@@ -62,11 +48,44 @@ cargo tree --locked --offline -p ime-ffi > "${STAGE}/cargo-tree.txt"
   xcrun --show-sdk-version
   sw_vers
 } > "${STAGE}/BUILD-INFO.txt"
+# GPL-3.0-or-later §6(d)：二进制包不含源码，改为在同一发布位置提供对应源码（ADR-064）。
+cat > "${STAGE}/SOURCE.txt" <<'TXT'
+本安装包按 GPL-3.0-or-later 分发，但**不含源码**（第 6(d) 条）。
+
+Corresponding Source（对应源码）：与本包发布在同一位置的
+  Lampyris-0.1.0-source.tar.gz
+若本包被转发到其它位置，转发者须在旁注明等价的源码获取地址；
+源码与本包一样免费可得，构建方式见源码包内 platforms/macos/README.md。
+TXT
 python3 packaging/macos/manifest.py "${STAGE}"
 ZIP="${WORK}/Lampyris-0.1.0-${ARCH}.zip"
 ditto -c -k --keepParent "${STAGE}" "${ZIP}"
 BYTES="$(stat -f %z "${ZIP}")"
 [ "${BYTES}" -le 15000000 ] || { echo "包超过 15MB：${BYTES}" >&2; exit 1; }
 (cd "${WORK}" && shasum -a 256 "$(basename "${ZIP}")" > "$(basename "${ZIP}").sha256")
+
+# ── 对应源码包（与二进制同处发布；GPL §6(d)）─────────────
+SOURCE_STAGE="${WORK}/source-tar"
+SOURCE_ROOT="${SOURCE_STAGE}/Lampyris-0.1.0-source"
+mkdir -p "${SOURCE_ROOT}"
+# Include locked dependency source; third parties can build without registry access.
+git archive HEAD | tar -x -C "${SOURCE_ROOT}"
+printf '%s\n' "${COMMIT}" > "${SOURCE_ROOT}/SOURCE-COMMIT"
+cargo vendor --locked --offline "${SOURCE_ROOT}/vendor" > "${WORK}/vendor-config.toml"
+mkdir -p "${SOURCE_ROOT}/.cargo"
+cp "${WORK}/vendor-config.toml" "${SOURCE_ROOT}/.cargo/config.toml"
+# cargo vendor emits the supplied absolute path; make the archive relocatable.
+python3 - "${SOURCE_ROOT}/.cargo/config.toml" <<'PY'
+import sys
+from pathlib import Path
+p = Path(sys.argv[1])
+s = p.read_text().splitlines()
+p.write_text('\n'.join('directory = "vendor"' if line.startswith('directory = ') else line for line in s) + '\n')
+PY
+SOURCE_TAR="${WORK}/Lampyris-0.1.0-source.tar.gz"
+tar -czf "${SOURCE_TAR}" -C "${SOURCE_STAGE}" "Lampyris-0.1.0-source"
+(cd "${WORK}" && shasum -a 256 "$(basename "${SOURCE_TAR}")" > "$(basename "${SOURCE_TAR}").sha256")
+
 echo "本地候选包：${ZIP}（${BYTES} 字节，signed_release=${SIGNED}）"
+echo "对应源码包：${SOURCE_TAR}（与二进制同处发布，GPL §6(d)）"
 if ! ${SIGNED}; then echo "仅供审核；尚未签名/公证，不可对外发布或安装。"; fi

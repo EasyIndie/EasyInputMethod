@@ -26,9 +26,9 @@
 
 ## 核验与复现
 
-SHA256SUMS 覆盖签名应用、源码与附件；包旁另附 ZIP 校验和。SBOM.cdx.json 是 ime-ffi 闭包的 CycloneDX 1.5 依赖清单，原始依赖许可在 DEPENDENCY-LICENSES。数据的独立许可与来源见 DATA-SOURCES.md、data-sources.toml、DATA-LICENSES；派生核心词表按 CC-BY-SA-4.0 提供，保留出处和修改说明。
+SHA256SUMS 覆盖签名应用与附件；包旁另附 ZIP 校验和。SBOM.cdx.json 是 ime-ffi 闭包的 CycloneDX 1.5 依赖清单，原始依赖许可在 DEPENDENCY-LICENSES。数据的独立许可与来源见 DATA-SOURCES.md、data-sources.toml、DATA-LICENSES；派生核心词表按 CC-BY-SA-4.0 提供，保留出处和修改说明。
 
-SOURCE 包含本次 git 提交的全部源码、Cargo.lock、工具链声明及锁定依赖 vendor。安装对应 Rust、Python 3 与 Command Line Tools 后，进入 SOURCE 运行 `cargo build --locked --offline --release -p ime-ffi`，然后 `./platforms/macos/build.sh --strict`；这些构建不需要下载词表，已登记默认数据随源码提供。原始词表再生成步骤见 SOURCE/platforms/macos/README.md。
+本包按 GPL-3.0-or-later **不含源码**（第 6(d) 条，见 `SOURCE.txt`）：对应源码为**与本包同处发布**的 `Lampyris-0.1.0-source.tar.gz`（含本次提交全部源码、Cargo.lock、工具链声明及锁定依赖 vendor）。安装对应 Rust、Python 3 与 Command Line Tools 后，解压源码包并在其根目录运行 `cargo build --locked --offline --release -p ime-ffi`，然后 `./platforms/macos/build.sh --strict`；构建不需下载词表，已登记默认数据随源码提供。原始词表再生成步骤见源码包内 platforms/macos/README.md。
 
 比较未签名可执行文件和默认数据 SHA-256；Swift/SDK/架构应与 BUILD-INFO.txt 相同。Apple 签名、公证及 ZIP 元数据不保证逐字节一致。支持目标 macOS 13+；只有已记录的实机环境经过验证，其他版本/架构不能据此推断已验收。
 
