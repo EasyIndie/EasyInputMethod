@@ -1,5 +1,7 @@
 # macOS 正式候选验收（2026-10-09）
 
+> **历史记录**：本文对应旧的 `Yinghuo` 命名与 arm64 候选；当前状态、缺口与发布清单以 [报告006](006-macos-mvp-gap-review.md)、[审计008](008-multi-role-audit.md) 和 [`../HANDOFF.md`](../../HANDOFF.md) 为准。
+
 ## 候选
 
 - 来源：私有 CI 37877336887，main 7d9cf788ccdb9ff2d1e80129b5c56d661090fb5a。

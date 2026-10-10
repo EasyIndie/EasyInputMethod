@@ -44,6 +44,14 @@
 - [ ] 实际菜单浅色/深色前景对比单独确认，用户“图标正常”尚未逐模式描述。
 - [ ] 独立第三方按包内说明复现并核验零外联，P1-M5完整验收仍未关闭。
 
+## 发布流程（汇总，ADR-065）
+
+1. 公开前复核（`docs/reviews/004-public-readiness.md`）→ 仓库**转公开**。
+2. Settings → Pages → Source 选 **GitHub Actions**（启用 Pages）。
+3. `git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）；可先手动跑 `release.yml` 的 `dry_run` 演练。
+4. 手动触发 `pages.yml` 部署落地页。
+5. 公开后设置 main 分支保护 + 必需 CI。
+
 ## 发布前收尾
 
 - [ ] 将最终实机结果录入报告005，满足技术方案§12后关闭P1-M4验收项。
