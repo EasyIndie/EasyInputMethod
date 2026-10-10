@@ -1,0 +1,37 @@
+name: DCO
+
+# 校验每个 PR 提交都带 Signed-off-by（Developer Certificate of Origin）。
+# 现状：**可见但不阻断**——未加入 main 的必需检查；团队化后由分支保护启用为必需。
+# 见 CONTRIBUTING.md §2、docs/开发工作流.md。
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dco-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dco:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
+      - name: Verify Signed-off-by on every commit
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          status=0
+          # 合并提交豁免（--no-merges）；普通提交必须带 Signed-off-by。
+          for sha in $(git rev-list --no-merges "${BASE_SHA}..${HEAD_SHA}"); do
+            if ! git log -1 --format=%B "${sha}" | grep -qiE '^Signed-off-by: .+ <.+@.+>$'; then
+              echo "::error::提交 ${sha} 缺少 Signed-off-by（请用 git commit -s）"
+              status=1
+            fi
+          done
+          exit "${status}"

@@ -7,6 +7,8 @@
 - 工具链：见 `rust-toolchain.toml`（`rustup` 会自动切换）。
 - 命令：`make help` 查看全部；提交前必须 `make verify` 全绿。
 - 开发依赖：`make bootstrap` 安装 `cargo-deny` 等。
+- 内环快检：`make fast`（fmt-check + clippy + test）；一次性 `make hooks` 安装 `pre-push` 自动跑 `make verify`（临时跳过：`git push --no-verify`）。
+- 工作流与 CI 分层（单人/团队）详见 [`docs/开发工作流.md`](./docs/开发工作流.md)。
 - 注意：`.claude/skills` 是指向 `.agents/skills` 的软链，**在 Windows 检出会失效**（当前 macOS 开发不受影响）。
 
 ## 2. 许可与署名
@@ -19,7 +21,7 @@
   git commit -s -m "feat(table): add wubi short-code support"
   ```
 
-  即表示你确认有权提交该代码且同意其许可。
+  即表示你确认有权提交该代码且同意其许可。**CI 会用 `.github/workflows/dco.yml` 校验每个普通提交的 `Signed-off-by`**（合并提交豁免）；未签名会显示红叉（当前不阻断，团队化后设为必需）。
 
 - **名称与 Logo 保留权利**：fork 版本请改名，不要使用"萤火虫"名称与 Logo。
 
