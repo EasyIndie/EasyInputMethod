@@ -16,11 +16,6 @@ if ime_abi_version() != expectedABI {
     NSLog("萤火虫：FFI ABI 版本不匹配（期待 \(expectedABI)，实际 \(ime_abi_version())）")
     exit(1)
 }
-// 诊断：确认运行的构建与 ABI。
-let commitFile = Bundle.main.resourceURL?.appendingPathComponent("SOURCE-COMMIT")
-let commit = commitFile.flatMap { try? String(contentsOf: $0, encoding: .utf8) }?
-    .trimmingCharacters(in: .whitespacesAndNewlines) ?? "?"
-NSLog("萤火虫：宿主启动 ABI=\(ime_abi_version()) commit=\(commit)")
 
 // 2) 启动 IMK 服务器；server 需在整个进程生命周期内保持存活。
 let connectionName =

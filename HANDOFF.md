@@ -141,6 +141,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：中英「单独 Shift」真机确认修好（recognizedEvents）
+- **根因**：IMK 默认只转发 `keyDown`；`flagsChanged` 必须在 `IMKInputController.recognizedEvents` 中**显式声明**（默认 mask 仅 keyDown），否则 `handle` 收不到修饰键变化。
+- 另修：`recognizedEvents` 的 Swift 返回类型为 `Int`（上次误写 `UInt` 导致编译失败、装成旧包）；同时接管 `leftMouseDown` 保留“点击组合外结束组合”。
+- 用户实机确认：`recognizedEvents mask=5122`，单独 Shift 切中英生效；临时诊断日志已移除。
+
 ### 2026-10-10 / pi：快捷键对齐搜狗/微信且可配置（ADR-067）
 - 新增配置 `hotkey.toggle_english`（默认 `shift` = 单独按 Shift）与 `hotkey.toggle_width`（默认 `shift+space`）；`toggle_mode` 不变。
 - 宿主：`flagsChanged` 检测单独 Shift（同按其它键不触发）；空格改用**物理键码 49** 判定（修复真实 IMK 事件不生效）；菜单保留中英/全半角入口。
