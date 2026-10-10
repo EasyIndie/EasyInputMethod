@@ -8,9 +8,9 @@
 |---|---|---|---|---|
 | T-MVP-01 | 修 `ime_config_snapshot` 跨线程借用（改按线程保留借用）+ 并发烟雾测试 | SEC-01/ARCH-01/QA-07 | S | [x] |
 | T-MVP-02 | 统一文件权限 0600（配置写入）+ 文档化锁策略差异 | SEC-02/SEC-03 | S | [x] |
-| T-MVP-03 | `subscribe` 的 `user` 裸指针生命周期：限制/文档化 | SEC-05 | S | [ ] |
-| T-MVP-04 | 加 `ime_abi_version()`，宿主启动校验 | ARCH-02 | S | [ ] |
-| T-MVP-05 | 菜单加「关于/版本（构建）」 | PROD-02 | S | [ ] |
+| T-MVP-03 | `subscribe` 的 `user` 裸指针生命周期：限制/文档化 | SEC-05 | S | [x] |
+| T-MVP-04 | 加 `ime_abi_version()`，宿主启动校验 | ARCH-02 | S | [x] |
+| T-MVP-05 | 菜单加「关于/版本（构建）」 | PROD-02 | S | [x] |
 | T-MVP-06 | 候选窗**鼠标点选** + **中英/全角/模式状态指示** | PROD-03/04 | M | [ ] |
 | T-MVP-07 | 词库写入去抖/批量 + 用户候选增量索引（先基准） | ARCH-04/TD-01/02 | M | [ ] |
 | T-MVP-08 | fuzz 短跑进 CI + 定时 `cargo deny` + 固定 `cargo-deny` 版本 | QA-01/SEC-07/08/OPS-06/07 | S | [ ] |

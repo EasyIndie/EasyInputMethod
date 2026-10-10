@@ -139,6 +139,12 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：MVP 收敛（T-MVP-03/04/05）
+- T-MVP-03：`ime.h` 明确 `subscribe` 的 `user` 生命周期与回调线程（回调同步派发，unsubscribe 不等在途回调）。
+- T-MVP-04：新增 `ime_abi_version()`（当前 `1`）；宿主 `main.swift` 启动校验，不匹配即 `exit(1)`。
+- T-MVP-05：输入菜单新增「关于 Lampyris…」（版本/构建/源码提交，读包内 `SOURCE-COMMIT`）。
+- 本地：`make verify` 118 passed；App 构建、预览冒烟、FFI 冒烟均通过。（CI 受阻于账号账单，非代码）
+
 ### 2026-10-10 / pi：MVP 收敛开始（T-MVP-01/02）
 - T-MVP-01：`ime_config_snapshot` 借用改为**按线程保留**（消除跨线程悬垂，SEC-01）；加并发烟雾测试；`ime.h` 注明线程本地有效期。
 - T-MVP-02：配置写入改为 **0600**（与用户词库一致，SEC-02）；代码与 `docs/故障恢复.md` 明确“配置锁 30s 自动回收 / 词库锁不自动删”的策略差异（SEC-03）。
