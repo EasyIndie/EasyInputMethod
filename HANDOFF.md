@@ -139,6 +139,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：MVP 收敛（T-MVP-08/09/10）
+- T-MVP-08：`make bootstrap` 固定 `cargo-deny 0.20.2` / `cargo-fuzz 0.13.2`；`ci.yml` 新增有界 fuzz job（nightly，三目标各 30s）；新增 `security.yml` 每周 `cargo deny check advisories`。
+- T-MVP-09：`platforms/macos/README.md` 明确 `run-perf.sh` 为**回归基线**、`run-render-perf.sh` 仅参考。
+- T-MVP-10：`005` 标注历史记录；`macos-release-checklist.md` 新增「发布流程（汇总）」。
+
 ### 2026-10-10 / pi：MVP 收敛（T-MVP-03/04/05）
 - T-MVP-03：`ime.h` 明确 `subscribe` 的 `user` 生命周期与回调线程（回调同步派发，unsubscribe 不等在途回调）。
 - T-MVP-04：新增 `ime_abi_version()`（当前 `1`）；宿主 `main.swift` 启动校验，不匹配即 `exit(1)`。
