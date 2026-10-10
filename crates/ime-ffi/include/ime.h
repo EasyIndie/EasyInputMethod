@@ -26,6 +26,10 @@ extern "C" {
 #define IME_ERR_LOCKED      -7  /* 配置文件被锁 */
 #define IME_ERR_PANIC       -8  /* 内部 panic（绝不应发生） */
 
+/* ── ABI 版本 ───────────────────────────────────────── */
+/* 宿主启动时应校验；主版本不匹配应拒绝使用（避免结构体布局不一致）。 */
+uint32_t ime_abi_version(void);
+
 /* ── 候选来源 ───────────────────────────────────────── */
 #define IME_SOURCE_CODE_TABLE 0
 #define IME_SOURCE_PINYIN     1
@@ -119,6 +123,8 @@ const ImeConfigSchema* ime_config_schema(void);
 int32_t ime_config_set(const char* key, const char* value_toml);
 int32_t ime_config_reload(void);
 
+/* 变更回调：在触发 set/reload 的线程上同步派发。`user` 必须在订阅存在期间、
+ * 且所有在途回调派发完成前保持有效；unsubscribe 不等待已开始的回调。 */
 typedef void (*ImeConfigChangedFn)(const char* key, void* user);
 int32_t ime_config_subscribe(ImeConfigChangedFn cb, void* user);
 int32_t ime_config_unsubscribe(int32_t token);

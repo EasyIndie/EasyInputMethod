@@ -21,3 +21,23 @@ pub use error::{
     IME_ERR_PANIC, IME_ERR_PARSE, IME_ERR_UNKNOWN_KEY, IME_OK,
 };
 pub use session::{IME_KEY_COMMITTED, IME_KEY_CONSUMED, IME_KEY_PASS_THROUGH};
+
+/// FFI ABI 版本：宿主启动时应调用 [`ime_abi_version`] 校验；不匹配应拒绝使用。
+pub const IME_ABI_VERSION: u32 = 1;
+
+/// 返回 FFI ABI 版本（见 [`IME_ABI_VERSION`]）。
+#[no_mangle]
+pub extern "C" fn ime_abi_version() -> u32 {
+    IME_ABI_VERSION
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn abi_version_is_reported() {
+        assert_eq!(IME_ABI_VERSION, 1);
+        assert_eq!(ime_abi_version(), IME_ABI_VERSION);
+    }
+}
