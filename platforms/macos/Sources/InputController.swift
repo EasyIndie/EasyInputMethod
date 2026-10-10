@@ -193,10 +193,13 @@ final class LampyrisInputController: IMKInputController {
             title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
-        let feedback = NSMenuItem(
-            title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
-        feedback.target = self
-        menu.addItem(feedback)
+        // 仅在系统可打开反馈链接时显示入口，避免“点不动”的死入口（ADR-073）。
+        if FeedbackUI.isAvailable {
+            let feedback = NSMenuItem(
+                title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
+            feedback.target = self
+            menu.addItem(feedback)
+        }
         let help = NSMenuItem(
             title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
         help.target = self
