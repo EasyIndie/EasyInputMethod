@@ -98,27 +98,34 @@ fn user_candidates(
     if max == 0 {
         return Vec::new();
     }
+    let schemes: &[&str] = match mode {
+        InputMode::WubiOnly => &["wubi"],
+        InputMode::PinyinOnly => &["pinyin"],
+        InputMode::Mixed => &["wubi", "pinyin"],
+    };
     let mut best = BinaryHeap::with_capacity(max);
-    for ((scheme, code, text), count) in entries {
-        let wubi = scheme == "wubi";
-        if !code.starts_with(buffer)
-            || (mode == InputMode::WubiOnly && !wubi)
-            || (mode == InputMode::PinyinOnly && wubi)
-        {
-            continue;
-        }
-        let rank = (
-            wubi,
-            code == buffer,
-            *count,
-            Reverse(text.as_str()),
-            Reverse(code.as_str()),
-        );
-        if best.len() < max {
-            best.push(Reverse(rank));
-        } else if best.peek().is_some_and(|lowest| rank > lowest.0) {
-            best.pop();
-            best.push(Reverse(rank));
+    for scheme in schemes {
+        let scheme = *scheme;
+        // 键按 (scheme, code, text) 排序：用 range 直接跳到前缀区间，避免全表扫描（T-MVP-07）。
+        let start = (scheme.to_string(), buffer.to_string(), String::new());
+        for ((s, code, text), count) in entries.range(start..) {
+            if s.as_str() != scheme || !code.starts_with(buffer) {
+                break;
+            }
+            let wubi = scheme == "wubi";
+            let rank = (
+                wubi,
+                code.as_str() == buffer,
+                *count,
+                Reverse(text.as_str()),
+                Reverse(code.as_str()),
+            );
+            if best.len() < max {
+                best.push(Reverse(rank));
+            } else if best.peek().is_some_and(|lowest| rank > lowest.0) {
+                best.pop();
+                best.push(Reverse(rank));
+            }
         }
     }
     best.into_iter()
@@ -755,6 +762,20 @@ mod tests {
         ime_session_focus_out(s);
         assert!(unsafe { (*s).dictionary.is_none() });
         ime_session_free(s);
+    }
+
+    #[test]
+    #[ignore = "timing probe; run with --ignored --nocapture"]
+    fn user_candidates_scan_cost_probe() {
+        let mut entries = ime_dict::Entries::new();
+        for i in 0..10_000 {
+            entries.insert(("wubi".into(), format!("ab{i:04}"), format!("词{i}")), 1);
+        }
+        let start = std::time::Instant::now();
+        for _ in 0..1000 {
+            let _ = user_candidates(&entries, "a", InputMode::Mixed, 256);
+        }
+        println!("1000 scans over 10k entries: {:?}", start.elapsed());
     }
 
     #[test]

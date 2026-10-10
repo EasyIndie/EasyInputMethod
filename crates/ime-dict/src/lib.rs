@@ -106,10 +106,10 @@ fn atomic_write(path: &Path, entries: &Entries) -> io::Result<FileStamp> {
     let mut file = options.open(&tmp)?;
     let _guard = Guard(tmp.clone());
     file.write_all(data.as_bytes())?;
-    file.sync_all()?;
+    // 不在写入路径 fsync：用户词库是高频写（每次选词），原子 rename 已保证一致性；
+    // 需要落盘时由 `Store::flush()`（会话结束/导出）统一 fsync（T-MVP-07）。
     let stamp = FileStamp::from_metadata(&file.metadata()?)?;
     fs::rename(&tmp, path)?;
-    fs::File::open(parent)?.sync_all()?;
     Ok(stamp)
 }
 
@@ -186,6 +186,8 @@ pub struct Store {
     path: PathBuf,
     entries: Arc<Entries>,
     stamp: Option<FileStamp>,
+    /// 写入后尚未 fsync（写入路径不 fsync，T-MVP-07）。
+    dirty: bool,
 }
 impl Store {
     pub fn load(path: impl Into<PathBuf>) -> io::Result<Self> {
@@ -195,6 +197,7 @@ impl Store {
             stamp,
             path,
             entries,
+            dirty: false,
         })
     }
     pub fn entries(&self) -> &Entries {
@@ -241,6 +244,7 @@ impl Store {
         remember(&mut cache, key, &entries);
         self.entries = entries;
         self.stamp = Some(stamp);
+        self.dirty = true;
         Ok(())
     }
     pub fn learn(&mut self, scheme: &str, code: &str, text: &str) -> io::Result<()> {
@@ -268,6 +272,26 @@ impl Store {
     pub fn export(&self, path: &Path) -> io::Result<()> {
         let (current, _) = snapshot(&self.path)?;
         atomic_write(path, &current).map(|_| ())
+    }
+
+    /// 把已写入的数据 fsync 到磁盘（写入路径平时不 fsync，T-MVP-07）。
+    /// 会话结束 / 导出后调用；`Drop` 也会兜底调用一次。
+    pub fn flush(&mut self) -> io::Result<()> {
+        if !self.dirty {
+            return Ok(());
+        }
+        self.dirty = false;
+        fs::File::open(&self.path)?.sync_all()?;
+        if let Some(parent) = self.path.parent().filter(|p| !p.as_os_str().is_empty()) {
+            let _ = fs::File::open(parent).and_then(|dir| dir.sync_all());
+        }
+        Ok(())
+    }
+}
+
+impl Drop for Store {
+    fn drop(&mut self) {
+        let _ = self.flush();
     }
 }
 
