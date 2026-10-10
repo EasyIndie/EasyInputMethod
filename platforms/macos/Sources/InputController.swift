@@ -185,6 +185,10 @@ final class LampyrisInputController: IMKInputController {
             entry.target = self; menu.addItem(entry)
         }
         menu.addItem(NSMenuItem.separator())
+        let help = NSMenuItem(
+            title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
+        help.target = self
+        menu.addItem(help)
         let about = NSMenuItem(title: "关于 Lampyris…", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
@@ -244,6 +248,11 @@ final class LampyrisInputController: IMKInputController {
     /// 候选窗内的紧凑状态徽标：模式（+ 全）。
     private func statusBadge() -> String {
         (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
+    }
+
+    @objc private func showHelp() {
+        cancelClientComposition()
+        HelpUI.show()
     }
 
     @objc private func showAbout() {
