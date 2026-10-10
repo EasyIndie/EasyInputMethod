@@ -126,12 +126,15 @@ final class ImeSession {
 
     func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
         let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
-        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
-        if key == " ", flags == [.control, .shift] { toggleEnglish(); return true }
-        if key == " ", flags == [.shift] { toggleWidth(); return true }
+        // 空格用**物理键码**(49) 或字符 " " 判定：既兼容真实 IMK 事件，也兼容合成事件。
+        let space = event.keyCode == 49 || event.charactersIgnoringModifiers == " "
+        if space, flags == [.control, .shift] { toggleEnglish(); return true }
+        if space, flags == [.shift] { toggleWidth(); return true }
         guard let configured = ImeConfig.string("hotkey.toggle_mode") else { return false }
         let parts = configured.lowercased().split(separator: "+").map(String.init)
-        guard let last = parts.last, last == key else { return false }
+        guard let last = parts.last else { return false }
+        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
+        guard last == key else { return false }
         var expected: NSEvent.ModifierFlags = []
         for modifier in parts.dropLast() {
             switch modifier {

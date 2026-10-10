@@ -178,6 +178,16 @@ final class LampyrisInputController: IMKInputController {
             keyEquivalent: "")
         item.target = self
         menu.addItem(item)
+        let english = NSMenuItem(
+            title: "临时中英切换（当前：\((session?.isEnglish ?? false) ? "英文" : "中文")）",
+            action: #selector(toggleEnglishMode), keyEquivalent: "")
+        english.target = self
+        menu.addItem(english)
+        let width = NSMenuItem(
+            title: "临时全/半角（当前：\((session?.isFullWidth ?? false) ? "全角" : "半角")）",
+            action: #selector(toggleWidthMode), keyEquivalent: "")
+        width.target = self
+        menu.addItem(width)
         for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
             ("导出用户词库…", #selector(exportWords)), ("拼音反查…", #selector(lookupPinyin))] {
             let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
@@ -260,6 +270,16 @@ final class LampyrisInputController: IMKInputController {
         alert.runModal()
     }
 
+    @objc private func toggleEnglishMode() {
+        cancelClientComposition()
+        session?.toggleEnglish()
+    }
+
+    @objc private func toggleWidthMode() {
+        cancelClientComposition()
+        session?.toggleWidth()
+    }
+
     @objc private func cycleMode(_ sender: Any?) {
         let order = ["mixed", "wubi", "pinyin"]
         let current = ImeConfig.string("mode") ?? "mixed"
@@ -292,6 +312,11 @@ final class LampyrisInputController: IMKInputController {
         }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags.contains(.control) {
+            // 诊断（临时）：记录到达宿主但未匹配快捷方式的 Ctrl 组合。
+            // 排查命令：log show --last 5m --predicate 'eventMessage CONTAINS "萤火虫"'
+            NSLog("萤火虫：未匹配 Ctrl 组合 keyCode=\(event.keyCode) flags=\(flags.rawValue) chars=\(event.charactersIgnoringModifiers ?? "nil")")
+        }
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
         }
