@@ -86,7 +86,7 @@
 - [ ] 自研 FSA 拼音引擎替换 `inputx-pinyin`（保持 trait）
 - [x] `TBD-3` 用户词库采用 TSV v1（ADR-029）
 - [x] 简繁转换（OpenCC 数据 + `Ctrl+Shift+F`，ADR-069，T-P2-01）
-- [ ] 设置界面（Schema 已就绪，见报告 008 P2）
+- [x] 设置界面（Schema 驱动非模态面板，ADR-070，T-P2-02）
 - [ ] 字根提示（§6.2 既定能力，见报告 007/008）
 
 ## P3 — Windows

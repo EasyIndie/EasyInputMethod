@@ -113,6 +113,8 @@ typedef struct ImeConfigSchemaOption {
     int32_t     int_min;      /* int 类型闭区间下界（其它类型为 0） */
     int32_t     int_max;      /* int 类型闭区间上界（其它类型为 0） */
     const char* enum_values;  /* enum 取值：NUL 分隔，空串结束 */
+    const char* title_zh;      /* 设置界面短标题（UTF-8） */
+    const char* enum_labels_zh;/* enum 显示名：NUL 分隔，与 enum_values 一一对应 */
 } ImeConfigSchemaOption;
 
 typedef struct ImeConfigSchema {

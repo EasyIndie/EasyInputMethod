@@ -189,6 +189,10 @@ final class LampyrisInputController: IMKInputController {
             entry.target = self; menu.addItem(entry)
         }
         menu.addItem(NSMenuItem.separator())
+        let settings = NSMenuItem(
+            title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
+        settings.target = self
+        menu.addItem(settings)
         let help = NSMenuItem(
             title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
         help.target = self
@@ -258,6 +262,12 @@ final class LampyrisInputController: IMKInputController {
     @objc private func showHelp() {
         cancelClientComposition()
         HelpUI.show()
+    }
+
+    /// 打开非模态偏好设置面板（ADR-070）；写入经 ime-config，改动即时生效。
+    @objc private func showSettings() {
+        cancelClientComposition()
+        SettingsPanel.shared.show()
     }
 
     @objc private func showAbout() {
