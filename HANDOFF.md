@@ -67,7 +67,8 @@
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
 1. **MVP-05**：正式实机 DoD 矩阵（**需用户实机**，我不催重启/重装）。**发布**：转公开（先做 `docs/reviews/004` 公开前复核）→ 打 `v0.1.0` tag 触发 `release.yml` → 启用 Pages 并手动跑 `pages.yml`。
-2. **MVP-14**（C 类）：需其他 macOS 版本机器 / Xcode 27 分层图标资源；不阻塞首版。
+2. **体验/技术债盘点**：`docs/reviews/007-ux-and-tech-debt.md` 已建立（UX-01…13、TD-01…16 + MVP/P2 分级）；**待用户补充实机体验问题（A2）**，再出统一排期表并拆任务卡。
+3. **MVP-14**（C 类）：需其他 macOS 版本机器 / Xcode 27 分层图标资源；不阻塞首版。
 
 > **A/B 类缺口（MVP-01…04、06…13）与 MVP-11 已全部闭环**（ADR-057…065）；MVP-05 验收与 MVP-14 依赖用户或外部环境。
 

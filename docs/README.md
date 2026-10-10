@@ -20,6 +20,8 @@
 
 首版要求、实现差距与待办队列见 [对照报告006](reviews/006-macos-mvp-gap-review.md)。
 
+体验问题与技术债盘点（优化排期依据）见 [盘点007](reviews/007-ux-and-tech-debt.md)。
+
 发布进度与剩余验收见 [macOS发布清单](macos-release-checklist.md)。
 
 ## 历史文档（已归档，仅供追溯）
