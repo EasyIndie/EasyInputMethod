@@ -1,5 +1,7 @@
 # 仓库公开可行性初审（2026-10-09）
 
+> **已执行（2026-10-10）**：仓库已转为 **public**；已启用 Pages（Source: GitHub Actions，站点 <https://easyindie.github.io/EasyInputMethod/>，HTTP 200）；main 分支保护已设（必需 `check`/`macos`/`fuzz`、禁强推/删除、admins 不强制）；公开前扫描无密钥/个人路径，作者邮箱与 GitHub 账号公开邮箱一致（不新增泄露）；Actions 免费恢复。
+
 ## 结论
 
 EasyIndie/EasyInputMethod 已归属 EasyIndie 组织，当前 private，无需迁移。项目定位与 GPL-3.0-or-later 适合公开；本次仅评估，不改变可见性。

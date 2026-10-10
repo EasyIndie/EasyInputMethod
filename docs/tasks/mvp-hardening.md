@@ -16,7 +16,7 @@
 | T-MVP-08 | fuzz 短跑进 CI + 定时 `cargo deny` + 固定 `cargo-deny` 版本 | QA-01/SEC-07/08/OPS-06/07 | S | [x] |
 | T-MVP-09 | 性能基线归一（`run-perf` 为准，`render-perf` 标参考） | QA-02 | S | [x] |
 | T-MVP-10 | 文档同步：报告005 / HANDOFF / 发布指引合并 | DOC-01/02/08 | S | [x] |
-| T-MVP-11 | 分支保护 + Release/Pages 演练（转公开后） | OPS-01/03 | S | [ ] |
+| T-MVP-11 | 分支保护 + Release/Pages（**已公开，保护/Pages 已就绪**） | OPS-01/03 | S | [x] |
 
 ## 验收约定
 

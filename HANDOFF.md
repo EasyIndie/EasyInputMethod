@@ -16,7 +16,7 @@
 | 更新者 | pi |
 | 当前阶段 | **macOS 首版收尾：MVP-01/02/03/04/12 已闭环；余 MVP-05…11；本机（macOS 13 Intel）可独立迭代与真机验收，不再依赖签名机** |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
-| 活跃 PR | 见 GitHub；仓库保持 private，无公开 Release |
+| 活跃 PR | 见 GitHub；仓库**已公开**（2026-10-10），无正式 Release |
 | 最近一次 `make verify` | ✅ 全绿：114 单测 + 1 doctest、fmt、Clippy、deny、156 产物零网络符号；`dev-preview --smoke-test`、universal 构建、离线重建均通过；`make fuzz FUZZ_SECONDS=10` 三目标无崩溃 |
 
 
@@ -41,6 +41,8 @@
 
 ## 3. 进行中
 
+- **✅ 仓库转公开 + 发布渠道就绪（2026-10-10，pi）**：安全复核无密钥/个人路径后转 **public**；启用 **Pages**（<https://easyindie.github.io/EasyInputMethod/>，HTTP 200）；设 main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；公开后 Actions 免费恢复（含 fuzz job 的 CI 全绿）。**首版 `v0.1.0` 待打 tag 发布**。
+- **✅ MVP 收敛 8/11（2026-10-10，pi）**
 - **⏸ MVP-05 待用户实机（2026-10-09 已备矩阵）**：在 `docs/macos-release-checklist.md` 提供 **13 项实机 DoD 矩阵模板**（系统/应用/候选源码/步骤/预期/结果/证据），用户实机后照填即可关闭。我不催重启/重装。
 - **✅ MVP-13 完成（2026-10-09，pi）**：`from_tsv` 改为排序分组（O(n log n)），核心表冷启动 **3219ms → 41ms**；候选窗主题计时器改为**仅可见时运行**；新增 `ime-cli --example startup_cost` 证据。
 - **⏸ MVP-14未完成（待外部环境）**：universal 包已由 CI 产出；更多 macOS 版本与 Icon Composer 分层外观需其他机器/Xcode 27+设计资源，本机无法关闭。
@@ -89,7 +91,7 @@
 
 - 当前 CI 公证候选：`Lampyris-macos-acceptance-<sha>`（universal，约 11.5 MB）；签名/staple/Gatekeeper 与离线复现通过。
 - 本机（macOS 13 Intel）为**用户域 ad-hoc 临时安装**（`cn.jokerhub.inputmethod.Lampyris`），用户已实体输入验收；验收结束可移除。
-- 仓库保持 private，无公开 Release；CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
+- 仓库**已公开**（2026-10-10）；无正式 Release（首版 `v0.1.0` 待打 tag）；Pages 上线、main 分支保护已设。CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
 
 ## 6. 必须知道的坑与硬约束
 
@@ -138,6 +140,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-10 / pi：仓库转公开 + Pages + 分支保护（T-MVP-11）
+- 公开前扫描：无密钥/个人路径/密钥文件；作者邮箱与 GitHub 账号公开邮箱一致。
+- 仓库转 **public**；启用 **Pages**（GitHub Actions 源，站点已 HTTP 200）；main 分支保护：必需 `check`/`macos`/`fuzz`，禁强推/删除。
+- 公开后 Actions 免费恢复：CI（含 **fuzz job**）与 acceptance 重跑全绿。首版 `v0.1.0` 待打 tag。
 
 ### 2026-10-10 / pi：MVP 收敛（T-MVP-08/09/10）
 - T-MVP-08：`make bootstrap` 固定 `cargo-deny 0.20.2` / `cargo-fuzz 0.13.2`；`ci.yml` 新增有界 fuzz job（nightly，三目标各 30s）；新增 `security.yml` 每周 `cargo deny check advisories`。

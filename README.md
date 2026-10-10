@@ -28,7 +28,7 @@
 - 下载最新版：<https://github.com/EasyIndie/EasyInputMethod/releases/latest> —— 同一 Release 含二进制包与**对应源码包**（GPL-3.0 §6(d)）。
 - 项目主页（GitHub Pages）：由 `site/` 部署，见仓库 Settings → Pages。
 
-> ⚠️ 当前仓库为 **private**，以上链接对公众尚不可用；**转公开后生效**。发布由 tag `v*` 触发（**不自动发布**）。
+> 仓库**已公开**（GPL-3.0-or-later）；发布由 tag `v*` 触发（**不自动发布**），首版 `v0.1.0` 待打 tag。
 
 ## 目录
 

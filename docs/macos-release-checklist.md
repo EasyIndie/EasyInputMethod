@@ -1,6 +1,6 @@
 # macOS 首版发布前清单
 
-当前版本 0.1.0，双架构 **universal（arm64 + x86_64）** 候选由 CI 产出（签名 + 公证 + 离线复现）。发布渠道定为 **GitHub Release（产物）+ GitHub Pages（指引）**（ADR-065），仓库**转公开后**打 `v0.1.0` tag 发布；当前 private，无正式 Release。实机验收（MVP-05）由用户安排。该清单汇总状态，详情以报告 003/005/006 及 HANDOFF 为准；**用户可见的版本说明见 [发布说明](发布说明.md)**。
+当前版本 0.1.0，双架构 **universal（arm64 + x86_64）** 候选由 CI 产出（签名 + 公证 + 离线复现）。发布渠道为 **GitHub Release（产物）+ GitHub Pages（指引）**（ADR-065）；仓库**已公开**（2026-10-10），打 `v0.1.0` tag 即发布，当前无正式 Release。实机验收（MVP-05）由用户安排。该清单汇总状态，详情以报告 003/005/006 及 HANDOFF 为准；**用户可见的版本说明见 [发布说明](发布说明.md)**。
 
 需求与实现差距（MVP-01…14）见 [报告006](reviews/006-macos-mvp-gap-review.md)。该报告补充候选来源、配置刷新/错误反馈等工程待办；本清单中“已完成”不等于Phase 1验收关闭。
 
@@ -46,19 +46,19 @@
 
 ## 发布流程（汇总，ADR-065）
 
-1. 公开前复核（`docs/reviews/004-public-readiness.md`）→ 仓库**转公开**。
-2. Settings → Pages → Source 选 **GitHub Actions**（启用 Pages）。
-3. `git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）；可先手动跑 `release.yml` 的 `dry_run` 演练。
-4. 手动触发 `pages.yml` 部署落地页。
-5. 公开后设置 main 分支保护 + 必需 CI。
+1. ✅ 公开前复核完成 → 仓库**已转公开**（2026-10-10）。
+2. ✅ Pages 已启用（Source: GitHub Actions），站点已上线（`https://easyindie.github.io/EasyInputMethod/`）。
+3. ⬜ `git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）；可先手动跑 `dry_run` 演练。
+4. ✅ `pages.yml` 已手动部署过（站点在线）。
+5. ✅ main 分支保护：必需 `check`/`macos`/`fuzz`，禁强推/删除。
 
 ## 发布前收尾
 
 - [ ] 将最终实机结果录入报告005，满足技术方案§12后关闭P1-M4验收项。
 - [ ] 汇总最终版本说明、已验环境和已知限制（底稿已就绪：[发布说明](发布说明.md)）；附件SHA须对应最终源码版本。
-- [ ] 完成公开发布前复核（历史日志/附件/个人路径、Actions权限），确认后把仓库转为公开。
+- [x] 公开前复核 + 仓库转公开（2026-10-10）；Pages 启用、分支保护已设。
 - [ ] 转公开后打 `v0.1.0` tag：`release.yml` 创建 Release（二进制 + 源码同页）；启用 Pages 并手动触发 `pages.yml` 部署落地页（ADR-065）。**Release 附件即长期分发位置**。（可先用 `release.yml` 的 `dry_run` 手动演练：只下载/校验附件，不创建 Release）
-- [ ] 公开后设置 main 分支保护 + 必需 CI 检查（Free 的 private 仓库不支持，公开后可用）。
+- [x] 公开后设置 main 分支保护 + 必需 CI 检查（`check`/`macos`/`fuzz`）。
 - [ ] 验收结束移除临时输入源及用户域应用，保留配置和词库，日常继续独立窗口。
 
 ## 后续增强（不扩首版范围）
