@@ -98,3 +98,40 @@ license = "CC-BY-SA-4.0"
 sha256 = "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f"
 generator = "tools/prepare-pinyin-core.py"
 notes = "ADR-031；按词频降序/词及拼音升序裁剪，包含注释不超过 256KiB；输入全量词表来自既有登记来源"
+
+[[source]]
+id = "D11"
+name = "OpenCC 简→繁 单字表（STCharacters）"
+path = "data/sources/opencc-STCharacters.txt"
+url = "https://github.com/BYVoid/OpenCC/blob/8cf737a4e193db27d675b2ce9867d84aace33745/data/dictionary/STCharacters.txt"
+upstream = "BYVoid/OpenCC"
+license = "Apache-2.0"
+risk = "low"
+sha256 = "a0ca1601c70648cf48b33c3c6210ccbecc5c7eead4b4c3daf76587ba2c03582b"
+used_for = ["simplified-traditional-conversion"]
+fetch_script = "data/sources/fetch-opencc.sh"
+added_at = "2026-10-10"
+notes = "Apache-2.0；OpenCC 固定 commit 8cf737a4；格式 `简体\t繁体(空格分隔多个)`；文件下载获取，不入库"
+
+[[source]]
+id = "D12"
+name = "OpenCC 简→繁 词组表（STPhrases）"
+path = "data/sources/opencc-STPhrases.txt"
+url = "https://github.com/BYVoid/OpenCC/blob/8cf737a4e193db27d675b2ce9867d84aace33745/data/dictionary/STPhrases.txt"
+upstream = "BYVoid/OpenCC"
+license = "Apache-2.0"
+risk = "low"
+sha256 = "f6eab5e5c6dd7640597878d3dfc6599ee1279d2bc91561eadd8e114194e2925a"
+used_for = ["simplified-traditional-conversion"]
+fetch_script = "data/sources/fetch-opencc.sh"
+added_at = "2026-10-10"
+notes = "Apache-2.0；OpenCC 固定 commit 8cf737a4；词组消歧（49,270 行）；文件下载获取，不入库"
+
+[[derived]]
+id = "variant-s2t-v1"
+path = "data/generated/variant-s2t.tsv"
+source_ids = ["D11", "D12"]
+license = "Apache-2.0"
+sha256 = "68c94a2c795efc757b1b5f4331d16497cc4d713417deec762a02b3c192fe90f6"
+generator = "tools/prepare-variant.py"
+notes = "简→繁转换表；每键取 OpenCC 默认形式；运行时按最长匹配优先命中词组；42,430 条 / 841KB；随包分发"

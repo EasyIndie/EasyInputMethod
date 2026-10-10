@@ -23,6 +23,10 @@ enum HelpUI {
         let english = readable(ImeConfig.string("hotkey.toggle_english"))
         let width = readable(ImeConfig.string("hotkey.toggle_width"))
         let punctuation = readable(ImeConfig.string("hotkey.toggle_punctuation"))
+        let variant = readable(ImeConfig.string("hotkey.toggle_variant"))
+        let variantState =
+            (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional"
+            ? "繁体" : "简体"
         let mode = readable(ImeConfig.string("hotkey.toggle_mode"))
         let pageWithComma = ImeConfig.bool("candidate.page_with_comma")
         let count = ImeConfig.int("candidate.count") ?? 7
@@ -31,6 +35,7 @@ enum HelpUI {
           中/英切换        \(english)
           全角/半角        \(width)
           中/英标点        \(punctuation)
+          简/繁切换        \(variant)   （当前：\(variantState)）
           输入模式循环     \(mode)   （混输 → 五笔 → 拼音）
 
         【输入与候选】

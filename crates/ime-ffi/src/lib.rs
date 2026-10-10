@@ -15,6 +15,7 @@ mod data;
 mod error;
 mod samples;
 mod session;
+mod variant;
 
 pub use error::{
     IME_ERR_INVALID_INPUT, IME_ERR_INVALID_UTF8, IME_ERR_IO, IME_ERR_LOCKED, IME_ERR_NULL,

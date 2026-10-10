@@ -54,6 +54,16 @@ enum ImeConfig {
         }
     }
 
+    /// 按 TOML 字面量写入（bool/int 等非字符串选项；字符串仍用 `setString`）。
+    @discardableResult
+    static func setToml(_ key: String, _ literal: String) -> Bool {
+        key.withCString { keyPtr in
+            literal.withCString { valuePtr in
+                ime_config_set(keyPtr, valuePtr) == IME_OK
+            }
+        }
+    }
+
     /// 最近一次配置加载/重载失败原因（含行号）；无错误返回 nil（ADR-059）。
     static func errorMessage() -> String? {
         guard let ptr = ime_config_last_error() else { return nil }

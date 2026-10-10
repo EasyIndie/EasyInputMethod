@@ -141,6 +141,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：T-P2-01 简繁转换
+- 数据：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit `8cf737a4`）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；登记 D11/D12 + 派生项、`数据来源与许可.md` §1.9；抓取 `fetch-opencc.sh`、编译 `tools/prepare-variant.py`。
+- 配置 `input.chinese_variant`（simplified/traditional）+ 快捷键 `hotkey.toggle_variant`（默认 `ctrl+shift+f`，写回）；FFI 边界对**候选/上屏**做**最长匹配**简→繁（引擎/学习仍存简体）；菜单状态显示“简/繁”、帮助面板新增行。
+- ADR-069；预览冒烟新增简繁断言；`make verify` 全绿。
+
 ### 2026-10-10 / pi：快捷键帮助面板（菜单入口）
 - 新增 `platforms/macos/Sources/Help.swift` 与菜单项「快捷键与使用说明…」：**读取当前配置**展示实际生效按键（中英/全半角/标点/模式/翻页/输入/其它），用户可自助学习。
 - `build.sh` 用 `Sources/*.swift` 通配，新文件自动纳入；`docs/发布说明.md` §4 补充说明。

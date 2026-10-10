@@ -96,6 +96,10 @@ final class LampyrisInputController: IMKInputController {
             } else {
                 failure = "缺少码表：\(wubi)"
             }
+            let variant = resources.appendingPathComponent("variant-s2t.tsv").path
+            if let s = session, fm.fileExists(atPath: variant) {
+                _ = s.setVariantData(variant)
+            }
         } else {
             failure = "找不到应用资源目录，无法加载数据文件"
         }
@@ -238,11 +242,12 @@ final class LampyrisInputController: IMKInputController {
         return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][raw] ?? "混输"
     }
 
-    /// 菜单里的完整状态：模式 · 中/英 · 半角/全角（T-MVP-06）。
+    /// 菜单里的完整状态：模式 · 中/英 · 半角/全角 · 简/繁（T-MVP-06 / T-P2-01）。
     private func stateDescription() -> String {
         let language = (session?.isEnglish ?? false) ? "英" : "中"
         let width = (session?.isFullWidth ?? false) ? "全角" : "半角"
-        return "\(modeName())·\(language)·\(width)"
+        let variant = (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional" ? "繁" : "简"
+        return "\(modeName())·\(language)·\(width)·\(variant)"
     }
 
     /// 候选窗内的紧凑状态徽标：模式（+ 全）。
@@ -324,7 +329,14 @@ final class LampyrisInputController: IMKInputController {
             candidateWindow?.hide()
         }
         if session.shortcut(event, persistMode: true) {
-            clearMarked(client); candidateWindow?.hide(); return true
+            if session.isComposing {
+                updateMarked(client, session.buffer)
+                showCandidates(client, session: session)
+            } else {
+                clearMarked(client)
+                candidateWindow?.hide()
+            }
+            return true
         }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)

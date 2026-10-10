@@ -40,7 +40,7 @@ else
   ARCHES=("${HOST_ARCH}")
 fi
 if ${STRICT}; then
-  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
+  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv variant-s2t.tsv; do
     [ -s "${GENERATED}/${name}" ] || { echo "发布构建缺少 ${name}" >&2; exit 1; }
   done
 fi
@@ -123,6 +123,7 @@ copy_data() {
 copy_data "${GENERATED}/wubi86-core.tsv" "wubi86-core.tsv"
 copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
 copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
+copy_data "${GENERATED}/variant-s2t.tsv" "variant-s2t.tsv"
 if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
   echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现）"
 fi

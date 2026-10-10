@@ -7,6 +7,7 @@ use ime_pinyin::{PinyinBackend, TablePinyinBackend};
 use ime_table::Table;
 
 use crate::error::{IME_ERR_IO, IME_ERR_LOCKED, IME_ERR_PARSE};
+use crate::variant::VariantMap;
 
 #[derive(Clone, PartialEq, Eq)]
 struct FileKey {
@@ -33,6 +34,7 @@ type PinyinEntry = (PinyinKey, Weak<dyn PinyinBackend>);
 struct Cache {
     wubi: Vec<(FileKey, Weak<Table>)>,
     pinyin: Vec<PinyinEntry>,
+    variant: Vec<(FileKey, Weak<VariantMap>)>,
 }
 fn cache() -> &'static Mutex<Cache> {
     static CACHE: OnceLock<Mutex<Cache>> = OnceLock::new();
@@ -85,6 +87,27 @@ pub(crate) fn pinyin(chars: &str, words: Option<&str>) -> Result<Arc<dyn PinyinB
         cache.pinyin.remove(0);
     }
     cache.pinyin.push((key, Arc::downgrade(&data)));
+    Ok(data)
+}
+
+/// 载入（并缓存）简→繁转换表；文件不存在/不可读返回错误码。
+pub(crate) fn variant(path: &str) -> Result<Arc<VariantMap>, i32> {
+    let key = FileKey::read(path)?;
+    let mut cache = cache().lock().map_err(|_| IME_ERR_LOCKED)?;
+    cache.variant.retain(|(_, weak)| weak.strong_count() > 0);
+    if let Some(data) = cache
+        .variant
+        .iter()
+        .find_map(|(k, w)| (k == &key).then(|| w.upgrade()).flatten())
+    {
+        return Ok(data);
+    }
+    let text = std::fs::read_to_string(&key.path).map_err(|_| IME_ERR_IO)?;
+    let data = Arc::new(VariantMap::from_tsv(&text));
+    if cache.variant.len() >= 4 {
+        cache.variant.remove(0);
+    }
+    cache.variant.push((key, Arc::downgrade(&data)));
     Ok(data)
 }
 

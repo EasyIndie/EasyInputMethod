@@ -199,6 +199,7 @@ guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-cor
     pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else {
     fputs("无法加载真实词典，请检查 data/generated/。\n", stderr); exit(1)
 }
+_ = session.setVariantData(data.appendingPathComponent("variant-s2t.tsv").path)
 let smoke = CommandLine.arguments.contains("--smoke-test")
 let smokeDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("lampyris-preview-\(UUID().uuidString)")
 if smoke {
@@ -343,6 +344,19 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.pageIndex == 1, session.candidates(limit: 9).map(\.text) != aPage else { exit(1) }
     keys(",")
     guard session.pageIndex == 0 else { exit(1) }
+    // 简/繁：默认 Ctrl+Shift+F 切换后上屏输出繁体（T-P2-01）。
+    session.setMode("wubi"); view.clear()
+    _ = ImeConfig.setToml("wubi.auto_commit", "false"); session.prepare()
+    let variantBefore = ImeConfig.string("input.chinese_variant")
+    keys("f", flags: [.control, .shift])
+    guard ImeConfig.string("input.chinese_variant") != variantBefore else {
+        fputs("Ctrl+Shift+F 未切换简繁。\n", stderr); exit(1)
+    }
+    keys("kwwl"); keys(" "); check("中華人民共和國")
+    keys("f", flags: [.control, .shift])
+    guard ImeConfig.string("input.chinese_variant") == variantBefore else { exit(1) }
+    _ = ImeConfig.setToml("wubi.auto_commit", "true"); session.prepare()
+    session.setMode("mixed")
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
     func pump(until condition: () -> Bool, timeout: TimeInterval = 5) -> Bool {

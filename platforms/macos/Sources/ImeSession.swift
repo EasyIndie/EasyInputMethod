@@ -133,6 +133,22 @@ final class ImeSession {
         prepare()
     }
 
+    /// 简/繁切换：翻转 `input.chinese_variant` 并写回配置（对齐搜狗/微软 `Ctrl+Shift+F`）。
+    func toggleVariant() {
+        let next =
+            (ImeConfig.string("input.chinese_variant") ?? "simplified") == "simplified"
+            ? "traditional" : "simplified"
+        guard ImeConfig.setString("input.chinese_variant", next) else { return }
+        prepare()
+    }
+
+    /// 注入简→繁转换表（宿主从包内 Resources 载入）。
+    @discardableResult
+    func setVariantData(_ path: String) -> Int32 {
+        guard let handle else { return IME_ERR_NULL }
+        return path.withCString { ime_session_set_variant_data(handle, $0) }
+    }
+
     // 单独 Shift 切换中英（对齐搜狗/微信）：需要 flagsChanged 的按下/抬起。
     private var shiftDown = false
     private var shiftUsedByKey = false
@@ -191,6 +207,10 @@ final class ImeSession {
         if matches(ImeConfig.string("hotkey.toggle_width"), event) { toggleWidth(); return true }
         if matches(ImeConfig.string("hotkey.toggle_punctuation"), event) {
             togglePunctuation()
+            return true
+        }
+        if matches(ImeConfig.string("hotkey.toggle_variant"), event) {
+            toggleVariant()
             return true
         }
         guard let configured = ImeConfig.string("hotkey.toggle_mode"), matches(configured, event)

@@ -9,10 +9,13 @@
 
 use std::ffi::{c_char, CString};
 use std::ptr;
+use std::sync::Arc;
 
 use ime_core::{CandidateSource, Engine, InputMode, KeyOutcome, Session};
 use ime_pinyin::PinyinEngine;
 use ime_table::CodeTableEngine;
+
+use crate::variant::VariantMap;
 
 use crate::error::{
     catch_ptr, catch_status, catch_value, cstr_arg, IME_ERR_INVALID_INPUT, IME_ERR_IO,
@@ -76,6 +79,10 @@ pub struct ImeSession {
     dictionary: Option<ime_dict::Store>,
     dictionary_error: i32,
     ffi_strings: Vec<(Option<CString>, Option<CString>)>,
+    /// 简→繁转换表（可选，由宿主注入 `ime_session_set_variant_data`）。
+    variant: Option<Arc<VariantMap>>,
+    /// 是否输出繁体（来自配置 `input.chinese_variant`）。
+    traditional: bool,
 }
 
 fn source_to_int(source: CandidateSource) -> i32 {
@@ -175,6 +182,8 @@ impl ImeSession {
             dictionary: None,
             dictionary_error: IME_OK,
             ffi_strings: Vec::new(),
+            variant: None,
+            traditional: false,
         });
         s.refresh();
         s
@@ -244,15 +253,18 @@ impl ImeSession {
 
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
     fn refresh(&mut self) {
+        let traditional = self.traditional;
+        let variant = self.variant.clone();
         self.ffi_strings = self
             .session
             .candidates()
             .iter()
             .map(|c| {
-                (
-                    CString::new(c.text.as_str()).ok(),
-                    CString::new(c.code.as_str()).ok(),
-                )
+                let text = match (&variant, traditional) {
+                    (Some(map), true) => map.to(&c.text),
+                    _ => c.text.clone(),
+                };
+                (CString::new(text).ok(), CString::new(c.code.as_str()).ok())
             })
             .collect();
         let mut view: Vec<ImeCandidate> = Vec::with_capacity(self.session.candidates().len());
@@ -332,6 +344,23 @@ pub extern "C" fn ime_session_free(session: *mut ImeSession) {
     }));
 }
 
+/// 注入简→繁转换表（宿主在创建会话后调用；路径非法返回负错误码）。
+#[no_mangle]
+pub extern "C" fn ime_session_set_variant_data(
+    session: *mut ImeSession,
+    path: *const c_char,
+) -> i32 {
+    catch_status(|| {
+        // SAFETY：契约见模块注释。
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        // SAFETY：契约见 `cstr_arg`。
+        let path = unsafe { cstr_arg(path)? };
+        s.variant = Some(crate::data::variant(path)?);
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+
 /// 喂入一个 Unicode 码点（等价 `Session::handle_key`）。
 ///
 /// 成功时返回 `IME_KEY_*`（`0` 消费 / `1` 上屏 / `2` 透传）；失败返回负数错误码。
@@ -382,6 +411,8 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
             fuzzy: boolean("pinyin.fuzzy"),
             z_wildcard: cfg.get("wubi.z_key").and_then(|v| v.as_str()) == Some("wildcard"),
         });
+        s.traditional =
+            cfg.get("input.chinese_variant").and_then(|v| v.as_str()) == Some("traditional");
         Ok(IME_OK)
     })
 }
@@ -672,7 +703,12 @@ pub extern "C" fn ime_session_commit(session: *mut ImeSession) -> ImeString {
         || {
             // SAFETY：契约见模块注释。
             let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
-            Ok(owned_string(s.session.committed()))
+            let committed = s.session.committed();
+            let text = match (&s.variant, s.traditional) {
+                (Some(map), true) => map.to(committed),
+                _ => committed.to_string(),
+            };
+            Ok(owned_string(&text))
         },
         ImeString {
             data: ptr::null(),

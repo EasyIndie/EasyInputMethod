@@ -81,6 +81,7 @@ int32_t      ime_session_dictionary_add(ImeSession* session, const char* scheme,
 int32_t      ime_session_dictionary_import(ImeSession* session, const char* path);
 int32_t      ime_session_dictionary_export(ImeSession* session, const char* path);
 int32_t      ime_session_configure(ImeSession* session);
+int32_t      ime_session_set_variant_data(ImeSession* session, const char* path); /* 注入简→繁表 */
 int32_t      ime_session_mode(ImeSession* session); /* mixed=0 wubi=1 pinyin=2 */
 int32_t      ime_session_set_mode(ImeSession* session, const char* mode);
 ImeCandidates ime_session_candidates(ImeSession* session);

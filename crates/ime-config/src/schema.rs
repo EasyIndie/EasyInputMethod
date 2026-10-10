@@ -124,6 +124,13 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Hotkey,
     },
     OptionSpec {
+        key: "hotkey.toggle_variant",
+        value_type: ValueType::String,
+        default: "\"ctrl+shift+f\"",
+        doc_zh: "简/繁切换：组合键如 ctrl+shift+f（默认，对齐搜狗/微软） | none = 关闭",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
         key: "input.punctuation",
         value_type: ValueType::Enum {
             values: &["chinese", "english"],
@@ -137,6 +144,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Bool,
         default: "false",
         doc_zh: "全角 ASCII（Shift+Space 可临时切换）",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
+        key: "input.chinese_variant",
+        value_type: ValueType::Enum {
+            values: &["simplified", "traditional"],
+        },
+        default: "\"simplified\"",
+        doc_zh: "输出字形：simplified = 简体 | traditional = 繁体（Ctrl+Shift+F 可切换）",
         scope: Scope::Engine,
     },
 ];

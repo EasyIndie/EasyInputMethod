@@ -13,7 +13,7 @@ WORK="$(mktemp -d "${OUT}/candidate-XXXXXX")"
 APP="${ROOT}/platforms/macos/build/Lampyris.app"
 if ${SIGNED}; then
   [ "$(cat "${APP}/Contents/Resources/SOURCE-COMMIT")" = "${COMMIT}" ] || { echo "签名应用与当前源码提交不符，请重新构建" >&2; exit 1; }
-  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
+  for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv variant-s2t.tsv; do
     cmp "data/generated/${name}" "${APP}/Contents/Resources/${name}"
   done
   cmp platforms/macos/Info.plist "${APP}/Contents/Info.plist"
