@@ -147,7 +147,8 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let exportButton = NSButton(title: "导出词库", target: self, action: #selector(exportWords))
         let lookup = NSButton(title: "拼音反查", target: self, action: #selector(lookupPinyin))
         let settingsButton = NSButton(title: "偏好设置", target: self, action: #selector(openSettings))
-        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton])
+        let feedbackButton = NSButton(title: "反馈", target: self, action: #selector(openFeedback))
+        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton, feedbackButton])
         controls.orientation = .horizontal
         let stack = NSStackView(views: [hint, controls, scroll, status])
         stack.orientation = .vertical
@@ -180,6 +181,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     }
     @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show() }
+    @objc func openFeedback() { input?.cancelComposition(); FeedbackUI.show() }
     @objc func addWord() { input?.cancelComposition(); UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func importWords() { input?.cancelComposition(); UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func exportWords() { input?.cancelComposition(); UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
@@ -500,6 +502,18 @@ if CommandLine.arguments.contains("--smoke-test") {
         ImeConfig.string("appearance.theme") == "dark"
     else {
         fputs("设置写回主题失败。\n", stderr); exit(1)
+    }
+    // 反馈入口（ADR-071）：静态公开链接、诊断信息不含隐私。
+    guard FeedbackUI.issuesURL.absoluteString.hasPrefix(
+        "https://github.com/EasyIndie/EasyInputMethod/")
+    else {
+        fputs("反馈链接不是项目公开地址。\n", stderr); exit(1)
+    }
+    let diagnostics = FeedbackUI.diagnostics()
+    guard diagnostics.contains("Lampyris"), diagnostics.contains("系统："),
+        diagnostics.contains("架构：")
+    else {
+        fputs("诊断信息缺少版本/系统/架构。\n", stderr); exit(1)
     }
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
