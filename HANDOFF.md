@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（偏好设置面板 ADR-070；候选窗体验打磨 A/C） |
+| 最后更新 | 2026-10-11（偏好设置面板 ADR-070、用户反馈入口 ADR-071；候选窗体验打磨 A/C） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ 用户反馈入口（T-P2-03，ADR-071，2026-10-11，pi）**：输入法菜单「反馈问题与建议…」→ AppKit 提示 + 本地诊断信息（版本/构建/提交/系统/架构，不含隐私），用户可「复制」或**主动**用系统浏览器打开公开 GitHub Issues；App 自身**零网络、不预填 URL、不上报**；敏感漏洞指向 `SECURITY.md` 私下渠道。
 - **✅ 偏好设置面板（T-P2-02，ADR-070，2026-10-11，pi）**：`platforms/macos/Sources/Settings.swift` 非模态 `NSPanel`，**完全由 `ime_config_schema()` 驱动**（零硬编码）；入口＝输入法菜单「偏好设置…」(⌘,)。`OptionSpec`/C ABI 追加 `title_zh`/`enum_labels_zh`；写入只经 `ime_config_set`；`ConfigWatcher` 支持多观察者。顺带修正 enum 列表“空串终止”约定。
 - **✅ 体验打磨 A/C（2026-10-11，pi）**：候选窗选屏改为「相交面积最大 → 光标中心 → 首屏」兜底（`CandidateWindow.bestScreenIndex`），修正副屏（负坐标）/跨屏/边缘定位；候选标签加**鼠标悬停高亮**（`CandidateLabel` + `NSTrackingArea`）；两者均补入预览冒烟隔离断言。**B（首次激活轻量引导）未做**，见 §4。
 - **✅ T-P2-01 简繁转换（ADR-069，2026-10-10，pi）**：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；配置 `input.chinese_variant` + 快捷键 `hotkey.toggle_variant`（默认 `ctrl+shift+f`）；FFI 边界最长匹配简→繁，引擎/学习仍存简体。登记 D11/D12 + 派生项。
@@ -57,7 +58,7 @@
 1. **体验打磨**：**A/C 已完成**（候选窗多屏定位加固 + 悬停高亮，见 §3）；剩 **B 首次激活轻量引导**（提示“按 Shift 切中英”，需确定“只提示一次”的持久化，可能先补 ADR）与候选窗**高分屏/多屏真机实测**（需用户实机；`docs/reviews/007-ux-and-tech-debt.md` §A2 留了栏位）。
 2. **MVP-05 实机 DoD 矩阵**：用户按 `docs/macos-release-checklist.md` 逐项填写（唯一剩余 A 类门槛）。
 3. **发布 `v0.1.0`**：`git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）。可先手动 `dry_run` 演练。
-4. **P2 迭代**：**设置界面已完成**（ADR-070）；剩字根提示、i18n、emoji 等（见报告 008 §8）；MVP-14 需外部环境。
+4. **P2 迭代**：**设置界面（ADR-070）与用户反馈入口（ADR-071）已完成**；剩字根提示、i18n、emoji 等（见报告 008 §8）；MVP-14 需外部环境。
 
 > **A/B 类缺口（MVP-01…04、06…13）与 MVP-11 已全部闭环**（ADR-057…069）；MVP-05 验收与 MVP-14 依赖用户或外部环境。
 
@@ -128,6 +129,10 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：用户反馈入口（T-P2-03，ADR-071）
+- 输入法菜单加「反馈问题与建议…」→ `platforms/macos/Sources/Feedback.swift`：展示本地诊断信息（版本/构建/提交/系统/架构，不含隐私），可复制或**主动**用浏览器打开公开 GitHub Issues；敏感漏洞指向 `SECURITY.md`。
+- App 自身零网络、不预填 URL、不上报；`隐私与安全.md` §1 补充说明。冒烟新增链接/诊断断言；`make verify` ✅。
 
 ### 2026-10-11 / pi：偏好设置面板（T-P2-02，ADR-070）
 - 新增 `platforms/macos/Sources/Settings.swift`：非模态 `NSPanel`，由 `ime_config_schema()` 动态建表（bool/stepper/下拉/文本框），菜单「偏好设置…」(⌘,) 打开；写入只经 `ime_config_set`。

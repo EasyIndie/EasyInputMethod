@@ -42,6 +42,7 @@ swiftc -g -Onone -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/CandidateWindow.swift" \
   "${SCRIPT_DIR}/Sources/Config.swift" \
   "${SCRIPT_DIR}/Sources/Settings.swift" \
+  "${SCRIPT_DIR}/Sources/Feedback.swift" \
   "${SCRIPT_DIR}/Sources/UserDictionary.swift" \
   "${SCRIPT_DIR}/Sources/Lookup.swift" \
   "${ROOT}/target/debug/libime_ffi.a" \

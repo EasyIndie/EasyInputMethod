@@ -87,6 +87,7 @@
 - [x] `TBD-3` 用户词库采用 TSV v1（ADR-029）
 - [x] 简繁转换（OpenCC 数据 + `Ctrl+Shift+F`，ADR-069，T-P2-01）
 - [x] 设置界面（Schema 驱动非模态面板，ADR-070，T-P2-02）
+- [x] 用户反馈入口（GitHub Issues，用户主动打开浏览器；ADR-071，T-P2-03）
 - [ ] 字根提示（§6.2 既定能力，见报告 007/008）
 
 ## P3 — Windows

@@ -193,6 +193,10 @@ final class LampyrisInputController: IMKInputController {
             title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
+        let feedback = NSMenuItem(
+            title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
+        feedback.target = self
+        menu.addItem(feedback)
         let help = NSMenuItem(
             title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
         help.target = self
@@ -268,6 +272,12 @@ final class LampyrisInputController: IMKInputController {
     @objc private func showSettings() {
         cancelClientComposition()
         SettingsPanel.shared.show()
+    }
+
+    /// 打开反馈入口（ADR-071）；仅用户点击时才用系统浏览器打开 GitHub Issues。
+    @objc private func showFeedback() {
+        cancelClientComposition()
+        FeedbackUI.show()
     }
 
     @objc private func showAbout() {
