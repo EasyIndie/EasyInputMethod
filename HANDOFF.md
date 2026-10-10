@@ -141,6 +141,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：MVP 收敛（T-MVP-06）
+- 候选窗**鼠标点选**（点候选项即选字/上屏，非激活面板 `acceptsFirstMouse`）+ 预览同回调；
+- 新增**状态徽标**（候选窗内模式 + `全`；输入菜单标题改为“混输·中·半角”）；为此新增 `ime_session_is_full_width()` + `ImeSession.isFullWidth` 与 Rust 测试；
+- 预览冒烟新增徽标/点选断言；`make verify` 120 passed。
+
 ### 2026-10-10 / pi：仓库转公开 + Pages + 分支保护（T-MVP-11）
 - 公开前扫描：无密钥/个人路径/密钥文件；作者邮箱与 GitHub 账号公开邮箱一致。
 - 仓库转 **public**；启用 **Pages**（GitHub Actions 源，站点已 HTTP 200）；main 分支保护：必需 `check`/`macos`/`fuzz`，禁强推/删除。
