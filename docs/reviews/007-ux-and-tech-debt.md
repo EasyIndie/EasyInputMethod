@@ -6,6 +6,8 @@
 
 来源：代码/脚本扫描、`docs/reviews/006`、`docs/技术方案.md` §6.2/§12、`docs/配置架构.md` §6、`docs/发布说明.md`、HANDOFF。
 
+> 跨角色全面审计（新增安全/架构/质量/运维/文档发现与 MVP/P2 分级）见 [审计008](008-multi-role-audit.md)。
+
 ---
 
 ## A. 体验问题（UX）

@@ -20,7 +20,7 @@
 
 首版要求、实现差距与待办队列见 [对照报告006](reviews/006-macos-mvp-gap-review.md)。
 
-体验问题与技术债盘点（优化排期依据）见 [盘点007](reviews/007-ux-and-tech-debt.md)。
+体验问题与技术债盘点（优化排期依据）见 [盘点007](reviews/007-ux-and-tech-debt.md)；跨角色全面审计与 MVP/P2 分级见 [审计008](reviews/008-multi-role-audit.md)。
 
 发布进度与剩余验收见 [macOS发布清单](macos-release-checklist.md)。
 
