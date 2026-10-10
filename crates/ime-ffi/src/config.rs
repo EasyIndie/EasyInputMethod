@@ -62,6 +62,10 @@ pub struct ImeConfigSchemaOption {
     pub int_max: i32,
     /// enum 取值：NUL 分隔的 UTF-8 列表，以空串结束（其它类型为单个 NUL）。
     pub enum_values: *const c_char,
+    /// 设置界面用的短标题（UTF-8）。
+    pub title_zh: *const c_char,
+    /// enum 显示名：NUL 分隔的 UTF-8 列表，与 `enum_values` 一一对应（其它类型为单个 NUL）。
+    pub enum_labels_zh: *const c_char,
 }
 
 /// Schema 的 C 布局（借用）。
@@ -297,6 +301,7 @@ fn build_schema() -> SchemaLayout {
         let key = cstring(spec.key);
         let default_toml = cstring(spec.default);
         let doc_zh = cstring(spec.doc_zh);
+        let title_zh = cstring(spec.title_zh);
 
         let (value_type, int_min, int_max, enum_values) = match spec.value_type {
             ValueType::Bool => (0, 0, 0, vec![0]),
@@ -307,13 +312,20 @@ fn build_schema() -> SchemaLayout {
                     buf.extend_from_slice(v.as_bytes());
                     buf.push(0);
                 }
-                if buf.last() != Some(&0) {
-                    buf.push(0);
-                }
+                // 末尾再补一个 NUL，形成“空串终止”（双 NUL），与 ABI 约定一致。
+                buf.push(0);
                 (2, 0, 0, buf)
             }
             ValueType::String => (3, 0, 0, vec![0]),
         };
+        // enum 显示名（与 enum_values 一一对应）；非枚举为空列表（单个 NUL）。
+        let mut enum_labels: Vec<u8> = Vec::new();
+        for label in spec.enum_labels_zh {
+            enum_labels.extend_from_slice(label.as_bytes());
+            enum_labels.push(0);
+        }
+        // 始终以空串终止（双 NUL），与 enum_values 解析约定一致。
+        enum_labels.push(0);
         let scope = match spec.scope {
             Scope::Engine => 0,
             Scope::CandidateWindow => 1,
@@ -322,6 +334,7 @@ fn build_schema() -> SchemaLayout {
         };
 
         let enum_ptr = enum_values.as_ptr() as *const c_char;
+        let enum_labels_ptr = enum_labels.as_ptr() as *const c_char;
         options.push(ImeConfigSchemaOption {
             key: key.as_ptr(),
             value_type,
@@ -331,11 +344,15 @@ fn build_schema() -> SchemaLayout {
             int_min,
             int_max,
             enum_values: enum_ptr,
+            title_zh: title_zh.as_ptr(),
+            enum_labels_zh: enum_labels_ptr,
         });
         strings.push(key);
         strings.push(default_toml);
         strings.push(doc_zh);
+        strings.push(title_zh);
         bytes.push(enum_values);
+        bytes.push(enum_labels);
     }
 
     let items = options.as_ptr();
@@ -418,11 +435,32 @@ mod tests {
         // SAFETY：指针由 build_schema 的 CString/Vec 持有，测试期间有效。
         unsafe {
             assert_eq!(CStr::from_ptr(first.key).to_str().unwrap(), "mode");
+            assert_eq!(CStr::from_ptr(first.title_zh).to_str().unwrap(), "输入模式");
         }
         assert_eq!(first.value_type, 2);
         // SAFETY：同上。
         let values = unsafe { cstr_list(first.enum_values) };
         assert_eq!(values, vec!["mixed", "wubi", "pinyin"]);
+        // SAFETY：显示名与取值一一对应（设置界面依赖）。
+        let labels = unsafe { cstr_list(first.enum_labels_zh) };
+        assert_eq!(labels.len(), values.len());
+        assert_eq!(labels[0], "五笔优先 + 拼音兜底");
+        // 每个枚举选项的取值/显示名非空且一一对应。
+        for option in &layout._options {
+            if option.value_type != 2 {
+                continue;
+            }
+            // SAFETY：枚举缓冲区与 layout 同生命周期。
+            let (values, labels) = unsafe {
+                (
+                    cstr_list(option.enum_values),
+                    cstr_list(option.enum_labels_zh),
+                )
+            };
+            let key = unsafe { CStr::from_ptr(option.key).to_str().unwrap() };
+            assert!(!values.is_empty(), "{key} 缺枚举取值");
+            assert_eq!(values.len(), labels.len());
+        }
     }
 
     #[test]

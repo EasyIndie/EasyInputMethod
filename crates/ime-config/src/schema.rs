@@ -1,7 +1,7 @@
 //! 配置 Schema：每个选项的唯一定义。
 //!
 //! 铁律 R4：默认值 / 取值范围 / 中文说明都只在这里出现一次；
-//! 配置文件注释、校验、默认快照、设置界面（未来）均由此派生。
+//! 配置文件注释、校验、默认快照、设置界面（ADR-070）均由此派生。
 
 /// 值类型。
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -31,9 +31,14 @@ pub struct OptionSpec {
     /// 点分键名，例如 `"wubi.auto_commit"`。
     pub key: &'static str,
     pub value_type: ValueType,
+    /// 枚举显示名（中文），与 `ValueType::Enum::values` **一一对应**；非枚举为空。
+    /// 仅供设置界面展示，持久化值仍是 `values` 里的英文标识。
+    pub enum_labels_zh: &'static [&'static str],
     /// 默认值的 TOML 字面量（唯一出处）。
     pub default: &'static str,
-    /// 中文说明，用于生成配置文件注释。
+    /// 设置界面用的短标题。
+    pub title_zh: &'static str,
+    /// 中文说明，用于生成配置文件注释与设置界面帮助文本。
     pub doc_zh: &'static str,
     pub scope: Scope,
 }
@@ -45,14 +50,18 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["mixed", "wubi", "pinyin"],
         },
+        enum_labels_zh: &["五笔优先 + 拼音兜底", "仅五笔", "仅拼音"],
         default: "\"mixed\"",
+        title_zh: "输入模式",
         doc_zh: "mixed = 五笔优先 + 拼音兜底（推荐） | wubi = 仅五笔 | pinyin = 仅拼音",
         scope: Scope::Engine,
     },
     OptionSpec {
         key: "wubi.auto_commit",
         value_type: ValueType::Bool,
+        enum_labels_zh: &[],
         default: "true",
+        title_zh: "四码唯一时自动上屏",
         doc_zh: "打满四码且唯一时直接上屏",
         scope: Scope::Engine,
     },
@@ -61,28 +70,36 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["wildcard", "none"],
         },
+        enum_labels_zh: &["万能键", "关闭"],
         default: "\"wildcard\"",
+        title_zh: "Z 键行为",
         doc_zh: "z 键：wildcard = 万能键 | none = 关闭",
         scope: Scope::Engine,
     },
     OptionSpec {
         key: "pinyin.fuzzy",
         value_type: ValueType::Bool,
+        enum_labels_zh: &[],
         default: "false",
+        title_zh: "模糊音",
         doc_zh: "模糊音（zh=z、ch=c、sh=s、n=l…）",
         scope: Scope::Engine,
     },
     OptionSpec {
         key: "candidate.count",
         value_type: ValueType::Int { min: 3, max: 9 },
+        enum_labels_zh: &[],
         default: "7",
+        title_zh: "每页候选数",
         doc_zh: "每页候选数（3–9）",
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
         key: "candidate.page_with_comma",
         value_type: ValueType::Bool,
+        enum_labels_zh: &[],
         default: "true",
+        title_zh: "逗号/句号翻页",
         doc_zh: "组合态下用 , / . 翻页（对齐搜狗/微信）",
         scope: Scope::CandidateWindow,
     },
@@ -91,43 +108,55 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],
         },
+        enum_labels_zh: &["跟随系统", "浅色", "深色"],
         default: "\"auto\"",
+        title_zh: "外观主题",
         doc_zh: "auto = 跟随系统 | light | dark",
         scope: Scope::Appearance,
     },
     OptionSpec {
         key: "hotkey.toggle_mode",
         value_type: ValueType::String,
+        enum_labels_zh: &[],
         default: "\"ctrl+shift+m\"",
-        doc_zh: "循环切换 混合 → 五笔 → 拼音",
+        title_zh: "切换输入模式",
+        doc_zh: "循环切换 混合 → 五笔 → 拼音；留空 = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
         key: "hotkey.toggle_english",
         value_type: ValueType::String,
+        enum_labels_zh: &[],
         default: "\"shift\"",
-        doc_zh: "中英切换：shift = 单独按 Shift（对齐搜狗/微信） | 组合键如 ctrl+shift+space | none = 关闭",
+        title_zh: "中英切换",
+        doc_zh: "shift = 单独按 Shift（对齐搜狗/微信） | 组合键如 ctrl+shift+space | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
         key: "hotkey.toggle_width",
         value_type: ValueType::String,
+        enum_labels_zh: &[],
         default: "\"shift+space\"",
-        doc_zh: "全/半角切换：组合键如 shift+space（默认，对齐搜狗/微信） | none = 关闭",
+        title_zh: "全/半角切换",
+        doc_zh: "组合键如 shift+space（默认，对齐搜狗/微信） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
         key: "hotkey.toggle_punctuation",
         value_type: ValueType::String,
+        enum_labels_zh: &[],
         default: "\"ctrl+.\"",
-        doc_zh: "中英标点切换：组合键如 ctrl+.（默认，对齐搜狗/微软） | none = 关闭",
+        title_zh: "中英标点切换",
+        doc_zh: "组合键如 ctrl+.（默认，对齐搜狗/微软） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
         key: "hotkey.toggle_variant",
         value_type: ValueType::String,
+        enum_labels_zh: &[],
         default: "\"ctrl+shift+f\"",
-        doc_zh: "简/繁切换：组合键如 ctrl+shift+f（默认，对齐搜狗/微软） | none = 关闭",
+        title_zh: "简/繁切换",
+        doc_zh: "组合键如 ctrl+shift+f（默认，对齐搜狗/微软） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
@@ -135,14 +164,18 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["chinese", "english"],
         },
+        enum_labels_zh: &["中文", "英文"],
         default: "\"chinese\"",
+        title_zh: "标点风格",
         doc_zh: "标点：chinese = 中文 | english = 英文",
         scope: Scope::Engine,
     },
     OptionSpec {
         key: "input.full_width",
         value_type: ValueType::Bool,
+        enum_labels_zh: &[],
         default: "false",
+        title_zh: "全角 ASCII",
         doc_zh: "全角 ASCII（Shift+Space 可临时切换）",
         scope: Scope::Engine,
     },
@@ -151,7 +184,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["simplified", "traditional"],
         },
+        enum_labels_zh: &["简体", "繁体"],
         default: "\"simplified\"",
+        title_zh: "输出字形",
         doc_zh: "输出字形：simplified = 简体 | traditional = 繁体（Ctrl+Shift+F 可切换）",
         scope: Scope::Engine,
     },

@@ -85,28 +85,43 @@ private func configChangedBridge(_ key: UnsafePointer<CChar>?, _ user: UnsafeMut
 final class ConfigWatcher {
     static let shared = ConfigWatcher()
     private var token: Int32 = -1
-    private weak var owner: AnyObject?
-    private var handler: ((String) -> Void)?
+
+    /// 单个观察者（持有处理器的弱引用 owner，owner 释放后自动失效）。
+    private final class Observer {
+        weak var owner: AnyObject?
+        let handler: (String) -> Void
+        init(owner: AnyObject, handler: @escaping (String) -> Void) {
+            self.owner = owner
+            self.handler = handler
+        }
+    }
+
+    private var observers: [ObjectIdentifier: Observer] = [:]
 
     private init() {}
 
-    /// 由 `owner` 接管回调；重复调用只替换处理器，不重复订阅。
+    /// 由 `owner` 接管回调；同一 `owner` 重复调用只替换处理器，不重复订阅。
+    /// 支持多观察者（宿主与设置面板需各自响应，ADR-070）。
     func observe(owner: AnyObject, _ handler: @escaping (String) -> Void) {
-        self.owner = owner
-        self.handler = handler
+        observers[ObjectIdentifier(owner)] = Observer(owner: owner, handler: handler)
         if token < 0 {
             token = ime_config_subscribe(configChangedBridge, nil)
         }
     }
 
-    /// 仅当 `owner` 是当前所有者时解绑（避免多控制器互相误清）。
+    /// 仅移除 `owner` 自己的观察，不影响其它观察者。
     func clear(owner: AnyObject) {
-        guard self.owner === owner else { return }
-        self.owner = nil
-        self.handler = nil
+        observers[ObjectIdentifier(owner)] = nil
     }
 
     fileprivate func deliver(_ key: String) {
-        handler?(key)
+        // 清理已释放的 owner，再快照处理器后派发（处理器可能再增删观察者）。
+        for (id, observer) in observers where observer.owner == nil {
+            observers[id] = nil
+        }
+        let handlers = observers.values.map(\.handler)
+        for handler in handlers {
+            handler(key)
+        }
     }
 }

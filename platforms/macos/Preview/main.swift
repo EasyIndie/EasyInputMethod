@@ -146,7 +146,8 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let importButton = NSButton(title: "导入词库", target: self, action: #selector(importWords))
         let exportButton = NSButton(title: "导出词库", target: self, action: #selector(exportWords))
         let lookup = NSButton(title: "拼音反查", target: self, action: #selector(lookupPinyin))
-        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup])
+        let settingsButton = NSButton(title: "偏好设置", target: self, action: #selector(openSettings))
+        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton])
         controls.orientation = .horizontal
         let stack = NSStackView(views: [hint, controls, scroll, status])
         stack.orientation = .vertical
@@ -178,6 +179,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window?.makeFirstResponder(input)
     }
     @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show() }
     @objc func addWord() { input?.cancelComposition(); UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func importWords() { input?.cancelComposition(); UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func exportWords() { input?.cancelComposition(); UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
@@ -465,6 +467,40 @@ if CommandLine.arguments.contains("--smoke-test") {
         pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else { exit(1) }
     restored.setMode("mixed"); _ = restored.feed(122); _ = restored.feed(122)
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
+    // 设置面板（ADR-070）：Schema 驱动、界面零硬编码。
+    let settingsOptions = SettingsSchema.options()
+    guard settingsOptions.count == 15 else {
+        fputs("设置项数量应为 15，实际 \(settingsOptions.count)。\n", stderr); exit(1)
+    }
+    guard settingsOptions.allSatisfy({ !$0.title.isEmpty && !$0.doc.isEmpty }) else {
+        fputs("设置项缺标题或说明。\n", stderr); exit(1)
+    }
+    guard settingsOptions.allSatisfy({ option in
+        if case .choice(let values, let labels) = option.kind {
+            return !values.isEmpty && values.count == labels.count
+        }
+        return true
+    }) else {
+        for option in settingsOptions {
+            if case .choice(let values, let labels) = option.kind, values.count != labels.count {
+                fputs("枚举错位：\(option.key) values=\(values) labels=\(labels)\n", stderr)
+            }
+        }
+        exit(1)
+    }
+    SettingsPanel.shared.prepare()
+    guard SettingsPanel.shared.rowCount == settingsOptions.count else {
+        fputs("设置面板行数与 Schema 不一致。\n", stderr); exit(1)
+    }
+    // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
+    guard ImeConfig.setToml("candidate.count", "5"), ImeConfig.int("candidate.count") == 5 else {
+        fputs("设置写回候选数失败。\n", stderr); exit(1)
+    }
+    guard ImeConfig.setString("appearance.theme", "dark"),
+        ImeConfig.string("appearance.theme") == "dark"
+    else {
+        fputs("设置写回主题失败。\n", stderr); exit(1)
+    }
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
     exit(0)
