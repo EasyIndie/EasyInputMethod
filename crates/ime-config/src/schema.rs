@@ -96,6 +96,20 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Hotkey,
     },
     OptionSpec {
+        key: "hotkey.toggle_english",
+        value_type: ValueType::String,
+        default: "\"shift\"",
+        doc_zh: "中英切换：shift = 单独按 Shift（对齐搜狗/微信） | 组合键如 ctrl+shift+space | none = 关闭",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
+        key: "hotkey.toggle_width",
+        value_type: ValueType::String,
+        default: "\"shift+space\"",
+        doc_zh: "全/半角切换：组合键如 shift+space（默认，对齐搜狗/微信） | none = 关闭",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
         key: "input.punctuation",
         value_type: ValueType::Enum {
             values: &["chinese", "english"],

@@ -298,10 +298,20 @@ final class LampyrisInputController: IMKInputController {
     // MARK: - 按键处理
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+        guard let event else { return false }
+        // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
+        if event.type == .flagsChanged {
+            if let session, session.shiftTransition(isDown: event.modifierFlags.contains(.shift)) {
+                if let client = activeClient ?? (sender as? IMKTextInput) { clearMarked(client) }
+                candidateWindow?.hide()
+            }
+            return false
+        }
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
         }
         activeClient = client
+        session.markKeyWhileShift()
         if let mode = ImeConfig.string("mode"), session.mode != mode {
             session.setMode(mode)
             clearMarked(client)

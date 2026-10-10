@@ -124,17 +124,41 @@ final class ImeSession {
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 
-    func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
-        let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
-        // 空格用**物理键码**(49) 或字符 " " 判定：既兼容真实 IMK 事件，也兼容合成事件。
-        let space = event.keyCode == 49 || event.charactersIgnoringModifiers == " "
-        if space, flags == [.control, .shift] { toggleEnglish(); return true }
-        if space, flags == [.shift] { toggleWidth(); return true }
-        guard let configured = ImeConfig.string("hotkey.toggle_mode") else { return false }
-        let parts = configured.lowercased().split(separator: "+").map(String.init)
+    // 单独 Shift 切换中英（对齐搜狗/微信）：需要 flagsChanged 的按下/抬起。
+    private var shiftDown = false
+    private var shiftUsedByKey = false
+
+    /// flagsChanged：记录 Shift 状态；抬起且期间无其它键 → 触发中英切换
+    /// （仅当 `hotkey.toggle_english == "shift"`）。返回是否触发了切换。
+    @discardableResult
+    func shiftTransition(isDown: Bool) -> Bool {
+        guard ImeConfig.string("hotkey.toggle_english") == "shift" else { return false }
+        if isDown {
+            shiftDown = true
+            shiftUsedByKey = false
+            return false
+        }
+        let solo = shiftDown && !shiftUsedByKey
+        shiftDown = false
+        shiftUsedByKey = false
+        if solo {
+            toggleEnglish()
+            return true
+        }
+        return false
+    }
+
+    /// 任意非修饰键按下时调用：本次 Shift 不算“单独按”。
+    func markKeyWhileShift() {
+        if shiftDown { shiftUsedByKey = true }
+    }
+
+    /// 判断一个组合键设置是否匹配当前按键（`space` 用物理键码 49 判定）。
+    private func matches(_ setting: String?, _ event: NSEvent) -> Bool {
+        guard let setting, setting != "shift", setting != "none" else { return false }
+        let parts = setting.lowercased().split(separator: "+").map(String.init)
         guard let last = parts.last else { return false }
-        let key = event.charactersIgnoringModifiers?.lowercased() ?? ""
-        guard last == key else { return false }
+        let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
         var expected: NSEvent.ModifierFlags = []
         for modifier in parts.dropLast() {
             switch modifier {
@@ -146,6 +170,18 @@ final class ImeSession {
             }
         }
         guard flags == expected else { return false }
+        if last == "space" {
+            return event.keyCode == 49 || event.charactersIgnoringModifiers == " "
+        }
+        return event.charactersIgnoringModifiers?.lowercased() == last
+    }
+
+    /// 组合键（均可配）：中英 / 全半角 / 切换模式；`"shift"` 与 `"none"` 不作为组合键。
+    func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
+        if matches(ImeConfig.string("hotkey.toggle_english"), event) { toggleEnglish(); return true }
+        if matches(ImeConfig.string("hotkey.toggle_width"), event) { toggleWidth(); return true }
+        guard let configured = ImeConfig.string("hotkey.toggle_mode"), matches(configured, event)
+        else { return false }
         let order = ["mixed", "wubi", "pinyin"]
         let next = order[((order.firstIndex(of: mode) ?? 0) + 1) % 3]
         if persistMode, !ImeConfig.setString("mode", next) { return false }

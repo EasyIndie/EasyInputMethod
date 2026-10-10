@@ -141,6 +141,11 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：快捷键对齐搜狗/微信且可配置（ADR-067）
+- 新增配置 `hotkey.toggle_english`（默认 `shift` = 单独按 Shift）与 `hotkey.toggle_width`（默认 `shift+space`）；`toggle_mode` 不变。
+- 宿主：`flagsChanged` 检测单独 Shift（同按其它键不触发）；空格改用**物理键码 49** 判定（修复真实 IMK 事件不生效）；菜单保留中英/全半角入口。
+- 冒烟更新覆盖：单独 Shift、同按不触发、Shift+Space、ctrl+shift+m；`make verify` 120 passed。
+
 ### 2026-10-10 / pi：MVP 收敛（T-MVP-07）
 - **基准**：`cargo run --release -p ime-dict --example learn_cost` → 每次 learn 平均 **25.6ms**、最坏 164ms（目录 fsync 8ms + 文件 fsync 15ms）。
 - **T-MVP-07**（ADR-066）：写入路径只 `write+rename`（不 fsync），新增 `Store::flush()` 在会话结束（Drop/focus_out）与导出时 fsync；实测 25.6ms → **~4ms**。配置写入仍保留 fsync。

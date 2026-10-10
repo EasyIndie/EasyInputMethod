@@ -33,6 +33,7 @@ final class PreviewInput: NSTextView {
     override var inputContext: NSTextInputContext? { nil }
 
     override func keyDown(with event: NSEvent) {
+        session.markKeyWhileShift()
         if session.shortcut(event, persistMode: false) { refresh(); return }
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
@@ -66,6 +67,10 @@ final class PreviewInput: NSTextView {
             }
         }
         refresh()
+    }
+
+    override func flagsChanged(with event: NSEvent) {
+        if session.shiftTransition(isDown: event.modifierFlags.contains(.shift)) { refresh() }
     }
 
     func refresh() {
@@ -300,9 +305,22 @@ if CommandLine.arguments.contains("--smoke-test") {
     keys(" "); check("你好")
     view.clear(); keys("\".\""); check("“。”")
     session.focusOut(); view.clear(); keys("\""); check("“")
-    keys(" ", flags: [.control, .shift]); view.clear(); keys("nihao"); check("nihao")
+    // 中英：默认“单独 Shift”（flagsChanged 语义）。
+    _ = session.shiftTransition(isDown: true); _ = session.shiftTransition(isDown: false)
+    view.clear(); keys("nihao"); check("nihao")
+    // 按住 Shift 期间有其它键 → 抬起不切换中英。
+    _ = session.shiftTransition(isDown: true)
+    session.markKeyWhileShift()
+    let englishBefore = session.isEnglish
+    _ = session.shiftTransition(isDown: false)
+    guard session.isEnglish == englishBefore else { exit(1) }
+    // 全/半角：默认 Shift+Space（此刻中英为“英”，故 A1 → Ａ１）。
     keys(" ", flags: [.shift]); view.clear(); keys("A1"); check("Ａ１")
-    keys(" ", flags: [.shift]); keys(" ", flags: [.control, .shift])
+    keys(" ", flags: [.shift])
+    // 中英切回中文。
+    _ = session.shiftTransition(isDown: true); _ = session.shiftTransition(isDown: false)
+    guard !session.isEnglish else { exit(1) }
+    // 模式：默认 ctrl+shift+m。
     keys("m", flags: [.control, .shift])
     guard session.mode == "mixed" else { exit(1) }
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
