@@ -139,6 +139,14 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
+### 2026-10-10 / pi：MVP 收敛开始（T-MVP-01/02）
+- T-MVP-01：`ime_config_snapshot` 借用改为**按线程保留**（消除跨线程悬垂，SEC-01）；加并发烟雾测试；`ime.h` 注明线程本地有效期。
+- T-MVP-02：配置写入改为 **0600**（与用户词库一致，SEC-02）；代码与 `docs/故障恢复.md` 明确“配置锁 30s 自动回收 / 词库锁不自动删”的策略差异（SEC-03）。
+- 清单：`docs/tasks/mvp-hardening.md`（T-MVP-01…11）；`make verify` 117 passed。
+
+### 2026-10-10 / pi：多角色审计与 MVP/P2 分级（008）
+- 产出 `docs/reviews/008-multi-role-audit.md`（产品/架构/质量/安全/运维/文档 6 视角）+ `007`；分级 MVP/P2/观察；**只记录未改代码**。
+
 ### 2026-10-10 / pi：发布渠道 GitHub Release + Pages（ADR-065）
 - 新增 `.github/workflows/release.yml`（仅 tag `v*`/手动；用 CI 已签名公证的产物建 Release，**二进制 + 源码同页**）与 `pages.yml`（初期手动，公开后放开 push）+ `site/index.html` 落地页。
 - `SOURCE.txt` 增补指向公开仓库对应 tag；`docs/发布说明`§8、`发布清单`、`README` 同步。**不自动发布**；转公开后打 tag 即生效。
