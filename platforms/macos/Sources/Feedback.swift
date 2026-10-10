@@ -1,9 +1,9 @@
-// 用户反馈入口（ADR-071）：不自动外发任何数据；仅当用户点击时用系统浏览器打开
-// 公开的 GitHub Issues 页面。诊断信息不含输入内容/词库/配置，由用户自行决定是否复制。
+// 用户反馈入口（ADR-071 / ADR-074）：**完全本地**——面板只展示诊断信息与反馈渠道链接文本，
+// 由用户自行复制并在浏览器中提交；输入法自身**不打开浏览器、不联网、不发送任何数据**。
+// 诊断信息不含输入内容/词库/配置。
 //
-// 健壮性（ADR-073）：
-//   1) 打开链接一律走**异步** API，绝不阻塞主线程 / 菜单事件循环；
-//   2) 仅在“系统存在可打开该链接的应用”时才显示菜单入口，避免死入口。
+// 不调用 `NSWorkspace.open` 等任何外部打开 API：既不会因网络不可达而卡死，也无需按可用性
+// 隐藏入口（关闭代理、GitHub 打不开时，复制到本地仍可用）。
 //
 // 见 `docs/隐私与安全.md` §1/§6、`SECURITY.md`。
 
@@ -16,26 +16,6 @@ enum FeedbackUI {
     /// 敏感漏洞的私下渠道。
     static let securityURL = URL(
         string: "https://github.com/EasyIndie/EasyInputMethod/security/advisories/new")!
-
-    /// GitHub Issues 反馈在本机是否可用：**只做本地判断**——系统是否存在能打开该 https
-    /// 链接的应用（默认浏览器）。查询 LaunchServices 本地数据库，不联网、不探测 GitHub 可达性
-    ///（铁律 1 禁止 App 发起任何网络请求）。因此“代理关闭导致 GitHub 打不开”这类**网络层**
-    /// 不可达无法在此识别；不可用时由菜单隐藏入口，避免点击无反应。
-    /// 语义集中在此处（唯一真值），将来若要改判据只改这里。
-    static let isAvailable: Bool = NSWorkspace.shared.urlForApplication(toOpen: issuesURL) != nil
-
-    /// 统一的外部链接打开入口：交给系统**异步**打开，绝不阻塞调用线程。
-    /// 禁止使用同步的 `NSWorkspace.open(url)`——它在浏览器/LaunchServices 异常时会卡死主线程，
-    /// 导致整个输入法菜单失去响应（见 ADR-073）。
-    static func openExternally(_ url: URL) {
-        let configuration = NSWorkspace.OpenConfiguration()
-        configuration.activates = true
-        NSWorkspace.shared.open(url, configuration: configuration) { _, error in
-            if let error {
-                NSLog("萤火虫：打开链接失败（\(url.absoluteString)）：\(error.localizedDescription)")
-            }
-        }
-    }
 
     /// 诊断文本：仅版本/构建/源码提交/系统/架构，绝不含输入内容或用户数据。
     static func diagnostics(bundle: Bundle = .main) -> String {
@@ -63,45 +43,54 @@ enum FeedbackUI {
         """
     }
 
+    /// 可整段复制的反馈正文：诊断信息 + 反馈渠道链接（纯文本，用户自行提交）。
+    static func feedbackText(bundle: Bundle = .main) -> String {
+        """
+        \(diagnostics(bundle: bundle))
+
+        反馈渠道（请自行在浏览器打开；本输入法不联网、不代发）：
+        - 问题 / 建议：\(issuesURL.absoluteString)
+        - 敏感漏洞：\(securityURL.absoluteString)
+        """
+    }
+
     static func show() {
         let alert = NSAlert()
         alert.messageText = "反馈问题 / 改进建议"
         alert.informativeText = """
-            欢迎到项目 GitHub Issues 报告问题或提出建议。
+            萤火虫不联网、不上报：本窗口不会发送或打开任何内容。
+            请点「复制反馈信息」，自行到 GitHub Issues 粘贴提交；下面的链接也可手动选中复制。
 
-            萤火虫不联网、不上报：本窗口不会自动发送任何内容，是否分享由你决定。下面的诊断信息不含你的输入内容、词库或配置。
+            内容不含你的输入内容、词库或配置。
             """
 
-        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 470, height: 130))
+        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 470, height: 170))
         scroll.hasVerticalScroller = true
         scroll.borderType = .bezelBorder
         let textView = NSTextView(frame: scroll.bounds)
         textView.isEditable = false
+        textView.isSelectable = true
         textView.isRichText = false
         textView.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        textView.string = diagnostics()
+        textView.string = feedbackText()
         textView.isVerticallyResizable = true
         textView.autoresizingMask = [.width]
         textView.textContainer?.widthTracksTextView = true
         scroll.documentView = textView
         alert.accessoryView = scroll
 
-        alert.addButton(withTitle: "打开 GitHub Issues")
-        alert.addButton(withTitle: "复制诊断信息")
+        alert.addButton(withTitle: "复制反馈信息")
         alert.addButton(withTitle: "关闭")
 
         switch alert.runModal() {
         case .alertFirstButtonReturn:
-            // 用户主动打开浏览器；App 自身不发起任何网络连接（异步、不阻塞主线程）。
-            openExternally(issuesURL)
-        case .alertSecondButtonReturn:
+            // 只写入剪贴板；不打开浏览器、不发起任何网络连接。
             let pasteboard = NSPasteboard.general
             pasteboard.clearContents()
-            _ = pasteboard.setString(diagnostics(), forType: .string)
+            _ = pasteboard.setString(feedbackText(), forType: .string)
             let done = NSAlert()
-            done.messageText = "诊断信息已复制"
-            done.informativeText =
-                "可粘贴到 GitHub Issue。\n敏感漏洞请改走私密安全公告：\(securityURL.absoluteString)"
+            done.messageText = "反馈信息已复制"
+            done.informativeText = "可粘贴到 GitHub Issue；敏感漏洞请改走私密安全公告。"
             done.runModal()
         default:
             break

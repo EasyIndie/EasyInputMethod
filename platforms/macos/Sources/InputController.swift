@@ -193,13 +193,10 @@ final class LampyrisInputController: IMKInputController {
             title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
-        // 仅在系统可打开反馈链接时显示入口，避免“点不动”的死入口（ADR-073）。
-        if FeedbackUI.isAvailable {
-            let feedback = NSMenuItem(
-                title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
-            feedback.target = self
-            menu.addItem(feedback)
-        }
+        let feedback = NSMenuItem(
+            title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
+        feedback.target = self
+        menu.addItem(feedback)
         let help = NSMenuItem(
             title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
         help.target = self
@@ -277,7 +274,7 @@ final class LampyrisInputController: IMKInputController {
         SettingsPanel.shared.show()
     }
 
-    /// 打开反馈入口（ADR-071）；仅用户点击时才用系统浏览器打开 GitHub Issues。
+    /// 打开反馈入口（ADR-074）：完全本地，复制诊断信息与链接文本，App 不打开浏览器、不联网。
     @objc private func showFeedback() {
         cancelClientComposition()
         FeedbackUI.show()
