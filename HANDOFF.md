@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-10（T-P2-01 简繁转换完成，功能集补齐；ADR-069） |
+| 最后更新 | 2026-10-11（体验打磨：候选窗多屏定位加固 + 悬停高亮） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
 | 活跃 PR | 见 GitHub；仓库**已公开**，**无正式 Release**（首版 `v0.1.0` 待打 tag） |
-| 最近一次 `make verify` | ✅ 全绿：122 项测试（含 doctest）、fmt、Clippy、deny、156 产物零网络符号；预览冒烟、universal 构建、离线重建、`make fuzz` 三目标均通过 |
+| 最近一次 `make verify` | ✅ 全绿：122 项测试（含 doctest）、fmt、Clippy、deny、184 产物零网络符号；预览冒烟（含多屏选屏/悬停断言）、宿主构建、离线重建、`make fuzz` 三目标均通过 |
 
 ## 1. 三十秒摘要
 
@@ -41,6 +41,7 @@
 
 ## 3. 进行中
 
+- **✅ 体验打磨 A/C（2026-10-11，pi）**：候选窗选屏改为「相交面积最大 → 光标中心 → 首屏」兜底（`CandidateWindow.bestScreenIndex`），修正副屏（负坐标）/跨屏/边缘定位；候选标签加**鼠标悬停高亮**（`CandidateLabel` + `NSTrackingArea`）；两者均补入预览冒烟隔离断言。**B（首次激活轻量引导）未做**，见 §4。
 - **✅ T-P2-01 简繁转换（ADR-069，2026-10-10，pi）**：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；配置 `input.chinese_variant` + 快捷键 `hotkey.toggle_variant`（默认 `ctrl+shift+f`）；FFI 边界最长匹配简→繁，引擎/学习仍存简体。登记 D11/D12 + 派生项。
 - **✅ MVP 工程收敛 11/11（ADR-061…066）**：见 `docs/tasks/mvp-hardening.md`。
 - **✅ 仓库公开 + 发布渠道就绪（ADR-064/065）**：仓库 **public**；Pages 上线 <https://easyindie.github.io/EasyInputMethod/>；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；`release.yml`（tag/手动，二进制+源码同页）/`pages.yml` 就绪；**`v0.1.0` 待打 tag**。
@@ -52,7 +53,7 @@
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **体验打磨**（当前重点）：等待用户实机反馈（`docs/reviews/007-ux-and-tech-debt.md` §A2 留了栏位）；可先做的低风险高收益项——候选窗**高分屏/多屏定位实测与加固**、首次激活**轻量引导**（提示"按 Shift 切中英"）、点选候选的**悬停高亮**。
+1. **体验打磨**：**A/C 已完成**（候选窗多屏定位加固 + 悬停高亮，见 §3）；剩 **B 首次激活轻量引导**（提示“按 Shift 切中英”，需确定“只提示一次”的持久化，可能先补 ADR）与候选窗**高分屏/多屏真机实测**（需用户实机；`docs/reviews/007-ux-and-tech-debt.md` §A2 留了栏位）。
 2. **MVP-05 实机 DoD 矩阵**：用户按 `docs/macos-release-checklist.md` 逐项填写（唯一剩余 A 类门槛）。
 3. **发布 `v0.1.0`**：`git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）。可先手动 `dry_run` 演练。
 4. **P2 迭代**：设置界面、字根提示、i18n、emoji 等（见报告 008 §8）；MVP-14 需外部环境。
@@ -126,6 +127,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：体验打磨 A/C（多屏定位加固 + 悬停高亮）
+- A：`CandidateWindow.bestScreenIndex` 按相交面积选屏（副屏负坐标/跨屏/边缘），`show` 用 frame 选屏、visibleFrame 钳制；补预览冒烟选屏 + 负坐标/右下角几何断言。
+- C：`CandidateLabel` 加 `NSTrackingArea` 悬停高亮（复用标签时复位），补 `simulateHover`/`isHovered`/`isHoverRenderable` 断言。
+- 验证：`dev-preview.sh --smoke-test` ✅、`build.sh` 宿主编译 ✅、`make verify` ✅（184 产物零网络符号）。距排 B（首次激活引导）与真机实测。
 
 ### 2026-10-10 / pi：T-P2-01 简繁转换（功能集补齐）
 - 数据：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit `8cf737a4`）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；登记 D11/D12 + 派生项、`数据来源与许可.md` §1.9；`fetch-opencc.sh` / `tools/prepare-variant.py`。

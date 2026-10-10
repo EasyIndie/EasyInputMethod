@@ -253,6 +253,63 @@ if CommandLine.arguments.contains("--smoke-test") {
     ])
     geometry.simulateClick(at: 1)
     guard picked == 1 else { fputs("鼠标点选回调索引错误：\(picked)\n", stderr); exit(1) }
+    // 多屏/负坐标选屏（体验打磨）：副屏在左（负 X）时按相交面积选对屏；跨屏取交叠更大者。
+    let primaryScreen = NSRect(x: 0, y: 0, width: 1920, height: 1080)
+    let secondaryScreen = NSRect(x: -1280, y: 0, width: 1280, height: 1024)
+    func screenIndex(_ caret: NSRect) -> Int? {
+        CandidateWindow.bestScreenIndex(for: caret, among: [primaryScreen, secondaryScreen])
+    }
+    guard
+        screenIndex(NSRect(x: 100, y: 100, width: 1, height: 20)) == 0,
+        screenIndex(NSRect(x: -100, y: 100, width: 1, height: 20)) == 1,
+        screenIndex(NSRect(x: 1910, y: 100, width: 20, height: 20)) == 0,
+        screenIndex(NSRect(x: -15, y: 100, width: 20, height: 20)) == 1,
+        screenIndex(NSRect(x: 9999, y: 9999, width: 1, height: 1)) == 0
+    else {
+        fputs("多屏选屏判定错误。\n", stderr); exit(1)
+    }
+    // 负坐标副屏 + 光标贴近顶部：候选窗仍完整落在该屏区域内。
+    let negativeArea = NSRect(x: -1280, y: 0, width: 1280, height: 1024)
+    geometry.update(candidates: (0..<9).map {
+        ImeCandidate(text: "候选\($0)", code: "wq", source: .codeTable, isPrefix: false)
+    })
+    geometry.layout(at: NSRect(x: -20, y: 1010, width: 1, height: 20), within: negativeArea)
+    guard negativeArea.contains(geometry.frame) else {
+        fputs("副屏（负坐标）候选窗越界：\(geometry.frame)\n", stderr); exit(1)
+    }
+    // 光标贴近屏幕右下角：候选窗被推回区域内（高分屏 / 多屏边缘定位）。
+    let cornerArea = NSRect(x: 0, y: 0, width: 1440, height: 900)
+    geometry.update(candidates: (0..<9).map {
+        ImeCandidate(text: "候选\($0)", code: "wq", source: .codeTable, isPrefix: false)
+    })
+    geometry.layout(at: NSRect(x: 1438, y: 2, width: 1, height: 20), within: cornerArea)
+    guard cornerArea.contains(geometry.frame) else {
+        fputs("右下角候选窗越界：\(geometry.frame)\n", stderr); exit(1)
+    }
+    // 悬停高亮（体验打磨）：进入/离开切换，候选刷新后复位。
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
+        ImeCandidate(text: "尼", code: "ni", source: .pinyin, isPrefix: false),
+    ])
+    geometry.simulateHover(at: 0, true)
+    guard geometry.isHovered(at: 0), !geometry.isHovered(at: 1) else {
+        fputs("悬停高亮未按候选切换。\n", stderr); exit(1)
+    }
+    guard geometry.isHoverRenderable(at: 0) else {
+        fputs("悬停高亮图层缺失，高亮会静默失效。\n", stderr); exit(1)
+    }
+    geometry.simulateHover(at: 0, false)
+    guard !geometry.isHovered(at: 0) else {
+        fputs("离开候选后悬停高亮未清除。\n", stderr); exit(1)
+    }
+    geometry.simulateHover(at: 1, true)
+    geometry.update(candidates: [
+        ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
+        ImeCandidate(text: "尼", code: "ni", source: .pinyin, isPrefix: false),
+    ])
+    guard !geometry.isHovered(at: 1) else {
+        fputs("候选刷新后应复位悬停高亮。\n", stderr); exit(1)
+    }
     // 数据加载失败可诊断：缺文件必须返回 nil，而不是静默样本兜底（ADR-063）。
     guard
         ImeSession(
