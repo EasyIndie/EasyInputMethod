@@ -77,7 +77,7 @@
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已澄清（ADR-055）—— macOS 13 本地 ad-hoc 即可（用户已验收）；分发与 macOS 26/27 仍强制 Developer ID + hardened runtime + 公证 | 不再阻塞；本地迭代无需签名机 |
 | **UX-1** | **⑩ 浏览器地址栏预编辑残留**（Chrome 切窗口/点击、Safari 点击；其余应用正常）。根因：客户端失焦时 **IMK 会把预编辑原样取消标记**成普通文本，且该时机在输入法收到任何回调之前（`commitComposition:` 内无论 `setMarkedText("")` / `insertText("")` / `markedRange()` 何种写法都不生效；只有我们主动清（如 Esc）才有效）。**决定（2026-10-11）：接受为已知限制**（与主流输入法同类行为），已写入发布说明 §3；若后续反馈多，再评估「预编辑不入客户端」（需放弃行内预编辑） | 否 |
-| **MEM-1** | **机器 B 引擎常驻内存超 DoD**：macOS 27/arm64 宿主足迹 43.8MB > 30MB（引擎 RSS 23.56MiB；4 表 2.17MB/145,758 条 → malloc 320k 节点/26.7MB；非本版本回归）。待决策：优化数据结构（interning/紧凑数组/简繁懒加载）或修订门槛。见 [`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) §2.4 | 否（已记录） |
+| **MEM-1** | **机器 B 引擎常驻内存超 DoD**：macOS 27/arm64 宿主足迹 43.8MB > 30MB（引擎 RSS 23.56MiB；4 表 2.17MB/145,758 条 → malloc 320k 节点/26.7MB；非本版本回归）。已开任务卡 **T-P2-04**（优化数据结构：interning/紧凑数组/简繁懒加载；或经 ADR 修订门槛）。见 [`docs/tasks/T-P2-04-memory.md`](docs/tasks/T-P2-04-memory.md) | 否（已排期） |
 
 ### 本次候选与执行状态
 
