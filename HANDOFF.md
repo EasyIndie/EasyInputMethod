@@ -50,7 +50,7 @@
 - **✅ 仓库公开 + 发布渠道就绪（ADR-064/065）**：仓库 **public**；Pages 上线 <https://easyindie.github.io/EasyInputMethod/>；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；`release.yml`（tag/手动，二进制+源码同页）/`pages.yml` 就绪；**`v0.1.0` 待打 tag**。
 - **⏸ MVP-05 待用户实机**：[`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) 有 **13 项实机 DoD 单一可填表**（环境栏 + 步骤/预期/结果/证据 + 证据命令 + 结论），用户实机后照填即可关闭。不催重启/重装。
 - **✅ MVP-05 本机 A 已验收关闭（2026-10-11）**：**12/13 通过**（自动 ①②③④⑤⑥⑪⑫ + 人工 ⑦⑧⑨⑬）；**⑩ 浏览器地址栏预编辑残留已决定接受为已知限制**（根因见 §5 UX-1）并写入 [发布说明](docs/发布说明.md) §3。剩 **机器 B 复现**与 **P1-M5 第三方**。
-- **⏭ 机器 B（`air`，macOS 27 / Apple Silicon）复现由用户接手（2026-10-11）**：该机已装 ad-hoc 候选（`SOURCE-COMMIT=9e7ef41`）、旧 `Yinghuo.app` 已移走，`~/lampyris-pkg/` 有《验收-步骤.txt》与 `run-acceptance.command`；仓库需再 `git pull`（其 SSH 用户在控制台时会被锁定）。填写块：`docs/tasks/MVP-05.md` §2.3。
+- **⏭ 机器 B（`air`，macOS 27 / Apple Silicon）复现由用户接手（2026-10-11）**：该机已装 ad-hoc 候选 **`88833aa`**（= main）、旧 `Yinghuo.app` 与 `9e7ef41` 已移到 `~/lampyris-pkg/backup/` 且已 `lsregister -u`，仓库同步到 main；`~/lampyris-pkg/` 有《验收-步骤.txt》与 `run-acceptance.command`。**尚需在系统设置里「添加萤火虫输入源」**（`TISEnableInputSource` 代不了）。填写块：`docs/tasks/MVP-05.md` §2.3。
 - **⏸ MVP-14 待外部环境**：更多 macOS 版本 + Icon Composer 分层图标（需其他机器 / Xcode 27）。
 - **⏸ MVP-11 收尾**：二进制包 + 源码包归档到长期位置、确定分发渠道/接收范围（工作流已就绪，待用户操作）。
 
@@ -82,7 +82,7 @@
 
 - 当前 CI 公证候选：`Lampyris-macos-acceptance-1c08956…`（universal；二进制 ZIP + 源码包 + SHA，约 12.1MB）；签名/staple/Gatekeeper 与离线复现通过。
 - 本机（macOS 13 Intel）为**用户域 ad-hoc 安装**（`cn.jokerhub.inputmethod.Lampyris`），已装到最新提交；用户已实体输入验收。
-- 本机当前 ad-hoc 候选（2026-10-11 自 `prepare.sh`）：`packaging/out/candidate-ENciBD/Lampyris-0.1.0-universal.zip`（3.4MB，universal，`signed_release=false`）+ 同目录源码包；已 `ditto` 装入 `~/Library/Input Methods/`，`SOURCE-COMMIT=9e7ef41`（本机所装提交）。供**第二台 Mac 复现**用，步骤见 `docs/人工验收与多机复现.md` §4。
+- 本机当前 ad-hoc 候选（2026-10-11 自 `prepare.sh`，main `88833aa`）：`packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（3.4MB，universal，`signed_release=false`）+ 同目录源码包；已 `ditto` 装入本机与 `air` 的 `~/Library/Input Methods/`（`SOURCE-COMMIT=88833aa`）。供**第二台 Mac 复现**用，步骤见 `docs/人工验收与多机复现.md` §4。
 - 仓库**已公开**（2026-10-10）；**无正式 Release**（首版 `v0.1.0` 待打 tag）；Pages 上线、main 分支保护已设。CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
 
 ## 6. 必须知道的坑与硬约束
@@ -116,10 +116,10 @@
 | 项 | 值 |
 |---|---|
 | 本机 A（本地迭代/真机验收） | macOS **13.7.8**、**Intel x86_64**；仅 CLT（Swift 5.8.1、无 Xcode）；`security find-identity` 为 0；已加 `aarch64-apple-darwin` + `x86_64-apple-darwin` target |
-| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据；已 `ditto` 装入 ad-hoc 候选（`SOURCE-COMMIT=9e7ef41`）、仓库更新到 `33748da`（改名前的旧 `Yinghuo.app` 已 `lsregister -u` 并移到 `~/lampyris-pkg/backup/`）；验收步骤与一键脚本放在其 `~/lampyris-pkg/`。**SSH 会话跑不了 GUI 自动化**（AppleEvent 超时），自动/人工验收需在其控制台终端进行 |
+| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据；已 `ditto` 装入 ad-hoc 候选（**`88833aa`**，= main）、仓库同步到 main（旧 `Yinghuo.app` 与 `9e7ef41` 已 `lsregister -u` 并移到 `~/lampyris-pkg/backup/`）；验收步骤与一键脚本放在其 `~/lampyris-pkg/`。**SSH 会话跑不了 GUI 自动化**（AppleEvent 超时），自动/人工验收需在其控制台终端进行 |
 | Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
 | 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
-| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到 **`9e7ef41`**（本机所装提交，universal ad-hoc 候选包）；分发/公证候选由 CI 出 universal |
+| 输入法现状 | 本机 A 与机器 B 均为用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到 **`88833aa`**（= main，universal ad-hoc 候选包）；分发/公证候选由 CI 出 universal |
 | 数据 | `data/generated/`：`wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-core.tsv` / **`variant-s2t.tsv`**（简繁，841KB，随包）；`pinyin-words.tsv` 8.4MB 不入库，可由 fetch 脚本复现 |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**122 项测试（含 doctest）**；`platforms/macos/` Swift 宿主；`fuzz/` cargo-fuzz |
 
@@ -133,6 +133,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：按最新代码重打包并装两台机器
+- `packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（commit `88833aa`，3.4MB，SHA 校验通过；+ 对应源码包）。
+- 本机：`ditto` 安装 → `SOURCE-COMMIT=88833aa`；注销候选目录影子登记；冒烟 ✅、自动验收 14/14 与 16/16。
+- `air`：仓库 `git pull` 到 main（代理已通）；装同一包 → `88833aa`；旧 `9e7ef41` 与 `Yinghuo.app` 移到 `~/lampyris-pkg/backup/` 并 `lsregister -u`（备份同名 bundle 会变影子副本）。**待你在系统设置添加输入源**。
 
 ### 2026-10-11 / pi：零诊断门禁（ADR-081）
 - `make verify`（pre-push 门禁）原先刷 477 行：清掉 cargo `output filename collision`、cargo-deny `wildcard` / `license-not-encountered`、swiftc 条件转换告警（**477 → 230 行，诊断 0**）。
@@ -149,7 +154,7 @@
 ### 2026-10-11 / pi：人工验收交接手册 + 最新 ad-hoc 候选包
 - 新增 **[`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)**：把剩下**只能人工做**的 ⑦⑧⑨⑩⑬ 写成逐步手册（怎么做 / 看到什么算对 / 记在哪），并给一套**第二台 Mac**（MVP-14 / P1-M5）的安装 + 复现流程（含 ad-hoc 包不能走 `install.sh`、需 `ditto` + `xattr` + 注销重登、AX 授权、结果回填）。
 - README / 发布清单 / MVP-05 均已交叉引用；**后续人工验收以该手册为准**。
-- 本机安装 `./packaging/macos/prepare.sh` 出的最新 ad-hoc 候选：`packaging/out/candidate-ENciBD/Lampyris-0.1.0-universal.zip`（3.4MB，universal；已核对 SHA、`ditto` 安装、注销 LaunchServices 影子副本）。装后 `SOURCE-COMMIT=9e7ef41`，自动验收 **14/14** 与 **16/16**、预览冒烟均通过。
+- 本机与 `air` 均用最新代码重打包并安装：`packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（3.4MB，universal；已核对 SHA、`ditto` 安装、注销 LaunchServices 影子副本）。两机 `SOURCE-COMMIT=88833aa`；本机自动验收 **14/14** 与 **16/16**、预览冒烟均通过；`air` 只差在系统设置里添加输入源。
 
 ### 2026-10-11 / pi：MVP-05 自动化补齐 + 用户词库性能（TD-01）
 - 验收脚本新增：**⑫ 输入期间零外联**（边打字边 8 次采样）、**⑪ 引擎按键时延**（`IMK_ACCEPTANCE_PERF=1`，断言 p95 <16ms）、**④ 重启后仍生效**（`IMK_ACCEPTANCE_RESTART=1`，重启宿主后状态徽标仍为「五笔」）。默认 **14/14**、`PERF+RESTART` **16/16**。
