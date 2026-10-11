@@ -42,7 +42,7 @@
 | 12 | 零外联采样 | 宿主进程 | 持续输入期间采样 `lsof` | 无网络连接 | ✅ 通过（自动，空闲 + 输入期间） | 空闲 6 次 + 输入期间 8 次采样，均 0 连接 |
 | 13 | 亮 / 暗主题 | 系统外观 | 切浅/深色，看菜单与候选窗 | 清晰可读 | ✅ 通过（人工，本机 A） | 浅/深色下候选窗、输入法菜单、偏好设置面板、版本信息窗均可读 |
 
-## 2.1 自动化入口（可复现）
+### 2.1 自动化入口（可复现）
 
 ```sh
 # 前提：终端 App 已获「辅助功能」；萤火虫已安装并启用。
@@ -70,6 +70,19 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
   3. 对照实验：组合中按 `Esc`（由我们自己的按键处理主动清空）→ 地址栏**立刻变空**，证明清空原语有效，差别只在「谁发起」。
   4. Chrome 切换窗口时**不调用** `commitComposition:`（Safari 会），且点击页面时 IMK 不向输入会话投递 `leftMouseDown` → 拿不到更早的时机。
 - **结论**：只有「不在客户端留下预编辑」才能彻底消除残留，属产品取舍；修复方案与选型待定（见 `HANDOFF.md` §3）。
+
+### 2.3 第二台 Mac 复现记录（机器 B，待填）
+
+> 步骤与预期同 §2（自动：`platforms/macos/tests/run-imk-acceptance.sh`，建议加 `IMK_ACCEPTANCE_PERF=1 IMK_ACCEPTANCE_RESTART=1`）；人工 ⑦⑧⑨⑩⑬ 见 [人工验收与多机复现](../人工验收与多机复现.md) §3。装包/运行见同文 §4。
+
+| 项 | 值 |
+|---|---|
+| 构建 commit | ________（`cat ~/Library/Input\ Methods/Lampyris.app/Contents/Resources/SOURCE-COMMIT`） |
+| macOS / 机型 / 架构 | ________（`sw_vers`；`sysctl -n hw.model`；`uname -m`） |
+| 包与 SHA | `Lampyris-0.1.0-universal.zip`；SHA：________ |
+| 自动验收 | ☐ 默认 14/14　☐ `PERF+RESTART` 16/16　实际：________ |
+| ⑦⑧⑨⑩⑬ | ⑦ ☐　⑧ ☐　⑨ ☐　⑩ ☐　⑬ ☐ |
+| 与本机 A 的差异 | ________（例：亮/暗、候选窗定位、`Cmd+Z`、地址栏残留是否同样出现） |
 
 ## 3. 证据获取命令
 
@@ -102,7 +115,7 @@ cat ~/Library/Application\ Support/Lampyris/config.toml
 - 结论：☑ **通过，可关闭 MVP-05**（12 项通过 + 1 项已记录限制）
 - 验收人 / 日期：用户（本机 A）/ 2026-10-11
 
-> 第二台 Mac（机器 B，macOS 27 / Apple Silicon）的自动 + 人工复现结果待补，记到本表。
+> 机器 B（macOS 27 / Apple Silicon）的自动 + 人工复现记到 §2.3。
 
 ## 5. 验收后收尾
 
