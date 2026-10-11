@@ -31,29 +31,33 @@
 | 1 | 五笔基础 | TextEdit | 输入 `wq` → 空格或数字选「你」 | 上屏「你」 | ✅ 通过（自动） | `wq`+空格/数字1 → 你（两轮一致） |
 | 2 | 拼音兜底 | TextEdit | 输入 `nihao` → 选「你好」 | 上屏「你好」 | ✅ 通过（自动） | `nihao`+空格 → 你好（两轮一致） |
 | 3 | 混输来源标注 | TextEdit | 输入产生多来源候选 | 候选后标「五笔／拼」 | ✅ 通过（自动） | 输入 `shi` → 候选含「五笔」「拼」 |
-| 4 | 三模式持久化 | TextEdit | 菜单切「仅五笔」→ 注销重登 → 再输入 | 仍为五笔 | ◐ 部分自动：切模式写盘 ✅<br>☐ 注销后待人工 | `ctrl+shift+m` → `mode = "wubi"` 已写入 config（重启后由宿主读取） |
+| 4 | 三模式持久化 | TextEdit | 菜单切「仅五笔」→ 注销重登 → 再输入 | 仍为五笔 | ✅ 通过（自动，含重启宿主） | `ctrl+shift+m` → `mode = "wubi"` 已写盘；重启后可输入且状态徽标「五笔」 |
 | 5 | 配置实时生效 | TextEdit | 输入中外部改 `candidate.count` | 候选数**无需按键**即时变 | ✅ 通过（自动） | count 5→3 未按键即变（两轮一致） |
 | 6 | 配置错误提示 | TextEdit | 写坏 `config.toml` | 照常输入 + 提示行号，同一错误仅一次 | ✅ 通过（自动，opt-in） | 弹窗含「第 1 行」；同一错误不重复；坏配置下仍可输入 |
-| 7 | 用户词库 | TextEdit（菜单/面板） | 新增词条 → 输入 → 注销重登 | 词条与频次保留 | ☐ 通过<br>☐ 不通过 | 面板操作，GUI |
-| 8 | 导入 / 导出 | TextEdit（面板「词库」） | 导出 → 清空 → 导入 | 词条恢复 | ☐ 通过<br>☐ 不通过 | 面板操作，GUI |
-| 9 | 拼音反查 | TextEdit（面板「词库」） | 反查「你好」 | 得 `ni hao` | ☐ 通过<br>☐ 不通过 | 面板操作，GUI |
+| 7 | 用户词库 | TextEdit（菜单/面板） | 新增词条 → 输入 → 注销重登 | 词条与频次保留 | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `ime_session_dictionary_add` → 输入即上屏；跨会话持久化由 `ime-dict` 单测覆盖 |
+| 8 | 导入 / 导出 | TextEdit（面板「词库」） | 导出 → 清空 → 导入 | 词条恢复 | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `export`→`import` 往返 + 坏文件拒绝（冒烟断言） |
+| 9 | 拼音反查 | TextEdit（面板「词库」） | 反查「你好」 | 得 `ni hao` | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `ime_session_reverse_lookup("你好") == "ni hao"`（冒烟断言） |
 | 10 | 五应用稳定 | TextEdit / Safari / VS Code / 微信 / Terminal | 各应用长文本、光标定位、`Cmd+Z` | 无错位/残留，撤销正常 | ☐ 通过<br>☐ 不通过 | |
-| 11 | 性能 / 内存 | 宿主进程 | 长时间输入；`ps` / `vmmap` | 按键 <16ms、常驻 ≤30MB | ✅ 内存通过（自动）<br>☐ 按键时延待测 | 物理足迹 ~18MB ≤30MB；按键<16ms 未专项计时 |
-| 12 | 零外联采样 | 宿主进程 | 持续输入期间采样 `lsof` | 无网络连接 | ✅ 空闲通过（自动）<br>☐ 输入期间待补 | 6 次采样 0 连接（非输入期间） |
+| 11 | 性能 / 内存 | 宿主进程 | 长时间输入；`ps` / `vmmap` | 按键 <16ms、常驻 ≤30MB | ✅ 通过（自动） | 物理足迹 ~17.5MB ≤30MB；引擎按键 p95 **1.2ms** / max ~4ms（`run-perf.sh`） |
+| 12 | 零外联采样 | 宿主进程 | 持续输入期间采样 `lsof` | 无网络连接 | ✅ 通过（自动，空闲 + 输入期间） | 空闲 6 次 + 输入期间 8 次采样，均 0 连接 |
 | 13 | 亮 / 暗主题 | 系统外观 | 切浅/深色，看菜单与候选窗 | 清晰可读 | ☐ 通过<br>☐ 不通过 | 视觉项 |
 
 ## 2.1 自动化入口（可复现）
 
 ```sh
 # 前提：终端 App 已获「辅助功能」；萤火虫已安装并启用。
-./platforms/macos/tests/run-imk-acceptance.sh                     # 主用例
-IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # 额外含配置错误弹窗（一次性）
+./platforms/macos/tests/run-imk-acceptance.sh                     # 主用例（14 项）
+IMK_ACCEPTANCE_PERF=1    ./platforms/macos/tests/run-imk-acceptance.sh  # 加引擎按键时延（run-perf.sh，较慢）
+IMK_ACCEPTANCE_RESTART=1 ./platforms/macos/tests/run-imk-acceptance.sh  # 加「重启宿主后仍生效」
+IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # 加配置错误弹窗（模态，一次性）
 ```
 
-- 主用例（连跑两遍均 `SUMMARY pass=13 fail=0`，一致）：①五笔 ②拼音 ③来源标注 ⑤配置实时 ⑪内存 ⑫零外联 + 状态徽标 / 数字选字 / Esc / **DoD④ 模式写盘**。
-- 配置错误弹窗（`IMK_ACCEPTANCE_CONFIG_ERROR=1`，`pass=17 fail=0`）：弹窗文本含行号、同一错误不重复、坏配置下仍可输入。
-- 脚本只在新开的空 TextEdit 文档里输入；会临时改 `config.toml` 并在结束时**自动还原**；配置错误弹窗为**模态**，跑完建议重新选择输入源或注销。
-- **不覆盖**：④ 注销重登后的最终生效（写盘已自动）、⑦⑧⑨ 面板操作、⑩ 五应用、⑬ 亮/暗（需人工/视觉/重启）。
+- 主用例（连跑两遍均 `SUMMARY pass=14 fail=0`）：①五笔 ②拼音 ③来源标注 ⑤配置实时 ⑫输入期间零外联 ⑪内存 + 状态徽标 / 数字选字 / Esc / 模式写盘。
+- 全选项（`PERF=1 RESTART=1`，`pass=16 fail=0`）：额外 **④ 重启后仍生效** 与 **⑪ 引擎按键 p95 <16ms**。
+- 配置错误弹窗（`IMK_ACCEPTANCE_CONFIG_ERROR=1`）：弹窗文本含行号、同一错误不重复、坏配置下仍可输入（模态，建议只跑一次）。
+- 脚本只在新开的空 TextEdit 文档里输入；会临时改 `config.toml` 并结束时**自动还原**；`RESTART` 会重启宿主、`CONFIG_ERROR` 为模态。
+- ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
+- **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`、⑬ 亮/暗主题、⑦⑧⑨ 的面板按钮点击。
 
 ## 3. 证据获取命令
 
@@ -67,6 +71,9 @@ vmmap "$pid" | grep -i 'physical footprint'
 
 # 零外联：应无任何输出
 lsof -nP -a -p "$pid" -i
+
+# 引擎按键时延（引擎级；不含 IMK 渲染）：应 p95 < 16ms
+./platforms/macos/tests/run-perf.sh
 
 # 配置与数据
 cat ~/Library/Application\ Support/Lampyris/config.toml
