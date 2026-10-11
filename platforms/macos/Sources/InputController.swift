@@ -198,17 +198,13 @@ final class LampyrisInputController: IMKInputController {
                 "简/繁：\(variantState())", action: #selector(toggleVariant(_:)),
                 hotkeyKey: "hotkey.toggle_variant"))
         menu.addItem(NSMenuItem.separator())
-        // 面板留「设置/词库」，反馈与关于回到菜单项（ADR-077）。
+        // 面板留「设置/词库」；反馈并入「关于」窗口（ADR-078）。
         let settings = NSMenuItem(
-            title: "偏好设置", action: #selector(showSettings), keyEquivalent: "")
+            title: "偏", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
-        let feedback = NSMenuItem(
-            title: "反馈", action: #selector(showFeedback), keyEquivalent: "")
-        feedback.target = self
-        menu.addItem(feedback)
         let about = NSMenuItem(
-            title: "关于萤火虫", action: #selector(showAbout), keyEquivalent: "")
+            title: "关于", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
         // 异常状态（仅在出错时出现）
@@ -313,10 +309,6 @@ final class LampyrisInputController: IMKInputController {
     @objc private func showSettings() {
         cancelClientComposition()
         SettingsPanel.shared.show(session: session)
-    }
-
-    @objc private func showFeedback() {
-        FeedbackUI.show()
     }
 
     @objc private func showAbout() {

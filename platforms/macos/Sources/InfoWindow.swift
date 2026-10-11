@@ -82,28 +82,22 @@ final class InfoWindow: NSObject {
     }
 }
 
-/// 关于信息（版本 / 构建 / 源码提交 / 许可）。
+/// 关于信息（版本 / 构建 / 源码提交 / 许可 + **反馈渠道**，ADR-078）。
 enum AboutUI {
+    /// 完整「关于」文本：诊断信息 + 许可 + 反馈渠道（反馈入口并入此处）。
     static func text() -> String {
-        let info = Bundle.main.infoDictionary
-        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info?["CFBundleVersion"] as? String ?? "?"
-        var commit = "未知"
-        if let url = Bundle.main.resourceURL?.appendingPathComponent("SOURCE-COMMIT"),
-            let text = try? String(contentsOf: url, encoding: .utf8)
-        {
-            commit = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        return [
-            "萤火虫 Lampyris \(version)",
-            "构建：\(build)",
-            "源码提交：\(commit)",
-            "许可证：GPL-3.0-or-later",
-            "默认离线 · 零遥测 · 无账号",
-        ].joined(separator: "\n")
+        """
+        \(FeedbackUI.diagnostics())
+        许可证：GPL-3.0-or-later
+        默认离线 · 零遥测 · 无账号
+
+        反馈渠道（请自行在浏览器打开；本输入法不联网、不代发）：
+        - 问题 / 建议：\(FeedbackUI.issuesURL.absoluteString)
+        - 敏感漏洞：\(FeedbackUI.securityURL.absoluteString)
+        """
     }
 
     static func show() {
-        InfoWindow.show(title: "关于萤火虫", text: text(), allowsCopy: false)
+        InfoWindow.show(title: "关于", text: text(), allowsCopy: true)
     }
 }
