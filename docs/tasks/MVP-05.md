@@ -59,6 +59,7 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 - 脚本新建的 TextEdit 文档会在退出时**自动关闭**（`trap` 里仅关自己的文档，不动你原本打开的），不残留窗口。
 - ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
 - **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`、⑬ 亮/暗主题、⑦⑧⑨ 的面板按钮点击。
+  → **逐步操作手册**（含第二台 Mac 复现）：[人工验收与多机复现](../人工验收与多机复现.md)。
 
 ## 3. 证据获取命令
 
