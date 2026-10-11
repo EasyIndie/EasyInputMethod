@@ -176,12 +176,27 @@ final class LampyrisInputController: IMKInputController {
 
     override func menu() -> NSMenu! {
         let menu = NSMenu()
-        let mode = NSMenuItem(
-            title: "输入模式：\(menuModeName())",
-            action: #selector(cycleMode(_:)), keyEquivalent: "")
-        mode.target = self
-        mode.applyConfiguredHotkey(ImeConfig.string("hotkey.toggle_mode"))
-        menu.addItem(mode)
+        // 输入状态（一级菜单 + 当前快捷键，ADR-076）。
+        menu.addItem(
+            stateItem(
+                "输入模式：\(menuModeName())", action: #selector(cycleMode(_:)),
+                hotkeyKey: "hotkey.toggle_mode"))
+        menu.addItem(
+            stateItem(
+                "中/英：\(languageState())", action: #selector(toggleEnglish(_:)),
+                hotkeyKey: "hotkey.toggle_english"))
+        menu.addItem(
+            stateItem(
+                "全/半角：\(widthState())", action: #selector(toggleWidth(_:)),
+                hotkeyKey: "hotkey.toggle_width"))
+        menu.addItem(
+            stateItem(
+                "中/英标点：\(punctuationState())", action: #selector(togglePunctuation(_:)),
+                hotkeyKey: "hotkey.toggle_punctuation"))
+        menu.addItem(
+            stateItem(
+                "简/繁：\(variantState())", action: #selector(toggleVariant(_:)),
+                hotkeyKey: "hotkey.toggle_variant"))
         menu.addItem(NSMenuItem.separator())
         // 词库/反查/帮助/反馈/关于统一收进设置面板（ADR-075），菜单保持精简。
         let settings = NSMenuItem(
@@ -208,6 +223,57 @@ final class LampyrisInputController: IMKInputController {
             }
         }
         return menu
+    }
+
+    /// 构造「输入状态」菜单项：标题含当前值，右侧显示当前快捷键。
+    private func stateItem(_ title: String, action: Selector, hotkeyKey: String) -> NSMenuItem {
+        let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
+        item.target = self
+        let binding = ImeConfig.string(hotkeyKey)
+        if !item.applyConfiguredHotkey(binding),
+            let symbol = NSMenuItem.singleModifierSymbol(binding)
+        {
+            item.title = "\(title)  \(symbol)"
+        }
+        return item
+    }
+
+    private func languageState() -> String { (session?.isEnglish ?? false) ? "英" : "中" }
+    private func widthState() -> String { (session?.isFullWidth ?? false) ? "全角" : "半角" }
+    private func punctuationState() -> String {
+        (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese" ? "中文" : "英文"
+    }
+    private func variantState() -> String {
+        (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional" ? "繁体" : "简体"
+    }
+
+    @objc private func toggleEnglish(_ sender: Any?) {
+        session?.toggleEnglish(); refreshAfterStateChange()
+    }
+    @objc private func toggleWidth(_ sender: Any?) {
+        session?.toggleWidth(); refreshAfterStateChange()
+    }
+    @objc private func togglePunctuation(_ sender: Any?) {
+        session?.togglePunctuation(); refreshAfterStateChange()
+    }
+    @objc private func toggleVariant(_ sender: Any?) {
+        session?.toggleVariant(); refreshAfterStateChange()
+    }
+
+    /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
+    private func refreshAfterStateChange() {
+        guard let session else { return }
+        guard let textClient = activeClient ?? (client() as? IMKTextInput) else {
+            candidateWindow?.hide()
+            return
+        }
+        if session.isComposing {
+            updateMarked(textClient, session.buffer)
+            showCandidates(textClient, session: session)
+        } else {
+            clearMarked(textClient)
+            candidateWindow?.hide()
+        }
     }
 
     private func cancelClientComposition() {
@@ -423,13 +489,14 @@ final class LampyrisInputController: IMKInputController {
 }
 
 private extension NSMenuItem {
-    /// 按 `config.toml` 的快捷键写法（如 `ctrl+shift+m`）显示并绑定菜单快捷键；`none`/空则忽略。
+    /// 按 `config.toml` 的快捷键写法（如 `ctrl+shift+m` / `shift+space`）显示并绑定菜单快捷键。
     ///
-    /// 仅用于把当前生效的绑定展示在菜单项右侧；`shift`（无字符键）等无法表示时不显示。
-    func applyConfiguredHotkey(_ setting: String?) {
-        guard let setting, !setting.isEmpty, setting.lowercased() != "none" else { return }
+    /// 成功返回 `true`；`none`/空/无法表示为菜单快捷键（如单 `shift`）返回 `false`。
+    @discardableResult
+    func applyConfiguredHotkey(_ setting: String?) -> Bool {
+        guard let setting, !setting.isEmpty, setting.lowercased() != "none" else { return false }
         let parts = setting.lowercased().split(separator: "+").map(String.init)
-        guard let key = parts.last, key.count == 1, let character = key.first else { return }
+        guard let key = parts.last else { return false }
         var mask: NSEvent.ModifierFlags = []
         for part in parts.dropLast() {
             switch part {
@@ -437,10 +504,29 @@ private extension NSMenuItem {
             case "shift": mask.insert(.shift)
             case "alt", "option": mask.insert(.option)
             case "cmd", "command": mask.insert(.command)
-            default: return
+            default: return false
             }
         }
-        keyEquivalent = String(character)
+        let equivalent: String
+        switch key {
+        case "space": equivalent = " "
+        default:
+            guard key.count == 1 else { return false }
+            equivalent = key
+        }
+        keyEquivalent = equivalent
         keyEquivalentModifierMask = mask
+        return true
+    }
+
+    /// 单修饰键绑定（如 `shift`）不能做成菜单快捷键，返回其符号用于标题后缀。
+    static func singleModifierSymbol(_ setting: String?) -> String? {
+        switch setting?.lowercased() {
+        case "shift": return "⇧"
+        case "ctrl", "control": return "⌃"
+        case "alt", "option": return "⌥"
+        case "cmd", "command": return "⌘"
+        default: return nil
+        }
     }
 }

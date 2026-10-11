@@ -49,7 +49,7 @@ enum HelpUI {
 
         【其它】
           每页候选数       \(count)（改 config.toml 即时生效，无需重启）
-          菜单            输入模式、偏好设置…（词库增/导/出、拼音反查、帮助、反馈、关于均在偏好设置面板）
+          菜单            输入模式、中/英、全/半角、中/英标点、简/繁（均显示当前值与快捷键）、偏好设置…
           配置与恢复      ~/Library/Application Support/Lampyris/config.toml
                           写坏或异常处理见 docs/故障恢复.md
         """
