@@ -147,8 +147,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let exportButton = NSButton(title: "导出词库", target: self, action: #selector(exportWords))
         let lookup = NSButton(title: "拼音反查", target: self, action: #selector(lookupPinyin))
         let settingsButton = NSButton(title: "偏好设置", target: self, action: #selector(openSettings))
-        let feedbackButton = NSButton(title: "反馈", target: self, action: #selector(openFeedback))
-        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton, feedbackButton])
+        let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton])
         controls.orientation = .horizontal
         let stack = NSStackView(views: [hint, controls, scroll, status])
         stack.orientation = .vertical
@@ -180,8 +179,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window?.makeFirstResponder(input)
     }
     @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show() }
-    @objc func openFeedback() { input?.cancelComposition(); FeedbackUI.show() }
+    @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show(session: session) }
     @objc func addWord() { input?.cancelComposition(); UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func importWords() { input?.cancelComposition(); UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func exportWords() { input?.cancelComposition(); UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
@@ -493,6 +491,13 @@ if CommandLine.arguments.contains("--smoke-test") {
     SettingsPanel.shared.prepare()
     guard SettingsPanel.shared.rowCount == settingsOptions.count else {
         fputs("设置面板行数与 Schema 不一致。\n", stderr); exit(1)
+    }
+    // 中心面板（ADR-075）：设置/词库/帮助/反馈/关于 五个分区；帮助文本非空。
+    guard SettingsPanel.shared.sectionCount == 5 else {
+        fputs("设置面板分区数应为 5，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
+    }
+    guard !HelpUI.text().isEmpty, FeedbackUI.feedbackText().contains("issues/new") else {
+        fputs("帮助或反馈文本缺失。\n", stderr); exit(1)
     }
     // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
     guard ImeConfig.setToml("candidate.count", "5"), ImeConfig.int("candidate.count") == 5 else {

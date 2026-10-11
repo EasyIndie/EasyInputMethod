@@ -41,6 +41,7 @@ swiftc -g -Onone -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \
   "${SCRIPT_DIR}/Sources/CandidateWindow.swift" \
   "${SCRIPT_DIR}/Sources/Config.swift" \
+  "${SCRIPT_DIR}/Sources/Help.swift" \
   "${SCRIPT_DIR}/Sources/Settings.swift" \
   "${SCRIPT_DIR}/Sources/Feedback.swift" \
   "${SCRIPT_DIR}/Sources/UserDictionary.swift" \

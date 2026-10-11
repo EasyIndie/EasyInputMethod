@@ -176,47 +176,36 @@ final class LampyrisInputController: IMKInputController {
 
     override func menu() -> NSMenu! {
         let menu = NSMenu()
-        let item = NSMenuItem(
-            title: "切换输入模式（当前：\(stateDescription())）",
-            action: #selector(cycleMode(_:)),
-            keyEquivalent: "")
-        item.target = self
-        menu.addItem(item)
+        let mode = NSMenuItem(
+            title: "输入模式：\(menuModeName())",
+            action: #selector(cycleMode(_:)), keyEquivalent: "")
+        mode.target = self
+        mode.applyConfiguredHotkey(ImeConfig.string("hotkey.toggle_mode"))
+        menu.addItem(mode)
         menu.addItem(NSMenuItem.separator())
-        for (title, action) in [("新增用户词条…", #selector(addWord)), ("导入用户词库…", #selector(importWords)),
-            ("导出用户词库…", #selector(exportWords)), ("拼音反查…", #selector(lookupPinyin))] {
-            let entry = NSMenuItem(title: title, action: action, keyEquivalent: "")
-            entry.target = self; menu.addItem(entry)
-        }
-        menu.addItem(NSMenuItem.separator())
+        // 词库/反查/帮助/反馈/关于统一收进设置面板（ADR-075），菜单保持精简。
         let settings = NSMenuItem(
             title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
         settings.target = self
         menu.addItem(settings)
-        let feedback = NSMenuItem(
-            title: "反馈问题与建议…", action: #selector(showFeedback), keyEquivalent: "")
-        feedback.target = self
-        menu.addItem(feedback)
-        let help = NSMenuItem(
-            title: "快捷键与使用说明…", action: #selector(showHelp), keyEquivalent: "")
-        help.target = self
-        menu.addItem(help)
-        let about = NSMenuItem(title: "关于 Lampyris…", action: #selector(showAbout), keyEquivalent: "")
-        about.target = self
-        menu.addItem(about)
+        // 异常状态（仅在出错时出现）
+        var alerts: [String] = []
         if let session, session.dictionaryError != IME_OK {
-            let status = NSMenuItem(title: "用户词库读写失败，请检查权限或文件格式", action: nil, keyEquivalent: "")
-            menu.addItem(status)
+            alerts.append("用户词库读写失败，请检查权限或文件格式")
         }
         if let message = ImeConfig.errorMessage() {
-            let status = NSMenuItem(title: "配置错误：\(message)", action: nil, keyEquivalent: "")
-            status.isEnabled = false
-            menu.addItem(status)
+            alerts.append("配置错误：\(message)")
         }
         if let message = dataLoadError {
-            let status = NSMenuItem(title: "数据文件错误：\(message)", action: nil, keyEquivalent: "")
-            status.isEnabled = false
-            menu.addItem(status)
+            alerts.append("数据文件错误：\(message)")
+        }
+        if !alerts.isEmpty {
+            menu.addItem(NSMenuItem.separator())
+            for title in alerts {
+                let status = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+                status.isEnabled = false
+                menu.addItem(status)
+            }
         }
         return menu
     }
@@ -227,35 +216,16 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow?.hide()
     }
 
-    @objc private func lookupPinyin() {
-        guard let session else { return }
-        cancelClientComposition(); LookupUI.show(session)
-    }
-    @objc private func addWord() {
-        guard let session else { return }
-        cancelClientComposition(); UserDictionaryUI.add(session)
-    }
-    @objc private func importWords() {
-        guard let session else { return }
-        cancelClientComposition(); UserDictionaryUI.importFile(session)
-    }
-    @objc private func exportWords() {
-        guard let session else { return }
-        cancelClientComposition(); UserDictionaryUI.exportFile(session)
-    }
-
-    /// 模式显示名（混输/五笔/拼）。
+    /// 模式显示名（混输/五笔/拼），用于候选窗状态徽标。
     private func modeName() -> String {
         let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
         return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][raw] ?? "混输"
     }
 
-    /// 菜单里的完整状态：模式 · 中/英 · 半角/全角 · 简/繁（T-MVP-06 / T-P2-01）。
-    private func stateDescription() -> String {
-        let language = (session?.isEnglish ?? false) ? "英" : "中"
-        let width = (session?.isFullWidth ?? false) ? "全角" : "半角"
-        let variant = (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional" ? "繁" : "简"
-        return "\(modeName())·\(language)·\(width)·\(variant)"
+    /// 菜单用的完整模式名（混输/五笔/拼音）。
+    private func menuModeName() -> String {
+        let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
+        return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼音"][raw] ?? "混输"
     }
 
     /// 候选窗内的紧凑状态徽标：模式（+ 全）。
@@ -263,37 +233,10 @@ final class LampyrisInputController: IMKInputController {
         (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
     }
 
-    @objc private func showHelp() {
-        cancelClientComposition()
-        HelpUI.show()
-    }
-
-    /// 打开非模态偏好设置面板（ADR-070）；写入经 ime-config，改动即时生效。
+    /// 打开非模态设置面板（ADR-070/075）：面板承载设置/词库/帮助/反馈/关于。
     @objc private func showSettings() {
         cancelClientComposition()
-        SettingsPanel.shared.show()
-    }
-
-    /// 打开反馈入口（ADR-074）：完全本地，复制诊断信息与链接文本，App 不打开浏览器、不联网。
-    @objc private func showFeedback() {
-        cancelClientComposition()
-        FeedbackUI.show()
-    }
-
-    @objc private func showAbout() {
-        cancelClientComposition()
-        let info = Bundle.main.infoDictionary
-        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info?["CFBundleVersion"] as? String ?? "?"
-        var commit = "未知"
-        if let url = Bundle.main.resourceURL?.appendingPathComponent("SOURCE-COMMIT"),
-           let text = try? String(contentsOf: url, encoding: .utf8) {
-            commit = text.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-        let alert = NSAlert()
-        alert.messageText = "萤火虫 Lampyris \(version)（构建 \(build)）"
-        alert.informativeText = "源码提交：\(commit)\nGPL-3.0-or-later · 默认离线、零遥测、无账号"
-        alert.runModal()
+        SettingsPanel.shared.show(session: session)
     }
 
     @objc private func cycleMode(_ sender: Any?) {
@@ -476,5 +419,28 @@ final class LampyrisInputController: IMKInputController {
             rect = NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1)
         }
         return rect
+    }
+}
+
+private extension NSMenuItem {
+    /// 按 `config.toml` 的快捷键写法（如 `ctrl+shift+m`）显示并绑定菜单快捷键；`none`/空则忽略。
+    ///
+    /// 仅用于把当前生效的绑定展示在菜单项右侧；`shift`（无字符键）等无法表示时不显示。
+    func applyConfiguredHotkey(_ setting: String?) {
+        guard let setting, !setting.isEmpty, setting.lowercased() != "none" else { return }
+        let parts = setting.lowercased().split(separator: "+").map(String.init)
+        guard let key = parts.last, key.count == 1, let character = key.first else { return }
+        var mask: NSEvent.ModifierFlags = []
+        for part in parts.dropLast() {
+            switch part {
+            case "ctrl", "control": mask.insert(.control)
+            case "shift": mask.insert(.shift)
+            case "alt", "option": mask.insert(.option)
+            case "cmd", "command": mask.insert(.command)
+            default: return
+            }
+        }
+        keyEquivalent = String(character)
+        keyEquivalentModifierMask = mask
     }
 }
