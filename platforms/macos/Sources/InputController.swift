@@ -177,34 +177,32 @@ final class LampyrisInputController: IMKInputController {
     override func menu() -> NSMenu! {
         let menu = NSMenu()
         // 输入状态（一级菜单 + 当前快捷键，ADR-076）。
+        // 状态项直接显示当前值，条目更简洁（ADR-079）。
         menu.addItem(
             stateItem(
-                "输入模式：\(menuModeName())", action: #selector(cycleMode(_:)),
-                hotkeyKey: "hotkey.toggle_mode"))
+                menuModeName(), action: #selector(cycleMode(_:)), hotkeyKey: "hotkey.toggle_mode"))
         menu.addItem(
             stateItem(
-                "中/英：\(languageState())", action: #selector(toggleEnglish(_:)),
+                languageState(), action: #selector(toggleEnglish(_:)),
                 hotkeyKey: "hotkey.toggle_english"))
         menu.addItem(
             stateItem(
-                "全/半角：\(widthState())", action: #selector(toggleWidth(_:)),
-                hotkeyKey: "hotkey.toggle_width"))
+                widthState(), action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width"))
         menu.addItem(
             stateItem(
-                "中/英标点：\(punctuationState())", action: #selector(togglePunctuation(_:)),
-                hotkeyKey: "hotkey.toggle_punctuation"))
-        menu.addItem(
-            stateItem(
-                "简/繁：\(variantState())", action: #selector(toggleVariant(_:)),
+                variantState(), action: #selector(toggleVariant(_:)),
                 hotkeyKey: "hotkey.toggle_variant"))
+        menu.addItem(
+            stateItem(
+                punctuationState(), action: #selector(togglePunctuation(_:)),
+                hotkeyKey: "hotkey.toggle_punctuation"))
         menu.addItem(NSMenuItem.separator())
-        // 面板留「设置/词库」；反馈并入「关于」窗口（ADR-078）。
         let settings = NSMenuItem(
-            title: "偏", action: #selector(showSettings), keyEquivalent: "")
+            title: "偏好设置", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
         let about = NSMenuItem(
-            title: "关于", action: #selector(showAbout), keyEquivalent: "")
+            title: "版本信息", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
         // 异常状态（仅在出错时出现）
@@ -244,10 +242,10 @@ final class LampyrisInputController: IMKInputController {
         return item
     }
 
-    private func languageState() -> String { (session?.isEnglish ?? false) ? "英" : "中" }
+    private func languageState() -> String { (session?.isEnglish ?? false) ? "英文" : "中文" }
     private func widthState() -> String { (session?.isFullWidth ?? false) ? "全角" : "半角" }
     private func punctuationState() -> String {
-        (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese" ? "中文" : "英文"
+        (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese" ? "中文标点" : "英文标点"
     }
     private func variantState() -> String {
         (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional" ? "繁体" : "简体"

@@ -510,8 +510,8 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard !HelpUI.text().isEmpty else {
         fputs("帮助文本缺失。\n", stderr); exit(1)
     }
-    guard AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("issues/new") else {
-        fputs("关于/反馈信息缺失。\n", stderr); exit(1)
+    guard AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("security/advisories") else {
+        fputs("版本信息缺失。\n", stderr); exit(1)
     }
     // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
     guard ImeConfig.setToml("candidate.count", "5"), ImeConfig.int("candidate.count") == 5 else {
