@@ -92,13 +92,15 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 - 自动验收命令与证据见 §2.1；⑦⑧⑨ 由 `run-panel-acceptance.sh`、⑩ 由 `run-input-apps.sh` 自动完成（已入库，见 [`platforms/macos/tests/README.md`](../../platforms/macos/tests/README.md)）；⑬ 由预览冒烟覆盖。
 - 验收后已恢复用户词库（`~/Library/Application Support/Lampyris/user-dictionary.tsv`，39 行）、关闭测试窗口；配置保留。
 
-### 2.4 机器 B 新增问题：引擎常驻内存超 DoD（⑪）
+### 2.4 机器 B 内存超 DoD（⑪）——✅ 已解决（ADR-082 / T-P2-04）
+
+> **结论（2026-10-11）**：按 ADR-082 优化后，宿主**全新启动 23.3 M**，`run-imk-acceptance.sh` **14/14**（⑪ 23.3M ≤ 30M）；引擎稳态三表 **6.73 MiB**（五笔 2.19）。遗留：打开偏好设置面板会临时抬升（macOS 27 AppKit/SwiftUI 内部，非我们的数据，已用 `malloc_history` 定位）。下方为发现时的取证。
 
 - **现象**：macOS 27 / MacBookAir10,1（arm64）宿主 `vmmap` 物理足迹 **43.8 MB**，超 [`技术方案.md`](../技术方案.md) §12「常驻内存 ≤ 30 MB」。
 - **取证**：同机最小 Swift AppKit 基线仅 **7.7 MB**；`run-perf.sh` 引擎峰值 RSS **23.56 MiB**；加载 4 个 TSV 共 **2.17 MB / 145,758 条**（五笔 37,828 · 拼音字 53,092 · 拼音词 12,405 · 简繁 42,433）→ malloc **319,890 节点 / 26.7 MB**。
 - **归因**：`ime-table`（`Vec<(String, Vec<Entry>)>`）、`ime-pinyin`（多张 `HashMap<String,…>` + 反查表）、`ime-ffi` 简繁（`HashMap<String,String>`）均逐条 `String` 分配，无 interning / 紧凑编码；2.17 MB 文本膨胀约 11×。
 - **非本版本回归**：简繁表在机器 A 那次 17.5 MB 的构建（`7ea5a53`）即已存在；差异主要来自 macOS 27 / arm64 的计量与架构。
-- **待决策**：优化数据结构（interning / 紧凑排序数组 / 简繁懒加载）或修订门槛。**尚未处理，记录于此。**
+- **处理**：按 ADR-082 实现「简繁懒加载 + `ime-table` 紧凑数组 + 面板关闭释放」（见 [`T-P2-04`](T-P2-04-memory.md)）。**已解决。**
 
 ## 3. 证据获取命令
 
