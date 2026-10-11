@@ -116,7 +116,7 @@
 | 项 | 值 |
 |---|---|
 | 本机 A（本地迭代/真机验收） | macOS **13.7.8**、**Intel x86_64**；仅 CLT（Swift 5.8.1、无 Xcode）；`security find-identity` 为 0；已加 `aarch64-apple-darwin` + `x86_64-apple-darwin` target |
-| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据 |
+| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据；已 `ditto` 装入 ad-hoc 候选（`SOURCE-COMMIT=9e7ef41`）、仓库更新到 `33748da`（改名前的旧 `Yinghuo.app` 已 `lsregister -u` 并移到 `~/lampyris-pkg/backup/`）；验收步骤与一键脚本放在其 `~/lampyris-pkg/`。**SSH 会话跑不了 GUI 自动化**（AppleEvent 超时），自动/人工验收需在其控制台终端进行 |
 | Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
 | 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
 | 输入法现状 | 本机 A 用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到 **`9e7ef41`**（本机所装提交，universal ad-hoc 候选包）；分发/公证候选由 CI 出 universal |
