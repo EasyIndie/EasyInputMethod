@@ -16,11 +16,11 @@
 
 | 项 | 值 |
 |---|---|
-| 构建 commit | `c4c4b20`（`cat ~/Library/Input\ Methods/Lampyris.app/Contents/Resources/SOURCE-COMMIT`） |
-| macOS 版本 / 机型 | ________（`sw_vers`；`uname -m`） |
-| 外观 | ☐ 浅色　☐ 深色 |
+| 构建 commit | `7ea5a53`（`cat ~/Library/Input\ Methods/Lampyris.app/Contents/Resources/SOURCE-COMMIT`） |
+| macOS 版本 / 机型 | macOS **13.7.8** / **Intel x86_64**（`sw_vers`；`uname -m`） |
+| 外观 | ☑ 浅色　☑ 深色（⑬ 两种都看过） |
 | 安装形态 | `~/Library/Input Methods/Lampyris.app`（ad-hoc） |
-| 验收人 / 日期 | ________ / ________ |
+| 验收人 / 日期 | 用户（本机 A）/ 2026-10-11 |
 
 ## 2. DoD 矩阵（13 项）
 
@@ -34,13 +34,13 @@
 | 4 | 三模式持久化 | TextEdit | 菜单切「仅五笔」→ 注销重登 → 再输入 | 仍为五笔 | ✅ 通过（自动，含重启宿主） | `ctrl+shift+m` → `mode = "wubi"` 已写盘；重启后可输入且状态徽标「五笔」 |
 | 5 | 配置实时生效 | TextEdit | 输入中外部改 `candidate.count` | 候选数**无需按键**即时变 | ✅ 通过（自动） | count 5→3 未按键即变（两轮一致） |
 | 6 | 配置错误提示 | TextEdit | 写坏 `config.toml` | 照常输入 + 提示行号，同一错误仅一次 | ✅ 通过（自动，opt-in） | 弹窗含「第 1 行」；同一错误不重复；坏配置下仍可输入 |
-| 7 | 用户词库 | TextEdit（菜单/面板） | 新增词条 → 输入 → 注销重登 | 词条与频次保留 | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `ime_session_dictionary_add` → 输入即上屏；跨会话持久化由 `ime-dict` 单测覆盖 |
-| 8 | 导入 / 导出 | TextEdit（面板「词库」） | 导出 → 清空 → 导入 | 词条恢复 | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `export`→`import` 往返 + 坏文件拒绝（冒烟断言） |
-| 9 | 拼音反查 | TextEdit（面板「词库」） | 反查「你好」 | 得 `ni hao` | ◐ 逻辑自动（preview 冒烟，FFI）<br>☐ 面板 GUI 待人工 | `ime_session_reverse_lookup("你好") == "ni hao"`（冒烟断言） |
-| 10 | 五应用稳定 | TextEdit / Safari / VS Code / 微信 / Terminal | 各应用长文本、光标定位、`Cmd+Z` | 无错位/残留，撤销正常 | ☐ 通过<br>☐ 不通过 | |
+| 7 | 用户词库 | TextEdit（菜单/面板） | 新增词条 → 输入 → 注销重登 | 词条与频次保留 | ✅ 通过（人工，本机 A） | 面板「新增词条…」→ 输入上屏 → 重启宿主后仍在（`~/Library/Application Support/Lampyris/user-dictionary.tsv`） |
+| 8 | 导入 / 导出 | TextEdit（面板「词库」） | 导出 → 清空 → 导入 | 词条恢复 | ✅ 通过（人工，本机 A） | 导出 → 导入往返正常；坏文件被拒（弹「用户词库操作失败」，原词库不变） |
+| 9 | 拼音反查 | TextEdit（面板「词库」） | 反查「你好」 | 得 `ni hao` | ✅ 通过（人工，本机 A） | 「你好」→ `ni hao`；反例「志向远大」→「未收录此读音，请检查文本（最多 256 个 UTF-8 字节）」（符合预期，非缺陷） |
+| 10 | 五应用稳定 | TextEdit / Safari / VS Code / 微信 / Terminal | 各应用长文本、光标定位、`Cmd+Z` | 无错位/残留，撤销正常 | ❌ **不通过**（本机 A） | TextEdit / VS Code / 微信 / Terminal 正常；**Safari / Chrome 地址栏**失焦后残留原始编码字母——根因与结论见 [§2.2](#22-已知缺陷-地址栏预编辑残留10) |
 | 11 | 性能 / 内存 | 宿主进程 | 长时间输入；`ps` / `vmmap` | 按键 <16ms、常驻 ≤30MB | ✅ 通过（自动） | 物理足迹 ~17.5MB ≤30MB；引擎按键 p95 **1.2ms** / max ~4ms（`run-perf.sh`） |
 | 12 | 零外联采样 | 宿主进程 | 持续输入期间采样 `lsof` | 无网络连接 | ✅ 通过（自动，空闲 + 输入期间） | 空闲 6 次 + 输入期间 8 次采样，均 0 连接 |
-| 13 | 亮 / 暗主题 | 系统外观 | 切浅/深色，看菜单与候选窗 | 清晰可读 | ☐ 通过<br>☐ 不通过 | 视觉项 |
+| 13 | 亮 / 暗主题 | 系统外观 | 切浅/深色，看菜单与候选窗 | 清晰可读 | ✅ 通过（人工，本机 A） | 浅/深色下候选窗、输入法菜单、偏好设置面板、版本信息窗均可读 |
 
 ## 2.1 自动化入口（可复现）
 
@@ -60,6 +60,16 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 - ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
 - **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`、⑬ 亮/暗主题、⑦⑧⑨ 的面板按钮点击。
   → **逐步操作手册**（含第二台 Mac 复现）：[人工验收与多机复现](../人工验收与多机复现.md)。
+
+### 2.2 已知缺陷：地址栏预编辑残留（⑩）
+
+- **现象**：在 **Chrome** 地址栏组合中（候选窗已出现）切换窗口或点击页面其它区域后，地址栏残留**原始编码字母**（如 `nihao`）；**Safari** 地址栏在「点击页面」时同样残留（「切换窗口」正常）。其余应用（TextEdit / VS Code / 微信 / Terminal）均正常。
+- **根因（2026-10-11 实测确认）**：
+  1. 预编辑是用 `setMarkedText` 写进客户端的（带下划线的 `nihao`）。
+  2. 客户端失焦/被要求提交时 IMK 走 `commitComposition:`；在该回调里**无论**调 `setMarkedText("")`（`replacementRange` 分别试过 `NSNotFound` 与 `client.markedRange()`）还是 `insertText("")`，IMK 都会在回调返回后把**当前预编辑原样取消标记**成普通文本 → 残留。
+  3. 对照实验：组合中按 `Esc`（由我们自己的按键处理主动清空）→ 地址栏**立刻变空**，证明清空原语有效，差别只在「谁发起」。
+  4. Chrome 切换窗口时**不调用** `commitComposition:`（Safari 会），且点击页面时 IMK 不向输入会话投递 `leftMouseDown` → 拿不到更早的时机。
+- **结论**：只有「不在客户端留下预编辑」才能彻底消除残留，属产品取舍；修复方案与选型待定（见 `HANDOFF.md` §3）。
 
 ## 3. 证据获取命令
 
@@ -87,10 +97,12 @@ cat ~/Library/Application\ Support/Lampyris/config.toml
 
 ## 4. 结论
 
-- 通过项数：____ / 13
-- 阻塞问题（附最小复现）：____________________
-- 结论：☐ 通过，可关闭 MVP-05　☐ 不通过，需修复后重测
-- 验收人签名 / 日期：____________________
+- 通过项数：**12 / 13**（本机 A，2026-10-11；自动 ①②③④⑤⑥⑪⑫ + 人工 ⑦⑧⑨⑬）
+- 阻塞问题：**⑩ 浏览器地址栏预编辑残留**（Chrome 切窗口/点击、Safari 点击）→ 见 [§2.2](#22-已知缺陷-地址栏预编辑残留10)；## 非阻塞，但属可见体验缺陷
+- 结论：☐ 通过，可关闭 MVP-05　☑ **不通过，待 ⑩ 修复或明确接受后再关闭**
+- 验收人 / 日期：用户（本机 A）/ 2026-10-11
+
+> 第二台 Mac（机器 B，macOS 27 / Apple Silicon）的自动 + 人工复现结果待补，记到本表。
 
 ## 5. 验收后收尾
 
