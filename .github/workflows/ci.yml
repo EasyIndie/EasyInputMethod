@@ -62,20 +62,20 @@ jobs:
         if: steps.ws.outputs.exists == 'true'
         run: cargo fmt --all -- --check
 
-      - name: cargo clippy
+      - name: make lint（clippy -D warnings + 零诊断门禁）
         if: steps.ws.outputs.exists == 'true'
-        run: cargo clippy --workspace --all-targets -- -D warnings
+        run: make lint
 
-      - name: cargo test
+      - name: make test（零诊断门禁）
         if: steps.ws.outputs.exists == 'true'
-        run: cargo test --workspace
+        run: make test
 
       - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
         if: steps.ws.outputs.exists == 'true'
 
-      - name: cargo deny
+      - name: make deny（零诊断门禁）
         if: steps.ws.outputs.exists == 'true'
-        run: cargo deny check
+        run: make deny
 
       - name: verify no network (privacy assertion)
         run: ./scripts/verify-no-network.sh
@@ -151,7 +151,7 @@ jobs:
           ./data/sources/fetch-pinyin-data.sh
           ./data/sources/fetch-phrase-pinyin.sh
           ./data/sources/fetch-jieba-dict.sh
-          cargo run -p ime-pinyin --example generate
+          cargo run -p ime-pinyin --example generate_pinyin
           python3 tools/prepare-pinyin-core.py
           git diff --exit-code -- data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
       - name: Build and smoke-test independent preview

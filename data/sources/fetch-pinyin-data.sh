@@ -58,4 +58,4 @@ download() {
 
 mkdir -p "$DEST"
 download "$D5_URL" "$D5_SHA" "$D5_OUT"
-echo "完成。下一步：cargo run -p ime-pinyin --example generate"
+echo "完成。下一步：cargo run -p ime-pinyin --example generate_pinyin"

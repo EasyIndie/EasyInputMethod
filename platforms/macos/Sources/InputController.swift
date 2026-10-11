@@ -267,7 +267,7 @@ final class LampyrisInputController: IMKInputController {
     /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
     private func refreshAfterStateChange() {
         guard let session else { return }
-        guard let textClient = activeClient ?? (client() as? IMKTextInput) else {
+        guard let textClient = activeClient ?? client() else {
             candidateWindow?.hide()
             return
         }
@@ -281,7 +281,7 @@ final class LampyrisInputController: IMKInputController {
     }
 
     private func cancelClientComposition() {
-        clearMarked(client() as? IMKTextInput)
+        clearMarked(client())
         session?.focusOut()
         candidateWindow?.hide()
     }

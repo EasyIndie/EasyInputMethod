@@ -72,7 +72,7 @@ build_arch() {
       echo "   （--universal 需先：rustup target add ${triple}）" >&2
       exit 1
     fi
-    swiftc -O -whole-module-optimization \
+    swiftc -O -whole-module-optimization -warnings-as-errors \
       -target "${arch}-apple-macosx13.0" \
       -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
       -file-prefix-map "${ROOT}=/lampyris-src" \

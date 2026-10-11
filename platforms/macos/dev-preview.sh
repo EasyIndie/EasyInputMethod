@@ -35,7 +35,7 @@ ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
 (cd "${ROOT}" && cargo build -p ime-ffi)
-swiftc -g -Onone -module-name LampyrisPreview \
+swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   -I "${ROOT}/crates/ime-ffi/include" \
   "${SCRIPT_DIR}/Preview/main.swift" \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \
