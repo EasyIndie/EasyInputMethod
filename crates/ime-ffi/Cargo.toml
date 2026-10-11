@@ -7,7 +7,7 @@ rust-version.workspace = true
 description = "萤火虫输入法窄 C ABI（会话 + 配置），唯一 unsafe 集中地"
 
 [lib]
-crate-type = ["cdylib", "staticlib"]
+crate-type = ["cdylib", "staticlib", "rlib"]
 
 [dependencies]
 ime-dict.workspace = true

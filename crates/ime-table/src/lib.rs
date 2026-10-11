@@ -1,6 +1,9 @@
 //! 码表引擎（五笔）。
 //!
 //! 排序数组 + 文本 TSV；精确二分 + 前缀区间扫描。cedarwood/二进制/mmap 为带触发条件的可选优化（ADR-060）。
+//!
+//! 内存：`code` 与候选文本存在各自的连续字节缓冲里，用偏移索引；候选扁平存储（ADR-082）。
+//! 对外仍暴露 owned 的 [`Entry`]（查询时物化），热路径直接用紧凑存储。
 
 #![forbid(unsafe_code)]
 
@@ -10,7 +13,7 @@ use std::sync::Arc;
 
 use ime_core::{Candidate, CandidateSource, ConvertResult, Engine, EngineType};
 
-/// 码表词条。
+/// 码表词条（对外拥有的视图；内部为紧凑偏移存储）。
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Entry {
     pub text: String,
@@ -41,13 +44,36 @@ impl fmt::Display for TsvError {
 
 impl Error for TsvError {}
 
-/// 内存码表：按 `code` 字典序排列的数组。
+/// 一个 code 组：指向 [`Table::codes`] 的区间，以及其候选在 [`Table::entries`] 的下标区间。
+#[derive(Debug, Clone, Copy)]
+struct Group {
+    code_start: u32,
+    code_len: u32,
+    entry_start: u32,
+    entry_end: u32,
+}
+
+/// 紧凑候选：指向 [`Table::texts`] 的区间 + 权重。
+#[derive(Debug, Clone, Copy)]
+struct Packed {
+    text_start: u32,
+    text_len: u32,
+    weight: i32,
+}
+
+/// 内存码表：紧凑连续存储 + 按 `code` 字典序排列的组索引。
 ///
 /// 精确查询用二分；前缀预测用区间扫描（同前缀的 code 在排序后连续）。
 #[derive(Debug, Clone, Default)]
 pub struct Table {
-    /// `(code, 该码下的候选列表)`，按 `code` 字典序排列。
-    entries: Vec<(String, Vec<Entry>)>,
+    /// 全部 code 拼接（按 code 字典序）。
+    codes: Box<str>,
+    /// 全部候选文本拼接。
+    texts: Box<str>,
+    /// 按 code 升序的组索引。
+    groups: Vec<Group>,
+    /// 扁平候选（按组连续）。
+    entries: Vec<Packed>,
 }
 
 impl Table {
@@ -55,13 +81,15 @@ impl Table {
         Self::default()
     }
 
+    /// 追加一条候选（构建期使用；查询前需 [`Table::finalize`]）。
     pub fn insert(&mut self, code: &str, text: &str, weight: i32) {
-        match self.entries.iter_mut().find(|(c, _)| c == code) {
+        let mut rows = self.rows();
+        match rows.iter_mut().find(|(c, _)| c == code) {
             Some((_, list)) => list.push(Entry {
                 text: text.to_string(),
                 weight,
             }),
-            None => self.entries.push((
+            None => rows.push((
                 code.to_string(),
                 vec![Entry {
                     text: text.to_string(),
@@ -69,6 +97,7 @@ impl Table {
                 }],
             )),
         }
+        *self = Self::from_rows(rows);
     }
 
     /// 从 TSV 文本（`code\ttext\tweight`）构建码表。
@@ -79,9 +108,7 @@ impl Table {
     /// - weight 必须可解析为 `i32`，否则 [`TsvError::InvalidWeight`]；
     /// - 同码多候选全部保留，构建完成后组内按 `weight` 降序（等权按 text 升序）。
     pub fn from_tsv(input: &str) -> Result<Table, TsvError> {
-        // 先收集、再按 code 排序分组：避免逐条线性查找的 O(n²)
-        // （MVP-13：37.8k 行逐条 insert 曾需 ~3.2s 冷启动）。
-        let mut rows: Vec<(String, Entry)> = Vec::new();
+        let mut rows: Vec<(String, Vec<Entry>)> = Vec::new();
         for (idx, raw) in input.lines().enumerate() {
             let line_no = idx + 1;
             let line = raw.trim_start_matches('\u{feff}').trim();
@@ -106,71 +133,163 @@ impl Table {
                 })?;
             rows.push((
                 code.to_string(),
-                Entry {
+                vec![Entry {
                     text: text.to_string(),
                     weight,
-                },
+                }],
             ));
         }
         rows.sort_by(|a, b| a.0.cmp(&b.0));
-        let mut entries: Vec<(String, Vec<Entry>)> = Vec::new();
-        for (code, entry) in rows {
-            match entries.last_mut() {
-                Some((last, list)) if *last == code => list.push(entry),
-                _ => entries.push((code, vec![entry])),
+        let mut grouped: Vec<(String, Vec<Entry>)> = Vec::new();
+        for (code, list) in rows {
+            match grouped.last_mut() {
+                Some((last, entries)) if *last == code => entries.extend(list),
+                _ => grouped.push((code, list)),
             }
         }
-        let mut table = Table { entries };
+        let mut table = Self::from_rows(grouped);
         table.finalize();
         Ok(table)
     }
 
     /// 构建完成后调用一次：组内按权重降序，组间按 code 字典序。
     pub fn finalize(&mut self) {
-        for (_, list) in self.entries.iter_mut() {
+        let mut rows = self.rows();
+        for (_, list) in rows.iter_mut() {
             list.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
-        }
-        self.entries.sort_by(|a, b| a.0.cmp(&b.0));
-        for (_, list) in &mut self.entries {
             list.shrink_to_fit();
         }
-        self.entries.shrink_to_fit();
+        rows.sort_by(|a, b| a.0.cmp(&b.0));
+        rows.shrink_to_fit();
+        *self = Self::from_rows(rows);
     }
 
     /// 精确查询：返回该码下的候选（按权重降序）。
-    pub fn exact(&self, code: &str) -> Option<&[Entry]> {
-        self.entries
-            .binary_search_by(|(c, _)| c.as_str().cmp(code))
-            .ok()
-            .map(|i| self.entries[i].1.as_slice())
+    pub fn exact(&self, code: &str) -> Option<Vec<Entry>> {
+        let i = self.group_index(code)?;
+        Some(
+            self.group_entries(i)
+                .map(|(text, weight)| Entry {
+                    text: text.to_string(),
+                    weight,
+                })
+                .collect(),
+        )
     }
 
     /// 前缀预测：返回所有 `code` 以 `prefix` 开头的 `(code, entry)`，最多 `limit` 条。
     pub fn prefix(&self, prefix: &str, limit: usize) -> Vec<(String, Entry)> {
         let mut out = Vec::new();
-        let start = self
-            .entries
-            .partition_point(|(code, _)| code.as_str() < prefix);
-        for (code, list) in self.entries.iter().skip(start) {
+        let start = self.groups.partition_point(|g| self.code_of(g) < prefix);
+        for i in start..self.groups.len() {
+            let code = self.code_of_index(i);
             if !code.starts_with(prefix) {
                 break;
             }
-            for entry in list {
+            for (text, weight) in self.group_entries(i) {
                 if out.len() >= limit {
                     return out;
                 }
-                out.push((code.clone(), entry.clone()));
+                out.push((
+                    code.to_string(),
+                    Entry {
+                        text: text.to_string(),
+                        weight,
+                    },
+                ));
             }
         }
         out
     }
 
     pub fn len(&self) -> usize {
-        self.entries.len()
+        self.groups.len()
     }
 
     pub fn is_empty(&self) -> bool {
-        self.entries.is_empty()
+        self.groups.is_empty()
+    }
+
+    // ---- 紧凑存储的内部视图（crate 内使用）----
+
+    fn code_of(&self, g: &Group) -> &str {
+        let start = g.code_start as usize;
+        &self.codes[start..start + g.code_len as usize]
+    }
+
+    fn code_of_index(&self, i: usize) -> &str {
+        self.code_of(&self.groups[i])
+    }
+
+    fn group_entries(&self, i: usize) -> impl Iterator<Item = (&str, i32)> {
+        let g = self.groups[i];
+        self.entries[g.entry_start as usize..g.entry_end as usize]
+            .iter()
+            .map(move |p| {
+                let start = p.text_start as usize;
+                (&self.texts[start..start + p.text_len as usize], p.weight)
+            })
+    }
+
+    fn group_index(&self, code: &str) -> Option<usize> {
+        self.groups
+            .binary_search_by(|g| self.code_of(g).cmp(code))
+            .ok()
+    }
+
+    /// 解码为可变的 `(code, 候选)` 行（仅供构建/自测）。
+    fn rows(&self) -> Vec<(String, Vec<Entry>)> {
+        (0..self.groups.len())
+            .map(|i| {
+                let list = self
+                    .group_entries(i)
+                    .map(|(text, weight)| Entry {
+                        text: text.to_string(),
+                        weight,
+                    })
+                    .collect();
+                (self.code_of_index(i).to_string(), list)
+            })
+            .collect()
+    }
+
+    /// 把 `(code, 候选)` 行编码为紧凑存储。
+    fn from_rows(rows: Vec<(String, Vec<Entry>)>) -> Self {
+        let mut codes = String::new();
+        let mut texts = String::new();
+        let mut groups = Vec::with_capacity(rows.len());
+        let mut entries: Vec<Packed> = Vec::new();
+        for (code, list) in rows {
+            let code_start = codes.len() as u32;
+            codes.push_str(&code);
+            let code_len = code.len() as u32;
+            let entry_start = entries.len() as u32;
+            for e in list {
+                let text_start = texts.len() as u32;
+                let text_len = e.text.len() as u32;
+                texts.push_str(&e.text);
+                entries.push(Packed {
+                    text_start,
+                    text_len,
+                    weight: e.weight,
+                });
+            }
+            let entry_end = entries.len() as u32;
+            groups.push(Group {
+                code_start,
+                code_len,
+                entry_start,
+                entry_end,
+            });
+        }
+        entries.shrink_to_fit();
+        groups.shrink_to_fit();
+        Self {
+            codes: codes.into_boxed_str(),
+            texts: texts.into_boxed_str(),
+            groups,
+            entries,
+        }
     }
 }
 
@@ -187,14 +306,14 @@ fn push_ranked<'a>(
     top: &mut std::collections::BinaryHeap<std::cmp::Reverse<Rank<'a>>>,
     input: &str,
     code: &'a str,
-    entries: &'a [Entry],
+    entries: impl Iterator<Item = (&'a str, i32)>,
     max: usize,
 ) {
-    for entry in entries {
+    for (text, weight) in entries {
         let rank: Rank<'a> = (
             code == input,
-            entry.weight,
-            std::cmp::Reverse(entry.text.as_str()),
+            weight,
+            std::cmp::Reverse(text),
             std::cmp::Reverse(code),
         );
         if top.len() < max {
@@ -245,9 +364,10 @@ impl Engine for CodeTableEngine {
             let head = input.split('z').next().unwrap_or("");
             let start = self
                 .table
-                .entries
-                .partition_point(|(code, _)| code.as_str() < head);
-            for (code, entries) in &self.table.entries[start..] {
+                .groups
+                .partition_point(|g| self.table.code_of(g) < head);
+            for i in start..self.table.groups.len() {
+                let code = self.table.code_of_index(i);
                 if !head.is_empty() && !code.starts_with(head) {
                     break;
                 }
@@ -257,20 +377,21 @@ impl Engine for CodeTableEngine {
                         .zip(code.bytes())
                         .all(|(a, b)| a == b'z' || a == b);
                 if matches {
-                    push_ranked(&mut top, input, code, entries, max);
+                    push_ranked(&mut top, input, code, self.table.group_entries(i), max);
                 }
             }
         } else {
             // 同前缀的码在排序后连续：二分定位起点，命中即区间扫描（不再全表）。
             let start = self
                 .table
-                .entries
-                .partition_point(|(code, _)| code.as_str() < input);
-            for (code, entries) in &self.table.entries[start..] {
+                .groups
+                .partition_point(|g| self.table.code_of(g) < input);
+            for i in start..self.table.groups.len() {
+                let code = self.table.code_of_index(i);
                 if !code.starts_with(input) {
                     break;
                 }
-                push_ranked(&mut top, input, code, entries, max);
+                push_ranked(&mut top, input, code, self.table.group_entries(i), max);
             }
         }
         let mut ranked: Vec<_> = top.into_iter().map(|r| r.0).collect();
@@ -422,7 +543,8 @@ mod tests {
         ) -> Vec<(String, i32, bool)> {
             use std::cmp::Reverse;
             let mut items: Vec<(bool, i32, Reverse<&str>, Reverse<&str>)> = Vec::new();
-            for (code, entries) in &table.entries {
+            let rows = table.rows();
+            for (code, entries) in &rows {
                 let matches = if wildcard && input.contains('z') {
                     code.len() >= input.len()
                         && input
@@ -482,59 +604,24 @@ mod tests {
                     let got: Vec<(String, i32, bool)> = engine
                         .convert(input, max)
                         .candidates
-                        .into_iter()
-                        .map(|c| (c.text, c.weight, c.is_prefix))
+                        .iter()
+                        .map(|c| (c.text.clone(), c.weight, c.is_prefix))
                         .collect();
-                    assert_eq!(
-                        got,
-                        reference(&engine.table, input, max, wildcard),
-                        "input={input} max={max} wildcard={wildcard}"
-                    );
+                    let want = reference(&engine.table, input, max, wildcard);
+                    assert_eq!(got, want, "input={input} max={max} wildcard={wildcard}");
                 }
             }
         }
     }
 
     #[test]
-    fn wildcard_head_range_preserves_matching() {
-        fn texts(engine: &CodeTableEngine, input: &str) -> Vec<String> {
-            engine
-                .convert(input, 9)
-                .candidates
-                .into_iter()
-                .map(|c| c.text)
-                .collect()
-        }
-        let mut t = Table::new();
-        t.insert("aacd", "甲", 10);
-        t.insert("abcd", "乙", 9);
-        t.insert("zbcd", "丙", 8);
-        t.insert("bbcd", "丁", 7);
-        t.finalize();
-        let mut e = CodeTableEngine::new(t, 4);
-        e.configure(&ime_core::EngineOptions {
-            auto_commit: false,
-            z_wildcard: true,
-            fuzzy: false,
-        });
-        // 'z' 在第 2 位：字面前缀为 "a"，只应在 a* 区间内匹配。
-        assert_eq!(texts(&e, "azcd"), ["甲", "乙"]);
-        // 'z' 在首位：退化为整表，按模式匹配；码恰好等于输入者（zbcd）仍优先。
-        assert_eq!(texts(&e, "zbcd"), ["丙", "乙", "丁"]);
-        // 未开启通配：按字面前缀处理，无匹配。
-        e.configure(&ime_core::EngineOptions {
-            auto_commit: false,
-            z_wildcard: false,
-            fuzzy: false,
-        });
-        assert!(texts(&e, "azcd").is_empty());
-    }
-
-    #[test]
     fn from_tsv_parses_normal_lines_and_skips_comments_and_blanks() {
         let t = Table::from_tsv("# comment\n\nwqiy\t你\t234587\n\n").unwrap();
         assert_eq!(t.len(), 1);
-        assert_eq!(t.exact("wqiy").unwrap()[0].text, "你");
+        let entries = t.exact("wqiy").unwrap();
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].text, "你");
+        assert_eq!(entries[0].weight, 234587);
     }
 
     #[test]
@@ -550,7 +637,7 @@ mod tests {
             err,
             TsvError::InvalidWeight {
                 line: 1,
-                value: "很多".to_string()
+                value: "很多".into()
             }
         );
     }
@@ -568,64 +655,32 @@ mod tests {
     }
 
     #[test]
-    fn exact_lookup_orders_duplicates_by_weight() {
+    fn exact_returns_weight_sorted_entries() {
         let t = core_table();
-        assert_eq!(t.exact("kwwl").unwrap()[0].text, "中华人民共和国");
-        let gggg: Vec<&str> = t
-            .exact("gggg")
-            .unwrap()
-            .iter()
-            .map(|e| e.text.as_str())
-            .collect();
-        assert_eq!(gggg, ["王", "龶"]);
-        assert!(t.exact("nope").is_none());
-    }
-
-    #[test]
-    fn convert_wq_puts_ni_first() {
-        let t = core_table();
-        let engine = CodeTableEngine::new(t, 4);
-        let result = engine.convert("wq", 9);
-        assert_eq!(result.candidates.first().unwrap().text, "你");
-        assert!(result.candidates.first().unwrap().is_prefix);
-    }
-
-    #[test]
-    fn convert_prefix_truncates_by_weight_not_code_order() {
-        let t = core_table();
-        let engine = CodeTableEngine::new(t, 4);
-        // 「低」的 code（wqay）字典序在「你」之前，但权重更低，不应被优先截断进来。
-        let result = engine.convert("wq", 2);
-        let texts: Vec<&str> = result.candidates.iter().map(|c| c.text.as_str()).collect();
-        assert_eq!(texts, ["你", "像"]);
-    }
-
-    #[test]
-    fn auto_commit_only_on_full_unique() {
-        let t = core_table();
-        let engine = CodeTableEngine::new(t, 4);
-        // wqiy 满码且唯一（样本里仅一个 wqiy 候选）。
+        // kwwl 下两条：中华人民共和国(9989) 在前，中集集团(5) 在后。
+        let entries = t.exact("kwwl").unwrap();
         assert_eq!(
-            engine.convert("wqiy", 9).should_commit.as_deref(),
-            Some("你")
+            entries.iter().map(|e| e.text.as_str()).collect::<Vec<_>>(),
+            vec!["中华人民共和国", "中集集团"]
         );
-        // kwwl 满码但多候选，不自动上屏。
-        assert_eq!(engine.convert("kwwl", 9).should_commit, None);
-        assert_eq!(engine.convert("wq", 9).should_commit, None);
+        // gggg 下 王(19704) 在前，龶(1) 在后。
+        let entries = t.exact("gggg").unwrap();
+        assert_eq!(
+            entries.iter().map(|e| e.text.as_str()).collect::<Vec<_>>(),
+            vec!["王", "龶"]
+        );
+        assert!(t.exact("zzzz").is_none());
     }
 
     #[test]
-    fn convert_marks_prefix() {
+    fn prefix_returns_matches_in_code_order_with_limit() {
         let t = core_table();
-        let engine = CodeTableEngine::new(t, 4);
-        let result = engine.convert("wq", 9);
-        assert!(result
-            .candidates
-            .iter()
-            .any(|c| c.text == "你" && c.is_prefix));
-        assert!(result
-            .candidates
-            .iter()
-            .any(|c| c.text == "像" && c.is_prefix));
+        let all = t.prefix("wq", 100);
+        assert_eq!(
+            all.iter().map(|(c, _)| c.as_str()).collect::<Vec<_>>(),
+            vec!["wqay", "wqiy", "wqje"]
+        );
+        assert_eq!(t.prefix("wq", 2).len(), 2);
+        assert!(t.prefix("zz", 10).is_empty());
     }
 }

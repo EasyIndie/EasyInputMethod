@@ -79,8 +79,10 @@ pub struct ImeSession {
     dictionary: Option<ime_dict::Store>,
     dictionary_error: i32,
     ffi_strings: Vec<(Option<CString>, Option<CString>)>,
-    /// 简→繁转换表（可选，由宿主注入 `ime_session_set_variant_data`）。
+    /// 简→繁转换表（懒加载，键为 `variant_path`；ADR-082）。
     variant: Option<Arc<VariantMap>>,
+    /// 简→繁表路径（由宿主注入 `ime_session_set_variant_data`）；未注入为 `None`。
+    variant_path: Option<String>,
     /// 是否输出繁体（来自配置 `input.chinese_variant`）。
     traditional: bool,
 }
@@ -183,10 +185,23 @@ impl ImeSession {
             dictionary_error: IME_OK,
             ffi_strings: Vec::new(),
             variant: None,
+            variant_path: None,
             traditional: false,
         });
         s.refresh();
         s
+    }
+
+    /// 按需载入简→繁表（仅首次需要繁体时解析；ADR-082）。
+    fn ensure_variant(&mut self) -> Option<Arc<VariantMap>> {
+        if self.variant.is_none() {
+            if let Some(path) = self.variant_path.clone() {
+                if let Ok(map) = crate::data::variant(&path) {
+                    self.variant = Some(map);
+                }
+            }
+        }
+        self.variant.clone()
     }
 
     fn ensure_dictionary(&mut self) {
@@ -254,7 +269,11 @@ impl ImeSession {
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
     fn refresh(&mut self) {
         let traditional = self.traditional;
-        let variant = self.variant.clone();
+        let variant = if traditional {
+            self.ensure_variant()
+        } else {
+            None
+        };
         self.ffi_strings = self
             .session
             .candidates()
@@ -355,7 +374,12 @@ pub extern "C" fn ime_session_set_variant_data(
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         // SAFETY：契约见 `cstr_arg`。
         let path = unsafe { cstr_arg(path)? };
-        s.variant = Some(crate::data::variant(path)?);
+        // 懒加载（ADR-082）：只校验可读并记路径，首次需要繁体时再解析。
+        if std::fs::metadata(path).is_err() {
+            return Err(IME_ERR_IO);
+        }
+        s.variant_path = Some(path.to_string());
+        s.variant = None;
         s.refresh();
         Ok(IME_OK)
     })
@@ -703,10 +727,15 @@ pub extern "C" fn ime_session_commit(session: *mut ImeSession) -> ImeString {
         || {
             // SAFETY：契约见模块注释。
             let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
-            let committed = s.session.committed();
-            let text = match (&s.variant, s.traditional) {
-                (Some(map), true) => map.to(committed),
-                _ => committed.to_string(),
+            let committed = s.session.committed().to_string();
+            let variant = if s.traditional {
+                s.ensure_variant()
+            } else {
+                None
+            };
+            let text = match &variant {
+                Some(map) if s.traditional => map.to(&committed),
+                _ => committed,
             };
             Ok(owned_string(&text))
         },
