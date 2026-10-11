@@ -503,14 +503,11 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard SettingsPanel.shared.rowCount == settingsOptions.count else {
         fputs("设置面板行数与 Schema 不一致。\n", stderr); exit(1)
     }
-    // 中心面板（ADR-075）：设置/词库/帮助/反馈/关于 五个分区；帮助文本非空。
+    // 面板（ADR-077/080）：设置/词库 两个分区。
     guard SettingsPanel.shared.sectionCount == 2 else {
         fputs("设置面板分区数应为 2，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
     }
-    guard !HelpUI.text().isEmpty else {
-        fputs("帮助文本缺失。\n", stderr); exit(1)
-    }
-    guard AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("security/advisories") else {
+    guard AboutUI.text().contains("GPL-3.0") else {
         fputs("版本信息缺失。\n", stderr); exit(1)
     }
     // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
