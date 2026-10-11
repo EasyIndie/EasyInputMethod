@@ -36,7 +36,7 @@
 5. **不扩功能**：不得实现 §3 非目标 中的任何功能；新增功能必须先写 ADR（见 `docs/决策记录.md`）。
 6. **许可**：项目为 GPL-3.0-or-later；新依赖必须通过 `cargo deny check`（白名单见 `deny.toml`）。
 7. **设计变更先写 ADR**：改架构/协议/约定 → 先更新 `docs/决策记录.md`，再动代码。
-8. **提交前必须跑验证**：`make verify`（见 §5），全绿才能提交。
+8. **提交前必须跑验证**：`make verify`（见 §5），全绿才能提交；**0 警告 0 错误**（ADR-081）。
 9. **文档同步**：行为变更 → 同步更新对应文档；文档与代码不一致视为 bug。
 10. **小步、可验证**：一次只做**一个**明确、可独立验证的改动；不要顺手重构无关代码。
 
@@ -99,8 +99,6 @@ ime-config ← 可被上层读取，但只由自身持久化
 make verify     # = fmt-check + lint + test + deny + verify-no-network
 ```
 
-分解：
-
 | 命令 | 作用 |
 |---|---|
 | `make fmt` | `cargo fmt --all` |
@@ -109,6 +107,8 @@ make verify     # = fmt-check + lint + test + deny + verify-no-network
 | `make deny` | `cargo deny check`（许可 + 漏洞 + 重复依赖） |
 | `make verify-no-network` | 断言产物无网络符号、进程无外联 |
 | `make fuzz` | `cargo +nightly fuzz`（解析器，可选） |
+
+> ⚠️ **零诊断门禁（ADR-081）**：`cargo` / `rustc` / `clippy` / `cargo-deny` / `swiftc` 的诊断必须为 **0**；`lint/test/deny/fast/verify` 已由 `scripts/check-clean.sh` 把关，CI 同源。有诊断就当失败修掉，不许当背景板。
 
 无 `make` 时，直接运行 `Makefile` 中对应行。
 

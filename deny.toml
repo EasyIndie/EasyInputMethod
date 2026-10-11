@@ -37,6 +37,8 @@ allow = [
   "GPL-3.0-or-later",
 ]
 confidence-threshold = 0.9
+# 允许清单是「政策」而非「当前用到的集合」；未命中的条目不必逐条告警。
+unused-allowed-license = "allow"
 
 [bans]
 multiple-versions = "warn"

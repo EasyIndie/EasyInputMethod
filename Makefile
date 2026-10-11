@@ -2,6 +2,7 @@
 # 用法: make help
 SHELL := /bin/bash
 CARGO ?= cargo
+CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流.md §4
 FUZZ_SECONDS ?= 30
 
 .PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview hooks
@@ -24,22 +25,22 @@ fmt: check-workspace ## 格式化代码
 fmt-check: check-workspace ## 检查格式（不改动）
 	$(CARGO) fmt --all -- --check
 
-lint: check-workspace ## Clippy（warnings 视为错误）
-	$(CARGO) clippy --workspace --all-targets -- -D warnings
+lint: check-workspace ## Clippy（warnings 视为错误；零诊断门禁）
+	$(CLEAN) $(CARGO) clippy --workspace --all-targets -- -D warnings
 
-test: check-workspace ## 运行全部测试
-	$(CARGO) test --workspace
+test: check-workspace ## 运行全部测试（零诊断门禁）
+	$(CLEAN) $(CARGO) test --workspace
 
 fast: check-workspace ## 内环快检（fmt-check + clippy + test；不含依赖/隐私断言）
 	$(CARGO) fmt --all -- --check
-	$(CARGO) clippy --workspace --all-targets -- -D warnings
-	$(CARGO) test --workspace
+	$(CLEAN) $(CARGO) clippy --workspace --all-targets -- -D warnings
+	$(CLEAN) $(CARGO) test --workspace
 
 hooks: ## 安装本地 git hooks（pre-push 自动跑 make verify）
 	./scripts/install-hooks.sh
 
-deny: check-workspace ## 依赖许可 / 漏洞 / 重复依赖检查
-	$(CARGO) deny check
+deny: check-workspace ## 依赖许可 / 漏洞 / 重复依赖检查（零诊断门禁）
+	$(CLEAN) $(CARGO) deny check
 
 bootstrap: ## 安装开发依赖（版本固定，见 MVP 审计 SEC-07）
 	cargo install cargo-deny --version 0.20.2 --locked
@@ -56,10 +57,10 @@ verify: ## 提交前全量验证（文档阶段只跑隐私断言）
 	@if [ -f Cargo.toml ]; then \
 		set -e; \
 		$(CARGO) fmt --all -- --check; \
-		$(CARGO) clippy --workspace --all-targets -- -D warnings; \
-		$(CARGO) test --workspace; \
+		$(CLEAN) $(CARGO) clippy --workspace --all-targets -- -D warnings; \
+		$(CLEAN) $(CARGO) test --workspace; \
 		if command -v cargo-deny >/dev/null 2>&1; then \
-			$(CARGO) deny check; \
+			$(CLEAN) $(CARGO) deny check; \
 		elif [ "$${ALLOW_MISSING_DENY:-}" = "1" ]; then \
 			echo "⚠️  降级：cargo-deny 未安装，已跳过依赖/许可审计 —— 此结果不可提交（先 make bootstrap）" >&2; \
 		else \

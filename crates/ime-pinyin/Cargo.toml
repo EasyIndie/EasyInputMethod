@@ -8,3 +8,10 @@ description = "萤火虫输入法拼音引擎：可插拔后端 trait + 内置�
 
 [dependencies]
 ime-core.workspace = true
+
+# 生成脚本的文件名与 wubi-encoder 的同名 example 冲突（cargo 会打印 output filename
+# collision），因此显式给输出起唯一名字；文件名保持 `examples/generate.rs` 不变，
+# 这样生成数据里的路径标注仍然有效。
+[[example]]
+name = "generate_pinyin"
+path = "examples/generate.rs"

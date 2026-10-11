@@ -12,12 +12,12 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（MVP-05 本机收尾：12/13 通过 + ⑩ 已知限制） |
+| 最后更新 | 2026-10-11（零诊断门禁 ADR-081：make verify / CI 强制 0 警告 0 错误） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
 | 活跃 PR | 见 GitHub；仓库**已公开**，**无正式 Release**（首版 `v0.1.0` 待打 tag） |
-| 最近一次 `make verify` | ✅ 全绿：122 项测试（含 doctest）、fmt、Clippy、deny、184 产物零网络符号；预览冒烟（含多屏选屏/悬停断言）、宿主构建、离线重建、`make fuzz` 三目标均通过 |
+| 最近一次 `make verify` | ✅ 全绿且**输出零诊断**（ADR-081）：122 项测试（含 doctest）、fmt、Clippy、deny、191 产物零网络符号；预览冒烟（含多屏/悬停断言）、宿主构建、离线重建、`make fuzz` 三目标均通过 |
 
 ## 1. 三十秒摘要
 
@@ -133,6 +133,12 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：零诊断门禁（ADR-081）
+- `make verify`（pre-push 门禁）原先刷 477 行：清掉 cargo `output filename collision`、cargo-deny `wildcard` / `license-not-encountered`、swiftc 条件转换告警（**477 → 230 行，诊断 0**）。
+- 新增 `scripts/check-clean.sh` 并把 `make lint/test/deny/fast/verify` 全接上；CI `check` job 改为直接调这些 make 目标；`build.sh` / `dev-preview.sh` 的 `swiftc` 加 `-warnings-as-errors`。
+- 三个坑：内部路径依赖要写 `version`；`deny.toml` 置 `unused-allowed-license = "allow"`；同名 example 用 `[[example]] name` 取唯一输出名。
+- 效率不变：门禁只是同一次运行 + 一次 grep，不额外编译；重活仍只在 CI 的 `macos` job。
 
 ### 2026-10-11 / pi：本机 A 人工验收回填 + ⑩ 地址栏残留根因定位
 - 用户完成本机人工验收：**⑦⑧⑨⑬ 通过**（⑨ 反例「志向远大」→「未收录此读音…」符合预期）；**⑩ 不通过**：Chrome 地址栏切窗口/点击、Safari 地址栏点击后**残留原始编码字母**，其余应用正常。已回填 `docs/tasks/MVP-05.md`（12/13）与 `docs/发布说明.md` 已知限制。

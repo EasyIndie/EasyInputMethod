@@ -14,7 +14,7 @@ WORDS="${GEN}/pinyin-core.tsv"
 for f in "${WUBI}" "${CHARS}" "${WORDS}"; do
   if [ ! -f "${f}" ]; then
     echo "❌ 缺少数据文件：${f}"
-    echo "   词表可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现。"
+    echo "   词表可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate_pinyin' 复现。"
     exit 1
   fi
 done

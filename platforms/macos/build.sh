@@ -72,7 +72,7 @@ build_arch() {
       echo "   （--universal 需先：rustup target add ${triple}）" >&2
       exit 1
     fi
-    swiftc -O -whole-module-optimization \
+    swiftc -O -whole-module-optimization -warnings-as-errors \
       -target "${arch}-apple-macosx13.0" \
       -Xlinker -oso_prefix -Xlinker "${ROOT}/" -Xlinker -reproducible -Xlinker -S \
       -file-prefix-map "${ROOT}=/lampyris-src" \
@@ -125,7 +125,7 @@ copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
 copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
 copy_data "${GENERATED}/variant-s2t.tsv" "variant-s2t.tsv"
 if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
-  echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate' 复现）"
+  echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate_pinyin' 复现）"
 fi
 
 echo "▶ 4/5 合成可执行文件（lipo）"
