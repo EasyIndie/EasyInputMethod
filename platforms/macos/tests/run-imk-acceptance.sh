@@ -4,7 +4,7 @@
 # 依赖与前提：
 #   1) 图形登录会话；萤火虫已安装到 ~/Library/Input Methods/ 且已在系统输入源里启用；
 #   2) 运行本脚本的**终端 App 已获「系统设置 → 隐私与安全性 → 辅助功能」授权**（发送按键所需）；
-#   3) 全程只在新开的空 TextEdit 文档里输入，并会临时改 config.toml（结束自动还原）。
+#   3) 只新建 TextEdit 空文档用于输入（结束**自动关闭**，不残留窗口），并会临时改 config.toml（结束自动还原）。
 #
 # 可选：IMK_ACCEPTANCE_CONFIG_ERROR=1 加测配置错误弹窗（模态，建议只跑一次）；
 #       IMK_ACCEPTANCE_PERF=1 加测引擎按键时延（run-perf.sh，较慢）；
@@ -22,9 +22,23 @@ CFG="$HOME/Library/Application Support/Lampyris/config.toml"
 BAK="$WORK/config.toml.bak"
 pass=0
 fail=0
+TE_BASE=0
+DOC_OURS=0
+
+te_docs() { osascript -e 'tell application "TextEdit" to count documents' 2>/dev/null; }
 
 cleanup() {
   [ -f "$BAK" ] && cp "$BAK" "$CFG" 2>/dev/null || true
+  # 关闭本脚本新建的 TextEdit 文档（不保存），避免验收后桌面堆积一大堆窗口。
+  if [ "${DOC_OURS:-0}" = "1" ]; then
+    for _ in 1 2 3 4 5; do
+      now="$(te_docs)"
+      case "$now" in '' | *[!0-9]*) break ;; esac
+      [ "$now" -le "$TE_BASE" ] && break
+      osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
+      sleep 0.3
+    done
+  fi
   rm -rf "$WORK"
 }
 trap cleanup EXIT
@@ -79,9 +93,14 @@ OSA
 alerttext() { cands; }
 nwin() { osascript -e 'tell application "System Events" to tell process "Lampyris" to count windows' 2>/dev/null; }
 
-echo "▶ 准备 TextEdit 空文档"
-osascript -e 'tell application "TextEdit" to activate' \
-  -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+echo "▶ 准备 TextEdit 空文档（只新建 1 个，结束时自动关闭）"
+osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1
+sleep 0.6
+now="$(te_docs)"
+case "$now" in '' | *[!0-9]*) now=0 ;; esac
+TE_BASE="$now"
+osascript -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+DOC_OURS=1
 sleep 1.2
 
 echo "▶ 辅助功能权限自检"
@@ -141,8 +160,9 @@ osascript -e 'tell application "System Events" to tell process "Lampyris" to cli
 sleep 0.6
 cp "$WORK/bad.toml" "$CFG"; sleep 1.2
 check "同一错误不重复弹窗" "$(nwin)" "0"
+# 弹窗是模态，当前实例会短暂降级，故开一个新文档重建输入上下文（结束统一关闭）。
 osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
-sleep 1.5; clear; sel; sleep 0.6
+sleep 1.5; sel; sleep 0.6
 type_ "wq"; sleep 0.4; key 49
 check "坏配置下仍可输入" "$(text)" "你"
 [ -f "$BAK" ] && cp "$BAK" "$CFG"; sleep 1.0
@@ -205,6 +225,7 @@ if [ "${IMK_ACCEPTANCE_RESTART:-0}" = "1" ]; then
   sleep 2
   c=""
   for _ in 1 2 3; do
+    # 宿主重启后**旧文档的输入上下文已失效**，必须新建文档才能重新绑定。
     osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
     sleep 0.8
     sel; sleep 1.2
