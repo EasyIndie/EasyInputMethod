@@ -153,14 +153,20 @@ final class ImeSession {
     private var shiftDown = false
     private var shiftUsedByKey = false
 
-    /// flagsChanged：记录 Shift 状态；抬起且期间无其它键 → 触发中英切换
-    /// （仅当 `hotkey.toggle_english == "shift"`）。返回是否触发了切换。
+    /// flagsChanged：记录 Shift 状态；仅当本次「按住并抬起 Shift」期间既没有其它键、
+    /// 也没有 Ctrl/Option/Command 参与时，才触发中英切换（仅当 `hotkey.toggle_english == "shift"`）。
+    ///
+    /// `otherModifier` 用于排除 `Ctrl+Shift+M` 这类组合：合成/快速输入时 `keyDown` 可能
+    /// 晚于 flagsChanged 到达，仅靠 `markKeyWhileShift()` 会漏判，导致抬起时误切英文。
     @discardableResult
-    func shiftTransition(isDown: Bool) -> Bool {
+    func shiftTransition(isDown: Bool, otherModifier: Bool = false) -> Bool {
         guard ImeConfig.string("hotkey.toggle_english") == "shift" else { return false }
         if isDown {
-            shiftDown = true
-            shiftUsedByKey = false
+            if !shiftDown {
+                shiftDown = true
+                shiftUsedByKey = false
+            }
+            if otherModifier { shiftUsedByKey = true }
             return false
         }
         let solo = shiftDown && !shiftUsedByKey
