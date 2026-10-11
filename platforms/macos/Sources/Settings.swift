@@ -295,6 +295,15 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
 
     func windowWillClose(_ notification: Notification) {
         setStatus("", isError: false)
+        // 关闭即释放整棵视图树与行引用，避免面板控件长期驻留（MEM-1）。
+        // 下次 show() 会重新 prepare() 构建。
+        window = nil
+        rows.removeAll()
+        sectionViews.removeAll()
+        contentHost = nil
+        segmented = nil
+        statusLabel = nil
+        session = nil
     }
 
     private func setStatus(_ text: String, isError: Bool) {
