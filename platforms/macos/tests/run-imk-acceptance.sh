@@ -72,6 +72,8 @@ tell application "System Events" to tell process "Lampyris"
 end tell
 OSA
 }
+alerttext() { cands; }
+nwin() { osascript -e 'tell application "System Events" to tell process "Lampyris" to count windows' 2>/dev/null; }
 
 echo "▶ 准备 TextEdit 空文档"
 osascript -e 'tell application "TextEdit" to activate' \
@@ -108,6 +110,34 @@ key 53
 sleep 0.6
 check "⑥ 配置实时生效(改前)" "$n1" "5"
 check "⑥ 配置实时生效(改后无按键)" "$n2" "3"
+
+# DoD④ 模式持久化：用 hotkey.toggle_mode 切换并验证已写入 config（供重启读取）
+echo "▶ DoD④ 模式持久化（写盘）"
+begin
+osascript -e 'tell application "System Events" to keystroke "m" using {control down, shift down}' >/dev/null 2>&1
+sleep 0.9
+mode="$(grep -oE 'mode = "[a-z]+"' "$CFG" | head -1)"
+[ "$mode" = 'mode = "wubi"' ] && ok "模式切换已写入 config（${mode}）" || no "模式写盘失败（${mode}）"
+
+# DoD⑥ 配置错误弹窗（可选，默认不跑）：弹窗是模态，会使当前实例短暂降级，
+# 故单独用 IMK_ACCEPTANCE_CONFIG_ERROR=1 触发，且建议仅跑一次/跑完注销重登。
+if [ "${IMK_ACCEPTANCE_CONFIG_ERROR:-0}" = "1" ]; then
+echo "▶ DoD⑥ 配置错误弹窗（一次性）"
+printf 'mode = [oops\n' > "$WORK/bad.toml" && cp "$WORK/bad.toml" "$CFG"
+a=""
+for _ in $(seq 1 12); do a="$(alerttext)"; echo "$a" | grep -q "配置文件有误" && break; sleep 0.4; done
+grep_ok "弹窗出现" "$a" "配置文件有误"
+grep_ok "弹窗含行号" "$a" "第 1 行"
+osascript -e 'tell application "System Events" to tell process "Lampyris" to click button 1 of window 1' >/dev/null 2>&1
+sleep 0.6
+cp "$WORK/bad.toml" "$CFG"; sleep 1.2
+check "同一错误不重复弹窗" "$(nwin)" "0"
+osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+sleep 1.5; clear; sel; sleep 0.6
+type_ "wq"; sleep 0.4; key 49
+check "坏配置下仍可输入" "$(text)" "你"
+[ -f "$BAK" ] && cp "$BAK" "$CFG"; sleep 1.0
+fi
 
 # ⑪ 内存 / ⑫ 零外联（宿主进程）
 pid="$(pgrep -x Lampyris | head -1)"
