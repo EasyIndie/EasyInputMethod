@@ -254,6 +254,15 @@ final class CandidateWindow {
         return labels[index].wantsLayer
     }
 
+    /// 供自测：把候选窗当前内容渲染为位图（按当前外观），用于浅/暗主题可读性（对比度）断言。
+    func renderSnapshotForTesting() -> NSBitmapImageRep? {
+        guard let view = panel.contentView, view.bounds.width > 1, view.bounds.height > 1,
+            let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds)
+        else { return nil }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        return rep
+    }
+
     /// 从多个屏幕 frame 中选出与光标最相关的一个：
     /// 优先相交面积最大者（副屏可为负坐标）；退而取包含光标中心的屏幕；再退回第一个。
     /// 独立于 `NSScreen` 实例，便于隔离几何测试（多屏 / 负坐标 / 高分屏）。

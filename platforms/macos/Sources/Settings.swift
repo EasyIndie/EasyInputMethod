@@ -270,6 +270,19 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     /// 供冒烟测试断言：分区数。
     var sectionCount: Int { sectionViews.count }
 
+    /// 供自测：在给定外观下渲染面板内容为位图，用于亮/暗主题对比度断言。
+    func renderSnapshotForTesting(appearance: NSAppearance) -> NSBitmapImageRep? {
+        prepare()
+        guard let window, let view = window.contentView, view.bounds.width > 1,
+            view.bounds.height > 1
+        else { return nil }
+        window.appearance = appearance
+        view.layoutSubtreeIfNeeded()
+        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        return rep
+    }
+
     /// 只刷新发生变化的行，避免打断其它行的编辑。
     func configChanged(_ key: String) {
         rows.first { $0.option.key == key }?.reload()
