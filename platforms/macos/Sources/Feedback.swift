@@ -1,4 +1,4 @@
-// 用户反馈入口（ADR-071 / ADR-074 / ADR-075）：**完全本地**——设置面板「反馈」分区只展示诊断信息
+// 用户反馈信息（ADR-071 / ADR-074 / ADR-078）：**完全本地**——「关于」窗口展示诊断信息
 // 与反馈渠道链接文本，由用户自行复制并在浏览器中提交；输入法自身**不打开浏览器、不联网、不发送任何数据**。
 // 诊断信息不含输入内容/词库/配置。
 //
@@ -41,21 +41,5 @@ enum FeedbackUI {
         系统：\(ProcessInfo.processInfo.operatingSystemVersionString)
         架构：\(arch)
         """
-    }
-
-    /// 可整段复制的反馈正文：诊断信息 + 反馈渠道链接（纯文本，用户自行提交）。
-    static func feedbackText(bundle: Bundle = .main) -> String {
-        """
-        \(diagnostics(bundle: bundle))
-
-        反馈渠道（请自行在浏览器打开；本输入法不联网、不代发）：
-        - 问题 / 建议：\(issuesURL.absoluteString)
-        - 敏感漏洞：\(securityURL.absoluteString)
-        """
-    }
-
-    /// 菜单「反馈」：独立小窗展示诊断与渠道文本，附一键复制（ADR-077）。
-    static func show() {
-        InfoWindow.show(title: "反馈", text: feedbackText(), allowsCopy: true)
     }
 }
