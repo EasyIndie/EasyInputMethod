@@ -50,6 +50,7 @@
 - **✅ 仓库公开 + 发布渠道就绪（ADR-064/065）**：仓库 **public**；Pages 上线 <https://easyindie.github.io/EasyInputMethod/>；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；`release.yml`（tag/手动，二进制+源码同页）/`pages.yml` 就绪；**`v0.1.0` 待打 tag**。
 - **⏸ MVP-05 待用户实机**：[`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) 有 **13 项实机 DoD 单一可填表**（环境栏 + 步骤/预期/结果/证据 + 证据命令 + 结论），用户实机后照填即可关闭。不催重启/重装。
 - **✅ MVP-05 本机 A 已验收关闭（2026-10-11）**：**12/13 通过**（自动 ①②③④⑤⑥⑪⑫ + 人工 ⑦⑧⑨⑬）；**⑩ 浏览器地址栏预编辑残留已决定接受为已知限制**（根因见 §5 UX-1）并写入 [发布说明](docs/发布说明.md) §3。剩 **机器 B 复现**与 **P1-M5 第三方**。
+- **⏭ 机器 B（`air`，macOS 27 / Apple Silicon）复现由用户接手（2026-10-11）**：该机已装 ad-hoc 候选（`SOURCE-COMMIT=9e7ef41`）、旧 `Yinghuo.app` 已移走，`~/lampyris-pkg/` 有《验收-步骤.txt》与 `run-acceptance.command`；仓库需再 `git pull`（其 SSH 用户在控制台时会被锁定）。填写块：`docs/tasks/MVP-05.md` §2.3。
 - **⏸ MVP-14 待外部环境**：更多 macOS 版本 + Icon Composer 分层图标（需其他机器 / Xcode 27）。
 - **⏸ MVP-11 收尾**：二进制包 + 源码包归档到长期位置、确定分发渠道/接收范围（工作流已就绪，待用户操作）。
 
@@ -58,7 +59,7 @@
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
 1. **体验打磨**：**A/C 已完成**（候选窗多屏定位加固 + 悬停高亮，见 §3）；剩候选窗**高分屏/多屏真机实测**（并入 MVP-05 的 ⑩/⑬ 一起录）。**B 首次激活引导已决定不做**（保持简洁，报告 007 §C3）。
-2. **MVP-05 实机 DoD 矩阵**：✅ **本机 A 已完成**（12/13 通过 + ⑩ 已记录限制；矩阵与结论见 [**`docs/tasks/MVP-05.md`**](docs/tasks/MVP-05.md)、交接手册 [`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)）。剩：**机器 B（macOS 27 / Apple Silicon）自动 + 人工复现**（MVP-14）、**P1-M5 第三方零外联核验**。
+2. **MVP-05 实机 DoD 矩阵**：✅ **本机 A 已完成**（12/13 通过 + ⑩ 已记录限制；矩阵与结论见 [**`docs/tasks/MVP-05.md`**](docs/tasks/MVP-05.md)、交接手册 [`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)）。**下一步（用户执行）**：机器 B（macOS 27 / Apple Silicon）自动 + 人工复现（MVP-14），结果填 `MVP-05.md` §2.3；再补 **P1-M5 第三方零外联核验**。
 3. **发布 `v0.1.0`**：`git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）。可先手动 `dry_run` 演练。
 4. **P2 迭代**：**设置界面（ADR-070）与用户反馈入口（ADR-071）已完成**；剩字根提示、i18n、emoji 等（见报告 008 §8）；MVP-14 需外部环境。
 
@@ -137,7 +138,7 @@
 - 用户完成本机人工验收：**⑦⑧⑨⑬ 通过**（⑨ 反例「志向远大」→「未收录此读音…」符合预期）；**⑩ 不通过**：Chrome 地址栏切窗口/点击、Safari 地址栏点击后**残留原始编码字母**，其余应用正常。已回填 `docs/tasks/MVP-05.md`（12/13）与 `docs/发布说明.md` 已知限制。
 - 用临时诊断（写 `/tmp` 回调时序）+ AX 读取地址栏值定位根因：**IMK 在客户端失焦时把预编辑原样取消标记成普通文本**，`commitComposition:` 回调里各种清法均无效，而「我们主动清」（Esc）有效；Chrome 切窗口不调 `commitComposition:`、点击页面不投递 `leftMouseDown`。诊断代码已全部回退，工作区无改动。
 - 过程中发现 **LaunchServices 影子副本**（`packaging/out/.../Lampyris.app`、`build/Lampyris.app`）会让浏览器绑到影子副本、输入法静默失效——已 `lsregister -u`；做浏览器实验前先清影子副本。
-- 修法采纳 **(a)**：作为已知限制接受（2026-10-11），并同步 `docs/发布说明.md` §3、`docs/tasks/MVP-05.md`（结论改为「通过，可关闭」）、`docs/macos-release-checklist.md` 与 `ROADMAP.md` P1-M4 验收项。后续若地址栏残留反馈变多，再评估「预编辑不入客户端」。
+- 修法采纳 **(a)**：作为已知限制接受（2026-10-11），并同步 `docs/发布说明.md` §3、`docs/tasks/MVP-05.md`（结论改为「通过，可关闭」+ §2.3 机器 B 填写块）、`docs/macos-release-checklist.md` 与 `ROADMAP.md` P1-M4 验收项。**机器 B 复现交由用户执行**；后续若地址栏残留反馈变多，再评估「预编辑不入客户端」。
 
 ### 2026-10-11 / pi：人工验收交接手册 + 最新 ad-hoc 候选包
 - 新增 **[`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)**：把剩下**只能人工做**的 ⑦⑧⑨⑩⑬ 写成逐步手册（怎么做 / 看到什么算对 / 记在哪），并给一套**第二台 Mac**（MVP-14 / P1-M5）的安装 + 复现流程（含 ad-hoc 包不能走 `install.sh`、需 `ditto` + `xattr` + 注销重登、AX 授权、结果回填）。
