@@ -232,6 +232,25 @@ if CommandLine.arguments.contains("--smoke-test") {
         ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false),
         ImeCandidate(text: "尼", code: "ni", source: .pinyin, isPrefix: false),
     ])
+    // 垂直居中（体验修复）：离屏渲染后文字带应与容器垂直居中（排除边框行列）。
+    if let rep = geometry.renderSnapshotForTesting() {
+        let h = rep.pixelsHigh
+        var top = -1, bot = -1
+        for y in 3..<(h - 3) {
+            var cnt = 0
+            for x in 8..<(rep.pixelsWide - 8) {
+                if let c = rep.colorAt(x: x, y: y)?.usingColorSpace(.sRGB),
+                    c.redComponent < 0.4, c.greenComponent < 0.4, c.blueComponent < 0.4
+                { cnt += 1 }
+            }
+            if cnt > 3 { if top < 0 { top = y }; bot = y }
+        }
+        let textCenter = Double(top + bot) / 2, boxCenter = Double(h) / 2
+        guard top >= 0, abs(textCenter - boxCenter) <= 2 else {
+            fputs("候选窗文本未垂直居中：textCenter=\(textCenter) boxCenter=\(boxCenter)\n", stderr)
+            exit(1)
+        }
+    }
     let mixedLabels = geometry.displayedCandidateTexts
     guard mixedLabels.count == 2, mixedLabels[0].contains("五笔"), mixedLabels[1].contains("拼") else {
         fputs("候选来源标签未按混输显示：\(mixedLabels)\n", stderr); exit(1)
