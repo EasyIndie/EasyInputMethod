@@ -58,7 +58,8 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 - 脚本只在新开的空 TextEdit 文档里输入；会临时改 `config.toml` 并结束时**自动还原**；`RESTART` 会重启宿主、`CONFIG_ERROR` 为模态。
 - 脚本新建的 TextEdit 文档会在退出时**自动关闭**（`trap` 里仅关自己的文档，不动你原本打开的），不残留窗口。
 - ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
-- **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`、⑬ 亮/暗主题、⑦⑧⑨ 的面板按钮点击。
+- **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`（机器 B 已用合成按键 + 剪贴板自动核验）、⑦⑧⑨ 的面板按钮点击（机器 B 已用 AX 自动点击）。
+- **亮/暗主题（⑬）已自动化**：预览冒烟（`dev-preview.sh --smoke-test`）在浅/暗两种 `NSAppearance` 下**离屏渲染**候选窗与设置面板，采样像素算 WCAG 对比度并断言 **≥ 4.5**（实测浅 21.0 / 暗 20.3）。输入法菜单与版本信息窗为标准 AppKit 控件且无硬编码颜色。
   → **逐步操作手册**（含第二台 Mac 复现）：[人工验收与多机复现](../人工验收与多机复现.md)。
 
 ### 2.2 已知缺陷：地址栏预编辑残留（⑩）
@@ -71,18 +72,29 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
   4. Chrome 切换窗口时**不调用** `commitComposition:`（Safari 会），且点击页面时 IMK 不向输入会话投递 `leftMouseDown` → 拿不到更早的时机。
 - **结论**：只有「不在客户端留下预编辑」才能彻底消除残留，属产品取舍；修复方案与选型待定（见 `HANDOFF.md` §3）。
 
-### 2.3 第二台 Mac 复现记录（机器 B，待填）
+### 2.3 第二台 Mac 复现记录（机器 B，2026-10-11）
 
 > 步骤与预期同 §2（自动：`platforms/macos/tests/run-imk-acceptance.sh`，建议加 `IMK_ACCEPTANCE_PERF=1 IMK_ACCEPTANCE_RESTART=1`）；人工 ⑦⑧⑨⑩⑬ 见 [人工验收与多机复现](../人工验收与多机复现.md) §3。装包/运行见同文 §4。
 
 | 项 | 值 |
 |---|---|
-| 构建 commit | ________（`cat ~/Library/Input\ Methods/Lampyris.app/Contents/Resources/SOURCE-COMMIT`） |
-| macOS / 机型 / 架构 | ________（`sw_vers`；`sysctl -n hw.model`；`uname -m`） |
-| 包与 SHA | `Lampyris-0.1.0-universal.zip`；SHA：________ |
-| 自动验收 | ☐ 默认 14/14　☐ `PERF+RESTART` 16/16　实际：________ |
-| ⑦⑧⑨⑩⑬ | ⑦ ☐　⑧ ☐　⑨ ☐　⑩ ☐　⑬ ☐ |
-| 与本机 A 的差异 | ________（例：亮/暗、候选窗定位、`Cmd+Z`、地址栏残留是否同样出现） |
+| 构建 commit | `88833aa`（`cat ~/Library/Input\ Methods/Lampyris.app/Contents/Resources/SOURCE-COMMIT`） |
+| macOS / 机型 / 架构 | macOS **27.0（26A428）** / **MacBookAir10,1（M1）** / **arm64** |
+| 包与 SHA | `Lampyris-0.1.0-universal.zip`；SHA `898c233bf4cdbc8ef1f660b2fe65251ec1ea194b38b0b728ad74bef19bed074a` |
+| 自动验收 | 默认 **13/14**；`PERF+RESTART` **15/16**。唯一失败：**⑪ 内存 43.8 MB > 30 MB**（见 §2.4） |
+| ⑦⑧⑨⑩⑬ | ⑦ ✅（面板新增词条 → 输入上屏 → 落盘）　⑧ ✅（导出 40 行；导入无误；坏文件弹「用户词库操作失败」且原词库不变）　⑨ ✅（`你好` → `ni hao`）　⑩ ✅ **5/5**（TextEdit / Safari / Chrome / Terminal / 微信；微信用合成按键 + 剪贴板核验，`Cmd+Z` 精确回退最后一次上屏、失焦无残留）　⑬ ✅（进程内离屏渲染对比度：候选窗/设置面板浅 21.0、暗 20.3） |
+| 与本机 A 的差异 | ①**内存**：macOS 27 / arm64 上物理足迹 **43.8 MB**（本机 A ~17.5 MB）超 DoD；②**地址栏残留**：Safari **复现**（点正文后地址栏留 `nihao`），Chrome 换 App / 换窗口均**清空**；③按键时延 p95 **0.555 ms**（本机 A 1.2 ms）；④ `Cmd+Z` 干净回退（TextEdit 把连续输入合并为一个撤销组，**ABC 键盘同样如此**，非输入法问题） |
+
+- 自动验收命令与证据见 §2.1；⑦⑧⑨ 用 AX 自动点击面板完成，⑩ 浏览器/微信用合成按键 + 剪贴板自动核验（脚本为临时工具，未入库）；⑬ 由预览冒烟覆盖。
+- 验收后已恢复用户词库（`~/Library/Application Support/Lampyris/user-dictionary.tsv`，39 行）、关闭测试窗口；配置保留。
+
+### 2.4 机器 B 新增问题：引擎常驻内存超 DoD（⑪）
+
+- **现象**：macOS 27 / MacBookAir10,1（arm64）宿主 `vmmap` 物理足迹 **43.8 MB**，超 [`技术方案.md`](../技术方案.md) §12「常驻内存 ≤ 30 MB」。
+- **取证**：同机最小 Swift AppKit 基线仅 **7.7 MB**；`run-perf.sh` 引擎峰值 RSS **23.56 MiB**；加载 4 个 TSV 共 **2.17 MB / 145,758 条**（五笔 37,828 · 拼音字 53,092 · 拼音词 12,405 · 简繁 42,433）→ malloc **319,890 节点 / 26.7 MB**。
+- **归因**：`ime-table`（`Vec<(String, Vec<Entry>)>`）、`ime-pinyin`（多张 `HashMap<String,…>` + 反查表）、`ime-ffi` 简繁（`HashMap<String,String>`）均逐条 `String` 分配，无 interning / 紧凑编码；2.17 MB 文本膨胀约 11×。
+- **非本版本回归**：简繁表在机器 A 那次 17.5 MB 的构建（`7ea5a53`）即已存在；差异主要来自 macOS 27 / arm64 的计量与架构。
+- **待决策**：优化数据结构（interning / 紧凑排序数组 / 简繁懒加载）或修订门槛。**尚未处理，记录于此。**
 
 ## 3. 证据获取命令
 
