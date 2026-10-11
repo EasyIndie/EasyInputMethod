@@ -82,6 +82,7 @@
 
 - 当前 CI 公证候选：`Lampyris-macos-acceptance-1c08956…`（universal；二进制 ZIP + 源码包 + SHA，约 12.1MB）；签名/staple/Gatekeeper 与离线复现通过。
 - 本机（macOS 13 Intel）为**用户域 ad-hoc 安装**（`cn.jokerhub.inputmethod.Lampyris`），已装到最新提交；用户已实体输入验收。
+- 本机当前 ad-hoc 候选（2026-10-11 自 `prepare.sh`）：`packaging/out/candidate-ENciBD/Lampyris-0.1.0-universal.zip`（3.4MB，universal，`signed_release=false`）+ 同目录源码包；已 `ditto` 装入 `~/Library/Input Methods/`，`SOURCE-COMMIT=9e7ef41`（本机所装提交）。供**第二台 Mac 复现**用，步骤见 `docs/人工验收与多机复现.md` §4。
 - 仓库**已公开**（2026-10-10）；**无正式 Release**（首版 `v0.1.0` 待打 tag）；Pages 上线、main 分支保护已设。CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
 
 ## 6. 必须知道的坑与硬约束
@@ -118,7 +119,7 @@
 | 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据 |
 | Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
 | 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
-| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到最新提交；分发/公证候选由 CI 出 universal |
+| 输入法现状 | 本机 A 用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到 **`9e7ef41`**（本机所装提交，universal ad-hoc 候选包）；分发/公证候选由 CI 出 universal |
 | 数据 | `data/generated/`：`wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-core.tsv` / **`variant-s2t.tsv`**（简繁，841KB，随包）；`pinyin-words.tsv` 8.4MB 不入库，可由 fetch 脚本复现 |
 | 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**122 项测试（含 doctest）**；`platforms/macos/` Swift 宿主；`fuzz/` cargo-fuzz |
 
@@ -136,7 +137,7 @@
 ### 2026-10-11 / pi：人工验收交接手册 + 最新 ad-hoc 候选包
 - 新增 **[`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)**：把剩下**只能人工做**的 ⑦⑧⑨⑩⑬ 写成逐步手册（怎么做 / 看到什么算对 / 记在哪），并给一套**第二台 Mac**（MVP-14 / P1-M5）的安装 + 复现流程（含 ad-hoc 包不能走 `install.sh`、需 `ditto` + `xattr` + 注销重登、AX 授权、结果回填）。
 - README / 发布清单 / MVP-05 均已交叉引用；**后续人工验收以该手册为准**。
-- 本机安装 `./packaging/macos/prepare.sh` 出的最新 ad-hoc 候选（见 §9 下一节/元信息），并跑自动验收确认基线。
+- 本机安装 `./packaging/macos/prepare.sh` 出的最新 ad-hoc 候选：`packaging/out/candidate-ENciBD/Lampyris-0.1.0-universal.zip`（3.4MB，universal；已核对 SHA、`ditto` 安装、注销 LaunchServices 影子副本）。装后 `SOURCE-COMMIT=9e7ef41`，自动验收 **14/14** 与 **16/16**、预览冒烟均通过。
 
 ### 2026-10-11 / pi：MVP-05 自动化补齐 + 用户词库性能（TD-01）
 - 验收脚本新增：**⑫ 输入期间零外联**（边打字边 8 次采样）、**⑪ 引擎按键时延**（`IMK_ACCEPTANCE_PERF=1`，断言 p95 <16ms）、**④ 重启后仍生效**（`IMK_ACCEPTANCE_RESTART=1`，重启宿主后状态徽标仍为「五笔」）。默认 **14/14**、`PERF+RESTART` **16/16**。
