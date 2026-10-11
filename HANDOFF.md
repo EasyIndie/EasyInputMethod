@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（零诊断门禁 ADR-081：make verify / CI 强制 0 警告 0 错误） |
+| 最后更新 | 2026-10-11（机器 B 复现 + 可复用真机测试组件入库；MEM-1 内存待决） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -50,7 +50,7 @@
 - **✅ 仓库公开 + 发布渠道就绪（ADR-064/065）**：仓库 **public**；Pages 上线 <https://easyindie.github.io/EasyInputMethod/>；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；`release.yml`（tag/手动，二进制+源码同页）/`pages.yml` 就绪；**`v0.1.0` 待打 tag**。
 - **⏸ MVP-05 待用户实机**：[`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) 有 **13 项实机 DoD 单一可填表**（环境栏 + 步骤/预期/结果/证据 + 证据命令 + 结论），用户实机后照填即可关闭。不催重启/重装。
 - **✅ MVP-05 本机 A 已验收关闭（2026-10-11）**：**12/13 通过**（自动 ①②③④⑤⑥⑪⑫ + 人工 ⑦⑧⑨⑬）；**⑩ 浏览器地址栏预编辑残留已决定接受为已知限制**（根因见 §5 UX-1）并写入 [发布说明](docs/发布说明.md) §3。剩 **机器 B 复现**与 **P1-M5 第三方**。
-- **⏭ 机器 B（`air`，macOS 27 / Apple Silicon）复现由用户接手（2026-10-11）**：该机已装 ad-hoc 候选 **`88833aa`**（= main）、旧 `Yinghuo.app` 与 `9e7ef41` 已移到 `~/lampyris-pkg/backup/` 且已 `lsregister -u`，仓库同步到 main；`~/lampyris-pkg/` 有《验收-步骤.txt》与 `run-acceptance.command`。**尚需在系统设置里「添加萤火虫输入源」**（`TISEnableInputSource` 代不了）。填写块：`docs/tasks/MVP-05.md` §2.3。
+- **✅ 机器 B（`air`，macOS 27.0 / M1 / arm64）复现完成（自动 + 全部人工项自动化，2026-10-11，pi）**：包 `88833aa`、SHA `898c233b…`。自动验收默认 **13/14**、`PERF+RESTART` **15/16**；⑦⑧⑨ AX 自动点击、⑩ **5/5**（含微信：无 AX，合成按键+剪贴板核验）、⑬ 离屏渲染对比度断言全部通过；**Safari 地址栏残留复现**、Chrome 换 App/换窗口清空；**唯一失败 ⑪ 内存 43.8MB**（见 §5 MEM-1）。结果见 [`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) §2.3–2.4。
 - **⏸ MVP-14 待外部环境**：更多 macOS 版本 + Icon Composer 分层图标（需其他机器 / Xcode 27）。
 - **⏸ MVP-11 收尾**：二进制包 + 源码包归档到长期位置、确定分发渠道/接收范围（工作流已就绪，待用户操作）。
 
@@ -77,6 +77,7 @@
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已澄清（ADR-055）—— macOS 13 本地 ad-hoc 即可（用户已验收）；分发与 macOS 26/27 仍强制 Developer ID + hardened runtime + 公证 | 不再阻塞；本地迭代无需签名机 |
 | **UX-1** | **⑩ 浏览器地址栏预编辑残留**（Chrome 切窗口/点击、Safari 点击；其余应用正常）。根因：客户端失焦时 **IMK 会把预编辑原样取消标记**成普通文本，且该时机在输入法收到任何回调之前（`commitComposition:` 内无论 `setMarkedText("")` / `insertText("")` / `markedRange()` 何种写法都不生效；只有我们主动清（如 Esc）才有效）。**决定（2026-10-11）：接受为已知限制**（与主流输入法同类行为），已写入发布说明 §3；若后续反馈多，再评估「预编辑不入客户端」（需放弃行内预编辑） | 否 |
+| **MEM-1** | **机器 B 引擎常驻内存超 DoD**：macOS 27/arm64 宿主足迹 43.8MB > 30MB（引擎 RSS 23.56MiB；4 表 2.17MB/145,758 条 → malloc 320k 节点/26.7MB；非本版本回归）。已开任务卡 **T-P2-04**（优化数据结构：interning/紧凑数组/简繁懒加载；或经 ADR 修订门槛）。见 [`docs/tasks/T-P2-04-memory.md`](docs/tasks/T-P2-04-memory.md) | 否（已排期） |
 
 ### 本次候选与执行状态
 
@@ -95,6 +96,7 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024）。诊断：`platforms/macos/tools/`。
+- ⚠️ **热杀宿主不会自动重启**：`killall Lampyris` 后，TIS 重选 / 输入菜单都拉不起宿主，需**完全退出并重开一个文本 App**（或注销/重登）才恢复。真机测试脚本因此**不杀宿主**（见 `platforms/macos/tests/README.md`）。
 - ✅ **注册标识**：bundle ID 必须带 `.inputmethod.`；当前 `cn.jokerhub.inputmethod.Lampyris`，连接名 `${bundleID}_Connection`（ADR-023/056）。
 - ⚠️ **IMK 事件掩码**：IMK 默认**只转发 `keyDown`**；修饰键变化（`flagsChanged`，单独 Shift 必需）必须重写 `IMKInputController.recognizedEvents` 显式声明，并接管 `leftMouseDown` 保留"点击组合外结束组合"。`recognizedEvents` 的 Swift 返回类型是 **`Int`**（写成 `UInt` 会编译失败→装成旧包）。见 ADR-067。
 - ⚠️ **`ImeConfig.setString` 会加引号**：只适合字符串/枚举；bool/int 等要用 `ImeConfig.setToml`（裸字面量），否则 `ime_config_set` 返回类型错误、设置静默失败。
@@ -133,6 +135,18 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：可复用真机测试组件入库（⑦⑧⑨ + ⑩）
+- 新增 `platforms/macos/tests/imk-auto.swift`（AX/鼠标/输入源/IME 菜单助手，`-warnings-as-errors`）+ `lib-imk-auto.sh` 共享函数 + `README.md`。
+- `run-panel-acceptance.sh`（⑦⑧⑨，AX 自动点击面板）**7/7**；`run-input-apps.sh`（⑩ 五应用，微信走合成按键+剪贴板）**6/6**。
+- 均自动还原词库文件、关闭自建窗口，**不热杀宿主**（热杀后需退出重开文本 App 才能恢复，已写入 §6 坑）。
+
+### 2026-10-11 / pi：机器 B（macOS 27 / M1）复现 + 全自动化验收
+- 机器 B 自动验收：默认 **13/14**、`PERF+RESTART` **15/16**；唯一失败 **⑪ 内存 43.8MB > DoD 30MB**；按键 p95 0.555ms、零外联全过。
+- 自动化 ⑦⑧⑨（AX 点击面板）与 ⑩ **5/5**（TextEdit/Safari/Chrome/Terminal/微信；微信无 AX，用合成按键+剪贴板核验）；**Safari 地址栏残留复现**、Chrome 换 App/换窗口清空；微信 `Cmd+Z` 精确回退最后一次上屏。
+- ⑬ 亮/暗主题改为**进程内离屏渲染 + WCAG 对比度断言**（候选窗/设置面板，浅 21.0/暗 20.3）：`CandidateWindow`/`SettingsPanel` 加自测渲染接口，预览冒烟新增断言；`make verify` 全绿（补装 cargo-deny 0.20.2）。
+- 内存取证见 `MVP-05.md` §2.4：最小 AppKit 基线 7.7MB、引擎 23.56MiB、4 表 2.17MB→320k malloc 节点；非本版本回归，macOS 27/arm64 差异为主；记 MEM-1 待决。
+- 结果回填 `MVP-05.md` §2.3；测试窗口/用户词库已还原（39 行）。
 
 ### 2026-10-11 / pi：按最新代码重打包并装两台机器
 - `packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（commit `88833aa`，3.4MB，SHA 校验通过；+ 对应源码包）。

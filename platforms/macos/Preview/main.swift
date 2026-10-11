@@ -429,6 +429,40 @@ if CommandLine.arguments.contains("--smoke-test") {
     session.setMode("mixed")
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
+    // 亮/暗主题可读性（⑬）：候选窗与设置面板在两种外观下离屏渲染，前景/背景对比度应达 WCAG AA（≥4.5）。
+    func srgbLuminance(_ color: NSColor) -> CGFloat {
+        let c = color.usingColorSpace(.sRGB) ?? color
+        func lin(_ v: CGFloat) -> CGFloat { v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
+        return 0.2126 * lin(c.redComponent) + 0.7152 * lin(c.greenComponent) + 0.0722 * lin(c.blueComponent)
+    }
+    func assertReadable(_ surface: String, _ theme: String, _ rep: NSBitmapImageRep?) {
+        guard let rep else {
+            fputs("\(surface) 在 \(theme) 主题下渲染失败。\n", stderr); exit(1)
+        }
+        var lo = CGFloat.greatestFiniteMagnitude, hi = -CGFloat.greatestFiniteMagnitude
+        for y in 0..<rep.pixelsHigh {
+            for x in 0..<rep.pixelsWide {
+                if let c = rep.colorAt(x: x, y: y) {
+                    let l = srgbLuminance(c)
+                    lo = min(lo, l); hi = max(hi, l)
+                }
+            }
+        }
+        let ratio = lo.isFinite && hi.isFinite ? (hi + 0.05) / (lo + 0.05) : 0
+        guard ratio >= 4.5 else {
+            fputs("\(surface) 在 \(theme) 主题对比度不足：\(ratio)。\n", stderr); exit(1)
+        }
+    }
+    for theme in ["light", "dark"] {
+        guard ImeConfig.setString("appearance.theme", theme) else { exit(1) }
+        geometry.update(candidates: [
+            ImeCandidate(text: "你好世界", code: "wq", source: .codeTable, isPrefix: false),
+            ImeCandidate(text: "混输", code: "ni", source: .pinyin, isPrefix: false),
+        ], status: "五笔·全")
+        assertReadable("候选窗", theme, geometry.renderSnapshotForTesting())
+        let appearance = NSAppearance(named: theme == "dark" ? .darkAqua : .aqua)
+        assertReadable("设置面板", theme, SettingsPanel.shared.renderSnapshotForTesting(appearance: appearance!))
+    }
     func pump(until condition: () -> Bool, timeout: TimeInterval = 5) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
         while !condition(), Date() < deadline {
