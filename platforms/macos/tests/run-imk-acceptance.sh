@@ -6,7 +6,11 @@
 #   2) 运行本脚本的**终端 App 已获「系统设置 → 隐私与安全性 → 辅助功能」授权**（发送按键所需）；
 #   3) 全程只在新开的空 TextEdit 文档里输入，并会临时改 config.toml（结束自动还原）。
 #
-# 不覆盖（需人工/视觉）：三模式重启持久化、配置错误弹窗、词库面板增删导入导出、反查面板、
+# 可选：IMK_ACCEPTANCE_CONFIG_ERROR=1 加测配置错误弹窗（模态，建议只跑一次）；
+#       IMK_ACCEPTANCE_PERF=1 加测引擎按键时延（run-perf.sh，较慢）；
+#       IMK_ACCEPTANCE_RESTART=1 加测重启后仍生效（会重启宿主，放最后）。
+#
+# 仍不覆盖（需人工/视觉）：面板词的增删导入导出（FFI 层已由 preview 冒烟覆盖）、
 # 五应用稳定性、亮/暗主题。见 docs/tasks/MVP-05.md。
 #
 # 用法：./platforms/macos/tests/run-imk-acceptance.sh
@@ -144,8 +148,35 @@ check "坏配置下仍可输入" "$(text)" "你"
 [ -f "$BAK" ] && cp "$BAK" "$CFG"; sleep 1.0
 fi
 
-# ⑪ 内存 / ⑫ 零外联（宿主进程）
+# ⑪ 引擎按键时延（可选：IMK_ACCEPTANCE_PERF=1；会跑 release 构建，较慢）
+if [ "${IMK_ACCEPTANCE_PERF:-0}" = "1" ]; then
+  echo "▶ ⑪ 引擎按键时延（run-perf.sh）"
+  perf="$("$ROOT/platforms/macos/tests/run-perf.sh" 2>/dev/null | grep -E '^keys=' | tail -1)"
+  echo "  ${perf:-未取到}"
+  p95="$(echo "$perf" | grep -oE 'p95_ms=[0-9.]+' | cut -d= -f2)"
+  if [ -n "$p95" ] && awk "BEGIN{exit !($p95 < 16)}"; then
+    ok "⑪ 按键 p95 <16ms（${p95}ms）"
+  else
+    no "⑪ 按键 p95 ≥16ms（${p95:-未知}）"
+  fi
+fi
+
+# ⑫ 零外联（输入期间）：边输入边采样，证明确实无连接
 pid="$(pgrep -x Lampyris | head -1)"
+if [ -n "$pid" ]; then
+  : > "$WORK/net-input.log"
+  ( for _ in $(seq 1 8); do lsof -nP -a -p "$pid" -i >>"$WORK/net-input.log" 2>/dev/null; sleep 0.35; done ) &
+  sampler=$!
+  begin
+  type_ "nihao"; key 49; type_ "wq"; key 49; type_ "zhongguo"; key 53
+  wait "$sampler" 2>/dev/null
+  hits="$(grep -c . "$WORK/net-input.log")"
+  [ "$hits" -eq 0 ] && ok "⑫ 零外联（输入期间 8 次采样）" || no "⑫ 输入期间发现连接：$(head -1 "$WORK/net-input.log")"
+else
+  no "未找到 Lampyris 进程（⑫）"
+fi
+
+# ⑪ 内存 / ⑫ 空闲零外联（宿主进程）
 if [ -n "$pid" ]; then
   fp="$(vmmap -summary "$pid" 2>/dev/null | awk -F: '/Physical footprint:/{print $2}' | head -1 | tr -d ' ')"
   mb="$(echo "$fp" | sed 's/M//' | cut -d. -f1)"
@@ -159,6 +190,29 @@ if [ -n "$pid" ]; then
   [ "$bad" -eq 0 ] && ok "⑫ 零外联 6 次采样无连接" || no "⑫ 发现 $bad 次网络连接"
 else
   no "未找到 Lampyris 进程（⑪⑫）"
+fi
+
+# DoD④ 重启后持久化（可选：IMK_ACCEPTANCE_RESTART=1）：会重启宿主，放在最后。
+if [ "${IMK_ACCEPTANCE_RESTART:-0}" = "1" ]; then
+  echo "▶ DoD④ 重启后仍生效（重启宿主）"
+  sed -i '' 's/^mode = "[a-z]*"/mode = "wubi"/' "$CFG" 2>/dev/null; sleep 1
+  killall Lampyris 2>/dev/null; sleep 1.5
+  for _ in $(seq 1 10); do
+    osascript -e 'tell application "System Events" to key code 49 using {control down}' >/dev/null 2>&1
+    sleep 1
+    pgrep -x Lampyris >/dev/null && break
+  done
+  sleep 2
+  c=""
+  for _ in 1 2 3; do
+    osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+    sleep 0.8
+    sel; sleep 1.2
+    type_ "wq"; sleep 1.0; c="$(cands)"; key 53
+    echo "$c" | grep -q "五笔" && break
+    sleep 1
+  done
+  grep_ok "④ 重启后仍为五笔（状态徽标）" "$c" "五笔"
 fi
 
 echo "SUMMARY pass=$pass fail=$fail"
