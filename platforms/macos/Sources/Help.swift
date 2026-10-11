@@ -1,6 +1,6 @@
-// 快捷键与使用说明面板：内容读取**当前实际配置**，展示真正生效的按键。
+// 快捷键与使用说明：内容读取**当前实际配置**，展示真正生效的按键。
 //
-// 从输入法菜单「快捷键与使用说明…」打开（T-MVP-… 用户可自助学习）。
+// 文本由设置面板「帮助」分区展示（ADR-075）；输入法菜单不再单独入口。
 
 import Cocoa
 
@@ -49,30 +49,9 @@ enum HelpUI {
 
         【其它】
           每页候选数       \(count)（改 config.toml 即时生效，无需重启）
-          菜单            切换模式、用户词库增/导/出、拼音反查、关于
+          菜单            输入模式、偏好设置…（词库增/导/出、拼音反查、帮助、反馈、关于均在偏好设置面板）
           配置与恢复      ~/Library/Application Support/Lampyris/config.toml
                           写坏或异常处理见 docs/故障恢复.md
         """
-    }
-
-    static func show() {
-        let alert = NSAlert()
-        alert.messageText = "快捷键与使用说明"
-        alert.informativeText = "以下为**当前生效**的按键；改 config.toml 后立即生效。"
-        let scroll = NSScrollView(frame: NSRect(x: 0, y: 0, width: 470, height: 300))
-        scroll.hasVerticalScroller = true
-        scroll.borderType = .bezelBorder
-        let textView = NSTextView(frame: scroll.bounds)
-        textView.isEditable = false
-        textView.isRichText = false
-        textView.font = NSFont.monospacedSystemFont(ofSize: 12, weight: .regular)
-        textView.string = text()
-        textView.isVerticallyResizable = true
-        textView.autoresizingMask = [.width]
-        textView.textContainer?.widthTracksTextView = true
-        scroll.documentView = textView
-        alert.accessoryView = scroll
-        alert.addButton(withTitle: "好")
-        alert.runModal()
     }
 }

@@ -1,7 +1,10 @@
-// 偏好设置面板（ADR-070）：完全由 `ime_config_schema()` 驱动，界面零硬编码。
+// 偏好设置面板（ADR-070 / ADR-075）：由 `ime_config_schema()` 驱动，界面零硬编码。
 //
 // 非模态、改动即时生效：写入只经 `ime_config_set()`（配置唯一写入路径），
 // 变更广播由 `ConfigWatcher` 派发（ADR-058）。见 `docs/配置架构.md` §8/§9/§11。
+//
+// ADR-075：面板升级为输入法的「中心」——用分段控件分「设置 / 词库 / 帮助 / 反馈 / 关于」，
+// 菜单只保留「输入模式」「偏好设置…」。新增分区只需扩展 `Section` 与 `sectionViews`。
 
 import Cocoa
 import ime
@@ -206,11 +209,34 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
 }
 
 /// 设置面板（进程内单例；重复打开只前置已有窗口）。
+///
+/// ADR-075：输入法的「中心」窗口，分段承载 设置 / 词库 / 帮助 / 反馈 / 关于。
 final class SettingsPanel: NSObject, NSWindowDelegate {
     static let shared = SettingsPanel()
+
+    /// 分区。新增分区 = 加一个 case + 一个 builder（保持可扩展、菜单不再膨胀）。
+    private enum Section: Int, CaseIterable {
+        case settings, dictionary, help, feedback, about
+        var title: String {
+            switch self {
+            case .settings: return "设置"
+            case .dictionary: return "词库"
+            case .help: return "帮助"
+            case .feedback: return "反馈"
+            case .about: return "关于"
+            }
+        }
+    }
+
     private var window: NSPanel?
     private var rows: [SettingRow] = []
     private var statusLabel: NSTextField?
+    private weak var session: ImeSession?
+    private var segmented: NSSegmentedControl?
+    private var contentHost: NSView?
+    private var sectionViews: [NSView] = []
+    private var helpTextView: NSTextView?
+    private var feedbackTextView: NSTextView?
 
     private override init() { super.init() }
 
@@ -218,7 +244,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     func prepare() {
         guard window == nil else { return }
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 500, height: 560),
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 600),
             styleMask: [.titled, .closable, .resizable, .utilityWindow],
             backing: .buffered, defer: false)
         panel.title = "萤火虫 · 偏好设置"
@@ -233,10 +259,13 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in self?.configChanged(key) }
     }
 
-    func show() {
+    /// 打开面板；`session` 供「词库」分区使用（可为 nil，此时按钮不可用）。
+    func show(session: ImeSession?) {
+        self.session = session
         prepare()
         rows.forEach { $0.reload() }
-        statusLabel?.stringValue = ""
+        refreshDynamicContent()
+        setStatus("", isError: false)
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
     }
@@ -244,25 +273,130 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     /// 已构建的行数（供冒烟测试断言）。
     var rowCount: Int { rows.count }
 
+    /// 供冒烟测试断言：分区数。
+    var sectionCount: Int { sectionViews.count }
+
     /// 只刷新发生变化的行，避免打断其它行的编辑。
     func configChanged(_ key: String) {
         rows.first { $0.option.key == key }?.reload()
+        // 帮助文本随配置变化（展示真正生效的按键）。
+        helpTextView?.string = HelpUI.text()
     }
 
     /// 写失败提示（校验/IO/只读/锁）。
     func reportFailure(_ key: String) {
-        statusLabel?.stringValue = "保存失败：\(key)（配置可能只读或文件被锁定）"
-    }
-
-    @objc private func closePanel() {
-        window?.orderOut(nil)
+        setStatus("保存失败：\(key)（配置可能只读或文件被锁定）", isError: true)
     }
 
     func windowWillClose(_ notification: Notification) {
-        statusLabel?.stringValue = ""
+        setStatus("", isError: false)
     }
 
+    private func setStatus(_ text: String, isError: Bool) {
+        statusLabel?.stringValue = text
+        statusLabel?.textColor = isError ? .systemRed : .secondaryLabelColor
+    }
+
+    private func refreshDynamicContent() {
+        helpTextView?.string = HelpUI.text()
+        feedbackTextView?.string = FeedbackUI.feedbackText()
+    }
+
+    // MARK: - 分区切换
+
+    @objc private func sectionChanged(_ sender: NSSegmentedControl) {
+        selectSection(sender.selectedSegment)
+    }
+
+    private func selectSection(_ index: Int) {
+        guard let host = contentHost, sectionViews.indices.contains(index) else { return }
+        host.subviews.forEach { $0.removeFromSuperview() }
+        let view = sectionViews[index]
+        view.translatesAutoresizingMaskIntoConstraints = false
+        host.addSubview(view)
+        NSLayoutConstraint.activate([
+            view.leadingAnchor.constraint(equalTo: host.leadingAnchor),
+            view.trailingAnchor.constraint(equalTo: host.trailingAnchor),
+            view.topAnchor.constraint(equalTo: host.topAnchor),
+            view.bottomAnchor.constraint(equalTo: host.bottomAnchor),
+        ])
+        segmented?.selectedSegment = index
+    }
+
+    // MARK: - 词库 / 反馈 动作
+
+    @objc private func addWord() {
+        guard let session else { return }
+        UserDictionaryUI.add(session)
+    }
+    @objc private func importWords() {
+        guard let session else { return }
+        UserDictionaryUI.importFile(session)
+    }
+    @objc private func exportWords() {
+        guard let session else { return }
+        UserDictionaryUI.exportFile(session)
+    }
+    @objc private func lookupPinyin() {
+        guard let session else { return }
+        LookupUI.show(session)
+    }
+    @objc private func copyFeedback() {
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        _ = pasteboard.setString(FeedbackUI.feedbackText(), forType: .string)
+        setStatus("反馈信息已复制，可粘贴到 GitHub Issue。", isError: false)
+    }
+
+    // MARK: - 构建
+
     private func buildContent(_ panel: NSPanel) {
+        let segmented = NSSegmentedControl(
+            labels: Section.allCases.map(\.title),
+            trackingMode: .selectOne, target: self, action: #selector(sectionChanged(_:)))
+        segmented.selectedSegment = Section.settings.rawValue
+        segmented.translatesAutoresizingMaskIntoConstraints = false
+        self.segmented = segmented
+
+        let host = NSView()
+        host.translatesAutoresizingMaskIntoConstraints = false
+        contentHost = host
+
+        let status = NSTextField(labelWithString: "")
+        status.font = .systemFont(ofSize: 11)
+        status.textColor = .secondaryLabelColor
+        status.lineBreakMode = .byTruncatingTail
+        status.translatesAutoresizingMaskIntoConstraints = false
+        statusLabel = status
+
+        sectionViews = [
+            buildSettingsSection(),
+            buildDictionarySection(),
+            buildTextSection(text: HelpUI.text()) { self.helpTextView = $0 },
+            buildFeedbackSection(),
+            buildAboutSection(),
+        ]
+
+        let content = panel.contentView!
+        content.addSubview(segmented)
+        content.addSubview(host)
+        content.addSubview(status)
+        NSLayoutConstraint.activate([
+            segmented.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
+            segmented.centerXAnchor.constraint(equalTo: content.centerXAnchor),
+            host.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 10),
+            host.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
+            host.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
+            host.bottomAnchor.constraint(equalTo: status.topAnchor, constant: -6),
+            status.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 18),
+            status.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -18),
+            status.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
+        ])
+        selectSection(Section.settings.rawValue)
+    }
+
+    /// 设置分区：Schema 驱动的滚动列表。
+    private func buildSettingsSection() -> NSView {
         let rowStack = NSStackView()
         rowStack.orientation = .vertical
         rowStack.alignment = .leading
@@ -300,27 +434,112 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         scroll.drawsBackground = false
         scroll.translatesAutoresizingMaskIntoConstraints = false
         scroll.documentView = document
+        document.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor).isActive = true
+        return scroll
+    }
 
-        let status = NSTextField(labelWithString: "")
-        status.font = .systemFont(ofSize: 11)
-        status.textColor = .systemRed
-        status.translatesAutoresizingMaskIntoConstraints = false
-        statusLabel = status
+    /// 词库分区：用户词库增/导/出与拼音反查（依赖当前会话，故按需传入）。
+    private func buildDictionarySection() -> NSView {
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 10
 
-        let content = NSView()
-        content.addSubview(scroll)
-        content.addSubview(status)
+        let intro = NSTextField(
+            wrappingLabelWithString: "用户词库只存本地，可新增、导入、导出；跨设备同步不在计划内。")
+        intro.font = .systemFont(ofSize: 12)
+        intro.textColor = .secondaryLabelColor
+        intro.preferredMaxLayoutWidth = 440
+        stack.addArrangedSubview(intro)
+        stack.setCustomSpacing(16, after: intro)
+
+        for (title, action) in [
+            ("新增词条…", #selector(addWord)),
+            ("导入用户词库…", #selector(importWords)),
+            ("导出用户词库…", #selector(exportWords)),
+            ("拼音反查…", #selector(lookupPinyin)),
+        ] as [(String, Selector)] {
+            let button = NSButton(title: title, target: self, action: action)
+            stack.addArrangedSubview(button)
+        }
+        return topAligned(stack)
+    }
+
+    /// 文本分区：等宽只读文本（可选中复制）。
+    private func buildTextSection(text: String, store: @escaping (NSTextView) -> Void) -> NSView {
+        let scroll = NSScrollView()
+        scroll.hasVerticalScroller = true
+        scroll.borderType = .bezelBorder
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 460, height: 400))
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.isRichText = false
+        textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+        textView.string = text
+        textView.isVerticallyResizable = true
+        textView.autoresizingMask = [.width]
+        textView.textContainer?.widthTracksTextView = true
+        scroll.documentView = textView
+        store(textView)
+        return scroll
+    }
+
+    /// 反馈分区：本地诊断 + 反馈渠道链接文本 + 一键复制（App 不打开浏览器、不联网）。
+    private func buildFeedbackSection() -> NSView {
+        let scroll = buildTextSection(text: FeedbackUI.feedbackText()) { self.feedbackTextView = $0 }
+        scroll.setContentHuggingPriority(.defaultLow, for: .vertical)
+        let copy = NSButton(title: "复制反馈信息", target: self, action: #selector(copyFeedback))
+        copy.setContentHuggingPriority(.defaultHigh, for: .vertical)
+
+        let stack = NSStackView(views: [scroll, copy])
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 10
+        scroll.widthAnchor.constraint(equalTo: stack.widthAnchor).isActive = true
+        return stack
+    }
+
+    /// 关于分区：版本 / 构建 / 源码提交 / 许可。
+    private func buildAboutSection() -> NSView {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info?["CFBundleVersion"] as? String ?? "?"
+        var commit = "未知"
+        if let url = Bundle.main.resourceURL?.appendingPathComponent("SOURCE-COMMIT"),
+            let text = try? String(contentsOf: url, encoding: .utf8)
+        {
+            commit = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        let lines = [
+            "萤火虫 Lampyris \(version)",
+            "构建：\(build)",
+            "源码提交：\(commit)",
+            "许可证：GPL-3.0-or-later",
+            "默认离线 · 零遥测 · 无账号",
+        ]
+        let stack = NSStackView()
+        stack.orientation = .vertical
+        stack.alignment = .leading
+        stack.spacing = 8
+        for (index, line) in lines.enumerated() {
+            let label = NSTextField(wrappingLabelWithString: line)
+            label.font = index == 0 ? .boldSystemFont(ofSize: 14) : .systemFont(ofSize: 12)
+            stack.addArrangedSubview(label)
+        }
+        return topAligned(stack)
+    }
+
+    /// 把内容顶部对齐放进一个填充分区的容器（其余留白）。
+    private func topAligned(_ view: NSView) -> NSView {
+        let container = NSView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(view)
         NSLayoutConstraint.activate([
-            scroll.topAnchor.constraint(equalTo: content.topAnchor),
-            scroll.leadingAnchor.constraint(equalTo: content.leadingAnchor),
-            scroll.trailingAnchor.constraint(equalTo: content.trailingAnchor),
-            scroll.bottomAnchor.constraint(equalTo: status.topAnchor, constant: -6),
-            status.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 18),
-            status.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -18),
-            status.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
-            document.widthAnchor.constraint(equalTo: scroll.contentView.widthAnchor),
+            view.topAnchor.constraint(equalTo: container.topAnchor, constant: 16),
+            view.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 18),
+            view.trailingAnchor.constraint(lessThanOrEqualTo: container.trailingAnchor, constant: -18),
         ])
-        panel.contentView = content
+        return container
     }
 }
 
