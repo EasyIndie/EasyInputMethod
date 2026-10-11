@@ -12,7 +12,7 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（机器 B 复现：自动 15/16 + ⑦⑧⑨⑩⑬ 全自动化；新增「⑪ 内存超 DoD」待决） |
+| 最后更新 | 2026-10-11（机器 B 复现 + 可复用真机测试组件入库；MEM-1 内存待决） |
 | 更新者 | pi |
 | 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
 | 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
@@ -96,6 +96,7 @@
 - ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
 - ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
 - ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024）。诊断：`platforms/macos/tools/`。
+- ⚠️ **热杀宿主不会自动重启**：`killall Lampyris` 后，TIS 重选 / 输入菜单都拉不起宿主，需**完全退出并重开一个文本 App**（或注销/重登）才恢复。真机测试脚本因此**不杀宿主**（见 `platforms/macos/tests/README.md`）。
 - ✅ **注册标识**：bundle ID 必须带 `.inputmethod.`；当前 `cn.jokerhub.inputmethod.Lampyris`，连接名 `${bundleID}_Connection`（ADR-023/056）。
 - ⚠️ **IMK 事件掩码**：IMK 默认**只转发 `keyDown`**；修饰键变化（`flagsChanged`，单独 Shift 必需）必须重写 `IMKInputController.recognizedEvents` 显式声明，并接管 `leftMouseDown` 保留"点击组合外结束组合"。`recognizedEvents` 的 Swift 返回类型是 **`Int`**（写成 `UInt` 会编译失败→装成旧包）。见 ADR-067。
 - ⚠️ **`ImeConfig.setString` 会加引号**：只适合字符串/枚举；bool/int 等要用 `ImeConfig.setToml`（裸字面量），否则 `ime_config_set` 返回类型错误、设置静默失败。
@@ -134,6 +135,11 @@
 - [ ] 有歧义 → **先问，不要猜**
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
+
+### 2026-10-11 / pi：可复用真机测试组件入库（⑦⑧⑨ + ⑩）
+- 新增 `platforms/macos/tests/imk-auto.swift`（AX/鼠标/输入源/IME 菜单助手，`-warnings-as-errors`）+ `lib-imk-auto.sh` 共享函数 + `README.md`。
+- `run-panel-acceptance.sh`（⑦⑧⑨，AX 自动点击面板）**7/7**；`run-input-apps.sh`（⑩ 五应用，微信走合成按键+剪贴板）**6/6**。
+- 均自动还原词库文件、关闭自建窗口，**不热杀宿主**（热杀后需退出重开文本 App 才能恢复，已写入 §6 坑）。
 
 ### 2026-10-11 / pi：机器 B（macOS 27 / M1）复现 + 全自动化验收
 - 机器 B 自动验收：默认 **13/14**、`PERF+RESTART` **15/16**；唯一失败 **⑪ 内存 43.8MB > DoD 30MB**；按键 p95 0.555ms、零外联全过。

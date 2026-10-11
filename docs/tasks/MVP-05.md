@@ -50,15 +50,19 @@
 IMK_ACCEPTANCE_PERF=1    ./platforms/macos/tests/run-imk-acceptance.sh  # 加引擎按键时延（run-perf.sh，较慢）
 IMK_ACCEPTANCE_RESTART=1 ./platforms/macos/tests/run-imk-acceptance.sh  # 加「重启宿主后仍生效」
 IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # 加配置错误弹窗（模态，一次性）
+./platforms/macos/tests/run-panel-acceptance.sh    # ⑦⑧⑨ 面板（AX 自动点击，7/7）
+./platforms/macos/tests/run-input-apps.sh          # ⑩ TextEdit/Safari/Chrome/Terminal/微信（合成按键+剪贴板，6/6）
 ```
+
+> 组件说明与共享工具（`imk-auto.swift` / `lib-imk-auto.sh`）见 [`platforms/macos/tests/README.md`](../../platforms/macos/tests/README.md)。
 
 - 主用例（连跑两遍均 `SUMMARY pass=14 fail=0`）：①五笔 ②拼音 ③来源标注 ⑤配置实时 ⑫输入期间零外联 ⑪内存 + 状态徽标 / 数字选字 / Esc / 模式写盘。
 - 全选项（`PERF=1 RESTART=1`，`pass=16 fail=0`）：额外 **④ 重启后仍生效** 与 **⑪ 引擎按键 p95 <16ms**。
 - 配置错误弹窗（`IMK_ACCEPTANCE_CONFIG_ERROR=1`）：弹窗文本含行号、同一错误不重复、坏配置下仍可输入（模态，建议只跑一次）。
 - 脚本只在新开的空 TextEdit 文档里输入；会临时改 `config.toml` 并结束时**自动还原**；`RESTART` 会重启宿主、`CONFIG_ERROR` 为模态。
 - 脚本新建的 TextEdit 文档会在退出时**自动关闭**（`trap` 里仅关自己的文档，不动你原本打开的），不残留窗口。
-- ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
-- **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`（机器 B 已用合成按键 + 剪贴板自动核验）、⑦⑧⑨ 的面板按钮点击（机器 B 已用 AX 自动点击）。
+- ⑦⑧⑨ 的**逻辑**由 `dev-preview.sh --smoke-test`（FFI 级）覆盖；**面板 GUI**由 `run-panel-acceptance.sh`（AX 自动点击）覆盖。
+- ⑩ 五应用由 `run-input-apps.sh` 覆盖（微信无 AX，用合成按键 + 剪贴板核验；**绝不按回车**）。
 - **亮/暗主题（⑬）已自动化**：预览冒烟（`dev-preview.sh --smoke-test`）在浅/暗两种 `NSAppearance` 下**离屏渲染**候选窗与设置面板，采样像素算 WCAG 对比度并断言 **≥ 4.5**（实测浅 21.0 / 暗 20.3）。输入法菜单与版本信息窗为标准 AppKit 控件且无硬编码颜色。
   → **逐步操作手册**（含第二台 Mac 复现）：[人工验收与多机复现](../人工验收与多机复现.md)。
 
@@ -85,7 +89,7 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 | ⑦⑧⑨⑩⑬ | ⑦ ✅（面板新增词条 → 输入上屏 → 落盘）　⑧ ✅（导出 40 行；导入无误；坏文件弹「用户词库操作失败」且原词库不变）　⑨ ✅（`你好` → `ni hao`）　⑩ ✅ **5/5**（TextEdit / Safari / Chrome / Terminal / 微信；微信用合成按键 + 剪贴板核验，`Cmd+Z` 精确回退最后一次上屏、失焦无残留）　⑬ ✅（进程内离屏渲染对比度：候选窗/设置面板浅 21.0、暗 20.3） |
 | 与本机 A 的差异 | ①**内存**：macOS 27 / arm64 上物理足迹 **43.8 MB**（本机 A ~17.5 MB）超 DoD；②**地址栏残留**：Safari **复现**（点正文后地址栏留 `nihao`），Chrome 换 App / 换窗口均**清空**；③按键时延 p95 **0.555 ms**（本机 A 1.2 ms）；④ `Cmd+Z` 干净回退（TextEdit 把连续输入合并为一个撤销组，**ABC 键盘同样如此**，非输入法问题） |
 
-- 自动验收命令与证据见 §2.1；⑦⑧⑨ 用 AX 自动点击面板完成，⑩ 浏览器/微信用合成按键 + 剪贴板自动核验（脚本为临时工具，未入库）；⑬ 由预览冒烟覆盖。
+- 自动验收命令与证据见 §2.1；⑦⑧⑨ 由 `run-panel-acceptance.sh`、⑩ 由 `run-input-apps.sh` 自动完成（已入库，见 [`platforms/macos/tests/README.md`](../../platforms/macos/tests/README.md)）；⑬ 由预览冒烟覆盖。
 - 验收后已恢复用户词库（`~/Library/Application Support/Lampyris/user-dictionary.tsv`，39 行）、关闭测试窗口；配置保留。
 
 ### 2.4 机器 B 新增问题：引擎常驻内存超 DoD（⑪）
