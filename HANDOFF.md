@@ -136,6 +136,7 @@
 - ⑦⑧⑨ 的**逻辑**由 `dev-preview.sh --smoke-test`（FFI：增词/导出/导入/反查）覆盖；面板 GUI 点击、⑩ 五应用、⑬ 亮/暗仍人工。
 - `ime-dict`：`Store::update` 改 `Arc::make_mut`（避免每次全表克隆）、`serialize` 改 `writeln!`；`learn_cost` 基准改分位输出。1 万条 **p50 4.3→1.5ms、p95 9→2.7ms**；`make verify` 全绿。
 - 文档：MVP-05 回填、reviews/007 记录 TD-01/02。
+- 验收脚本改为**只新建 1 个 TextEdit 文档并全程复用**，退出时 `trap` **自动关闭**自己新建的全部窗口（不再向桌面堆窗口）。
 
 ### 2026-10-11 / pi：移除设置帮助段 + 版本信息安全渠道按钮（ADR-080）
 - 设置面板**移除与快捷键配置重复的「帮助」段**；删除 `Sources/Help.swift`（及 `dev-preview.sh` 编译项）。

@@ -56,6 +56,7 @@ IMK_ACCEPTANCE_CONFIG_ERROR=1 ./platforms/macos/tests/run-imk-acceptance.sh  # �
 - 全选项（`PERF=1 RESTART=1`，`pass=16 fail=0`）：额外 **④ 重启后仍生效** 与 **⑪ 引擎按键 p95 <16ms**。
 - 配置错误弹窗（`IMK_ACCEPTANCE_CONFIG_ERROR=1`）：弹窗文本含行号、同一错误不重复、坏配置下仍可输入（模态，建议只跑一次）。
 - 脚本只在新开的空 TextEdit 文档里输入；会临时改 `config.toml` 并结束时**自动还原**；`RESTART` 会重启宿主、`CONFIG_ERROR` 为模态。
+- 脚本新建的 TextEdit 文档会在退出时**自动关闭**（`trap` 里仅关自己的文档，不动你原本打开的），不残留窗口。
 - ⑦⑧⑨ 的**逻辑**已由 `dev-preview.sh --smoke-test`（FFI 级：增词 / 导出 / 导入 / 反查 / 坏文件拒绝）覆盖；**面板 GUI 点击**仍建议人工过一遍。
 - **不覆盖（人工/视觉）**：⑩ 五应用 + `Cmd+Z`、⑬ 亮/暗主题、⑦⑧⑨ 的面板按钮点击。
 
