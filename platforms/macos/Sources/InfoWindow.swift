@@ -1,6 +1,7 @@
-// 菜单「反馈」「关于」共用的轻量只读信息窗口（ADR-077）。
+// 菜单「版本信息」窗口（ADR-077/078/079）：只读诊断文本 + 「复制信息」/「反馈问题」按钮。
 //
-// 与设置面板一致：不联网、不打开外部程序（ADR-074）；仅展示文本，可选一键复制。
+// 与设置面板一致：不联网。「反馈问题」仅在用户**显式点击**时用系统默认程序打开公开 Issues
+// 页（异步打开，避免阻塞主线程，ADR-073）；App 自身不建立连接、不上报任何数据。
 
 import Cocoa
 
@@ -9,13 +10,17 @@ final class InfoWindow: NSObject {
     private static let shared = InfoWindow()
     private var panel: NSPanel?
     private var currentText = ""
+    private var feedbackURL: URL?
 
-    static func show(title: String, text: String, allowsCopy: Bool) {
-        shared.present(title: title, text: text, allowsCopy: allowsCopy)
+    static func show(
+        title: String, text: String, allowsCopy: Bool, feedbackURL: URL? = nil
+    ) {
+        shared.present(title: title, text: text, allowsCopy: allowsCopy, feedbackURL: feedbackURL)
     }
 
-    private func present(title: String, text: String, allowsCopy: Bool) {
+    private func present(title: String, text: String, allowsCopy: Bool, feedbackURL: URL?) {
         currentText = text
+        self.feedbackURL = feedbackURL
         let panel = self.panel ?? makePanel()
         self.panel = panel
         panel.title = title
@@ -37,11 +42,20 @@ final class InfoWindow: NSObject {
         scroll.documentView = textView
         scroll.translatesAutoresizingMaskIntoConstraints = false
 
-        var views: [NSView] = [scroll]
+        var buttons: [NSView] = []
         if allowsCopy {
-            let copy = NSButton(title: "复制反馈信息", target: self, action: #selector(copyText))
-            copy.setContentHuggingPriority(.defaultHigh, for: .vertical)
-            views.append(copy)
+            buttons.append(NSButton(title: "复制信息", target: self, action: #selector(copyText)))
+        }
+        if feedbackURL != nil {
+            buttons.append(NSButton(title: "反馈问题", target: self, action: #selector(openFeedback)))
+        }
+
+        var views: [NSView] = [scroll]
+        if !buttons.isEmpty {
+            let row = NSStackView(views: buttons)
+            row.orientation = .horizontal
+            row.spacing = 10
+            views.append(row)
         }
         let stack = NSStackView(views: views)
         stack.orientation = .vertical
@@ -70,6 +84,14 @@ final class InfoWindow: NSObject {
         _ = pasteboard.setString(currentText, forType: .string)
     }
 
+    /// 用户显式点击「反馈问题」才跳转；异步打开，不阻塞主线程（ADR-073）。
+    @objc private func openFeedback() {
+        guard let feedbackURL else { return }
+        NSWorkspace.shared.open(
+            feedbackURL, configuration: NSWorkspace.OpenConfiguration()
+        ) { _, _ in }
+    }
+
     private func makePanel() -> NSPanel {
         let panel = NSPanel(
             contentRect: NSRect(x: 0, y: 0, width: 460, height: 320),
@@ -82,22 +104,22 @@ final class InfoWindow: NSObject {
     }
 }
 
-/// 关于信息（版本 / 构建 / 源码提交 / 许可 + **反馈渠道**，ADR-078）。
+/// 版本信息（诊断 / 许可；反馈入口为窗口按钮，ADR-079）。
 enum AboutUI {
-    /// 完整「关于」文本：诊断信息 + 许可 + 反馈渠道（反馈入口并入此处）。
+    /// 版本信息正文：诊断 + 许可；安全漏洞私下渠道见文末。
     static func text() -> String {
         """
         \(FeedbackUI.diagnostics())
         许可证：GPL-3.0-or-later
         默认离线 · 零遥测 · 无账号
 
-        反馈渠道（请自行在浏览器打开；本输入法不联网、不代发）：
-        - 问题 / 建议：\(FeedbackUI.issuesURL.absoluteString)
-        - 敏感漏洞：\(FeedbackUI.securityURL.absoluteString)
+        安全漏洞请走私下渠道：
+        \(FeedbackUI.securityURL.absoluteString)
         """
     }
 
     static func show() {
-        InfoWindow.show(title: "关于", text: text(), allowsCopy: true)
+        InfoWindow.show(
+            title: "版本信息", text: text(), allowsCopy: true, feedbackURL: FeedbackUI.issuesURL)
     }
 }
