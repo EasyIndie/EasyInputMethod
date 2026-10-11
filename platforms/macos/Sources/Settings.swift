@@ -3,7 +3,7 @@
 // 非模态、改动即时生效：写入只经 `ime_config_set()`（配置唯一写入路径），
 // 变更广播由 `ConfigWatcher` 派发（ADR-058）。见 `docs/配置架构.md` §8/§9/§11。
 //
-// ADR-077：面板收窄为「设置（含帮助）/ 词库」两段；反馈与关于回到输入法菜单。
+// ADR-077/080：面板为「设置 / 词库」两段（帮助信息已移除，快捷键在设置项内即可见）。
 // 新增分区只需扩展 `Section` 与 `sectionViews`。
 
 import Cocoa
@@ -210,7 +210,7 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
 
 /// 设置面板（进程内单例；重复打开只前置已有窗口）。
 ///
-/// ADR-075：输入法的「中心」窗口，分段承载 设置 / 词库 / 帮助 / 反馈 / 关于。
+/// ADR-070/077/080：非模态设置窗口，分段承载 设置 / 词库。
 final class SettingsPanel: NSObject, NSWindowDelegate {
     static let shared = SettingsPanel()
 
@@ -232,7 +232,6 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     private var segmented: NSSegmentedControl?
     private var contentHost: NSView?
     private var sectionViews: [NSView] = []
-    private var helpLabel: NSTextField?
 
     private override init() { super.init() }
 
@@ -260,7 +259,6 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         self.session = session
         prepare()
         rows.forEach { $0.reload() }
-        helpLabel?.stringValue = HelpUI.text()
         setStatus("", isError: false)
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
@@ -275,8 +273,6 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     /// 只刷新发生变化的行，避免打断其它行的编辑。
     func configChanged(_ key: String) {
         rows.first { $0.option.key == key }?.reload()
-        // 帮助文本随配置变化（展示真正生效的按键）。
-        helpLabel?.stringValue = HelpUI.text()
     }
 
     /// 写失败提示（校验/IO/只读/锁）。
@@ -400,19 +396,6 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             rowStack.addArrangedSubview(row)
             row.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
         }
-
-        // 帮助合并进设置分区（ADR-077）：同一处既改设置又看按键说明。
-        let helpHeader = NSTextField(labelWithString: "帮助")
-        helpHeader.font = .boldSystemFont(ofSize: 13)
-        helpHeader.textColor = .secondaryLabelColor
-        rowStack.addArrangedSubview(helpHeader)
-        let help = NSTextField(wrappingLabelWithString: HelpUI.text())
-        help.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
-        help.isSelectable = true
-        help.preferredMaxLayoutWidth = 440
-        helpLabel = help
-        rowStack.addArrangedSubview(help)
-        help.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
 
         let document = FlippedView()
         document.translatesAutoresizingMaskIntoConstraints = false

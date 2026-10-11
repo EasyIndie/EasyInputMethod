@@ -89,8 +89,9 @@ else
   exit 1
 fi
 
-# 统一初始状态为混输（①-⑥ 依赖）；结束后由 BAK 还原
+# 统一初始状态为混输 + 每页 5 个候选（①-⑥ 依赖）；结束后由 BAK 还原
 sed -i '' 's/^mode = "[a-z]*"/mode = "mixed"/' "$CFG" 2>/dev/null
+sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG" 2>/dev/null
 sleep 1.0
 
 echo "▶ 验收用例"
