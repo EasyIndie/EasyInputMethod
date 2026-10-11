@@ -66,7 +66,7 @@ platforms/macos/
 
 ```sh
 ./data/sources/fetch-jieba-dict.sh        # 以及 fetch-pinyin-data.sh / fetch-phrase-pinyin.sh
-cargo run -p ime-pinyin --example generate
+cargo run -p ime-pinyin --example generate_pinyin
 python3 tools/prepare-pinyin-core.py
 ```
 
