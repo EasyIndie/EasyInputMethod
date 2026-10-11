@@ -74,6 +74,10 @@ final class CandidateWindow {
     private var renderedCount = 0
     private var widthConstraints: [NSLayoutConstraint] = []
 
+    /// 光学垂直微调：无边框标签的文本贴在行盒顶部，CJK 字形重心偏上；
+    /// 下移让字形视觉居中（离屏像素实测，见预览冒烟 `DEBUG3`）。
+    private static let verticalNudge = -NSFont.systemFont(ofSize: 16).descender * 0.75
+
     /// 点击第 `index` 个候选时回调（由宿主执行选字/上屏）。
     var onSelect: ((Int) -> Void)?
 
@@ -119,8 +123,10 @@ final class CandidateWindow {
         NSLayoutConstraint.activate([
             stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
             stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
-            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 5),
-            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -5),
+            stack.topAnchor.constraint(
+                equalTo: container.topAnchor, constant: 5 + Self.verticalNudge),
+            stack.bottomAnchor.constraint(
+                equalTo: container.bottomAnchor, constant: -(5 - Self.verticalNudge)),
         ])
         panel.contentView = container
         // 空闲不轮询：主题计时器只在候选窗可见时运行（MVP-13）。
@@ -252,6 +258,15 @@ final class CandidateWindow {
     func isHoverRenderable(at index: Int) -> Bool {
         guard index >= 0, index < renderedCount else { return false }
         return labels[index].wantsLayer
+    }
+
+    /// 供自测：容器 bounds 与已渲染候选标签的 frame（容器坐标系），用于垂直居中回归。
+    func layoutForTesting() -> (container: NSRect, labels: [NSRect])? {
+        guard let container = panel.contentView else { return nil }
+        return (
+            container.bounds,
+            labels.prefix(renderedCount).map { $0.convert($0.bounds, to: container) }
+        )
     }
 
     /// 供自测：把候选窗当前内容渲染为位图（按当前外观），用于浅/暗主题可读性（对比度）断言。
