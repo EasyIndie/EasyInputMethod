@@ -71,9 +71,12 @@ fn read(path: &Path) -> io::Result<Entries> {
 }
 
 fn serialize(entries: &Entries) -> String {
-    let mut data = String::from("# lampyris-user-dictionary v1\n");
+    use std::fmt::Write as _;
+    let mut data = String::with_capacity(entries.len() * 32 + 32);
+    data.push_str("# lampyris-user-dictionary v1\n");
     for ((scheme, code, text), count) in entries {
-        data.push_str(&format!("{scheme}\t{code}\t{text}\t{count}\n"));
+        // 直写缓冲区，避免逐行 `format!` 的临时分配（TD-01）。
+        let _ = writeln!(data, "{scheme}\t{code}\t{text}\t{count}");
     }
     data
 }
@@ -225,15 +228,16 @@ impl Store {
             .create_new(true)
             .open(&lock)?;
         let _guard = Guard(lock);
-        let (current, _) = snapshot(&self.path)?;
-        let mut entries = (*current).clone();
-        drop(current);
-        change(&mut entries)?;
-        if entries.len() > MAX_ENTRIES {
-            return Err(invalid());
+        // 其它进程写过则先重载；否则直接用当前内存状态，避免每次全表重读 + 克隆（TD-01）。
+        self.refresh()?;
+        {
+            let entries = Arc::make_mut(&mut self.entries);
+            change(entries)?;
+            if entries.len() > MAX_ENTRIES {
+                return Err(invalid());
+            }
         }
-        let stamp = atomic_write(&self.path, &entries)?;
-        let entries = Arc::new(entries);
+        let stamp = atomic_write(&self.path, &self.entries)?;
         let key = SnapshotKey {
             path: fs::canonicalize(&self.path)?,
             stamp: stamp.clone(),
@@ -241,8 +245,7 @@ impl Store {
         let mut cache = snapshots()
             .lock()
             .map_err(|_| io::Error::other("用户词库缓存锁不可用"))?;
-        remember(&mut cache, key, &entries);
-        self.entries = entries;
+        remember(&mut cache, key, &self.entries);
         self.stamp = Some(stamp);
         self.dirty = true;
         Ok(())
