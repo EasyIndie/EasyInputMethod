@@ -74,7 +74,11 @@ final class PreviewInput: NSTextView {
     }
 
     override func flagsChanged(with event: NSEvent) {
-        if session.shiftTransition(isDown: event.modifierFlags.contains(.shift)) { refresh() }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        let other = flags.contains(.control) || flags.contains(.option) || flags.contains(.command)
+        if session.shiftTransition(isDown: flags.contains(.shift), otherModifier: other) {
+            refresh()
+        }
     }
 
     func refresh() {
@@ -378,6 +382,13 @@ if CommandLine.arguments.contains("--smoke-test") {
     let englishBefore = session.isEnglish
     _ = session.shiftTransition(isDown: false)
     guard session.isEnglish == englishBefore else { exit(1) }
+    // Shift 期间有其它修饰键（Ctrl/Option/Command）→ 抬起也不切换中英（避免 Ctrl+Shift+M 误切）。
+    _ = session.shiftTransition(isDown: true, otherModifier: true)
+    let englishBeforeCombo = session.isEnglish
+    _ = session.shiftTransition(isDown: false, otherModifier: true)
+    guard session.isEnglish == englishBeforeCombo else {
+        fputs("修饰键组合不应触发中英切换。\n", stderr); exit(1)
+    }
     // 全/半角：默认 Shift+Space（此刻中英为“英”，故 A1 → Ａ１）。
     keys(" ", flags: [.shift]); view.clear(); keys("A1"); check("Ａ１")
     keys(" ", flags: [.shift])
@@ -493,11 +504,14 @@ if CommandLine.arguments.contains("--smoke-test") {
         fputs("设置面板行数与 Schema 不一致。\n", stderr); exit(1)
     }
     // 中心面板（ADR-075）：设置/词库/帮助/反馈/关于 五个分区；帮助文本非空。
-    guard SettingsPanel.shared.sectionCount == 5 else {
-        fputs("设置面板分区数应为 5，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
+    guard SettingsPanel.shared.sectionCount == 2 else {
+        fputs("设置面板分区数应为 2，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
     }
     guard !HelpUI.text().isEmpty, FeedbackUI.feedbackText().contains("issues/new") else {
         fputs("帮助或反馈文本缺失。\n", stderr); exit(1)
+    }
+    guard !AboutUI.text().isEmpty, AboutUI.text().contains("GPL-3.0") else {
+        fputs("关于信息缺失。\n", stderr); exit(1)
     }
     // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
     guard ImeConfig.setToml("candidate.count", "5"), ImeConfig.int("candidate.count") == 5 else {

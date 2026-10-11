@@ -89,6 +89,10 @@ else
   exit 1
 fi
 
+# 统一初始状态为混输（①-⑥ 依赖）；结束后由 BAK 还原
+sed -i '' 's/^mode = "[a-z]*"/mode = "mixed"/' "$CFG" 2>/dev/null
+sleep 1.0
+
 echo "▶ 验收用例"
 begin; type_ "wq"; sleep 0.25; key 49; check "① 五笔 wq+空格" "$(text)" "你"
 begin; type_ "nihao"; sleep 0.25; key 49; check "② 拼音 nihao+空格" "$(text)" "你好"
@@ -106,7 +110,7 @@ sed 's/^count = 5/count = 3/' "$CFG" > "$WORK/c.new" && mv "$WORK/c.new" "$CFG"
 sleep 1.3
 n2="$(cands | grep -oE '[1-9]\.' | wc -l | tr -d ' ')"
 key 53
-[ -f "$BAK" ] && cp "$BAK" "$CFG"
+sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG"
 sleep 0.6
 check "⑥ 配置实时生效(改前)" "$n1" "5"
 check "⑥ 配置实时生效(改后无按键)" "$n2" "3"

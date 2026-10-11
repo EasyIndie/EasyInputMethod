@@ -198,11 +198,19 @@ final class LampyrisInputController: IMKInputController {
                 "简/繁：\(variantState())", action: #selector(toggleVariant(_:)),
                 hotkeyKey: "hotkey.toggle_variant"))
         menu.addItem(NSMenuItem.separator())
-        // 词库/反查/帮助/反馈/关于统一收进设置面板（ADR-075），菜单保持精简。
+        // 面板留「设置/词库」，反馈与关于回到菜单项（ADR-077）。
         let settings = NSMenuItem(
-            title: "偏好设置…", action: #selector(showSettings), keyEquivalent: ",")
+            title: "偏好设置", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
+        let feedback = NSMenuItem(
+            title: "反馈", action: #selector(showFeedback), keyEquivalent: "")
+        feedback.target = self
+        menu.addItem(feedback)
+        let about = NSMenuItem(
+            title: "关于萤火虫", action: #selector(showAbout), keyEquivalent: "")
+        about.target = self
+        menu.addItem(about)
         // 异常状态（仅在出错时出现）
         var alerts: [String] = []
         if let session, session.dictionaryError != IME_OK {
@@ -233,7 +241,9 @@ final class LampyrisInputController: IMKInputController {
         if !item.applyConfiguredHotkey(binding),
             let symbol = NSMenuItem.singleModifierSymbol(binding)
         {
-            item.title = "\(title)  \(symbol)"
+            // 单修饰键（如 Shift）无法成为菜单快捷键；放在快捷键位显示以保持右对齐（与其它项一致）。
+            item.keyEquivalent = symbol
+            item.keyEquivalentModifierMask = []
         }
         return item
     }
@@ -305,6 +315,14 @@ final class LampyrisInputController: IMKInputController {
         SettingsPanel.shared.show(session: session)
     }
 
+    @objc private func showFeedback() {
+        FeedbackUI.show()
+    }
+
+    @objc private func showAbout() {
+        AboutUI.show()
+    }
+
     @objc private func cycleMode(_ sender: Any?) {
         let order = ["mixed", "wubi", "pinyin"]
         let current = ImeConfig.string("mode") ?? "mixed"
@@ -334,7 +352,12 @@ final class LampyrisInputController: IMKInputController {
         guard let event else { return false }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
         if event.type == .flagsChanged {
-            if let session, session.shiftTransition(isDown: event.modifierFlags.contains(.shift)) {
+            let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            let other =
+                flags.contains(.control) || flags.contains(.option) || flags.contains(.command)
+            if let session,
+                session.shiftTransition(isDown: flags.contains(.shift), otherModifier: other)
+            {
                 if let client = activeClient ?? (sender as? IMKTextInput) { clearMarked(client) }
                 candidateWindow?.hide()
             }

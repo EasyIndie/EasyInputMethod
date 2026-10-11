@@ -53,4 +53,9 @@ enum FeedbackUI {
         - 敏感漏洞：\(securityURL.absoluteString)
         """
     }
+
+    /// 菜单「反馈」：独立小窗展示诊断与渠道文本，附一键复制（ADR-077）。
+    static func show() {
+        InfoWindow.show(title: "反馈", text: feedbackText(), allowsCopy: true)
+    }
 }
