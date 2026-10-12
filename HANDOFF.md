@@ -12,18 +12,62 @@
 
 | 项 | 值 |
 |---|---|
-| 最后更新 | 2026-10-11（候选窗文本垂直居中修复 + MEM-1 内存已解决） |
-| 更新者 | pi |
-| 当前阶段 | **功能集已补齐，进入体验打磨 / P2 迭代**；A/B 类 MVP 全部闭环，仅剩 **MVP-05（用户实机）** 与 **MVP-14（外部环境）**；仓库已公开、可发布 |
-| 当前分支 | `main`，与 origin 同步（见 `git log --oneline -5`） |
+| 最后更新 | 2026-10-13（Terminal实际输入/中断恢复通过，准备候选源码） |
+| 更新者 | Codex |
+| 当前阶段 | **首版功能已实现，设备 B 审计发现新增可靠性/可访问性问题，待逐项修复与最终包验收**；历史 MVP 工程收敛已闭环，产品MVP尚未完成；正式 Release、P1-M5 第三方核验和扩展兼容仍待推进 |
+| 当前分支 | 本地主工作区`main c294b67`及未提交产品改动；远端main已合入PR #38至a292534，未拉取覆盖主工作区 |
 | 活跃 PR | 见 GitHub；仓库**已公开**，**无正式 Release**（首版 `v0.1.0` 待打 tag） |
-| 最近一次 `make verify` | ✅ 全绿且**输出零诊断**（ADR-081）：122 项测试（含 doctest）、fmt、Clippy、deny、191 产物零网络符号；预览冒烟（含多屏/悬停断言）、宿主构建、离线重建、`make fuzz` 三目标均通过 |
+| 历史扩展验收 | ✅ 全绿且**输出零诊断**（ADR-081）：122 项测试（含 doctest）、fmt、Clippy、deny、191 产物零网络符号；预览冒烟（含多屏/悬停断言）、宿主构建、离线重建、`make fuzz` 三目标均通过 |
+
+**登录发现/选择阻塞已解除（仅本次设备B对照）：用户截图及TIS复查确认7bb55aa3父源/模式启用。临时根已被重新登录清理；核验公证包/绑定记录后独占恢复空根及所有权标记。用户明确批准自动切换恢复，normal/failure/INT/TERM四路径全部通过，原当前源/完整启用集合及真实配置/词库摘要保持，未发键。旧64663035已精确禁用、注销并归档，其他输入源未变。** 公证包仍保留供实际客户端验收；正式安装包未替换，产品MVP未完成。
+
+ADR-136：授权执行链已定位并解除。TCC日志responsible/subject=com.openai.codex，实际宿主/Applications/ChatGPT.app（显示名ChatGPT）；父链ChatGPT→内嵌CodexCLI→Python→osascript。此前辅助功能有效策略Denied (System Set)，给osascript单独授权未覆盖责任主体。用户允许精确宿主后UI elements enabled=true，前台及AX保护通过。证据build/tcc-chain-2n0505ky/chain.json、attribution.log/json。严格宿主签名核验通过；没有TCC数据库读写/重置或系统代理重启。
+
+ADR-137/138：TextEdit基础实际提交已通过。字符/物理键码在原先“先创建文档再选源”顺序均原码透传；改为先选独有源再创建/首次激活文档，物理W/Q+空格正确提交“你”。固化驱动后再次通过（build/installed-textedit-vn0hx0zp）；原源/完整启用集合及真实数据摘要保持，独有文档关闭。模拟failure、INT、TERM恢复分别通过（z6bq1iy3、4_2jkozt、u8v4mh1s），均在发键前注入；它们只证明创建/切换阶段恢复，不等同组合中断或其他应用通过。13项相关回归、Swift前轮零诊断及本轮make verify全绿/170产物通过。签名包仍基于c294b67，不含全部未提交产品修复；IT-01整体及产品MVP保持进行中。
+
+ADR-139：wq前缀输入后、空格提交前的failure/INT/TERM三场景已固化并原生通过（build/installed-textedit-fak6mom7、pnb0o8l1、rn5vn9py），每条均核验前缀和原源/完整启用集合/真实数据摘要恢复，独有文档关闭。新增中断场景回归后共14项相关测试通过，make verify零诊断/170产物通过。前缀文本校验不等同marked range证明，完整预编辑协议及多应用覆盖仍待验。
+
+ADR-140：本机TextEdit自有AXTextArea公开AXTextInputMarkedRange；已同调用校验窗口/文档/前台/AX身份后读取。wq阶段AppleScript端点1,2，提交“你”后2,1，原生正常通过（build/installed-textedit-0m2r8ohi）；预编辑范围已确认时failure/INT/TERM三路径也通过（rv2fun0q、l9th_ubb、8ab2cx2q），原源/完整启用集合/真实数据恢复、独有文档关闭。范围缺失/不可读不作为空值通过，新负向回归验证不发送提交键。相关回归15项及make verify零诊断/170产物通过。该端点表示不是CFRange的location/length；只验证固定TextEdit场景，不代表所有预编辑协议或最终候选通过。
+
+ADR-141/142：用户授权后Safari调用恢复，离线窗口创建和页面身份检查通过。关闭保留不可见零标签对象，已修正exists误判；四次顺序创建/检查/关闭原生全通过（build/safari-ownership-0uxjlkmp/fixed-result.json），不是failure/INT/TERM中断验收。未发键/选源，Safari实际输入、焦点及中断驱动仍待验；make verify零诊断/170产物通过。初次超时和关闭误判证据原样保留。
+
+ADR-143：Safari初始焦点是智能搜索栏；自有窗口唯一描述AXTextArea定位/首次聚焦及每次read/key页面/前台/角色身份检查已接入专用驱动。正常wq+空格提交“你”通过（installed-safari-ryzelwii），前缀阶段failure/INT/TERM通过（6fkc8ng0、ch4241os、3fc5ln2v），源/启用集合/真实数据恢复且自有窗口关闭。没有Safari marked range证明，不代表完整协议/最终候选。make verify零诊断/170产物通过。
+
+ADR-144：Terminal非执行字节接收器已实现，30秒/64字节边界、私有目录及0600元数据，INT/TERM恢复TTY；macOS恢复canonical会设置瞬态PENDIN，比较仅忽略该位。四项PTY测试（含两个中断信号）及make verify零诊断/170产物通过；尚未创建原生Terminal窗口或发键，下一步绑定窗口/TTY/接收器PID后再验输入。
+
+ADR-145/146：用户授权后Terminal只读调用恢复；精确进程核验发现Homebrew解释器启动器和Framework实际进程路径不同，已按同版本实际路径修正，未放宽命令/TTY匹配。原生窗口/单标签TTY/ready PID/完整ps命令绑定、stop后TTY恢复及非busy精确关闭通过（build/terminal-ownership-ccynlyig/result.json）。5项接收器/身份回归及make verify零诊断/170产物通过。未发键/切源，下一步逐键AX焦点保护及实际输入；不再请求Terminal授权。
+
+
+
+ADR-147：Terminal逐键同调用窗口/TTY/前台/AXTextArea/PID完整命令及输入源保护完成。正常wq+空格接收“你”通过（installed-terminal-tp05x0d3），AX前缀确认后failure/驱动INT/TERM通过（p93m28kf、5h66ex17、fyuau280）；源/完整启用集合/真实数据恢复、TTY恢复及自有窗口关闭均通过。前缀尾部屏幕空白判定已修正，失败证据保留；不代表marked range或最终候选。7项Terminal结果/身份/接收器回归及make verify零诊断/170产物通过。
+
+下一步：TextEdit基础预编辑/提交/组合阶段中断已通过，继续补Chrome/VSCode及安全聊天目标应用覆盖，Safari/Terminal范围和更多交互仍待验；把当前产品修复构建为最终候选后再验可靠性/UX和用户五工作日试用。不再把TextEdit基础提交列为未验，不开放旧live。
+
+候选准备：已创建并附加独立工作区`/Users/joker/.codex/worktrees/mvp-product-candidate/EasyInputMethod`，基于c294b67保存当前源码/文档文件的私有快照（排除pyc/构建产物）；主工作区保持，未提交或推送。快照清单及SHA在/private/tmp/lampyris-candidate-snapshot-20261013.json；make verify零诊断/87产物通过，strict universal构建已成功；这是未提交开发候选，不冒称最终源码提交身份。下一步按独立问题审阅/拆分PR，再签名公证同一锁定提交、双设备和五工作日试用。
+
+最新进度：IT-04…09完成（ADR-093…098）；IT-02完成独立面板隔离及原生交互/清理（ADR-103）；IT-19基础模糊音按音节展开、有界查询与精确候选优先完成（ADR-104）；IT-21反馈操作结果完成（ADR-102）。IT-10/11/16/17/18仍进行中；用户词库写入失败回滚、精确删除、导入路径/行号错误与反查恢复已实现并有隔离原生证据（ADR-106…108）。五笔代表键名提示已实现及登记D13（ADR-109），不等同完整字根拆字图。
+
+最新验证：make verify全绿零诊断、170产物隐私扫描；strict universal及实际构建身份/产品契约检查通过，FFI冒烟通过；隔离预览通过（含四键提示+九长候选窄屏）。IT-03覆盖门禁10项、IT-13附件核验9项与构建身份4项回归通过，已接CI；发布演练和正式发布只读取核验后的4附件。按键内容日志已移除（ADR-110…114）。隔离渲染2200keys：cold15.827ms、warm p95 4.413ms、footprint21.49MiB；不代表真实IMK性能。
+
+本轮新增导入/导出成功反馈（ADR-111）源码/预览通过，原生验证CUA应用绑定约3994秒超时，记BLOCKED；独有测试进程已退出、真实配置/词库未变，临时目录归档后清理。另修复交互驱动stdin注册异常未进入清理保护的问题。当前不重复调用该超时原生路径；恢复窗口工具后补原生反馈/AX/VoiceOver。未换已安装包、未提交/发布。
+
+上轮审计核验：当前执行设备是 **B（macOS 27.0 / 26A428 / arm64）**，源码 HEAD `c294b67`，已安装包 `4d9339c`（thin arm64 / ad-hoc）。`make verify` 全绿零诊断（118 通过、1 忽略，162 产物隐私扫描）；隔离预览冒烟、满容量合成词库压力和 strict arm64 宿主构建通过。universal 本机构建缺 Intel Rust target；原生 AX 窗口检查超时，未重跑多应用实机/VoiceOver/多屏/fuzz。新增问题与证据见 [审计009](docs/reviews/009-macos-product-engineering-audit.md)。
+
+ADR-122：测试构建和实体注册前置身份校验已接入，缺inputmethod段、连接名和模式清单漂移有回归，5项通过并由现有CI执行。设备B新版完整实体注册/清理驱动exit0，枚举2源，原输入源/完整启用集合恢复；无参数隔离服务READY且持有PID清理通过，真实数据摘要不变。证据platforms/macos/build/source-probe-e2e-6aadf5a7/；随后四路径/错误标记拒绝回归通过并删除根目录。未选择输入源、未验证客户端输入，IT-01仍进行中。
+
+当前隔离公证包：`~/Library/Input Methods/LampyrisIMKTest-7bb55aa3-bc3d-431a-98bc-16161a4b5acc.app`，显示名“萤火虫隔离验收 7bb55aa3”，独有根`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-7bb55aa3-bc3d-431a-98bc-16161a4b5acc`。公证运行38258905282、合并提交a292534；包基于c294b67，仅作信任/隔离对照，不含主工作区全部MVP改动。附件/选择证据：`platforms/macos/build/ci-isolated-38258905282/Lampyris-isolated-imk-a292534062608bbf2ede323dd54bf041055cbc9a/`，post-login-result.json四路径通过；root-recovery.json记录空根恢复。旧包归档：`platforms/macos/build/retired-isolated-64663035/`，state.json确认其他输入源不变。不要改签名资源或以此包当最终候选。
+
+ADR-131/132：已装源探针保留原启用集合；原先用于注册/清理的驱动不适合直接重跑此已启用包。临时根会在登录时被清理，恢复仅允许已核验独有UUID/私有根绑定的空目录和标记，不回退正式配置。TextEdit基础客户端输入已通过，其他客户端/组合中断待验，旧live入口继续禁用。命名/路径/登录发现与根生命周期经验见平台README。
+
+独立CI工作区`/Users/joker/.codex/worktrees/isolated-ci-notary/EasyInputMethod`保留，PR #38已合入。主工作区未拉取覆盖未提交改动，远端main为a292534；后续同步需保留本地产品改动。
+
+设备A已由ssh pro只读确认Intel/macOS13.7.8、Swift5.8.1、干净c294b67；已安装88833aa。用户担任手动验收和独立核验者；ADR-125改为用户本人一位，计划2026-10-13开始，累计5工作日要求保留。单人清单和IT-23任务卡已准备；覆盖报告schema 2、10项回归通过。尚无最终候选或用户验收结果。
 
 ## 1. 三十秒摘要
 
 - **萤火虫 / Lampyris**：跨平台、开源可审计、默认离线、只做核心输入的中文输入法（五笔优先，**默认混输**）。Rust 引擎 + 窄 C ABI + 平台薄宿主；**GPL-3.0-or-later**。
-- **现在**：P1-M0…M3 全部完成；**首版功能集已补齐**（五笔/拼音/混输、反查、用户词库与学习、中英/全半角/中英标点/简繁/三模式切换、候选点选与来源标注、配置即时刷新与错误可见、帮助面板）；**MVP 工程收敛 11/11** 完成；仓库公开、Pages 上线、Release/Pages 工作流就绪。
-- **下一步**：**体验打磨**（候选窗高分屏/多屏实测、点选手感等）＋ **MVP-05 用户实机验收** → 打 `v0.1.0` 发布。
+- **现在**：P1-M0…M3 全部完成；**首版功能集已补齐**（五笔/拼音/混输、反查、用户词库与学习、中英/全半角/中英标点/简繁/三模式切换、候选点选与来源标注、配置即时刷新与错误可见；设置与词库面板、版本信息与反馈入口（ADR-080 已移除独立帮助））；**MVP 工程收敛 11/11** 完成；仓库公开、Pages 上线、Release/Pages 工作流就绪。
+- **下一步**：按 [迭代计划](docs/迭代计划.md) 执行 I0安全 → I1可靠性 → I2产品体验 → I3日常可用 → I4分发就绪；继续 T-ITER-01与IT-03，保护实机验收数据。IT-02、04…09、19、21已完成；IT-01仍进行中；IT-11/16推进中，后续输入质量与分发门禁仍待完成。
 - ⛔ 铁律：核心不联网、`forbid(unsafe_code)`（**仅 `ime-ffi` 例外**）、数据登记许可、配置只走 `ime-config`。
 
 ## 2. 已完成（按里程碑；细节见 `docs/tasks/` 与 ADR）
@@ -36,34 +80,32 @@
 | **P1-M2** 配置+拼音+混输 | `crates/ime-config`（Schema/`ArcSwap`/原子写/广播）+ `crates/ime-pinyin`（内置兜底）；混输合并 | `docs/配置架构.md`、ADR-008/009 |
 | **P1-M3** macOS 宿主 | `crates/ime-ffi`（会话 + 配置 C ABI）+ `platforms/macos/` Swift/IMK 宿主（`build.sh` 产 `Lampyris.app`） | `platforms/macos/README.md`、ADR-022/023/055 |
 | **MVP 收敛** | T-MVP-01…11 全部完成（安全/一致性/性能/CI/文档） | `docs/tasks/mvp-hardening.md`、ADR-061…066 |
-| **首版功能集** | 中英（单独 Shift）/全半角（Shift+空格）/标点（Ctrl+.）/简繁（Ctrl+Shift+F）/三模式；候选点选 + 来源标注 + 状态徽标；帮助面板 | ADR-057/067/068/069 |
+| **首版功能集** | 中英（单独 Shift）/全半角（Shift+空格）/标点（Ctrl+.）/简繁（Ctrl+Shift+F）/三模式；候选点选 + 来源标注 + 状态徽标；设置 / 词库面板与版本信息 / 反馈入口 | ADR-057/067/068/069/079/080 |
 | **发布工程** | 二进制不含源码 + 同页源码包（GPL §6(d)）、Release + Pages 工作流、仓库公开、分支保护 | ADR-064/065、`.github/workflows/` |
 
-## 3. 进行中
+## 3. 进行中与待推进
 
-- **✅ 三 PR 已合并 main 并通过统一验收（2026-10-11，pi）**：#9 候选窗 A/C → #10 设置面板 → #11 反馈入口依次合并（合并 commit）；`make verify`、预览冒烟、完整宿主 `build.sh`、main push 的 CI 与 macOS Acceptance Package 均成功。**下一步：实机重装 main 构建做统一真机验收**。
-- **✅ 用户反馈入口（T-P2-03，ADR-071，2026-10-11，pi）**：输入法菜单「反馈问题与建议…」→ AppKit 提示 + 本地诊断信息（版本/构建/提交/系统/架构，不含隐私），用户可「复制」或**主动**用系统浏览器打开公开 GitHub Issues；App 自身**零网络、不预填 URL、不上报**；敏感漏洞指向 `SECURITY.md` 私下渠道。
-- **✅ 偏好设置面板（T-P2-02，ADR-070，2026-10-11，pi）**：`platforms/macos/Sources/Settings.swift` 非模态 `NSPanel`，**完全由 `ime_config_schema()` 驱动**（零硬编码）；入口＝输入法菜单「偏好设置…」(⌘,)。`OptionSpec`/C ABI 追加 `title_zh`/`enum_labels_zh`；写入只经 `ime_config_set`；`ConfigWatcher` 支持多观察者。顺带修正 enum 列表“空串终止”约定。
-- **✅ 体验打磨 A/C（2026-10-11，pi）**：候选窗选屏改为「相交面积最大 → 光标中心 → 首屏」兜底（`CandidateWindow.bestScreenIndex`），修正副屏（负坐标）/跨屏/边缘定位；候选标签加**鼠标悬停高亮**（`CandidateLabel` + `NSTrackingArea`）；两者均补入预览冒烟隔离断言。**B（首次激活轻量引导）决定不做**（保持简洁；见报告 007 §C3）。
-- **✅ T-P2-01 简繁转换（ADR-069，2026-10-10，pi）**：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；配置 `input.chinese_variant` + 快捷键 `hotkey.toggle_variant`（默认 `ctrl+shift+f`）；FFI 边界最长匹配简→繁，引擎/学习仍存简体。登记 D11/D12 + 派生项。
-- **✅ MVP 工程收敛 11/11（ADR-061…066）**：见 `docs/tasks/mvp-hardening.md`。
-- **✅ 仓库公开 + 发布渠道就绪（ADR-064/065）**：仓库 **public**；Pages 上线 <https://easyindie.github.io/EasyInputMethod/>；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；`release.yml`（tag/手动，二进制+源码同页）/`pages.yml` 就绪；**`v0.1.0` 待打 tag**。
-- **⏸ MVP-05 待用户实机**：[`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) 有 **13 项实机 DoD 单一可填表**（环境栏 + 步骤/预期/结果/证据 + 证据命令 + 结论），用户实机后照填即可关闭。不催重启/重装。
-- **✅ MVP-05 本机 A 已验收关闭（2026-10-11）**：**12/13 通过**（自动 ①②③④⑤⑥⑪⑫ + 人工 ⑦⑧⑨⑬）；**⑩ 浏览器地址栏预编辑残留已决定接受为已知限制**（根因见 §5 UX-1）并写入 [发布说明](docs/发布说明.md) §3。剩 **机器 B 复现**与 **P1-M5 第三方**。
-- **✅ 机器 B（`air`，macOS 27.0 / M1 / arm64）复现完成（自动 + 全部人工项自动化，2026-10-11，pi）**：包 `88833aa`、SHA `898c233b…`。自动验收默认 **13/14**、`PERF+RESTART` **15/16**；⑦⑧⑨ AX 自动点击、⑩ **5/5**（含微信：无 AX，合成按键+剪贴板核验）、⑬ 离屏渲染对比度断言全部通过；**Safari 地址栏残留复现**、Chrome 换 App/换窗口清空；**唯一失败 ⑪ 内存 43.8MB 已修复**（ADR-082：宿主全新 23.3M，验收 14/14）→ §5 MEM-1（已关闭）。结果见 [`docs/tasks/MVP-05.md`](docs/tasks/MVP-05.md) §2.3–2.4。
-- **⏸ MVP-14 待外部环境**：更多 macOS 版本 + Icon Composer 分层图标（需其他机器 / Xcode 27）。
-- **⏸ MVP-11 收尾**：二进制包 + 源码包归档到长期位置、确定分发渠道/接收范围（工作流已就绪，待用户操作）。
+- **设备 B 审计已完成，MAC-01的清理所有权子步已实施，完整数据保护待推进；MAC-02…05、07、19已由IT-04…09修复，其余MAC项待推进**：见 [报告009](docs/reviews/009-macos-product-engineering-audit.md)。近期优先：实机脚本可能影响真实数据、快捷键非法/冲突、全半角配置与临时状态冲突、组合中配置不重算、保存失败被吞、可访问动作、简繁资源错误与对比度验证。
+- **已交付**：候选窗多屏几何与悬停/文本居中；简繁（ADR-069）；设置 / 词库两分区、版本信息与显式反馈跳转（以 ADR-079/080 为准）；MEM-1 内存优化（ADR-082）。
+- **历史实机**：本机 A 的 MVP-05 已关闭（12/13 + 浏览器地址栏已披露限制）；机器 B 在88833aa完成复现，内存优化后补验14/14（MVP-05 §2.3–2.4）。这些不是 c294b67 最终签名包的完整验收。
+- **发布收尾待办**：最终包来源/SHA/版本说明、Release dry_run实际附件校验、P1-M5独立第三方复现与零外联、正式 v0.1.0 Release。
+- **MVP-14**：更多 macOS 版本、真实多屏/缩放覆盖与分层图标仍待评估；当前已在设备 B，可本地处理 Xcode27 相关工作，但不把图标升级作为首版门槛。
+
+- **IT-01进行中**：共享TextEdit所有权协议及normal/failure/INT/TERM四条原生路径通过；Safari/Terminal协议、输入源恢复和真实IMK数据隔离仍需补验，禁止直接运行旧真实环境脚本。
+- **IT-02已完成**：独立临时配置/词库、唯一进程身份、四路径清理及原生面板交互通过；旧入口参数仍在资源操作前BLOCKED/3退出。详见任务卡。
+- **恢复执行入口**：IT-03门禁实现仍待安全驱动/实际包报告接入；IT-18成功反馈已实现但新增原生验证BLOCKED。IT-20提示验收/IT-12基线/IT-13分发卡已建立；下一步安全IMK隔离及原生工具恢复，然后I2/I3/I4最终门禁。
 
 ## 4. 下一步（可执行，按优先级）
 
 **本地迭代（不依赖签名机）**：日常 `make macos-preview`；阶段真机 `./platforms/macos/build.sh --strict --universal` → 拷到 `~/Library/Input Methods/` 并删 `build/` 副本（避影子）→ 选中「萤火虫」实打。macOS 13 上 ad-hoc 即可（ADR-055）。
 
-1. **体验打磨**：**A/C 已完成**（候选窗多屏定位加固 + 悬停高亮，见 §3）；剩候选窗**高分屏/多屏真机实测**（并入 MVP-05 的 ⑩/⑬ 一起录）。**B 首次激活引导已决定不做**（保持简洁，报告 007 §C3）。
-2. **MVP-05 实机 DoD 矩阵**：✅ **本机 A 已完成**（12/13 通过 + ⑩ 已记录限制；矩阵与结论见 [**`docs/tasks/MVP-05.md`**](docs/tasks/MVP-05.md)、交接手册 [`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)）。**下一步（用户执行）**：机器 B（macOS 27 / Apple Silicon）自动 + 人工复现（MVP-14），结果填 `MVP-05.md` §2.3；再补 **P1-M5 第三方零外联核验**。
-3. **发布 `v0.1.0`**：`git tag v0.1.0 && git push origin v0.1.0` → `release.yml` 建 Release（二进制 + 源码同页）。可先手动 `dry_run` 演练。
-4. **P2 迭代**：**设置界面（ADR-070）与用户反馈入口（ADR-071）已完成**；剩字根提示、i18n、emoji 等（见报告 008 §8）；MVP-14 需外部环境。
-
-> **A/B 类缺口（MVP-01…04、06…13）与 MVP-11 已全部闭环**（ADR-057…069）；MVP-05 验收与 MVP-14 依赖用户或外部环境。
+1. **I0 / 恢复后推进**：用户已允许恢复；IT-02已完成，继续IT-03结果分类及IT-01真实IMK数据隔离/协议补验，未经修复不运行旧真实环境脚本。
+2. **I1 / IT-04…09已完成**：最终安装包仍需真实客户端回归；本轮未替换历史安装包。
+3. **I2产品体验**：IT-10/11、16…22，设置/候选视觉、词库纠错、基础拼音质量、字根提示、反馈与产品走查纳入MVP。
+4. **I3日常可用**：IT-12/23性能和持续试用、目标应用/系统/多屏兼容。
+5. **I4 / P1-M5**：最终候选、包校验、独立第三方核验和分发材料。
+6. **发布 v0.1.0**：统一版本说明与验收环境，补附件摘要/来源核验后 dry_run，再决定打 tag / Release。
+7. **MVP后**：稳定维护→输入质量深化→Windows/Linux→移动端；详见 `docs/MVP后里程碑.md`。
 
 ## 5. 待决 / 阻塞
 
@@ -77,53 +119,35 @@
 | TBD-5 | 结构/末笔**独立**数据源 — 暂无可用的 GPL-3 兼容来源；以多 oracle 交叉验证替代（ADR-019），字根来源用 D3 拆字（ADR-020） | 否 |
 | **SIG-1** | **签名/公证要求**：✅ 已澄清（ADR-055）—— macOS 13 本地 ad-hoc 即可（用户已验收）；分发与 macOS 26/27 仍强制 Developer ID + hardened runtime + 公证 | 不再阻塞；本地迭代无需签名机 |
 | **UX-1** | **⑩ 浏览器地址栏预编辑残留**（Chrome 切窗口/点击、Safari 点击；其余应用正常）。根因：客户端失焦时 **IMK 会把预编辑原样取消标记**成普通文本，且该时机在输入法收到任何回调之前（`commitComposition:` 内无论 `setMarkedText("")` / `insertText("")` / `markedRange()` 何种写法都不生效；只有我们主动清（如 Esc）才有效）。**决定（2026-10-11）：接受为已知限制**（与主流输入法同类行为），已写入发布说明 §3；若后续反馈多，再评估「预编辑不入客户端」（需放弃行内预编辑） | 否 |
+| **IMK-SEL** | 登录后7bb55aa3父源/模式启用，四路径选择恢复通过；旧64663035已归档 | 选择阻塞已解除，TextEdit基础提交通过，完整客户端覆盖待验 |
+| **AUD-009** | 设备 B 审计发现新增可靠性 / 测试数据保护 / 可访问性问题（报告009） | 待逐项修复与验收；未改变历史已接受限制 |
 | **MEM-1** | ✅ **已解决（ADR-082 / T-P2-04）**：简繁懒加载 + `ime-table` 紧凑数组 + 面板关闭释放；宿主全新 **43.8→23.3 M**，验收 ⑪ 达标（14/14）。见 [`docs/tasks/T-P2-04-memory.md`](docs/tasks/T-P2-04-memory.md) | 已关闭 |
 
 ### 本次候选与执行状态
 
-- 当前 CI 公证候选：`Lampyris-macos-acceptance-1c08956…`（universal；二进制 ZIP + 源码包 + SHA，约 12.1MB）；签名/staple/Gatekeeper 与离线复现通过。
-- 本机（macOS 13 Intel）为**用户域 ad-hoc 安装**（`cn.jokerhub.inputmethod.Lampyris`），已装到最新提交；用户已实体输入验收。
-- 本机当前 ad-hoc 候选（2026-10-11 自 `prepare.sh`，main `88833aa`）：`packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（3.4MB，universal，`signed_release=false`）+ 同目录源码包；已 `ditto` 装入本机与 `air` 的 `~/Library/Input Methods/`（`SOURCE-COMMIT=88833aa`）。供**第二台 Mac 复现**用，步骤见 `docs/人工验收与多机复现.md` §4。
-- 仓库**已公开**（2026-10-10）；**无正式 Release**（首版 `v0.1.0` 待打 tag）；Pages 上线、main 分支保护已设。CI 签名/公证凭据配置见 `packaging/macos/CI-ACCEPTANCE.md`（不在本文件记录凭据细节）。
+- 当前设备 B 安装：`~/Library/Input Methods/Lampyris.app`，**4d9339c / thin arm64 / ad-hoc**（审计009读取包内提交和签名确认），早于 #37 文字居中修复；本轮未替换。
+- 当前源码：`main c294b67`；审计009生成 strict arm64 开发构建于 `platforms/macos/build/Lampyris.app`，**未安装**。本机已安装 arm64 与 Intel Rust target，strict universal开发构建已通过；未证明Intel实机运行或正式签名。
+- 仓库已公开；上一轮远端查询无开放 PR/正式 Release，c294b67 的 CI 与 macOS Acceptance Package 成功。本轮未再查询远端或下载签名候选，不能使用旧候选编号表示最新附件。
 
 ## 6. 必须知道的坑与硬约束
 
-**铁律（见 `AGENTS.md` §2）**：核心不联网；`forbid(unsafe_code)`（仅 `ime-ffi`）；配置只走 `ime-config`（禁 `UserDefaults`/注册表/第二文件）；任何数据先登记许可。
-
-**实操坑（本轮踩过，务必记住）**：
-
-- ⚠️ 发行ZIP必须用Finder/ditto保留执行权限；Python zipfile.extractall把程序变0644，签名仍通过但无法启动。安装器现拒绝损坏权限。
-- ⚠️ **模型名要带 provider**：`deepseek-v4-pro` 在 8 个 provider 下**歧义** → 必须 `--provider cc-switch-deep-seek`；`deepseek-v4-flash` 不歧义。
-- ⚠️ **> ~5 MB 的生成文件会让 `git push` 报 HTTP 400**：大表（`wubi86-phrases.tsv` 5.6MB、`pinyin-words.tsv` 8.4MB）**一律 gitignore**，由 `data/sources/fetch-*.sh` + `cargo run --example …` 复现。
-- ⚠️ **macOS 输入法必须是 `.app`**（不是 `.inputmethod`），本机首次注册/注册元数据修正后需**注销/重启**完成登录扫描；普通代码热替换尚未验收；`killall TextInputMenuAgent` / 删 `IntlDataCache` / `lsregister -f` / `TISRegisterInputSource`（返回 `noErr`）都**不能**免重启触发重扫。日常功能迭代使用独立窗口（ADR-024）。诊断：`platforms/macos/tools/`。
-- ⚠️ **热杀宿主不会自动重启**：`killall Lampyris` 后，TIS 重选 / 输入菜单都拉不起宿主，需**完全退出并重开一个文本 App**（或注销/重登）才恢复。真机测试脚本因此**不杀宿主**（见 `platforms/macos/tests/README.md`）。
-- ✅ **注册标识**：bundle ID 必须带 `.inputmethod.`；当前 `cn.jokerhub.inputmethod.Lampyris`，连接名 `${bundleID}_Connection`（ADR-023/056）。
-- ⚠️ **IMK 事件掩码**：IMK 默认**只转发 `keyDown`**；修饰键变化（`flagsChanged`，单独 Shift 必需）必须重写 `IMKInputController.recognizedEvents` 显式声明，并接管 `leftMouseDown` 保留"点击组合外结束组合"。`recognizedEvents` 的 Swift 返回类型是 **`Int`**（写成 `UInt` 会编译失败→装成旧包）。见 ADR-067。
-- ⚠️ **`ImeConfig.setString` 会加引号**：只适合字符串/枚举；bool/int 等要用 `ImeConfig.setToml`（裸字面量），否则 `ime_config_set` 返回类型错误、设置静默失败。
-- ⚙️ **Swift/Swift 链接坑**：`-whole-module-optimization` 下不能把 `.a` 作位置参数（Swift 5.8 当源码）也不能用 `-L … -lime_ffi`（会链到 cdylib 并把绝对构建路径写进 `LC_LOAD_DYLIB`）；必须 `-Xlinker <lib.a>`。见 ADR-055。
-- ⚙️ **universal 构建**：需 `rustup target add aarch64-apple-darwin x86_64-apple-darwin`，再 `./platforms/macos/build.sh --strict --universal`（Rust 用 `aarch64`、Apple 用 `arm64`）。
-- ⚠️ **构建后务必看退出码**：`build.sh` 编译失败时不会替换旧 `.app`；只看 `tail -1` 容易把**旧包**当新包装上（本会话踩过）。
-- ⚠️ **公证三件套**：`codesign --options runtime --timestamp` → `ditto` 打包 → `xcrun notarytool submit --keychain-profile <profile> --wait` → `xcrun stapler staple`；判定 `spctl -a -vvv -t exec` 应为 `accepted / Notarized Developer ID`。首次常遇 `403` → Account Holder 需在 App Store Connect 接受协议。
-- ⚠️ **登录钥匙串**：后台/非 GUI 会话跑 `codesign` 会报 `errSecInternalComponent`；需在 GUI Terminal 跑一次并点"始终允许"。
-- ⚠️ **LS 影子副本**：同一 bundle id 若有残留登记，Text Input 会绑定影子副本导致静默失败；装完 `lsregister -dump` 去重。
-- **默认拼音为 `pinyin-core.tsv`（256KiB）**：全量词表作为生成输入、不默认装载（ADR-031）；发布不得容忍数据缺失降级。
-- ⚠️ **bash + 中文坑**：`$var` 后紧跟全角字符会被当变量名 → 一律写 `${var}`。
-- ⚠️ **许可地雷**：`Arphic Public License`（makemeahanzi / hanzi-writer）**GPL 不兼容**；`GPLv2-only` 与 GPL-3 不兼容；**极点五笔 provenance 存疑**（`rime-wubi86-jidian` 仅可测试）。新增数据先登记 `docs/数据来源与许可.md` + `data/sources.toml`。
-- ⚠️ **worker 产出不会自动提交**：派发后必须人工复核 + `git add/commit/push`。
-- ⚠️ **派发工具**：`./scripts/dispatch-task.sh docs/tasks/<卡> --model <m> [--provider <p>] [--jobs N]`；用量记 `docs/experiments/runs/usage.jsonl`。
-- 提交前必须 `make verify` 全绿；第三方 Actions 升级方法见 `CONTRIBUTING.md` §9。
+- 铁律见 `AGENTS.md` §2：核心零网络、unsafe仅FFI、配置唯一、数据合规、ADR先于行为变更、提交前零诊断验证。
+- **真实环境验收脚本尚有数据保护缺陷**，IT-01未完成；两个旧live入口已程序化BLOCKED，无绕过；使用说明见 `platforms/macos/tests/README.md`。
+- 安装ZIP用Finder/ditto保留权限；注意同bundle影子副本。首次注册可能需注销/登录；热杀宿主后仅重选输入源不能保证恢复。操作细节见 `platforms/macos/README.md` 与 `docs/人工验收与多机复现.md`。
+- B现有双架构Rust target，strict universal开发构建已通过；构建失败不会替换旧包，必须核对退出码与SOURCE-COMMIT。
+- 构建/FFI/API约定见平台README与配置架构；派发工具及供应商配置见任务索引/开发工作流，勿把历史机器操作当成本次执行结果。
 
 ## 7. 环境快照
 
 | 项 | 值 |
 |---|---|
 | 本机 A（本地迭代/真机验收） | macOS **13.7.8**、**Intel x86_64**；仅 CLT（Swift 5.8.1、无 Xcode）；`security find-identity` 为 0；已加 `aarch64-apple-darwin` + `x86_64-apple-darwin` target |
-| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据；已 `ditto` 装入 ad-hoc 候选（**`88833aa`**，= main）、仓库同步到 main（旧 `Yinghuo.app` 与 `9e7ef41` 已 `lsregister -u` 并移到 `~/lampyris-pkg/backup/`）；验收步骤与一键脚本放在其 `~/lampyris-pkg/`。**SSH 会话跑不了 GUI 自动化**（AppleEvent 超时），自动/人工验收需在其控制台终端进行 |
-| Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；target `x86_64-apple-darwin` + `aarch64-apple-darwin` |
+| 机器 B（签名/新版系统） | macOS **27.0**（26A428）、**Apple Silicon arm64**；Xcode **27.0**（27A266a）；Developer ID 身份与 CI 公证凭据；当前执行设备；审计009核验已安装 **4d9339c / thin arm64 / ad-hoc**，源码 **c294b67**（旧 `Yinghuo.app` 与 `9e7ef41` 已 `lsregister -u` 并移到 `~/lampyris-pkg/backup/`）；验收步骤与一键脚本放在其 `~/lampyris-pkg/`。原生 CUA 清单可读，但应用 AX 抓取超时；隔离预览冒烟在审计009通过，真实 GUI 验收范围见报告009 |
+| Rust | ✅ 1.98.1（`rust-toolchain.toml` 固定）；设备 B 已有 `aarch64-apple-darwin` 与 `x86_64-apple-darwin`；A 的双 target 为历史记录 |
 | 宿主工具链 | A：CLT `swiftc`/`codesign`；B：Xcode 27 `swiftc`/`codesign`/`notarytool`/`stapler`；`make` 均可用 |
-| 输入法现状 | 本机 A 与机器 B 均为用户域 ad-hoc 安装（`cn.jokerhub.inputmethod.Lampyris`），已装到 **`88833aa`**（= main，universal ad-hoc 候选包）；分发/公证候选由 CI 出 universal |
+| 输入法现状 | 设备 B 当前 4d9339c / thin arm64 / ad-hoc；机器 A 安装状态本轮未访问，不能推断与 B 同步。正式分发候选由 CI 签名/公证 |
 | 数据 | `data/generated/`：`wubi86-core.tsv` / `pinyin-chars.tsv` / `pinyin-core.tsv` / **`variant-s2t.tsv`**（简繁，841KB，随包）；`pinyin-words.tsv` 8.4MB 不入库，可由 fetch 脚本复现 |
-| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；**122 项测试（含 doctest）**；`platforms/macos/` Swift 宿主；`fuzz/` cargo-fuzz |
+| 代码 | ✅ crates：`ime-core` `ime-table` `ime-pinyin` `ime-config` `ime-ffi` `ime-cli` `wubi-encoder`；审计009 **118 项通过（含 doctest）+ 1 项忽略**；`platforms/macos/` Swift 宿主；`fuzz/` cargo-fuzz |
 
 ## 8. 接手清单（新会话开始时）
 
@@ -136,174 +160,44 @@
 
 ## 9. 会话日志（倒序，保留最近 10 条；更早见 git 历史）
 
-### 2026-10-11 / pi：候选窗文本垂直居中修复
-- 现象：候选窗文字偏上（离屏像素实测 2x 下 textCenter 24 vs boxCenter 29）。根因：无边框 `NSTextField` 标签文本贴行盒顶部，CJK 字形重心偏上。
-- 修复：`CandidateWindow` 加光学垂直微调 `verticalNudge = -descender*0.75`（下移 ~2.5pt），实测 textCenter == boxCenter。
-- 回归：预览冒烟新增「候选窗文本垂直居中」断言（离屏渲染 + 暗像素带中心比对）。已重建并装入本机；`make verify` 全绿。
+### 2026-10-13 / Codex：Terminal实际输入四场景通过
+- ADR-147：逐键目标/进程/源保护完成，正常“你”及wq阶段failure/INT/TERM恢复原生全通过。
+- 完整状态/真实数据/TTY保持、自有窗口关闭；make verify零诊断/170产物通过。继续候选源码归并及最终包验收，不关闭MVP。
 
-### 2026-10-11 / pi：内存优化（MEM-1，ADR-082）
-- 简繁**懒加载**（默认不解析 `variant-s2t.tsv`）；`ime-table::Table` 改**紧凑数组**（code/text 连续缓冲 + 偏移，候选扁平）；设置面板**关闭即释放**视图树。
-- 新增 `crates/ime-ffi/examples/mem_probe.rs`（稳态基线）；`ime-ffi` 加 `rlib` 以供示例链接。
-- 实测：引擎稳态三表 **6.73 MiB**（五笔 2.19）；宿主全新 **43.8→23.3 M**；`run-imk-acceptance.sh` **14/14**（⑪ 23.3M ≤ 30M）。`make verify` 全绿。
-- 遗留：打开设置面板会临时抬升 ~15M（macOS 27 AppKit/SwiftUI 内部，`malloc_history` 定位）；引擎 `ime-pinyin` 精简推迟（已在预算内）。
+### 2026-10-13 / Codex：Terminal原生身份绑定通过
+- ADR-146：修正Homebrew启动器/实际Framework解释器路径差异，完整命令与TTY仍精确匹配。
+- 自有窗口/TTY/PID绑定、空输入stop及TTY恢复/精确关闭原生通过；5项回归及make verify零诊断/170产物，未发键或切源。
 
-### 2026-10-11 / pi：可复用真机测试组件入库（⑦⑧⑨ + ⑩）
-- 新增 `platforms/macos/tests/imk-auto.swift`（AX/鼠标/输入源/IME 菜单助手，`-warnings-as-errors`）+ `lib-imk-auto.sh` 共享函数 + `README.md`。
-- `run-panel-acceptance.sh`（⑦⑧⑨，AX 自动点击面板）**7/7**；`run-input-apps.sh`（⑩ 五应用，微信走合成按键+剪贴板）**6/6**。
-- 均自动还原词库文件、关闭自建窗口，**不热杀宿主**（热杀后需退出重开文本 App 才能恢复，已写入 §6 坑）。
+### 2026-10-13 / Codex：Terminal窗口绑定实现
+- ADR-145：新窗口/单标签TTY/接收器PID命令绑定及非busy清理实现，原生编译、四项PTY回归及make verify零诊断/170产物通过。
+- Terminal只读调用也AppleEvent超时，待用户核对授权；未发键或切源，不记录原生绑定PASS。
 
-### 2026-10-11 / pi：机器 B（macOS 27 / M1）复现 + 全自动化验收
-- 机器 B 自动验收：默认 **13/14**、`PERF+RESTART` **15/16**；唯一失败 **⑪ 内存 43.8MB > DoD 30MB**；按键 p95 0.555ms、零外联全过。
-- 自动化 ⑦⑧⑨（AX 点击面板）与 ⑩ **5/5**（TextEdit/Safari/Chrome/Terminal/微信；微信无 AX，用合成按键+剪贴板核验）；**Safari 地址栏残留复现**、Chrome 换 App/换窗口清空；微信 `Cmd+Z` 精确回退最后一次上屏。
-- ⑬ 亮/暗主题改为**进程内离屏渲染 + WCAG 对比度断言**（候选窗/设置面板，浅 21.0/暗 20.3）：`CandidateWindow`/`SettingsPanel` 加自测渲染接口，预览冒烟新增断言；`make verify` 全绿（补装 cargo-deny 0.20.2）。
-- 内存取证见 `MVP-05.md` §2.4：最小 AppKit 基线 7.7MB、引擎 23.56MiB、4 表 2.17MB→320k malloc 节点；非本版本回归，macOS 27/arm64 差异为主；记 MEM-1 待决。
-- 结果回填 `MVP-05.md` §2.3；测试窗口/用户词库已还原（39 行）。
+### 2026-10-13 / Codex：Terminal安全接收器完成
+- ADR-144：有界非执行TTY接收器、私有结果分类及信号后设置恢复实现，四项PTY测试及make verify零诊断/170产物通过。
+- 原生Terminal窗口/TTY/进程绑定及实际输入仍待验，不开放旧live；IT-01保持进行中。
 
-### 2026-10-11 / pi：按最新代码重打包并装两台机器
-- `packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（commit `88833aa`，3.4MB，SHA 校验通过；+ 对应源码包）。
-- 本机：`ditto` 安装 → `SOURCE-COMMIT=88833aa`；注销候选目录影子登记；冒烟 ✅、自动验收 14/14 与 16/16。
-- `air`：仓库 `git pull` 到 main（代理已通）；装同一包 → `88833aa`；旧 `9e7ef41` 与 `Yinghuo.app` 移到 `~/lampyris-pkg/backup/` 并 `lsregister -u`（备份同名 bundle 会变影子副本）。**待你在系统设置添加输入源**。
+### 2026-10-12 / Codex：Safari正文输入及中断恢复通过
+- ADR-143：唯一AXTextArea定位和同调用保护完成，正常提交“你”、前缀后failure/INT/TERM四场景通过。
+- 源/启用集合/真实数据恢复、自有窗口关闭；make verify零诊断/170产物，Safari范围/最终候选仍待验。
 
-### 2026-10-11 / pi：零诊断门禁（ADR-081）
-- `make verify`（pre-push 门禁）原先刷 477 行：清掉 cargo `output filename collision`、cargo-deny `wildcard` / `license-not-encountered`、swiftc 条件转换告警（**477 → 230 行，诊断 0**）。
-- 新增 `scripts/check-clean.sh` 并把 `make lint/test/deny/fast/verify` 全接上；CI `check` job 改为直接调这些 make 目标；`build.sh` / `dev-preview.sh` 的 `swiftc` 加 `-warnings-as-errors`。
-- 三个坑：内部路径依赖要写 `version`；`deny.toml` 置 `unused-allowed-license = "allow"`；同名 example 用 `[[example]] name` 取唯一输出名。
-- 效率不变：门禁只是同一次运行 + 一次 grep，不额外编译；重活仍只在 CI 的 `macos` job。
+### 2026-10-12 / Codex：Safari授权及离线窗口所有权通过
+- ADR-142：关闭后的隐藏零标签窗口不再误报，四次顺序创建/身份检查/精确关闭原生通过。
+- make verify零诊断/170产物通过；未输入/切源，不代表中断或Safari客户端输入验收。
 
-### 2026-10-11 / pi：本机 A 人工验收回填 + ⑩ 地址栏残留根因定位
-- 用户完成本机人工验收：**⑦⑧⑨⑬ 通过**（⑨ 反例「志向远大」→「未收录此读音…」符合预期）；**⑩ 不通过**：Chrome 地址栏切窗口/点击、Safari 地址栏点击后**残留原始编码字母**，其余应用正常。已回填 `docs/tasks/MVP-05.md`（12/13）与 `docs/发布说明.md` 已知限制。
-- 用临时诊断（写 `/tmp` 回调时序）+ AX 读取地址栏值定位根因：**IMK 在客户端失焦时把预编辑原样取消标记成普通文本**，`commitComposition:` 回调里各种清法均无效，而「我们主动清」（Esc）有效；Chrome 切窗口不调 `commitComposition:`、点击页面不投递 `leftMouseDown`。诊断代码已全部回退，工作区无改动。
-- 过程中发现 **LaunchServices 影子副本**（`packaging/out/.../Lampyris.app`、`build/Lampyris.app`）会让浏览器绑到影子副本、输入法静默失效——已 `lsregister -u`；做浏览器实验前先清影子副本。
-- 修法采纳 **(a)**：作为已知限制接受（2026-10-11），并同步 `docs/发布说明.md` §3、`docs/tasks/MVP-05.md`（结论改为「通过，可关闭」+ §2.3 机器 B 填写块）、`docs/macos-release-checklist.md` 与 `ROADMAP.md` P1-M4 验收项。**机器 B 复现交由用户执行**；后续若地址栏残留反馈变多，再评估「预编辑不入客户端」。
+### 2026-10-12 / Codex：Safari离线所有权夹具
+- ADR-141：私有无外部资源页面及新窗口/单标签/精确URL检查和关闭实现，原生编译通过。
+- 首次创建AppleEvent超时(-1712)，未取得ID；保留证据/现场，未发键或切源，Safari验收保持BLOCKED；15项回归及make verify零诊断/170产物通过。
 
-### 2026-10-11 / pi：人工验收交接手册 + 最新 ad-hoc 候选包
-- 新增 **[`docs/人工验收与多机复现.md`](docs/人工验收与多机复现.md)**：把剩下**只能人工做**的 ⑦⑧⑨⑩⑬ 写成逐步手册（怎么做 / 看到什么算对 / 记在哪），并给一套**第二台 Mac**（MVP-14 / P1-M5）的安装 + 复现流程（含 ad-hoc 包不能走 `install.sh`、需 `ditto` + `xattr` + 注销重登、AX 授权、结果回填）。
-- README / 发布清单 / MVP-05 均已交叉引用；**后续人工验收以该手册为准**。
-- 本机与 `air` 均用最新代码重打包并安装：`packaging/out/candidate-JinRr0/Lampyris-0.1.0-universal.zip`（3.4MB，universal；已核对 SHA、`ditto` 安装、注销 LaunchServices 影子副本）。两机 `SOURCE-COMMIT=88833aa`；本机自动验收 **14/14** 与 **16/16**、预览冒烟均通过；`air` 只差在系统设置里添加输入源。
+### 2026-10-12 / Codex：TextEdit预编辑范围验证通过
+- ADR-140：受所有权/焦点保护的marked-range动作，wq范围1,2、提交“你”后2,1，正常及预编辑阶段failure/INT/TERM原生通过。
+- 15项相关回归及make verify零诊断/170产物通过，原源/启用集合/真实数据保持；仅固定TextEdit场景，多应用/最终候选仍待验。
 
-### 2026-10-11 / pi：MVP-05 自动化补齐 + 用户词库性能（TD-01）
-- 验收脚本新增：**⑫ 输入期间零外联**（边打字边 8 次采样）、**⑪ 引擎按键时延**（`IMK_ACCEPTANCE_PERF=1`，断言 p95 <16ms）、**④ 重启后仍生效**（`IMK_ACCEPTANCE_RESTART=1`，重启宿主后状态徽标仍为「五笔」）。默认 **14/14**、`PERF+RESTART` **16/16**。
-- ⑦⑧⑨ 的**逻辑**由 `dev-preview.sh --smoke-test`（FFI：增词/导出/导入/反查）覆盖；面板 GUI 点击、⑩ 五应用、⑬ 亮/暗仍人工。
-- `ime-dict`：`Store::update` 改 `Arc::make_mut`（避免每次全表克隆）、`serialize` 改 `writeln!`；`learn_cost` 基准改分位输出。1 万条 **p50 4.3→1.5ms、p95 9→2.7ms**；`make verify` 全绿。
-- 文档：MVP-05 回填、reviews/007 记录 TD-01/02。
-- 验收脚本改为**只新建 1 个 TextEdit 文档并全程复用**，退出时 `trap` **自动关闭**自己新建的全部窗口（不再向桌面堆窗口）。
+### 2026-10-12 / Codex：前缀输入阶段中断恢复通过
+- ADR-139：wq输入后空格前failure/INT/TERM原生全通过，前缀核验及源/启用集合/真实数据恢复，独有文档关闭。
+- 14项相关回归、Python编译及make verify零诊断/170产物通过；客户端marked range及其他应用仍待验，不关闭IT-01。
 
-### 2026-10-11 / pi：移除设置帮助段 + 版本信息安全渠道按钮（ADR-080）
-- 设置面板**移除与快捷键配置重复的「帮助」段**；删除 `Sources/Help.swift`（及 `dev-preview.sh` 编译项）。
-- 「版本信息」窗口正文简化为「诊断 + 许可」，按钮变为 **「复制信息」「反馈问题」「反馈漏洞」**（后两者仅用户点击时异步跳转公开 Issues / 安全公告页）。
-- 验收脚本开头同时归一 `candidate.count=5`（除 `mode` 外），避免残留状态假失败。
-- 真机 AX 验证：窗口三按钮与正文正确；IMK 验收 `13/13`。
-- 文档：ADR-080 及 隐私与安全 / 发布说明 / reviews/007 / T-P2-02 / MVP-05 同步。
+### 2026-10-12 / Codex：TextEdit实际提交通过
+- ADR-137/138：原码透传与客户端建立顺序有关；先选独有源再创建文档后wq+空格提交“你”，固化驱动复跑通过。
+- 正常提交及发键前failure/INT/TERM恢复全通过，源/启用集合/真实数据保持；13项回归及make verify全绿/170产物。
+- 当前包仍只作隔离对照，不代表全部产品修复或组合中断/其他应用验收；IT-01及MVP未关闭。
 
-### 2026-10-11 / pi：状态项显示当前值 + 版本信息窗口（ADR-079）
-- 菜单状态项**只显示当前值**：`混输/五笔/拼音`、`中文/英文`、`全角/半角`、`简体/繁体`、`中文标点/英文标点`（调序：模式→中英→全半角→简繁→标点）；底部菜单项为「偏好设置」「版本信息」。
-- 「版本信息」窗口：正文＝诊断（版本/构建/提交/系统/架构）+ 许可 + 安全渠道；按钮「复制信息」与「反馈问题」（**用户显式点击**才用异步 `NSWorkspace.open` 跳转公开 Issues 页；打开窗口本身不跳转）。
-- 实机 AX 验证：菜单 5 个状态项 + 偏好设置/版本信息；窗口标题/按钮/正文均正确；打开窗口未自动跳转；验收 `13/13`。
-- 文档：ADR-079 及 隐私与安全 / 发布说明 / reviews/007 / T-P2-03 / MVP-05 同步。
-
-### 2026-10-11 / pi：反馈并入「关于」+ 菜单文案精简（ADR-078）
-- 删除菜单「反馈」项；「关于」窗口一窗全包：诊断（版本/构建/源码提交/系统/架构）+ 许可 + 反馈渠道链接 + 「复制反馈信息」；仍不联网、不打开浏览器。
-- 菜单文案：`关于萤火虫`→`关于`、`偏好设置`→`偏`。
-- `AboutUI.text()` 复用 `FeedbackUI.diagnostics()`；删除 `FeedbackUI.feedbackText()/show()` 与菜单「反馈」动作。
-- 预览冒烟、完整 `build.sh`、真机验收 `13/13` 均通过；已装到 `~/Library/Input Methods/`（待实机确认）。
-- 文档：ADR-078 及 隐私与安全 / 发布说明 / reviews/007 / T-P2-03 / MVP-05 同步。
-
-### 2026-10-11 / pi：真机反馈修复 + 面板/菜单重排（ADR-077）
-- 修 **输入焦点下按 `Ctrl+Shift+M` 误切中英（变英文）**：`ImeSession.shiftTransition` 增加 `otherModifier` 判定（Shift 期间出现 Ctrl/Option/Command 即不切中英），并修正重复 `flagsChanged` 重置状态的问题；单按 Shift 切中英不变。合成事件与真修饰键序列两种方式均验证。
-- 菜单：单修饰键改用**快捷键位**显示（`keyEquivalent="⇧"`、空修饰位）以与其它项右对齐；「偏好设置」去掉省略号与不生效的 `⌘,`。
-- 面板收窄为「设置（含帮助）/ 词库」；新增 `Sources/InfoWindow.swift`（`InfoWindow`/`AboutUI`），**反馈/关于回到菜单**（独立只读小窗，反馈带复制；仍不联网）。
-- 验收脚本：开始处归一 `mode=mixed`、⑥ 只还原 count（可重复，两轮 `13/13`）。
-- 文档：ADR-077；同步 隐私与安全 / 发布说明 / reviews/007 / T-P2-02/03 / MVP-05。
-- 已装 `SOURCE-COMMIT` 为 `4ef2ba9` 的 ad-hoc（含上述未提交改动），待用户实机确认菜单/面板观感。
-
-### 2026-10-11 / pi：MVP-05 自动验收（真机 IMK 层，续）
-- `run-imk-acceptance.sh` 增：**DoD④ 模式写盘**（ctrl+shift+m → `mode="wubi"` 已持久化）；主用例**两遍均 13/13 一致**。
-- 新增可选项 `IMK_ACCEPTANCE_CONFIG_ERROR=1`：**DoD⑥ 配置错误弹窗**（含行号 / 同一错误不重复 / 坏配置下仍可输入），单独跑 `17/17`（模态，跑完建议重选输入源或注销）。
-- 结论：自动覆盖 ①②③⑤⑥ 与 ⑪⑫ + 状态徽标/选字/Esc/模式写盘；剩 ④注销最终生效 ⑦⑧⑨面板 ⑩五应用 ⑬亮暗 待人工。
-- 记录：热杀宿主会使当前实例短暂降级（需重选输入源/注销恢复）——即 HANDOFF §6 的已知坑。
-
-### 2026-10-11 / pi：MVP-05 自动验收（真机 IMK 层）
-- 新增 `platforms/macos/tests/{im-select.swift,run-imk-acceptance.sh}`：在真机自动跑 ①五笔 ②拼音 ③来源标注 ⑤配置实时 ⑪内存 ⑫零外联 + 状态徽标/数字选字/Esc，**连跑两遍 12/12 一致**。
-- 需终端 App 授权「辅助功能」；脚本仅在新开空 TextEdit 输入，临时改 config 并自动还原。
-- `docs/tasks/MVP-05.md` 回填自动结果 + 脚本入口；剩 ④重启 ⑥错误弹窗 ⑦⑧⑨面板 ⑩五应用 ⑬亮暗 待人工。
-
-### 2026-10-11 / pi：MVP-05 验收表 + 「首次激活引导」决定不做
-- 新增 `docs/tasks/MVP-05.md`：13 项 DoD **单一可填表**（含环境栏、证据获取命令、结论、验收后收尾）；发布清单去重并指向它，006 引用同步。
-- **决定不做首次激活引导 B**（一次性提示 + 持久化会增状态与复杂度，不符合简洁调性；报告 007 §C3）。
-
-### 2026-10-11 / pi：输入状态回到一级菜单（ADR-076）
-- 一级菜单：输入模式 / 中·英 / 全·半角 / 中·英标点 / 简·繁（均显示**当前值 + 快捷键**），再「偏好设置…」与异常行。
-- 动作复用 `ImeSession.toggleEnglish/Width/Punctuation/Variant`（与快捷键同一实现）；单 `shift` 以 `⇧` 后缀展示。
-
-### 2026-10-11 / pi：菜单精简 + 设置面板升级为中心（ADR-075）
-- 输入法菜单只留 **「输入模式：<当前>」（显示 `hotkey.toggle_mode` 快捷键）** 与 **「偏好设置…」（⌘,）**，异常状态行仅在出错时出现。
-- 设置面板升级为**中心**：分段 `设置/词库/帮助/反馈/关于`；`show(session:)` 接入词库/反查。
-- 删除 `HelpUI.show()`/`FeedbackUI.show()`（文本改由面板分区承载）；词库/反查动作从 `InputController` 移入面板。
-- `dev-preview.sh` 新增编译 `Help.swift`；冒烟新增分区数=5 与帮助/反馈文本断言。
-
-### 2026-10-11 / pi：反馈入口改为完全本地（ADR-074）
-- 面板不再调用 `NSWorkspace.open`：只展示诊断信息 + 链接文本，唯一动作是「复制反馈信息」。
-- 移除可用性门控，菜单入口**始终显示**（离线可用，无死入口）。
-- 文档：ADR-074、`隐私与安全.md` §6、T-P2-03。
-
-### 2026-10-11 / pi：反馈入口卡死修复（异步打开 + 可用性门控；ADR-073）
-- 修复：`FeedbackUI` 主线程**同步** `NSWorkspace.open(url)` → 异步 `openExternally`（关闭代理/GitHub 不可达时点菜单不再卡死）。
-- 门控：菜单「反馈问题与建议…」仅在 `FeedbackUI.isAvailable`（本地 LaunchServices 判据，**不联网**）时显示。
-- 审计：全仓库仅此一处外部打开；其余 `runModal()` 均为用户可关闭模态，无同类阻塞。
-- 已知边界：网络层不可达（代理致 GitHub 打不开）在零网络前提下无法识别，入口仍显示但不再卡死。
-
-### 2026-10-11 / pi：开发工作流（分层 CI + DCO + 本地 hooks；ADR-072）
-- 新增 `docs/开发工作流.md` + ADR-072；`ci.yml` 分层：`check` 恒跑，`macos`/`fuzz` 仅⾜代码相关变更执行（job 仍上报，避免必需检查卡住）。
-- 新增 `make fast` / `make hooks`（pre-push→verify）、`scripts/ci-detect-code-changes.sh`、`.github/workflows/dco.yml`（Signed-off-by，**可见不阻断**）。
-- 团队化（CODEOWNERS / 必需 review / merge queue / 覆盖率与基准门禁）**延后**到 MVP 后或首个外部贡献者；未改动现有必需检查与分支保护。
-
-### 2026-10-11 / pi：三 PR 合并 + main 统一验收
-- #9（候选窗 A/C）→ #10（设置面板 ADR-070）→ #11（反馈入口 ADR-071）依次以 merge commit 合并；堆叠分支同步 main 后 CI（check/macos/fuzz）全绿。
-- main 统一验收：`make verify` ✅、预览冒烟 ✅、完整宿主 `build.sh` ✅；main push 的 CI 与 macOS Acceptance Package 均 success。
-- 遗留：本机安装仍是旧构建；需重装 main 产物做**真机验收**（菜单入口/面板/反馈）。
-
-### 2026-10-11 / pi：用户反馈入口（T-P2-03，ADR-071）
-- 输入法菜单加「反馈问题与建议…」→ `platforms/macos/Sources/Feedback.swift`：展示本地诊断信息（版本/构建/提交/系统/架构，不含隐私），可复制或**主动**用浏览器打开公开 GitHub Issues；敏感漏洞指向 `SECURITY.md`。
-- App 自身零网络、不预填 URL、不上报；`隐私与安全.md` §1 补充说明。冒烟新增链接/诊断断言；`make verify` ✅。
-
-### 2026-10-11 / pi：偏好设置面板（T-P2-02，ADR-070）
-- 新增 `platforms/macos/Sources/Settings.swift`：非模态 `NSPanel`，由 `ime_config_schema()` 动态建表（bool/stepper/下拉/文本框），菜单「偏好设置…」(⌘,) 打开；写入只经 `ime_config_set`。
-- Schema/ABI：`OptionSpec` 与 `ImeConfigSchemaOption` 追加 `title_zh`/`enum_labels_zh`；修正 `build_schema` enum 列表“空串终止”约定（旧单测只测 mode，靠相邻内存为 0 未暴露）。
-- `ConfigWatcher` 改为多观察者（宿主 + 设置面板）。冒烟新增设置断言；`make verify` ✅（184 产物零网络符号）。
-
-### 2026-10-11 / pi：体验打磨 A/C（多屏定位加固 + 悬停高亮）
-- A：`CandidateWindow.bestScreenIndex` 按相交面积选屏（副屏负坐标/跨屏/边缘），`show` 用 frame 选屏、visibleFrame 钳制；补预览冒烟选屏 + 负坐标/右下角几何断言。
-- C：`CandidateLabel` 加 `NSTrackingArea` 悬停高亮（复用标签时复位），补 `simulateHover`/`isHovered`/`isHoverRenderable` 断言。
-- 验证：`dev-preview.sh --smoke-test` ✅、`build.sh` 宿主编译 ✅、`make verify` ✅（184 产物零网络符号）。距排 B（首次激活引导）与真机实测。
-
-### 2026-10-10 / pi：T-P2-01 简繁转换（功能集补齐）
-- 数据：OpenCC `STCharacters`+`STPhrases`（Apache-2.0，固定 commit `8cf737a4`）→ `data/generated/variant-s2t.tsv`（42,430 条 / 841KB，随包）；登记 D11/D12 + 派生项、`数据来源与许可.md` §1.9；`fetch-opencc.sh` / `tools/prepare-variant.py`。
-- 配置 `input.chinese_variant` + 快捷键 `hotkey.toggle_variant`（默认 `ctrl+shift+f`，写回）；FFI 边界最长匹配简→繁，引擎/学习仍存简体；菜单状态与帮助面板新增简/繁。
-- ADR-069；预览冒烟新增简繁断言；`make verify` 122 passed（含 doctest）。
-
-### 2026-10-10 / pi：快捷键帮助面板（菜单入口）
-- 新增 `platforms/macos/Sources/Help.swift` + 菜单「快捷键与使用说明…」：**读取当前配置**展示实际生效按键；`build.sh` 用 `Sources/*.swift` 通配，新文件自动纳入。
-
-### 2026-10-10 / pi：菜单精简 + 简繁 P2 卡
-- 菜单移除与快捷键冗余的「临时中英切换」「临时全/半角」（快捷键已生效；模式项已显示状态），加分隔分组：模式 / 词库与反查 / 帮助 / 关于 / 条件错误项。新增 `docs/tasks/T-P2-01.md`。
-
-### 2026-10-10 / pi：对齐主流 Ctrl+. 与 ,/. 翻页（ADR-068）
-- 新增 `hotkey.toggle_punctuation`（默认 `ctrl+.`）与 `candidate.page_with_comma`（默认 true，组合态 `,`/`.` 翻页）；中英/全半角已与搜狗/微软/微信/RIME 一致。
-
-### 2026-10-10 / pi：中英「单独 Shift」真机修好（recognizedEvents）
-- 根因：IMK 默认只转发 `keyDown`，`flagsChanged` 必须在 `recognizedEvents` 中显式声明；另修返回类型应为 `Int`（写错会编译失败装成旧包）；接管 `leftMouseDown`。用户实机确认 `mask=5122`、单独 Shift 生效。
-
-### 2026-10-10 / pi：快捷键对齐搜狗/微信且可配置（ADR-067）
-- 新增 `hotkey.toggle_english`（默认 `shift` = 单独按 Shift）与 `hotkey.toggle_width`（默认 `shift+space`）；空格用**物理键码 49** 判定，修复真实 IMK 事件不生效。
-
-### 2026-10-10 / pi：MVP 收敛（T-MVP-07，ADR-066）
-- 词库每次 learn **25.6ms → ~4ms**：写入路径只 `write+rename`（不 fsync），`Store::flush()` 在会话结束/导出时统一 fsync；配置写入仍保留 fsync。用户候选改 BTreeMap 前缀 range。
-
-### 2026-10-10 / pi：MVP 收敛（T-MVP-06）
-- 候选窗**鼠标点选** + **状态徽标**（模式 + `全`）；新增 `ime_session_is_full_width()`；菜单标题显示 `混输·中·半角`；预览冒烟新增断言。
-
-### 2026-10-10 / pi：仓库转公开 + Pages + 分支保护（T-MVP-11）
-- 公开前扫描无密钥/个人路径；仓库转 **public**；启用 **Pages**（HTTP 200）；main 分支保护（必需 `check`/`macos`/`fuzz`，禁强推/删除）；Actions 免费恢复，CI（含 fuzz）与公证全绿。
-
-### 2026-10-10 / pi：MVP 收敛（T-MVP-08/09/10）
-- 固定 `cargo-deny 0.20.2`/`cargo-fuzz 0.13.2`；CI 加有界 fuzz job；新增 `security.yml` 每周 `cargo deny advisories`；`run-perf.sh` 定为回归基线；`005` 标历史、发布清单加「发布流程（汇总）」。

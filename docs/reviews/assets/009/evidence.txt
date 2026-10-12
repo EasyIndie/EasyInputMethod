@@ -1,0 +1,30 @@
+invalid_hotkey_saved=true
+duplicate_english_saved=true duplicate_mode_saved=true
+duplicate_trigger english=true mode_unchanged=true
+alias_hotkey_saved=true matched=true english_changed=false
+after_temporary_width config=false actual=true
+after_settings_false config=false actual=true
+alias_only_matched=false
+punctuation_write_failure consumed=true unchanged=true
+fuzzy_live old=["张"] after_config=["张"]
+fuzzy_next_input=["脏", "张"]
+bad_variant_accepted=0
+candidate_ax_role=AXUnknown ax_press=false
+settings_scope_sequence=["输入引擎", "输入引擎", "输入引擎", "输入引擎", "候选窗", "候选窗", "外观", "快捷键", "快捷键", "快捷键", "快捷键", "快捷键", "输入引擎", "输入引擎", "输入引擎"]
+probe_complete
+
+Environment: macOS 27.0 (26A428), arm64; source HEAD c294b67
+Installed app: SOURCE-COMMIT 4d9339c; thin arm64; ad-hoc; TeamIdentifier not set
+make verify: passed, zero diagnostics; 118 passed / 1 ignored; 162 artifacts privacy assertion passed
+preview smoke: passed using temporary configuration
+strict arm64 host: passed
+strict universal host: blocked by missing x86_64-apple-darwin Rust target
+10000-entry synthetic dictionary / 2200 keys:
+  p50=0.123ms p95=0.968ms max=8.615ms
+  steady_footprint=24.53MiB learn_max=1.935ms
+Cold traditional probe (single sample, release FFI only):
+  simplified=17.92MiB cold_configure_and_refresh=16.117ms
+  traditional=22.97MiB return_simplified=23.02MiB
+Native UI: inventory available, per-app AX inspection timed out; no completed live VoiceOver/multi-display validation
+
+Note: alias_hotkey_saved/matched=true reflects the still-present ctrl+space mode binding; alias_only_matched=false is the isolated control+space result with mode binding disabled.

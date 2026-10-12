@@ -1,50 +1,10 @@
-# 任务卡 backlog（粗粒度，到点时再拆）
+# 后续任务入口
 
-> 以下为历史阶段拆分草案，不能作为当前未完任务清单。
-> 当前执行队列见 [首版对照报告006](../reviews/006-macos-mvp-gap-review.md) 的MVP-01…14；P1-M2/M3多数已交付，P1-M4/M5仍需补齐缺口及验收。
-> 这些是 P1-M2 之后的阶段。**执行前先按"flash/pro"原则拆成细卡**（见本目录 README）。
-> 依赖关系见 `ROADMAP.md`。
+当前待推进项统一维护在 [迭代计划](../迭代计划.md)，近期实施卡见 [任务卡索引](README.md)，跨平台阶段见 [ROADMAP](../../ROADMAP.md)。本文件不再重复罗列已完成的 P1-M2/M3/M4 或发布工程实现。
 
-## P1-M2 — 配置 + 拼音兜底 + 混输
+- I0/I1：安全验收与已复现可靠性问题，先于最终候选验收。
+- I2：产品体验完整性与视觉、可访问性；IT-16…22已纳入MVP。
+- I3：日常试用、宿主性能与兼容性；I4：最终签名包与P1-M5第三方核验。
+- 后续：FSA/整句、数据结构替换及锁自动恢复只在计划列出的触发条件满足后评估；Windows/Linux/移动端按原阶段推进，P6 前不做语音。
 
-- **配置子系统**（`ime-config`）：Schema + `ArcSwap` 快照 + 原子写 + 广播 + 唯一写者。见 `docs/配置架构.md`。（建议 pro：并发/跨进程是难点；Schema 骨架可 flash）
-- **`PinyinBackend` trait + 内置轻量拼音兜底**（音节→高频字词表 + 简拼 + 反查）。数据几百 KB。
-- **混输合并**（五笔优先 + 拼音兜底 + 去重排序，source 标记）。
-- **`inputx-pinyin` spike**：验证 API/质量/体积，决定是否接入（ADR-008）。
-
-## P1-M3 — macOS 宿主
-
-- `ime-ffi` C ABI（会话 + 配置接口，唯一 unsafe 集中地）。
-- Swift + InputMethodKit 宿主（`IMKInputController`）。
-- 安装脚本 + 手动安装/Gatekeeper 说明。
-- CI 加 macOS runner。
-
-## P1-M4 — 交互完善
-
-- 候选窗（自绘 NSPanel、亮暗主题）。
-- 翻页/选择/退格/Esc；中英切换、标点、全半角。
-- 用户词库 + 词频学习（本地持久化、可导出/导入）。
-- 拼音反查完善。
-
-## P1-M5 — 发布工程
-
-- 打包脚本、`verify-no-network.sh` 接入 CI、SBOM、可复现构建说明。
-
-## P2 — 拼音体验 + 自研引擎
-
-- 整句/长词（n-gram）、模糊音、简拼优化。
-- 自研 FSA 拼音引擎替换（保持 trait）。
-- 词典数据结构：**文本 TSV + 排序数组**为当前实现；cedarwood/二进制/mmap 仅在触发条件下评估（ADR-060）。
-
-## P3 / P4 / P5 / P6
-
-- P3 Windows：Rust TSF spike（timebox 1–2 周，不成就退 C++ 薄壳）。
-- P4 Linux：Fcitx5 addon。
-- P5 Android / iOS（Android=Kotlin+JNI；iOS=Swift+staticlib，不申请 Full Access）。
-- P6 本地语音（`sherpa-onnx`，模型下载器放 workspace 外，避开 deny 网络禁令）。
-
-## 待调研（不阻塞）
-
-- TBD-2 五笔98/新世纪/郑码数据源
-- TBD-3 已由ADR-029关闭：有界TSV v1
-- TBD-4 ✅ ADR-056：英文/包名定为 Lampyris
+历史阶段细节查各任务卡与 ADR；不要把历史草案当成未完成清单。
