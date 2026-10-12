@@ -53,7 +53,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &["五笔优先 + 拼音兜底", "仅五笔", "仅拼音"],
         default: "\"mixed\"",
         title_zh: "输入模式",
-        doc_zh: "mixed = 五笔优先 + 拼音兜底（推荐） | wubi = 仅五笔 | pinyin = 仅拼音",
+        doc_zh: "优先使用五笔，想不起编码时用拼音兜底；也可选择仅五笔或仅拼音",
         scope: Scope::Engine,
     },
     OptionSpec {
@@ -73,7 +73,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &["万能键", "关闭"],
         default: "\"wildcard\"",
         title_zh: "Z 键行为",
-        doc_zh: "z 键：wildcard = 万能键 | none = 关闭",
+        doc_zh: "万能键可代替想不起的五笔编码；也可关闭",
         scope: Scope::Engine,
     },
     OptionSpec {
@@ -111,7 +111,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &["跟随系统", "浅色", "深色"],
         default: "\"auto\"",
         title_zh: "外观主题",
-        doc_zh: "auto = 跟随系统 | light | dark",
+        doc_zh: "跟随系统外观，或固定使用浅色、深色主题",
         scope: Scope::Appearance,
     },
     OptionSpec {
@@ -167,7 +167,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &["中文", "英文"],
         default: "\"chinese\"",
         title_zh: "标点风格",
-        doc_zh: "标点：chinese = 中文 | english = 英文",
+        doc_zh: "选择中文或英文标点；快捷键切换会保存此偏好",
         scope: Scope::Engine,
     },
     OptionSpec {
@@ -187,7 +187,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &["简体", "繁体"],
         default: "\"simplified\"",
         title_zh: "输出字形",
-        doc_zh: "输出字形：simplified = 简体 | traditional = 繁体（Ctrl+Shift+F 可切换）",
+        doc_zh: "选择简体或繁体输出；快捷键切换会保存此偏好",
         scope: Scope::Engine,
     },
 ];

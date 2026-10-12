@@ -26,7 +26,7 @@ BIN="$(mktemp -t ime_ffi_smoke)"
 trap 'rm -f "${BIN}"' EXIT
 
 echo "▶ 编译 Swift 冒烟（swiftc）"
-swiftc -O \
+swiftc -O -warnings-as-errors \
   -I "${ROOT}/crates/ime-ffi/include" \
   "${SCRIPT_DIR}/ffi_smoke.swift" \
   "${ROOT}/target/release/libime_ffi.a" \

@@ -10,6 +10,7 @@ use std::sync::{Arc, Mutex, OnceLock, Weak};
 const MAX_BYTES: u64 = 2 * 1024 * 1024;
 const MAX_ENTRIES: usize = 10_000;
 pub type Entries = BTreeMap<(String, String, String), u32>;
+type Changes = Vec<((String, String, String), Option<u32>)>;
 
 fn invalid() -> io::Error {
     io::Error::new(io::ErrorKind::InvalidData, "用户词库格式或容量无效")
@@ -34,18 +35,27 @@ pub fn parse(data: &str) -> io::Result<Entries> {
         return Err(invalid());
     }
     let mut entries = Entries::new();
-    for line in data
-        .lines()
-        .filter(|s| !s.is_empty() && !s.starts_with('#'))
-    {
+    for (index, line) in data.lines().enumerate() {
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let invalid_line = |reason: &str| {
+            io::Error::new(
+                io::ErrorKind::InvalidData,
+                format!("第{}行：{reason}", index + 1),
+            )
+        };
         let fields: Vec<_> = line.split('\t').collect();
         if fields.len() != 4 {
-            return Err(invalid());
+            return Err(invalid_line("须包含方案、编码、文本、词频四列"));
         }
-        validate(fields[0], fields[1], fields[2])?;
-        let count: u32 = fields[3].parse().map_err(|_| invalid())?;
+        validate(fields[0], fields[1], fields[2])
+            .map_err(|_| invalid_line("方案、编码或文本无效"))?;
+        let count: u32 = fields[3]
+            .parse()
+            .map_err(|_| invalid_line("词频须为正整数"))?;
         if count == 0 {
-            return Err(invalid());
+            return Err(invalid_line("词频须大于零"));
         }
         let key = (fields[0].into(), fields[1].into(), fields[2].into());
         entries
@@ -218,7 +228,7 @@ impl Store {
         }
         Ok(())
     }
-    fn update(&mut self, change: impl FnOnce(&mut Entries) -> io::Result<()>) -> io::Result<()> {
+    fn update(&mut self, change: impl FnOnce(&Entries) -> io::Result<Changes>) -> io::Result<()> {
         if let Some(parent) = self.path.parent() {
             fs::create_dir_all(parent)?;
         }
@@ -228,48 +238,79 @@ impl Store {
             .create_new(true)
             .open(&lock)?;
         let _guard = Guard(lock);
-        // 其它进程写过则先重载；否则直接用当前内存状态，避免每次全表重读 + 克隆（TD-01）。
         self.refresh()?;
-        {
-            let entries = Arc::make_mut(&mut self.entries);
-            change(entries)?;
-            if entries.len() > MAX_ENTRIES {
-                return Err(invalid());
-            }
+        let changes = change(&self.entries)?;
+        let entries = Arc::make_mut(&mut self.entries);
+        let mut undo = Vec::with_capacity(changes.len());
+        for (key, value) in changes {
+            let previous = if let Some(value) = value {
+                entries.insert(key.clone(), value)
+            } else {
+                entries.remove(&key)
+            };
+            undo.push((key, previous));
         }
-        let stamp = atomic_write(&self.path, &self.entries)?;
-        let key = SnapshotKey {
-            path: fs::canonicalize(&self.path)?,
-            stamp: stamp.clone(),
+        let result = if entries.len() > MAX_ENTRIES {
+            Err(invalid())
+        } else {
+            atomic_write(&self.path, entries)
         };
-        let mut cache = snapshots()
-            .lock()
-            .map_err(|_| io::Error::other("用户词库缓存锁不可用"))?;
-        remember(&mut cache, key, &self.entries);
-        self.stamp = Some(stamp);
+        let stamp = match result {
+            Ok(stamp) => stamp,
+            Err(error) => {
+                for (key, previous) in undo.into_iter().rev() {
+                    if let Some(value) = previous {
+                        entries.insert(key, value);
+                    } else {
+                        entries.remove(&key);
+                    }
+                }
+                return Err(error);
+            }
+        };
+        self.stamp = Some(stamp.clone());
         self.dirty = true;
+        // Snapshot caching is optional after a successful atomic commit.
+        if let (Ok(path), Ok(mut cache)) = (fs::canonicalize(&self.path), snapshots().lock()) {
+            remember(&mut cache, SnapshotKey { path, stamp }, &self.entries);
+        }
         Ok(())
     }
     pub fn learn(&mut self, scheme: &str, code: &str, text: &str) -> io::Result<()> {
         validate(scheme, code, text)?;
+        let key = (scheme.into(), code.into(), text.into());
         self.update(|entries| {
             let count = entries
-                .entry((scheme.into(), code.into(), text.into()))
-                .or_default();
-            *count = count.saturating_add(1);
-            Ok(())
+                .get(&key)
+                .copied()
+                .unwrap_or_default()
+                .saturating_add(1);
+            Ok(vec![(key, Some(count))])
         })
     }
     pub fn import(&mut self, path: &Path) -> io::Result<()> {
-        let incoming = read(path)?;
+        let incoming = read(path).map_err(|error| {
+            io::Error::new(error.kind(), format!("{}：{}", path.display(), error))
+        })?;
         self.update(|entries| {
-            for (key, value) in incoming {
-                entries
-                    .entry(key)
-                    .and_modify(|v| *v = (*v).max(value))
-                    .or_insert(value);
+            Ok(incoming
+                .into_iter()
+                .map(|(key, value)| {
+                    let merged = entries.get(&key).copied().unwrap_or_default().max(value);
+                    (key, Some(merged))
+                })
+                .collect())
+        })
+    }
+    /// Remove one exact user entry, including its learned frequency.
+    pub fn remove(&mut self, scheme: &str, code: &str, text: &str) -> io::Result<()> {
+        validate(scheme, code, text)?;
+        let key = (scheme.into(), code.into(), text.into());
+        self.update(|entries| {
+            if !entries.contains_key(&key) {
+                return Err(io::Error::new(io::ErrorKind::NotFound, "未找到此用户词条"));
             }
-            Ok(())
+            Ok(vec![(key, None)])
         })
     }
     pub fn export(&self, path: &Path) -> io::Result<()> {
@@ -459,6 +500,64 @@ mod tests {
         a.learn("wubi", "ab", "词甲").unwrap();
         assert_eq!(
             Store::load(&path).unwrap().entries()[&("wubi".into(), "ab".into(), "词甲".into())],
+            2
+        );
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn failed_atomic_write_and_capacity_keep_memory_and_disk_unchanged() {
+        let dir = std::env::temp_dir().join(format!(
+            "lampyris-rollback-{}-{}",
+            std::process::id(),
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let path = dir.join("user.tsv");
+        let mut store = Store::load(&path).unwrap();
+        store.learn("wubi", "ab", "原词").unwrap();
+        let shared = Arc::clone(&store.entries);
+        let before = fs::read(&path).unwrap();
+        let collision = path.with_extension(format!("tmp-{}", std::process::id()));
+        fs::write(&collision, "独立哨兵").unwrap();
+        assert!(store.learn("wubi", "ab", "原词").is_err());
+        assert!(store.learn("wubi", "ab", "新词").is_err());
+        assert_eq!(store.entries(), shared.as_ref());
+        assert_eq!(fs::read(&path).unwrap(), before);
+        assert_eq!(fs::read_to_string(&collision).unwrap(), "独立哨兵");
+        fs::remove_file(&collision).unwrap();
+        store.learn("pinyin", "ab", "原词").unwrap();
+        fs::write(&collision, "独立哨兵").unwrap();
+        let before_entries = store.entries().clone();
+        let before = fs::read(&path).unwrap();
+        assert!(store.remove("wubi", "ab", "原词").is_err());
+        assert_eq!(store.entries(), &before_entries);
+        assert_eq!(fs::read(&path).unwrap(), before);
+        fs::remove_file(&collision).unwrap();
+        store.remove("wubi", "ab", "原词").unwrap();
+        assert_eq!(store.entries().len(), 1);
+        assert!(store
+            .entries()
+            .contains_key(&("pinyin".into(), "ab".into(), "原词".into())));
+        assert_eq!(
+            store.remove("wubi", "ab", "原词").unwrap_err().kind(),
+            io::ErrorKind::NotFound
+        );
+        assert_eq!(Store::load(&path).unwrap().entries(), store.entries());
+        let full: Entries = (0..MAX_ENTRIES)
+            .map(|i| (("wubi".into(), "ab".into(), format!("词{i}")), 1))
+            .collect();
+        fs::write(&path, serialize(&full)).unwrap();
+        store.reload().unwrap();
+        let before = fs::read(&path).unwrap();
+        assert!(store.learn("wubi", "ab", "超限新词").is_err());
+        assert_eq!(store.entries(), &full);
+        assert_eq!(fs::read(&path).unwrap(), before);
+        store.learn("wubi", "ab", "词0").unwrap();
+        assert_eq!(
+            store.entries()[&("wubi".into(), "ab".into(), "词0".into())],
             2
         );
         fs::remove_dir_all(dir).unwrap();

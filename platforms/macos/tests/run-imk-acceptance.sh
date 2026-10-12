@@ -16,38 +16,57 @@
 # 用法：./platforms/macos/tests/run-imk-acceptance.sh
 set -uo pipefail
 
+# No live bypass until the installed host's learning state is isolated (IT-01).
+echo 'BLOCKED：真实IMK学习数据隔离尚未完成；旧入口禁用，不能用通过数量替代最终包覆盖清单。' >&2
+exit 3
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 WORK="$(mktemp -d)"
 CFG="$HOME/Library/Application Support/Lampyris/config.toml"
-BAK="$WORK/config.toml.bak"
+BAK="$WORK/config.original"
+CONFIG_JOURNAL="$WORK/config.json"
+CONFIG_READY=0
+ORIGINAL_SOURCE=""
+SOURCE_READY=0
+GUARD="$ROOT/platforms/macos/tests/fixture-guard.py"
 pass=0
 fail=0
-TE_BASE=0
-DOC_OURS=0
-
-te_docs() { osascript -e 'tell application "TextEdit" to count documents' 2>/dev/null; }
+source "${ROOT}/platforms/macos/tests/owned-resources.sh"
 
 cleanup() {
-  [ -f "$BAK" ] && cp "$BAK" "$CFG" 2>/dev/null || true
-  # 关闭本脚本新建的 TextEdit 文档（不保存），避免验收后桌面堆积一大堆窗口。
-  if [ "${DOC_OURS:-0}" = "1" ]; then
-    for _ in 1 2 3 4 5; do
-      now="$(te_docs)"
-      case "$now" in '' | *[!0-9]*) break ;; esac
-      [ "$now" -le "$TE_BASE" ] && break
-      osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
-      sleep 0.3
-    done
+  local status=$? recovery=0
+  if [ "$CONFIG_READY" = 1 ]; then
+    python3 "$GUARD" restore "$CONFIG_JOURNAL" || recovery=1
   fi
-  rm -rf "$WORK"
+  owned_cleanup || recovery=1
+  if [ "$SOURCE_READY" = 1 ]; then
+    "$WORK/imk-auto" select-exact "$ORIGINAL_SOURCE" >/dev/null 2>&1 || recovery=1
+  fi
+  if [ "$recovery" = 0 ]; then
+    rm -rf "$WORK"
+  else
+    echo "BLOCKED 恢复未完成；保留备份：$WORK" >&2
+    status=1
+  fi
+  exit "$status"
 }
+config_run() { python3 "$GUARD" run "$CONFIG_JOURNAL" "$@" || exit 1; }
+
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 echo "▶ 编译输入源选择器"
-swiftc -O "$ROOT/platforms/macos/tests/im-select.swift" -o "$WORK/im-select" || {
+swiftc -O -warnings-as-errors "$ROOT/platforms/macos/tests/im-select.swift" -o "$WORK/im-select" || {
   echo "❌ 编译 im-select 失败（需命令行工具链 swiftc）" >&2
   exit 1
 }
+
+swiftc -O -warnings-as-errors "$ROOT/platforms/macos/tests/imk-auto.swift" -o "$WORK/imk-auto" || exit 1
+ORIGINAL_SOURCE="$("$WORK/imk-auto" current-source)" || exit 1
+SOURCE_READY=1
+python3 "$GUARD" save "$CONFIG_JOURNAL" "$CFG" || exit 1
+CONFIG_READY=1
 
 echo "▶ 前置检查：选择萤火虫输入源"
 if ! "$WORK/im-select" >/dev/null 2>&1; then
@@ -55,7 +74,7 @@ if ! "$WORK/im-select" >/dev/null 2>&1; then
   exit 1
 fi
 
-[ -f "$CFG" ] && cp "$CFG" "$BAK"
+
 
 # --- 报告辅助 ---
 ok() { echo "  PASS  $1"; pass=$((pass + 1)); }
@@ -64,19 +83,16 @@ check() { [ "$2" = "$3" ] && ok "$1 -> '$3'" || no "$1 -> 期望'$3' 实际'$2'"
 grep_ok() { echo "$2" | grep -q "$3" && ok "$1 (含 $3)" || no "$1 (缺 $3)：$2"; }
 
 sel() { "$WORK/im-select" >/dev/null 2>&1; }
-text() { osascript -e 'tell application "TextEdit" to get text of front document' 2>/dev/null; }
+text() { owned_do read; }
 begin() {
-  osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1
-  osascript -e 'tell application "TextEdit" to set text of front document to ""' >/dev/null 2>&1
+  owned_do clear
   sleep 0.3
   sel
   sleep 0.4
 }
-type_() { local s="$1" i; for ((i = 0; i < ${#s}; i++)); do
-  osascript -e "tell application \"System Events\" to keystroke \"${s:$i:1}\"" >/dev/null 2>&1
-  sleep 0.13
-done; }
-key() { osascript -e "tell application \"System Events\" to key code $1" >/dev/null 2>&1; sleep 0.5; }
+type_() { owned_type "$1"; }
+key() { owned_do key "$1"; sleep 0.5; }
+
 cands() {
   osascript <<'OSA' 2>/dev/null
 tell application "System Events" to tell process "Lampyris"
@@ -96,15 +112,11 @@ nwin() { osascript -e 'tell application "System Events" to tell process "Lampyri
 echo "▶ 准备 TextEdit 空文档（只新建 1 个，结束时自动关闭）"
 osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1
 sleep 0.6
-now="$(te_docs)"
-case "$now" in '' | *[!0-9]*) now=0 ;; esac
-TE_BASE="$now"
-osascript -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
-DOC_OURS=1
+owned_textedit_create || exit 1
 sleep 1.2
 
 echo "▶ 辅助功能权限自检"
-if osascript -e 'tell application "System Events" to keystroke "x"' >/dev/null 2>&1; then
+if owned_do char x; then
   ok "可发送按键（辅助功能已授权）"
   key 53  # 取消可能的组合
 else
@@ -113,8 +125,8 @@ else
 fi
 
 # 统一初始状态为混输 + 每页 5 个候选（①-⑥ 依赖）；结束后由 BAK 还原
-sed -i '' 's/^mode = "[a-z]*"/mode = "mixed"/' "$CFG" 2>/dev/null
-sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG" 2>/dev/null
+config_run sed -i '' 's/^mode = "[a-z]*"/mode = "mixed"/' "$CFG" 2>/dev/null
+config_run sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG" 2>/dev/null
 sleep 1.0
 
 echo "▶ 验收用例"
@@ -130,11 +142,11 @@ grep_ok "⑤ 状态徽标" "$c" "混输"
 # ⑥ 配置实时生效：外部改 candidate.count（5→3），不按任何键
 begin; type_ "w"; sleep 0.8
 n1="$(cands | grep -oE '[1-9]\.' | wc -l | tr -d ' ')"
-sed 's/^count = 5/count = 3/' "$CFG" > "$WORK/c.new" && mv "$WORK/c.new" "$CFG"
+config_run sed -i '' 's/^count = 5/count = 3/' "$CFG"
 sleep 1.3
 n2="$(cands | grep -oE '[1-9]\.' | wc -l | tr -d ' ')"
 key 53
-sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG"
+config_run sed -i '' 's/^count = [0-9]*/count = 5/' "$CFG"
 sleep 0.6
 check "⑥ 配置实时生效(改前)" "$n1" "5"
 check "⑥ 配置实时生效(改后无按键)" "$n2" "3"
@@ -142,8 +154,7 @@ check "⑥ 配置实时生效(改后无按键)" "$n2" "3"
 # DoD④ 模式持久化：用 hotkey.toggle_mode 切换并验证已写入 config（供重启读取）
 echo "▶ DoD④ 模式持久化（写盘）"
 begin
-osascript -e 'tell application "System Events" to keystroke "m" using {control down, shift down}' >/dev/null 2>&1
-sleep 0.9
+config_run bash -c 'source "$1"; owned_record TextEdit window "$2" || exit 1; owned_do mode; sleep 0.9' mode-test "$ROOT/platforms/macos/tests/owned-resources.sh" "$OWNED_ID"
 mode="$(grep -oE 'mode = "[a-z]+"' "$CFG" | head -1)"
 [ "$mode" = 'mode = "wubi"' ] && ok "模式切换已写入 config（${mode}）" || no "模式写盘失败（${mode}）"
 
@@ -151,21 +162,21 @@ mode="$(grep -oE 'mode = "[a-z]+"' "$CFG" | head -1)"
 # 故单独用 IMK_ACCEPTANCE_CONFIG_ERROR=1 触发，且建议仅跑一次/跑完注销重登。
 if [ "${IMK_ACCEPTANCE_CONFIG_ERROR:-0}" = "1" ]; then
 echo "▶ DoD⑥ 配置错误弹窗（一次性）"
-printf 'mode = [oops\n' > "$WORK/bad.toml" && cp "$WORK/bad.toml" "$CFG"
+printf 'mode = [oops\n' > "$WORK/bad.toml" && config_run cp "$WORK/bad.toml" "$CFG"
 a=""
 for _ in $(seq 1 12); do a="$(alerttext)"; echo "$a" | grep -q "配置文件有误" && break; sleep 0.4; done
 grep_ok "弹窗出现" "$a" "配置文件有误"
 grep_ok "弹窗含行号" "$a" "第 1 行"
 osascript -e 'tell application "System Events" to tell process "Lampyris" to click button 1 of window 1' >/dev/null 2>&1
 sleep 0.6
-cp "$WORK/bad.toml" "$CFG"; sleep 1.2
+config_run cp "$WORK/bad.toml" "$CFG"; sleep 1.2
 check "同一错误不重复弹窗" "$(nwin)" "0"
 # 弹窗是模态，当前实例会短暂降级，故开一个新文档重建输入上下文（结束统一关闭）。
-osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+owned_textedit_create || exit 1
 sleep 1.5; sel; sleep 0.6
 type_ "wq"; sleep 0.4; key 49
 check "坏配置下仍可输入" "$(text)" "你"
-[ -f "$BAK" ] && cp "$BAK" "$CFG"; sleep 1.0
+config_run cp "$BAK" "$CFG"; sleep 1.0
 fi
 
 # ⑪ 引擎按键时延（可选：IMK_ACCEPTANCE_PERF=1；会跑 release 构建，较慢）
@@ -215,10 +226,10 @@ fi
 # DoD④ 重启后持久化（可选：IMK_ACCEPTANCE_RESTART=1）：会重启宿主，放在最后。
 if [ "${IMK_ACCEPTANCE_RESTART:-0}" = "1" ]; then
   echo "▶ DoD④ 重启后仍生效（重启宿主）"
-  sed -i '' 's/^mode = "[a-z]*"/mode = "wubi"/' "$CFG" 2>/dev/null; sleep 1
+  config_run sed -i '' 's/^mode = "[a-z]*"/mode = "wubi"/' "$CFG" 2>/dev/null; sleep 1
   killall Lampyris 2>/dev/null; sleep 1.5
   for _ in $(seq 1 10); do
-    osascript -e 'tell application "System Events" to key code 49 using {control down}' >/dev/null 2>&1
+    owned_do source
     sleep 1
     pgrep -x Lampyris >/dev/null && break
   done
@@ -226,7 +237,7 @@ if [ "${IMK_ACCEPTANCE_RESTART:-0}" = "1" ]; then
   c=""
   for _ in 1 2 3; do
     # 宿主重启后**旧文档的输入上下文已失效**，必须新建文档才能重新绑定。
-    osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+    owned_textedit_create || exit 1
     sleep 0.8
     sel; sleep 1.2
     type_ "wq"; sleep 1.0; c="$(cands)"; key 53

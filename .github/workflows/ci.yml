@@ -164,11 +164,10 @@ jobs:
           plutil -lint platforms/macos/build/preview/LampyrisPreview.app/Contents/Info.plist
           cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/Lampyris.app/Contents/Resources/Lampyris.icns
           cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/preview/LampyrisPreview.app/Contents/Resources/Lampyris.icns
-      - name: Verify signing cleanup without credentials
+      - name: Verify all offline macOS and packaging regressions
         if: steps.changes.outputs.code == 'true'
         run: |
-          python3 packaging/macos/tests/test-ci-sign.py
-          python3 platforms/macos/tests/test-install.py
+          make macos-offline-tests
       - name: Prepare and reproduce local release candidate
         if: steps.changes.outputs.code == 'true'
         run: |

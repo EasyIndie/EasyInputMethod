@@ -163,6 +163,7 @@ pub(crate) fn extract_config(doc: &DocumentMut) -> Result<(Config, Vec<String>),
             unknown.push(key.to_string());
         }
     }
+    crate::hotkey::validate(&config)?;
     Ok((config, unknown))
 }
 
@@ -313,10 +314,12 @@ fn scalar_from_value(spec: &schema::OptionSpec, value: &Value) -> Result<ConfigV
             .ok_or_else(|| {
                 ConfigError::invalid_value(spec.key, format!("期望 {}", values.join(" | ")))
             }),
-        ValueType::String => value
-            .as_str()
-            .map(|s| ConfigValue::String(s.to_string()))
-            .ok_or_else(|| ConfigError::invalid_value(spec.key, "期望字符串")),
+        ValueType::String => crate::config::string_value(
+            spec,
+            value
+                .as_str()
+                .ok_or_else(|| ConfigError::invalid_value(spec.key, "期望字符串"))?,
+        ),
     }
 }
 

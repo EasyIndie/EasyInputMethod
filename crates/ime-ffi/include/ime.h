@@ -25,6 +25,7 @@ extern "C" {
 #define IME_ERR_PARSE       -6  /* 语法/解析错误 */
 #define IME_ERR_LOCKED      -7  /* 配置文件被锁 */
 #define IME_ERR_PANIC       -8  /* 内部 panic（绝不应发生） */
+#define IME_ERR_NOT_FOUND   -9  /* 未找到精确用户词条 */
 
 /* ── ABI 版本 ───────────────────────────────────────── */
 /* 宿主启动时应校验；主版本不匹配应拒绝使用（避免结构体布局不一致）。 */
@@ -77,7 +78,9 @@ int32_t      ime_session_toggle_width(ImeSession* session);
 int32_t      ime_session_is_english(ImeSession* session);
 int32_t      ime_session_is_full_width(ImeSession* session); /* 1=全角，0=半角，-1=错误 */
 int32_t      ime_session_dictionary_error(ImeSession* session);
+ImeString    ime_session_dictionary_error_message(ImeSession* session); /* 拥有式字符串，调用ime_string_free */
 int32_t      ime_session_dictionary_add(ImeSession* session, const char* scheme, const char* code, const char* text);
+int32_t      ime_session_dictionary_remove(ImeSession* session, const char* scheme, const char* code, const char* text);
 int32_t      ime_session_dictionary_import(ImeSession* session, const char* path);
 int32_t      ime_session_dictionary_export(ImeSession* session, const char* path);
 int32_t      ime_session_configure(ImeSession* session);
@@ -97,10 +100,19 @@ void         ime_session_focus_out(ImeSession* session);
 void         ime_session_reset(ImeSession* session);
 void         ime_string_free(ImeString s);
 
+int32_t ime_session_variant_error(const ImeSession* session); /* 懒加载资源错误，不触发加载 */
+int32_t ime_session_is_traditional(const ImeSession* session); /* 有效繁体状态，非请求偏好 */
+
 /* ── 配置 ABI（线程安全） ────────────────────────────── */
 int32_t          ime_config_init(const char* path);  /* 宿主设定配置路径，须最先调用 */
 const ImeConfig* ime_config_snapshot(void);   /* 借用；勿释放；按线程保留，该线程下次调用前有效 */
 const char*      ime_config_get(const char* key); /* 字符串形式；NULL=未知/错误 */
+typedef struct ImeHotkey {
+    uint32_t kind;       /* 0=关闭 1=单Shift 2=组合键 */
+    uint32_t modifiers;  /* ctrl=1 alt=2 shift=4 cmd=8 */
+    uint32_t key;        /* ASCII码点，space=32 */
+} ImeHotkey;
+ImeHotkey        ime_config_hotkey(const char* key); /* 规范表示，错误/未知键返回关闭 */
 const char*      ime_config_last_error(void);      /* 最近一次加载/重载失败原因；空串=无错误；借用 */
 
 /* Schema：供设置界面动态渲染（界面零硬编码） */

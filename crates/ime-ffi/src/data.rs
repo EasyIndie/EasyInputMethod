@@ -80,9 +80,12 @@ pub(crate) fn pinyin(chars: &str, words: Option<&str>) -> Result<Arc<dyn PinyinB
         .transpose()
         .map_err(|_| IME_ERR_IO)?
         .unwrap_or_default();
-    let data: Arc<dyn PinyinBackend> = Arc::new(
-        TablePinyinBackend::from_tsv(&chars, &words, "内置轻量拼音").map_err(|_| IME_ERR_PARSE)?,
-    );
+    let backend =
+        TablePinyinBackend::from_tsv(&chars, &words, "内置轻量拼音").map_err(|_| IME_ERR_PARSE)?;
+    if !backend.has_character_data() || (key.1.is_some() && !backend.has_word_data()) {
+        return Err(IME_ERR_PARSE);
+    }
+    let data: Arc<dyn PinyinBackend> = Arc::new(backend);
     if cache.pinyin.len() >= 4 {
         cache.pinyin.remove(0);
     }
@@ -103,7 +106,7 @@ pub(crate) fn variant(path: &str) -> Result<Arc<VariantMap>, i32> {
         return Ok(data);
     }
     let text = std::fs::read_to_string(&key.path).map_err(|_| IME_ERR_IO)?;
-    let data = Arc::new(VariantMap::from_tsv(&text));
+    let data = Arc::new(VariantMap::from_tsv(&text).map_err(|_| IME_ERR_PARSE)?);
     if cache.variant.len() >= 4 {
         cache.variant.remove(0);
     }
@@ -114,6 +117,26 @@ pub(crate) fn variant(path: &str) -> Result<Arc<VariantMap>, i32> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[test]
+    fn packaged_pinyin_rejects_empty_characters_and_explicit_empty_words() {
+        let root =
+            std::env::temp_dir().join(format!("lampyris-pinyin-empty-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let chars = root.join("chars.tsv");
+        let words = root.join("words.tsv");
+        std::fs::write(&chars, "# no data").unwrap();
+        let chars_path = chars.to_str().unwrap();
+        assert!(matches!(pinyin(chars_path, None), Err(IME_ERR_PARSE)));
+        std::fs::write(&chars, "ni\t你\t100\n").unwrap();
+        std::fs::write(&words, "# no words").unwrap();
+        assert!(matches!(
+            pinyin(chars_path, Some(words.to_str().unwrap())),
+            Err(IME_ERR_PARSE)
+        ));
+        assert!(pinyin(chars_path, None).is_ok());
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
     #[test]
     fn tables_are_shared_and_changed_files_create_a_new_snapshot() {
         use ime_core::Engine;

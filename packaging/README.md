@@ -22,3 +22,7 @@ make verify                            # 完整审计通过后保存提交
 同环境离线载荷复现：`./platforms/macos/tests/run-repro.sh <候选ZIP>`，在临时目录核验二进制包 SHA/软链及**同目录源码包**的 SHA 后，从源码包 vendor 离线构建；去签名可执行文件及默认词表须逐字节一致，不安装应用。正式构建通过 ADR-033 归一化编译路径和目标版本；需要相同架构、Rust、Swift/SDK 与编译选项。
 
 自动验收出包采用 GitHub Actions + App Store Connect 团队 API 密钥，凭据一次配置后由 CI 签名/公证/上传附件，见 [CI-ACCEPTANCE.md](macos/CI-ACCEPTANCE.md)。普通 PR 自动提供无凭据审核包。
+
+### 发布附件门禁（ADR-112）
+
+Release演练和正式发布在相同分支前运行`python3 packaging/macos/validate-release.py dist v0.1.0 <40位提交>`。只有四个核验附件会进入上传列表；校验外部/内部摘要、版本/提交、实际双架构和对应离线源码。工具不解压执行候选；Developer ID与公证仍在macOS核验。当前只完成合成回归及本机Mach-O检查，最终签名附件和dry_run尚未运行。

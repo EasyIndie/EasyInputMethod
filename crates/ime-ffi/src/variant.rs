@@ -14,7 +14,7 @@ pub struct VariantMap {
 
 impl VariantMap {
     /// 解析 `simplified\ttraditional` TSV（忽略空行与 `#` 注释）。
-    pub fn from_tsv(text: &str) -> Self {
+    pub fn from_tsv(text: &str) -> Result<Self, &'static str> {
         let mut entries: HashMap<String, String> = HashMap::new();
         let mut max_len = 0usize;
         for raw in text.lines() {
@@ -23,10 +23,13 @@ impl VariantMap {
                 continue;
             }
             let Some((key, value)) = line.split_once('\t') else {
-                continue;
+                return Err("简繁映射缺列");
             };
             let (key, value) = (key.trim(), value.trim());
-            if key.is_empty() || value.is_empty() || key == value {
+            if key.is_empty() || value.is_empty() || value.contains('\t') {
+                return Err("简繁映射列无效");
+            }
+            if key == value {
                 continue;
             }
             max_len = max_len.max(key.chars().count());
@@ -38,7 +41,10 @@ impl VariantMap {
             let len = key.chars().count();
             buckets[len - 1].insert(key, value);
         }
-        Self { buckets, max_len }
+        if max_len == 0 {
+            return Err("简繁映射无有效数据");
+        }
+        Ok(Self { buckets, max_len })
     }
 
     /// 最长匹配转换：从左到右，优先命中更长的 key（词组优先于单字）。
@@ -77,7 +83,7 @@ mod tests {
 
     #[test]
     fn longest_match_prefers_phrases_then_chars() {
-        let map = VariantMap::from_tsv("# header\n发\t發\n头发\t頭髮\n后\t後\n");
+        let map = VariantMap::from_tsv("# header\n发\t發\n头发\t頭髮\n后\t後\n").unwrap();
         // 词组优先：头发 → 頭髮（而不是 頭發）。
         assert_eq!(map.to("头发"), "頭髮");
         // 单字兜底。
@@ -91,8 +97,16 @@ mod tests {
     }
 
     #[test]
-    fn empty_map_is_identity() {
-        let map = VariantMap::from_tsv("");
-        assert_eq!(map.to("头发"), "头发");
+    fn empty_and_corrupt_maps_are_rejected() {
+        for text in [
+            "",
+            "# comment",
+            "发\t发",
+            "broken",
+            "发\t發\nbroken",
+            "发\t發\textra",
+        ] {
+            assert!(VariantMap::from_tsv(text).is_err());
+        }
     }
 }

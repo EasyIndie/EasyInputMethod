@@ -70,6 +70,16 @@ cargo run -p ime-pinyin --example generate_pinyin
 python3 tools/prepare-pinyin-core.py
 ```
 
+## IMK包标识与注册排错（ADR-120…122）
+
+本仓库的生产和隔离输入法bundle标识必须保留完整的`.inputmethod.`命名段。生产为`cn.jokerhub.inputmethod.Lampyris`，隔离为`cn.jokerhub.inputmethod.LampyrisIMKTest.<UUID>`。这指bundle标识，不是包后缀；包后缀仍为`.app`。模式ID和连接名必须由同一身份派生，不能只改CFBundleIdentifier。
+
+设备B（macOS27/arm64）的实机对照：原隔离标识`cn.jokerhub.lampyris.imktest.<UUID>`在软链、实体ad-hoc及实体Developer ID三种条件下均出现TIS返回0而无对应输入源。保留`.inputmethod.`后，实体ad-hoc包枚举了父源与default模式两个身份。初次证据目录为`build/source-probe-identity-7cb49b02/`；完整驱动复跑证据为`build/source-probe-e2e-6aadf5a7/`（注册/完整恢复exit0），旧失败目录见IT-01任务卡。这是该设备的因果对照和仓库命名契约，尚未证明所有macOS版本均如此；Apple SDK只描述模式ID构造中的该命名段，不据此伪称官方强制规则。
+
+排查“注册返回0但没有输入源”时：先核对完整bundle标识、两份模式清单及连接名，再看LaunchServices识别结果，最后在TIS中核对精确ID与bundle属性。不要仅凭返回0、lsregister成功或有签名就宣称注册成功，也不要无依据反复请求辅助功能权限。身份检查已接入隔离构建与实体注册前置校验，CI回归拒绝缺段标识、连接名或模式清单漂移。
+
+清理时TISDisable返回0也不足以证明状态恢复：设备B实测default模式可暂仍显示enabled。仅在当前源和非测试启用集合未变、整个测试文件树仍匹配时，注销并移除自己的实体包，再用新进程检查完整启用集合恢复及测试身份均禁用。系统可能保留禁用缓存；不要删除系统偏好或其他输入法来清理缓存。详细安全入口见[测试规范](tests/README.md)。
+
 ## 手动装载（历史基础输入验收通过，当前候选待验收）
 
 ADR-023 修正后的经典 `.app` + IMKServer 已通过本机 macOS 27 装载验收：Developer ID 签名、公证、系统域安装、重启后，用户确认 TextEdit/Safari 的 `wq→你`、`nihao→你好` 正常。每次重新构建仍须重新签名/公证；`build.sh` 的 ad-hoc 产物用于开发校验。流程已固化在 packaging/macos/ 与 install.sh/uninstall.sh；最终候选安装验收待完成。
@@ -126,8 +136,8 @@ make macos-preview
 
 - **唯一配置文件**：`~/Library/Application Support/Lampyris/config.toml`
   （宿主启动时经 `ime_config_init` 告知引擎，绝不使用 `UserDefaults`，见 `docs/配置架构.md`）；
-- 首次运行前文件可以不存在 → 使用 Schema 默认值；外部修改约 350–550ms 后加载；语法错误保留上一份有效配置。正式宿主下一次按键应用模式/页大小，候选窗主题自动刷新。
-- 切换模式：文本输入菜单里的「切换输入模式」（当前实现；正式交互属 P1-M4），
+- 首次运行前文件可以不存在 → 使用 Schema 默认值；外部修改约 350–550ms 后加载；语法错误保留上一份有效配置。正式宿主订阅配置变化并刷新模式/页大小/外观；审计009发现部分候选相关选项在组合中未重算，修复见 IT-06。
+- 切换模式：文本输入菜单显示当前「混输 / 五笔 / 拼音」并点击循环切换（ADR-079），
   或直接改 `config.toml` 的 `mode = "mixed" | "wubi" | "pinyin"`。
 
 ## 已知限制 / 待人工验证
@@ -135,7 +145,7 @@ make macos-preview
 - 正式候选已在 macOS 27 / Apple Silicon 通过实体输入、分页、退格/Esc、失焦清理、回车原码、模式切换、拼音反查及图标显示复核，详见 `docs/reviews/005-macos-formal-acceptance.md`。
 - 候选窗支持分页、亮暗主题和屏幕边界限制；真实客户端长时间使用、光标定位与撤销行为仍需按发布清单逐项验收。
 - 候选为 **universal（arm64 + x86_64）**，由 CI 构建；macOS 13（Intel）已用 ad-hoc 在本机完成实体输入验收（ADR-055）。目标 macOS 13+ 不代表所有版本均经实机验收。
-- 用户词库菜单和重启保留、完整 IMK 端到端性能及长时间多应用验收仍待完成，见 `docs/macos-release-checklist.md`。
+- 用户词库操作及重启保留已有历史验收；完整 IMK 性能、长时间多应用、多屏/缩放和最终签名包仍需补验，见 `docs/迭代计划.md`。真实环境脚本需先完成 IT-01/02 数据保护修复。
 
 ## 为宿主扩展的 `ime-ffi` 入口（T-M3-02）
 
@@ -167,7 +177,7 @@ macOS job 独立运行 Rust 全量验证、正式宿主构建、按登记许可�
 
 ## 输入交互
 
-Ctrl+Shift+Space 临时中英切换，Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。
+单独按 Shift（松开且期间无其它键，默认）临时中英切换，Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。
 
 ## 用户词库与学习
 
@@ -200,10 +210,34 @@ bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
 
 组合中按 Return/Enter 提交原始字母，空格或数字键提交中文候选；非组合态回车交由当前应用处理。
 
-正式宿主在组合结束、输入源停用及当前客户端应用失活时取消未选组合，清空预编辑并隐藏候选；不自动提交未选择文字。
+正式宿主在组合结束、输入源停用及客户端失活时尝试取消未选组合、清空预编辑并隐藏候选；Safari/Chrome 地址栏部分失焦场景仍会保留原码，已接受并在发布说明披露（UX-1）。
 
 多页候选显示“当前页/总页数”，用 `-`/`=` 或 Page Up/Page Down 翻页；每页默认七项，数字键选当前页候选。
 
 ### 解压权限与菜单栏外观
 
 发行ZIP使用Finder或 `ditto -x -k <候选.zip> <目录>` 解压，保留程序执行权限。Python zipfile.extractall等丢失权限的解压方式会使输入源可见但宿主无法启动；安装预检拒绝这种候选。菜单栏采用18pt透明单色飞行萤火虫符号与2x资源，Info.plist声明 `TISIconIsTemplate=true`，跟随系统菜单栏亮暗及选中着色；无需新增配置文件。
+
+### 构建身份（ADR-113）
+
+构建前检查所需Rust目标，缺项不会开始编译或清理旧暂存目录。源码Info.plist只保留产品字段；应用plist中的SDK/构建系统/Xcode身份由实际所选SDK和工具链派生，CLT不虚构Xcode字段。`python3 tools/macos-build-metadata.py check-contract platforms/macos/Info.plist platforms/macos/build/Lampyris.app/Contents/Info.plist`只核对产品契约；签名、公证与最终源码身份仍按分发流程验收。
+
+### 隔离实体包路径与显示名称（ADR-124/126）
+
+测试包的`IMKTestRoot`为0600所有权声明，不是配置文件；Python可能返回`/private/var/...`，Foundation的规范化路径可能为`/var/...`，应按同一规范化规则比较，不能以原始字符串判定不同目录。错误声明和过宽权限均须拒绝启动。
+
+设备B实测`CFBundleDisplayName`设为中文隔离名称时，TIS父源实际名称仍为`LampyrisIMKTest`，模式名称为完整测试ID。向用户提供添加名称前先读取`kTISPropertyLocalizedName`；TIS枚举、启用返回0、父源真正启用、系统设置可添加及模式选择成功是不同检查。当前父源仍disabled、选择返回-50，原因未证实，不能直接归因权限。用户改变输入源后不得按旧日志强行恢复。
+
+### 登录扫描与隔离根生命周期（ADR-130…132）
+
+设备B本次对照：TIS登记/服务端点提交、Developer ID签名及公证accepted均不能证明立即可选择；重新登录后父源与模式启用，选择/恢复四路径通过。旧未公证测试源也同时出现，因此不能把公证称为本次发现生效的唯一原因；这只是当前系统/登录会话的观察，不是所有macOS必须注销的保证。
+
+私有临时根可能在重新登录时被系统清理，菜单可见不代表测试入口能启动。已绑定公证包不得下载后改IMKTestRoot；需要先验证签名/票据/UUID/声明/系统临时路径，再独占恢复同一0700空根和0600所有权标记，配置仍由ime-config初始化。不得恢复到真实Lampyris目录。已装已启用源测试需以新基线保持其完整启用集合，不直接复用会注销移除包的注册驱动。
+
+### 隔离验收：重复启用和实际授权主体
+
+设备B本次已启用父源/模式的选择探针中，重复调用TISEnableInputSource(parent)后系统设置立即成为前台。助手先读取enabled，仅未启用时调用启用API，避免无意义副作用；修复后四路径恢复通过。此为本机观察，不能推广为所有版本保证，也不能取消逐键焦点保护（ADR-134）。
+
+Codex辅助功能/自动化显示允许，不保证子进程执行路径都已获授权。本次对自有TextEdit控件的只读AX查询明确返回“osascript不允许辅助访问”（-1719）；以tccd日志的responsible/subject及精确宿主路径为准请求用户允许，报错中的执行者名称不能单独确定授权主体，不通过绕过AX检查继续发键。输入源发现/选择、前台检查、AX授权、真实提交分别记录。
+
+2026-10-12责任归属对照（ADR-136）：本机实际链ChatGPT.app→内嵌CodexCLI→Python→osascript。TCC责任主体com.openai.codex、路径/Applications/ChatGPT.app，显示名称ChatGPT；允许该精确宿主后UI elements enabled=true且AX检查通过。不要按应用显示名或osascript报错猜测需授权哪个实体，先用进程PID对应日志。证据build/tcc-chain-2n0505ky；未重置TCC或读取其数据库。原生提交断言仍单独待诊断，不等同最终MVP通过。

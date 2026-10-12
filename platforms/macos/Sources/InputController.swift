@@ -14,9 +14,7 @@ final class LampyrisInputController: IMKInputController {
     private var candidateCount = 7
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
-    private var lastAlertedConfigError: String?
     private var dataLoadError: String?
-    private var lastAlertedDataError: String?
 
     // MARK: - 生命周期
 
@@ -89,15 +87,17 @@ final class LampyrisInputController: IMKInputController {
                 session = ImeSession(
                     wubiPath: wubi, pinyinCharsPath: charsPath, pinyinWordsPath: wordsPath)
                 if session == nil {
-                    failure = "码表损坏或无法解析：\(wubi)"
+                    failure = "码表或拼音数据损坏、为空或无法读取，请重新安装完整包：\(resources.path)"
                 } else if charsPath == nil {
                     failure = "缺少拼音字表，混输的拼音兜底不可用：\(chars)"
+                } else if wordsPath == nil {
+                    failure = "缺少拼音词表，拼音词组及简拼不可用：\(words)"
                 }
             } else {
                 failure = "缺少码表：\(wubi)"
             }
             let variant = resources.appendingPathComponent("variant-s2t.tsv").path
-            if let s = session, fm.fileExists(atPath: variant) {
+            if let s = session {
                 _ = s.setVariantData(variant)
             }
         } else {
@@ -124,6 +124,7 @@ final class LampyrisInputController: IMKInputController {
         presentConfigError()
         guard let session else { return }
         session.prepare()
+        presentDataError()
         if let count = ImeConfig.int("candidate.count"), (3...9).contains(count) {
             candidateCount = count
             session.setPageSize(count)
@@ -142,35 +143,15 @@ final class LampyrisInputController: IMKInputController {
 
     /// 配置错误在宿主中可见；同一错误只提示一次，修复后自动复位（ADR-059）。
     private func presentConfigError() {
-        guard let message = ImeConfig.errorMessage() else {
-            lastAlertedConfigError = nil
-            return
-        }
-        guard message != lastAlertedConfigError else { return }
-        lastAlertedConfigError = message
-        NSLog("萤火虫：\(message)")
-        DispatchQueue.main.async {
-            let alert = NSAlert()
-            alert.messageText = "配置文件有误，已沿用上一份有效设置"
-            alert.informativeText = message
-            alert.runModal()
-        }
+        ProcessErrorPresenter.shared.update(
+            channel: "configuration", title: "设置未生效，已沿用上一份有效设置",
+            current: { ImeConfig.errorMessage() })
     }
 
-    /// 数据文件异常在宿主中可见；同一错误只提示一次（ADR-063）。
     private func presentDataError() {
-        guard let message = dataLoadError else {
-            lastAlertedDataError = nil
-            return
-        }
-        guard message != lastAlertedDataError else { return }
-        lastAlertedDataError = message
-        NSLog("萤火虫：\(message)")
-        DispatchQueue.main.async {
-            let alert = NSAlert()
-            alert.messageText = "数据文件异常"
-            alert.informativeText = message + "\n\n请重新安装完整包；排查步骤见文档「故障恢复」。"
-            alert.runModal()
+        ProcessErrorPresenter.shared.update(channel: "resources", title: "数据文件异常") { [weak self] in
+            guard let self, let message = self.dataLoadError ?? self.session?.variantErrorMessage else { return nil }
+            return message + "\n\n请重新安装完整包；排查步骤见文档「故障恢复」。"
         }
     }
 
@@ -213,7 +194,7 @@ final class LampyrisInputController: IMKInputController {
         if let message = ImeConfig.errorMessage() {
             alerts.append("配置错误：\(message)")
         }
-        if let message = dataLoadError {
+        if let message = dataLoadError ?? session?.variantErrorMessage {
             alerts.append("数据文件错误：\(message)")
         }
         if !alerts.isEmpty {
@@ -231,7 +212,7 @@ final class LampyrisInputController: IMKInputController {
     private func stateItem(_ title: String, action: Selector, hotkeyKey: String) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
         item.target = self
-        let binding = ImeConfig.string(hotkeyKey)
+        let binding = ImeConfig.hotkey(hotkeyKey)
         if !item.applyConfiguredHotkey(binding),
             let symbol = NSMenuItem.singleModifierSymbol(binding)
         {
@@ -248,7 +229,8 @@ final class LampyrisInputController: IMKInputController {
         (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese" ? "中文标点" : "英文标点"
     }
     private func variantState() -> String {
-        (ImeConfig.string("input.chinese_variant") ?? "simplified") == "traditional" ? "繁体" : "简体"
+        if let session, session.variantError != IME_OK { return "简体（繁体数据异常）" }
+        return session?.isTraditional == true ? "繁体" : "简体"
     }
 
     @objc private func toggleEnglish(_ sender: Any?) {
@@ -300,7 +282,8 @@ final class LampyrisInputController: IMKInputController {
 
     /// 候选窗内的紧凑状态徽标：模式（+ 全）。
     private func statusBadge() -> String {
-        (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
+        let width = (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
+        return session?.variantErrorMessage == nil ? width : "\(width)·简（异常）"
     }
 
     /// 打开非模态设置面板（ADR-070/075）：面板承载设置/词库/帮助/反馈/关于。
@@ -319,6 +302,7 @@ final class LampyrisInputController: IMKInputController {
         let next = order[((order.firstIndex(of: current) ?? -1) + 1) % order.count]
         guard ImeConfig.setString("mode", next) else {
             let alert = NSAlert()
+            ImeAppearance.applyTheme(to: alert.window)
             alert.messageText = "无法保存输入模式"
             alert.informativeText = "请检查配置文件权限。当前输入模式保持不变。"
             alert.runModal()
@@ -370,7 +354,9 @@ final class LampyrisInputController: IMKInputController {
             clearMarked(client)
             candidateWindow?.hide()
         }
-        if session.shortcut(event, persistMode: true) {
+        let shortcut = session.shortcut(event, persistMode: true)
+        if shortcut.consumed {
+            if shortcut == .failed { presentConfigError() }
             if session.isComposing {
                 updateMarked(client, session.buffer)
                 showCandidates(client, session: session)
@@ -382,11 +368,6 @@ final class LampyrisInputController: IMKInputController {
         }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
-        if flags.contains(.control) {
-            // 诊断（临时）：记录到达宿主但未匹配快捷方式的 Ctrl 组合。
-            // 排查命令：log show --last 5m --predicate 'eventMessage CONTAINS "萤火虫"'
-            NSLog("萤火虫：未匹配 Ctrl 组合 keyCode=\(event.keyCode) flags=\(flags.rawValue) chars=\(event.charactersIgnoringModifiers ?? "nil")")
-        }
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
         }
@@ -485,7 +466,8 @@ final class LampyrisInputController: IMKInputController {
         }
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            status: statusBadge())
+            status: statusBadge(), hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
+                english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"))
         window.show(at: caretRect(client))
     }
 
@@ -506,40 +488,14 @@ private extension NSMenuItem {
     ///
     /// 成功返回 `true`；`none`/空/无法表示为菜单快捷键（如单 `shift`）返回 `false`。
     @discardableResult
-    func applyConfiguredHotkey(_ setting: String?) -> Bool {
-        guard let setting, !setting.isEmpty, setting.lowercased() != "none" else { return false }
-        let parts = setting.lowercased().split(separator: "+").map(String.init)
-        guard let key = parts.last else { return false }
-        var mask: NSEvent.ModifierFlags = []
-        for part in parts.dropLast() {
-            switch part {
-            case "ctrl", "control": mask.insert(.control)
-            case "shift": mask.insert(.shift)
-            case "alt", "option": mask.insert(.option)
-            case "cmd", "command": mask.insert(.command)
-            default: return false
-            }
-        }
-        let equivalent: String
-        switch key {
-        case "space": equivalent = " "
-        default:
-            guard key.count == 1 else { return false }
-            equivalent = key
-        }
-        keyEquivalent = equivalent
-        keyEquivalentModifierMask = mask
+    func applyConfiguredHotkey(_ binding: ConfiguredHotkey) -> Bool {
+        guard binding.kind == 2 else { return false }
+        keyEquivalent = binding.equivalent
+        keyEquivalentModifierMask = binding.modifiers
         return true
     }
 
-    /// 单修饰键绑定（如 `shift`）不能做成菜单快捷键，返回其符号用于标题后缀。
-    static func singleModifierSymbol(_ setting: String?) -> String? {
-        switch setting?.lowercased() {
-        case "shift": return "⇧"
-        case "ctrl", "control": return "⌃"
-        case "alt", "option": return "⌥"
-        case "cmd", "command": return "⌘"
-        default: return nil
-        }
+    static func singleModifierSymbol(_ binding: ConfiguredHotkey) -> String? {
+        binding.kind == 1 ? "⇧" : nil
     }
 }

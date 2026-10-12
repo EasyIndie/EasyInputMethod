@@ -94,12 +94,17 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         top.alignment = .firstBaseline
         top.spacing = 10
         top.addArrangedSubview(title)
-        if let control = buildControl() { top.addArrangedSubview(control) }
+        if let control = buildControl() {
+            control.setAccessibilityLabel(option.title)
+            control.setAccessibilityHelp(option.doc)
+            top.addArrangedSubview(control)
+        }
 
         let help = NSTextField(wrappingLabelWithString: option.doc)
         help.font = .systemFont(ofSize: 11)
-        help.textColor = .secondaryLabelColor
+        help.textColor = ImeAppearance.secondaryText
         help.preferredMaxLayoutWidth = 430
+        help.lineBreakMode = .byWordWrapping
 
         addArrangedSubview(top)
         addArrangedSubview(help)
@@ -128,6 +133,8 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             stepper.valueWraps = false
             stepper.target = self
             stepper.action = #selector(stepperChanged(_:))
+            stepper.setAccessibilityLabel(option.title)
+            stepper.setAccessibilityHelp(option.doc)
             self.stepper = stepper
             let box = NSStackView(views: [value, stepper])
             box.orientation = .horizontal
@@ -243,6 +250,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             styleMask: [.titled, .closable, .resizable, .utilityWindow],
             backing: .buffered, defer: false)
         panel.title = "萤火虫 · 偏好设置"
+        panel.contentMinSize = NSSize(width: 520, height: 440)
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
@@ -250,6 +258,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         buildContent(panel)
         panel.center()
         window = panel
+        ImeAppearance.applyTheme(to: panel)
         // 其它入口（快捷键/菜单/外部编辑）改配置时，保持面板控件同步。
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in self?.configChanged(key) }
     }
@@ -259,6 +268,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         self.session = session
         prepare()
         rows.forEach { $0.reload() }
+        if let window { ImeAppearance.applyTheme(to: window) }
         setStatus("", isError: false)
         NSApp.activate(ignoringOtherApps: true)
         window?.makeKeyAndOrderFront(nil)
@@ -266,6 +276,25 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
 
     /// 已构建的行数（供冒烟测试断言）。
     var rowCount: Int { rows.count }
+    var displayedOptionKeys: [String] { rows.map { $0.option.key } }
+    var minimumContentSize: NSSize { window?.contentMinSize ?? .zero }
+    var configuredAppearanceForTesting: NSAppearance.Name? { window?.appearance?.name }
+
+    func renderLongErrorForTesting(appearance: NSAppearance) -> NSBitmapImageRep? {
+        prepare()
+        setStatus(String(repeating: "保存失败：请检查文件权限或修复快捷键冲突。", count: 5), isError: true)
+        defer { setStatus("", isError: false) }
+        return renderSnapshotForTesting(appearance: appearance)
+    }
+
+    func renderMinimumSizeForTesting(appearance: NSAppearance) -> NSBitmapImageRep? {
+        prepare()
+        guard let window else { return nil }
+        let original = window.contentView?.bounds.size ?? window.contentMinSize
+        window.setContentSize(window.contentMinSize)
+        defer { window.setContentSize(original) }
+        return renderLongErrorForTesting(appearance: appearance)
+    }
 
     /// 供冒烟测试断言：分区数。
     var sectionCount: Int { sectionViews.count }
@@ -273,24 +302,38 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     /// 供自测：在给定外观下渲染面板内容为位图，用于亮/暗主题对比度断言。
     func renderSnapshotForTesting(appearance: NSAppearance) -> NSBitmapImageRep? {
         prepare()
+        rows.forEach { $0.reload() }
         guard let window, let view = window.contentView, view.bounds.width > 1,
             view.bounds.height > 1
         else { return nil }
         window.appearance = appearance
+        let wasVisible = window.isVisible
+        if !wasVisible { window.orderFront(nil) }
+        defer { if !wasVisible { window.orderOut(nil) } }
         view.layoutSubtreeIfNeeded()
+        window.displayIfNeeded()
+        RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
         guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
         view.cacheDisplay(in: view.bounds, to: rep)
-        return rep
+        var output: NSBitmapImageRep?
+        appearance.performAsCurrentDrawingAppearance {
+            output = ImeAppearance.opaqueSnapshot(rep, background: .windowBackgroundColor)
+        }
+        return output
     }
 
     /// 只刷新发生变化的行，避免打断其它行的编辑。
     func configChanged(_ key: String) {
         rows.first { $0.option.key == key }?.reload()
+        if key == "appearance.theme", let window { ImeAppearance.applyTheme(to: window) }
+        if key == "*error" {
+            setStatus(ImeConfig.errorMessage() ?? "", isError: ImeConfig.errorMessage() != nil)
+        }
     }
 
     /// 写失败提示（校验/IO/只读/锁）。
     func reportFailure(_ key: String) {
-        setStatus("保存失败：\(key)（配置可能只读或文件被锁定）", isError: true)
+        setStatus("保存失败：\(ImeConfig.errorMessage() ?? key)", isError: true)
     }
 
     func windowWillClose(_ notification: Notification) {
@@ -308,7 +351,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
 
     private func setStatus(_ text: String, isError: Bool) {
         statusLabel?.stringValue = text
-        statusLabel?.textColor = isError ? .systemRed : .secondaryLabelColor
+        statusLabel?.textColor = isError ? ImeAppearance.errorText : ImeAppearance.secondaryText
     }
 
     // MARK: - 分区切换
@@ -336,15 +379,23 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
 
     @objc private func addWord() {
         guard let session else { return }
-        UserDictionaryUI.add(session)
+        if UserDictionaryUI.add(session) { setStatus("词条已添加。", isError: false) }
+    }
+    @objc private func removeWord() {
+        guard let session else { return }
+        if UserDictionaryUI.remove(session) { setStatus("用户词条及学习记录已删除；内置词不受影响。", isError: false) }
     }
     @objc private func importWords() {
         guard let session else { return }
-        UserDictionaryUI.importFile(session)
+        if let url = UserDictionaryUI.importFile(session) {
+            setStatus("用户词库已导入：\(url.path)", isError: false)
+        }
     }
     @objc private func exportWords() {
         guard let session else { return }
-        UserDictionaryUI.exportFile(session)
+        if let url = UserDictionaryUI.exportFile(session) {
+            setStatus("用户词库已导出：\(url.path)", isError: false)
+        }
     }
     @objc private func lookupPinyin() {
         guard let session else { return }
@@ -365,10 +416,10 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         host.translatesAutoresizingMaskIntoConstraints = false
         contentHost = host
 
-        let status = NSTextField(labelWithString: "")
+        let status = NSTextField(wrappingLabelWithString: "")
         status.font = .systemFont(ofSize: 11)
-        status.textColor = .secondaryLabelColor
-        status.lineBreakMode = .byTruncatingTail
+        status.textColor = ImeAppearance.secondaryText
+        status.lineBreakMode = .byWordWrapping
         status.translatesAutoresizingMaskIntoConstraints = false
         statusLabel = status
 
@@ -404,19 +455,20 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         rowStack.edgeInsets = NSEdgeInsets(top: 16, left: 18, bottom: 16, right: 18)
         rowStack.translatesAutoresizingMaskIntoConstraints = false
 
-        var lastScope: Int?
-        for option in SettingsSchema.options() {
-            if option.scope != lastScope {
-                lastScope = option.scope
-                let header = NSTextField(labelWithString: option.scopeTitle)
-                header.font = .boldSystemFont(ofSize: 13)
-                header.textColor = .secondaryLabelColor
-                rowStack.addArrangedSubview(header)
+        let options = SettingsSchema.options()
+        for scope in Set(options.map(\.scope)).sorted() {
+            let group = options.filter { $0.scope == scope }
+            guard let first = group.first else { continue }
+            let header = NSTextField(labelWithString: first.scopeTitle)
+            header.font = .boldSystemFont(ofSize: 13)
+            header.textColor = .labelColor
+            rowStack.addArrangedSubview(header)
+            for option in group {
+                let row = SettingRow(option: option)
+                rows.append(row)
+                rowStack.addArrangedSubview(row)
+                row.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
             }
-            let row = SettingRow(option: option)
-            rows.append(row)
-            rowStack.addArrangedSubview(row)
-            row.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
         }
 
         let document = FlippedView()
@@ -446,15 +498,16 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         stack.spacing = 10
 
         let intro = NSTextField(
-            wrappingLabelWithString: "用户词库只存本地，可新增、导入、导出；跨设备同步不在计划内。")
+            wrappingLabelWithString: "用户词库只存本地，可新增、精确删除、导入和导出；纠错时先删除再添加。")
         intro.font = .systemFont(ofSize: 12)
-        intro.textColor = .secondaryLabelColor
+        intro.textColor = ImeAppearance.secondaryText
         intro.preferredMaxLayoutWidth = 440
         stack.addArrangedSubview(intro)
         stack.setCustomSpacing(16, after: intro)
 
         for (title, action) in [
             ("新增词条…", #selector(addWord)),
+            ("删除用户词条…", #selector(removeWord)),
             ("导入用户词库…", #selector(importWords)),
             ("导出用户词库…", #selector(exportWords)),
             ("拼音反查…", #selector(lookupPinyin)),

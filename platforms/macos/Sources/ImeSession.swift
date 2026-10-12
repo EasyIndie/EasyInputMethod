@@ -38,6 +38,12 @@ enum ImeKeyResult {
     case failure(Int32)
 }
 
+/// A recognized shortcut is consumed even if persistence fails.
+enum ShortcutResult {
+    case unmatched, handled, failed
+    var consumed: Bool { self != .unmatched }
+}
+
 /// 不透明会话句柄的封装。
 final class ImeSession {
     private var handle: OpaquePointer?
@@ -103,7 +109,19 @@ final class ImeSession {
         }
     }
 
+    var variantError: Int32 { ime_session_variant_error(handle) }
+    var isTraditional: Bool { ime_session_is_traditional(handle) == 1 }
+    var variantErrorMessage: String? {
+        guard variantError != IME_OK else { return nil }
+        return "繁体转换数据不可用，当前输出简体（错误码：\(variantError)）。请重新安装完整包，或修复资源后先切简体再启用繁体。"
+    }
     var dictionaryError: Int32 { ime_session_dictionary_error(handle) }
+    var dictionaryOperationError: String? {
+        let result = ime_session_dictionary_error_message(handle)
+        defer { ime_string_free(result) }
+        guard let text = result.data, result.len > 0 else { return nil }
+        return String(cString: text)
+    }
     func addWord(scheme: String, code: String, text: String) -> Int32 {
         scheme.withCString { a in code.withCString { b in text.withCString { c in
             ime_session_dictionary_add(handle, a, b, c)
@@ -111,6 +129,11 @@ final class ImeSession {
     }
     func importDictionary(_ path: String) -> Int32 {
         path.withCString { ime_session_dictionary_import(handle, $0) }
+    }
+    func removeWord(scheme: String, code: String, text: String) -> Int32 {
+        scheme.withCString { a in code.withCString { b in text.withCString { c in
+            ime_session_dictionary_remove(handle, a, b, c)
+        } } }
     }
     func exportDictionary(_ path: String) -> Int32 {
         path.withCString { ime_session_dictionary_export(handle, $0) }
@@ -125,21 +148,25 @@ final class ImeSession {
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 
     /// 中英标点切换：翻转 `input.punctuation` 并写回配置（对齐搜狗/微软 `Ctrl+.`）。
-    func togglePunctuation() {
+    @discardableResult
+    func togglePunctuation() -> Bool {
         let next =
             (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese"
             ? "english" : "chinese"
-        guard ImeConfig.setString("input.punctuation", next) else { return }
+        guard ImeConfig.setString("input.punctuation", next) else { return false }
         prepare()
+        return true
     }
 
     /// 简/繁切换：翻转 `input.chinese_variant` 并写回配置（对齐搜狗/微软 `Ctrl+Shift+F`）。
-    func toggleVariant() {
+    @discardableResult
+    func toggleVariant() -> Bool {
         let next =
             (ImeConfig.string("input.chinese_variant") ?? "simplified") == "simplified"
             ? "traditional" : "simplified"
-        guard ImeConfig.setString("input.chinese_variant", next) else { return }
+        guard ImeConfig.setString("input.chinese_variant", next) else { return false }
         prepare()
+        return true
     }
 
     /// 注入简→繁转换表（宿主从包内 Resources 载入）。
@@ -160,7 +187,7 @@ final class ImeSession {
     /// 晚于 flagsChanged 到达，仅靠 `markKeyWhileShift()` 会漏判，导致抬起时误切英文。
     @discardableResult
     func shiftTransition(isDown: Bool, otherModifier: Bool = false) -> Bool {
-        guard ImeConfig.string("hotkey.toggle_english") == "shift" else { return false }
+        guard ImeConfig.hotkey("hotkey.toggle_english").kind == 1 else { return false }
         if isDown {
             if !shiftDown {
                 shiftDown = true
@@ -185,47 +212,27 @@ final class ImeSession {
     }
 
     /// 判断一个组合键设置是否匹配当前按键（`space` 用物理键码 49 判定）。
-    private func matches(_ setting: String?, _ event: NSEvent) -> Bool {
-        guard let setting, setting != "shift", setting != "none" else { return false }
-        let parts = setting.lowercased().split(separator: "+").map(String.init)
-        guard let last = parts.last else { return false }
-        let flags = event.modifierFlags.intersection([.command, .control, .option, .shift])
-        var expected: NSEvent.ModifierFlags = []
-        for modifier in parts.dropLast() {
-            switch modifier {
-            case "ctrl": expected.insert(.control)
-            case "shift": expected.insert(.shift)
-            case "alt": expected.insert(.option)
-            case "cmd": expected.insert(.command)
-            default: return false
-            }
-        }
-        guard flags == expected else { return false }
-        if last == "space" {
-            return event.keyCode == 49 || event.charactersIgnoringModifiers == " "
-        }
-        return event.charactersIgnoringModifiers?.lowercased() == last
+    private func matches(_ key: String, _ event: NSEvent) -> Bool {
+        ImeConfig.hotkey(key).matches(event)
     }
 
     /// 组合键（均可配）：中英 / 全半角 / 切换模式；`"shift"` 与 `"none"` 不作为组合键。
-    func shortcut(_ event: NSEvent, persistMode: Bool) -> Bool {
-        if matches(ImeConfig.string("hotkey.toggle_english"), event) { toggleEnglish(); return true }
-        if matches(ImeConfig.string("hotkey.toggle_width"), event) { toggleWidth(); return true }
-        if matches(ImeConfig.string("hotkey.toggle_punctuation"), event) {
-            togglePunctuation()
-            return true
+    func shortcut(_ event: NSEvent, persistMode: Bool) -> ShortcutResult {
+        if matches("hotkey.toggle_english", event) { toggleEnglish(); return .handled }
+        if matches("hotkey.toggle_width", event) { toggleWidth(); return .handled }
+        if matches("hotkey.toggle_punctuation", event) {
+            return togglePunctuation() ? .handled : .failed
         }
-        if matches(ImeConfig.string("hotkey.toggle_variant"), event) {
-            toggleVariant()
-            return true
+        if matches("hotkey.toggle_variant", event) {
+            return toggleVariant() ? .handled : .failed
         }
-        guard let configured = ImeConfig.string("hotkey.toggle_mode"), matches(configured, event)
-        else { return false }
+        guard matches("hotkey.toggle_mode", event)
+        else { return .unmatched }
         let order = ["mixed", "wubi", "pinyin"]
         let next = order[((order.firstIndex(of: mode) ?? 0) + 1) % 3]
-        if persistMode, !ImeConfig.setString("mode", next) { return false }
+        if persistMode, !ImeConfig.setString("mode", next) { return .failed }
         setMode(next)
-        return true
+        return .handled
     }
 
     var mode: String { ["mixed", "wubi", "pinyin"][max(0, min(2, Int(ime_session_mode(handle))))] }

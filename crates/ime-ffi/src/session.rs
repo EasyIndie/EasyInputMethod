@@ -78,6 +78,7 @@ pub struct ImeSession {
     ffi_buffer: Option<CString>,
     dictionary: Option<ime_dict::Store>,
     dictionary_error: i32,
+    dictionary_operation_error: Option<String>,
     ffi_strings: Vec<(Option<CString>, Option<CString>)>,
     /// 简→繁转换表（懒加载，键为 `variant_path`；ADR-082）。
     variant: Option<Arc<VariantMap>>,
@@ -85,6 +86,8 @@ pub struct ImeSession {
     variant_path: Option<String>,
     /// 是否输出繁体（来自配置 `input.chinese_variant`）。
     traditional: bool,
+    variant_error: i32,
+    variant_attempted: bool,
 }
 
 fn source_to_int(source: CandidateSource) -> i32 {
@@ -183,10 +186,13 @@ impl ImeSession {
             ffi_buffer: None,
             dictionary: None,
             dictionary_error: IME_OK,
+            dictionary_operation_error: None,
             ffi_strings: Vec::new(),
             variant: None,
             variant_path: None,
             traditional: false,
+            variant_error: IME_OK,
+            variant_attempted: false,
         });
         s.refresh();
         s
@@ -194,10 +200,21 @@ impl ImeSession {
 
     /// 按需载入简→繁表（仅首次需要繁体时解析；ADR-082）。
     fn ensure_variant(&mut self) -> Option<Arc<VariantMap>> {
-        if self.variant.is_none() {
-            if let Some(path) = self.variant_path.clone() {
-                if let Ok(map) = crate::data::variant(&path) {
+        if !self.variant_attempted {
+            self.variant_attempted = true;
+            match self
+                .variant_path
+                .as_deref()
+                .ok_or(IME_ERR_IO)
+                .and_then(crate::data::variant)
+            {
+                Ok(map) => {
                     self.variant = Some(map);
+                    self.variant_error = IME_OK;
+                }
+                Err(code) => {
+                    self.variant = None;
+                    self.variant_error = code;
                 }
             }
         }
@@ -374,14 +391,33 @@ pub extern "C" fn ime_session_set_variant_data(
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         // SAFETY：契约见 `cstr_arg`。
         let path = unsafe { cstr_arg(path)? };
-        // 懒加载（ADR-082）：只校验可读并记路径，首次需要繁体时再解析。
-        if std::fs::metadata(path).is_err() {
-            return Err(IME_ERR_IO);
-        }
+        // Lazy registration (ADR-097): first traditional use validates readability and contents.
         s.variant_path = Some(path.to_string());
         s.variant = None;
+        s.variant_attempted = false;
+        s.variant_error = IME_OK;
         s.refresh();
         Ok(IME_OK)
+    })
+}
+
+/// Query the resource error without forcing a lazy load.
+#[no_mangle]
+pub extern "C" fn ime_session_variant_error(session: *const ImeSession) -> i32 {
+    catch_status(|| {
+        // SAFETY: a non-null pointer must identify a live session.
+        let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+        Ok(s.variant_error)
+    })
+}
+
+/// Whether the current output can actually use the traditional map.
+#[no_mangle]
+pub extern "C" fn ime_session_is_traditional(session: *const ImeSession) -> i32 {
+    catch_status(|| {
+        // SAFETY: a non-null pointer must identify a live session.
+        let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+        Ok(i32::from(s.traditional && s.variant.is_some()))
     })
 }
 
@@ -430,13 +466,25 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
             boolean("input.full_width"),
             cfg.get("input.punctuation").and_then(|v| v.as_str()) == Some("chinese"),
         );
-        s.session.configure_engines(&ime_core::EngineOptions {
+        let changed = s.session.configure_engines(&ime_core::EngineOptions {
             auto_commit: boolean("wubi.auto_commit"),
             fuzzy: boolean("pinyin.fuzzy"),
             z_wildcard: cfg.get("wubi.z_key").and_then(|v| v.as_str()) == Some("wildcard"),
         });
-        s.traditional =
+        let traditional =
             cfg.get("input.chinese_variant").and_then(|v| v.as_str()) == Some("traditional");
+        let variant_changed = s.traditional != traditional;
+        s.traditional = traditional;
+        if variant_changed {
+            s.variant_attempted = false;
+            s.variant_error = IME_OK;
+        }
+        if changed {
+            s.personalize();
+        }
+        if changed || variant_changed {
+            s.refresh();
+        }
         Ok(IME_OK)
     })
 }
@@ -585,6 +633,23 @@ pub extern "C" fn ime_session_dictionary_error(session: *mut ImeSession) -> i32 
 }
 
 #[no_mangle]
+pub extern "C" fn ime_session_dictionary_error_message(session: *mut ImeSession) -> ImeString {
+    catch_value(
+        || {
+            // SAFETY: the caller owns a live session; returned text is copied.
+            let s = unsafe { session.as_ref().ok_or(IME_ERR_NULL)? };
+            Ok(owned_string(
+                s.dictionary_operation_error.as_deref().unwrap_or_default(),
+            ))
+        },
+        ImeString {
+            data: ptr::null(),
+            len: 0,
+        },
+    )
+}
+
+#[no_mangle]
 pub extern "C" fn ime_session_dictionary_add(
     session: *mut ImeSession,
     scheme: *const c_char,
@@ -594,6 +659,7 @@ pub extern "C" fn ime_session_dictionary_add(
     catch_status(|| {
         // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.dictionary_operation_error = None;
         let (scheme, code, text) = unsafe { (cstr_arg(scheme)?, cstr_arg(code)?, cstr_arg(text)?) };
         ime_dict::validate(scheme, code, text).map_err(|_| IME_ERR_INVALID_INPUT)?;
         s.ensure_dictionary();
@@ -608,6 +674,37 @@ pub extern "C" fn ime_session_dictionary_add(
     })
 }
 #[no_mangle]
+pub extern "C" fn ime_session_dictionary_remove(
+    session: *mut ImeSession,
+    scheme: *const c_char,
+    code: *const c_char,
+    text: *const c_char,
+) -> i32 {
+    catch_status(|| {
+        // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.dictionary_operation_error = None;
+        let (scheme, code, text) = unsafe { (cstr_arg(scheme)?, cstr_arg(code)?, cstr_arg(text)?) };
+        ime_dict::validate(scheme, code, text).map_err(|_| IME_ERR_INVALID_INPUT)?;
+        s.ensure_dictionary();
+        s.dictionary
+            .as_mut()
+            .ok_or(IME_ERR_IO)?
+            .remove(scheme, code, text)
+            .map_err(|error| {
+                if error.kind() == std::io::ErrorKind::NotFound {
+                    crate::error::IME_ERR_NOT_FOUND
+                } else {
+                    IME_ERR_IO
+                }
+            })?;
+        s.session.cancel();
+        s.refresh();
+        Ok(IME_OK)
+    })
+}
+
+#[no_mangle]
 pub extern "C" fn ime_session_dictionary_import(
     session: *mut ImeSession,
     path: *const c_char,
@@ -615,16 +712,21 @@ pub extern "C" fn ime_session_dictionary_import(
     catch_status(|| {
         // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.dictionary_operation_error = None;
         let path = std::path::Path::new(unsafe { cstr_arg(path)? });
         if !path.is_file() {
             return Err(IME_ERR_IO);
         }
         s.ensure_dictionary();
-        s.dictionary
-            .as_mut()
-            .ok_or(IME_ERR_IO)?
-            .import(path)
-            .map_err(|_| IME_ERR_IO)?;
+        let result = s.dictionary.as_mut().ok_or(IME_ERR_IO)?.import(path);
+        s.dictionary_operation_error = result.as_ref().err().map(ToString::to_string);
+        result.map_err(|error| {
+            if error.kind() == std::io::ErrorKind::InvalidData {
+                crate::error::IME_ERR_PARSE
+            } else {
+                IME_ERR_IO
+            }
+        })?;
         s.personalize();
         s.refresh();
         Ok(IME_OK)
@@ -638,6 +740,7 @@ pub extern "C" fn ime_session_dictionary_export(
     catch_status(|| {
         // SAFETY: pointers follow the live-session and NUL-terminated input contracts.
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.dictionary_operation_error = None;
         let path = std::path::Path::new(unsafe { cstr_arg(path)? });
         let profile = crate::config::user_dictionary_path();
         let config = profile.with_file_name("config.toml");
@@ -651,8 +754,9 @@ pub extern "C" fn ime_session_dictionary_export(
         }
         s.ensure_dictionary();
         let store = s.dictionary.as_mut().ok_or(IME_ERR_IO)?;
-        store.refresh().map_err(|_| IME_ERR_IO)?;
-        store.export(path).map_err(|_| IME_ERR_IO)?;
+        let result = store.refresh().and_then(|_| store.export(path));
+        s.dictionary_operation_error = result.as_ref().err().map(ToString::to_string);
+        result.map_err(|_| IME_ERR_IO)?;
         Ok(IME_OK)
     })
 }
@@ -813,6 +917,42 @@ mod tests {
         }
         // SAFETY：指针来自会话内部字符串，测试期间保持有效。
         unsafe { CStr::from_ptr(ptr) }.to_str().ok()
+    }
+
+    #[test]
+    fn lazy_variant_errors_are_visible_and_reinjection_recovers_effective_output() {
+        let root =
+            std::env::temp_dir().join(format!("lampyris-variant-errors-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let path = root.join("variant.tsv");
+        let argument = CString::new(path.to_str().unwrap()).unwrap();
+        let mut s = ImeSession::new();
+        assert_eq!(
+            ime_session_set_variant_data(&mut *s, argument.as_ptr()),
+            IME_OK
+        );
+        assert!(!s.variant_attempted);
+        assert_eq!(ime_session_variant_error(&*s), IME_OK);
+        s.session.handle_key('w');
+        s.session.handle_key('q');
+        s.traditional = true;
+        s.refresh();
+        assert_eq!(ime_session_variant_error(&*s), IME_ERR_IO);
+        assert_eq!(ime_session_is_traditional(&*s), 0);
+        assert_eq!(s.ffi_strings[0].0.as_ref().unwrap().to_str().unwrap(), "你");
+        for invalid in ["", "# comment", "broken", "你\t妳\nbroken"] {
+            std::fs::write(&path, invalid).unwrap();
+            ime_session_set_variant_data(&mut *s, argument.as_ptr());
+            assert_eq!(ime_session_variant_error(&*s), crate::error::IME_ERR_PARSE);
+            assert_eq!(ime_session_is_traditional(&*s), 0);
+            assert_eq!(s.session.buffer(), "wq");
+        }
+        std::fs::write(&path, "你\t妳\n").unwrap();
+        ime_session_set_variant_data(&mut *s, argument.as_ptr());
+        assert_eq!(ime_session_variant_error(&*s), IME_OK);
+        assert_eq!(ime_session_is_traditional(&*s), 1);
+        assert_eq!(s.ffi_strings[0].0.as_ref().unwrap().to_str().unwrap(), "妳");
+        std::fs::remove_dir_all(root).unwrap();
     }
 
     #[test]

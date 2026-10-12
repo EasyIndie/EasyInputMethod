@@ -46,6 +46,14 @@ if ${STRICT}; then
 fi
 
 echo "▶ 1/5 构建各架构 staticlib + Swift 宿主：${ARCHES[*]}"
+INSTALLED_TARGETS="$(rustup target list --installed)"
+for arch in "${ARCHES[@]}"; do
+  case "$arch" in arm64) triple="aarch64-apple-darwin" ;; *) triple="${arch}-apple-darwin" ;; esac
+  if ! printf '%s\n' "$INSTALLED_TARGETS" | grep -Fxq "$triple"; then
+    echo "缺少Rust目标${triple}；请先运行：rustup target add ${triple}" >&2
+    exit 1
+  fi
+done
 EXE_DIR="${BUILD_DIR}/tmp"
 rm -rf "${EXE_DIR}"
 mkdir -p "${EXE_DIR}"
@@ -91,7 +99,7 @@ for arch in "${ARCHES[@]}"; do build_arch "${arch}"; done
 echo "▶ 2/5 重置 bundle 目录"
 rm -rf "${APP_DIR}"
 mkdir -p "${APP_DIR}/Contents/MacOS" "${APP_DIR}/Contents/Resources"
-cp "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
+python3 "${ROOT}/tools/macos-build-metadata.py" write "${SCRIPT_DIR}/Info.plist" "${APP_DIR}/Contents/Info.plist"
 REPO_ROOT="$(git -C "${ROOT}" rev-parse --show-toplevel 2>/dev/null || true)"
 if [ "${REPO_ROOT}" = "${ROOT}" ]; then
   git -C "${ROOT}" rev-parse HEAD > "${APP_DIR}/Contents/Resources/SOURCE-COMMIT"

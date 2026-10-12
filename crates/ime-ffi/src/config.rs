@@ -209,6 +209,35 @@ pub extern "C" fn ime_config_get(key: *const c_char) -> *const c_char {
     }
 }
 
+/// Canonical shortcut representation; invalid or unknown input is disabled.
+#[repr(C)]
+#[derive(Clone, Copy, Default)]
+pub struct ImeHotkey {
+    pub kind: u32,
+    pub modifiers: u32,
+    pub key: u32,
+}
+
+#[no_mangle]
+pub extern "C" fn ime_config_hotkey(key: *const c_char) -> ImeHotkey {
+    catch_value(
+        || {
+            // SAFETY: caller supplies a readable NUL-terminated key, as for get.
+            let key = unsafe { cstr_arg(key)? };
+            let value = store().get(key).ok_or(IME_ERR_UNKNOWN_KEY)?;
+            let value = value.as_str().ok_or(IME_ERR_INVALID_INPUT)?;
+            let binding =
+                ime_config::Hotkey::parse(key, value).map_err(|_| IME_ERR_INVALID_INPUT)?;
+            Ok(ImeHotkey {
+                kind: binding.kind,
+                modifiers: binding.modifiers,
+                key: binding.key,
+            })
+        },
+        ImeHotkey::default(),
+    )
+}
+
 /// 最近一次配置加载/重载失败原因（UTF-8，仍含行号）；无错误返回空串。
 /// 借用指针，下次调用前有效；绝不返回 NULL。
 #[no_mangle]

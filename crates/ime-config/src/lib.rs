@@ -9,6 +9,7 @@
 #![forbid(unsafe_code)]
 
 mod config;
+mod hotkey;
 mod persist;
 mod schema;
 mod watch;
@@ -22,6 +23,7 @@ use std::sync::{Arc, Mutex};
 use arc_swap::ArcSwap;
 
 pub use config::{Config, ConfigValue};
+pub use hotkey::Hotkey;
 pub use schema::{OptionSpec, Scope, ValueType, SCHEMA};
 pub use watch::FileWatcher;
 
@@ -73,7 +75,9 @@ impl ConfigError {
 impl fmt::Display for ConfigError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Io { path, .. } => write!(f, "配置文件 IO 错误：{}", path.display()),
+            Self::Io { path, source } => {
+                write!(f, "无法读写配置文件：{}（{source}）", path.display())
+            }
             Self::Parse { line, col, message } => match (line, col) {
                 (Some(l), Some(c)) => write!(f, "配置语法错误（第 {l} 行第 {c} 列）：{message}"),
                 (Some(l), None) => write!(f, "配置语法错误（第 {l} 行）：{message}"),
@@ -188,6 +192,17 @@ impl ConfigStore {
     ///
     /// 任何一步失败都不会改动文件或快照。
     pub fn set(&self, key: &str, value_toml: &str) -> Result<(), ConfigError> {
+        let previous = self.last_error();
+        let result = self.set_inner(key, value_toml);
+        let current = result.as_ref().err().map(ToString::to_string);
+        self.set_last_error(current.clone());
+        if previous != current {
+            self.notify(CONFIG_ERROR_KEY);
+        }
+        result
+    }
+
+    fn set_inner(&self, key: &str, value_toml: &str) -> Result<(), ConfigError> {
         let spec = schema::find(key).ok_or_else(|| ConfigError::unknown_key(key))?;
         let value = config::parse_literal(spec, value_toml)?;
 
@@ -356,6 +371,122 @@ mod tests {
 
     fn read(path: &Path) -> String {
         std::fs::read_to_string(path).unwrap()
+    }
+
+    #[test]
+    fn failed_writes_publish_reason_keep_state_and_recover_after_lock_release() {
+        let tmp = TempFile::new("write-error");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        store.set("input.punctuation", "\"chinese\"").unwrap();
+        let original = read(tmp.path());
+        let snapshot = store.snapshot();
+        let seen = Arc::new(Mutex::new(Vec::new()));
+        let notifications = Arc::clone(&seen);
+        store.subscribe(move |key, _| notifications.lock().unwrap().push(key.to_string()));
+        let lock = PathBuf::from(format!("{}.lock", tmp.path().display()));
+        write(&lock, "test lock");
+        for _ in 0..2 {
+            assert!(matches!(
+                store.set("input.punctuation", "\"english\""),
+                Err(ConfigError::Locked { .. })
+            ));
+            assert_eq!(read(tmp.path()), original);
+            assert_eq!(*store.snapshot(), *snapshot);
+            assert!(store.last_error().unwrap().contains("被锁定"));
+        }
+        assert_eq!(seen.lock().unwrap().as_slice(), [CONFIG_ERROR_KEY]);
+        std::fs::remove_file(lock).unwrap();
+        store.set("input.punctuation", "\"english\"").unwrap();
+        assert_eq!(
+            store.get("input.punctuation").unwrap().as_str(),
+            Some("english")
+        );
+        assert!(store.last_error().is_none());
+        assert_eq!(
+            seen.lock().unwrap().as_slice(),
+            [CONFIG_ERROR_KEY, "input.punctuation", CONFIG_ERROR_KEY]
+        );
+        write(tmp.path(), "parent is a regular file");
+        let blocked = ConfigStore::with_defaults(tmp.path().join("config.toml"));
+        assert!(blocked.set("candidate.count", "5").is_err());
+        assert!(blocked.last_error().unwrap().contains("无法读写"));
+        assert_eq!(read(tmp.path()), "parent is a regular file");
+    }
+
+    #[test]
+    fn shortcuts_reject_invalid_syntax_and_collisions_without_writes() {
+        let tmp = TempFile::new("hotkeys");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        store.set("candidate.count", "5").unwrap();
+        let original = read(tmp.path());
+        let snapshot = store.snapshot();
+        for value in [
+            "banana",
+            "m",
+            "ctrl+ctrl+m",
+            "ctrl++m",
+            "ctrl+shift",
+            "shift",
+            "ctrl+enter",
+        ] {
+            assert!(
+                store
+                    .set("hotkey.toggle_mode", &format!("\"{value}\""))
+                    .is_err(),
+                "{value}"
+            );
+            assert_eq!(read(tmp.path()), original);
+            assert_eq!(*store.snapshot(), *snapshot);
+        }
+        assert!(store.set("hotkey.toggle_mode", "\"shift+space\"").is_err());
+        assert_eq!(read(tmp.path()), original);
+        store.set("hotkey.toggle_width", "\"none\"").unwrap();
+        store.set("hotkey.toggle_mode", "\"shift+space\"").unwrap();
+        assert!(store.set("hotkey.toggle_width", "\"space+shift\"").is_err());
+    }
+
+    #[test]
+    fn shortcut_aliases_normalize_and_file_reload_preserves_good_snapshot() {
+        let tmp = TempFile::new("hotkey-aliases");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        store
+            .set(
+                "hotkey.toggle_mode",
+                "\"COMMAND + Option + CONTROL + Shift + M\"",
+            )
+            .unwrap();
+        assert_eq!(
+            store.get("hotkey.toggle_mode").unwrap().as_str(),
+            Some("ctrl+alt+shift+cmd+m")
+        );
+        store.set("hotkey.toggle_width", "\"\"").unwrap();
+        assert_eq!(
+            store.get("hotkey.toggle_width").unwrap().as_str(),
+            Some("none")
+        );
+        let snapshot = store.snapshot();
+        write(
+            tmp.path(),
+            "[hotkey]\ntoggle_mode = \"ctrl+space\"\ntoggle_width = \"CONTROL + SPACE\"\n",
+        );
+        assert!(store.reload().is_err());
+        assert_eq!(*store.snapshot(), *snapshot);
+        assert!(store.last_error().unwrap().contains("冲突"));
+        write(
+            tmp.path(),
+            "[hotkey]\ntoggle_mode = \"Control + Option + M\"\n",
+        );
+        store.reload().unwrap();
+        assert_eq!(
+            store.get("hotkey.toggle_mode").unwrap().as_str(),
+            Some("ctrl+alt+m")
+        );
+        assert!(store.last_error().is_none());
+        write(tmp.path(), "[hotkey]\ntoggle_mode = \"banana\"\n");
+        assert!(ConfigStore::load(tmp.path()).is_err());
+        assert!(ConfigStore::load_or_defaults(tmp.path())
+            .last_error()
+            .is_some());
     }
 
     #[test]

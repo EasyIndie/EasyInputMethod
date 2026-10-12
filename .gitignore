@@ -39,3 +39,7 @@ docs/experiments/runs/sessions/
 # 大型生成表（可由 fetch 脚本 + examples 复现，不入库）
 /data/generated/wubi86-phrases.tsv
 /data/generated/pinyin-words.tsv
+
+# Python 回归运行缓存
+__pycache__/
+*.py[cod]

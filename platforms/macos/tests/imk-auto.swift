@@ -4,6 +4,8 @@
 // 只依赖系统框架（AppKit / ApplicationServices / Carbon），运行时由脚本用 swiftc 编译。
 //
 // 子命令：
+//   current-source             打印当前输入源精确ID
+//   select-exact <id>          精确恢复输入源（不允许前缀匹配）
 //   select [id]                 选中输入源（默认萤火虫）
 //   activate <bundle>           把指定 App 前置
 //   frontmost                   打印前台 App 名
@@ -68,14 +70,22 @@ let args = Array(CommandLine.arguments.dropFirst())
 let command = args.first ?? "help"
 
 switch command {
-case "select":
+case "current-source":
+    let source = TISCopyCurrentKeyboardInputSource().takeRetainedValue()
+    guard let property = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else {
+        fail("无法读取当前输入源")
+    }
+    print(Unmanaged<CFString>.fromOpaque(property).takeUnretainedValue() as String)
+    exit(0)
+
+case "select", "select-exact":
     let want = args.count > 1 ? args[1] : "cn.jokerhub.inputmethod.Lampyris.default"
     let list = TISCreateInputSourceList(nil, false).takeRetainedValue() as! [TISInputSource]
     func id(_ s: TISInputSource) -> String {
         guard let p = TISGetInputSourceProperty(s, kTISPropertyInputSourceID) else { return "" }
         return Unmanaged<CFString>.fromOpaque(p).takeUnretainedValue() as String
     }
-    guard let target = list.first(where: { id($0) == want || id($0).hasPrefix(want) }) else {
+    guard let target = list.first(where: { id($0) == want || (command == "select" && id($0).hasPrefix(want)) }) else {
         fail("未找到输入源：\(want)")
     }
     let status = TISSelectInputSource(target)
