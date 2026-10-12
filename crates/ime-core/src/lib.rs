@@ -80,6 +80,8 @@ pub struct Candidate {
     pub source: CandidateSource,
     pub comment: Option<String>,
     pub is_prefix: bool,
+    /// A spelling approximation; exact matches rank first within the source.
+    pub is_fuzzy: bool,
 }
 
 impl Candidate {
@@ -96,6 +98,7 @@ impl Candidate {
             source,
             comment: None,
             is_prefix: false,
+            is_fuzzy: false,
         }
     }
 }
@@ -111,6 +114,7 @@ pub struct ConvertResult {
 /// 输入引擎抽象。
 ///
 /// 实现必须纯逻辑：不感知平台、UI、网络、文件系统。
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct EngineOptions {
     pub auto_commit: bool,
     pub z_wildcard: bool,
@@ -166,6 +170,7 @@ pub struct Session {
     chinese_punctuation: bool,
     double_quote_open: bool,
     single_quote_open: bool,
+    engine_options: Option<EngineOptions>,
 }
 
 impl Session {
@@ -179,13 +184,18 @@ impl Session {
 
     pub fn set_wubi_engine(&mut self, engine: Box<dyn Engine>) {
         self.wubi = Some(engine);
+        self.engine_options = None;
     }
 
     pub fn set_pinyin_engine(&mut self, engine: Box<dyn Engine>) {
         self.pinyin = Some(engine);
+        self.engine_options = None;
     }
 
     pub fn set_input_options(&mut self, full_width: bool, chinese_punctuation: bool) {
+        if self.full_width != full_width {
+            self.width_override = None;
+        }
         self.full_width = full_width;
         self.chinese_punctuation = chinese_punctuation;
     }
@@ -251,13 +261,22 @@ impl Session {
         self.pinyin.as_ref()?.reverse_lookup(text)
     }
 
-    pub fn configure_engines(&mut self, options: &EngineOptions) {
+    /// Apply changed engine options and refresh composition without committing it.
+    pub fn configure_engines(&mut self, options: &EngineOptions) -> bool {
+        if self.engine_options.as_ref() == Some(options) {
+            return false;
+        }
+        self.engine_options = Some(*options);
         if let Some(engine) = self.wubi.as_mut() {
             engine.configure(options);
         }
         if let Some(engine) = self.pinyin.as_mut() {
             engine.configure(options);
         }
+        if self.composing {
+            self.recompute_with_commit(false);
+        }
+        true
     }
 
     pub fn mode(&self) -> InputMode {
@@ -313,6 +332,7 @@ impl Session {
             rank(a)
                 .cmp(&rank(b))
                 .then_with(|| a.is_prefix.cmp(&b.is_prefix))
+                .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b_score.cmp(a_score))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
@@ -494,6 +514,10 @@ impl Session {
     }
 
     fn recompute(&mut self) -> KeyOutcome {
+        self.recompute_with_commit(true)
+    }
+
+    fn recompute_with_commit(&mut self, allow_commit: bool) -> KeyOutcome {
         let mut merged: Vec<Candidate> = Vec::new();
         let mut auto: Option<String> = None;
 
@@ -509,10 +533,11 @@ impl Session {
             merged.extend(result.candidates);
         }
 
-        // 去重：同 text 保留权重最高者；再按权重降序。
+        // Deduplicate by source priority, exact spelling and then frequency.
         merged.sort_by(|a, b| {
             usize::from(a.source == CandidateSource::Pinyin)
                 .cmp(&usize::from(b.source == CandidateSource::Pinyin))
+                .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
         });
@@ -521,7 +546,7 @@ impl Session {
         self.candidates = merged;
         self.page = 0;
 
-        if let Some(text) = auto {
+        if let Some(text) = auto.filter(|_| allow_commit) {
             self.commit(&text);
             KeyOutcome::Committed(text)
         } else {
@@ -590,6 +615,71 @@ mod tests {
         fn max_code_length(&self) -> usize {
             4
         }
+    }
+
+    struct ChangingEngine(bool);
+    impl Engine for ChangingEngine {
+        fn configure(&mut self, options: &EngineOptions) {
+            self.0 = options.fuzzy;
+        }
+        fn convert(&self, input: &str, _max: usize) -> ConvertResult {
+            ConvertResult {
+                candidates: (0..20)
+                    .map(|i| {
+                        Candidate::new(
+                            format!("{}-{i:02}", if self.0 { "new" } else { "old" }),
+                            input,
+                            100 - i,
+                            CandidateSource::Pinyin,
+                        )
+                    })
+                    .collect(),
+                should_commit: if self.0 {
+                    Some("must-not-commit-on-config".into())
+                } else {
+                    None
+                },
+            }
+        }
+        fn engine_type(&self) -> EngineType {
+            EngineType::Pinyin
+        }
+        fn max_code_length(&self) -> usize {
+            32
+        }
+    }
+
+    #[test]
+    fn engine_option_changes_recompute_without_commit_and_duplicates_preserve_page() {
+        let mut first = Session::new(InputMode::PinyinOnly);
+        let mut second = Session::new(InputMode::PinyinOnly);
+        let mut options = EngineOptions {
+            auto_commit: false,
+            z_wildcard: true,
+            fuzzy: false,
+        };
+        for session in [&mut first, &mut second] {
+            session.set_pinyin_engine(Box::new(ChangingEngine(false)));
+            session.configure_engines(&options);
+            session.handle_key('a');
+            session.page(1);
+        }
+        assert_eq!(first.page_index(), 1);
+        assert!(!first.configure_engines(&options));
+        assert_eq!(first.page_index(), 1);
+        options.fuzzy = true;
+        assert!(first.configure_engines(&options));
+        assert_eq!(first.buffer(), "a");
+        assert!(first.composing());
+        assert_eq!(first.committed(), "");
+        assert_eq!(first.page_index(), 0);
+        assert_eq!(first.candidates()[0].text, "new-00");
+        assert_eq!(second.candidates()[0].text, "old-09");
+        second.configure_engines(&options);
+        assert_eq!(second.candidates()[0].text, "new-00");
+        first.page(1);
+        assert!(!first.configure_engines(&options));
+        assert_eq!(first.page_index(), 1);
     }
 
     #[test]
@@ -695,6 +785,20 @@ mod tests {
     }
 
     #[test]
+    fn personalization_keeps_exact_pinyin_before_fuzzy_even_with_maximal_learning() {
+        let mut session = Session::new(InputMode::PinyinOnly);
+        let exact = Candidate::new("张", "zhang", 9, CandidateSource::Pinyin);
+        let mut fuzzy = Candidate::new("脏", "zang", i32::MAX, CandidateSource::Pinyin);
+        fuzzy.is_fuzzy = true;
+        session.personalize(
+            vec![fuzzy, exact],
+            |c| if c.is_fuzzy { u32::MAX } else { 0 },
+        );
+        assert_eq!(session.candidates()[0].text, "张");
+        assert_eq!(session.candidates()[1].text, "脏");
+    }
+
+    #[test]
     fn compose_buffer_is_bounded_and_backspace_recovers() {
         let mut s = session_with_wubi(InputMode::WubiOnly);
         for _ in 0..MAX_COMPOSE_LEN {
@@ -755,13 +859,35 @@ mod tests {
         assert!(!s.is_full_width());
         s.toggle_width();
         assert!(s.is_full_width());
-        s.toggle_width();
-        assert!(!s.is_full_width());
+        s.set_input_options(false, false);
+        assert!(
+            s.is_full_width(),
+            "unchanged configure preserves temporary toggle"
+        );
         s.set_input_options(true, false);
-        // set_input_options 只更新基线；Shift+Space 的临时覆盖仍生效。
-        assert!(!s.is_full_width());
-        s.toggle_width();
         assert!(s.is_full_width());
+        s.set_input_options(false, false);
+        assert!(!s.is_full_width());
+        assert_eq!(s.handle_key('1'), KeyOutcome::PassThrough);
+        s.toggle_english();
+        s.set_input_options(true, false);
+        assert!(s.english());
+        assert_eq!(s.handle_key('1'), KeyOutcome::Committed("１".into()));
+    }
+
+    #[test]
+    fn width_preference_does_not_cancel_composition_or_change_other_state() {
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.set_input_options(false, true);
+        s.handle_key('a');
+        let candidates = s.candidates().to_vec();
+        s.set_input_options(true, true);
+        assert_eq!(s.buffer(), "a");
+        assert_eq!(s.candidates(), candidates);
+        assert!(s.composing());
+        assert!(!s.english());
+        assert_eq!(s.mode(), InputMode::Mixed);
+        assert_eq!(s.handle_key(','), KeyOutcome::Committed("甲，".into()));
     }
 
     #[test]

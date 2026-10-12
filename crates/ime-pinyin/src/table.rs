@@ -59,6 +59,14 @@ pub struct TablePinyinBackend {
 }
 
 impl TablePinyinBackend {
+    /// Whether packaged character/word data contains usable entries.
+    pub fn has_character_data(&self) -> bool {
+        !self.chars.is_empty()
+    }
+    pub fn has_word_data(&self) -> bool {
+        !self.words.is_empty()
+    }
+
     /// 用两份 TSV 构建后端；`name` 供诊断。
     pub fn from_tsv(
         chars_tsv: &str,
