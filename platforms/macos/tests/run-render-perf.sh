@@ -9,7 +9,7 @@ case "${1:-}" in
   *) echo "用法：$0 [--max-user-dictionary]" >&2; exit 2 ;;
 esac
 (cd "${ROOT}" && cargo build --release -p ime-ffi)
-swiftc -O -whole-module-optimization -target "$(uname -m)-apple-macosx13.0" \
+swiftc -O -warnings-as-errors -whole-module-optimization -target "$(uname -m)-apple-macosx13.0" \
   -module-cache-path "${WORK}/module-cache" -I "${ROOT}/crates/ime-ffi/include" \
   "${ROOT}/platforms/macos/tests/render_perf.swift" \
   "${ROOT}/platforms/macos/Sources/ImeSession.swift" \

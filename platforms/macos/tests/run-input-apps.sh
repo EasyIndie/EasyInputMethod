@@ -2,55 +2,80 @@
 # 萤火虫 macOS ⑩ 五应用输入验收（TextEdit / Safari / Chrome / Terminal / 微信）。
 #
 # 用合成按键在真实应用里输入「wq + 空格 → 你」，再用 AX 或剪贴板核验上屏。
-# 不暴露 AX 的 App（微信、浏览器地址栏）改用「剪贴板」读取聚焦文本框；**绝不按回车**。
+# 浏览器地址栏用剪贴板读取；微信尚无安全隔离草稿，明确BLOCKED；绝不按回车。
 #
 # 前提：图形登录会话；萤火虫已安装并启用；终端已获「辅助功能」授权。
 # 用法：./platforms/macos/tests/run-input-apps.sh
 set -uo pipefail
 
+# No live bypass until the installed host's learning state is isolated (IT-01).
+echo 'BLOCKED：真实IMK学习数据隔离尚未完成；旧入口禁用，不能用通过数量替代最终包覆盖清单。' >&2
+exit 3
+
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 WORK="$(mktemp -d)"
 PASS=0
 FAIL=0
-CREATE_CHROME=0
-CREATE_SAFARI=0
-CREATE_TERMINAL=0
+ORIGINAL_SOURCE=""
+CLIP_COUNT=""
+STATE_READY=0
+PASTEBOARD="${WORK}/pasteboard-state"
+source "${ROOT}/platforms/macos/tests/owned-resources.sh"
 
 source "${ROOT}/platforms/macos/tests/lib-imk-auto.sh"
 
 cleanup() {
-    field_clear >/dev/null 2>&1 || true
-    close_panel_windows
-    if [ "$CREATE_CHROME" = "1" ]; then
-        osascript -e 'tell application "Google Chrome" to close front window' >/dev/null 2>&1
+    local result=$? recovery=0
+    owned_cleanup || recovery=1
+    if [ "$STATE_READY" = 1 ]; then
+        aui select-exact "$ORIGINAL_SOURCE" >/dev/null 2>&1 || recovery=1
+        "$PASTEBOARD" restore "$WORK/clipboard.json" "$CLIP_COUNT" || recovery=1
     fi
-    if [ "$CREATE_SAFARI" = "1" ]; then
-        osascript -e 'tell application "Safari" to close front window' >/dev/null 2>&1
+    if [ "$recovery" = 0 ]; then
+        rm -rf "$WORK"
+    else
+        echo "BLOCKED 状态恢复未完成；保留备份：$WORK" >&2
+        result=1
     fi
-    if [ "$CREATE_TERMINAL" = "1" ]; then
-        osascript -e 'tell application "Terminal" to close front window' >/dev/null 2>&1
-    fi
-    osascript -e 'tell application "TextEdit" to close every document saving no' >/dev/null 2>&1
-    printf '' | pbcopy
-    rm -rf "$WORK"
+    exit "$result"
 }
+
+clipboard_observe() { CLIP_COUNT="$("$PASTEBOARD" count)" || exit 1; }
+
 trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 # 在聚焦的输入框里输入 wq + 空格，期望得到「你」。
 type_phrase_and_verify() {
-    local surface="$1" got
+    local surface="$1" got before_copy
     select_ime
-    type_text "wq"
+    owned_type "wq"
     sleep 0.2
-    keycode 49
+    owned_do key 49
     sleep 0.6
-    got="$(field_read_clipboard)"
+    owned_do select-all
+    sleep 0.25
+    before_copy="$("$PASTEBOARD" count)" || exit 1
+    owned_do copy
+    sleep 0.35
+    clipboard_observe
+    if [ "$CLIP_COUNT" = "$before_copy" ]; then
+        echo "BLOCKED 复制未产生新剪贴板内容，拒绝使用旧值验收" >&2
+        exit 1
+    fi
+    got="$(pbpaste)"
     check_eq "$surface 输入 wq+空格" "$got" "你"
-    field_clear
+    # The owned browser window is closed on exit; do not send a destructive clear.
 }
 
 echo "▶ 编译 imk-auto"
 imk_auto_build || { echo "❌ 编译失败（需 swiftc）" >&2; exit 1; }
+
+swiftc -O -warnings-as-errors "$ROOT/platforms/macos/tests/pasteboard-state.swift" -o "$PASTEBOARD" || exit 1
+ORIGINAL_SOURCE="$(aui current-source)" || exit 1
+CLIP_COUNT="$("$PASTEBOARD" save "$WORK/clipboard.json")" || exit 1
+STATE_READY=1
 
 echo "▶ 前置检查"
 aui select >/dev/null 2>&1 || { echo "❌ 未找到萤火虫输入源" >&2; exit 1; }
@@ -58,27 +83,27 @@ require_host || exit 1
 sleep 0.4
 
 echo "▶ ⑩-1 TextEdit"
-osascript -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+owned_textedit_create || exit 1
 aui activate com.apple.TextEdit >/dev/null 2>&1
 sleep 1.0
 select_ime
-type_text "wq"; sleep 0.2; keycode 49
+owned_type "wq"; sleep 0.2; owned_do key 49
 sleep 0.6
-got="$(osascript -e 'tell application "TextEdit" to get text of front document' 2>/dev/null)"
+got="$(owned_do read)" || exit 1
 check_eq "TextEdit 输入 wq+空格" "$got" "你"
-osascript -e 'tell application "System Events" to keystroke "z" using command down' >/dev/null 2>&1
+owned_do undo
 sleep 0.6
-got="$(osascript -e 'tell application "TextEdit" to get text of front document' 2>/dev/null)"
+got="$(owned_do read)" || exit 1
 check_eq "TextEdit Cmd+Z 回退" "$got" ""
 
 echo "▶ ⑩-2 Terminal（新窗口）"
-osascript -e 'tell application "Terminal" to do script ""' >/dev/null 2>&1
-CREATE_TERMINAL=1
+id="$(osascript -e 'tell application "Terminal" to get id of window of (do script "")')" || exit 1
+owned_record Terminal window "$id" || exit 1
 sleep 1.5
 aui activate com.apple.Terminal >/dev/null 2>&1
 sleep 0.8
 select_ime
-type_text "wq"; sleep 0.2; keycode 49
+owned_type "wq"; sleep 0.2; owned_do key 49
 sleep 0.8
 if aui dump "com.apple.Terminal" | grep -q "你"; then
     ok "Terminal 上屏含「你」"
@@ -87,49 +112,27 @@ else
 fi
 
 echo "▶ ⑩-3 Chrome 地址栏（新窗口）"
-osascript -e 'tell application "Google Chrome" to make new window' >/dev/null 2>&1
-CREATE_CHROME=1
+id="$(osascript -e 'tell application "Google Chrome" to get id of (make new window)')" || exit 1
+owned_record "Google Chrome" window "$id" || exit 1
 sleep 1.5
 aui activate com.google.Chrome >/dev/null 2>&1
 sleep 0.8
-osascript -e 'tell application "System Events" to keystroke "l" using command down' >/dev/null 2>&1
+owned_do address
 sleep 0.5
 type_phrase_and_verify "Chrome 地址栏"
 
 echo "▶ ⑩-4 Safari 地址栏（新窗口）"
-osascript -e 'tell application "Safari" to make new document' >/dev/null 2>&1
-CREATE_SAFARI=1
+id="$(osascript -e 'tell application "Safari"' -e 'set newDocument to make new document' -e 'get id of first window whose document is newDocument' -e 'end tell')" || exit 1
+owned_record Safari window "$id" || exit 1 || exit 1
 sleep 1.5
 aui activate com.apple.Safari >/dev/null 2>&1
 sleep 0.8
-osascript -e 'tell application "System Events" to keystroke "l" using command down' >/dev/null 2>&1
+owned_do address
 sleep 0.5
 type_phrase_and_verify "Safari 地址栏"
 
-echo "▶ ⑩-5 微信（需已登录且有会话；无 AX，用剪贴板）"
-if pgrep -x WeChat >/dev/null; then
-    aui activate com.tencent.xinWeChat >/dev/null 2>&1
-    sleep 1.2
-    if frontmost_name | grep -q "微信\|WeChat"; then
-        pos="$(osascript -e 'tell application "System Events" to tell process "WeChat" to get position of window 1' 2>/dev/null | tr -d ' ')"
-        size="$(osascript -e 'tell application "System Events" to tell process "WeChat" to get size of window 1' 2>/dev/null | tr -d ' ')"
-        if [ -n "$pos" ] && [ -n "$size" ]; then
-            wx="$(printf '%s' "$pos" | cut -d, -f1)"
-            wy="$(printf '%s' "$pos" | cut -d, -f2)"
-            ww="$(printf '%s' "$size" | cut -d, -f1)"
-            wh="$(printf '%s' "$size" | cut -d, -f2)"
-            aui click $(( wx + ww / 2 )) $(( wy + wh - 60 )) >/dev/null
-            sleep 0.8
-            type_phrase_and_verify "微信输入框"
-        else
-            no "微信窗口不可读（跳过）"
-        fi
-    else
-        echo "  SKIP  微信未能前置（实际：$(frontmost_name)）"
-    fi
-else
-    echo "  SKIP  微信未运行（先登录再跑本项）"
-fi
+echo "  BLOCKED 微信：尚无可验证所有权的隔离草稿，不向已有聊天投递按键"
+FAIL=$((FAIL + 1))
 
 echo "SUMMARY pass=$PASS fail=$FAIL"
 [ "$FAIL" -eq 0 ]
