@@ -24,6 +24,8 @@ pub const IME_ERR_PARSE: i32 = -6;
 pub const IME_ERR_LOCKED: i32 = -7;
 /// 内部 panic（`catch_unwind` 兜底，绝不应出现）。
 pub const IME_ERR_PANIC: i32 = -8;
+/// The exact user entry does not exist.
+pub const IME_ERR_NOT_FOUND: i32 = -9;
 
 /// 兜底执行：任何 panic 都转为 [`IME_ERR_PANIC`]。
 pub fn catch_status<F>(f: F) -> i32
