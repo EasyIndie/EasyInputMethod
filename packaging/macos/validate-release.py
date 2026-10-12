@@ -2,6 +2,7 @@
 import argparse
 import hashlib
 from pathlib import Path, PurePosixPath
+import posixpath
 import plistlib
 import re
 import struct
@@ -45,7 +46,7 @@ def architectures(executable):
     require(cpus == {0x01000007, 0x0100000C}, "缺少arm64或x86_64")
 
 
-def validate(directory, tag, commit):
+def validate(directory, tag, commit, review=False):
     require(re.fullmatch(r"v\d+\.\d+\.\d+", tag), "无效发布版本")
     require(re.fullmatch(r"[0-9a-f]{40}", commit), "源码提交须为40位SHA")
     version = tag[1:]
@@ -97,7 +98,7 @@ def validate(directory, tag, commit):
         require(info.get("CFBundleIdentifier") == "cn.jokerhub.inputmethod.Lampyris", "bundle身份不符")
         require(files[app + "Resources/SOURCE-COMMIT"].decode().strip() == commit, "应用源码提交不符")
         metadata = files["BUILD-INFO.txt"].decode().splitlines()
-        for expected in ("commit=" + commit, "architecture=universal", "signed_release=true"):
+        for expected in ("commit=" + commit, "architecture=universal", ("signed_release=false" if review else "signed_release=true")):
             key = expected.split("=", 1)[0] + "="
             require([line for line in metadata if line.startswith(key)] == [expected], "构建元信息不符：" + key)
         arches = [line for line in metadata if line.startswith("lipo_archs=")]
@@ -113,7 +114,16 @@ def validate(directory, tag, commit):
         for member in members:
             safe_name(member.name)
             require(member.name == root.rstrip("/") or member.name.startswith(root), "源码包根目录不符")
-            require(member.isfile() or member.isdir(), "源码包仅接受文件与目录")
+            require(member.isfile() or member.isdir() or member.issym(), "源码包拒绝硬链接和特殊文件")
+        by_name = {member.name: member for member in members}
+        links = [member for member in members if member.issym()]
+        for member in links:
+            require(not member.linkname.startswith("/"), "源码链接不得为绝对路径")
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(member.name), member.linkname))
+            require(target.startswith(root) and target in by_name, "源码链接越界或目标缺失")
+            require(by_name[target].isfile() or by_name[target].isdir(), "源码链接目标不得为链接")
+            require(not any(name.startswith(member.name + "/") for name in names), "源码链接下不得有额外成员")
+            require(not any(target.startswith(link.name + "/") for link in links), "源码链接目标不得穿越其他链接")
         source_files = {member.name for member in members if member.isfile()}
         required = ("SOURCE-COMMIT", "Cargo.lock", "Cargo.toml", "LICENSE", ".cargo/config.toml", "platforms/macos/build.sh")
         require(all(root + name in source_files for name in required), "对应源码或离线构建材料不全")
@@ -129,9 +139,12 @@ def main():
     parser.add_argument("tag")
     parser.add_argument("commit")
     parser.add_argument("--assets-only", action="store_true", help="仅输出已核验附件路径，供发布步骤读取")
+    parser.add_argument("--review", action="store_true", help="仅校验未签名本地审核包；不能用于发布附件输出")
     args = parser.parse_args()
+    if args.review and args.assets_only:
+        parser.error("审核模式不能输出正式发布附件")
     try:
-        assets = validate(args.directory, args.tag, args.commit)
+        assets = validate(args.directory, args.tag, args.commit, review=args.review)
         if not args.assets_only:
             print("附件摘要、版本、双架构、提交与对应源码核验通过（Apple签名/公证由macOS另验）")
         for path in assets:

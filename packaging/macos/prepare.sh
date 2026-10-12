@@ -60,7 +60,7 @@ Corresponding Source（对应源码）：
 TXT
 python3 packaging/macos/manifest.py "${STAGE}"
 ZIP="${WORK}/Lampyris-0.1.0-${ARCH}.zip"
-ditto -c -k --keepParent "${STAGE}" "${ZIP}"
+ditto -c -k --norsrc --noextattr --keepParent "${STAGE}" "${ZIP}"
 BYTES="$(stat -f %z "${ZIP}")"
 [ "${BYTES}" -le 15000000 ] || { echo "包超过 15MB：${BYTES}" >&2; exit 1; }
 (cd "${WORK}" && shasum -a 256 "$(basename "${ZIP}")" > "$(basename "${ZIP}").sha256")
@@ -84,7 +84,7 @@ s = p.read_text().splitlines()
 p.write_text('\n'.join('directory = "vendor"' if line.startswith('directory = ') else line for line in s) + '\n')
 PY
 SOURCE_TAR="${WORK}/Lampyris-0.1.0-source.tar.gz"
-tar -czf "${SOURCE_TAR}" -C "${SOURCE_STAGE}" "Lampyris-0.1.0-source"
+COPYFILE_DISABLE=1 tar -czf "${SOURCE_TAR}" -C "${SOURCE_STAGE}" "Lampyris-0.1.0-source"
 (cd "${WORK}" && shasum -a 256 "$(basename "${SOURCE_TAR}")" > "$(basename "${SOURCE_TAR}").sha256")
 
 echo "本地候选包：${ZIP}（${BYTES} 字节，signed_release=${SIGNED}）"

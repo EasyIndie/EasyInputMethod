@@ -35,6 +35,7 @@ class ReleaseValidationTests(unittest.TestCase):
             "BUILD-INFO.txt": (f"commit={COMMIT}\narchitecture=universal\nlipo_archs=arm64 x86_64\nsigned_release=true\n").encode(),
             "LICENSE": b"synthetic", "SOURCE.txt": b"synthetic", "SBOM.cdx.json": b"{}", "DATA-SOURCES.md": b"synthetic",
         }
+        self.source_links = {}
         self.source_commit = COMMIT
         for name in ("wubi86-core.tsv", "pinyin-chars.tsv", "pinyin-core.tsv", "variant-s2t.tsv"):
             self.files[APP + "Resources/" + name] = b"synthetic data"
@@ -58,8 +59,30 @@ class ReleaseValidationTests(unittest.TestCase):
                 entry = tarfile.TarInfo("Lampyris-0.1.0-source/" + name)
                 entry.size = len(data)
                 package.addfile(entry, io.BytesIO(data))
+            for name, target in self.source_links.items():
+                entry = tarfile.TarInfo("Lampyris-0.1.0-source/" + name)
+                entry.type = tarfile.SYMTYPE
+                entry.linkname = target
+                package.addfile(entry)
         for path in (self.binary, self.source):
             Path(str(path) + ".sha256").write_text(hashlib.sha256(path.read_bytes()).hexdigest() + "  " + path.name + "\n")
+
+    def test_review_does_not_pass_release_gate(self):
+        self.files['BUILD-INFO.txt'] = self.files['BUILD-INFO.txt'].replace(b'signed_release=true', b'signed_release=false')
+        self.write()
+        self.assertEqual(len(validator.validate(self.root, 'v0.1.0', COMMIT, review=True)), 4)
+        with self.assertRaises(ValueError):
+            self.check()
+
+    def test_internal_source_link_and_escape_rejection(self):
+        self.source_links = {'alias': 'LICENSE'}
+        self.write()
+        self.check()
+        for target in ['../../escape', '/absolute', 'absent', 'alias']:
+            self.source_links = {'alias': target}
+            self.write()
+            with self.assertRaises(ValueError):
+                self.check()
 
     def check(self):
         return validator.validate(self.root, "v0.1.0", COMMIT)
