@@ -60,15 +60,22 @@ jobs:
           gh run download "${run_id}" --dir dist
           find dist -type f | sort
 
+      - name: Validate release assets before dry run or publication
+        env:
+          RELEASE_TAG: ${{ steps.meta.outputs.tag }}
+          RELEASE_COMMIT: ${{ steps.meta.outputs.sha }}
+        run: |
+          python3 packaging/macos/tests/test-validate-release.py
+          python3 packaging/macos/validate-release.py dist "$RELEASE_TAG" "$RELEASE_COMMIT" --assets-only > release-assets.txt
+          cat release-assets.txt
+
       - name: Create the GitHub Release (binary + corresponding source, same page)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
           tag="${{ steps.meta.outputs.tag }}"
-          mapfile -t assets < <(find dist -type f \( \
-            -name 'Lampyris-0.1.0-*.zip' -o -name 'Lampyris-0.1.0-*.zip.sha256' \
-            -o -name '*-source.tar.gz' -o -name '*-source.tar.gz.sha256' \) | sort)
+          mapfile -t assets < release-assets.txt
           printf '%s\n' "${assets[@]}"
           # GPL-3.0 §6(d)：二进制与对应源码必须同页发布。
           printf '%s\n' "${assets[@]}" | grep -q 'source.tar.gz$' \

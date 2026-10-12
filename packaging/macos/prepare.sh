@@ -16,7 +16,7 @@ if ${SIGNED}; then
   for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv variant-s2t.tsv; do
     cmp "data/generated/${name}" "${APP}/Contents/Resources/${name}"
   done
-  cmp platforms/macos/Info.plist "${APP}/Contents/Info.plist"
+  python3 tools/macos-build-metadata.py check-contract platforms/macos/Info.plist "${APP}/Contents/Info.plist"
   codesign --verify --strict "${APP}"
   xcrun stapler validate "${APP}"
   spctl --assess --type execute --verbose=2 "${APP}"
