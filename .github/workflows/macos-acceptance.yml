@@ -34,10 +34,9 @@ jobs:
           make verify
           ./platforms/macos/dev-preview.sh --smoke-test
           ./platforms/macos/build.sh --strict --universal
-      - name: Verify signing cleanup without credentials
+      - name: Verify all offline macOS and packaging regressions
         run: |
-          python3 packaging/macos/tests/test-ci-sign.py
-          python3 platforms/macos/tests/test-install.py
+          make macos-offline-tests
       - name: Sign and notarize with team API key
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
