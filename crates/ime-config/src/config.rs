@@ -117,7 +117,7 @@ pub(crate) fn parse_literal(spec: &OptionSpec, raw: &str) -> Result<ConfigValue,
                 ))
             }
         }
-        ValueType::String => Ok(ConfigValue::String(unquote(raw))),
+        ValueType::String => string_value(spec, &unquote(raw)),
     }
 }
 
@@ -128,5 +128,16 @@ fn unquote(raw: &str) -> String {
         raw[1..raw.len() - 1].to_string()
     } else {
         raw.to_string()
+    }
+}
+
+/// Validate and normalize string values from both setters and file loads.
+pub(crate) fn string_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, ConfigError> {
+    if spec.scope == schema::Scope::Hotkey {
+        Ok(ConfigValue::String(
+            crate::Hotkey::parse(spec.key, value)?.canonical(),
+        ))
+    } else {
+        Ok(ConfigValue::String(value.to_owned()))
     }
 }
