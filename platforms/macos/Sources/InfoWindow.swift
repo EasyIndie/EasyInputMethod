@@ -17,6 +17,10 @@ final class InfoWindow: NSObject {
     private var panel: NSPanel?
     private var currentText = ""
     private var links: [InfoLink] = []
+    private let status = NSTextField(wrappingLabelWithString: "")
+    private let fallbackAddress = NSTextField(wrappingLabelWithString: "")
+    private lazy var copyAddressButton = NSButton(title: "复制地址", target: self, action: #selector(copyAddress))
+    private var presentationID = UUID()
 
     static func show(title: String, text: String, allowsCopy: Bool, links: [InfoLink] = []) {
         shared.present(title: title, text: text, allowsCopy: allowsCopy, links: links)
@@ -25,9 +29,16 @@ final class InfoWindow: NSObject {
     private func present(title: String, text: String, allowsCopy: Bool, links: [InfoLink]) {
         currentText = text
         self.links = links
+        presentationID = UUID()
+        status.stringValue = ""
+        fallbackAddress.stringValue = ""
+        fallbackAddress.isSelectable = true
+        fallbackAddress.isHidden = true
+        copyAddressButton.isHidden = true
         let panel = self.panel ?? makePanel()
         self.panel = panel
         panel.title = title
+        ImeAppearance.applyTheme(to: panel)
 
         let textView = NSTextView()
         textView.isEditable = false
@@ -63,6 +74,9 @@ final class InfoWindow: NSObject {
             row.spacing = 10
             views.append(row)
         }
+        views.append(status)
+        views.append(fallbackAddress)
+        views.append(copyAddressButton)
         let stack = NSStackView(views: views)
         stack.orientation = .vertical
         stack.alignment = .leading
@@ -79,23 +93,57 @@ final class InfoWindow: NSObject {
             stack.topAnchor.constraint(equalTo: content.topAnchor),
             stack.bottomAnchor.constraint(equalTo: content.bottomAnchor),
             scroll.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -32),
+            status.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -32),
+            fallbackAddress.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -32),
         ])
         NSApp.activate(ignoringOtherApps: true)
         panel.makeKeyAndOrderFront(nil)
     }
 
     @objc private func copyText() {
-        let pasteboard = NSPasteboard.general
+        reportCopy(Self.copy(currentText, to: .general))
+    }
+
+    static func copy(_ text: String, to pasteboard: NSPasteboard) -> Bool {
         pasteboard.clearContents()
-        _ = pasteboard.setString(currentText, forType: .string)
+        return pasteboard.setString(text, forType: .string)
+    }
+
+    private func reportCopy(_ success: Bool) {
+        status.stringValue = success ? "已复制" : "复制失败，请选中文字手动复制。"
+        status.textColor = success ? ImeAppearance.secondaryText : ImeAppearance.errorText
+    }
+
+    @objc private func copyAddress() { reportCopy(Self.copy(fallbackAddress.stringValue, to: .general)) }
+
+    private func finishOpen(_ url: URL, succeeded: Bool, presentation: UUID) {
+        guard presentation == presentationID else { return }
+        status.stringValue = succeeded ? "已交给默认浏览器打开。" : "打开失败，请复制地址到浏览器。"
+        status.textColor = succeeded ? ImeAppearance.secondaryText : ImeAppearance.errorText
+        fallbackAddress.stringValue = succeeded ? "" : url.absoluteString
+        fallbackAddress.isHidden = succeeded
+        copyAddressButton.isHidden = succeeded
+    }
+
+    static func testOpenResult(_ url: URL, succeeded: Bool) -> (String, String, Bool) {
+        let window = InfoWindow()
+        window.finishOpen(url, succeeded: succeeded, presentation: window.presentationID)
+        return (window.status.stringValue, window.fallbackAddress.stringValue, !window.copyAddressButton.isHidden)
     }
 
     /// 用户显式点击跳转按钮才打开对应页面；异步打开，不阻塞主线程（ADR-073）。
     @objc private func openLink(_ sender: NSButton) {
         guard links.indices.contains(sender.tag) else { return }
+        let url = links[sender.tag].url
+        let identity = presentationID
+        status.stringValue = "正在打开…"
         NSWorkspace.shared.open(
-            links[sender.tag].url, configuration: NSWorkspace.OpenConfiguration()
-        ) { _, _ in }
+            url, configuration: NSWorkspace.OpenConfiguration()
+        ) { [weak self] application, error in
+            DispatchQueue.main.async {
+                self?.finishOpen(url, succeeded: application != nil && error == nil, presentation: identity)
+            }
+        }
     }
 
     private func makePanel() -> NSPanel {
@@ -105,9 +153,18 @@ final class InfoWindow: NSObject {
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
+        ImeAppearance.applyTheme(to: panel)
+        ConfigWatcher.shared.observe(owner: self) { [weak self] key in
+            if key == "appearance.theme", let panel = self?.panel { ImeAppearance.applyTheme(to: panel) }
+        }
         panel.center()
         return panel
     }
+
+    static func prepareThemeForTesting() {
+        if shared.panel == nil { shared.panel = shared.makePanel() }
+    }
+    static var configuredAppearanceForTesting: NSAppearance.Name? { shared.panel?.appearance?.name }
 }
 
 /// 版本信息（诊断 / 许可；反馈与安全渠道为窗口按钮，ADR-079/080）。

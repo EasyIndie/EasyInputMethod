@@ -3,7 +3,7 @@
 // 配置唯一真值是 `config.toml`；宿主只读快照/取值，写入一律走 `ime_config_set`。
 // 见 docs/配置架构.md 四条铁律（R1–R4）。
 
-import Foundation
+import Cocoa
 import ime
 
 enum ImePaths {
@@ -29,6 +29,12 @@ enum ImePaths {
 
 /// 配置读取（经 `ime-config`，绝不自行解析 TOML）。
 enum ImeConfig {
+    /// The configuration module owns parsing, aliases, validation and conflicts.
+    static func hotkey(_ key: String) -> ConfiguredHotkey {
+        let value = key.withCString { ime_config_hotkey($0) }
+        return ConfiguredHotkey(kind: value.kind, modifiers: value.modifiers, key: value.key)
+    }
+
     static func string(_ key: String) -> String? {
         guard let ptr = key.withCString({ ime_config_get($0) }) else { return nil }
         return String(cString: ptr)
@@ -123,5 +129,75 @@ final class ConfigWatcher {
         for handler in handlers {
             handler(key)
         }
+    }
+}
+
+/// AppKit adapter for a typed shortcut, shared by menus and input dispatch.
+struct ConfiguredHotkey {
+    let kind: UInt32
+    private let modifierBits: UInt32
+    let key: UInt32
+    init(kind: UInt32, modifiers: UInt32, key: UInt32) {
+        self.kind = kind; modifierBits = modifiers; self.key = key
+    }
+    var modifiers: NSEvent.ModifierFlags {
+        var flags: NSEvent.ModifierFlags = []
+        for (bit, flag) in [(UInt32(1), NSEvent.ModifierFlags.control), (2, .option), (4, .shift), (8, .command)] {
+            if modifierBits & bit != 0 { flags.insert(flag) }
+        }
+        return flags
+    }
+    var equivalent: String { UnicodeScalar(key).map { String($0) } ?? "" }
+    func matches(_ event: NSEvent) -> Bool {
+        guard kind == 2, event.modifierFlags.intersection([.control, .option, .shift, .command]) == modifiers else { return false }
+        if key == 32 { return event.keyCode == 49 || event.charactersIgnoringModifiers == " " }
+        return event.charactersIgnoringModifiers?.lowercased() == equivalent
+    }
+}
+
+/// Temporary process-wide state, never persisted as user preferences.
+final class ErrorNoticeGate {
+    private var seen: [String: Set<String>] = [:]
+    func claim(channel: String, message: String?) -> Bool {
+        guard let message else { seen[channel] = nil; return false }
+        return seen[channel, default: []].insert(message).inserted
+    }
+}
+
+/// Serialize modal notices and discard queued messages that have already recovered.
+final class ProcessErrorPresenter {
+    static let shared = ProcessErrorPresenter()
+    private let gate = ErrorNoticeGate()
+    private var queue: [(String, String, String, () -> String?)] = []
+    private var presenting = false
+    private let display: (String, String) -> Void
+
+    init(display: @escaping (String, String) -> Void = { title, message in
+        let alert = NSAlert()
+        ImeAppearance.applyTheme(to: alert.window)
+        alert.messageText = title
+        alert.informativeText = message
+        alert.runModal()
+    }) { self.display = display }
+
+    func update(channel: String, title: String, current: @escaping () -> String?) {
+        let message = current()
+        guard gate.claim(channel: channel, message: message), let message else { return }
+        queue.append((channel, title, message, current))
+        DispatchQueue.main.async { [weak self] in self?.drain() }
+    }
+
+    private func drain() {
+        guard !presenting, !queue.isEmpty else { return }
+        let (channel, title, message, current) = queue.removeFirst()
+        guard current() == message else {
+            if current() == nil { _ = gate.claim(channel: channel, message: nil) }
+            drain()
+            return
+        }
+        presenting = true
+        display(title, message)
+        presenting = false
+        drain()
     }
 }

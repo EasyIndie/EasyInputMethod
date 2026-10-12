@@ -135,3 +135,25 @@ license = "Apache-2.0"
 sha256 = "68c94a2c795efc757b1b5f4331d16497cc4d713417deec762a02b3c192fe90f6"
 generator = "tools/prepare-variant.py"
 notes = "简→繁转换表；每键取 OpenCC 默认形式；运行时按最长匹配优先命中词组；42,430 条 / 841KB；随包分发"
+
+[[source]]
+id = "D13"
+name = "本项目五笔86键名字"
+path = "crates/wubi-encoder/src/lib.rs"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/c294b67/crates/wubi-encoder/src/lib.rs"
+upstream = "EasyIndie/EasyInputMethod"
+license = "GPL-3.0-or-later"
+risk = "low"
+sha256 = "575ce24329b5deab9938ccbcb9d1bc569b84dff2c8dabf06028ba9e0738c2650"
+used_for = ["wubi-key-name-hints"]
+added_at = "2026-10-12"
+notes = "复用KEY_NAMES公开事实映射；项目代码许可见根LICENSE，不增加第三方数据"
+
+[[derived]]
+id = "wubi-key-hints-v1"
+path = "platforms/macos/Sources/WubiHints.generated.swift"
+source_ids = ["D13"]
+license = "GPL-3.0-or-later"
+sha256 = "23148919edcdc57fccdf9f5f7c16c23e7d48673b0d79823178045443786e77e4"
+generator = "tools/generate-wubi-hints.py"
+notes = "25键可读键名展示；不是完整字根表或当前汉字拆字"

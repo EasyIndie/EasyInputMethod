@@ -34,7 +34,12 @@ final class PreviewInput: NSTextView {
 
     override func keyDown(with event: NSEvent) {
         session.markKeyWhileShift()
-        if session.shortcut(event, persistMode: false) { refresh(); return }
+        let shortcut = session.shortcut(event, persistMode: false)
+        if shortcut.consumed {
+            refresh()
+            if shortcut == .failed { status?(ImeConfig.errorMessage() ?? "设置未保存，请重试。") }
+            return
+        }
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             super.keyDown(with: event)
@@ -91,12 +96,14 @@ final class PreviewInput: NSTextView {
         setSelectedRange(NSRange(location: content.length, length: 0))
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
         let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
-        status?("词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
+        status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
             let badge = ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][session.mode] ?? session.mode
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
-                status: session.isFullWidth ? "\(badge)·全" : badge)
+                status: session.isFullWidth ? "\(badge)·全" : badge,
+                hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
+                    english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"))
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
@@ -185,13 +192,30 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show(session: session) }
     @objc func addWord() { input?.cancelComposition(); UserDictionaryUI.add(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func importWords() { input?.cancelComposition(); UserDictionaryUI.importFile(session); input?.refresh(); window?.makeFirstResponder(input) }
-    @objc func exportWords() { input?.cancelComposition(); UserDictionaryUI.exportFile(session); input?.refresh(); window?.makeFirstResponder(input) }
+    @objc func importWords() {
+        input?.cancelComposition()
+        let url = UserDictionaryUI.importFile(session)
+        input?.refresh()
+        if let url { input?.status?("用户词库已导入：\(url.path)") }
+        window?.makeFirstResponder(input)
+    }
+    @objc func exportWords() {
+        input?.cancelComposition()
+        let url = UserDictionaryUI.exportFile(session)
+        input?.refresh()
+        if let url { input?.status?("用户词库已导出：\(url.path)") }
+        window?.makeFirstResponder(input)
+    }
     @objc func clearInput() { input?.clear(); window?.makeFirstResponder(input) }
     func windowDidResignKey(_ notification: Notification) { input?.cancelComposition() }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }
 
+if Bundle.main.bundleIdentifier?.hasPrefix("cn.jokerhub.lampyris.isolatedpanel.") == true,
+    !CommandLine.arguments.contains("--panel-isolation-probe") {
+    fputs("BLOCKED：独立测试应用缺少隔离启动参数。\n", stderr)
+    exit(3)
+}
 let data: URL
 if CommandLine.arguments.count == 2 || CommandLine.arguments.count == 3 {
     data = URL(fileURLWithPath: CommandLine.arguments[CommandLine.arguments.count - 1])
@@ -207,18 +231,58 @@ guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-cor
 }
 _ = session.setVariantData(data.appendingPathComponent("variant-s2t.tsv").path)
 let smoke = CommandLine.arguments.contains("--smoke-test")
+let panelProbe = CommandLine.arguments.contains("--panel-isolation-probe")
 let smokeDirectory = FileManager.default.temporaryDirectory.appendingPathComponent("lampyris-preview-\(UUID().uuidString)")
-if smoke {
+if panelProbe {
+    guard CommandLine.arguments.count == 5,
+        ["normal", "failure", "INT", "TERM", "interactive"].contains(CommandLine.arguments[2])
+    else { fputs("BLOCKED：隔离探针参数无效。\n", stderr); exit(3) }
+    let root = URL(fileURLWithPath: CommandLine.arguments[3], isDirectory: true)
+    guard root.lastPathComponent.hasPrefix("lampyris-panel-"),
+        (try? String(contentsOf: root.appendingPathComponent("owner"), encoding: .utf8)) == root.lastPathComponent
+    else { fputs("BLOCKED：测试目录身份无效。\n", stderr); exit(3) }
+    ime_config_init(root.appendingPathComponent("config.toml").path)
+} else if smoke {
     try FileManager.default.createDirectory(at: smokeDirectory, withIntermediateDirectories: true)
     ime_config_init(smokeDirectory.appendingPathComponent("config.toml").path)
 } else { ime_config_init(ImePaths.configFile()) }
 let app = NSApplication.shared
+if panelProbe, CommandLine.arguments[2] != "interactive" {
+    let mode = CommandLine.arguments[2]
+    app.setActivationPolicy(.regular)
+    session.prepare()
+    guard ImeConfig.setString("mode", "wubi"),
+        session.addWord(scheme: "wubi", code: "zz", text: "面板隔离测试词") == IME_OK
+    else { fputs("FAIL：隔离数据初始化失败。\n", stderr); exit(1) }
+    SettingsPanel.shared.prepare()
+    let alert = NSAlert()
+    alert.messageText = "萤火虫隔离面板验证"
+    alert.informativeText = "仅使用测试进程自己的配置和词库。"
+    alert.addButton(withTitle: "关闭测试面板")
+    let panelTimer = Timer(timeInterval: 0.1, repeats: false) { _ in
+        print("READY \(ProcessInfo.processInfo.processIdentifier)")
+        fflush(stdout)
+        if mode == "normal" { alert.buttons[0].performClick(nil) }
+        else if mode == "failure" { exit(7) }
+    }
+    RunLoop.main.add(panelTimer, forMode: .modalPanel)
+    guard alert.runModal() == .alertFirstButtonReturn else { exit(1) }
+    print("PASS isolated-panel normal")
+    exit(0)
+}
 if CommandLine.arguments.contains("--smoke-test") {
+    guard WubiHints.text(buffer: "wq", mode: "mixed", english: false, wildcard: false) == "键位提示：W 人 · Q 金",
+        WubiHints.text(buffer: "nihao", mode: "pinyin", english: false, wildcard: false) == nil,
+        WubiHints.text(buffer: "wq", mode: "wubi", english: true, wildcard: false) == nil,
+        WubiHints.text(buffer: "z", mode: "wubi", english: false, wildcard: false) == nil,
+        WubiHints.text(buffer: "z", mode: "wubi", english: false, wildcard: true) == "键位提示：Z 通配"
+    else { fputs("五笔键位提示边界错误。\n", stderr); exit(1) }
     let geometry = CandidateWindow()
     let area = NSRect(x: 100, y: 100, width: 320, height: 500)
     let long = ImeCandidate(
         text: String(repeating: "长词条", count: 28), code: "", source: .codeTable, isPrefix: false)
-    geometry.update(candidates: Array(repeating: long, count: 9))
+    geometry.update(candidates: Array(repeating: long, count: 9),
+        hint: WubiHints.text(buffer: "aaaa", mode: "wubi", english: false, wildcard: false))
     geometry.layout(at: NSRect(x: 410, y: 580, width: 1, height: 20), within: area)
     guard area.contains(geometry.frame), geometry.frame.height > 28 else { exit(1) }
     geometry.update(candidates: [
@@ -258,7 +322,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     geometry.update(candidates: [
         ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)
     ])
-    guard geometry.displayedCandidateTexts == ["1.你"] else {
+    guard geometry.displayedCandidateTexts == ["1. 你"] else {
         fputs("单一来源页不应标注来源：\(geometry.displayedCandidateTexts)\n", stderr); exit(1)
     }
     // 状态徽标 + 鼠标点选（T-MVP-06）。
@@ -278,6 +342,15 @@ if CommandLine.arguments.contains("--smoke-test") {
     ])
     geometry.simulateClick(at: 1)
     guard picked == 1 else { fputs("鼠标点选回调索引错误：\(picked)\n", stderr); exit(1) }
+    picked = -1
+    guard geometry.accessiblePressForTesting(at: 0), picked == 0 else {
+        fputs("辅助按下没有执行候选选择。\n", stderr); exit(1)
+    }
+    geometry.update(candidates: [])
+    picked = -1
+    guard !geometry.accessiblePressForTesting(at: 0), picked == -1 else {
+        fputs("已移除候选仍能被辅助选择。\n", stderr); exit(1)
+    }
     // 多屏/负坐标选屏（体验打磨）：副屏在左（负 X）时按相交面积选对屏；跨屏取交叠更大者。
     let primaryScreen = NSRect(x: 0, y: 0, width: 1920, height: 1080)
     let secondaryScreen = NSRect(x: -1280, y: 0, width: 1280, height: 1024)
@@ -448,39 +521,42 @@ if CommandLine.arguments.contains("--smoke-test") {
     session.setMode("mixed")
     guard ImeConfig.setString("appearance.theme", "dark") else { exit(1) }
     guard ImeConfig.string("appearance.theme") == "dark" else { exit(1) }
-    // 亮/暗主题可读性（⑬）：候选窗与设置面板在两种外观下离屏渲染，前景/背景对比度应达 WCAG AA（≥4.5）。
-    func srgbLuminance(_ color: NSColor) -> CGFloat {
-        let c = color.usingColorSpace(.sRGB) ?? color
-        func lin(_ v: CGFloat) -> CGFloat { v <= 0.03928 ? v / 12.92 : pow((v + 0.055) / 1.055, 2.4) }
-        return 0.2126 * lin(c.redComponent) + 0.7152 * lin(c.greenComponent) + 0.0722 * lin(c.blueComponent)
+    let qaDirectory = Bundle.main.bundleURL.deletingLastPathComponent().appendingPathComponent("qa-\(UUID().uuidString)")
+    try FileManager.default.createDirectory(at: qaDirectory, withIntermediateDirectories: false)
+    func saveQA(_ image: NSBitmapImageRep?, _ name: String) {
+        guard let bytes = image?.representation(using: .png, properties: [:]) else { fputs("视觉证据生成失败：\(name)\n", stderr); exit(1) }
+        do { try bytes.write(to: qaDirectory.appendingPathComponent(name), options: .withoutOverwriting) }
+        catch { fputs("视觉证据保存失败：\(error)\n", stderr); exit(1) }
     }
-    func assertReadable(_ surface: String, _ theme: String, _ rep: NSBitmapImageRep?) {
-        guard let rep else {
-            fputs("\(surface) 在 \(theme) 主题下渲染失败。\n", stderr); exit(1)
-        }
-        var lo = CGFloat.greatestFiniteMagnitude, hi = -CGFloat.greatestFiniteMagnitude
-        for y in 0..<rep.pixelsHigh {
-            for x in 0..<rep.pixelsWide {
-                if let c = rep.colorAt(x: x, y: y) {
-                    let l = srgbLuminance(c)
-                    lo = min(lo, l); hi = max(hi, l)
+    // Semantic text colors are composited over the actual painted backgrounds.
+    for theme in ["light", "dark"] {
+        guard ImeConfig.setString("appearance.theme", theme),
+            let appearance = NSAppearance(named: theme == "dark" ? .darkAqua : .aqua)
+        else { exit(1) }
+        appearance.performAsCurrentDrawingAppearance {
+            let surfaces: [(String, NSColor, NSColor)] = [
+                ("候选正文", .labelColor, .windowBackgroundColor),
+                ("候选来源/状态", ImeAppearance.secondaryText, .windowBackgroundColor),
+                ("悬停正文", .labelColor, ImeAppearance.hoverBackground()),
+                ("悬停来源", ImeAppearance.secondaryText, ImeAppearance.hoverBackground()),
+                ("设置说明", ImeAppearance.secondaryText, .windowBackgroundColor),
+                ("错误状态", ImeAppearance.errorText, .windowBackgroundColor),
+            ]
+            for (surface, foreground, background) in surfaces {
+                let ratio = ImeAppearance.contrast(foreground, over: background)
+                guard ratio >= 4.5 else {
+                    fputs("\(surface)在\(theme)主题下合成对比度不足：\(ratio)。\n", stderr); exit(1)
                 }
             }
         }
-        let ratio = lo.isFinite && hi.isFinite ? (hi + 0.05) / (lo + 0.05) : 0
-        guard ratio >= 4.5 else {
-            fputs("\(surface) 在 \(theme) 主题对比度不足：\(ratio)。\n", stderr); exit(1)
-        }
-    }
-    for theme in ["light", "dark"] {
-        guard ImeConfig.setString("appearance.theme", theme) else { exit(1) }
         geometry.update(candidates: [
             ImeCandidate(text: "你好世界", code: "wq", source: .codeTable, isPrefix: false),
             ImeCandidate(text: "混输", code: "ni", source: .pinyin, isPrefix: false),
-        ], status: "五笔·全")
-        assertReadable("候选窗", theme, geometry.renderSnapshotForTesting())
-        let appearance = NSAppearance(named: theme == "dark" ? .darkAqua : .aqua)
-        assertReadable("设置面板", theme, SettingsPanel.shared.renderSnapshotForTesting(appearance: appearance!))
+        ], status: "五笔·全", hint: WubiHints.text(buffer: "wq", mode: "mixed", english: false, wildcard: false))
+        saveQA(geometry.renderSnapshotForTesting(), "candidate-\(theme).png")
+        saveQA(SettingsPanel.shared.renderSnapshotForTesting(appearance: appearance), "settings-\(theme).png")
+        saveQA(SettingsPanel.shared.renderLongErrorForTesting(appearance: appearance), "settings-error-\(theme).png")
+        saveQA(SettingsPanel.shared.renderMinimumSizeForTesting(appearance: appearance), "settings-minimum-\(theme).png")
     }
     func pump(until condition: () -> Bool, timeout: TimeInterval = 5) -> Bool {
         let deadline = Date().addingTimeInterval(timeout)
@@ -518,7 +594,31 @@ if CommandLine.arguments.contains("--smoke-test") {
     session.setMode("mixed"); view.clear(); keys("wq")
     guard session.candidates(limit: 9).count == 3 else { exit(1) }
     guard session.reverseLookup("你好") == "ni hao", session.reverseLookup("🙂") == nil else { exit(1) }
+    guard ImeConfig.setToml("candidate.count", "9"), ImeConfig.setToml("pinyin.fuzzy", "true") else { exit(1) }
+    session.prepare()
+    session.setPageSize(9)
+    session.setMode("pinyin")
+    for (input, target) in [("nihao", "你好"), ("nh", "你好"), ("zhongguo", "中国"),
+        ("zg", "中国"), ("shijie", "世界"), ("xiexie", "谢谢"),
+        ("zongguo", "中国"), ("sijie", "世界"), ("sisi", "试试")] {
+        session.reset()
+        for letter in input.utf8 { _ = session.feed(UInt32(letter)) }
+        guard session.candidates(limit: 9).contains(where: { $0.text == target }) else {
+            fputs("核心拼音质量回归失败：\(input)未在前9项命中\(target)。\n", stderr); exit(1)
+        }
+    }
+    session.reset()
+    guard ImeConfig.setToml("pinyin.fuzzy", "false"), ImeConfig.setToml("candidate.count", "3") else { exit(1) }
+    session.prepare()
+    session.setPageSize(3)
+    session.setMode("mixed")
     guard session.addWord(scheme: "wubi", code: "zz", text: "离线测试词") == IME_OK else { exit(1) }
+    guard session.addWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_OK,
+        session.removeWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_OK,
+        session.removeWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_ERR_NOT_FOUND,
+        UserDictionaryUI.entryError(IME_ERR_INVALID_INPUT, code: "AB", text: "词").contains("小写"),
+        UserDictionaryUI.entryError(IME_ERR_NOT_FOUND, code: "ab", text: "词").contains("未找到")
+    else { fputs("用户词条精确删除或校验反馈失败。\n", stderr); exit(1) }
     view.clear(); keys("zz "); check("离线测试词")
     let exported = smokeDirectory.appendingPathComponent("export.tsv")
     guard session.exportDictionary(exported.path) == IME_OK else { exit(1) }
@@ -526,6 +626,10 @@ if CommandLine.arguments.contains("--smoke-test") {
     let bad = smokeDirectory.appendingPathComponent("bad.tsv")
     try "broken".write(to: bad, atomically: true, encoding: .utf8)
     guard session.importDictionary(bad.path) != IME_OK else { exit(1) }
+    guard let importError = session.dictionaryOperationError,
+        importError.contains(bad.path), importError.contains("第1行"),
+        session.importDictionary(exported.path) == IME_OK, session.dictionaryOperationError == nil
+    else { fputs("词库导入错误定位或恢复清除失败。\n", stderr); exit(1) }
     guard let restored = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
         pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
         pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else { exit(1) }
@@ -556,6 +660,25 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard SettingsPanel.shared.rowCount == settingsOptions.count else {
         fputs("设置面板行数与 Schema 不一致。\n", stderr); exit(1)
     }
+    InfoWindow.prepareThemeForTesting()
+    let themes: [(String, NSAppearance.Name?)] = [("dark", .darkAqua), ("light", .aqua), ("auto", nil)]
+    for (value, expected) in themes {
+        guard ImeConfig.setString("appearance.theme", value), pump(until: {
+            SettingsPanel.shared.configuredAppearanceForTesting == expected &&
+                InfoWindow.configuredAppearanceForTesting == expected
+        }) else { fputs("设置/信息窗口未即时应用配置主题。\n", stderr); exit(1) }
+        view.candidates.refreshAppearance()
+        guard view.candidates.configuredAppearanceForTesting == expected else {
+            fputs("候选主题与配置不一致。\n", stderr); exit(1)
+        }
+    }
+    let displayedKeys = SettingsPanel.shared.displayedOptionKeys
+    let displayedScopes = displayedKeys.compactMap { key in settingsOptions.first { $0.key == key }?.scope }
+    guard displayedScopes == displayedScopes.sorted(),
+        Set(displayedKeys).count == settingsOptions.count,
+        SettingsPanel.shared.minimumContentSize.width >= 520,
+        SettingsPanel.shared.minimumContentSize.height >= 440
+    else { fputs("设置分组或窗口约束不符。\n", stderr); exit(1) }
     // 面板（ADR-077/080）：设置/词库 两个分区。
     guard SettingsPanel.shared.sectionCount == 2 else {
         fputs("设置面板分区数应为 2，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
@@ -563,6 +686,105 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard AboutUI.text().contains("GPL-3.0") else {
         fputs("版本信息缺失。\n", stderr); exit(1)
     }
+    // Real-data fuzzy changes refresh an existing composition without new keys.
+    guard ImeConfig.setString("mode", "pinyin"), ImeConfig.setToml("pinyin.fuzzy", "false") else { exit(1) }
+    session.setMode("pinyin"); session.prepare(); view.clear(); keys("zongguo")
+    let exactCandidates = session.candidates(limit: 9).map(\.text)
+    guard session.buffer == "zongguo", ImeConfig.setToml("pinyin.fuzzy", "true") else { exit(1) }
+    view.configChanged("pinyin.fuzzy")
+    guard session.buffer == "zongguo", session.isComposing,
+        session.candidates(limit: 9).map(\.text) != exactCandidates
+    else { fputs("组合中模糊音配置未重算候选。\n", stderr); exit(1) }
+    session.page(1)
+    let preservedPage = session.pageIndex
+    view.configChanged("appearance.theme")
+    guard session.pageIndex == preservedPage, session.buffer == "zongguo" else { exit(1) }
+    guard ImeConfig.setToml("pinyin.fuzzy", "false"), ImeConfig.setString("mode", "mixed") else { exit(1) }
+    view.configChanged("pinyin.fuzzy"); session.setMode("mixed"); view.clear()
+    // Width preference changes replace only the temporary width override.
+    guard ImeConfig.setToml("input.full_width", "false") else { exit(1) }
+    session.prepare(); session.toggleWidth()
+    guard session.isFullWidth else { exit(1) }
+    session.prepare()
+    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "true") else { exit(1) }
+    session.prepare()
+    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "false") else { exit(1) }
+    session.prepare()
+    guard !session.isFullWidth else { exit(1) }
+    view.clear(); keys("1"); check("1")
+    // Broken lazy variant resources remain visible and never claim effective traditional output.
+    let invalidVariant = smokeDirectory.appendingPathComponent("invalid-variant.tsv")
+    try "broken".write(to: invalidVariant, atomically: true, encoding: .utf8)
+    guard ImeConfig.setString("input.chinese_variant", "traditional") else { exit(1) }
+    session.setVariantData(invalidVariant.path); session.prepare()
+    guard session.variantError != IME_OK, !session.isTraditional,
+        session.variantErrorMessage != nil, session.isComposing == false
+    else { exit(1) }
+    guard ImeConfig.setString("input.chinese_variant", "simplified") else { exit(1) }
+    session.prepare(); session.setVariantData(data.appendingPathComponent("variant-s2t.tsv").path)
+    guard ImeConfig.setString("input.chinese_variant", "traditional") else { exit(1) }
+    session.prepare()
+    guard session.variantError == IME_OK, session.isTraditional else { exit(1) }
+    guard ImeConfig.setString("input.chinese_variant", "simplified") else { exit(1) }
+    session.prepare()
+    // A locked test config rejects persistence but consumes recognized shortcuts.
+    guard ImeConfig.setString("hotkey.toggle_mode", "ctrl+shift+m") else { exit(1) }
+    let previousMode = session.mode
+    let previousPunctuation = ImeConfig.string("input.punctuation")
+    let previousVariant = ImeConfig.string("input.chinese_variant")
+    let lockedBytes = try Data(contentsOf: external)
+    let configLock = URL(fileURLWithPath: external.path + ".lock")
+    try Data("test lock".utf8).write(to: configLock, options: .withoutOverwriting)
+    for (text, flags) in [("m", NSEvent.ModifierFlags([.control, .shift])), (".", .control), ("f", [.control, .shift])] {
+        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
+            timestamp: 0, windowNumber: 0, context: nil, characters: text,
+            charactersIgnoringModifiers: text, isARepeat: false, keyCode: 0),
+            session.shortcut(event, persistMode: true) == .failed,
+            ImeConfig.errorMessage()?.contains("被锁定") == true
+        else { fputs("锁占用时快捷键失败契约不符。\n", stderr); exit(1) }
+    }
+    guard session.mode == previousMode,
+        ImeConfig.string("input.punctuation") == previousPunctuation,
+        ImeConfig.string("input.chinese_variant") == previousVariant,
+        try Data(contentsOf: external) == lockedBytes
+    else { exit(1) }
+    try FileManager.default.removeItem(at: configLock)
+    guard session.togglePunctuation(), ImeConfig.errorMessage() == nil else { exit(1) }
+    // All controllers share an error cycle; recovery permits a fresh notice.
+    let errorGate = ErrorNoticeGate()
+    guard errorGate.claim(channel: "configuration", message: "locked"),
+        !errorGate.claim(channel: "configuration", message: "locked"),
+        errorGate.claim(channel: "configuration", message: "bad syntax"),
+        !errorGate.claim(channel: "configuration", message: "locked"),
+        errorGate.claim(channel: "resources", message: "locked"),
+        !errorGate.claim(channel: "configuration", message: nil),
+        errorGate.claim(channel: "configuration", message: "locked")
+    else { fputs("进程错误提示门控不符。\n", stderr); exit(1) }
+    var currentNotice: String? = "locked"
+    var displayedNotices: [String] = []
+    let presenter = ProcessErrorPresenter { _, message in displayedNotices.append(message) }
+    for _ in 0..<3 {
+        presenter.update(channel: "test", title: "test", current: { currentNotice })
+    }
+    guard pump(until: { displayedNotices.count == 1 }), displayedNotices == ["locked"] else { exit(1) }
+    currentNotice = nil
+    presenter.update(channel: "test", title: "test", current: { currentNotice })
+    currentNotice = "old"
+    presenter.update(channel: "test", title: "test", current: { currentNotice })
+    currentNotice = "new"
+    presenter.update(channel: "test", title: "test", current: { currentNotice })
+    guard pump(until: { displayedNotices.count == 2 }), displayedNotices == ["locked", "new"] else { exit(1) }
+    // Typed shortcut contract: runtime and menu consume the same canonical ABI.
+    guard ImeConfig.setString("hotkey.toggle_mode", "CONTROL + OPTION + M") else { exit(1) }
+    let normalizedHotkey = ImeConfig.hotkey("hotkey.toggle_mode")
+    guard normalizedHotkey.kind == 2, normalizedHotkey.equivalent == "m",
+        normalizedHotkey.modifiers == [.control, .option],
+        ImeConfig.string("hotkey.toggle_mode") == "ctrl+alt+m",
+        !ImeConfig.setString("hotkey.toggle_mode", "banana"),
+        !ImeConfig.setString("hotkey.toggle_mode", "shift+space"),
+        ImeConfig.setString("hotkey.toggle_mode", "none"),
+        ImeConfig.hotkey("hotkey.toggle_mode").kind == 0
+    else { fputs("快捷键规范/非法值/冲突校验失败。\n", stderr); exit(1) }
     // 写回往返：设置面板走的正是这条唯一路径（ime_config_set）。
     guard ImeConfig.setToml("candidate.count", "5"), ImeConfig.int("candidate.count") == 5 else {
         fputs("设置写回候选数失败。\n", stderr); exit(1)
@@ -579,12 +801,23 @@ if CommandLine.arguments.contains("--smoke-test") {
         fputs("反馈链接不是项目公开地址。\n", stderr); exit(1)
     }
     let diagnostics = FeedbackUI.diagnostics()
+    let feedbackPasteboard = NSPasteboard(name: NSPasteboard.Name("lampyris-feedback-test-\(UUID().uuidString)"))
+    guard InfoWindow.copy(diagnostics, to: feedbackPasteboard),
+        feedbackPasteboard.string(forType: .string) == diagnostics
+    else { fputs("诊断复制失败。\n", stderr); exit(1) }
+    feedbackPasteboard.releaseGlobally()
+    let failedOpen = InfoWindow.testOpenResult(FeedbackUI.issuesURL, succeeded: false)
+    let successfulOpen = InfoWindow.testOpenResult(FeedbackUI.issuesURL, succeeded: true)
+    guard failedOpen.0.contains("打开失败"), failedOpen.1 == FeedbackUI.issuesURL.absoluteString,
+        failedOpen.2, successfulOpen.1.isEmpty, !successfulOpen.2
+    else { fputs("渠道打开结果缺少地址回退。\n", stderr); exit(1) }
     guard diagnostics.contains("Lampyris"), diagnostics.contains("系统："),
         diagnostics.contains("架构：")
     else {
         fputs("诊断信息缺少版本/系统/架构。\n", stderr); exit(1)
     }
     try? FileManager.default.removeItem(at: smokeDirectory)
+    print("视觉证据：\(qaDirectory.path)")
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
     exit(0)
 }

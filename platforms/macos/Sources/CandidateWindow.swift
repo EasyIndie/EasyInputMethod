@@ -5,6 +5,73 @@
 
 import Cocoa
 
+/// Colors used by custom text; resolve them in the view's actual appearance.
+enum ImeAppearance {
+    static func applyTheme(to window: NSWindow) {
+        switch ImeConfig.string("appearance.theme") {
+        case "light": window.appearance = NSAppearance(named: .aqua)
+        case "dark": window.appearance = NSAppearance(named: .darkAqua)
+        default: window.appearance = nil
+        }
+    }
+
+    static let secondaryText = NSColor(name: nil) { appearance in
+        var resolved = NSColor.labelColor
+        appearance.performAsCurrentDrawingAppearance {
+            resolved = NSColor.labelColor.usingColorSpace(.sRGB) ?? .labelColor
+        }
+        return resolved.withAlphaComponent(0.78)
+    }
+    static let errorText = NSColor(name: nil) { appearance in
+        if appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua {
+            return NSColor(srgbRed: 1, green: 0.6, blue: 0.6, alpha: 1)
+        }
+        return NSColor(srgbRed: 0.65, green: 0.1, blue: 0.1, alpha: 1)
+    }
+
+    static func contrast(_ foreground: NSColor, over background: NSColor) -> CGFloat {
+        guard let fg = foreground.usingColorSpace(.sRGB), let bg = background.usingColorSpace(.sRGB) else { return 0 }
+        func linear(_ value: CGFloat) -> CGFloat {
+            value <= 0.04045 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4)
+        }
+        func luminance(_ r: CGFloat, _ g: CGFloat, _ b: CGFloat) -> CGFloat {
+            0.2126 * linear(r) + 0.7152 * linear(g) + 0.0722 * linear(b)
+        }
+        let alpha = fg.alphaComponent
+        let top = luminance(fg.redComponent * alpha + bg.redComponent * (1 - alpha),
+            fg.greenComponent * alpha + bg.greenComponent * (1 - alpha),
+            fg.blueComponent * alpha + bg.blueComponent * (1 - alpha))
+        let bottom = luminance(bg.redComponent, bg.greenComponent, bg.blueComponent)
+        return (max(top, bottom) + 0.05) / (min(top, bottom) + 0.05)
+    }
+
+    static func hoverBackground() -> NSColor {
+        guard let bg = NSColor.windowBackgroundColor.usingColorSpace(.sRGB),
+            let tint = NSColor.selectedContentBackgroundColor.usingColorSpace(.sRGB)
+        else { return .windowBackgroundColor }
+        return NSColor(srgbRed: bg.redComponent * 0.7 + tint.redComponent * 0.3,
+            green: bg.greenComponent * 0.7 + tint.greenComponent * 0.3,
+            blue: bg.blueComponent * 0.7 + tint.blueComponent * 0.3, alpha: 1)
+    }
+
+    static func opaqueSnapshot(_ image: NSBitmapImageRep, background: NSColor) -> NSBitmapImageRep? {
+        guard let output = NSBitmapImageRep(bitmapDataPlanes: nil,
+            pixelsWide: image.pixelsWide, pixelsHigh: image.pixelsHigh, bitsPerSample: 8,
+            samplesPerPixel: 4, hasAlpha: true, isPlanar: false,
+            colorSpaceName: .deviceRGB, bytesPerRow: 0, bitsPerPixel: 0),
+            let context = NSGraphicsContext(bitmapImageRep: output)
+        else { return nil }
+        NSGraphicsContext.saveGraphicsState()
+        defer { NSGraphicsContext.restoreGraphicsState() }
+        NSGraphicsContext.current = context
+        let bounds = NSRect(x: 0, y: 0, width: image.pixelsWide, height: image.pixelsHigh)
+        background.setFill()
+        bounds.fill()
+        image.draw(in: bounds, from: .zero, operation: .sourceOver, fraction: 1, respectFlipped: false, hints: nil)
+        return output
+    }
+}
+
 /// 可点击的候选标签：单击即选中该候选；鼠标悬停时高亮（体验打磨）。
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
@@ -24,12 +91,19 @@ final class CandidateLabel: NSTextField {
     private func setUpLayer() {
         wantsLayer = true
         layer?.cornerRadius = 4
+        setAccessibilityRole(.button)
     }
 
     override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
 
     override func mouseDown(with event: NSEvent) {
         onClick?()
+    }
+
+    override func accessibilityPerformPress() -> Bool {
+        guard let onClick, !isHidden else { return false }
+        onClick()
+        return true
     }
 
     override func resetCursorRects() {
@@ -66,6 +140,8 @@ final class CandidateLabel: NSTextField {
 final class CandidateWindow {
     private let panel: NSPanel
     private let stack: NSStackView
+    private let rows: NSStackView
+    private let hintLabel = NSTextField(labelWithString: "")
     private var themeTimer: Timer?
     private let pageLabel = NSTextField(labelWithString: "")
     private let statusLabel = NSTextField(labelWithString: "")
@@ -87,6 +163,7 @@ final class CandidateWindow {
     var displayedStatus: String? {
         stack.arrangedSubviews.contains(statusLabel) ? statusLabel.stringValue : nil
     }
+    var configuredAppearanceForTesting: NSAppearance.Name? { panel.appearance?.name }
 
     /// 当前已渲染的候选文本（含来源标签），供自测断言。
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
@@ -112,6 +189,11 @@ final class CandidateWindow {
         stack.spacing = 14
         stack.alignment = .centerY
         stack.translatesAutoresizingMaskIntoConstraints = false
+        rows = NSStackView(views: [stack])
+        rows.orientation = .vertical
+        rows.alignment = .leading
+        rows.spacing = 4
+        rows.translatesAutoresizingMaskIntoConstraints = false
 
         let container = NSView()
         container.wantsLayer = true
@@ -119,20 +201,23 @@ final class CandidateWindow {
         container.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
         container.layer?.borderWidth = 1
         container.layer?.borderColor = NSColor.separatorColor.cgColor
-        container.addSubview(stack)
+        container.addSubview(rows)
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
-            stack.topAnchor.constraint(
+            rows.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
+            rows.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
+            rows.topAnchor.constraint(
                 equalTo: container.topAnchor, constant: 5 + Self.verticalNudge),
-            stack.bottomAnchor.constraint(
+            rows.bottomAnchor.constraint(
                 equalTo: container.bottomAnchor, constant: -(5 - Self.verticalNudge)),
         ])
         panel.contentView = container
+        hintLabel.font = .systemFont(ofSize: 11)
+        hintLabel.textColor = ImeAppearance.secondaryText
+        hintLabel.lineBreakMode = .byTruncatingTail
         // 空闲不轮询：主题计时器只在候选窗可见时运行（MVP-13）。
         for label in [pageLabel, statusLabel, separatorLabel] {
             label.font = NSFont.systemFont(ofSize: 11)
-            label.textColor = .secondaryLabelColor
+            label.textColor = ImeAppearance.secondaryText
         }
         // Warm Chinese font/layout while hidden, before the first input event.
         update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
@@ -155,11 +240,7 @@ final class CandidateWindow {
     }
 
     func refreshAppearance() {
-        switch ImeConfig.string("appearance.theme") {
-        case "light": panel.appearance = NSAppearance(named: .aqua)
-        case "dark": panel.appearance = NSAppearance(named: .darkAqua)
-        default: panel.appearance = nil
-        }
+        ImeAppearance.applyTheme(to: panel)
         panel.effectiveAppearance.performAsCurrentDrawingAppearance {
             panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
             panel.contentView?.layer?.borderColor = NSColor.separatorColor.cgColor
@@ -171,18 +252,22 @@ final class CandidateWindow {
         -> NSAttributedString
     {
         let text = NSMutableAttributedString(
-            string: "\(index + 1).\(candidate.text)",
+            string: "\(index + 1). ",
             attributes: [
-                .font: NSFont.systemFont(ofSize: 16),
-                .foregroundColor: NSColor.labelColor,
+                .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular),
+                .foregroundColor: ImeAppearance.secondaryText,
             ])
+        text.append(NSAttributedString(string: candidate.text, attributes: [
+            .font: NSFont.systemFont(ofSize: 16, weight: index == 0 ? .semibold : .regular),
+            .foregroundColor: NSColor.labelColor,
+        ]))
         if showSource {
             text.append(
                 NSAttributedString(
                     string: " " + candidate.source.label,
                     attributes: [
                         .font: NSFont.systemFont(ofSize: 11),
-                        .foregroundColor: NSColor.secondaryLabelColor,
+                        .foregroundColor: ImeAppearance.secondaryText,
                     ]))
         }
         return text
@@ -192,17 +277,29 @@ final class CandidateWindow {
     ///
     /// `status`（可选）为紧凑状态徽标（模式/中英/全角），仅在非空时显示。
     func update(
-        candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1, status: String? = nil
+        candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1, status: String? = nil,
+        hint: String? = nil
     ) {
         refreshAppearance()
 
         NSLayoutConstraint.deactivate(widthConstraints)
         widthConstraints = []
+        hintLabel.removeFromSuperview()
+        if let hint, !hint.isEmpty, !candidates.isEmpty {
+            hintLabel.stringValue = hint
+            hintLabel.toolTip = hint
+            hintLabel.setAccessibilityLabel(hint)
+            rows.addArrangedSubview(hintLabel)
+        }
         stack.orientation = .horizontal
         stack.alignment = .centerY
         stack.spacing = 14
         for view in stack.arrangedSubviews {
             view.removeFromSuperview()
+        }
+        for label in labels {
+            label.onClick = nil
+            label.setAccessibilityElement(false)
         }
         // 状态徽标：模式/中英/全角（T-MVP-06）。
         if let status, !status.isEmpty {
@@ -220,6 +317,8 @@ final class CandidateWindow {
             label.lineBreakMode = .byTruncatingTail
             label.usesSingleLineMode = true
             label.toolTip = candidate.text
+            label.setAccessibilityElement(true)
+            label.setAccessibilityLabel("第\(i + 1)项，\(candidate.text)，\(candidate.source.label)")
             label.onClick = { [weak self] in self?.onSelect?(i) }
             // 内容变化后复位悬停，避免旧高亮残留（标签会被复用）。
             label.setHovered(false)
@@ -228,11 +327,12 @@ final class CandidateWindow {
         }
         renderedCount = candidates.count
         if !candidates.isEmpty, pageCount > 1 {
-            pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= 翻页"
+            let commaKeys = ImeConfig.bool("candidate.page_with_comma") ? " · ,/." : ""
+            pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= · PgUp/PgDn\(commaKeys)"
             stack.addArrangedSubview(pageLabel)
         }
         panel.contentView?.layoutSubtreeIfNeeded()
-        let fitting = stack.fittingSize
+        let fitting = rows.fittingSize
         panel.setContentSize(
             NSSize(width: max(fitting.width + 20, 44), height: max(fitting.height + 10, 28)))
     }
@@ -240,6 +340,11 @@ final class CandidateWindow {
     /// 供自测：模拟点击第 `index` 个候选（不经过真实鼠标事件）。
     func simulateClick(at index: Int) {
         onSelect?(index)
+    }
+
+    func accessiblePressForTesting(at index: Int) -> Bool {
+        guard index >= 0, index < labels.count else { return false }
+        return labels[index].accessibilityPerformPress()
     }
 
     /// 供自测：模拟鼠标悬停第 `index` 个候选（不经过真实鼠标事件）。
@@ -315,19 +420,20 @@ final class CandidateWindow {
     func layout(at caret: NSRect, within area: NSRect) {
         NSLayoutConstraint.deactivate(widthConstraints)
         widthConstraints = []
+        widthConstraints.append(hintLabel.widthAnchor.constraint(lessThanOrEqualToConstant: max(1, area.width - 20)))
         stack.orientation = .horizontal
         stack.alignment = .centerY
         stack.spacing = 14
         if stack.fittingSize.width + 20 > area.width {
             stack.orientation = .vertical
             stack.alignment = .leading
-            widthConstraints = stack.arrangedSubviews.map {
+            widthConstraints += stack.arrangedSubviews.map {
                 $0.widthAnchor.constraint(lessThanOrEqualToConstant: max(1, area.width - 20))
             }
-            NSLayoutConstraint.activate(widthConstraints)
         }
+        NSLayoutConstraint.activate(widthConstraints)
         panel.contentView?.layoutSubtreeIfNeeded()
-        let fitting = stack.fittingSize
+        let fitting = rows.fittingSize
         panel.setContentSize(NSSize(width: min(area.width, max(fitting.width + 20, 44)),
             height: min(area.height, max(fitting.height + 10, 28))))
         let size = panel.frame.size
