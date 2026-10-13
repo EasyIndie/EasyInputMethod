@@ -92,6 +92,14 @@ final class ImeSession {
 
     var isComposing: Bool { !buffer.isEmpty }
 
+    /// Keep client navigation from editing marked text while the engine owns it.
+    func consumesCompositionNavigation(_ event: NSEvent) -> Bool {
+        guard event.type == .keyDown, isComposing,
+            (123...126).contains(event.keyCode)
+        else { return false }
+        return event.modifierFlags.intersection([.command, .control, .option]).isEmpty
+    }
+
     /// 喂入一个 Unicode 码点。
     func feed(_ codepoint: UInt32) -> ImeKeyResult {
         guard let handle else { return .failure(IME_ERR_NULL) }

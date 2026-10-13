@@ -241,3 +241,5 @@ bash platforms/macos/tests/run-render-perf.sh --max-user-dictionary --stress
 Codex辅助功能/自动化显示允许，不保证子进程执行路径都已获授权。本次对自有TextEdit控件的只读AX查询明确返回“osascript不允许辅助访问”（-1719）；以tccd日志的responsible/subject及精确宿主路径为准请求用户允许，报错中的执行者名称不能单独确定授权主体，不通过绕过AX检查继续发键。输入源发现/选择、前台检查、AX授权、真实提交分别记录。
 
 2026-10-12责任归属对照（ADR-136）：本机实际链ChatGPT.app→内嵌CodexCLI→Python→osascript。TCC责任主体com.openai.codex、路径/Applications/ChatGPT.app，显示名称ChatGPT；允许该精确宿主后UI elements enabled=true且AX检查通过。不要按应用显示名或osascript报错猜测需授权哪个实体，先用进程PID对应日志。证据build/tcc-chain-2n0505ky；未重置TCC或读取其数据库。原生提交断言仍单独待诊断，不等同最终MVP通过。
+
+组合中四方向键（含Shift）保持预编辑与候选，不移动客户端光标或选择候选；非组合态及Command/Control/Option导航透传。使用数字/空格选字、既有翻页键翻页（ADR-151）。

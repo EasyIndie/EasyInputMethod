@@ -371,6 +371,12 @@ final class LampyrisInputController: IMKInputController {
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
         }
+        // Do not let the client edit marked text behind the engine's buffer.
+        if session.consumesCompositionNavigation(event) {
+            updateMarked(client, session.buffer)
+            showCandidates(client, session: session)
+            return true
+        }
         guard let chars = event.charactersIgnoringModifiers, let scalar = chars.unicodeScalars.first
         else { return false }
 

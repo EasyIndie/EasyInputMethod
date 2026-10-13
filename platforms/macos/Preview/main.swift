@@ -271,6 +271,42 @@ if panelProbe, CommandLine.arguments[2] != "interactive" {
     exit(0)
 }
 if CommandLine.arguments.contains("--smoke-test") {
+    // Native key representations must not alter a live FFI composition.
+    func navigationEvent(_ key: UInt16, _ flags: NSEvent.ModifierFlags = [],
+        characters: String = "\u{1f}") -> NSEvent {
+        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+            modifierFlags: flags, timestamp: 0, windowNumber: 0, context: nil,
+            characters: characters, charactersIgnoringModifiers: characters,
+            isARepeat: false, keyCode: key) else { fatalError("Cannot create test event") }
+        return event
+    }
+    session.setMode("wubi")
+    for key: UInt16 in [123, 124, 125, 126] {
+        _ = session.feed(27)
+        guard !session.consumesCompositionNavigation(navigationEvent(key)) else { exit(1) }
+        _ = session.feed(119); _ = session.feed(113)
+        let candidates = session.candidates(limit: 9).map(\.text)
+        for chars in ["\u{1f}", "\u{f701}", ""] {
+            guard session.consumesCompositionNavigation(navigationEvent(key, characters: chars)),
+                session.consumesCompositionNavigation(navigationEvent(key, .shift, characters: chars)),
+                session.buffer == "wq", session.candidates(limit: 9).map(\.text) == candidates else { exit(1) }
+        }
+        for flags: NSEvent.ModifierFlags in [.command, .control, .option] {
+            guard !session.consumesCompositionNavigation(navigationEvent(key, flags)) else { exit(1) }
+        }
+        guard !session.consumesCompositionNavigation(navigationEvent(116)),
+            !session.consumesCompositionNavigation(navigationEvent(13)) else { exit(1) }
+        _ = session.feed(8)
+        guard session.buffer == "w" else { exit(1) }
+        _ = session.feed(113)
+        if case .committed("你") = session.feed(32) {} else { exit(1) }
+        _ = session.feed(119); _ = session.feed(113)
+        guard session.consumesCompositionNavigation(navigationEvent(key)) else { exit(1) }
+        if case .committed("你") = session.feed(49) {} else { exit(1) }
+        _ = session.feed(119); _ = session.feed(113); _ = session.feed(27)
+        guard session.buffer.isEmpty else { exit(1) }
+    }
+    session.setMode("mixed")
     guard WubiHints.text(buffer: "wq", mode: "mixed", english: false, wildcard: false) == "键位提示：W 人 · Q 金",
         WubiHints.text(buffer: "nihao", mode: "pinyin", english: false, wildcard: false) == nil,
         WubiHints.text(buffer: "wq", mode: "wubi", english: true, wildcard: false) == nil,
