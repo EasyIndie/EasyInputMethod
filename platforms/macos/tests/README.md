@@ -97,3 +97,5 @@ ADR-146更新：用户授权后Terminal调用已恢复。Homebrew bin/python3.14
 设备B正常通过`installed-terminal-tp05x0d3`；failure/INT/TERM通过`p93m28kf`、`5h66ex17`、`fyuau280`。初次前缀断言因尾部屏幕空白失败的证据`secvbit9`保留；该轮也安全恢复/关闭。没有marked range校验，固定场景通过不代表所有Terminal交互或最终候选。
 
 Terminal结果门禁新增`test-installed-terminal-probe.py`两项回归：正常必须具备完整身份/焦点/恢复/清理及committed字节证据；中断必须具备前缀、注入信号及已知empty/prefix字节分类，unexpected不能PASS。加上身份与接收器回归共7项。
+
+ADR-151：独立预览冒烟新增真实NSEvent+FFI组合导航回归，覆盖四方向/Shift、修饰透传、控制字符/函数键/空字符表示与退格/Esc/选字交互。此处不构成已装IMK客户端复验；IT-24须新签名包原生复验后关闭。
