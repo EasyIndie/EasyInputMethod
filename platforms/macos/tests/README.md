@@ -99,3 +99,5 @@ ADR-146更新：用户授权后Terminal调用已恢复。Homebrew bin/python3.14
 Terminal结果门禁新增`test-installed-terminal-probe.py`两项回归：正常必须具备完整身份/焦点/恢复/清理及committed字节证据；中断必须具备前缀、注入信号及已知empty/prefix字节分类，unexpected不能PASS。加上身份与接收器回归共7项。
 
 ADR-151：独立预览冒烟新增真实NSEvent+FFI组合导航回归，覆盖四方向/Shift、修饰透传、控制字符/函数键/空字符表示与退格/Esc/选字交互。此处不构成已装IMK客户端复验；IT-24须新签名包原生复验后关闭。
+
+ADR-170/171：test-wubi-learning.py通过真实Rust只读ABI与Swift/生产CandidateWindow测试完整码、核验根码/识别码、长词摘要/逐字披露、137pt明细上限、独立Schema显示开关/快捷键及组合保持。只用私有数据和离屏图，不激活窗口/发键；不代替根码覆盖或最终实机验收。

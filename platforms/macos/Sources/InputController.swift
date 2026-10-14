@@ -177,6 +177,10 @@ final class LampyrisInputController: IMKInputController {
             stateItem(
                 "标点：\(punctuationState())", action: #selector(togglePunctuation(_:)),
                 hotkeyKey: "hotkey.toggle_punctuation"))
+        let learning = stateItem("显示编码与拆字说明", action: #selector(toggleLearning(_:)),
+            hotkeyKey: "hotkey.toggle_wubi_learning")
+        learning.state = ImeConfig.bool("candidate.show_wubi_learning") ? .on : .off
+        menu.addItem(learning)
         menu.addItem(NSMenuItem.separator())
         let settings = NSMenuItem(
             title: "设置…", action: #selector(showSettings), keyEquivalent: "")
@@ -279,6 +283,11 @@ final class LampyrisInputController: IMKInputController {
     @objc private func showSettings() {
         cancelClientComposition()
         SettingsPanel.shared.show(session: session)
+    }
+
+    @objc private func toggleLearning(_ sender: Any?) {
+        if !ImeConfig.setToml("candidate.show_wubi_learning",
+            ImeConfig.bool("candidate.show_wubi_learning") ? "false" : "true") { presentConfigError() }
     }
 
     @objc private func showAbout() {
@@ -466,8 +475,7 @@ final class LampyrisInputController: IMKInputController {
         }
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            input: session.buffer, hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
-                english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"), warning: session.variantErrorMessage)
+            input: session.buffer, warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
     }
 

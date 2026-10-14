@@ -168,9 +168,198 @@ private final class CandidateDocument: NSView {
     override var isFlipped: Bool { true }
 }
 
+/// Nonactivating teaching extension. It never owns an input session or commits text.
+final class WubiLearningView: NSView {
+    private var model: WubiLearning?
+    private var identity = ""
+    private var expanded = false
+    private var expandedCharacters: Set<Int> = []
+    var onResize: (() -> Void)?
+    override var isFlipped: Bool { true }
+    var hasContent: Bool { model != nil }
+    var expandedForTesting: Bool { expanded }
+
+    func update(_ text: String?) {
+        if text != identity {
+            identity = text ?? ""
+            expanded = false
+            expandedCharacters.removeAll()
+        }
+        model = text.flatMap(WubiLearning.lookup)
+        isHidden = model == nil
+        if model == nil { subviews.forEach { $0.removeFromSuperview() } }
+    }
+
+    @discardableResult
+    private func label(_ text: String, in parent: NSView, x: CGFloat, y: CGFloat,
+                       width: CGFloat, size: CGFloat = 11, mono: Bool = false,
+                       strong: Bool = false) -> CGFloat {
+        let label = NSTextField(wrappingLabelWithString: text)
+        label.font = mono ? .monospacedSystemFont(ofSize: size, weight: strong ? .medium : .regular)
+            : .systemFont(ofSize: size, weight: strong ? .semibold : .regular)
+        label.textColor = ImeAppearance.secondaryText
+        label.preferredMaxLayoutWidth = max(1, width)
+        let height = max(size + 4, ceil(label.attributedStringValue.boundingRect(
+            with: NSSize(width: max(1, width), height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 2)
+        label.frame = NSRect(x: x, y: y, width: max(1, width), height: height)
+        label.setAccessibilityLabel(text)
+        parent.addSubview(label)
+        return height
+    }
+
+    private func rootRow(_ roots: [WubiLearning.Root], in parent: NSView,
+                         y: CGFloat, width: CGFloat) -> CGFloat {
+        guard !roots.isEmpty else { return 0 }
+        let cellWidth = min(52, max(32, width / CGFloat(roots.count)))
+        var x: CGFloat = 0
+        var rowY = y
+        for root in roots {
+            if x + cellWidth > width && x > 0 { x = 0; rowY += 42 }
+            let column = NSView(frame: NSRect(x: x, y: rowY, width: cellWidth, height: 40))
+            // Root/code are one accessible unit, preserving their correspondence.
+            column.setAccessibilityElement(true)
+            column.setAccessibilityRole(.group)
+            column.setAccessibilityLabel("\(root.text)，键\(root.key)")
+            let upper = NSTextField(labelWithString: root.text)
+            upper.font = .systemFont(ofSize: root.text == "识别码" ? 11 : 15)
+            upper.textColor = ImeAppearance.secondaryText
+            upper.alignment = .center
+            upper.frame = NSRect(x: 0, y: 18, width: cellWidth, height: 21)
+            let lower = NSTextField(labelWithString: root.key)
+            lower.font = .monospacedSystemFont(ofSize: 11, weight: .regular)
+            lower.textColor = ImeAppearance.secondaryText
+            lower.alignment = .center
+            lower.frame = NSRect(x: 0, y: 1, width: cellWidth, height: 16)
+            column.addSubview(upper); column.addSubview(lower)
+            parent.addSubview(column)
+            x += cellWidth
+        }
+        return rowY - y + 42
+    }
+
+    private func button(_ title: String, x: CGFloat, y: CGFloat, width: CGFloat,
+                        in parent: NSView, action: Selector, tag: Int = 0) {
+        let button = NSButton(title: title, target: self, action: action)
+        button.isBordered = false
+        button.font = .systemFont(ofSize: 11)
+        button.refusesFirstResponder = true
+        button.tag = tag
+        let isCharacter = action == #selector(toggleCharacter(_:))
+        button.alignment = isCharacter ? .left : .right
+        let open = isCharacter ? expandedCharacters.contains(tag) : expanded
+        button.image = NSImage(systemSymbolName: open ? "chevron.down" : "chevron.right", accessibilityDescription: nil)
+        button.imagePosition = .imageLeading
+        button.imageScaling = .scaleProportionallyDown
+        button.setAccessibilityValue(open ? "已展开" : "已收起")
+        button.setAccessibilityLabel(title)
+        button.frame = NSRect(x: x, y: y, width: width, height: 24)
+        parent.addSubview(button)
+    }
+
+    func arrange(width: CGFloat, maxHeight: CGFloat) -> CGFloat {
+        subviews.forEach { $0.removeFromSuperview() }
+        guard let model, maxHeight >= 62 else { isHidden = true; return 0 }
+        isHidden = false
+        let separator = NSBox(frame: NSRect(x: 0, y: 0, width: width, height: 1))
+        separator.boxType = .separator
+        addSubview(separator)
+        var rule = model.rule
+        if model.characters.count == 1, let item = model.characters.first {
+            if let recognition = item.recognition { rule = "\(recognition.key)识别码：\(recognition.text)" }
+            else if item.category == "key_name" { rule = "键名字：所在键连打四次" }
+        }
+        let summary = NSTextField(wrappingLabelWithString: "")
+        let codeText = model.code.map { "完整码 \($0.uppercased())   " } ?? "五笔编码暂缺"
+        let text = NSMutableAttributedString(string: codeText, attributes: [
+            .font: NSFont.monospacedSystemFont(ofSize: 13, weight: .medium),
+            .foregroundColor: ImeAppearance.secondaryText])
+        if model.code != nil { text.append(NSAttributedString(string: rule, attributes: [
+            .font: NSFont.systemFont(ofSize: 11), .foregroundColor: ImeAppearance.secondaryText])) }
+        summary.attributedStringValue = text
+        summary.preferredMaxLayoutWidth = width
+        let summaryHeight = ceil(text.boundingRect(with: NSSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 4
+        summary.frame = NSRect(x: 0, y: 9, width: width, height: summaryHeight)
+        summary.setAccessibilityLabel(text.string)
+        addSubview(summary)
+        var y = 9 + summaryHeight + 5
+        if model.characters.count == 1, let item = model.characters.first {
+            if item.roots.isEmpty {
+                y += label("拆字说明暂缺", in: self, x: 0, y: y, width: width)
+            } else {
+                // Recognition explanation stays in the summary, separate from real roots.
+                var roots = item.roots
+                if let code = item.recognition?.key { roots.append(WubiLearning.Root(text: "识别码", key: code)) }
+                y += rootRow(roots, in: self, y: y, width: width)
+            }
+        } else {
+            let count = model.characters.count
+            let indexes = count <= 3 ? Array(0..<count) : [0, 1, 2, count - 1]
+            let roots: [WubiLearning.Root] = indexes.map { index in
+                let item = model.characters[index]
+                let length = count == 2 || (count == 3 && index == 2) ? 2 : 1
+                return WubiLearning.Root(text: item.text, key: item.code.map { String($0.prefix(length)).uppercased() } ?? "?")
+            }
+            y += rootRow(roots, in: self, y: y, width: max(1, width - 86))
+            button(expanded ? "收起逐字拆分" : "逐字拆分", x: max(0, width - 86), y: y - 32,
+                width: 86, in: self, action: #selector(toggleDetails))
+            if expanded {
+                let scroll = NSScrollView()
+                scroll.drawsBackground = false
+                scroll.hasVerticalScroller = true
+                scroll.autohidesScrollers = true
+                let document = LearningDetailsView()
+                var offset: CGFloat = 0
+                let inner = max(1, width - 16)
+                for (index, item) in model.characters.enumerated() {
+                    let open = expandedCharacters.contains(index)
+                    let heading = "\(item.text)" + (open ? "" : "  \(item.code?.uppercased() ?? "编码暂缺")")
+                    button(heading, x: 0, y: offset, width: inner, in: document,
+                        action: #selector(toggleCharacter(_:)), tag: index)
+                    offset += 27
+                    if open {
+                        offset += label("完整码 \(item.code?.uppercased() ?? "暂缺")   \(item.rule ?? "拆字说明暂缺")",
+                            in: document, x: 12, y: offset, width: inner - 12)
+                        if item.roots.isEmpty {
+                            offset += label("拆字说明暂缺", in: document, x: 12, y: offset, width: inner - 12)
+                        } else {
+                            var roots = item.roots
+                            if let key = item.recognition?.key { roots.append(WubiLearning.Root(text: "识别码", key: key)) }
+                            offset += rootRow(roots, in: document, y: offset, width: inner)
+                        }
+                        offset += 5
+                    }
+                }
+                let height = max(0, min(137, maxHeight - y - 8))
+                scroll.frame = NSRect(x: 0, y: y + 4, width: width, height: height)
+                document.frame = NSRect(x: 0, y: 0, width: inner, height: offset)
+                scroll.documentView = document
+                addSubview(scroll)
+                y += height + 4
+            }
+        }
+        return min(maxHeight, y + 6)
+    }
+
+    @objc private func toggleDetails() { expanded.toggle(); onResize?() }
+    @objc private func toggleCharacter(_ sender: NSButton) {
+        if expandedCharacters.contains(sender.tag) { expandedCharacters.remove(sender.tag) }
+        else { expandedCharacters.insert(sender.tag) }
+        onResize?()
+    }
+    func toggleForTesting() { toggleDetails() }
+    func toggleCharacterForTesting(_ index: Int) { let button = NSButton(); button.tag = index; toggleCharacter(button) }
+}
+private final class LearningDetailsView: NSView {
+    override var isFlipped: Bool { true }
+}
+
 final class CandidateWindow: NSObject {
     private let panel: CandidatePanel
     private let inputLabel = NSTextField(labelWithString: "")
+    private let learningView = WubiLearningView()
+    private var learningAnchor: (NSRect, NSRect)?
     private let pageLabel = NSTextField(labelWithString: "")
     private let hintLabel = NSTextField(labelWithString: "")
     private let warningLabel = NSTextField(labelWithString: "")
@@ -260,6 +449,11 @@ final class CandidateWindow: NSObject {
         document.setAccessibilityRole(.group)
         document.setAccessibilityLabel("候选字词")
         container.addSubview(scrollView)
+        container.addSubview(learningView)
+        learningView.onResize = { [weak self] in
+            guard let self, let anchor = self.learningAnchor else { return }
+            self.layout(at: anchor.0, within: anchor.1)
+        }
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(displayOptionsChanged),
             name: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil)
         // Warm native Chinese font layout without showing a window.
@@ -310,6 +504,7 @@ final class CandidateWindow: NSObject {
     func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
                 input: String = "", hint: String? = nil, warning: String? = nil) {
         refreshAppearance()
+        learningView.update(ImeConfig.bool("candidate.show_wubi_learning") ? candidates.first?.text : nil)
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
         self.warning = candidates.isEmpty ? nil : warning
@@ -375,13 +570,14 @@ final class CandidateWindow: NSObject {
         let inputWidth = ceil((input as NSString).size(withAttributes: [.font: inputLabel.font ?? .monospacedSystemFont(ofSize: 12, weight: .regular)]).width) + 4
         let hintWidth = ceil((hintLabel.stringValue as NSString).size(withAttributes: [.font: hintLabel.font ?? .systemFont(ofSize: 11)]).width) + 4
         let warningWidth = warning == nil ? 0 : ceil(warningLabel.intrinsicContentSize.width)
-        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth)
+        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth, learningView.hasContent ? 352 : 0)
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
         let headerHeight: CGFloat = headerVisible ? 24 : 0
         let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
-        let extraHeight = CGFloat(16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
+        let learningHeight = learningView.arrange(width: inner, maxHeight: min(270, max(0, available.height - 92)))
+        let extraHeight = learningHeight + (learningHeight > 0 ? 8 : 0) + CGFloat(16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
         let maxBody = max(1, min(320, available.height - extraHeight))
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
@@ -437,8 +633,12 @@ final class CandidateWindow: NSObject {
         warningLabel.isHidden = warningHeight == 0
         warningLabel.frame = NSRect(x: margin, y: 8 + hintHeight, width: inner, height: warningHeight)
         hintLabel.frame = NSRect(x: margin, y: 8, width: inner, height: hintHeight)
+        learningView.frame = NSRect(x: margin, y: 8 + hintHeight + warningHeight, width: inner, height: learningHeight)
     }
 
+    var learningVisibleForTesting: Bool { !learningView.isHidden }
+    func toggleLearningDetailsForTesting() { learningView.toggleForTesting() }
+    func toggleLearningCharacterForTesting(_ index: Int) { learningView.toggleCharacterForTesting(index) }
     func simulateClick(at index: Int) {
         guard index >= 0, index < renderedCount else { return }
         onSelect?(index)
@@ -495,6 +695,7 @@ final class CandidateWindow: NSObject {
         panel.orderFront(nil)
     }
     func layout(at caret: NSRect, within area: NSRect) {
+        learningAnchor = (caret, area)
         available = area.size
         arrange()
         let size = panel.frame.size

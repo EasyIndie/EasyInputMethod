@@ -11,7 +11,7 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 15,
+guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 17,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
@@ -47,6 +47,6 @@ guard !panel.dictionaryActionsEnabledForTesting else { fail("session disable") }
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 15, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 17, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

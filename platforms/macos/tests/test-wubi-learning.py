@@ -15,7 +15,7 @@ class WubiLearningTests(unittest.TestCase):
     def test_real_ffi_teaching_model(self):
         with tempfile.TemporaryDirectory(prefix="lampyris-learning-ui-") as folder:
             temporary = Path(folder)
-            output = ROOT / "platforms/macos/build/mvp-ui01-review"
+            output = ROOT / "platforms/macos/build/mvp-full-ui-review"
             output.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / "platforms/macos/tests/wubi-learning.swift", temporary / "main.swift")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",

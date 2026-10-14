@@ -104,6 +104,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
+        key: "candidate.show_wubi_learning",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "false",
+        title_zh: "显示编码与拆字说明",
+        doc_zh: "按需显示当前候选的完整五笔码与已核验拆字；不随输入模式自动开关",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
         key: "appearance.theme",
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],
@@ -113,6 +122,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         title_zh: "外观主题",
         doc_zh: "跟随系统外观，或固定使用浅色、深色主题",
         scope: Scope::Appearance,
+    },
+    OptionSpec {
+        key: "hotkey.toggle_wubi_learning",
+        value_type: ValueType::String,
+        enum_labels_zh: &[],
+        default: "\"none\"",
+        title_zh: "显示/隐藏学习区",
+        doc_zh: "切换同一学习区显示偏好，不提交当前组合；默认未绑定，留空 = 关闭",
+        scope: Scope::Hotkey,
     },
     OptionSpec {
         key: "hotkey.toggle_mode",

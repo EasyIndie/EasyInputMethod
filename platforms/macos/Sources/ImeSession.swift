@@ -275,6 +275,10 @@ final class ImeSession {
 
     /// 组合键（均可配）：中英 / 全半角 / 切换模式；`"shift"` 与 `"none"` 不作为组合键。
     func shortcut(_ event: NSEvent, persistMode: Bool) -> ShortcutResult {
+        if matches("hotkey.toggle_wubi_learning", event) {
+            return ImeConfig.setToml("candidate.show_wubi_learning",
+                ImeConfig.bool("candidate.show_wubi_learning") ? "false" : "true") ? .handled : .failed
+        }
         if matches("hotkey.toggle_english", event) { toggleEnglish(); return .handled }
         if matches("hotkey.toggle_width", event) { toggleWidth(); return .handled }
         if matches("hotkey.toggle_punctuation", event) {
