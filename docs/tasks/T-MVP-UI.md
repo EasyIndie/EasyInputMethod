@@ -1,6 +1,6 @@
 # T-MVP-UI：首版基础UI改版
 
-- 状态：基础UI改造工程完成；UI05产品验收待推进；用户批准路线，ADR-165。功能基线66ab513，独立分支codex/mvp-ui-refinement，仅本地。
+- 状态：基础UI改造工程完成；UI05产品验收待推进；用户批准路线，ADR-165。功能基线66ab513，分支codex/mvp-ui-refinement，PR #43门禁中；用户已持续授权同类公开/合入/CI公证，安装/Release另行安排。
 - 目标：原生、精简、可读、一致；不扩核心功能或教学数据，不重写引擎/框架。
 - 规格：[MVP基础UI](../design/mvp-ui.md)。
 
