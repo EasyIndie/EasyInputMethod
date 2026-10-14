@@ -32,3 +32,7 @@ canvas=NSColor.windowBackgroundColor、text=labelColor、separator=separatorColo
 ## 后移与冻结
 
 完整码反查、真实根码对应、多字词逐字教学、学习开关/快捷键属于后续独立功能和数据任务。当前不改输入算法/模式种类/排序或增加配置。原始功能候选66ab的公开批准若到达，仅适用于该SHA；UI后最终候选重新审核/签名/公证，不覆盖旧候选身份。
+
+## UI02实施
+
+四个任务pane采用不可定制NSToolbar（输入/候选/快捷键/词库），原生SF Symbols与iconAndLabel，标题随pane更新。最近pane仅进程内保留；没有会话时词库操作禁用。菜单增加状态类别、设置/关于动作省略号；现有循环/快捷键不改。官方依据2026-10-14核验：[Settings](https://developer.apple.com/design/human-interface-guidelines/settings)、[Menus](https://developer.apple.com/design/human-interface-guidelines/menus)、[Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)，官方DocC数据回退已读取。

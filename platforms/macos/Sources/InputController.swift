@@ -161,29 +161,29 @@ final class LampyrisInputController: IMKInputController {
         // 状态项直接显示当前值，条目更简洁（ADR-079）。
         menu.addItem(
             stateItem(
-                menuModeName(), action: #selector(cycleMode(_:)), hotkeyKey: "hotkey.toggle_mode"))
+                "输入模式：\(menuModeName())", action: #selector(cycleMode(_:)), hotkeyKey: "hotkey.toggle_mode"))
         menu.addItem(
             stateItem(
-                languageState(), action: #selector(toggleEnglish(_:)),
+                "语言：\(languageState())", action: #selector(toggleEnglish(_:)),
                 hotkeyKey: "hotkey.toggle_english"))
         menu.addItem(
             stateItem(
-                widthState(), action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width"))
+                "字符宽度：\(widthState())", action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width"))
         menu.addItem(
             stateItem(
-                variantState(), action: #selector(toggleVariant(_:)),
+                "字形：\(variantState())", action: #selector(toggleVariant(_:)),
                 hotkeyKey: "hotkey.toggle_variant"))
         menu.addItem(
             stateItem(
-                punctuationState(), action: #selector(togglePunctuation(_:)),
+                "标点：\(punctuationState())", action: #selector(togglePunctuation(_:)),
                 hotkeyKey: "hotkey.toggle_punctuation"))
         menu.addItem(NSMenuItem.separator())
         let settings = NSMenuItem(
-            title: "偏好设置", action: #selector(showSettings), keyEquivalent: "")
+            title: "设置…", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
         let about = NSMenuItem(
-            title: "版本信息", action: #selector(showAbout), keyEquivalent: "")
+            title: "关于萤火虫…", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
         // 异常状态（仅在出错时出现）
@@ -212,6 +212,7 @@ final class LampyrisInputController: IMKInputController {
     private func stateItem(_ title: String, action: Selector, hotkeyKey: String) -> NSMenuItem {
         let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
         item.target = self
+        item.toolTip = hotkeyKey == "hotkey.toggle_mode" ? "点击依次切换混输、五笔、拼音；设置中可直接选择。" : "点击切换此输入状态。"
         let binding = ImeConfig.hotkey(hotkeyKey)
         if !item.applyConfiguredHotkey(binding),
             let symbol = NSMenuItem.singleModifierSymbol(binding)

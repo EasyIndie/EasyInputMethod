@@ -716,8 +716,8 @@ if CommandLine.arguments.contains("--smoke-test") {
         SettingsPanel.shared.minimumContentSize.height >= 440
     else { fputs("设置分组或窗口约束不符。\n", stderr); exit(1) }
     // 面板（ADR-077/080）：设置/词库 两个分区。
-    guard SettingsPanel.shared.sectionCount == 2 else {
-        fputs("设置面板分区数应为 2，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
+    guard SettingsPanel.shared.sectionCount == 4 else {
+        fputs("设置面板分区数应为 4，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
     }
     guard AboutUI.text().contains("GPL-3.0") else {
         fputs("版本信息缺失。\n", stderr); exit(1)

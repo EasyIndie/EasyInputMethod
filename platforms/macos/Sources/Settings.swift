@@ -3,7 +3,7 @@
 // 非模态、改动即时生效：写入只经 `ime_config_set()`（配置唯一写入路径），
 // 变更广播由 `ConfigWatcher` 派发（ADR-058）。见 `docs/配置架构.md` §8/§9/§11。
 //
-// ADR-077/080：面板为「设置 / 词库」两段（帮助信息已移除，快捷键在设置项内即可见）。
+// ADR-166: Native input/candidates/shortcuts/dictionary preference panes.
 // 新增分区只需扩展 `Section` 与 `sectionViews`。
 
 import Cocoa
@@ -217,26 +217,39 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
 
 /// 设置面板（进程内单例；重复打开只前置已有窗口）。
 ///
-/// ADR-070/077/080：非模态设置窗口，分段承载 设置 / 词库。
-final class SettingsPanel: NSObject, NSWindowDelegate {
+/// Nonmodal settings window with native task-oriented preference panes.
+final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
     static let shared = SettingsPanel()
 
     /// 分区。新增分区 = 加一个 case + 一个 builder（保持可扩展、菜单不再膨胀）。
     private enum Section: Int, CaseIterable {
-        case settings, dictionary
+        case input, candidates, shortcuts, dictionary
         var title: String {
             switch self {
-            case .settings: return "设置"
+            case .input: return "输入"
+            case .candidates: return "候选"
+            case .shortcuts: return "快捷键"
             case .dictionary: return "词库"
             }
         }
+        var symbol: String {
+            switch self {
+            case .input: return "keyboard"
+            case .candidates: return "textformat"
+            case .shortcuts: return "command"
+            case .dictionary: return "books.vertical"
+            }
+        }
+        var identifier: NSToolbarItem.Identifier { .init("lampyris.settings.\(rawValue)") }
     }
 
     private var window: NSPanel?
     private var rows: [SettingRow] = []
     private var statusLabel: NSTextField?
     private weak var session: ImeSession?
-    private var segmented: NSSegmentedControl?
+    private var navigation: NSToolbar?
+    private var selectedSection = Section.input.rawValue
+    private var dictionaryButtons: [NSButton] = []
     private var contentHost: NSView?
     private var sectionViews: [NSView] = []
 
@@ -249,7 +262,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             contentRect: NSRect(x: 0, y: 0, width: 520, height: 600),
             styleMask: [.titled, .closable, .resizable, .utilityWindow],
             backing: .buffered, defer: false)
-        panel.title = "萤火虫 · 偏好设置"
+        panel.title = "输入 · 萤火虫设置"
+        panel.toolbarStyle = .preference
         panel.contentMinSize = NSSize(width: 520, height: 440)
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
@@ -268,6 +282,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         self.session = session
         prepare()
         rows.forEach { $0.reload() }
+        dictionaryButtons.forEach { $0.isEnabled = session != nil }
         if let window { ImeAppearance.applyTheme(to: window) }
         setStatus("", isError: false)
         NSApp.activate(ignoringOtherApps: true)
@@ -307,9 +322,6 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             view.bounds.height > 1
         else { return nil }
         window.appearance = appearance
-        let wasVisible = window.isVisible
-        if !wasVisible { window.orderFront(nil) }
-        defer { if !wasVisible { window.orderOut(nil) } }
         view.layoutSubtreeIfNeeded()
         window.displayIfNeeded()
         RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
@@ -344,7 +356,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         rows.removeAll()
         sectionViews.removeAll()
         contentHost = nil
-        segmented = nil
+        navigation = nil
+        dictionaryButtons.removeAll()
         statusLabel = nil
         session = nil
     }
@@ -356,8 +369,47 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
 
     // MARK: - 分区切换
 
-    @objc private func sectionChanged(_ sender: NSSegmentedControl) {
-        selectSection(sender.selectedSegment)
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        Section.allCases.map(\.identifier)
+    }
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        toolbarAllowedItemIdentifiers(toolbar)
+    }
+    func toolbarSelectableItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        toolbarAllowedItemIdentifiers(toolbar)
+    }
+    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier identifier: NSToolbarItem.Identifier,
+                 willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        guard let section = Section.allCases.first(where: { $0.identifier == identifier }) else { return nil }
+        let item = NSToolbarItem(itemIdentifier: identifier)
+        item.label = section.title
+        item.paletteLabel = section.title
+        item.image = NSImage(systemSymbolName: section.symbol, accessibilityDescription: section.title)
+        item.target = self
+        item.action = #selector(sectionChanged(_:))
+        item.tag = section.rawValue
+        item.toolTip = "显示\(section.title)设置"
+        return item
+    }
+    @objc private func sectionChanged(_ sender: NSToolbarItem) { selectSection(sender.tag) }
+
+    func selectSectionForTesting(_ index: Int) { prepare(); selectSection(index) }
+    var selectedSectionForTesting: Int { selectedSection }
+    var visibleOptionKeysForTesting: [String] {
+        guard sectionViews.indices.contains(selectedSection) else { return [] }
+        return rows.filter { $0.isDescendant(of: sectionViews[selectedSection]) }.map { $0.option.key }
+    }
+    var isVisibleForTesting: Bool { window?.isVisible == true }
+    var statusForTesting: String { statusLabel?.stringValue ?? "" }
+
+    var navigationIsNativeForTesting: Bool {
+        navigation?.isVisible == true && navigation?.allowsUserCustomization == false
+            && navigation?.selectedItemIdentifier == Section(rawValue: selectedSection)?.identifier
+    }
+    var dictionaryActionsEnabledForTesting: Bool { dictionaryButtons.allSatisfy(\.isEnabled) }
+    func bindSessionForTesting(_ value: ImeSession?) {
+        session = value
+        dictionaryButtons.forEach { $0.isEnabled = value != nil }
     }
 
     private func selectSection(_ index: Int) {
@@ -372,7 +424,10 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             view.topAnchor.constraint(equalTo: host.topAnchor),
             view.bottomAnchor.constraint(equalTo: host.bottomAnchor),
         ])
-        segmented?.selectedSegment = index
+        selectedSection = index
+        navigation?.selectedItemIdentifier = Section(rawValue: index)?.identifier
+        window?.title = "\(Section(rawValue: index)?.title ?? "设置") · 萤火虫设置"
+        window?.recalculateKeyViewLoop()
     }
 
     // MARK: - 词库 动作
@@ -405,12 +460,14 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
     // MARK: - 构建
 
     private func buildContent(_ panel: NSPanel) {
-        let segmented = NSSegmentedControl(
-            labels: Section.allCases.map(\.title),
-            trackingMode: .selectOne, target: self, action: #selector(sectionChanged(_:)))
-        segmented.selectedSegment = Section.settings.rawValue
-        segmented.translatesAutoresizingMaskIntoConstraints = false
-        self.segmented = segmented
+        let toolbar = NSToolbar(identifier: "lampyris.settings")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconAndLabel
+        toolbar.allowsUserCustomization = false
+        toolbar.autosavesConfiguration = false
+        toolbar.isVisible = true
+        panel.toolbar = toolbar
+        navigation = toolbar
 
         let host = NSView()
         host.translatesAutoresizingMaskIntoConstraints = false
@@ -424,18 +481,17 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         statusLabel = status
 
         sectionViews = [
-            buildSettingsSection(),
+            buildSettingsSection(scopes: [0]),
+            buildSettingsSection(scopes: [1, 2]),
+            buildSettingsSection(scopes: [3]),
             buildDictionarySection(),
         ]
 
         let content = panel.contentView!
-        content.addSubview(segmented)
         content.addSubview(host)
         content.addSubview(status)
         NSLayoutConstraint.activate([
-            segmented.topAnchor.constraint(equalTo: content.topAnchor, constant: 12),
-            segmented.centerXAnchor.constraint(equalTo: content.centerXAnchor),
-            host.topAnchor.constraint(equalTo: segmented.bottomAnchor, constant: 10),
+            host.topAnchor.constraint(equalTo: content.topAnchor, constant: 10),
             host.leadingAnchor.constraint(equalTo: content.leadingAnchor, constant: 12),
             host.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -12),
             host.bottomAnchor.constraint(equalTo: status.topAnchor, constant: -6),
@@ -443,11 +499,12 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             status.trailingAnchor.constraint(equalTo: content.trailingAnchor, constant: -18),
             status.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
         ])
-        selectSection(Section.settings.rawValue)
+        selectSection(selectedSection)
+        panel.title = "\(Section(rawValue: selectedSection)?.title ?? "设置") · 萤火虫设置"
     }
 
     /// 设置分区：Schema 驱动的滚动列表。
-    private func buildSettingsSection() -> NSView {
+    private func buildSettingsSection(scopes: [Int]) -> NSView {
         let rowStack = NSStackView()
         rowStack.orientation = .vertical
         rowStack.alignment = .leading
@@ -455,7 +512,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
         rowStack.edgeInsets = NSEdgeInsets(top: 16, left: 18, bottom: 16, right: 18)
         rowStack.translatesAutoresizingMaskIntoConstraints = false
 
-        let options = SettingsSchema.options()
+        let options = SettingsSchema.options().filter { scopes.contains($0.scope) }
         for scope in Set(options.map(\.scope)).sorted() {
             let group = options.filter { $0.scope == scope }
             guard let first = group.first else { continue }
@@ -513,6 +570,9 @@ final class SettingsPanel: NSObject, NSWindowDelegate {
             ("拼音反查…", #selector(lookupPinyin)),
         ] as [(String, Selector)] {
             let button = NSButton(title: title, target: self, action: action)
+            button.isEnabled = session != nil
+            button.setAccessibilityHelp("仅在本地操作用户词库；需要当前输入会话。")
+            dictionaryButtons.append(button)
             stack.addArrangedSubview(button)
         }
         return topAligned(stack)
