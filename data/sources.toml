@@ -41,7 +41,7 @@ upstream = "mozillazg/phrase-pinyin-data"
 license = "MIT"
 risk = "low"
 sha256 = "dcc769607c220b312fea3e71cb63421298b4b891b1f7356a95ab58f2c96fff81"
-used_for = ["wubi86-phrase-code-generation"]
+used_for = ["wubi86-phrase-code-generation", "pinyin-reading-evidence"]
 fetch_script = "data/sources/fetch-phrase-pinyin.sh"
 added_at = "2026-10-08"
 notes = "版本 0.19.0；格式 `词: 拼音`，仅取第一列中文词（含非汉字者跳过）；文件下载获取，不入库"
@@ -157,3 +157,12 @@ license = "GPL-3.0-or-later"
 sha256 = "23148919edcdc57fccdf9f5f7c16c23e7d48673b0d79823178045443786e77e4"
 generator = "tools/generate-wubi-hints.py"
 notes = "25键可读键名展示；不是完整字根表或当前汉字拆字"
+
+[[derived]]
+id = "pinyin-chars-v2"
+path = "data/generated/pinyin-chars.tsv"
+source_ids = ["D4", "D5", "D10"]
+license = "CC-BY-SA-4.0"
+sha256 = "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12"
+generator = "crates/ime-pinyin/examples/generate.rs"
+notes = "ADR-163；首选读音保持D10单字词频，次读音用三分之一底线加D4/D10对齐词频证据；不增加读音/词条，不是实际读音频次"

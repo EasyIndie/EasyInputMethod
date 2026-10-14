@@ -131,3 +131,5 @@
 - [IT-28](T-ITER-28.md)：编辑键/安全输入边界取证，非已确认漏洞。
 
 IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进；全部最终包原生门禁待验。见[报告012](../reviews/012-core-refinement.md)。
+
+[IT-27读音工程结果](../reviews/014-pinyin-reading-quality.md)，最终包原生待验。

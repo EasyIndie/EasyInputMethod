@@ -67,3 +67,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [核心输入收口第一批012](reviews/012-core-refinement.md)
 
 [IT-25公开门禁与CI公证013](reviews/013-it25-ci-notary.md)
+
+[常用多音读音质量014](reviews/014-pinyin-reading-quality.md)

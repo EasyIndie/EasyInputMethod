@@ -153,7 +153,7 @@ jobs:
           ./data/sources/fetch-jieba-dict.sh
           cargo run -p ime-pinyin --example generate_pinyin
           python3 tools/prepare-pinyin-core.py
-          git diff --exit-code -- data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
+          git diff --exit-code -- data/generated/pinyin-chars.tsv data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
       - name: Build and smoke-test independent preview
         if: steps.changes.outputs.code == 'true'
         run: ./platforms/macos/dev-preview.sh --smoke-test

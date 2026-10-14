@@ -90,6 +90,8 @@ fn main() -> Result<(), Box<dyn Error>> {
             m
         });
 
+    let evidence = reading_evidence(&d5, &d4, &jieba);
+
     // ---- 字表：音节 → 字 ----
     // 每条记录带 primary 标记：D5 首条读音是首选读音（供 reverse_lookup 返回首选）。
     let mut char_rows: Vec<(String, char, i32, bool)> = Vec::new();
@@ -98,7 +100,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         let weight = char_weight.get(ch).copied().unwrap_or(DEFAULT_WEIGHT);
         for (idx, r) in readings.iter().enumerate() {
             if char_seen.insert((r.clone(), *ch)) {
-                char_rows.push((r.clone(), *ch, weight, idx == 0));
+                char_rows.push((
+                    r.clone(),
+                    *ch,
+                    reading_weight(
+                        weight,
+                        idx == 0,
+                        evidence.get(&(*ch, r.clone())).copied().unwrap_or(0),
+                    ),
+                    idx == 0,
+                ));
             }
         }
     }
@@ -182,6 +193,48 @@ fn main() -> Result<(), Box<dyn Error>> {
 // ---------------------------------------------------------------------------
 // 解析
 // ---------------------------------------------------------------------------
+
+fn reading_weight(weight: i32, primary: bool, evidence: u64) -> i32 {
+    let base = weight.max(DEFAULT_WEIGHT);
+    if primary {
+        return base;
+    }
+    u64::from((base / 3) as u32)
+        .saturating_add(evidence)
+        .min(base as u64)
+        .max(DEFAULT_WEIGHT as u64) as i32
+}
+
+fn reading_evidence(
+    d5: &[D5Entry],
+    d4: &[(String, String)],
+    frequencies: &HashMap<String, u32>,
+) -> HashMap<(char, String), u64> {
+    let legal: HashMap<_, _> = d5.iter().map(|(ch, values)| (*ch, values)).collect();
+    let final_phrases: HashMap<_, _> = d4.iter().map(|(word, pinyin)| (word, pinyin)).collect();
+    let mut evidence = HashMap::new();
+    for (word, pinyin) in final_phrases {
+        let Some(&frequency) = frequencies.get(word) else {
+            continue;
+        };
+        let chars: Vec<_> = word.chars().collect();
+        let parts: Vec<_> = pinyin.split_whitespace().collect();
+        if chars.len() != parts.len()
+            || !chars.iter().zip(&parts).all(|(ch, part)| {
+                legal
+                    .get(ch)
+                    .is_some_and(|readings| readings.iter().any(|reading| reading == part))
+            })
+        {
+            continue;
+        }
+        for (ch, part) in chars.into_iter().zip(parts) {
+            let value = evidence.entry((ch, part.to_owned())).or_insert(0_u64);
+            *value = value.saturating_add(u64::from(frequency));
+        }
+    }
+    evidence
+}
 
 /// 解析 D5（`U+XXXX: pinyin1,pinyin2  # 字`），返回 (字, 无调读音列表)。
 fn parse_d5(input: &str) -> Result<Vec<D5Entry>, Box<dyn Error>> {
@@ -313,11 +366,11 @@ fn render_chars(rows: &[(String, char, i32, bool)]) -> String {
     );
     let _ = writeln!(
         out,
-        "# 来源：mozillazg/pinyin-data（MIT，D5）+ fxsjy/jieba 词频（MIT，D10）。"
+        "# 来源：mozillazg/pinyin-data（MIT，D5）+ phrase-pinyin-data（MIT，D4）+ jieba（MIT，D10）。"
     );
     let _ = writeln!(
         out,
-        "# weight = jieba 单字词频（缺者 {DEFAULT_WEIGHT}）；每字首选读音（D5 首条）在前。"
+        "# weight：首读=单字词频；次读=max(1,min(单字词频,单字词频/3+对齐词频证据))，ADR-163；缺者 {DEFAULT_WEIGHT}。"
     );
     let _ = writeln!(out, "# 音节\t字\tweight");
     for (syllable, ch, weight, _primary) in rows {
@@ -404,4 +457,44 @@ fn write_file(path: &Path, content: &str) -> Result<(), Box<dyn Error>> {
     }
     fs::write(path, content).map_err(|e| format!("写入失败（{}）：{e}", path.display()))?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn secondary_readings_use_bounded_evidence_without_erasing_rare_readings() {
+        assert_eq!(reading_weight(30, true, 0), 30);
+        assert_eq!(reading_weight(30, false, 0), 10);
+        assert_eq!(reading_weight(30, false, 7), 17);
+        assert_eq!(reading_weight(30, false, u64::MAX), 30);
+        assert_eq!(reading_weight(1, false, 0), 1);
+        assert_eq!(reading_weight(2, false, 1), 1);
+    }
+
+    #[test]
+    fn reading_evidence_uses_final_aligned_legal_phrase_once() {
+        let d5 = vec![
+            ('见', vec!["jian".into(), "xian".into()]),
+            ('面', vec!["mian".into()]),
+        ];
+        let d4 = vec![
+            ("见面".into(), "xian mian".into()),
+            ("见面".into(), "jian mian".into()),
+            ("面见".into(), "mian".into()),
+            ("见见".into(), "bad jian".into()),
+            ("面面".into(), "mian mian".into()),
+        ];
+        let freq = HashMap::from([
+            ("见面".into(), 7),
+            ("面见".into(), 100),
+            ("见见".into(), 100),
+        ]);
+        let evidence = reading_evidence(&d5, &d4, &freq);
+        assert_eq!(evidence.get(&('见', "jian".into())), Some(&7));
+        assert_eq!(evidence.get(&('面', "mian".into())), Some(&7));
+        assert!(!evidence.contains_key(&('见', "xian".into())));
+        assert_eq!(evidence.len(), 2);
+    }
 }
