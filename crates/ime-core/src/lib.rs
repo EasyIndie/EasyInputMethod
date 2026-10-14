@@ -312,6 +312,7 @@ impl Session {
         let size = size.clamp(3, 9);
         if self.page_size != size {
             self.page_size = size;
+            self.arrange_mixed_fallback();
             self.page = 0;
         }
     }
@@ -343,7 +344,43 @@ impl Session {
             .map(|(c, _)| c)
             .filter(|c| seen.insert(c.text.clone()))
             .collect();
+        self.arrange_mixed_fallback();
         self.page = self.page.min(self.page_count().saturating_sub(1));
+    }
+
+    fn arrange_mixed_fallback(&mut self) {
+        if self.mode != InputMode::Mixed {
+            return;
+        }
+        // Stable source partition preserves each engine's learned ordering.
+        self.candidates
+            .sort_by_key(|c| c.source == CandidateSource::Pinyin);
+        let table_count = self
+            .candidates
+            .iter()
+            .take_while(|c| c.source != CandidateSource::Pinyin)
+            .count();
+        if table_count == 0 {
+            return;
+        }
+        let eligible: Vec<_> = self
+            .candidates
+            .iter()
+            .enumerate()
+            .filter(|(_, c)| c.source == CandidateSource::Pinyin && !c.is_fuzzy)
+            .take(2)
+            .map(|(index, _)| index)
+            .collect();
+        if eligible.is_empty() {
+            return;
+        }
+        let insertion = table_count.min(self.page_size - eligible.len());
+        let mut fallback = Vec::new();
+        for index in eligible.into_iter().rev() {
+            fallback.push(self.candidates.remove(index));
+        }
+        fallback.reverse();
+        self.candidates.splice(insertion..insertion, fallback);
     }
 
     pub fn page_index(&self) -> usize {
@@ -552,6 +589,7 @@ impl Session {
         let mut seen = std::collections::HashSet::new();
         merged.retain(|c| seen.insert(c.text.clone()));
         self.candidates = merged;
+        self.arrange_mixed_fallback();
         self.page = 0;
 
         if let Some(text) = auto.filter(|_| allow_commit) {
@@ -635,6 +673,31 @@ mod tests {
             }
             assert_eq!(s.handle_key('g'), KeyOutcome::Committed("佢".into()));
         }
+    }
+
+    #[test]
+    fn mixed_fallback_stays_visible_after_learning_and_page_size_changes() {
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_wubi_engine(Box::new(ManyEngine));
+        s.handle_key('a');
+        let pin = |text: &str, weight| Candidate::new(text, "a", weight, CandidateSource::Pinyin);
+        let mut fuzzy = pin("模糊", 1000);
+        fuzzy.is_fuzzy = true;
+        s.personalize(vec![pin("拼一", 20), pin("拼二", 10), fuzzy], |_| 0);
+        assert_eq!(s.candidates()[0].text, "词00");
+        assert_eq!(s.candidates()[7].text, "拼一");
+        assert_eq!(s.candidates()[8].text, "拼二");
+        assert_eq!(s.candidates.len(), 23);
+        s.personalize(vec![], |c| if c.text == "词19" { 100 } else { 0 });
+        assert_eq!(s.candidates()[0].text, "词19");
+        assert_eq!(s.candidates()[7].text, "拼一");
+        s.page(1);
+        assert_eq!(s.candidates()[0].text, "词06");
+        s.set_page_size(3);
+        assert_eq!(s.candidates()[0].text, "词19");
+        assert_eq!(s.candidates()[1].text, "拼一");
+        assert_eq!(s.candidates()[2].text, "拼二");
+        assert_eq!(s.handle_key('2'), KeyOutcome::Committed("拼一".into()));
     }
 
     struct MockEngine;

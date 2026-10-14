@@ -118,3 +118,21 @@ _ = ime_session_key(learned, 97)
 _ = ime_session_key(learned, 98)
 guard learningFirst(learned) == "常选后项" else { fail("重新加载后主动学习未生效") }
 print("✅ Swift/C ABI 离线学习通过：历史1000后四次主动选择前移，重载保留；仅临时词库")
+
+// Cold mixed fallback stays on the first page with the shipped tables.
+for (input, target) in [("ni", "你"), ("wo", "我"), ("yu", "与")] {
+    _ = ime_session_key(session, 27)
+    feed(input)
+    let list = ime_session_candidates(session)
+    guard let items = list.items else { fail("混输兜底候选为空") }
+    let position = (0..<Int(list.len)).first { index in
+        guard let text = items[index].text else { return false }
+        return String(cString: text) == target
+    }
+    guard position == 7 else { fail("\(input)→\(target)应在首屏第8项") }
+    guard ime_session_key(session, 56) == 1 else { fail("首屏数字8选择失败") }
+    let value = ime_session_commit(session)
+    guard let text = value.data, String(cString: text) == target else { fail("兜底提交错误") }
+    ime_string_free(value)
+}
+print("✅ 冷词库混输兜底：ni/wo/yu→你/我/与均首屏数字8")
