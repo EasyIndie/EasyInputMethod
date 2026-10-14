@@ -36,3 +36,7 @@ canvas=NSColor.windowBackgroundColor、text=labelColor、separator=separatorColo
 ## UI02实施
 
 四个任务pane采用不可定制NSToolbar（输入/候选/快捷键/词库），原生SF Symbols与iconAndLabel，标题随pane更新。最近pane仅进程内保留；没有会话时词库操作禁用。菜单增加状态类别、设置/关于动作省略号；现有循环/快捷键不改。官方依据2026-10-14核验：[Settings](https://developer.apple.com/design/human-interface-guidelines/settings)、[Menus](https://developer.apple.com/design/human-interface-guidelines/menus)、[Accessibility](https://developer.apple.com/design/human-interface-guidelines/accessibility)，官方DocC数据回退已读取。
+
+## UI03实施
+
+词条表单用对齐的显式标签和原生输入/方案控件，错误换行、失败保留字段；删除默认取消。导入/导出沿系统文件面板并说明本地操作范围。关于/反查结果统一任务标题、可缩放窗口、可选择正文、原生复制/反馈按钮及行内结果；反馈失败保留可复制地址。所有反馈链接仅显式点击打开系统浏览器，诊断不自动发送。实际表单及信息窗口离屏图位于build/mvp-ui03-review，测试工具未带正式Bundle版本，所以关于图显示?，最终包元数据仍由现有门禁核验。

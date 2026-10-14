@@ -23,10 +23,12 @@ final class InfoWindow: NSObject {
     private var presentationID = UUID()
 
     static func show(title: String, text: String, allowsCopy: Bool, links: [InfoLink] = []) {
-        shared.present(title: title, text: text, allowsCopy: allowsCopy, links: links)
+        shared.prepareContent(title: title, text: text, allowsCopy: allowsCopy, links: links)
+        NSApp.activate(ignoringOtherApps: true)
+        shared.panel?.makeKeyAndOrderFront(nil)
     }
 
-    private func present(title: String, text: String, allowsCopy: Bool, links: [InfoLink]) {
+    private func prepareContent(title: String, text: String, allowsCopy: Bool, links: [InfoLink]) {
         currentText = text
         self.links = links
         presentationID = UUID()
@@ -44,6 +46,11 @@ final class InfoWindow: NSObject {
         textView.isEditable = false
         textView.isSelectable = true
         textView.isRichText = false
+        textView.textColor = .labelColor
+        textView.backgroundColor = .textBackgroundColor
+        textView.textContainerInset = NSSize(width: 10, height: 10)
+        textView.setAccessibilityLabel(title + "内容")
+        textView.setAccessibilityHelp("只读信息，可选择文本；复制按钮不会发送信息。")
         textView.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         textView.string = text
         textView.isVerticallyResizable = true
@@ -52,7 +59,8 @@ final class InfoWindow: NSObject {
 
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
-        scroll.borderType = .bezelBorder
+        scroll.borderType = .noBorder
+        scroll.autohidesScrollers = true
         scroll.drawsBackground = false
         scroll.documentView = textView
         scroll.translatesAutoresizingMaskIntoConstraints = false
@@ -67,7 +75,15 @@ final class InfoWindow: NSObject {
             buttons.append(button)
         }
 
-        var views: [NSView] = [scroll]
+        let heading = NSTextField(labelWithString: title)
+        heading.font = .systemFont(ofSize: 18, weight: .semibold)
+        heading.textColor = .labelColor
+        status.font = .systemFont(ofSize: 12)
+        status.setAccessibilityLabel("操作结果")
+        fallbackAddress.font = .systemFont(ofSize: 12)
+        fallbackAddress.lineBreakMode = .byCharWrapping
+        fallbackAddress.setAccessibilityLabel("打开失败的地址")
+        var views: [NSView] = [heading, scroll]
         if !buttons.isEmpty {
             let row = NSStackView(views: buttons)
             row.orientation = .horizontal
@@ -96,8 +112,7 @@ final class InfoWindow: NSObject {
             status.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -32),
             fallbackAddress.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -32),
         ])
-        NSApp.activate(ignoringOtherApps: true)
-        panel.makeKeyAndOrderFront(nil)
+        panel.recalculateKeyViewLoop()
     }
 
     @objc private func copyText() {
@@ -148,8 +163,9 @@ final class InfoWindow: NSObject {
 
     private func makePanel() -> NSPanel {
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 460, height: 320),
-            styleMask: [.titled, .closable, .utilityWindow], backing: .buffered, defer: false)
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 360),
+            styleMask: [.titled, .closable, .resizable, .utilityWindow], backing: .buffered, defer: false)
+        panel.contentMinSize = NSSize(width: 420, height: 300)
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
@@ -159,6 +175,29 @@ final class InfoWindow: NSObject {
         }
         panel.center()
         return panel
+    }
+
+    static func preparePresentationForTesting(title: String, text: String, allowsCopy: Bool, links: [InfoLink] = []) {
+        shared.prepareContent(title: title, text: text, allowsCopy: allowsCopy, links: links)
+    }
+    static func simulateOpenForTesting(_ url: URL, succeeded: Bool) {
+        shared.finishOpen(url, succeeded: succeeded, presentation: shared.presentationID)
+    }
+    static var isVisibleForTesting: Bool { shared.panel?.isVisible == true }
+    static var statusForTesting: String { shared.status.stringValue }
+    static func renderSnapshotForTesting(appearance: NSAppearance, minimum: Bool = false) -> NSBitmapImageRep? {
+        guard let panel = shared.panel, let view = panel.contentView else { return nil }
+        panel.appearance = appearance
+        if minimum { panel.setContentSize(panel.contentMinSize) }
+        view.layoutSubtreeIfNeeded()
+        panel.displayIfNeeded()
+        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
+        view.cacheDisplay(in: view.bounds, to: rep)
+        var output: NSBitmapImageRep?
+        appearance.performAsCurrentDrawingAppearance {
+            output = ImeAppearance.opaqueSnapshot(rep, background: .windowBackgroundColor)
+        }
+        return output
     }
 
     static func prepareThemeForTesting() {
@@ -180,7 +219,7 @@ enum AboutUI {
 
     static func show() {
         InfoWindow.show(
-            title: "版本信息", text: text(), allowsCopy: true,
+            title: "关于萤火虫", text: text(), allowsCopy: true,
             links: [
                 InfoLink(title: "反馈问题", url: FeedbackUI.issuesURL),
                 InfoLink(title: "反馈漏洞", url: FeedbackUI.securityURL),
