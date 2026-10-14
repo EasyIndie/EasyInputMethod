@@ -135,3 +135,5 @@ IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进�
 [IT-27读音工程结果](../reviews/014-pinyin-reading-quality.md)，最终包原生待验。
 
 [IT-28工程结果及原生矩阵](../reviews/015-editing-boundary-audit.md)；编辑键工程完成，安全字段/布局等原生待验。
+
+2026-10-14用户批准ADR-165：基础UI纳入MVP，候选→设置/菜单→既有工具/反馈→外观/AX→重新锁最终包；功能基线66ab513保留，完整教学后移。实施见docs/design/mvp-ui.md及T-MVP-UI；历史“全UI延期”段落被本决策覆盖，新UI尚未原生验收。

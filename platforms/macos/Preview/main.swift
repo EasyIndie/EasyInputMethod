@@ -98,12 +98,12 @@ final class PreviewInput: NSTextView {
         let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
         status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
-            let badge = ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][session.mode] ?? session.mode
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
-                status: session.isFullWidth ? "\(badge)·全" : badge,
+                input: session.buffer,
                 hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
-                    english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"))
+                    english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"), warning: session.variantErrorMessage)
+            candidates.onPage = { [weak self] delta in self?.session.page(delta); self?.refresh() }
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
@@ -247,6 +247,7 @@ if panelProbe {
     ime_config_init(smokeDirectory.appendingPathComponent("config.toml").path)
 } else { ime_config_init(ImePaths.configFile()) }
 let app = NSApplication.shared
+if smoke { app.setActivationPolicy(.prohibited) }
 if panelProbe, CommandLine.arguments[2] != "interactive" {
     let mode = CommandLine.arguments[2]
     app.setActivationPolicy(.regular)
@@ -346,30 +347,31 @@ if CommandLine.arguments.contains("--smoke-test") {
             if cnt > 3 { if top < 0 { top = y }; bot = y }
         }
         let textCenter = Double(top + bot) / 2, boxCenter = Double(h) / 2
-        guard top >= 0, abs(textCenter - boxCenter) <= 2 else {
+        let pixelsPerPoint = Double(h) / Double(geometry.frame.height)
+        guard top >= 0, abs(textCenter - boxCenter) / pixelsPerPoint <= 2.5 else {
             fputs("候选窗文本未垂直居中：textCenter=\(textCenter) boxCenter=\(boxCenter)\n", stderr)
             exit(1)
         }
     }
     let mixedLabels = geometry.displayedCandidateTexts
-    guard mixedLabels.count == 2, mixedLabels[0].contains("五笔"), mixedLabels[1].contains("拼") else {
+    guard mixedLabels.count == 2, !mixedLabels[0].contains("五笔"), !mixedLabels[1].contains("拼") else {
         fputs("候选来源标签未按混输显示：\(mixedLabels)\n", stderr); exit(1)
     }
     geometry.update(candidates: [
         ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)
     ])
-    guard geometry.displayedCandidateTexts == ["1. 你"] else {
+    guard geometry.displayedCandidateTexts == ["1 你"] else {
         fputs("单一来源页不应标注来源：\(geometry.displayedCandidateTexts)\n", stderr); exit(1)
     }
     // 状态徽标 + 鼠标点选（T-MVP-06）。
     geometry.update(
         candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)],
-        status: "五笔·全")
-    guard geometry.displayedStatus == "五笔·全" else {
+        input: "wq")
+    guard geometry.displayedInput == "wq" else {
         fputs("状态徽标未显示。\n", stderr); exit(1)
     }
     geometry.update(candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)])
-    guard geometry.displayedStatus == nil else { fputs("无状态时不应显示徽标。\n", stderr); exit(1) }
+    guard geometry.displayedInput.isEmpty else { fputs("无状态时不应显示徽标。\n", stderr); exit(1) }
     var picked = -1
     geometry.onSelect = { picked = $0 }
     geometry.update(candidates: [
@@ -588,7 +590,7 @@ if CommandLine.arguments.contains("--smoke-test") {
         geometry.update(candidates: [
             ImeCandidate(text: "你好世界", code: "wq", source: .codeTable, isPrefix: false),
             ImeCandidate(text: "混输", code: "ni", source: .pinyin, isPrefix: false),
-        ], status: "五笔·全", hint: WubiHints.text(buffer: "wq", mode: "mixed", english: false, wildcard: false))
+        ], input: "wq", hint: WubiHints.text(buffer: "wq", mode: "mixed", english: false, wildcard: false))
         saveQA(geometry.renderSnapshotForTesting(), "candidate-\(theme).png")
         saveQA(SettingsPanel.shared.renderSnapshotForTesting(appearance: appearance), "settings-\(theme).png")
         saveQA(SettingsPanel.shared.renderLongErrorForTesting(appearance: appearance), "settings-error-\(theme).png")
@@ -716,8 +718,8 @@ if CommandLine.arguments.contains("--smoke-test") {
         SettingsPanel.shared.minimumContentSize.height >= 440
     else { fputs("设置分组或窗口约束不符。\n", stderr); exit(1) }
     // 面板（ADR-077/080）：设置/词库 两个分区。
-    guard SettingsPanel.shared.sectionCount == 2 else {
-        fputs("设置面板分区数应为 2，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
+    guard SettingsPanel.shared.sectionCount == 4 else {
+        fputs("设置面板分区数应为 4，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
     }
     guard AboutUI.text().contains("GPL-3.0") else {
         fputs("版本信息缺失。\n", stderr); exit(1)

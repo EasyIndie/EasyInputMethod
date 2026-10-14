@@ -10,6 +10,8 @@ enum LookupUI {
         alert.addButton(withTitle: "查询")
         alert.addButton(withTitle: "取消")
         let input = NSTextField(frame: NSRect(x: 0, y: 0, width: 320, height: 26))
+        input.font = .systemFont(ofSize: 13)
+        input.setAccessibilityHelp("本地查询内置词表的首选拼音，不是五笔拆字反查。")
         input.placeholderString = "例如：你好"
         input.setAccessibilityLabel("待反查的汉字或词组")
         alert.accessoryView = input
