@@ -10,6 +10,13 @@ import tempfile
 import time
 
 
+def failure_excerpt(log):
+    text = log.read_text(errors='replace')
+    if len(text) <= 16000:
+        return text
+    return text[:4000] + '\n[诊断中段省略；完整内容保留在私有日志]\n' + text[-12000:]
+
+
 def main():
     root = Path(__file__).resolve().parents[3]
     files = sorted((root / 'platforms/macos/tests').glob('test-*.py')) + sorted((root / 'packaging/macos/tests').glob('test-*.py'))
@@ -34,6 +41,8 @@ def main():
         counts = re.findall(r'Ran (\d+) tests?', log.read_text())
         rows.append({'file': str(file.relative_to(root)), 'status': status, 'exit': code, 'seconds': round(time.monotonic() - started, 3), 'tests': int(counts[-1]) if counts else None, 'log': str(log)})
         print(f'{status} {file.relative_to(root)}', flush=True)
+        if status != 'PASS':
+            print('失败诊断：' + failure_excerpt(log), flush=True)
     report = output / 'summary.json'
     report.write_text(json.dumps({'passed': all(row['status'] == 'PASS' for row in rows), 'files': len(rows), 'tests': sum(row['tests'] or 0 for row in rows), 'results': rows}, ensure_ascii=False, indent=2))
     report.chmod(0o600)
