@@ -61,29 +61,34 @@ fn root_key(value: &'static str) -> Option<RootKey> {
 }
 
 fn decomposition(character: char) -> Option<Decomposition> {
-    ROOTS.lines().find_map(|line| {
-        if line.starts_with('#') {
-            return None;
-        }
-        let mut fields = line.split('\t');
-        if fields.next()?.chars().next()? != character {
-            return None;
-        }
-        let _code = fields.next()?;
-        let category = fields.next()?;
-        let rule = fields.next()?;
-        let roots = fields
-            .next()?
-            .split_whitespace()
-            .filter_map(root_key)
-            .collect();
-        let recognition = root_key(fields.next()?);
-        Some(Decomposition {
-            category,
-            rule,
-            roots,
-            recognition,
+    static INDEX: std::sync::OnceLock<Vec<&'static str>> = std::sync::OnceLock::new();
+    let rows = INDEX.get_or_init(|| {
+        ROOTS
+            .lines()
+            .filter(|line| !line.is_empty() && !line.starts_with('#'))
+            .collect()
+    });
+    let index = rows
+        .binary_search_by_key(&(character as u32), |line| {
+            line.chars().next().map_or(0, |c| c as u32)
         })
+        .ok()?;
+    let mut fields = rows[index].split('\t');
+    let _character = fields.next()?;
+    let _code = fields.next()?;
+    let category = fields.next()?;
+    let rule = fields.next()?;
+    let roots = fields
+        .next()?
+        .split_whitespace()
+        .filter_map(root_key)
+        .collect();
+    let recognition = root_key(fields.next()?);
+    Some(Decomposition {
+        category,
+        rule,
+        roots,
+        recognition,
     })
 }
 
@@ -208,7 +213,101 @@ mod tests {
         );
         let people = &item.characters[3];
         assert_eq!(people.full_code, Some("nav"));
-        assert!(people.decomposition.is_none());
+        assert_eq!(
+            people
+                .decomposition
+                .as_ref()
+                .unwrap()
+                .recognition
+                .as_ref()
+                .unwrap()
+                .key,
+            "v"
+        );
+    }
+
+    #[test]
+    fn generated_teaching_types_preserve_uncertainty_and_publication_boundaries() {
+        let mut previous = 0;
+        for row in ROOTS
+            .lines()
+            .filter(|line| !line.starts_with('#') && !line.is_empty())
+        {
+            let fields: Vec<_> = row.split('\t').collect();
+            assert_eq!(fields.len(), 6);
+            let character = fields[0].chars().next().unwrap();
+            assert!(character as u32 > previous);
+            previous = character as u32;
+            assert_eq!(full_code(character), Some(fields[1]));
+            assert!(!row
+                .chars()
+                .any(|c| matches!(c as u32, 0xe000..=0xf8ff | 0xf0000..=0x10ffff)));
+            let d = decomposition(character).unwrap();
+            let keys: String = d.roots.iter().map(|r| r.key).collect();
+            match d.category {
+                "partial" => {
+                    assert_eq!(keys, &fields[1][..fields[1].len() - 1]);
+                    assert!(d.recognition.is_none());
+                    assert!(d.rule.contains("说明暂缺"));
+                }
+                "selected_roots" | "chengzi" | "stroke" => {
+                    assert_eq!(keys, fields[1]);
+                    assert!(d.recognition.is_none());
+                }
+                "key_name" => assert_eq!(keys.repeat(4), fields[1]),
+                "compound" => assert_eq!(keys + d.recognition.as_ref().unwrap().key, fields[1]),
+                _ => panic!("unknown teaching category"),
+            }
+        }
+        assert_eq!(
+            query("小").unwrap().characters[0]
+                .decomposition
+                .as_ref()
+                .unwrap()
+                .category,
+            "chengzi"
+        );
+        assert_eq!(
+            query("凡").unwrap().characters[0]
+                .decomposition
+                .as_ref()
+                .unwrap()
+                .category,
+            "partial"
+        );
+        assert_eq!(
+            query("噤").unwrap().characters[0]
+                .decomposition
+                .as_ref()
+                .unwrap()
+                .category,
+            "selected_roots"
+        );
+    }
+
+    #[test]
+    fn verified_examples_cover_every_recognition_key_and_basic_strokes() {
+        let keys: std::collections::BTreeSet<_> = "好字本叶华中杉少才你共国亿艺电"
+            .chars()
+            .map(|c| decomposition(c).unwrap().recognition.unwrap().key)
+            .collect();
+        assert_eq!(keys.len(), 15);
+        for (text, code) in [
+            ("一", "ggll"),
+            ("丨", "hhll"),
+            ("丿", "ttll"),
+            ("丶", "yyll"),
+            ("乙", "nnll"),
+        ] {
+            let item = query(text).unwrap();
+            assert_eq!(item.full_code.as_deref(), Some(code));
+            assert_eq!(
+                item.characters[0].decomposition.as_ref().unwrap().category,
+                "stroke"
+            );
+        }
+        let country = query("中华人民共和国").unwrap();
+        assert!(country.characters.iter().all(|c| c.decomposition.is_some()));
     }
 
     #[test]

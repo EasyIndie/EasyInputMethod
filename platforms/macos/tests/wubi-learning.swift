@@ -10,9 +10,10 @@ require(single?.characters.first?.roots.map(\.key) == ["W", "Q", "I"], "aligned 
 require(single?.characters.first?.recognition?.key == "Y", "separate recognition")
 let phrase = WubiLearning.lookup("中华人民共和国")
 require(phrase?.code == "kwwl" && phrase?.characters.count == 7, "long phrase summary and every character")
-require(phrase?.characters[3].code == "nav" && phrase?.characters[3].roots.isEmpty == true, "unknown decomposition preserves full code")
+require(phrase?.characters[3].code == "nav" && phrase?.characters[3].recognition?.key == "V", "verified long-word decomposition")
 require(WubiLearning.lookup("你好")?.code == "wqvb", "phrase code")
 require(WubiLearning.lookup("😀")?.code == nil, "missing code")
+require(WubiLearning.lookup("是")?.characters[0].roots.isEmpty == true, "missing explanation remains explicit")
 require(WubiLearning.lookup("人")?.characters[0].category == "key_name", "key-name category")
 for input in ["", "你\t好", String(repeating: "你", count: 33)] {
     require(WubiLearning.lookup(input) == nil, "bounded invalid input")

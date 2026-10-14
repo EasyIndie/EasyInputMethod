@@ -13,7 +13,7 @@ upstream = "aardio/wubi-lex"
 license = "MIT"
 risk = "low"
 sha256 = "da8a20e6af3446348d5d68a89ac71d5e3b9b17b00446d8204ac1e9529626697f"
-used_for = ["wubi86-single-char-code-generation", "chaizi-crosscheck"]
+used_for = ["wubi86-single-char-code-generation", "chaizi-crosscheck", "verified-readable-learning-roots"]
 fetch_script = "data/sources/fetch-wubi-chaizi.sh"
 added_at = "2026-10-08"
 notes = "格式 字\t字根1字根2...（字根逐字符拼接）；文件下载获取，不入库"
@@ -170,12 +170,12 @@ notes = "ADR-163；首选读音保持D10单字词频，次读音用三分之一�
 [[source]]
 id = "D14"
 name = "项目自建五笔86教学核验记录"
-path = "data/learning/wubi86-roots.tsv"
+path = "data/learning/wubi86-verified.tsv"
 url = "https://github.com/EasyIndie/EasyInputMethod"
 upstream = "本项目公开五笔86规则与既有自建码表"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "f44a9590df3f6fa37222fd64caf65d63e686b2aa88d992556493caec3667879b"
+sha256 = "26a48f3e41d263e88eccecf05d4def3b8743d3d3c05855ea7dbdffdcdd84635a"
 used_for = ["offline-wubi-learning"]
 added_at = "2026-10-15"
 notes = "项目逐条核验；不含oracle编码列或PUA；未覆盖解释明确缺失。摘要由生成步骤补齐。"
@@ -187,3 +187,18 @@ license = "CC-BY-SA-4.0"
 sha256 = "8476f52b422c81b9bfcd402bd9669c926c0463f7796be4817932241e7d83e78e"
 generator = "tools/prepare-wubi-learning.py"
 notes = "Unicode标量排序8字节记录；全码来自primary单字表，不读oracle编码列"
+
+[[derived]]
+path = "data/learning/wubi86-roots.tsv"
+source_ids = ["D2", "D14"]
+license = "CC-BY-SA-4.0"
+generator = "tools/prepare-wubi-learning.py"
+sha256 = "92904255229ab8be55ab1756ea42ba8d2b08480feba7b403cb1b835ae44d41f1"
+notes = "D2纯Unicode根经独立键位事实与primary全码核对，类型区分完整核验/取码/部分；附D2 MIT归属，不含字体或PUA。"
+
+[[derived]]
+path = "data/learning/wubi86-readable-keys.tsv"
+source_ids = ["D14"]
+license = "CC-BY-SA-4.0"
+sha256 = "425fb2769a0f8ff6754babb036a5db500c2454d0a1363588e47083702220f504"
+notes = "项目独立公开五笔86键位事实，不从oracle编码列推导"

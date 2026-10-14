@@ -992,7 +992,7 @@ mod tests {
             assert!(payload.starts_with(&format!("wubi-learning-v1\t{code}\t")));
             assert_eq!(payload.lines().count(), text.chars().count() + 1);
             if text == "中华人民共和国" {
-                assert!(payload.contains("民\tnav\t\t\t\t"));
+                assert!(payload.contains("民\tnav\tcompound\t"));
             }
             ime_string_free(result);
         }
