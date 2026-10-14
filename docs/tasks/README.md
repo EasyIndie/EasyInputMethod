@@ -133,3 +133,5 @@
 IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进；全部最终包原生门禁待验。见[报告012](../reviews/012-core-refinement.md)。
 
 [IT-27读音工程结果](../reviews/014-pinyin-reading-quality.md)，最终包原生待验。
+
+[IT-28工程结果及原生矩阵](../reviews/015-editing-boundary-audit.md)；编辑键工程完成，安全字段/布局等原生待验。
