@@ -7,6 +7,8 @@
 
 #![forbid(unsafe_code)]
 
+pub mod learning;
+
 use std::error::Error;
 use std::fmt;
 use std::sync::Arc;

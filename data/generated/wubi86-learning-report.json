@@ -1,0 +1,11 @@
+{
+  "source_sha256": "72328b6966e323deafa4e85ae751b07801040146ce7e153bc14e6b8e63202686",
+  "roots_sha256": "f44a9590df3f6fa37222fd64caf65d63e686b2aa88d992556493caec3667879b",
+  "index_sha256": "8476f52b422c81b9bfcd402bd9669c926c0463f7796be4817932241e7d83e78e",
+  "index_bytes": 222584,
+  "full_code_characters": 27823,
+  "verified_explanations": 32,
+  "unexplained_characters": 27791,
+  "oracle_code_columns_published": false,
+  "note": "Only verified explanations; all other characters explicitly lack decomposition."
+}

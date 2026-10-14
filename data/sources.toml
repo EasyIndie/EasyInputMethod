@@ -166,3 +166,24 @@ license = "CC-BY-SA-4.0"
 sha256 = "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12"
 generator = "crates/ime-pinyin/examples/generate.rs"
 notes = "ADR-163；首选读音保持D10单字词频，次读音用三分之一底线加D4/D10对齐词频证据；不增加读音/词条，不是实际读音频次"
+
+[[source]]
+id = "D14"
+name = "项目自建五笔86教学核验记录"
+path = "data/learning/wubi86-roots.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod"
+upstream = "本项目公开五笔86规则与既有自建码表"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "f44a9590df3f6fa37222fd64caf65d63e686b2aa88d992556493caec3667879b"
+used_for = ["offline-wubi-learning"]
+added_at = "2026-10-15"
+notes = "项目逐条核验；不含oracle编码列或PUA；未覆盖解释明确缺失。摘要由生成步骤补齐。"
+
+[[derived]]
+path = "data/generated/wubi86-learning-codes.bin"
+source_ids = ["D1", "D14"]
+license = "CC-BY-SA-4.0"
+sha256 = "8476f52b422c81b9bfcd402bd9669c926c0463f7796be4817932241e7d83e78e"
+generator = "tools/prepare-wubi-learning.py"
+notes = "Unicode标量排序8字节记录；全码来自primary单字表，不读oracle编码列"
