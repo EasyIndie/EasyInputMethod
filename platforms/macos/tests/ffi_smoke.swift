@@ -19,6 +19,16 @@ guard args.count == 4 else {
 }
 let (wubiPath, charsPath, wordsPath) = (args[1], args[2], args[3])
 
+// Keep all learning/configuration IO inside a new private test directory.
+let learningRoot = FileManager.default.temporaryDirectory
+    .appendingPathComponent("lampyris-learning-smoke-" + UUID().uuidString)
+do { try FileManager.default.createDirectory(at: learningRoot, withIntermediateDirectories: true) }
+catch { fail("无法创建隔离学习目录") }
+defer { try? FileManager.default.removeItem(at: learningRoot) }
+guard ime_config_init(learningRoot.appendingPathComponent("config.toml").path) == IME_OK else {
+    fail("隔离配置初始化失败")
+}
+
 guard let session = ime_session_new_with_data(wubiPath, charsPath, wordsPath) else {
     fail("ime_session_new_with_data 返回 NULL")
 }
@@ -54,3 +64,39 @@ let pinyinFirst = firstCandidate()
 guard pinyinFirst == "你好" else { fail("nihao 首选应为「你好」，实际：\(pinyinFirst ?? "nil")") }
 
 print("✅ FFI 运行时冒烟通过：wq→你，nihao→你好")
+
+// Exercise the actual Swift/C ABI learning path with synthetic private fixtures.
+let learningTable = learningRoot.appendingPathComponent("table.tsv")
+let learningSeed = learningRoot.appendingPathComponent("seed.tsv")
+do {
+    try "ab\t历史首项\t100\nab\t常选后项\t1\n".write(to: learningTable, atomically: true, encoding: .utf8)
+    try "wubi\tab\t历史首项\t1000\n".write(to: learningSeed, atomically: true, encoding: .utf8)
+} catch { fail("无法写入隔离学习样例") }
+func learningSession() -> OpaquePointer {
+    guard let s = ime_session_new_with_data(learningTable.path, charsPath, wordsPath) else {
+        fail("无法创建隔离学习会话")
+    }
+    guard ime_session_configure(s) == IME_OK else { fail("隔离学习配置失败") }
+    return s
+}
+func learningFirst(_ s: OpaquePointer) -> String? {
+    let list = ime_session_candidates(s)
+    guard list.len > 0, let items = list.items, let value = items[0].text else { return nil }
+    return String(cString: value)
+}
+let learner = learningSession()
+guard ime_session_dictionary_import(learner, learningSeed.path) == IME_OK else { fail("学习样例导入失败") }
+for _ in 0..<4 {
+    _ = ime_session_key(learner, 97)
+    _ = ime_session_key(learner, 98)
+    guard learningFirst(learner) == "历史首项" else { fail("学习前排序异常") }
+    guard ime_session_key(learner, 50) == IME_KEY_COMMITTED else { fail("主动选择未提交") }
+    guard ime_session_dictionary_error(learner) == IME_OK else { fail("隔离学习持久化失败") }
+}
+ime_session_free(learner)
+let learned = learningSession()
+defer { ime_session_free(learned) }
+_ = ime_session_key(learned, 97)
+_ = ime_session_key(learned, 98)
+guard learningFirst(learned) == "常选后项" else { fail("重新加载后主动学习未生效") }
+print("✅ Swift/C ABI 离线学习通过：历史1000后四次主动选择前移，重载保留；仅临时词库")

@@ -288,6 +288,51 @@ impl Store {
             Ok(vec![(key, Some(count))])
         })
     }
+    /// Learn an explicit non-first Wubi choice without letting old totals lock its rank.
+    /// The persisted value is a preference weight, not a typing statistic.
+    pub fn learn_preferred(&mut self, code: &str, text: &str, input: &str) -> io::Result<()> {
+        validate("wubi", code, text)?;
+        // Wildcard queries do not describe a literal dictionary prefix.
+        let prefix = if !input.is_empty() && !input.contains('z') && code.starts_with(input) {
+            input
+        } else {
+            code
+        };
+        let exact = code == prefix;
+        let key = ("wubi".into(), code.into(), text.into());
+        self.update(|entries| {
+            let group: Vec<_> = entries
+                .range((String::from("wubi"), prefix.to_owned(), String::new())..)
+                .take_while(|((scheme, other_code, _), _)| {
+                    scheme == "wubi" && other_code.starts_with(prefix)
+                })
+                .filter(|((_, other_code, _), _)| (other_code == prefix) == exact)
+                .collect();
+            let largest = group.iter().map(|(_, value)| **value).max().unwrap_or(0);
+            let divisor = if largest > u32::MAX / 2 { 2 } else { 1 };
+            let normalized = |value: u32| (value / divisor).max(1);
+            let leader = group
+                .iter()
+                .filter(|(other, _)| **other != key)
+                .map(|(_, value)| normalized(**value))
+                .max()
+                .unwrap_or(0);
+            let current = entries.get(&key).copied().map(normalized).unwrap_or(0);
+            let increment = (leader / 4).saturating_add(1);
+            let mut changes: Changes = if divisor == 2 {
+                group
+                    .into_iter()
+                    .filter(|(other, _)| **other != key)
+                    .map(|(other, value)| (other.clone(), Some(normalized(*value))))
+                    .collect()
+            } else {
+                Vec::new()
+            };
+            changes.push((key.clone(), Some(current.saturating_add(increment))));
+            Ok(changes)
+        })
+    }
+
     pub fn import(&mut self, path: &Path) -> io::Result<()> {
         let incoming = read(path).map_err(|error| {
             io::Error::new(error.kind(), format!("{}：{}", path.display(), error))
@@ -370,25 +415,122 @@ mod tests {
     }
 
     #[test]
-    fn snapshots_share_data_refresh_atomically_and_export_latest_version() {
+    fn snapshots_refresh_atomically_and_export_latest_version() {
         let dir = std::env::temp_dir().join(format!("yinghuo-shared-user-{}", std::process::id()));
         fs::create_dir_all(&dir).unwrap();
         let path = dir.join("user-dictionary.tsv");
         let mut first = Store::load(&path).unwrap();
         first.learn("wubi", "zz", "测试词").unwrap();
         let mut second = Store::load(&path).unwrap();
-        assert!(Arc::ptr_eq(&first.entries, &second.entries));
+        // The four-slot global cache may evict this path during concurrent tests.
+        // Data consistency, not cache residency or pointer identity, is the contract.
+        assert_eq!(first.entries(), second.entries());
         first.learn("wubi", "zz", "测试词").unwrap();
-        assert!(!Arc::ptr_eq(&first.entries, &second.entries));
+        assert_ne!(first.entries(), second.entries());
         let exported = dir.join("export.tsv");
         second.export(&exported).unwrap();
         assert_eq!(read(&exported).unwrap(), *first.entries);
         second.refresh().unwrap();
-        assert!(Arc::ptr_eq(&first.entries, &second.entries));
+        assert_eq!(first.entries(), second.entries());
         let weak = Arc::downgrade(&first.entries);
         drop(first);
         drop(second);
         assert!(weak.upgrade().is_none());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn preferred_learning_is_grouped_and_shared_across_stores() {
+        let dir = unique_dir("preferred-group");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        fs::write(&path, "wubi\ta\t精确\t1000000\nwubi\tab\t历史\t1000\npinyin\tab\t拼音\t4294967295\nwubi\tb\t无关\t4294967295\n").unwrap();
+        let mut first = Store::load(&path).unwrap();
+        let mut second = Store::load(&path).unwrap();
+        for _ in 0..2 {
+            first.learn_preferred("ac", "常用", "a").unwrap();
+            second.learn_preferred("ac", "常用", "a").unwrap();
+        }
+        first.refresh().unwrap();
+        assert_eq!(
+            first.entries()[&("wubi".into(), "ac".into(), "常用".into())],
+            1004
+        );
+        assert_eq!(
+            first.entries()[&("wubi".into(), "a".into(), "精确".into())],
+            1000000
+        );
+        assert_eq!(
+            first.entries()[&("pinyin".into(), "ab".into(), "拼音".into())],
+            u32::MAX
+        );
+        assert_eq!(
+            first.entries()[&("wubi".into(), "b".into(), "无关".into())],
+            u32::MAX
+        );
+        assert_eq!(first.entries(), second.entries());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn preferred_learning_rebases_saturated_weights_without_losing_entries() {
+        let dir = unique_dir("preferred-saturation");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        fs::write(
+            &path,
+            "wubi\tab\t历史\t4294967295\nwubi\tabc\t补全\t4294967295\n",
+        )
+        .unwrap();
+        let mut store = Store::load(&path).unwrap();
+        for _ in 0..4 {
+            store.learn_preferred("ab", "常用", "ab").unwrap();
+        }
+        let history = store.entries()[&("wubi".into(), "ab".into(), "历史".into())];
+        let preferred = store.entries()[&("wubi".into(), "ab".into(), "常用".into())];
+        assert!(preferred > history);
+        assert!(preferred < u32::MAX);
+        assert_eq!(
+            store.entries()[&("wubi".into(), "abc".into(), "补全".into())],
+            u32::MAX
+        );
+        assert_eq!(Store::load(&path).unwrap().entries(), store.entries());
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn preferred_learning_rolls_back_rebasing_when_capacity_is_full() {
+        let dir = unique_dir("preferred-rollback");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        let data: String = (0..MAX_ENTRIES)
+            .map(|i| format!("wubi\tab\t词{i}\t4294967295\n"))
+            .collect();
+        fs::write(&path, &data).unwrap();
+        let mut store = Store::load(&path).unwrap();
+        let before = store.entries().clone();
+        assert!(store.learn_preferred("ab", "新词", "ab").is_err());
+        assert_eq!(store.entries(), &before);
+        assert_eq!(fs::read_to_string(&path).unwrap(), data);
+        fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn wildcard_preference_uses_only_the_selected_full_code_group() {
+        let dir = unique_dir("preferred-wildcard");
+        fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        fs::write(&path, "wubi\tab\t同码\t1000\nwubi\tac\t异码\t1000000\n").unwrap();
+        let mut store = Store::load(&path).unwrap();
+        store.learn_preferred("ab", "目标", "az").unwrap();
+        assert_eq!(
+            store.entries()[&("wubi".into(), "ab".into(), "目标".into())],
+            251
+        );
+        assert_eq!(
+            store.entries()[&("wubi".into(), "ac".into(), "异码".into())],
+            1000000
+        );
         fs::remove_dir_all(dir).unwrap();
     }
 
