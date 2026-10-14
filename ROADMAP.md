@@ -147,3 +147,5 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] `TBD-4` 英文/包名最终形（ADR-056：Lampyris）
 
 - [ ] IT-25：ADR-159五笔主动后项学习工程已通过隔离回归、make verify/strict universal/Swift FFI；待新签名原生验收与用户例子确认。见docs/tasks/T-ITER-25.md。
+
+2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。

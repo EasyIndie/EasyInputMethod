@@ -61,3 +61,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 - TBD-4 ✅ 英文/包名定为 `Lampyris`（ADR-056）
 
 - [MVP单人验收清单](MVP单人验收清单.md)：用户手动走查、五工作日试用与独立核验材料（ADR-125）。
+
+- [核心完整性与精简范围评估011](reviews/011-core-completeness-and-scope.md)：官方对照与21个私有默认配置FFI样例，当前调研不改变产品行为。
