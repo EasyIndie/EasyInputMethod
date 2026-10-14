@@ -34,6 +34,7 @@ class CandidatePresentationTests(unittest.TestCase):
                 result = subprocess.run(command, cwd=ROOT, env=environment,
                                         capture_output=True, text=True, timeout=timeout)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                self.assertNotIn("Unable to simultaneously satisfy constraints", result.stderr)
             self.assertIn("PASS candidate-presentation", result.stdout)
 
 

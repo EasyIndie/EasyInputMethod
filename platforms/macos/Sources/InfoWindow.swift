@@ -21,6 +21,7 @@ final class InfoWindow: NSObject {
     private let fallbackAddress = NSTextField(wrappingLabelWithString: "")
     private lazy var copyAddressButton = NSButton(title: "复制地址", target: self, action: #selector(copyAddress))
     private var presentationID = UUID()
+    deinit { NSWorkspace.shared.notificationCenter.removeObserver(self) }
 
     static func show(title: String, text: String, allowsCopy: Bool, links: [InfoLink] = []) {
         shared.prepareContent(title: title, text: text, allowsCopy: allowsCopy, links: links)
@@ -127,6 +128,7 @@ final class InfoWindow: NSObject {
     private func reportCopy(_ success: Bool) {
         status.stringValue = success ? "已复制" : "复制失败，请选中文字手动复制。"
         status.textColor = success ? ImeAppearance.secondaryText : ImeAppearance.errorText
+        announceStatus()
     }
 
     @objc private func copyAddress() { reportCopy(Self.copy(fallbackAddress.stringValue, to: .general)) }
@@ -138,6 +140,13 @@ final class InfoWindow: NSObject {
         fallbackAddress.stringValue = succeeded ? "" : url.absoluteString
         fallbackAddress.isHidden = succeeded
         copyAddressButton.isHidden = succeeded
+        announceStatus()
+    }
+    private func announceStatus() {
+        if panel?.isVisible == true { NSAccessibility.post(element: status, notification: .valueChanged) }
+    }
+    @objc private func displayOptionsChanged() {
+        if let panel { ImeAppearance.applyTheme(to: panel) }
     }
 
     static func testOpenResult(_ url: URL, succeeded: Bool) -> (String, String, Bool) {
@@ -170,6 +179,8 @@ final class InfoWindow: NSObject {
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
         ImeAppearance.applyTheme(to: panel)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(displayOptionsChanged),
+            name: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil)
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in
             if key == "appearance.theme", let panel = self?.panel { ImeAppearance.applyTheme(to: panel) }
         }

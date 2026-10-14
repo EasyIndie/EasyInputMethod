@@ -27,6 +27,13 @@ struct SettingsOption {
     /// scope 显示名（与 FFI 的 `scope` 数值约定一致）。
     static let scopeTitles = ["输入引擎", "候选窗", "外观", "快捷键"]
 
+    /// Hide implementation comparison notes while preserving schema-defined guidance.
+    var userHelp: String {
+        doc.replacingOccurrences(of: #"(?:，|,)?对齐[^）)]*"#, with: "", options: .regularExpression)
+            .replacingOccurrences(of: "（）", with: "")
+            .replacingOccurrences(of: "()", with: "")
+    }
+
     var scopeTitle: String {
         (0..<Self.scopeTitles.count).contains(scope) ? Self.scopeTitles[scope] : "其它"
     }
@@ -96,11 +103,11 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         top.addArrangedSubview(title)
         if let control = buildControl() {
             control.setAccessibilityLabel(option.title)
-            control.setAccessibilityHelp(option.doc)
+            control.setAccessibilityHelp(option.userHelp)
             top.addArrangedSubview(control)
         }
 
-        let help = NSTextField(wrappingLabelWithString: option.doc)
+        let help = NSTextField(wrappingLabelWithString: option.userHelp)
         help.font = .systemFont(ofSize: 11)
         help.textColor = ImeAppearance.secondaryText
         help.preferredMaxLayoutWidth = 430
@@ -134,7 +141,7 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             stepper.target = self
             stepper.action = #selector(stepperChanged(_:))
             stepper.setAccessibilityLabel(option.title)
-            stepper.setAccessibilityHelp(option.doc)
+            stepper.setAccessibilityHelp(option.userHelp)
             self.stepper = stepper
             let box = NSStackView(views: [value, stepper])
             box.orientation = .horizontal
@@ -180,6 +187,13 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         }
     }
 
+    var textValueForTesting: String? { textField?.stringValue }
+    func commitTextForTesting(_ value: String) -> Bool {
+        guard let field = textField, let action = field.action else { return false }
+        field.stringValue = value
+        return NSApp.sendAction(action, to: field.target, from: field)
+    }
+
     // MARK: - 写回（唯一路径）
 
     @objc private func boolChanged(_ sender: NSButton) {
@@ -208,7 +222,9 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
 
     private func write(_ value: String, toml: Bool) {
         let ok = toml ? ImeConfig.setToml(option.key, value) : ImeConfig.setString(option.key, value)
-        if !ok {
+        if ok {
+            SettingsPanel.shared.reportSaved()
+        } else {
             SettingsPanel.shared.reportFailure(option.key)
             reload()
         }
@@ -253,17 +269,26 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
     private var contentHost: NSView?
     private var sectionViews: [NSView] = []
 
-    private override init() { super.init() }
+    private override init() {
+        super.init()
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(displayOptionsChanged),
+            name: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil)
+    }
+    deinit { NSWorkspace.shared.notificationCenter.removeObserver(self) }
+    @objc private func displayOptionsChanged() {
+        if let window { ImeAppearance.applyTheme(to: window) }
+    }
 
     /// 构建窗口（幂等，不前置）；供 `show()` 与冒烟测试复用。
     func prepare() {
         guard window == nil else { return }
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 600),
-            styleMask: [.titled, .closable, .resizable, .utilityWindow],
+            contentRect: NSRect(x: 0, y: 0, width: 520, height: 520),
+            styleMask: [.titled, .closable, .resizable],
             backing: .buffered, defer: false)
         panel.title = "输入 · 萤火虫设置"
         panel.toolbarStyle = .preference
+        panel.standardWindowButton(.zoomButton)?.isEnabled = false
         panel.contentMinSize = NSSize(width: 520, height: 440)
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
@@ -291,6 +316,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
 
     /// 已构建的行数（供冒烟测试断言）。
     var rowCount: Int { rows.count }
+    func rowForTesting(_ key: String) -> SettingRow? { rows.first { $0.option.key == key } }
     var displayedOptionKeys: [String] { rows.map { $0.option.key } }
     var minimumContentSize: NSSize { window?.contentMinSize ?? .zero }
     var configuredAppearanceForTesting: NSAppearance.Name? { window?.appearance?.name }
@@ -315,7 +341,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
     var sectionCount: Int { sectionViews.count }
 
     /// 供自测：在给定外观下渲染面板内容为位图，用于亮/暗主题对比度断言。
-    func renderSnapshotForTesting(appearance: NSAppearance) -> NSBitmapImageRep? {
+    func renderSnapshotForTesting(appearance: NSAppearance, includingChrome: Bool = false) -> NSBitmapImageRep? {
         prepare()
         rows.forEach { $0.reload() }
         guard let window, let view = window.contentView, view.bounds.width > 1,
@@ -325,8 +351,10 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         view.layoutSubtreeIfNeeded()
         window.displayIfNeeded()
         RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.05))
-        guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
-        view.cacheDisplay(in: view.bounds, to: rep)
+        let snapshotView = includingChrome ? (view.superview ?? view) : view
+        snapshotView.layoutSubtreeIfNeeded()
+        guard let rep = snapshotView.bitmapImageRepForCachingDisplay(in: snapshotView.bounds) else { return nil }
+        snapshotView.cacheDisplay(in: snapshotView.bounds, to: rep)
         var output: NSBitmapImageRep?
         appearance.performAsCurrentDrawingAppearance {
             output = ImeAppearance.opaqueSnapshot(rep, background: .windowBackgroundColor)
@@ -342,6 +370,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
             setStatus(ImeConfig.errorMessage() ?? "", isError: ImeConfig.errorMessage() != nil)
         }
     }
+
+    func reportSaved() { setStatus("", isError: false) }
 
     /// 写失败提示（校验/IO/只读/锁）。
     func reportFailure(_ key: String) {
@@ -365,6 +395,9 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
     private func setStatus(_ text: String, isError: Bool) {
         statusLabel?.stringValue = text
         statusLabel?.textColor = isError ? ImeAppearance.errorText : ImeAppearance.secondaryText
+        if !text.isEmpty, window?.isVisible == true, let statusLabel {
+            NSAccessibility.post(element: statusLabel, notification: .valueChanged)
+        }
     }
 
     // MARK: - 分区切换
@@ -414,6 +447,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
 
     private func selectSection(_ index: Int) {
         guard let host = contentHost, sectionViews.indices.contains(index) else { return }
+        if window?.isVisible == true { _ = window?.makeFirstResponder(nil) }
         host.subviews.forEach { $0.removeFromSuperview() }
         let view = sectionViews[index]
         view.translatesAutoresizingMaskIntoConstraints = false

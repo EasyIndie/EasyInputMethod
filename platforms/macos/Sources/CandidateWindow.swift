@@ -7,20 +7,33 @@ import Cocoa
 
 /// Colors used by custom text; resolve them in the view's actual appearance.
 enum ImeAppearance {
+    static func isHighContrast(_ appearance: NSAppearance) -> Bool {
+        NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
+            || appearance.name == .accessibilityHighContrastAqua
+            || appearance.name == .accessibilityHighContrastDarkAqua
+    }
+
     static func applyTheme(to window: NSWindow) {
+        let highContrast = NSWorkspace.shared.accessibilityDisplayShouldIncreaseContrast
         switch ImeConfig.string("appearance.theme") {
-        case "light": window.appearance = NSAppearance(named: .aqua)
-        case "dark": window.appearance = NSAppearance(named: .darkAqua)
+        case "light": window.appearance = NSAppearance(named: highContrast ? .accessibilityHighContrastAqua : .aqua)
+        case "dark": window.appearance = NSAppearance(named: highContrast ? .accessibilityHighContrastDarkAqua : .darkAqua)
         default: window.appearance = nil
         }
     }
 
-    static let secondaryText = NSColor(name: nil) { appearance in
+    static func secondaryTextColor(for appearance: NSAppearance, highContrast: Bool) -> NSColor {
         var resolved = NSColor.labelColor
         appearance.performAsCurrentDrawingAppearance {
             resolved = NSColor.labelColor.usingColorSpace(.sRGB) ?? .labelColor
         }
-        return resolved.withAlphaComponent(0.78)
+        return resolved.withAlphaComponent(highContrast ? 1 : 0.78)
+    }
+    static let secondaryText = NSColor(name: nil) { appearance in
+        secondaryTextColor(for: appearance, highContrast: isHighContrast(appearance))
+    }
+    static func candidateBorderColor(highContrast: Bool) -> NSColor {
+        highContrast ? NSColor.labelColor.withAlphaComponent(0.5) : .separatorColor
     }
     static let errorText = NSColor(name: nil) { appearance in
         if appearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua {
@@ -91,6 +104,7 @@ final class CandidateLabel: NSTextField {
     private func setUpLayer() {
         wantsLayer = true
         layer?.cornerRadius = 4
+        layer?.actions = ["backgroundColor": NSNull()]
         setAccessibilityRole(.button)
     }
 
@@ -207,6 +221,7 @@ final class CandidateWindow: NSObject {
         container.wantsLayer = true
         container.layer?.cornerRadius = 8
         container.layer?.borderWidth = 1
+        container.layer?.actions = ["backgroundColor": NSNull(), "borderColor": NSNull()]
         panel.contentView = container
         for field in [inputLabel, pageLabel, hintLabel, warningLabel] {
             field.usesSingleLineMode = true
@@ -245,12 +260,15 @@ final class CandidateWindow: NSObject {
         document.setAccessibilityRole(.group)
         document.setAccessibilityLabel("候选字词")
         container.addSubview(scrollView)
+        NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(displayOptionsChanged),
+            name: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil)
         // Warm native Chinese font layout without showing a window.
         update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
         update(candidates: [])
     }
 
-    deinit { themeTimer?.invalidate() }
+    deinit { themeTimer?.invalidate(); NSWorkspace.shared.notificationCenter.removeObserver(self) }
+    @objc private func displayOptionsChanged() { refreshAppearance() }
 
     private func startThemeTimer() {
         guard themeTimer == nil else { return }
@@ -261,9 +279,16 @@ final class CandidateWindow: NSObject {
 
     func refreshAppearance() {
         ImeAppearance.applyTheme(to: panel)
+        paintResolvedAppearance()
+    }
+    func setAppearanceForTesting(_ appearance: NSAppearance) {
+        panel.appearance = appearance
+        paintResolvedAppearance()
+    }
+    private func paintResolvedAppearance() {
         panel.effectiveAppearance.performAsCurrentDrawingAppearance {
             panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
-            panel.contentView?.layer?.borderColor = NSColor.separatorColor.cgColor
+            panel.contentView?.layer?.borderColor = ImeAppearance.candidateBorderColor(highContrast: ImeAppearance.isHighContrast(panel.effectiveAppearance)).cgColor
             for label in labels.prefix(renderedCount) where label.isHovered {
                 label.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
             }
@@ -314,6 +339,7 @@ final class CandidateWindow: NSObject {
             }
             let label = labels[index]
             label.isHidden = false
+            label.font = .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)
             label.attributedStringValue = Self.render(index: index, candidate)
             label.toolTip = "\(candidate.text) · \(candidate.source.label)"
             label.setAccessibilityElement(true)

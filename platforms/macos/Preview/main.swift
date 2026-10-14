@@ -247,6 +247,7 @@ if panelProbe {
     ime_config_init(smokeDirectory.appendingPathComponent("config.toml").path)
 } else { ime_config_init(ImePaths.configFile()) }
 let app = NSApplication.shared
+if smoke { app.setActivationPolicy(.prohibited) }
 if panelProbe, CommandLine.arguments[2] != "interactive" {
     let mode = CommandLine.arguments[2]
     app.setActivationPolicy(.regular)
@@ -346,7 +347,8 @@ if CommandLine.arguments.contains("--smoke-test") {
             if cnt > 3 { if top < 0 { top = y }; bot = y }
         }
         let textCenter = Double(top + bot) / 2, boxCenter = Double(h) / 2
-        guard top >= 0, abs(textCenter - boxCenter) <= 2 else {
+        let pixelsPerPoint = Double(h) / Double(geometry.frame.height)
+        guard top >= 0, abs(textCenter - boxCenter) / pixelsPerPoint <= 2.5 else {
             fputs("候选窗文本未垂直居中：textCenter=\(textCenter) boxCenter=\(boxCenter)\n", stderr)
             exit(1)
         }

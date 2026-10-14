@@ -27,7 +27,7 @@ for index in 0..<4 {
     else { fail("pane mapping " + String(index)) }
     for (theme, appearance) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
         guard let appearance = NSAppearance(named: appearance) else { fail("appearance") }
-        snapshot(panel.renderSnapshotForTesting(appearance: appearance), "pane-\(index)-\(theme)")
+        snapshot(panel.renderSnapshotForTesting(appearance: appearance, includingChrome: true), "pane-\(index)-\(theme)")
         snapshot(panel.renderMinimumSizeForTesting(appearance: appearance), "minimum-\(index)-\(theme)")
         guard !panel.isVisibleForTesting else { fail("offscreen render became visible") }
     }
