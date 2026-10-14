@@ -473,7 +473,7 @@ mod tests {
         // SAFETY：显示名与取值一一对应（设置界面依赖）。
         let labels = unsafe { cstr_list(first.enum_labels_zh) };
         assert_eq!(labels.len(), values.len());
-        assert_eq!(labels[0], "五笔优先 + 拼音兜底");
+        assert_eq!(labels[0], "混输");
         // 每个枚举选项的取值/显示名非空且一一对应。
         for option in &layout._options {
             if option.value_type != 2 {

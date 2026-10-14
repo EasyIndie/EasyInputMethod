@@ -15,6 +15,10 @@ guard panel.sectionCount == 4, panel.rowCount == options.count, options.count ==
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
+panel.selectSectionForTesting(0)
+guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
+panel.selectSectionForTesting(2)
+guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
 func snapshot(_ image: NSBitmapImageRep?, _ name: String) {
     guard let data = image?.representation(using: .png, properties: [:]) else { fail("snapshot " + name) }
     do { try data.write(to: output.appendingPathComponent(name + ".png")) } catch { fail("snapshot write") }

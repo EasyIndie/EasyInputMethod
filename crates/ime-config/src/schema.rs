@@ -50,10 +50,10 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Enum {
             values: &["mixed", "wubi", "pinyin"],
         },
-        enum_labels_zh: &["五笔优先 + 拼音兜底", "仅五笔", "仅拼音"],
+        enum_labels_zh: &["混输", "五笔", "拼音"],
         default: "\"mixed\"",
         title_zh: "输入模式",
-        doc_zh: "优先使用五笔，想不起编码时用拼音兜底；也可选择仅五笔或仅拼音",
+        doc_zh: "五笔优先，想不起编码时用拼音兜底。",
         scope: Scope::Engine,
     },
     OptionSpec {
@@ -82,7 +82,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         enum_labels_zh: &[],
         default: "false",
         title_zh: "模糊音",
-        doc_zh: "模糊音（zh=z、ch=c、sh=s、n=l…）",
+        doc_zh: "支持 zh/z、ch/c、sh/s、n/l 的基础模糊音",
         scope: Scope::Engine,
     },
     OptionSpec {
