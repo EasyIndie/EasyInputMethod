@@ -830,6 +830,54 @@ pub extern "C" fn ime_session_reverse_lookup(
     )
 }
 
+/// Return bounded, owned TSV v1 teaching data without touching any input session.
+#[no_mangle]
+pub extern "C" fn ime_wubi_learning(text: *const c_char) -> ImeString {
+    catch_value(
+        || {
+            // SAFETY: callers supply a valid NUL-terminated UTF-8 string.
+            let text = unsafe { cstr_arg(text)? };
+            let learning = ime_table::learning::query(text).ok_or(IME_ERR_INVALID_INPUT)?;
+            let mut lines = vec![format!(
+                "wubi-learning-v1\t{}\t{}",
+                learning.full_code.as_deref().unwrap_or_default(),
+                learning.rule
+            )];
+            for item in learning.characters {
+                let (category, rule, roots, recognition) = match item.decomposition {
+                    Some(d) => (
+                        d.category,
+                        d.rule,
+                        d.roots
+                            .iter()
+                            .map(|r| format!("{}:{}", r.root, r.key))
+                            .collect::<Vec<_>>()
+                            .join(" "),
+                        d.recognition
+                            .map(|r| format!("{}:{}", r.root, r.key))
+                            .unwrap_or_default(),
+                    ),
+                    None => ("", "", String::new(), String::new()),
+                };
+                lines.push(format!(
+                    "{}\t{}\t{}\t{}\t{}\t{}",
+                    item.character,
+                    item.full_code.unwrap_or_default(),
+                    category,
+                    rule,
+                    roots,
+                    recognition
+                ));
+            }
+            Ok(owned_string(&lines.join("\n")))
+        },
+        ImeString {
+            data: ptr::null(),
+            len: 0,
+        },
+    )
+}
+
 /// 取已上屏文本（库分配，调用方负责 [`ime_string_free`]）。
 #[no_mangle]
 pub extern "C" fn ime_session_commit(session: *mut ImeSession) -> ImeString {
@@ -923,6 +971,45 @@ mod tests {
         }
         // SAFETY：指针来自会话内部字符串，测试期间保持有效。
         unsafe { CStr::from_ptr(ptr) }.to_str().ok()
+    }
+
+    #[test]
+    fn learning_abi_is_bounded_owned_and_distinguishes_missing_explanations() {
+        for (text, code) in [
+            ("你", "wqiy"),
+            ("你好", "wqvb"),
+            ("中华人民共和国", "kwwl"),
+            ("😀", ""),
+        ] {
+            let value = CString::new(text).unwrap();
+            let result = ime_wubi_learning(value.as_ptr());
+            assert!(!result.data.is_null());
+            // SAFETY: result is live and owned until the free below.
+            let bytes = unsafe {
+                std::slice::from_raw_parts(result.data.cast::<u8>(), result.len as usize)
+            };
+            let payload = std::str::from_utf8(bytes).unwrap();
+            assert!(payload.starts_with(&format!("wubi-learning-v1\t{code}\t")));
+            assert_eq!(payload.lines().count(), text.chars().count() + 1);
+            if text == "中华人民共和国" {
+                assert!(payload.contains("民\tnav\t\t\t\t"));
+            }
+            ime_string_free(result);
+        }
+        for text in [
+            String::new(),
+            "a".repeat(129),
+            "人".repeat(33),
+            "你\t好".into(),
+        ] {
+            assert!(ime_wubi_learning(CString::new(text).unwrap().as_ptr())
+                .data
+                .is_null());
+        }
+        assert!(ime_wubi_learning(ptr::null()).data.is_null());
+        assert!(ime_wubi_learning([0xff_u8, 0].as_ptr().cast())
+            .data
+            .is_null());
     }
 
     #[test]
