@@ -100,9 +100,7 @@ final class PreviewInput: NSTextView {
         if session.isComposing, !values.isEmpty, window != nil {
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
-                input: session.buffer,
-                hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
-                    english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"), warning: session.variantErrorMessage)
+                input: session.buffer, warning: session.variantErrorMessage)
             candidates.onPage = { [weak self] delta in self?.session.page(delta); self?.refresh() }
             let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
@@ -675,8 +673,8 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     // 设置面板（ADR-070）：Schema 驱动、界面零硬编码。
     let settingsOptions = SettingsSchema.options()
-    guard settingsOptions.count == 15 else {
-        fputs("设置项数量应为 15，实际 \(settingsOptions.count)。\n", stderr); exit(1)
+    guard settingsOptions.count == 17 else {
+        fputs("设置项数量应为 17，实际 \(settingsOptions.count)。\n", stderr); exit(1)
     }
     guard settingsOptions.allSatisfy({ !$0.title.isEmpty && !$0.doc.isEmpty }) else {
         fputs("设置项缺标题或说明。\n", stderr); exit(1)

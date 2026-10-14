@@ -328,6 +328,8 @@ final class WubiLearningView: NSView {
             options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 4
         summary.frame = NSRect(x: 0, y: 9, width: width, height: summaryHeight)
         summary.setAccessibilityLabel(text.string)
+        summary.toolTip = model.rule
+        summary.setAccessibilityHelp(model.rule)
         addSubview(summary)
         var y = 9 + summaryHeight + 5
         guard model.code != nil else { return min(maxHeight, y + 6) }

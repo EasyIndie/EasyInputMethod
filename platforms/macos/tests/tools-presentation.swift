@@ -46,6 +46,17 @@ for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
     save(InfoWindow.renderSnapshotForTesting(appearance: appearance, minimum: true), "lookup-long-\(theme)")
     guard !InfoWindow.isVisibleForTesting, InfoWindow.statusForTesting.isEmpty else { fail("offscreen/no stale status") }
 }
+guard let isolatedSession = ImeSession(wubiPath: "data/generated/wubi86-core.tsv", pinyinCharsPath: nil, pinyinWordsPath: nil) else { fail("private session") }
+_ = isolatedSession.feed(119)
+let originalBuffer = isolatedSession.buffer
+let hiddenParent = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 300, height: 200),
+                            styleMask: [.titled], backing: .buffered, defer: false)
+var refusedHiddenParent = false
+UserDictionaryUI.presentEntry(isolatedSession, deleting: false, on: hiddenParent) { saved in
+    refusedHiddenParent = !saved
+}
+guard refusedHiddenParent, isolatedSession.buffer == originalBuffer,
+      hiddenParent.attachedSheet == nil else { fail("closed parent mutated input or showed sheet") }
 let board = NSPasteboard.withUniqueName()
 defer { board.releaseGlobally() }
 guard InfoWindow.copy("独有诊断文本", to: board), board.string(forType: .string) == "独有诊断文本" else { fail("private copy") }

@@ -530,13 +530,14 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
 
     // MARK: - 词库 动作
 
-    @objc private func addWord() {
-        guard let session else { return }
-        if UserDictionaryUI.add(session) { setStatus("词条已添加。", isError: false) }
-    }
-    @objc private func removeWord() {
-        guard let session else { return }
-        if UserDictionaryUI.remove(session) { setStatus("用户词条及学习记录已删除；内置词不受影响。", isError: false) }
+    @objc private func addWord() { presentWordEntry(deleting: false) }
+    @objc private func removeWord() { presentWordEntry(deleting: true) }
+    private func presentWordEntry(deleting: Bool) {
+        guard let session, let host = window else { return }
+        UserDictionaryUI.presentEntry(session, deleting: deleting, on: host) { [weak self, weak host] saved in
+            guard saved, let self, let host, self.window === host, host.isVisible else { return }
+            self.setStatus(deleting ? "用户词条及学习记录已删除；内置词不受影响。" : "词条已添加。", isError: false)
+        }
     }
     @objc private func importWords() {
         guard let session else { return }

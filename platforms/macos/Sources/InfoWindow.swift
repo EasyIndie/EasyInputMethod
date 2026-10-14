@@ -282,6 +282,7 @@ final class AboutPanel: NSObject, NSWindowDelegate {
 
     func show() {
         prepare()
+        NSApp.activate(ignoringOtherApps: true)
         status.stringValue = ""
         panel?.makeKeyAndOrderFront(nil)
     }

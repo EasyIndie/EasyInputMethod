@@ -93,6 +93,38 @@ enum UserDictionaryUI {
         }
         return false
     }
+    /// Present only inside the owning settings window; stale windows never mutate input.
+    static func presentEntry(_ session: ImeSession, deleting: Bool, on parent: NSWindow,
+                             completion: @escaping (Bool) -> Void) {
+        guard parent.isVisible, parent.attachedSheet == nil else { completion(false); return }
+        session.focusOut()
+        let (alert, form) = makeEntryAlert(mode: session.mode, deleting: deleting)
+        presentEntryAlert(alert, form: form, session: session, deleting: deleting,
+                          on: parent, completion: completion)
+    }
+
+    private static func presentEntryAlert(_ alert: NSAlert, form: DictionaryEntryForm,
+                                         session: ImeSession, deleting: Bool, on parent: NSWindow,
+                                         completion: @escaping (Bool) -> Void) {
+        guard parent.isVisible, parent.attachedSheet == nil else { completion(false); return }
+        alert.beginSheetModal(for: parent) { [weak parent] response in
+            guard response == .alertFirstButtonReturn, let parent, parent.isVisible else {
+                completion(false); return
+            }
+            let scheme = form.scheme.indexOfSelectedItem == 0 ? "wubi" : "pinyin"
+            let result = deleting
+                ? session.removeWord(scheme: scheme, code: form.code.stringValue, text: form.text.stringValue)
+                : session.addWord(scheme: scheme, code: form.code.stringValue, text: form.text.stringValue)
+            if result == IME_OK { completion(true); return }
+            form.status.stringValue = entryError(result, code: form.code.stringValue, text: form.text.stringValue)
+            DispatchQueue.main.async { [weak parent] in
+                guard let parent else { completion(false); return }
+                presentEntryAlert(alert, form: form, session: session, deleting: deleting,
+                                  on: parent, completion: completion)
+            }
+        }
+    }
+
     static func makeEntryAlert(mode: String, deleting: Bool) -> (NSAlert, DictionaryEntryForm) {
         let alert = NSAlert()
         ImeAppearance.applyTheme(to: alert.window)
