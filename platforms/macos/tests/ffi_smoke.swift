@@ -136,3 +136,25 @@ for (input, target) in [("ni", "你"), ("wo", "我"), ("yu", "与")] {
     ime_string_free(value)
 }
 print("✅ 冷词库混输兜底：ni/wo/yu→你/我/与均首屏数字8")
+
+// Explicit pinyin boundaries stay in composition and learn a canonical code.
+for mode in ["pinyin", "mixed"] {
+    _ = mode.withCString { ime_session_set_mode(session, $0) }
+    for scalar in "xi'an".unicodeScalars {
+        guard ime_session_key(session, scalar.value) == 0 else { fail("隔音符不得提前提交") }
+    }
+    guard firstCandidate() == "西安" else { fail("\(mode) xi'an应首选西安") }
+    guard ime_session_key(session, 32) == 1 else { fail("西安空格确认失败") }
+    let value = ime_session_commit(session)
+    guard let text = value.data, String(cString: text) == "西安" else { fail("隔音符提交错误") }
+    ime_string_free(value)
+}
+let boundaryExport = learningRoot.appendingPathComponent("boundary-export.tsv")
+guard ime_session_dictionary_export(session, boundaryExport.path) == IME_OK else { fail("隔音符学习导出失败") }
+let boundaryRows: String
+do { boundaryRows = try String(contentsOf: boundaryExport, encoding: .utf8) }
+catch { fail("隔音符导出读取失败") }
+guard boundaryRows.contains("pinyin\txian\t西安\t2"), !boundaryRows.contains("pinyin\txi'an\t") else {
+    fail("隔音符学习码应规范为xian，两次确认权重2")
+}
+print("✅ 隔音符：纯拼音/混输xi'an→西安，无提前提交；学习标准码xian")

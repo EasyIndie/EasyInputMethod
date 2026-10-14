@@ -45,6 +45,17 @@ pub fn segment(input: &str, syllables: &HashSet<String>) -> Vec<String> {
     if input.is_empty() || !input.is_ascii() {
         return Vec::new();
     }
+    if input.contains('\'') {
+        let mut result = Vec::new();
+        for part in input.split('\'') {
+            let mut parsed = segment(part, syllables);
+            if parsed.is_empty() {
+                return Vec::new();
+            }
+            result.append(&mut parsed);
+        }
+        return result;
+    }
     fn dfs(
         input: &str,
         pos: usize,

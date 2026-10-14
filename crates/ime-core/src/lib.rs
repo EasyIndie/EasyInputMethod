@@ -450,6 +450,20 @@ impl Session {
         }
 
         match key {
+            '\'' if self.mode != InputMode::WubiOnly && self.pinyin.is_some() => {
+                if self.buffer.len() < MAX_COMPOSE_LEN
+                    && self
+                        .buffer
+                        .as_bytes()
+                        .last()
+                        .is_some_and(u8::is_ascii_lowercase)
+                {
+                    self.buffer.push(key);
+                    self.recompute()
+                } else {
+                    KeyOutcome::Consumed
+                }
+            }
             'a'..='z' => {
                 // 达上限后忽略字母（ADR-062）：不改缓冲、不误上屏。
                 if self.buffer.len() >= MAX_COMPOSE_LEN {
@@ -698,6 +712,32 @@ mod tests {
         assert_eq!(s.candidates()[1].text, "拼一");
         assert_eq!(s.candidates()[2].text, "拼二");
         assert_eq!(s.handle_key('2'), KeyOutcome::Committed("拼一".into()));
+    }
+
+    #[test]
+    fn pinyin_separator_preserves_raw_buffer_editing_and_mode_quotes() {
+        for mode in [InputMode::Mixed, InputMode::PinyinOnly] {
+            let mut s = Session::new(mode);
+            s.set_pinyin_engine(Box::new(AutoConflictEngine(EngineType::Pinyin, "王")));
+            s.set_input_options(false, true);
+            for ch in "xi''an".chars() {
+                assert_eq!(s.handle_key(ch), KeyOutcome::Consumed);
+            }
+            assert_eq!(s.buffer(), "xi'an");
+            assert_eq!(s.committed(), "");
+            s.handle_key('\u{8}');
+            s.handle_key('\u{8}');
+            assert_eq!(s.buffer(), "xi'");
+            s.handle_key('\u{8}');
+            assert_eq!(s.buffer(), "xi");
+            s.handle_key('\'');
+            assert_eq!(s.handle_key('\r'), KeyOutcome::Committed("xi'".into()));
+            assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        }
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        s.set_input_options(false, true);
+        s.handle_key('a');
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("甲‘".into()));
     }
 
     struct MockEngine;
