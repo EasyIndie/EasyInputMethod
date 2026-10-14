@@ -65,6 +65,24 @@ guard pinyinFirst == "你好" else { fail("nihao 首选应为「你好」，实�
 
 print("✅ FFI 运行时冒烟通过：wq→你，nihao→你好")
 
+// Mixed ambiguity must remain selectable with the shipped default tables.
+_ = "mixed".withCString { ime_session_set_mode(session, $0) }
+guard ime_session_configure(session) == IME_OK else { fail("隔离混输配置失败") }
+for scalar in "wang".unicodeScalars {
+    guard ime_session_key(session, scalar.value) == 0 else { fail("混输wang不得提前上屏") }
+}
+let mixedChoices = ime_session_candidates(session)
+guard mixedChoices.len >= 2, let choices = mixedChoices.items,
+      let first = choices[0].text, let second = choices[1].text,
+      String(cString: first) == "佢", String(cString: second) == "王" else {
+    fail("混输wang应保留佢及王")
+}
+guard ime_session_key(session, 50) == 1 else { fail("混输数字2应提交王") }
+let mixedCommit = ime_session_commit(session)
+guard let value = mixedCommit.data, String(cString: value) == "王" else { fail("混输提交目标错误") }
+ime_string_free(mixedCommit)
+print("✅ 混输歧义保护通过：wang保留候选，数字2→王")
+
 // Exercise the actual Swift/C ABI learning path with synthetic private fixtures.
 let learningTable = learningRoot.appendingPathComponent("table.tsv")
 let learningSeed = learningRoot.appendingPathComponent("seed.tsv")
@@ -100,3 +118,43 @@ _ = ime_session_key(learned, 97)
 _ = ime_session_key(learned, 98)
 guard learningFirst(learned) == "常选后项" else { fail("重新加载后主动学习未生效") }
 print("✅ Swift/C ABI 离线学习通过：历史1000后四次主动选择前移，重载保留；仅临时词库")
+
+// Cold mixed fallback stays on the first page with the shipped tables.
+for (input, target) in [("ni", "你"), ("wo", "我"), ("yu", "与")] {
+    _ = ime_session_key(session, 27)
+    feed(input)
+    let list = ime_session_candidates(session)
+    guard let items = list.items else { fail("混输兜底候选为空") }
+    let position = (0..<Int(list.len)).first { index in
+        guard let text = items[index].text else { return false }
+        return String(cString: text) == target
+    }
+    guard position == 7 else { fail("\(input)→\(target)应在首屏第8项") }
+    guard ime_session_key(session, 56) == 1 else { fail("首屏数字8选择失败") }
+    let value = ime_session_commit(session)
+    guard let text = value.data, String(cString: text) == target else { fail("兜底提交错误") }
+    ime_string_free(value)
+}
+print("✅ 冷词库混输兜底：ni/wo/yu→你/我/与均首屏数字8")
+
+// Explicit pinyin boundaries stay in composition and learn a canonical code.
+for mode in ["pinyin", "mixed"] {
+    _ = mode.withCString { ime_session_set_mode(session, $0) }
+    for scalar in "xi'an".unicodeScalars {
+        guard ime_session_key(session, scalar.value) == 0 else { fail("隔音符不得提前提交") }
+    }
+    guard firstCandidate() == "西安" else { fail("\(mode) xi'an应首选西安") }
+    guard ime_session_key(session, 32) == 1 else { fail("西安空格确认失败") }
+    let value = ime_session_commit(session)
+    guard let text = value.data, String(cString: text) == "西安" else { fail("隔音符提交错误") }
+    ime_string_free(value)
+}
+let boundaryExport = learningRoot.appendingPathComponent("boundary-export.tsv")
+guard ime_session_dictionary_export(session, boundaryExport.path) == IME_OK else { fail("隔音符学习导出失败") }
+let boundaryRows: String
+do { boundaryRows = try String(contentsOf: boundaryExport, encoding: .utf8) }
+catch { fail("隔音符导出读取失败") }
+guard boundaryRows.contains("pinyin\txian\t西安\t2"), !boundaryRows.contains("pinyin\txi'an\t") else {
+    fail("隔音符学习码应规范为xian，两次确认权重2")
+}
+print("✅ 隔音符：纯拼音/混输xi'an→西安，无提前提交；学习标准码xian")

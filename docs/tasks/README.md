@@ -122,3 +122,16 @@
 | [T-M3-04](T-M3-04.md) | CI 加 macOS runner（覆盖 Swift 前端） | flash | T-M3-02 |
 
 - [T-ITER-23：单人五工作日手动试用](T-ITER-23.md)：用户计划2026-10-13开始，最终RC及实际结果待验。
+
+## 核心完整性评估待办
+
+- [IT-29](T-ITER-29.md)：混输自动提交跨引擎歧义。
+- [IT-26](T-ITER-26.md)：拼音兜底首屏可达。
+- [IT-27](T-ITER-27.md)：隔音符与常用读音质量。
+- [IT-28](T-ITER-28.md)：编辑键/安全输入边界取证，非已确认漏洞。
+
+IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进；全部最终包原生门禁待验。见[报告012](../reviews/012-core-refinement.md)。
+
+[IT-27读音工程结果](../reviews/014-pinyin-reading-quality.md)，最终包原生待验。
+
+[IT-28工程结果及原生矩阵](../reviews/015-editing-boundary-audit.md)；编辑键工程完成，安全字段/布局等原生待验。

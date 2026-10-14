@@ -1,0 +1,36 @@
+{
+  "approvedCommit": "f90010bbd9f69f2ab097dad2236cced18760ec00",
+  "pr": "https://github.com/EasyIndie/EasyInputMethod/pull/41",
+  "prChecks": {
+    "check": "SUCCESS",
+    "dco": "SUCCESS",
+    "fuzz": "SUCCESS",
+    "macos": "SUCCESS"
+  },
+  "mergeCommit": "b62b70d6513115388b1c2223dbcbf142ac90fe9f",
+  "acceptanceRun": 38548270116,
+  "acceptanceConclusion": "success",
+  "appleNotarization": "Accepted",
+  "ciOfflineReproduction": "byte-identical unsigned executable and default data",
+  "localAssetValidator": "PASS",
+  "localCodesign": "PASS deep strict",
+  "localStapler": "PASS",
+  "localGatekeeper": "accepted, Notarized Developer ID",
+  "executableSHA256": "3a3c2b9cf85a0fa96383de04543161baea59a7ddaec06751e082eb55cfe113c6",
+  "assets": {
+    "Lampyris-0.1.0-source.tar.gz": "d91e810135ba73abf0b365ec9501b4e26567a28bebbb53b0c89cf1a8e15a6d97",
+    "Lampyris-0.1.0-source.tar.gz.sha256": "9e2dda92c3d3773ad7e8d0557dc0a675991626aeb498833e92bc6fffc90f49d6",
+    "Lampyris-0.1.0-universal.zip": "157b4715c1fd3bf0571350e8b5950e3ab5ed05a36cd1b0fe5e463b8a4b98c68d",
+    "Lampyris-0.1.0-universal.zip.sha256": "a1ca1d7beac3d0337a605027a6cd0189037bc29f4324a237917388a04c8a9aed"
+  },
+  "installedChanged": false,
+  "releasePublished": false,
+  "excludedLocalCommits": [
+    "a17ecde",
+    "658ac30",
+    "a1e86bf",
+    "fa49be8"
+  ],
+  "nativeProductAcceptance": "pending",
+  "ciPlatformAnnotations": "existing Node.js20 migration and arm64 capacity notices; compilation zero-diagnostic gate passed"
+}

@@ -237,7 +237,7 @@ impl PinyinBackend for TablePinyinBackend {
     }
 
     fn convert(&self, input: &str, max: usize) -> Vec<PinyinCandidate> {
-        if input.is_empty() || !input.bytes().all(|b| b.is_ascii_lowercase()) {
+        if input.is_empty() || !input.bytes().all(|b| b.is_ascii_lowercase() || b == b'\'') {
             return Vec::new();
         }
         let mut out: Vec<PinyinCandidate> = Vec::new();
@@ -350,6 +350,23 @@ mod tests {
             TablePinyinBackend::from_tsv("", "ni hao\t你好\t很多\n", "t"),
             Err(TsvError::InvalidWeight { line: 1, .. })
         ));
+    }
+
+    #[test]
+    fn explicit_syllable_boundaries_do_not_merge_or_accept_empty_parts() {
+        let b = TablePinyinBackend::from_tsv(
+            "xi\t西\t10\nan\t安\t10\nxian\t先\t20\n",
+            "xi an\t西安\t30\n",
+            "boundary",
+        )
+        .unwrap();
+        assert_eq!(b.segment("xi'an"), vec!["xi", "an"]);
+        assert_eq!(b.convert("xi'an", 9)[0].text, "西安");
+        assert_eq!(b.convert("xian", 9)[0].text, "先");
+        assert_eq!(b.convert("xi'an", 9)[0].pinyin, "xi an");
+        for invalid in ["'xian", "xi'", "xi''an", "xi'aq", "xi’an", "xi an", "XI'an"] {
+            assert!(b.convert(invalid, 9).is_empty(), "{invalid}");
+        }
     }
 
     #[test]

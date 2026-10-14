@@ -1,0 +1,295 @@
+{
+  "scope": "固定公开字词，空私有配置/词库；默认词表纯拼音FFI，无原生IMK/安装/用户数据",
+  "cases": [
+    {
+      "input": "xian",
+      "target": "先",
+      "maxRank": 1,
+      "beforeRank": 3,
+      "afterRank": 1
+    },
+    {
+      "input": "jian",
+      "target": "见",
+      "maxRank": 1,
+      "beforeRank": 2,
+      "afterRank": 1
+    },
+    {
+      "input": "sheng",
+      "target": "省",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "xing",
+      "target": "行",
+      "maxRank": 1,
+      "beforeRank": 2,
+      "afterRank": 1
+    },
+    {
+      "input": "hang",
+      "target": "行",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "chang",
+      "target": "长",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "zhang",
+      "target": "长",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "zhong",
+      "target": "重",
+      "maxRank": 9,
+      "beforeRank": 3,
+      "afterRank": 3
+    },
+    {
+      "input": "chong",
+      "target": "重",
+      "maxRank": 9,
+      "beforeRank": 2,
+      "afterRank": 1
+    },
+    {
+      "input": "le",
+      "target": "乐",
+      "maxRank": 9,
+      "beforeRank": 2,
+      "afterRank": 2
+    },
+    {
+      "input": "yue",
+      "target": "乐",
+      "maxRank": 9,
+      "beforeRank": 7,
+      "afterRank": 6
+    },
+    {
+      "input": "dou",
+      "target": "都",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "du",
+      "target": "都",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "de",
+      "target": "地",
+      "maxRank": 9,
+      "beforeRank": 2,
+      "afterRank": 3
+    },
+    {
+      "input": "dei",
+      "target": "得",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "hai",
+      "target": "还",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "huan",
+      "target": "还",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "bian",
+      "target": "便",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "pian",
+      "target": "便",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "jiang",
+      "target": "降",
+      "maxRank": 9,
+      "beforeRank": 5,
+      "afterRank": 5
+    },
+    {
+      "input": "xiang",
+      "target": "降",
+      "maxRank": 9,
+      "beforeRank": 8,
+      "afterRank": 8
+    },
+    {
+      "input": "jue",
+      "target": "觉",
+      "maxRank": 9,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "jiao",
+      "target": "觉",
+      "maxRank": 9,
+      "beforeRank": 4,
+      "afterRank": 6
+    },
+    {
+      "input": "bao",
+      "target": "薄",
+      "maxRank": 9,
+      "beforeRank": 8,
+      "afterRank": 6
+    },
+    {
+      "input": "bo",
+      "target": "薄",
+      "maxRank": 9,
+      "beforeRank": 10,
+      "afterRank": 5
+    },
+    {
+      "input": "ni",
+      "target": "你",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "wo",
+      "target": "我",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "shi",
+      "target": "是",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "yu",
+      "target": "与",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "hao",
+      "target": "好",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "wang",
+      "target": "王",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "xi'an",
+      "target": "西安",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "nv",
+      "target": "女",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "lv",
+      "target": "绿",
+      "maxRank": 9,
+      "beforeRank": 2,
+      "afterRank": 2
+    },
+    {
+      "input": "lve",
+      "target": "略",
+      "maxRank": 9,
+      "beforeRank": 2,
+      "afterRank": 1
+    },
+    {
+      "input": "jsj",
+      "target": "计算机",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    },
+    {
+      "input": "jisuanji",
+      "target": "计算机",
+      "maxRank": 1,
+      "beforeRank": 1,
+      "afterRank": 1
+    }
+  ],
+  "summary": {
+    "cases": 37,
+    "beforeTop1": 22,
+    "afterTop1": 27,
+    "beforeFirstPage": 36,
+    "afterFirstPage": 37
+  },
+  "timing": {
+    "scope": "本机引擎/FFI按键调用，非真实IMK端到端，固定37例一次采样",
+    "keys": 132,
+    "maximumMilliseconds": 0.246125,
+    "medianMilliseconds": 0.037875
+  },
+  "data": {
+    "rows": 53087,
+    "sourceIDs": [
+      "D4",
+      "D5",
+      "D10"
+    ],
+    "bytes": 574062,
+    "sha256": "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12",
+    "repeatGeneration": "byte identical chars/core words/core report",
+    "readingsAndOrder": "unchanged"
+  },
+  "mixed": {
+    "cases": 37,
+    "prematureCommits": 0,
+    "xianTargetRank": 1,
+    "xingTargetRank": 1
+  }
+}

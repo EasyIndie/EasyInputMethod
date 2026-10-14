@@ -95,7 +95,8 @@ final class ImeSession {
     /// Keep client navigation from editing marked text while the engine owns it.
     func consumesCompositionNavigation(_ event: NSEvent) -> Bool {
         guard event.type == .keyDown, isComposing,
-            (123...126).contains(event.keyCode)
+            ((123...126).contains(event.keyCode)
+                || [115, 117, 119].contains(event.keyCode))
         else { return false }
         return event.modifierFlags.intersection([.command, .control, .option]).isEmpty
     }

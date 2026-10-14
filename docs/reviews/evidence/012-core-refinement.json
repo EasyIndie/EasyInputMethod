@@ -1,0 +1,346 @@
+{
+  "scope": "隔离配置、固定测试输入、默认合规词表，核心/FFI工程验证；无原生IMK、无安装或真实用户数据修改",
+  "date": "2026-10-14",
+  "baselineEvidence": "011-core-gap-probe.json",
+  "after": [
+    {
+      "mode": "mixed",
+      "input": "ni",
+      "events": [
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        }
+      ],
+      "candidateCount": 210,
+      "firstPinyinRank": 8,
+      "top5": [
+        {
+          "text": "尿",
+          "source": 0,
+          "code": "nii"
+        },
+        {
+          "text": "悄悄",
+          "source": 0,
+          "code": "nini"
+        },
+        {
+          "text": "发源地",
+          "source": 0,
+          "code": "nifb"
+        },
+        {
+          "text": "悄",
+          "source": 0,
+          "code": "nieg"
+        },
+        {
+          "text": "屑",
+          "source": 0,
+          "code": "nied"
+        }
+      ],
+      "targets": {
+        "你": 8,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "wo",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "o",
+          "result": 0
+        }
+      ],
+      "candidateCount": 138,
+      "firstPinyinRank": 8,
+      "top5": [
+        {
+          "text": "伙伴",
+          "source": 0,
+          "code": "wowu"
+        },
+        {
+          "text": "伙",
+          "source": 0,
+          "code": "woy"
+        },
+        {
+          "text": "企业家",
+          "source": 0,
+          "code": "wope"
+        },
+        {
+          "text": "分数线",
+          "source": 0,
+          "code": "woxg"
+        },
+        {
+          "text": "伙计",
+          "source": 0,
+          "code": "woyf"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": 8,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "yu",
+      "events": [
+        {
+          "key": "y",
+          "result": 0
+        },
+        {
+          "key": "u",
+          "result": 0
+        }
+      ],
+      "candidateCount": 329,
+      "firstPinyinRank": 8,
+      "top5": [
+        {
+          "text": "说",
+          "source": 0,
+          "code": "yukq"
+        },
+        {
+          "text": "说道",
+          "source": 0,
+          "code": "yuut"
+        },
+        {
+          "text": "说话",
+          "source": 0,
+          "code": "yuyt"
+        },
+        {
+          "text": "说明",
+          "source": 0,
+          "code": "yuje"
+        },
+        {
+          "text": "说法",
+          "source": 0,
+          "code": "yuif"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": 8,
+        "王": 77,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "wang",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        }
+      ],
+      "candidateCount": 98,
+      "firstPinyinRank": 2,
+      "top5": [
+        {
+          "text": "佢",
+          "source": 0,
+          "code": "wang"
+        },
+        {
+          "text": "王",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "往",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "方",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "望",
+          "source": 1,
+          "code": "wang"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": 2,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "xi'an",
+      "events": [
+        {
+          "key": "x",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "'",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        }
+      ],
+      "candidateCount": 2,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "西安",
+          "source": 1,
+          "code": "xi an"
+        },
+        {
+          "text": "西岸",
+          "source": 1,
+          "code": "xi an"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": 1,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "wubi",
+      "input": "wang",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 1,
+          "committed": "佢"
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    }
+  ],
+  "verification": {
+    "rustPassed": 141,
+    "rustIgnored": 1,
+    "zeroDiagnostics": true,
+    "networkArtifacts": 130,
+    "swiftFFI": true,
+    "strictUniversal": true,
+    "offlineFiles": 17,
+    "offlineTests": 75
+  },
+  "remaining": [
+    "IT-27常用多音读音权重质量",
+    "IT-28特殊编辑键/安全输入原生补验",
+    "最终签名包双设备产品验收"
+  ]
+}

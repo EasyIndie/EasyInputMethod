@@ -1,0 +1,79 @@
+{
+  "scope": "真实Swift ImeSession/配置桥接/FFI，构造NSEvent但不post，不创建窗口；私有配置和词库，无原生客户端验收",
+  "date": "2026-10-14",
+  "before": {
+    "keys": [
+      115,
+      119,
+      117
+    ],
+    "protected": false,
+    "ffiResult": "passThrough",
+    "retainedBuffer": "wq",
+    "actualClientCorruption": "not demonstrated"
+  },
+  "after": {
+    "protectedKeys": [
+      115,
+      117,
+      119,
+      123,
+      124,
+      125,
+      126
+    ],
+    "modes": [
+      "wubi",
+      "pinyin",
+      "mixed"
+    ],
+    "states": [
+      "idle",
+      "composing",
+      "cancelled"
+    ],
+    "testedCompositionModifierStates": [
+      "none",
+      "shift",
+      "function",
+      "capsLock",
+      "shift+function+capsLock"
+    ],
+    "testedRepresentations": [
+      "U+001F",
+      "U+F728",
+      "U+F729",
+      "U+F72B",
+      "empty"
+    ],
+    "commandControlOption": "pass through",
+    "unchangedContracts": [
+      "PgUp/PgDn not classified as editing",
+      "backward delete",
+      "Esc",
+      "digit/space confirmation",
+      "raw Enter"
+    ],
+    "TabAndFocusOut": "pass through preserves buffer; explicit focusOut cancels; actual focus traversal not verified",
+    "EnglishASCII": "decimals/path/email all pass through, no composition, private dictionary/config snapshot unchanged"
+  },
+  "validation": {
+    "rustPassed": 144,
+    "rustIgnored": 1,
+    "networkArtifacts": 137,
+    "zeroCompilerDiagnostics": true,
+    "offlineFiles": 18,
+    "offlineTests": 76,
+    "strictUniversal": "PASS"
+  },
+  "nativePending": [
+    "actual marked text/client navigation/undo",
+    "Tab/ShiftTab focus movement",
+    "CapsLock and modifier sequences",
+    "non-US layout Latin/non-Latin and punctuation context",
+    "NSSecureTextField event delivery and no learning",
+    "Terminal secure keyboard entry routing/learning/restoration"
+  ],
+  "installedChanged": false,
+  "networkOrDependencyAdded": false
+}

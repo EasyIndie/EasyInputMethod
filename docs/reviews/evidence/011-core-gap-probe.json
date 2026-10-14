@@ -1,0 +1,1146 @@
+{
+  "scope": "headless engine/FFI with shipped tables; default schema configured via private temporary root, no import or desktop events; only shipped tables and synthetic inputs",
+  "rows": [
+    {
+      "mode": "mixed",
+      "input": "ni",
+      "events": [
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        }
+      ],
+      "candidateCount": 210,
+      "firstPinyinRank": 20,
+      "top5": [
+        {
+          "text": "尿",
+          "source": 0,
+          "code": "nii"
+        },
+        {
+          "text": "悄悄",
+          "source": 0,
+          "code": "nini"
+        },
+        {
+          "text": "发源地",
+          "source": 0,
+          "code": "nifb"
+        },
+        {
+          "text": "悄",
+          "source": 0,
+          "code": "nieg"
+        },
+        {
+          "text": "屑",
+          "source": 0,
+          "code": "nied"
+        }
+      ],
+      "targets": {
+        "你": 20,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "wo",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "o",
+          "result": 0
+        }
+      ],
+      "candidateCount": 138,
+      "firstPinyinRank": 16,
+      "top5": [
+        {
+          "text": "伙伴",
+          "source": 0,
+          "code": "wowu"
+        },
+        {
+          "text": "伙",
+          "source": 0,
+          "code": "woy"
+        },
+        {
+          "text": "企业家",
+          "source": 0,
+          "code": "wope"
+        },
+        {
+          "text": "分数线",
+          "source": 0,
+          "code": "woxg"
+        },
+        {
+          "text": "伙计",
+          "source": 0,
+          "code": "woyf"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": 16,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "shi",
+      "events": [
+        {
+          "key": "s",
+          "result": 0
+        },
+        {
+          "key": "h",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        }
+      ],
+      "candidateCount": 260,
+      "firstPinyinRank": 5,
+      "top5": [
+        {
+          "text": "相当",
+          "source": 0,
+          "code": "shiv"
+        },
+        {
+          "text": "想法",
+          "source": 0,
+          "code": "shif"
+        },
+        {
+          "text": "椒",
+          "source": 0,
+          "code": "shic"
+        },
+        {
+          "text": "㰋",
+          "source": 0,
+          "code": "shim"
+        },
+        {
+          "text": "是",
+          "source": 1,
+          "code": "shi"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": 5,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "yu",
+      "events": [
+        {
+          "key": "y",
+          "result": 0
+        },
+        {
+          "key": "u",
+          "result": 0
+        }
+      ],
+      "candidateCount": 329,
+      "firstPinyinRank": 74,
+      "top5": [
+        {
+          "text": "说",
+          "source": 0,
+          "code": "yukq"
+        },
+        {
+          "text": "说道",
+          "source": 0,
+          "code": "yuut"
+        },
+        {
+          "text": "说话",
+          "source": 0,
+          "code": "yuyt"
+        },
+        {
+          "text": "说明",
+          "source": 0,
+          "code": "yuje"
+        },
+        {
+          "text": "说法",
+          "source": 0,
+          "code": "yuif"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": 74,
+        "王": 77,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "hao",
+      "events": [
+        {
+          "key": "h",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "o",
+          "result": 0
+        }
+      ],
+      "candidateCount": 146,
+      "firstPinyinRank": 7,
+      "top5": [
+        {
+          "text": "虚",
+          "source": 0,
+          "code": "haog"
+        },
+        {
+          "text": "觑",
+          "source": 0,
+          "code": "haoq"
+        },
+        {
+          "text": "戯",
+          "source": 0,
+          "code": "haoa"
+        },
+        {
+          "text": "歔",
+          "source": 0,
+          "code": "haow"
+        },
+        {
+          "text": "覷",
+          "source": 0,
+          "code": "haoq"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "nihao",
+      "events": [
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "h",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "o",
+          "result": 0
+        }
+      ],
+      "candidateCount": 1,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "你好",
+          "source": 1,
+          "code": "ni hao"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "mixed",
+      "input": "wang",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 1,
+          "committed": "佢"
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "xian",
+      "events": [
+        {
+          "key": "x",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        }
+      ],
+      "candidateCount": 256,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "见",
+          "source": 1,
+          "code": "xian"
+        },
+        {
+          "text": "省",
+          "source": 1,
+          "code": "xian"
+        },
+        {
+          "text": "先",
+          "source": 1,
+          "code": "xian"
+        },
+        {
+          "text": "县",
+          "source": 1,
+          "code": "xian"
+        },
+        {
+          "text": "现",
+          "source": 1,
+          "code": "xian"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "xi'an",
+      "events": [
+        {
+          "key": "x",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "'",
+          "result": 1,
+          "committed": "西‘"
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        }
+      ],
+      "candidateCount": 142,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "按",
+          "source": 1,
+          "code": "an"
+        },
+        {
+          "text": "干",
+          "source": 1,
+          "code": "an"
+        },
+        {
+          "text": "安",
+          "source": 1,
+          "code": "an"
+        },
+        {
+          "text": "厂",
+          "source": 1,
+          "code": "an"
+        },
+        {
+          "text": "广",
+          "source": 1,
+          "code": "an"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "xa",
+      "events": [
+        {
+          "key": "x",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        }
+      ],
+      "candidateCount": 4,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "西安",
+          "source": 1,
+          "code": "xa"
+        },
+        {
+          "text": "喜爱",
+          "source": 1,
+          "code": "xa"
+        },
+        {
+          "text": "西岸",
+          "source": 1,
+          "code": "xa"
+        },
+        {
+          "text": "心爱",
+          "source": 1,
+          "code": "xa"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": 1,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "lv",
+      "events": [
+        {
+          "key": "l",
+          "result": 0
+        },
+        {
+          "key": "v",
+          "result": 0
+        }
+      ],
+      "candidateCount": 154,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "率",
+          "source": 1,
+          "code": "lv"
+        },
+        {
+          "text": "绿",
+          "source": 1,
+          "code": "lv"
+        },
+        {
+          "text": "累",
+          "source": 1,
+          "code": "lv"
+        },
+        {
+          "text": "旅",
+          "source": 1,
+          "code": "lv"
+        },
+        {
+          "text": "律",
+          "source": 1,
+          "code": "lv"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": 2,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "nv",
+      "events": [
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "v",
+          "result": 0
+        }
+      ],
+      "candidateCount": 25,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "女",
+          "source": 1,
+          "code": "nv"
+        },
+        {
+          "text": "絮",
+          "source": 1,
+          "code": "nv"
+        },
+        {
+          "text": "衄",
+          "source": 1,
+          "code": "nv"
+        },
+        {
+          "text": "钕",
+          "source": 1,
+          "code": "nv"
+        },
+        {
+          "text": "胬",
+          "source": 1,
+          "code": "nv"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": 1,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "lve",
+      "events": [
+        {
+          "key": "l",
+          "result": 0
+        },
+        {
+          "key": "v",
+          "result": 0
+        },
+        {
+          "key": "e",
+          "result": 0
+        }
+      ],
+      "candidateCount": 31,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "率",
+          "source": 1,
+          "code": "lve"
+        },
+        {
+          "text": "略",
+          "source": 1,
+          "code": "lve"
+        },
+        {
+          "text": "掠",
+          "source": 1,
+          "code": "lve"
+        },
+        {
+          "text": "擽",
+          "source": 1,
+          "code": "lve"
+        },
+        {
+          "text": "锊",
+          "source": 1,
+          "code": "lve"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": 2,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "jsj",
+      "events": [
+        {
+          "key": "j",
+          "result": 0
+        },
+        {
+          "key": "s",
+          "result": 0
+        },
+        {
+          "key": "j",
+          "result": 0
+        }
+      ],
+      "candidateCount": 1,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "计算机",
+          "source": 1,
+          "code": "jsj"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": 1,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "jisuanji",
+      "events": [
+        {
+          "key": "j",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "s",
+          "result": 0
+        },
+        {
+          "key": "u",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "j",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        }
+      ],
+      "candidateCount": 1,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "计算机",
+          "source": 1,
+          "code": "ji suan ji"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": 1,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "jisuanj",
+      "events": [
+        {
+          "key": "j",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "s",
+          "result": 0
+        },
+        {
+          "key": "u",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "j",
+          "result": 0
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "pingguogs",
+      "events": [
+        {
+          "key": "p",
+          "result": 0
+        },
+        {
+          "key": "i",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "u",
+          "result": 0
+        },
+        {
+          "key": "o",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "s",
+          "result": 0
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "pinyin",
+      "input": "wang",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        }
+      ],
+      "candidateCount": 97,
+      "firstPinyinRank": 1,
+      "top5": [
+        {
+          "text": "王",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "往",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "方",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "望",
+          "source": 1,
+          "code": "wang"
+        },
+        {
+          "text": "网",
+          "source": 1,
+          "code": "wang"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": 1,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "wubi",
+      "input": "ggtt",
+      "events": [
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "t",
+          "result": 0
+        },
+        {
+          "key": "t",
+          "result": 0
+        }
+      ],
+      "candidateCount": 2,
+      "firstPinyinRank": null,
+      "top5": [
+        {
+          "text": "一笔",
+          "source": 0,
+          "code": "ggtt"
+        },
+        {
+          "text": "开玩笑",
+          "source": 0,
+          "code": "ggtt"
+        }
+      ],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "wubi",
+      "input": "ggtta",
+      "events": [
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 0
+        },
+        {
+          "key": "t",
+          "result": 0
+        },
+        {
+          "key": "t",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    },
+    {
+      "mode": "wubi",
+      "input": "wang",
+      "events": [
+        {
+          "key": "w",
+          "result": 0
+        },
+        {
+          "key": "a",
+          "result": 0
+        },
+        {
+          "key": "n",
+          "result": 0
+        },
+        {
+          "key": "g",
+          "result": 1,
+          "committed": "佢"
+        }
+      ],
+      "candidateCount": 0,
+      "firstPinyinRank": null,
+      "top5": [],
+      "targets": {
+        "你": null,
+        "我": null,
+        "是": null,
+        "与": null,
+        "王": null,
+        "西安": null,
+        "绿": null,
+        "女": null,
+        "略": null,
+        "计算机": null,
+        "苹果公司": null
+      }
+    }
+  ],
+  "codeCommit": "f90010bbd9f69f2ab097dad2236cced18760ec00",
+  "tableSha256": {
+    "wubi86-core.tsv": "db3f66ecd8e62bf5d60ad12d38f096eb3f2808560820ce035311dc65111ac9db",
+    "pinyin-chars.tsv": "486158b79cca593320b0adbcc10db3479e4124b69726d33b07f6bc7b47d17290",
+    "pinyin-core.tsv": "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f"
+  },
+  "caseCount": 21,
+  "nativeIMKTest": false
+}

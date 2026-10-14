@@ -312,6 +312,7 @@ impl Session {
         let size = size.clamp(3, 9);
         if self.page_size != size {
             self.page_size = size;
+            self.arrange_mixed_fallback();
             self.page = 0;
         }
     }
@@ -343,7 +344,43 @@ impl Session {
             .map(|(c, _)| c)
             .filter(|c| seen.insert(c.text.clone()))
             .collect();
+        self.arrange_mixed_fallback();
         self.page = self.page.min(self.page_count().saturating_sub(1));
+    }
+
+    fn arrange_mixed_fallback(&mut self) {
+        if self.mode != InputMode::Mixed {
+            return;
+        }
+        // Stable source partition preserves each engine's learned ordering.
+        self.candidates
+            .sort_by_key(|c| c.source == CandidateSource::Pinyin);
+        let table_count = self
+            .candidates
+            .iter()
+            .take_while(|c| c.source != CandidateSource::Pinyin)
+            .count();
+        if table_count == 0 {
+            return;
+        }
+        let eligible: Vec<_> = self
+            .candidates
+            .iter()
+            .enumerate()
+            .filter(|(_, c)| c.source == CandidateSource::Pinyin && !c.is_fuzzy)
+            .take(2)
+            .map(|(index, _)| index)
+            .collect();
+        if eligible.is_empty() {
+            return;
+        }
+        let insertion = table_count.min(self.page_size - eligible.len());
+        let mut fallback = Vec::new();
+        for index in eligible.into_iter().rev() {
+            fallback.push(self.candidates.remove(index));
+        }
+        fallback.reverse();
+        self.candidates.splice(insertion..insertion, fallback);
     }
 
     pub fn page_index(&self) -> usize {
@@ -413,6 +450,20 @@ impl Session {
         }
 
         match key {
+            '\'' if self.mode != InputMode::WubiOnly && self.pinyin.is_some() => {
+                if self.buffer.len() < MAX_COMPOSE_LEN
+                    && self
+                        .buffer
+                        .as_bytes()
+                        .last()
+                        .is_some_and(u8::is_ascii_lowercase)
+                {
+                    self.buffer.push(key);
+                    self.recompute()
+                } else {
+                    KeyOutcome::Consumed
+                }
+            }
             'a'..='z' => {
                 // 达上限后忽略字母（ADR-062）：不改缓冲、不误上屏。
                 if self.buffer.len() >= MAX_COMPOSE_LEN {
@@ -534,6 +585,14 @@ impl Session {
         }
 
         // Deduplicate by source priority, exact spelling and then frequency.
+        // Check before deduplication: a pinyin alternative may share text with
+        // another table candidate and lose its source during the merge.
+        let auto = auto.filter(|text| {
+            self.mode != InputMode::Mixed
+                || !merged.iter().any(|candidate| {
+                    candidate.source == CandidateSource::Pinyin && candidate.text != *text
+                })
+        });
         merged.sort_by(|a, b| {
             usize::from(a.source == CandidateSource::Pinyin)
                 .cmp(&usize::from(b.source == CandidateSource::Pinyin))
@@ -544,6 +603,7 @@ impl Session {
         let mut seen = std::collections::HashSet::new();
         merged.retain(|c| seen.insert(c.text.clone()));
         self.candidates = merged;
+        self.arrange_mixed_fallback();
         self.page = 0;
 
         if let Some(text) = auto.filter(|_| allow_commit) {
@@ -558,6 +618,127 @@ impl Session {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    struct AutoConflictEngine(EngineType, &'static str);
+    impl Engine for AutoConflictEngine {
+        fn convert(&self, input: &str, _: usize) -> ConvertResult {
+            if input != "wang" {
+                return ConvertResult::default();
+            }
+            let source = if self.0 == EngineType::Pinyin {
+                CandidateSource::Pinyin
+            } else {
+                CandidateSource::CodeTable
+            };
+            ConvertResult {
+                candidates: vec![Candidate::new(self.1, input, 10, source)],
+                should_commit: if self.0 == EngineType::CodeTable {
+                    Some(self.1.into())
+                } else {
+                    None
+                },
+            }
+        }
+        fn engine_type(&self) -> EngineType {
+            self.0
+        }
+        fn max_code_length(&self) -> usize {
+            32
+        }
+    }
+
+    #[test]
+    fn mixed_auto_commit_waits_for_distinct_pinyin_and_allows_explicit_choice() {
+        for key in ['1', '2', ' ', '\u{1b}', '\u{8}', 'a'] {
+            let mut s = Session::new(InputMode::Mixed);
+            s.set_wubi_engine(Box::new(AutoConflictEngine(EngineType::CodeTable, "佢")));
+            s.set_pinyin_engine(Box::new(AutoConflictEngine(EngineType::Pinyin, "王")));
+            for ch in "wang".chars() {
+                assert_eq!(s.handle_key(ch), KeyOutcome::Consumed);
+            }
+            assert_eq!(s.buffer(), "wang");
+            assert_eq!(s.committed(), "");
+            let result = s.handle_key(key);
+            match key {
+                '1' | ' ' => assert_eq!(result, KeyOutcome::Committed("佢".into())),
+                '2' => assert_eq!(result, KeyOutcome::Committed("王".into())),
+                '\u{1b}' => assert_eq!(s.buffer(), ""),
+                '\u{8}' => assert_eq!(s.buffer(), "wan"),
+                _ => assert_eq!(s.buffer(), "wanga"),
+            }
+        }
+    }
+
+    #[test]
+    fn pure_wubi_and_same_text_mixed_keep_unique_auto_commit() {
+        for mode in [InputMode::WubiOnly, InputMode::Mixed] {
+            let mut s = Session::new(mode);
+            s.set_wubi_engine(Box::new(AutoConflictEngine(EngineType::CodeTable, "佢")));
+            s.set_pinyin_engine(Box::new(AutoConflictEngine(
+                EngineType::Pinyin,
+                if mode == InputMode::Mixed {
+                    "佢"
+                } else {
+                    "王"
+                },
+            )));
+            for ch in "wan".chars() {
+                s.handle_key(ch);
+            }
+            assert_eq!(s.handle_key('g'), KeyOutcome::Committed("佢".into()));
+        }
+    }
+
+    #[test]
+    fn mixed_fallback_stays_visible_after_learning_and_page_size_changes() {
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_wubi_engine(Box::new(ManyEngine));
+        s.handle_key('a');
+        let pin = |text: &str, weight| Candidate::new(text, "a", weight, CandidateSource::Pinyin);
+        let mut fuzzy = pin("模糊", 1000);
+        fuzzy.is_fuzzy = true;
+        s.personalize(vec![pin("拼一", 20), pin("拼二", 10), fuzzy], |_| 0);
+        assert_eq!(s.candidates()[0].text, "词00");
+        assert_eq!(s.candidates()[7].text, "拼一");
+        assert_eq!(s.candidates()[8].text, "拼二");
+        assert_eq!(s.candidates.len(), 23);
+        s.personalize(vec![], |c| if c.text == "词19" { 100 } else { 0 });
+        assert_eq!(s.candidates()[0].text, "词19");
+        assert_eq!(s.candidates()[7].text, "拼一");
+        s.page(1);
+        assert_eq!(s.candidates()[0].text, "词06");
+        s.set_page_size(3);
+        assert_eq!(s.candidates()[0].text, "词19");
+        assert_eq!(s.candidates()[1].text, "拼一");
+        assert_eq!(s.candidates()[2].text, "拼二");
+        assert_eq!(s.handle_key('2'), KeyOutcome::Committed("拼一".into()));
+    }
+
+    #[test]
+    fn pinyin_separator_preserves_raw_buffer_editing_and_mode_quotes() {
+        for mode in [InputMode::Mixed, InputMode::PinyinOnly] {
+            let mut s = Session::new(mode);
+            s.set_pinyin_engine(Box::new(AutoConflictEngine(EngineType::Pinyin, "王")));
+            s.set_input_options(false, true);
+            for ch in "xi''an".chars() {
+                assert_eq!(s.handle_key(ch), KeyOutcome::Consumed);
+            }
+            assert_eq!(s.buffer(), "xi'an");
+            assert_eq!(s.committed(), "");
+            s.handle_key('\u{8}');
+            s.handle_key('\u{8}');
+            assert_eq!(s.buffer(), "xi'");
+            s.handle_key('\u{8}');
+            assert_eq!(s.buffer(), "xi");
+            s.handle_key('\'');
+            assert_eq!(s.handle_key('\r'), KeyOutcome::Committed("xi'".into()));
+            assert_eq!(s.handle_key('\''), KeyOutcome::Committed("‘".into()));
+        }
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        s.set_input_options(false, true);
+        s.handle_key('a');
+        assert_eq!(s.handle_key('\''), KeyOutcome::Committed("甲‘".into()));
+    }
 
     struct MockEngine;
 
