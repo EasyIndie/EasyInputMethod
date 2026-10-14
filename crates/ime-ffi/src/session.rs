@@ -263,7 +263,7 @@ impl ImeSession {
                 .unwrap_or(0)
         });
     }
-    fn learn(&mut self, candidate: Option<ime_core::Candidate>) {
+    fn learn(&mut self, candidate: Option<ime_core::Candidate>, preferred: bool, input: &str) {
         let Some(c) = candidate else {
             return;
         };
@@ -276,11 +276,12 @@ impl ImeSession {
             "wubi"
         };
         let code: String = c.code.chars().filter(|c| !c.is_whitespace()).collect();
-        self.dictionary_error = if store.learn(scheme, &code, &c.text).is_ok() {
-            IME_OK
+        let result = if preferred && scheme == "wubi" {
+            store.learn_preferred(&code, &c.text, input)
         } else {
-            IME_ERR_IO
+            store.learn(scheme, &code, &c.text)
         };
+        self.dictionary_error = if result.is_ok() { IME_OK } else { IME_ERR_IO };
     }
 
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
@@ -439,9 +440,12 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
                 .cloned(),
             _ => None,
         };
+        let input = s.session.buffer().to_owned();
+        let preferred = (matches!(ch, '1'..='9') && (ch != '1' || s.session.page_index() > 0))
+            || (ch == ' ' && s.session.page_index() > 0);
         let outcome = s.session.handle_key(ch);
         if matches!(outcome, KeyOutcome::Committed(_)) {
-            s.learn(selected);
+            s.learn(selected, preferred, &input);
         }
         s.personalize();
         s.refresh();
@@ -612,10 +616,12 @@ pub extern "C" fn ime_session_select(session: *mut ImeSession, index: i32) -> i3
             return Err(IME_ERR_INVALID_INPUT);
         }
         let selected = s.session.candidates().get(index as usize).cloned();
+        let input = s.session.buffer().to_owned();
+        let preferred = index > 0 || s.session.page_index() > 0;
         if s.session.select(index as usize).is_none() {
             return Err(IME_ERR_INVALID_INPUT);
         }
-        s.learn(selected);
+        s.learn(selected, preferred, &input);
         s.refresh();
         Ok(IME_OK)
     })
@@ -981,6 +987,147 @@ mod tests {
             let _ = user_candidates(&entries, "a", InputMode::Mixed, 256);
         }
         println!("1000 scans over 10k entries: {:?}", start.elapsed());
+    }
+
+    #[test]
+    fn later_page_first_choices_are_explicit_but_default_space_is_not() {
+        for action in ['1', ' ', 'm'] {
+            let dir = std::env::temp_dir().join(format!(
+                "lampyris-page-learning-{}-{action}",
+                std::process::id()
+            ));
+            std::fs::create_dir_all(&dir).unwrap();
+            let path = dir.join("user.tsv");
+            std::fs::write(&path, "wubi\tab\t候选0\t1000\n").unwrap();
+            let mut table = Table::new();
+            for i in 0..4 {
+                table.insert("ab", &format!("候选{i}"), 100 - i);
+            }
+            table.finalize();
+            let mut s = ImeSession::from_engines(
+                InputMode::WubiOnly,
+                Some(Box::new(CodeTableEngine::new(table, 4))),
+                None,
+            );
+            s.dictionary = Some(ime_dict::Store::load(&path).unwrap());
+            ime_session_set_page_size(&mut *s, 3);
+            ime_session_key(&mut *s, 'a' as u32);
+            ime_session_key(&mut *s, 'b' as u32);
+            assert_eq!(ime_session_key(&mut *s, ' ' as u32), IME_KEY_COMMITTED);
+            assert_eq!(
+                s.dictionary.as_ref().unwrap().entries()
+                    [&("wubi".into(), "ab".into(), "候选0".into())],
+                1001
+            );
+            ime_session_key(&mut *s, 'a' as u32);
+            ime_session_key(&mut *s, 'b' as u32);
+            assert_eq!(ime_session_page(&mut *s, 1), IME_OK);
+            assert_eq!(s.session.candidates()[0].text, "候选3");
+            if action == 'm' {
+                assert_eq!(ime_session_select(&mut *s, 0), IME_OK);
+            } else {
+                assert_eq!(ime_session_key(&mut *s, action as u32), IME_KEY_COMMITTED);
+            }
+            assert_eq!(s.session.committed(), "候选3");
+            assert_eq!(
+                s.dictionary.as_ref().unwrap().entries()
+                    [&("wubi".into(), "ab".into(), "候选3".into())],
+                251
+            );
+            assert_eq!(s.dictionary_error, IME_OK);
+            std::fs::remove_dir_all(dir).unwrap();
+        }
+    }
+
+    #[test]
+    fn explicit_pinyin_choices_keep_unit_learning() {
+        let dir =
+            std::env::temp_dir().join(format!("lampyris-pinyin-learning-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let path = dir.join("user.tsv");
+        std::fs::write(&path, "pinyin\tab\t历史\t1000\n").unwrap();
+        let mut s = ImeSession::new();
+        s.dictionary = Some(ime_dict::Store::load(&path).unwrap());
+        s.learn(
+            Some(ime_core::Candidate::new(
+                "目标",
+                "ab",
+                1,
+                CandidateSource::Pinyin,
+            )),
+            true,
+            "ab",
+        );
+        assert_eq!(
+            s.dictionary.as_ref().unwrap().entries()
+                [&("pinyin".into(), "ab".into(), "目标".into())],
+            1
+        );
+        assert_eq!(s.dictionary_error, IME_OK);
+        std::fs::remove_dir_all(dir).unwrap();
+    }
+
+    #[test]
+    fn explicit_wubi_choices_overtake_history_and_survive_reload() {
+        for mode in [InputMode::WubiOnly, InputMode::Mixed] {
+            for input in ["ab", "a"] {
+                let dir = std::env::temp_dir().join(format!(
+                    "lampyris-preference-{}-{}",
+                    std::process::id(),
+                    std::time::SystemTime::now()
+                        .duration_since(std::time::UNIX_EPOCH)
+                        .unwrap()
+                        .as_nanos()
+                ));
+                std::fs::create_dir_all(&dir).unwrap();
+                let path = dir.join("user.tsv");
+                std::fs::write(&path, "wubi\tab\t历史首项\t1000\n").unwrap();
+                let mut table = Table::new();
+                table.insert("ab", "历史首项", 100);
+                table.insert(if input == "a" { "ac" } else { "ab" }, "常选后项", 1);
+                table.finalize();
+                let create = || {
+                    let mut s = ImeSession::from_engines(
+                        mode,
+                        Some(Box::new(CodeTableEngine::new(table.clone(), 4))),
+                        None,
+                    );
+                    s.dictionary = Some(ime_dict::Store::load(&path).unwrap());
+                    s
+                };
+                let mut s = create();
+                for choice in 0..4 {
+                    for key in input.chars() {
+                        assert_eq!(ime_session_key(&mut *s, key as u32), IME_KEY_CONSUMED);
+                    }
+                    assert_eq!(s.session.candidates()[0].text, "历史首项");
+                    let index = s
+                        .session
+                        .candidates()
+                        .iter()
+                        .position(|c| c.text == "常选后项")
+                        .unwrap();
+                    if choice % 2 == 0 {
+                        assert_eq!(ime_session_select(&mut *s, index as i32), IME_OK);
+                    } else {
+                        assert_eq!(
+                            ime_session_key(&mut *s, ('1' as u32) + index as u32),
+                            IME_KEY_COMMITTED
+                        );
+                    }
+                    assert_eq!(s.session.committed(), "常选后项");
+                    assert_eq!(s.dictionary_error, IME_OK);
+                }
+                drop(s);
+                let mut reloaded = create();
+                for key in input.chars() {
+                    ime_session_key(&mut *reloaded, key as u32);
+                }
+                assert_eq!(reloaded.session.candidates()[0].text, "常选后项");
+                drop(reloaded);
+                std::fs::remove_dir_all(dir).unwrap();
+            }
+        }
     }
 
     #[test]

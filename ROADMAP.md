@@ -145,3 +145,5 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [ ] `TBD-2` 五笔98 / 新世纪 / 郑码数据源
 - [x] `TBD-3` ADR-029：用户词库TSV v1
 - [x] `TBD-4` 英文/包名最终形（ADR-056：Lampyris）
+
+- [ ] IT-25：ADR-159五笔主动后项学习工程已通过隔离回归、make verify/strict universal/Swift FFI；待新签名原生验收与用户例子确认。见docs/tasks/T-ITER-25.md。
