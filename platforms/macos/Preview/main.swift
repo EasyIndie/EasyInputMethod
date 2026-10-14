@@ -709,9 +709,8 @@ if CommandLine.arguments.contains("--smoke-test") {
         }
     }
     let displayedKeys = SettingsPanel.shared.displayedOptionKeys
-    let displayedScopes = displayedKeys.compactMap { key in settingsOptions.first { $0.key == key }?.scope }
-    guard displayedScopes == displayedScopes.sorted(),
-        Set(displayedKeys).count == settingsOptions.count,
+    guard displayedKeys.count == settingsOptions.count,
+        Set(displayedKeys) == Set(settingsOptions.map(\.key)),
         SettingsPanel.shared.minimumContentSize.width >= 520,
         SettingsPanel.shared.minimumContentSize.height >= 440
     else { fputs("设置分组或窗口约束不符。\n", stderr); exit(1) }

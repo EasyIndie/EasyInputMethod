@@ -17,6 +17,21 @@ guard panel.sectionCount == 4, panel.rowCount == options.count, options.count ==
 else { fail("schema/native toolbar/session availability") }
 panel.selectSectionForTesting(0)
 guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
+panel.selectSectionForTesting(1)
+guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "appearance.theme", "candidate.show_wubi_learning"] else { fail("candidate design group order") }
+guard let countOption = options.first(where: { $0.key == "candidate.count" }) else { fail("count schema") }
+let numberRow = SettingRow(option: countOption)
+numberRow.reload()
+for value in ["3", "9", "7"] {
+    numberRow.commitNumberForTesting(value)
+    guard ImeConfig.int("candidate.count") == Int(value), numberRow.numberValueForTesting == value else { fail("editable native count") }
+}
+for value in ["", "0", "10", "3.5", "abc"] {
+    numberRow.commitNumberForTesting(value)
+    guard ImeConfig.int("candidate.count") == 7, numberRow.numberValueForTesting == "7" else { fail("invalid count rollback") }
+}
+numberRow.commitNumberForTesting("7")
+panel.reportSaved()
 panel.selectSectionForTesting(2)
 guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
 func snapshot(_ image: NSBitmapImageRep?, _ name: String) {

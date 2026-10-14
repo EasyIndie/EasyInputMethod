@@ -134,10 +134,16 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             checkbox = box
             return box
         case .int(let min, let max):
-            let value = NSTextField(labelWithString: "")
+            let value = NSTextField()
+            value.bezelStyle = .roundedBezel
+            value.delegate = self
+            value.target = self
+            value.action = #selector(numberCommitted(_:))
+            value.setAccessibilityLabel(option.title)
+            value.setAccessibilityHelp(option.userHelp)
             value.alignment = .right
             value.font = .monospacedDigitSystemFont(ofSize: 13, weight: .regular)
-            value.widthAnchor.constraint(equalToConstant: 22).isActive = true
+            value.widthAnchor.constraint(equalToConstant: 54).isActive = true
             numberLabel = value
             let stepper = NSStepper()
             stepper.minValue = Double(min)
@@ -224,6 +230,18 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         write(sender.state == .on ? "true" : "false", toml: true)
     }
 
+    @objc private func numberCommitted(_ sender: NSTextField) {
+        write(sender.stringValue.trimmingCharacters(in: .whitespaces), toml: true)
+        reload()
+    }
+
+    var numberValueForTesting: String? { numberLabel?.stringValue }
+    func commitNumberForTesting(_ value: String) {
+        guard let field = numberLabel else { return }
+        field.stringValue = value
+        numberCommitted(field)
+    }
+
     @objc private func stepperChanged(_ sender: NSStepper) {
         write(String(sender.integerValue), toml: true)
     }
@@ -280,8 +298,9 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
     }
 
     func controlTextDidEndEditing(_ notification: Notification) {
-        guard let field = notification.object as? NSTextField, field === textField else { return }
-        textCommitted(field)
+        guard let field = notification.object as? NSTextField else { return }
+        if field === numberLabel { numberCommitted(field) }
+        else if field === textField { textCommitted(field) }
     }
 
     private func write(_ value: String, toml: Bool) {
@@ -621,7 +640,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
                 "hotkey.toggle_punctuation", "hotkey.toggle_variant", "hotkey.toggle_wubi_learning"])]
         } else {
             groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
-                ("五笔学习", ["candidate.show_wubi_learning"]), ("外观", ["appearance.theme"])]
+                ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning"])]
         }
         let known = Set(groups.flatMap { $0.1 })
         let allGroups = groups + [("其他", options.filter { !known.contains($0.key) }.map(\.key))]

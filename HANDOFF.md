@@ -4,7 +4,7 @@
 
 - 更新：2026-10-15 / Codex。
 - 当前阶段：首版完整UI及拆字学习工程已实现，候选冻结/包级核验及实机验收进行中；**产品MVP未完成**。
-- 实现工作区：`/Users/joker/.codex/worktrees/mvp-product-candidate/EasyInputMethod`，分支`codex/mvp-complete-learning-ui`，基于main50fdac3，11个本地功能提交至5b11bba；本次文档/图库另行提交。
+- 实现工作区：`/Users/joker/.codex/worktrees/mvp-product-candidate/EasyInputMethod`，分支`codex/mvp-complete-learning-ui`，基于main50fdac3，完整候选fb757b4之后补齐ADR-180数字编辑与分组顺序，随本次提交重新冻结。
 - 主目录`/Users/joker/Documents/EasyInputMethod`仍保留原main c294b67及既有代码/码表修改，只同步文档/图库，禁止拉取覆盖。
 - 最近验证：make verify零诊断/141产物；24文件83离线项、strict universal、完整私有预览及教学生成确定性全部通过。源码包/最终签名包验证需按冻结提交另做。
 
@@ -16,13 +16,13 @@ PR #43四门禁通过并合入main **50fdac31381f2adfeda02bf1954b414e54953ea2**�
 
 ## 2. 本轮已实现
 
-用户将完整学习区/所需功能纳入首版，覆盖旧“教学后移”（ADR-170…179）。候选按统一稿400pt稳定主体；可选学习扩展完整码/规则同行、上根下码、长词摘要与逐字披露/有界滚动。只读FFI、Schema唯一开关/快捷键，默认收起/未绑定；不按模式自动隐藏。设置/快捷键sheet、原生模式子菜单/勾选、关于身份及词条附着sheet同步还原。
+用户将完整学习区/所需功能纳入首版，覆盖旧“教学后移”（ADR-170…180）。候选按统一稿400pt稳定主体；可选学习扩展完整码/规则同行、上根下码、长词摘要与逐字披露/有界滚动。只读FFI、Schema唯一开关/快捷键，默认收起/未绑定；不按模式自动隐藏。设置/快捷键sheet、原生模式子菜单/勾选、关于身份及词条附着sheet同步还原。
 
 教学27,823字全码；3,592分类型记录，**仅104完整规则解释**，另1,348码位字形/2,140部分说明；24,231字只有码。D2 MIT+独立D14事实、无不明字体/PUA猜测。缺失明确展示，不称全量完整拆字。模型和全部15类识别码/成字根/单笔画/七字长词核验通过。详见报告026、T-MVP-FULL-UI、设计图库`docs/design/mvp-complete-ui-review/index.html`（46图）。
 
 ## 3. 正在推进
 
-冻结候选、审核包及离线逐字节重建；随后PR/四门禁/CI公证。当前新分支未推送，未公证或安装。离屏图只证明组件呈现，不是系统实际操作或VoiceOver验收。
+fb757b4审核包逐字节离线重建已通过；ADR-180修订需重新生成最终审核包及源码重建，然后等待PR四门禁/CI公证。PR #44已推送；截至此次源码冻结尚未合入/公证或安装，修订后须等待最新head的全部门禁。离屏图只证明组件呈现，不是系统实际操作或VoiceOver验收。
 
 ## 4. 下一步
 
@@ -50,12 +50,12 @@ B：本机arm64/macOS27.0.1。A：pro，Intel/macOS13.7.8/Swift5.8.1，暂不可
 
 ## 8. 入口
 
-先读本文件→ROADMAP→docs/tasks/T-MVP-FULL-UI.md→docs/reviews/026-complete-learning-ui.md；行为细节查ADR-170…179。旧审计/签名和实机状态保留在023/024/025，不能用旧包成绩代替新包。
+先读本文件→ROADMAP→docs/tasks/T-MVP-FULL-UI.md→docs/reviews/026-complete-learning-ui.md；行为细节查ADR-170…180。旧审计/签名和实机状态保留在023/024/025，不能用旧包成绩代替新包。
 
 ## 9. 会话日志（最近10条）
 
 ### 2026-10-15 / Codex：完整学习与统一UI工程
-- 11个本地功能提交完成全码/分型拆字、FFI、学习交互、统一候选/设置/菜单/关于及词条sheet；ADR-170…179。
+- 11个本地功能提交完成全码/分型拆字、FFI、学习交互、统一候选/设置/菜单/关于及词条sheet；ADR-170…180。
 - verify零诊断/141产物、24文件83项、strict universal、私有预览、生成确定性通过；46图/报告026。
 - 新包未安装，继续冻结/重建与PR/公证；真实VoiceOver/A及五日未完成。教学仅104完整规则，明确缺失。
 
