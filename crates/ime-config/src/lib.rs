@@ -702,7 +702,7 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 15);
+        assert_eq!(schema().len(), 17);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -713,7 +713,9 @@ mod tests {
                 "pinyin.fuzzy",
                 "candidate.count",
                 "candidate.page_with_comma",
+                "candidate.show_wubi_learning",
                 "appearance.theme",
+                "hotkey.toggle_wubi_learning",
                 "hotkey.toggle_mode",
                 "hotkey.toggle_english",
                 "hotkey.toggle_width",

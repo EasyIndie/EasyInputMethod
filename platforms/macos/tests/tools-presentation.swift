@@ -31,9 +31,12 @@ for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
         appearance.performAsCurrentDrawingAppearance { image = ImeAppearance.opaqueSnapshot(rep, background: .windowBackgroundColor) }
         save(image, "\(deleting ? "delete" : "add")-\(theme)")
     }
-    InfoWindow.preparePresentationForTesting(title: "关于萤火虫", text: AboutUI.text(), allowsCopy: true,
+    InfoWindow.preparePresentationForTesting(title: "诊断信息", text: AboutUI.text(), allowsCopy: true,
        links: [InfoLink(title: "反馈问题", url: FeedbackUI.issuesURL), InfoLink(title: "反馈漏洞", url: FeedbackUI.securityURL)])
-    save(InfoWindow.renderSnapshotForTesting(appearance: appearance), "about-\(theme)")
+    save(InfoWindow.renderSnapshotForTesting(appearance: appearance), "diagnostics-\(theme)")
+    guard let icon = NSImage(contentsOfFile: "assets/icons/yinghuo-official-app.icns") else { fail("official icon") }
+    save(AboutPanel.shared.renderForTesting(appearance: appearance, icon: icon), "about-\(theme)")
+    guard !AboutPanel.shared.isVisibleForTesting else { fail("about offscreen") }
     InfoWindow.simulateOpenForTesting(FeedbackUI.issuesURL, succeeded: false)
     guard InfoWindow.statusForTesting.contains("打开失败") else { fail("failed link state") }
     save(InfoWindow.renderSnapshotForTesting(appearance: appearance, minimum: true), "feedback-failure-\(theme)")
@@ -43,8 +46,20 @@ for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
     save(InfoWindow.renderSnapshotForTesting(appearance: appearance, minimum: true), "lookup-long-\(theme)")
     guard !InfoWindow.isVisibleForTesting, InfoWindow.statusForTesting.isEmpty else { fail("offscreen/no stale status") }
 }
+guard let isolatedSession = ImeSession(wubiPath: "data/generated/wubi86-core.tsv", pinyinCharsPath: nil, pinyinWordsPath: nil) else { fail("private session") }
+_ = isolatedSession.feed(119)
+let originalBuffer = isolatedSession.buffer
+let hiddenParent = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 300, height: 200),
+                            styleMask: [.titled], backing: .buffered, defer: false)
+var refusedHiddenParent = false
+UserDictionaryUI.presentEntry(isolatedSession, deleting: false, on: hiddenParent) { saved in
+    refusedHiddenParent = !saved
+}
+guard refusedHiddenParent, isolatedSession.buffer == originalBuffer,
+      hiddenParent.attachedSheet == nil else { fail("closed parent mutated input or showed sheet") }
 let board = NSPasteboard.withUniqueName()
 defer { board.releaseGlobally() }
 guard InfoWindow.copy("独有诊断文本", to: board), board.string(forType: .string) == "独有诊断文本" else { fail("private copy") }
-guard AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("零遥测") else { fail("about contract") }
+guard AboutPanel.shared.copyDiagnostics(to: board), board.string(forType: .string) == AboutUI.text(),
+      AboutPanel.shared.statusForTesting.contains("尚未发送"), AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("零遥测") else { fail("about contract") }
 print("PASS tools-presentation: real labelled form, destructive cancel, retained errors, about/lookup long content, native link fallback/success, private clipboard, hidden light/dark")

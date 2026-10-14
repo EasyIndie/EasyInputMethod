@@ -217,6 +217,117 @@ final class InfoWindow: NSObject {
     static var configuredAppearanceForTesting: NSAppearance.Name? { shared.panel?.appearance?.name }
 }
 
+/// Product identity is separate from the diagnostic text that people explicitly copy.
+final class AboutPanel: NSObject, NSWindowDelegate {
+    static let shared = AboutPanel()
+    private var panel: NSPanel?
+    private let status = NSTextField(labelWithString: "")
+
+    func prepare(icon: NSImage? = nil) {
+        guard panel == nil else { return }
+        let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 450, height: 324),
+            styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        panel.title = "关于萤火虫"
+        panel.isFloatingPanel = true
+        panel.hidesOnDeactivate = false
+        panel.isReleasedWhenClosed = false
+        panel.delegate = self
+        let content = AboutContentView(frame: NSRect(x: 0, y: 0, width: 450, height: 324))
+        panel.contentView = content
+        self.panel = panel
+        let image = NSImageView(frame: NSRect(x: 188, y: 18, width: 74, height: 74))
+        image.image = icon ?? Bundle.main.url(forResource: "Lampyris", withExtension: "icns")
+            .flatMap { NSImage(contentsOf: $0) } ?? NSImage(named: NSImage.applicationIconName)
+        image.imageScaling = .scaleProportionallyUpOrDown
+        image.setAccessibilityLabel("萤火虫应用图标")
+        content.addSubview(image)
+        func label(_ text: String, y: CGFloat, size: CGFloat, strong: Bool = false) {
+            let label = NSTextField(labelWithString: text)
+            label.font = .systemFont(ofSize: size, weight: strong ? .semibold : .regular)
+            label.textColor = strong ? .labelColor : ImeAppearance.secondaryText
+            label.alignment = .center
+            label.frame = NSRect(x: 16, y: y, width: 418, height: size + 9)
+            content.addSubview(label)
+        }
+        label("萤火虫", y: 107, size: 22, strong: true)
+        let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
+        label("\(version ?? "版本信息不可用") · 开源中文输入法", y: 148, size: 12)
+        label("五笔优先，拼音兜底。默认离线。", y: 187, size: 13)
+        let copy = NSButton(title: "复制诊断", target: self, action: #selector(copyDiagnostics(_:)))
+        copy.bezelStyle = .rounded
+        copy.frame = NSRect(x: 99, y: 229, width: 116, height: 30)
+        copy.setAccessibilityHelp("仅复制本地版本与环境信息，不发送任何诊断。")
+        content.addSubview(copy)
+        let feedback = NSPopUpButton(frame: NSRect(x: 231, y: 229, width: 120, height: 30), pullsDown: true)
+        feedback.addItems(withTitles: ["反馈问题…", "报告问题…", "报告安全漏洞…"])
+        feedback.target = self
+        feedback.action = #selector(openFeedback(_:))
+        feedback.setAccessibilityLabel("选择问题或安全漏洞反馈渠道")
+        content.addSubview(feedback)
+        status.frame = NSRect(x: 16, y: 265, width: 418, height: 18)
+        status.font = .systemFont(ofSize: 11)
+        status.textColor = ImeAppearance.secondaryText
+        status.alignment = .center
+        status.stringValue = ""
+        status.setAccessibilityLabel("操作结果")
+        content.addSubview(status)
+        label("GPL-3.0-or-later", y: 287, size: 11)
+        ImeAppearance.applyTheme(to: panel)
+        ConfigWatcher.shared.observe(owner: self) { [weak self] key in
+            guard key == "appearance.theme", let panel = self?.panel else { return }
+            ImeAppearance.applyTheme(to: panel)
+        }
+        panel.center()
+    }
+
+    func show() {
+        prepare()
+        NSApp.activate(ignoringOtherApps: true)
+        status.stringValue = ""
+        panel?.makeKeyAndOrderFront(nil)
+    }
+
+    @objc private func copyDiagnostics(_ sender: Any?) {
+        _ = copyDiagnostics(to: .general)
+    }
+    @discardableResult
+    func copyDiagnostics(to pasteboard: NSPasteboard) -> Bool {
+        let copied = InfoWindow.copy(AboutUI.text(), to: pasteboard)
+        status.stringValue = copied ? "已复制诊断；尚未发送。" : "复制失败，请重试。"
+        if let panel, panel.isVisible { NSAccessibility.post(element: status, notification: .valueChanged) }
+        return copied
+    }
+    @objc private func openFeedback(_ sender: NSPopUpButton) {
+        guard sender.indexOfSelectedItem > 0 else { return }
+        let url = sender.indexOfSelectedItem == 2 ? FeedbackUI.securityURL : FeedbackUI.issuesURL
+        let opened = NSWorkspace.shared.open(url)
+        status.stringValue = opened ? "已交给默认浏览器打开。" : "打开失败，已保留反馈地址。"
+        if !opened {
+            InfoWindow.show(title: "无法打开反馈", text: "请复制地址后手动打开：\n" + url.absoluteString,
+                allowsCopy: true, links: [InfoLink(title: "重新打开…", url: url)])
+        }
+    }
+    func windowWillClose(_ notification: Notification) { panel = nil; status.stringValue = "" }
+    var isVisibleForTesting: Bool { panel?.isVisible == true }
+    var statusForTesting: String { status.stringValue }
+    func renderForTesting(appearance: NSAppearance, icon: NSImage) -> NSBitmapImageRep? {
+        prepare(icon: icon)
+        guard let panel, let view = panel.contentView else { return nil }
+        panel.appearance = appearance
+        var image: NSBitmapImageRep?
+        appearance.performAsCurrentDrawingAppearance {
+            view.layoutSubtreeIfNeeded()
+            guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+            view.cacheDisplay(in: view.bounds, to: bitmap)
+            image = ImeAppearance.opaqueSnapshot(bitmap, background: .windowBackgroundColor)
+        }
+        return image
+    }
+}
+private final class AboutContentView: NSView {
+    override var isFlipped: Bool { true }
+}
+
 /// 版本信息（诊断 / 许可；反馈与安全渠道为窗口按钮，ADR-079/080）。
 enum AboutUI {
     /// 版本信息正文：诊断 + 许可（可整段复制到反馈里）。
@@ -228,12 +339,5 @@ enum AboutUI {
         """
     }
 
-    static func show() {
-        InfoWindow.show(
-            title: "关于萤火虫", text: text(), allowsCopy: true,
-            links: [
-                InfoLink(title: "反馈问题", url: FeedbackUI.issuesURL),
-                InfoLink(title: "反馈漏洞", url: FeedbackUI.securityURL),
-            ])
-    }
+    static func show() { AboutPanel.shared.show() }
 }

@@ -1,0 +1,62 @@
+# SPDX-License-Identifier: CC-BY-SA-4.0
+# D14 project-authored, verified against the public Wubi86 rules and primary single-character table.
+# char full-code category rule root:key-pairs recognition-description:key-or-dash
+你	wqiy	compound	依次取亻、⺈、小；末笔点，左右结构，补识别码Y	亻:w ⺈:q 小:i	点/左右:y
+好	vbg	compound	依次取女、子；末笔横，左右结构，补识别码G	女:v 子:b	横/左右:g
+中	khk	compound	依次取口、丨；末笔竖，杂合结构，补识别码K	口:k 丨:h	竖/杂合:k
+华	wxfj	compound	依次取亻、匕、十；末笔竖，上下结构，补识别码J	亻:w 匕:x 十:f	竖/上下:j
+共	awu	compound	依次取艹、八；末笔捺，上下结构，补识别码U	艹:a 八:w	捺/上下:u
+和	tkg	compound	依次取禾、口；末笔横，左右结构，补识别码G	禾:t 口:k	横/左右:g
+国	lgyi	compound	依次取囗、王、丶；包围字按内部末笔点、杂合结构补识别码I	囗:l 王:g 丶:y	点/杂合:i
+工	aaaa	key_name	键名字：A键连打四次	工:a	-
+子	bbbb	key_name	键名字：B键连打四次	子:b	-
+又	cccc	key_name	键名字：C键连打四次	又:c	-
+大	dddd	key_name	键名字：D键连打四次	大:d	-
+月	eeee	key_name	键名字：E键连打四次	月:e	-
+土	ffff	key_name	键名字：F键连打四次	土:f	-
+王	gggg	key_name	键名字：G键连打四次	王:g	-
+目	hhhh	key_name	键名字：H键连打四次	目:h	-
+水	iiii	key_name	键名字：I键连打四次	水:i	-
+日	jjjj	key_name	键名字：J键连打四次	日:j	-
+口	kkkk	key_name	键名字：K键连打四次	口:k	-
+田	llll	key_name	键名字：L键连打四次	田:l	-
+山	mmmm	key_name	键名字：M键连打四次	山:m	-
+已	nnnn	key_name	键名字：N键连打四次	已:n	-
+火	oooo	key_name	键名字：O键连打四次	火:o	-
+之	pppp	key_name	键名字：P键连打四次	之:p	-
+金	qqqq	key_name	键名字：Q键连打四次	金:q	-
+白	rrrr	key_name	键名字：R键连打四次	白:r	-
+木	ssss	key_name	键名字：S键连打四次	木:s	-
+禾	tttt	key_name	键名字：T键连打四次	禾:t	-
+立	uuuu	key_name	键名字：U键连打四次	立:u	-
+女	vvvv	key_name	键名字：V键连打四次	女:v	-
+人	wwww	key_name	键名字：W键连打四次	人:w	-
+纟	xxxx	key_name	键名字：X键连打四次	纟:x	-
+言	yyyy	key_name	键名字：Y键连打四次	言:y	-
+字	pbf	compound	依次取宀、子；末笔横，上下结构，补识别码F	宀:p 子:b	横/上下:f
+本	sgd	compound	依次取木、一；末笔横，杂合结构，补识别码D	木:s 一:g	横/杂合:d
+叶	kfh	compound	依次取口、十；末笔竖，左右结构，补识别码H	口:k 十:f	竖/左右:h
+杉	set	compound	依次取木、彡；末笔撇，左右结构，补识别码T	木:s 彡:e	撇/左右:t
+少	itr	compound	依次取小、丿；末笔撇，上下结构，补识别码R	小:i 丿:t	撇/上下:r
+才	fte	compound	依次取十形、丿；末笔撇，杂合结构，补识别码E	十形:f 丿:t	撇/杂合:e
+亿	wnn	compound	依次取亻、乙；末笔折，左右结构，补识别码N	亻:w 乙:n	折/左右:n
+艺	anb	compound	依次取艹、乙；末笔折，上下结构，补识别码B	艹:a 乙:n	折/上下:b
+电	jnv	compound	依次取日、乚；末笔折，杂合结构，补识别码V	日:j 乚:n	折/杂合:v
+民	nav	compound	按变形字根取尸形、七形；末笔折，杂合结构，补识别码V	尸形:n 七形:a	折/杂合:v
+们	wun	compound	依次取亻、门；末笔折，左右结构，补识别码N	亻:w 门:u	折/左右:n
+位	wug	compound	依次取亻、立；末笔横，左右结构，补识别码G	亻:w 立:u	横/左右:g
+他	wbn	compound	依次取亻、也；末笔折，左右结构，补识别码N	亻:w 也:b	折/左右:n
+地	fbn	compound	依次取土、也；末笔折，左右结构，补识别码N	土:f 也:b	折/左右:n
+时	jfy	compound	依次取日、寸；末笔点，左右结构，补识别码Y	日:j 寸:f	点/左右:y
+过	fpi	compound	依次取寸、辶；末笔捺，杂合结构，补识别码I	寸:f 辶:p	捺/杂合:i
+这	ypi	compound	依次取文、辶；末笔捺，杂合结构，补识别码I	文:y 辶:p	捺/杂合:i
+天	gdi	compound	依次取一、大；末笔捺，杂合结构，补识别码I	一:g 大:d	捺/杂合:i
+太	dyi	compound	依次取大、丶；末笔点，杂合结构，补识别码I	大:d 丶:y	点/杂合:i
+以	nywy	compound	依次取乙、丶、人；末笔捺，左右结构，补识别码Y	乙:n 丶:y 人:w	捺/左右:y
+下	ghi	compound	依次取一、卜；末笔点，杂合结构，补识别码I	一:g 卜:h	点/杂合:i
+不	gii	compound	依次取一、小形；末笔点，杂合结构，补识别码I	一:g 小形:i	点/杂合:i
+一	ggll	stroke	单笔画：所在键连打两次，再补LL	一:g 一:g 补位:l 补位:l	-
+丨	hhll	stroke	单笔画：所在键连打两次，再补LL	丨:h 丨:h 补位:l 补位:l	-
+丿	ttll	stroke	单笔画：所在键连打两次，再补LL	丿:t 丿:t 补位:l 补位:l	-
+丶	yyll	stroke	单笔画：所在键连打两次，再补LL	丶:y 丶:y 补位:l 补位:l	-
+乙	nnll	stroke	单笔画：所在键连打两次，再补LL	乙:n 乙:n 补位:l 补位:l	-

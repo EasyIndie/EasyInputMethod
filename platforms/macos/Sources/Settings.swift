@@ -80,6 +80,8 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
     let option: SettingsOption
     private var checkbox: NSButton?
     private var popup: NSPopUpButton?
+    private var segmented: NSSegmentedControl?
+    private var shortcutButton: NSButton?
     private var stepper: NSStepper?
     private var numberLabel: NSTextField?
     private var textField: NSTextField?
@@ -100,21 +102,25 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         top.orientation = .horizontal
         top.alignment = .firstBaseline
         top.spacing = 10
-        top.addArrangedSubview(title)
+        let isBoolean: Bool
+        if case .bool = option.kind { isBoolean = true } else { isBoolean = false }
+        if !isBoolean { top.addArrangedSubview(title); top.addArrangedSubview(NSView()) }
         if let control = buildControl() {
             control.setAccessibilityLabel(option.title)
             control.setAccessibilityHelp(option.userHelp)
             top.addArrangedSubview(control)
         }
-
-        let help = NSTextField(wrappingLabelWithString: option.userHelp)
-        help.font = .systemFont(ofSize: 11)
-        help.textColor = ImeAppearance.secondaryText
-        help.preferredMaxLayoutWidth = 430
-        help.lineBreakMode = .byWordWrapping
-
+        if isBoolean { top.addArrangedSubview(NSView()) }
         addArrangedSubview(top)
-        addArrangedSubview(help)
+        let visibleHelp = ["mode", "input.full_width", "pinyin.fuzzy", "candidate.show_wubi_learning"]
+        if visibleHelp.contains(option.key) {
+            let help = NSTextField(wrappingLabelWithString: option.userHelp)
+            help.font = .systemFont(ofSize: 11)
+            help.textColor = ImeAppearance.secondaryText
+            help.lineBreakMode = .byWordWrapping
+            addArrangedSubview(help)
+            help.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
+        }
         top.widthAnchor.constraint(equalTo: widthAnchor).isActive = true
     }
 
@@ -124,14 +130,20 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
     private func buildControl() -> NSView? {
         switch option.kind {
         case .bool:
-            let box = NSButton(checkboxWithTitle: "", target: self, action: #selector(boolChanged(_:)))
+            let box = NSButton(checkboxWithTitle: option.title, target: self, action: #selector(boolChanged(_:)))
             checkbox = box
             return box
         case .int(let min, let max):
-            let value = NSTextField(labelWithString: "")
+            let value = NSTextField()
+            value.bezelStyle = .roundedBezel
+            value.delegate = self
+            value.target = self
+            value.action = #selector(numberCommitted(_:))
+            value.setAccessibilityLabel(option.title)
+            value.setAccessibilityHelp(option.userHelp)
             value.alignment = .right
             value.font = .monospacedDigitSystemFont(ofSize: 13, weight: .regular)
-            value.widthAnchor.constraint(equalToConstant: 22).isActive = true
+            value.widthAnchor.constraint(equalToConstant: 54).isActive = true
             numberLabel = value
             let stepper = NSStepper()
             stepper.minValue = Double(min)
@@ -150,7 +162,15 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             return box
         case .choice(let values, let labels):
             rawValues = values
+            if option.key == "mode" {
+                let control = NSSegmentedControl(labels: labels, trackingMode: .selectOne,
+                    target: self, action: #selector(segmentChanged(_:)))
+                control.widthAnchor.constraint(equalToConstant: 244).isActive = true
+                segmented = control
+                return control
+            }
             let menu = NSPopUpButton()
+            menu.widthAnchor.constraint(equalToConstant: 148).isActive = true
             for (index, value) in values.enumerated() {
                 menu.addItem(withTitle: index < labels.count ? labels[index] : value)
             }
@@ -167,7 +187,11 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             field.action = #selector(textCommitted(_:))
             field.widthAnchor.constraint(equalToConstant: 190).isActive = true
             textField = field
-            return field
+            let button = NSButton(title: "", target: self, action: #selector(editShortcut(_:)))
+            button.bezelStyle = .rounded
+            button.widthAnchor.constraint(equalToConstant: 130).isActive = true
+            shortcutButton = button
+            return button
         }
     }
 
@@ -181,9 +205,15 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             numberLabel?.stringValue = raw
             stepper?.intValue = Int32(raw) ?? 0
         case .choice(let values, _):
-            if let index = values.firstIndex(of: raw) { popup?.selectItem(at: index) }
+            if let index = values.firstIndex(of: raw) { popup?.selectItem(at: index); segmented?.selectedSegment = index }
         case .text:
             textField?.stringValue = raw == "none" ? "" : raw
+            let binding = ImeConfig.hotkey(option.key)
+            let flags = binding.modifiers
+            let symbols = (flags.contains(.control) ? "⌃" : "") + (flags.contains(.option) ? "⌥" : "")
+                + (flags.contains(.shift) ? "⇧" : "") + (flags.contains(.command) ? "⌘" : "")
+            let key = binding.key == 32 ? "空格" : binding.equivalent.uppercased()
+            shortcutButton?.title = binding.kind == 0 ? "未设置…" : binding.kind == 1 ? "⇧…" : symbols + key + "…"
         }
     }
 
@@ -200,8 +230,60 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         write(sender.state == .on ? "true" : "false", toml: true)
     }
 
+    @objc private func numberCommitted(_ sender: NSTextField) {
+        write(sender.stringValue.trimmingCharacters(in: .whitespaces), toml: true)
+        reload()
+    }
+
+    var numberValueForTesting: String? { numberLabel?.stringValue }
+    func commitNumberForTesting(_ value: String) {
+        guard let field = numberLabel else { return }
+        field.stringValue = value
+        numberCommitted(field)
+    }
+
     @objc private func stepperChanged(_ sender: NSStepper) {
         write(String(sender.integerValue), toml: true)
+    }
+
+    @objc private func segmentChanged(_ sender: NSSegmentedControl) {
+        guard rawValues.indices.contains(sender.selectedSegment) else { return }
+        write(rawValues[sender.selectedSegment], toml: false)
+    }
+
+    @objc private func editShortcut(_ sender: NSButton) {
+        presentShortcutEditor(textField?.stringValue ?? "", message: nil)
+    }
+
+    private func presentShortcutEditor(_ value: String, message: String?) {
+        guard let host = window else { return }
+        let alert = NSAlert()
+        ImeAppearance.applyTheme(to: alert.window)
+        alert.messageText = "修改\(option.title)"
+        alert.informativeText = message ?? option.userHelp
+        alert.addButton(withTitle: "保存")
+        alert.addButton(withTitle: "取消")
+        let input = NSTextField(string: value)
+        input.frame = NSRect(x: 0, y: 0, width: 360, height: 26)
+        input.placeholderString = "如 ctrl+shift+k；留空关闭"
+        input.setAccessibilityLabel(option.title)
+        alert.accessoryView = input
+        alert.window.initialFirstResponder = input
+        alert.beginSheetModal(for: host) { [weak self, weak host] response in
+            guard let self, let host, self.window === host, response == .alertFirstButtonReturn else { return }
+            let value = input.stringValue.trimmingCharacters(in: .whitespaces)
+            if ImeConfig.setString(self.option.key, value.isEmpty ? "none" : value) {
+                self.reload()
+                SettingsPanel.shared.reportSaved()
+            } else {
+                let error = ImeConfig.errorMessage() ?? "无法保存，请检查绑定或配置文件权限。"
+                SettingsPanel.shared.reportFailure(self.option.key)
+                DispatchQueue.main.async { [weak self, weak host] in
+                    guard let self, let host, self.window === host else { return }
+                    self.presentShortcutEditor(value, message: "保存失败：" + error + " 输入已保留。")
+                }
+            }
+        }
     }
 
     @objc private func popupChanged(_ sender: NSPopUpButton) {
@@ -216,8 +298,9 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
     }
 
     func controlTextDidEndEditing(_ notification: Notification) {
-        guard let field = notification.object as? NSTextField, field === textField else { return }
-        textCommitted(field)
+        guard let field = notification.object as? NSTextField else { return }
+        if field === numberLabel { numberCommitted(field) }
+        else if field === textField { textCommitted(field) }
     }
 
     private func write(_ value: String, toml: Bool) {
@@ -251,9 +334,9 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         var symbol: String {
             switch self {
             case .input: return "keyboard"
-            case .candidates: return "textformat"
+            case .candidates: return "text.bubble"
             case .shortcuts: return "command"
-            case .dictionary: return "books.vertical"
+            case .dictionary: return "character.book.closed"
             }
         }
         var identifier: NSToolbarItem.Identifier { .init("lampyris.settings.\(rawValue)") }
@@ -283,13 +366,13 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
     func prepare() {
         guard window == nil else { return }
         let panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 520, height: 520),
+            contentRect: NSRect(x: 0, y: 0, width: 650, height: 500),
             styleMask: [.titled, .closable, .resizable],
             backing: .buffered, defer: false)
-        panel.title = "输入 · 萤火虫设置"
+        panel.title = "输入 — 萤火虫"
         panel.toolbarStyle = .preference
         panel.standardWindowButton(.zoomButton)?.isEnabled = false
-        panel.contentMinSize = NSSize(width: 520, height: 440)
+        panel.contentMinSize = NSSize(width: 560, height: 440)
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
@@ -460,19 +543,20 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         ])
         selectedSection = index
         navigation?.selectedItemIdentifier = Section(rawValue: index)?.identifier
-        window?.title = "\(Section(rawValue: index)?.title ?? "设置") · 萤火虫设置"
+        window?.title = "\(Section(rawValue: index)?.title ?? "设置") — 萤火虫"
         window?.recalculateKeyViewLoop()
     }
 
     // MARK: - 词库 动作
 
-    @objc private func addWord() {
-        guard let session else { return }
-        if UserDictionaryUI.add(session) { setStatus("词条已添加。", isError: false) }
-    }
-    @objc private func removeWord() {
-        guard let session else { return }
-        if UserDictionaryUI.remove(session) { setStatus("用户词条及学习记录已删除；内置词不受影响。", isError: false) }
+    @objc private func addWord() { presentWordEntry(deleting: false) }
+    @objc private func removeWord() { presentWordEntry(deleting: true) }
+    private func presentWordEntry(deleting: Bool) {
+        guard let session, let host = window else { return }
+        UserDictionaryUI.presentEntry(session, deleting: deleting, on: host) { [weak self, weak host] saved in
+            guard saved, let self, let host, self.window === host, host.isVisible else { return }
+            self.setStatus(deleting ? "用户词条及学习记录已删除；内置词不受影响。" : "词条已添加。", isError: false)
+        }
     }
     @objc private func importWords() {
         guard let session else { return }
@@ -534,7 +618,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
             status.bottomAnchor.constraint(equalTo: content.bottomAnchor, constant: -8),
         ])
         selectSection(selectedSection)
-        panel.title = "\(Section(rawValue: selectedSection)?.title ?? "设置") · 萤火虫设置"
+        panel.title = "\(Section(rawValue: selectedSection)?.title ?? "设置") — 萤火虫"
     }
 
     /// 设置分区：Schema 驱动的滚动列表。
@@ -543,22 +627,46 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         rowStack.orientation = .vertical
         rowStack.alignment = .leading
         rowStack.spacing = 14
-        rowStack.edgeInsets = NSEdgeInsets(top: 16, left: 18, bottom: 16, right: 18)
+        rowStack.edgeInsets = NSEdgeInsets(top: 6, left: 12, bottom: 18, right: 12)
         rowStack.translatesAutoresizingMaskIntoConstraints = false
 
         let options = SettingsSchema.options().filter { scopes.contains($0.scope) }
-        for scope in Set(options.map(\.scope)).sorted() {
-            let group = options.filter { $0.scope == scope }
-            guard let first = group.first else { continue }
-            let header = NSTextField(labelWithString: first.scopeTitle)
-            header.font = .boldSystemFont(ofSize: 13)
-            header.textColor = .labelColor
+        let groups: [(String, [String])]
+        if scopes == [0] {
+            groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width"]),
+                ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
+        } else if scopes.contains(3) {
+            groups = [("快捷键", ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
+                "hotkey.toggle_punctuation", "hotkey.toggle_variant", "hotkey.toggle_wubi_learning"])]
+        } else {
+            groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
+                ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning"])]
+        }
+        let known = Set(groups.flatMap { $0.1 })
+        let allGroups = groups + [("其他", options.filter { !known.contains($0.key) }.map(\.key))]
+        var count = 0
+        for (title, keys) in allGroups {
+            let group = keys.compactMap { key in options.first { $0.key == key } }
+            guard !group.isEmpty else { continue }
+            if count > 0 {
+                let separator = NSBox(); separator.boxType = .separator
+                rowStack.addArrangedSubview(separator)
+                separator.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -24).isActive = true
+            }
+            count += 1
+            let header = NSTextField(labelWithString: title)
+            header.font = .systemFont(ofSize: 13, weight: .semibold)
             rowStack.addArrangedSubview(header)
             for option in group {
                 let row = SettingRow(option: option)
                 rows.append(row)
-                rowStack.addArrangedSubview(row)
-                row.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
+                let inset = NSView(); inset.widthAnchor.constraint(equalToConstant: 18).isActive = true
+                let wrapper = NSStackView(views: [inset, row])
+                wrapper.orientation = .horizontal
+                wrapper.spacing = 0
+                rowStack.addArrangedSubview(wrapper)
+                wrapper.widthAnchor.constraint(equalTo: rowStack.widthAnchor, constant: -36).isActive = true
+                row.widthAnchor.constraint(equalTo: wrapper.widthAnchor, constant: -18).isActive = true
             }
         }
 

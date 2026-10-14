@@ -30,6 +30,54 @@ struct ImeCandidate {
     let isPrefix: Bool
 }
 
+/// Read-only, bounded teaching data supplied by the Rust model.
+struct WubiLearning {
+    struct Root { let text: String; let key: String }
+    struct Character {
+        let text: String
+        let code: String?
+        let category: String?
+        let rule: String?
+        let roots: [Root]
+        let recognition: Root?
+    }
+    let code: String?
+    let rule: String
+    let characters: [Character]
+
+    static func lookup(_ text: String) -> WubiLearning? {
+        let value = text.withCString { ime_wubi_learning($0) }
+        defer { ime_string_free(value) }
+        guard let pointer = value.data, value.len > 0, value.len <= 65536 else { return nil }
+        let bytes = UnsafeRawBufferPointer(start: pointer, count: Int(value.len))
+        guard let payload = String(bytes: bytes, encoding: .utf8) else { return nil }
+        let lines = payload.components(separatedBy: "\n")
+        let header = lines[0].components(separatedBy: "\t")
+        guard header.count == 3, header[0] == "wubi-learning-v1", lines.count <= 257 else { return nil }
+        func optional(_ value: String) -> String? { value.isEmpty ? nil : value }
+        func pair(_ value: String) -> Root? {
+            let fields = value.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)
+            guard fields.count == 2, !fields[0].isEmpty, fields[1].count == 1,
+                  let key = fields[1].utf8.first, (97...121).contains(key) else { return nil }
+            return Root(text: String(fields[0]), key: String(fields[1]).uppercased())
+        }
+        var characters: [Character] = []
+        for line in lines.dropFirst() {
+            let fields = line.components(separatedBy: "\t")
+            guard fields.count == 6, fields[0].count == 1 else { return nil }
+            let encodedRoots = fields[4].split(separator: " ").map(String.init)
+            let roots = encodedRoots.compactMap(pair)
+            guard roots.count == encodedRoots.count else { return nil }
+            let recognition = pair(fields[5])
+            guard fields[5].isEmpty || recognition != nil else { return nil }
+            characters.append(Character(text: fields[0], code: optional(fields[1]), category: optional(fields[2]),
+                rule: optional(fields[3]), roots: roots, recognition: recognition))
+        }
+        guard characters.map(\.text).joined() == text else { return nil }
+        return WubiLearning(code: optional(header[1]), rule: header[2], characters: characters)
+    }
+}
+
 /// `ime_session_key` 的结果。
 enum ImeKeyResult {
     case consumed
@@ -227,6 +275,10 @@ final class ImeSession {
 
     /// 组合键（均可配）：中英 / 全半角 / 切换模式；`"shift"` 与 `"none"` 不作为组合键。
     func shortcut(_ event: NSEvent, persistMode: Bool) -> ShortcutResult {
+        if matches("hotkey.toggle_wubi_learning", event) {
+            return ImeConfig.setToml("candidate.show_wubi_learning",
+                ImeConfig.bool("candidate.show_wubi_learning") ? "false" : "true") ? .handled : .failed
+        }
         if matches("hotkey.toggle_english", event) { toggleEnglish(); return .handled }
         if matches("hotkey.toggle_width", event) { toggleWidth(); return .handled }
         if matches("hotkey.toggle_punctuation", event) {

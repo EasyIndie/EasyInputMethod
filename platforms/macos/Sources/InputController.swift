@@ -157,26 +157,36 @@ final class LampyrisInputController: IMKInputController {
 
     override func menu() -> NSMenu! {
         let menu = NSMenu()
-        // 输入状态（一级菜单 + 当前快捷键，ADR-076）。
-        // 状态项直接显示当前值，条目更简洁（ADR-079）。
-        menu.addItem(
-            stateItem(
-                "输入模式：\(menuModeName())", action: #selector(cycleMode(_:)), hotkeyKey: "hotkey.toggle_mode"))
-        menu.addItem(
-            stateItem(
-                "语言：\(languageState())", action: #selector(toggleEnglish(_:)),
-                hotkeyKey: "hotkey.toggle_english"))
-        menu.addItem(
-            stateItem(
-                "字符宽度：\(widthState())", action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width"))
-        menu.addItem(
-            stateItem(
-                "字形：\(variantState())", action: #selector(toggleVariant(_:)),
-                hotkeyKey: "hotkey.toggle_variant"))
-        menu.addItem(
-            stateItem(
-                "标点：\(punctuationState())", action: #selector(togglePunctuation(_:)),
-                hotkeyKey: "hotkey.toggle_punctuation"))
+        menu.autoenablesItems = false
+        let modeItem = NSMenuItem(title: "输入模式", action: nil, keyEquivalent: "")
+        let modes = NSMenu(title: "输入模式")
+        modes.autoenablesItems = false
+        let selectedMode = session?.mode ?? ImeConfig.string("mode")
+        for (raw, title) in [("mixed", "混输"), ("wubi", "五笔"), ("pinyin", "拼音")] {
+            let item = NSMenuItem(title: title, action: #selector(chooseMode(_:)), keyEquivalent: "")
+            item.target = self
+            item.representedObject = raw
+            item.state = selectedMode == raw ? .on : .off
+            modes.addItem(item)
+        }
+        modeItem.submenu = modes
+        menu.addItem(modeItem)
+        let chinese = stateItem("中文输入", action: #selector(toggleEnglish(_:)), hotkeyKey: "hotkey.toggle_english")
+        chinese.state = session?.isEnglish == false ? .on : .off
+        chinese.isEnabled = session != nil
+        menu.addItem(chinese)
+        let width = stateItem("全角 ASCII", action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width")
+        width.state = session?.isFullWidth == true ? .on : .off
+        width.isEnabled = session != nil
+        menu.addItem(width)
+        let variant = stateItem("繁体输出", action: #selector(toggleVariant(_:)), hotkeyKey: "hotkey.toggle_variant")
+        variant.state = session?.isTraditional == true ? .on : .off
+        variant.isEnabled = session != nil
+        menu.addItem(variant)
+        let punctuation = stateItem("中文标点", action: #selector(togglePunctuation(_:)), hotkeyKey: "hotkey.toggle_punctuation")
+        punctuation.state = ImeConfig.string("input.punctuation") == "chinese" ? .on : .off
+        punctuation.isEnabled = session != nil
+        menu.addItem(punctuation)
         menu.addItem(NSMenuItem.separator())
         let settings = NSMenuItem(
             title: "设置…", action: #selector(showSettings), keyEquivalent: "")
@@ -285,18 +295,11 @@ final class LampyrisInputController: IMKInputController {
         AboutUI.show()
     }
 
-    @objc private func cycleMode(_ sender: Any?) {
-        let order = ["mixed", "wubi", "pinyin"]
-        let current = ImeConfig.string("mode") ?? "mixed"
-        let next = order[((order.firstIndex(of: current) ?? -1) + 1) % order.count]
-        guard ImeConfig.setString("mode", next) else {
-            let alert = NSAlert()
-            ImeAppearance.applyTheme(to: alert.window)
-            alert.messageText = "无法保存输入模式"
-            alert.informativeText = "请检查配置文件权限。当前输入模式保持不变。"
-            alert.runModal()
-            return
-        }
+    @objc private func chooseMode(_ sender: NSMenuItem) {
+        guard let next = sender.representedObject as? String,
+            ["mixed", "wubi", "pinyin"].contains(next) else { return }
+        if ImeConfig.string("mode") != next, !ImeConfig.setString("mode", next) { presentConfigError(); return }
+        guard session?.mode != next else { return }
         cancelClientComposition()
         session?.setMode(next)
     }
@@ -466,8 +469,7 @@ final class LampyrisInputController: IMKInputController {
         }
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            input: session.buffer, hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
-                english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"), warning: session.variantErrorMessage)
+            input: session.buffer, warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
     }
 

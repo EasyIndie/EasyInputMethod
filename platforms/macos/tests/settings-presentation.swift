@@ -11,10 +11,29 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 15,
+guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 17,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
+panel.selectSectionForTesting(0)
+guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
+panel.selectSectionForTesting(1)
+guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "appearance.theme", "candidate.show_wubi_learning"] else { fail("candidate design group order") }
+guard let countOption = options.first(where: { $0.key == "candidate.count" }) else { fail("count schema") }
+let numberRow = SettingRow(option: countOption)
+numberRow.reload()
+for value in ["3", "9", "7"] {
+    numberRow.commitNumberForTesting(value)
+    guard ImeConfig.int("candidate.count") == Int(value), numberRow.numberValueForTesting == value else { fail("editable native count") }
+}
+for value in ["", "0", "10", "3.5", "abc"] {
+    numberRow.commitNumberForTesting(value)
+    guard ImeConfig.int("candidate.count") == 7, numberRow.numberValueForTesting == "7" else { fail("invalid count rollback") }
+}
+numberRow.commitNumberForTesting("7")
+panel.reportSaved()
+panel.selectSectionForTesting(2)
+guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
 func snapshot(_ image: NSBitmapImageRep?, _ name: String) {
     guard let data = image?.representation(using: .png, properties: [:]) else { fail("snapshot " + name) }
     do { try data.write(to: output.appendingPathComponent(name + ".png")) } catch { fail("snapshot write") }
@@ -47,6 +66,6 @@ guard !panel.dictionaryActionsEnabledForTesting else { fail("session disable") }
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 15, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 17, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

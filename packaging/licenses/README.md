@@ -9,3 +9,5 @@
 | D5-MIT.txt | https://raw.githubusercontent.com/mozillazg/pinyin-data/master/LICENSE | `9c048697be2502a16e8bcb282d5d465a07295b2def0ffb05a269c5d39dbe1586` |
 | D10-MIT.txt | https://raw.githubusercontent.com/fxsjy/jieba/master/LICENSE | `18ba0984839f85853b29fadaf992f7dba8fd0ca0fbeae34de2b8735222dc7a37` |
 | CC-BY-SA-4.0.txt | https://creativecommons.org/licenses/by-sa/4.0/legalcode.txt | `28a9529c7d0bb4dc51f4bf5c116a3d16ef247a052f7591466768ddf563fd1cf5` |
+
+D2-MIT.txt：aardio/wubi-lex可读教学派生数据的上游许可（MIT，Copyright 2019 aardio）；不含上游字体或私有区字形。项目核验/键位事实及派生修改按CC-BY-SA-4.0，详见DATA-SOURCES.md与data-sources.toml。

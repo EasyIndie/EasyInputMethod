@@ -459,7 +459,7 @@ mod tests {
     #[test]
     fn schema_layout_matches_v1() {
         let layout = build_schema();
-        assert_eq!(layout.view.len, 15);
+        assert_eq!(layout.view.len, 17);
         let first = layout._options[0];
         // SAFETY：指针由 build_schema 的 CString/Vec 持有，测试期间有效。
         unsafe {
@@ -473,7 +473,7 @@ mod tests {
         // SAFETY：显示名与取值一一对应（设置界面依赖）。
         let labels = unsafe { cstr_list(first.enum_labels_zh) };
         assert_eq!(labels.len(), values.len());
-        assert_eq!(labels[0], "五笔优先 + 拼音兜底");
+        assert_eq!(labels[0], "混输");
         // 每个枚举选项的取值/显示名非空且一一对应。
         for option in &layout._options {
             if option.value_type != 2 {
