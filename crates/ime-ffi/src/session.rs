@@ -869,7 +869,11 @@ pub extern "C" fn ime_wubi_learning(text: *const c_char) -> ImeString {
                     recognition
                 ));
             }
-            Ok(owned_string(&lines.join("\n")))
+            let payload = lines.join("\n");
+            if payload.len() > 65536 {
+                return Err(IME_ERR_INVALID_INPUT);
+            }
+            Ok(owned_string(&payload))
         },
         ImeString {
             data: ptr::null(),
@@ -998,8 +1002,8 @@ mod tests {
         }
         for text in [
             String::new(),
-            "a".repeat(129),
-            "人".repeat(33),
+            "a".repeat(257),
+            "人".repeat(86),
             "你\t好".into(),
         ] {
             assert!(ime_wubi_learning(CString::new(text).unwrap().as_ptr())

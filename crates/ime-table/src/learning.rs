@@ -92,9 +92,9 @@ fn decomposition(character: char) -> Option<Decomposition> {
     })
 }
 
-/// Query at most 32 characters / 128 UTF-8 bytes. It never learns or changes a session.
+/// Query at most 256 UTF-8 bytes, matching legal user-dictionary text. It never learns or changes a session.
 pub fn query(text: &str) -> Option<Learning> {
-    if text.is_empty() || text.len() > 128 || text.chars().any(char::is_control) {
+    if text.is_empty() || text.len() > 256 || text.chars().any(char::is_control) {
         return None;
     }
     let characters: Vec<_> = text
@@ -105,9 +105,6 @@ pub fn query(text: &str) -> Option<Learning> {
             decomposition: decomposition(character),
         })
         .collect();
-    if characters.len() > 32 {
-        return None;
-    }
     let rule = match characters.len() {
         1 => characters[0]
             .decomposition
@@ -312,6 +309,8 @@ mod tests {
 
     #[test]
     fn missing_data_and_oversized_queries_are_explicit() {
+        assert_eq!(query(&"人".repeat(85)).unwrap().characters.len(), 85);
+        assert_eq!(query(&"a".repeat(256)).unwrap().characters.len(), 256);
         let missing = query("😀").unwrap();
         assert!(missing.full_code.is_none());
         assert!(missing.characters[0].decomposition.is_none());
@@ -319,7 +318,7 @@ mod tests {
         for input in ["", "你\t好", "你\n好"] {
             assert!(query(input).is_none());
         }
-        assert!(query(&"人".repeat(33)).is_none());
-        assert!(query(&"a".repeat(129)).is_none());
+        assert!(query(&"人".repeat(86)).is_none());
+        assert!(query(&"a".repeat(257)).is_none());
     }
 }

@@ -172,6 +172,7 @@ private final class CandidateDocument: NSView {
 final class WubiLearningView: NSView {
     private var model: WubiLearning?
     private var identity = ""
+    private var queryUnavailable = false
     private var expanded = false
     private var expandedCharacters: Set<Int> = []
     var onResize: (() -> Void)?
@@ -185,9 +186,33 @@ final class WubiLearningView: NSView {
             expanded = false
             expandedCharacters.removeAll()
         }
-        model = text.flatMap(WubiLearning.lookup)
+        let result = text.flatMap(WubiLearning.lookup)
+        queryUnavailable = text != nil && result == nil
+        model = text == nil ? nil : result ?? WubiLearning(code: nil, rule: "学习说明暂缺", characters: [])
         isHidden = model == nil
-        if model == nil { subviews.forEach { $0.removeFromSuperview() } }
+        if model == nil { clearContent() }
+    }
+
+    private func clearContent() {
+        func clear(_ view: NSView) {
+            if let control = view as? NSControl { control.target = nil; control.action = nil }
+            view.subviews.forEach(clear)
+        }
+        subviews.forEach { clear($0); $0.removeFromSuperview() }
+    }
+    var actionForTesting: NSButton? {
+        func find(_ view: NSView) -> NSButton? {
+            if let button = view as? NSButton { return button }
+            return view.subviews.lazy.compactMap(find).first
+        }
+        return subviews.lazy.compactMap(find).first
+    }
+    var minimumContrastForTesting: CGFloat {
+        func values(_ view: NSView) -> [CGFloat] {
+            let own = (view as? NSTextField).map { [ImeAppearance.contrast($0.textColor ?? .labelColor, over: .windowBackgroundColor)] } ?? []
+            return own + view.subviews.flatMap(values)
+        }
+        return values(self).min() ?? 100
     }
 
     @discardableResult
@@ -231,6 +256,8 @@ final class WubiLearningView: NSView {
             lower.textColor = ImeAppearance.secondaryText
             lower.alignment = .center
             lower.frame = NSRect(x: 0, y: 1, width: cellWidth, height: 16)
+            upper.setAccessibilityElement(false); lower.setAccessibilityElement(false)
+            column.setAccessibilityChildren([])
             column.addSubview(upper); column.addSubview(lower)
             parent.addSubview(column)
             x += cellWidth
@@ -258,7 +285,7 @@ final class WubiLearningView: NSView {
     }
 
     func arrange(width: CGFloat, maxHeight: CGFloat) -> CGFloat {
-        subviews.forEach { $0.removeFromSuperview() }
+        clearContent()
         guard let model, maxHeight >= 62 else { isHidden = true; return 0 }
         isHidden = false
         let separator = NSBox(frame: NSRect(x: 0, y: 0, width: width, height: 1))
@@ -270,7 +297,7 @@ final class WubiLearningView: NSView {
             else if item.category == "key_name" { rule = "键名字：所在键连打四次" }
         }
         let summary = NSTextField(wrappingLabelWithString: "")
-        let codeText = model.code.map { "完整码 \($0.uppercased())   " } ?? "五笔编码暂缺"
+        let codeText = model.code.map { "完整码 \($0.uppercased())   " } ?? (queryUnavailable ? "学习说明暂缺" : "五笔编码暂缺")
         let text = NSMutableAttributedString(string: codeText, attributes: [
             .font: NSFont.monospacedSystemFont(ofSize: 13, weight: .medium),
             .foregroundColor: ImeAppearance.secondaryText])
@@ -284,10 +311,9 @@ final class WubiLearningView: NSView {
         summary.setAccessibilityLabel(text.string)
         addSubview(summary)
         var y = 9 + summaryHeight + 5
+        guard model.code != nil else { return min(maxHeight, y + 6) }
         if model.characters.count == 1, let item = model.characters.first {
-            if item.roots.isEmpty {
-                y += label("拆字说明暂缺", in: self, x: 0, y: y, width: width)
-            } else {
+            if !item.roots.isEmpty {
                 // Recognition explanation stays in the summary, separate from real roots.
                 y += rootRow(item.roots, in: self, y: y, width: width)
             }
@@ -640,6 +666,12 @@ final class CandidateWindow: NSObject {
     }
 
     var learningVisibleForTesting: Bool { !learningView.isHidden }
+    var learningActionForTesting: NSButton? { learningView.actionForTesting }
+    var learningTextContrastForTesting: CGFloat {
+        var value: CGFloat = 100
+        panel.effectiveAppearance.performAsCurrentDrawingAppearance { value = learningView.minimumContrastForTesting }
+        return value
+    }
     func toggleLearningDetailsForTesting() { learningView.toggleForTesting() }
     func toggleLearningCharacterForTesting(_ index: Int) { learningView.toggleCharacterForTesting(index) }
     func simulateClick(at index: Int) {

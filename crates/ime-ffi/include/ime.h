@@ -95,7 +95,7 @@ int32_t      ime_session_page_index(ImeSession* session);
 int32_t      ime_session_page_count(ImeSession* session);
 /* 只读反查：有效文本 <=256 UTF-8 字节；未知为空，非法/NULL 返回 NULL；string_free 释放。 */
 ImeString    ime_session_reverse_lookup(const ImeSession* session, const char* text);
-/* Read-only Wubi teaching TSV v1, <=32 scalars /128 UTF-8 bytes; NULL invalid; owned/string_free. */
+/* Read-only Wubi teaching TSV v1, <=256 UTF-8 bytes, payload <=64KiB; NULL invalid; owned/string_free. */
 ImeString    ime_wubi_learning(const char* text);
 ImeString    ime_session_commit(ImeSession* session);
 void         ime_session_focus_out(ImeSession* session);

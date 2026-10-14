@@ -48,12 +48,12 @@ struct WubiLearning {
     static func lookup(_ text: String) -> WubiLearning? {
         let value = text.withCString { ime_wubi_learning($0) }
         defer { ime_string_free(value) }
-        guard let pointer = value.data, value.len > 0, value.len <= 32768 else { return nil }
+        guard let pointer = value.data, value.len > 0, value.len <= 65536 else { return nil }
         let bytes = UnsafeRawBufferPointer(start: pointer, count: Int(value.len))
         guard let payload = String(bytes: bytes, encoding: .utf8) else { return nil }
         let lines = payload.components(separatedBy: "\n")
         let header = lines[0].components(separatedBy: "\t")
-        guard header.count == 3, header[0] == "wubi-learning-v1", lines.count <= 33 else { return nil }
+        guard header.count == 3, header[0] == "wubi-learning-v1", lines.count <= 257 else { return nil }
         func optional(_ value: String) -> String? { value.isEmpty ? nil : value }
         func pair(_ value: String) -> Root? {
             let fields = value.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: false)

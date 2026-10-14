@@ -15,7 +15,7 @@ require(WubiLearning.lookup("你好")?.code == "wqvb", "phrase code")
 require(WubiLearning.lookup("😀")?.code == nil, "missing code")
 require(WubiLearning.lookup("是")?.characters[0].roots.isEmpty == true, "missing explanation remains explicit")
 require(WubiLearning.lookup("人")?.characters[0].category == "key_name", "key-name category")
-for input in ["", "你\t好", String(repeating: "你", count: 33)] {
+for input in ["", "你\t好", String(repeating: "你", count: 86)] {
     require(WubiLearning.lookup(input) == nil, "bounded invalid input")
 }
 print("PASS wubi-learning: real Rust ABI, ownership, full codes, readable roots, long words, missing data and bounds")
@@ -86,4 +86,20 @@ window.update(candidates: matched, pageIndex: 0, pageCount: 12, input: "wq")
 window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
 require(window.frame.width == stableWidth, "learning preserves candidate body width")
 snapshot("matched-learning-light")
+window.hide()
+
+require(WubiLearning.lookup(String(repeating: "人", count: 85))?.characters.count == 85, "legal long word has teaching data")
+require(WubiLearning.lookup(String(repeating: "a", count: 256))?.characters.count == 256, "legal byte boundary")
+require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "lifecycle visibility")
+window.update(candidates: [ImeCandidate(text: "中华人民共和国", code: "kwwl", source: .phrase, isPrefix: false)], input: "kwwl")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+guard let oldAction = window.learningActionForTesting else { exit(1) }
+window.hide()
+require(oldAction.target == nil && oldAction.action == nil, "old learning actions invalidated")
+for theme in ["light", "dark"] {
+    require(ImeConfig.setString("appearance.theme", theme), "learning contrast theme")
+    window.update(candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)], input: "wq")
+    window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+    require(window.learningTextContrastForTesting >= 4.5, "learning text contrast")
+}
 window.hide()
