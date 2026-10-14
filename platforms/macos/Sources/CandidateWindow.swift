@@ -175,6 +175,9 @@ final class WubiLearningView: NSView {
     private var queryUnavailable = false
     private var expanded = false
     private var expandedCharacters: Set<Int> = []
+    private var buttons: [String: NSButton] = [:]
+    private var detailScroll: NSScrollView?
+    private var detailOrigin = NSPoint.zero
     var onResize: (() -> Void)?
     override var isFlipped: Bool { true }
     var hasContent: Bool { model != nil }
@@ -182,6 +185,8 @@ final class WubiLearningView: NSView {
 
     func update(_ text: String?) {
         if text != identity {
+            clearContent()
+            detailOrigin = .zero
             identity = text ?? ""
             expanded = false
             expandedCharacters.removeAll()
@@ -193,12 +198,20 @@ final class WubiLearningView: NSView {
         if model == nil { clearContent() }
     }
 
-    private func clearContent() {
+    private func clearContent(dropButtons: Bool = true) {
         func clear(_ view: NSView) {
             if let control = view as? NSControl { control.target = nil; control.action = nil }
             view.subviews.forEach(clear)
         }
         subviews.forEach { clear($0); $0.removeFromSuperview() }
+        detailScroll = nil
+        if dropButtons { buttons.removeAll() }
+    }
+    var detailOriginForTesting: NSPoint { detailScroll?.contentView.bounds.origin ?? .zero }
+    func scrollDetailsForTesting(_ y: CGFloat) {
+        guard let scroll = detailScroll, let document = scroll.documentView else { return }
+        scroll.contentView.scroll(to: NSPoint(x: 0, y: max(0, min(y, document.frame.height - scroll.contentSize.height))))
+        scroll.reflectScrolledClipView(scroll.contentView)
     }
     var actionForTesting: NSButton? {
         func find(_ view: NSView) -> NSButton? {
@@ -267,12 +280,17 @@ final class WubiLearningView: NSView {
 
     private func button(_ title: String, x: CGFloat, y: CGFloat, width: CGFloat,
                         in parent: NSView, action: Selector, tag: Int = 0) {
-        let button = NSButton(title: title, target: self, action: action)
+        let isCharacter = action == #selector(toggleCharacter(_:))
+        let cacheKey = isCharacter ? "character-\(tag)" : "summary"
+        let button = buttons[cacheKey] ?? NSButton()
+        buttons[cacheKey] = button
+        button.title = title
+        button.target = self
+        button.action = action
         button.isBordered = false
         button.font = .systemFont(ofSize: 11)
         button.refusesFirstResponder = true
         button.tag = tag
-        let isCharacter = action == #selector(toggleCharacter(_:))
         button.alignment = isCharacter ? .left : .right
         let open = isCharacter ? expandedCharacters.contains(tag) : expanded
         button.image = NSImage(systemSymbolName: open ? "chevron.down" : "chevron.right", accessibilityDescription: nil)
@@ -285,7 +303,8 @@ final class WubiLearningView: NSView {
     }
 
     func arrange(width: CGFloat, maxHeight: CGFloat) -> CGFloat {
-        clearContent()
+        if let detailScroll { detailOrigin = detailScroll.contentView.bounds.origin }
+        clearContent(dropButtons: false)
         guard let model, maxHeight >= 62 else { isHidden = true; return 0 }
         isHidden = false
         let separator = NSBox(frame: NSRect(x: 0, y: 0, width: width, height: 1))
@@ -358,6 +377,11 @@ final class WubiLearningView: NSView {
                 document.frame = NSRect(x: 0, y: 0, width: inner, height: offset)
                 scroll.documentView = document
                 addSubview(scroll)
+                detailScroll = scroll
+                scroll.tile()
+                let origin = NSPoint(x: 0, y: max(0, min(detailOrigin.y, offset - height)))
+                scroll.contentView.scroll(to: origin)
+                scroll.reflectScrolledClipView(scroll.contentView)
                 y += height + 4
             }
         }
@@ -603,9 +627,7 @@ final class CandidateWindow: NSObject {
         let headerHeight: CGFloat = headerVisible ? 24 : 0
         let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
-        let learningHeight = learningView.arrange(width: inner, maxHeight: min(270, max(0, available.height - 92)))
-        let extraHeight = learningHeight + (learningHeight > 0 ? 8 : 0) + CGFloat(headerVisible ? 22 : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
-        let maxBody = max(1, min(320, available.height - extraHeight))
+        let baseExtra = CGFloat(headerVisible ? 22 : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
                 if !vertical { return ceil(label.attributedStringValue.size().height) + 4 }
@@ -619,6 +641,11 @@ final class CandidateWindow: NSObject {
             vertical ? rowHeights.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 8 : (rowHeights.max() ?? 0)
         }
         var naturalHeight = totalHeight()
+        let preferredBody = min(naturalHeight, max(1, min(320, available.height - baseExtra)))
+        let learningBudget = min(270, max(0, available.height - baseExtra - preferredBody - 8))
+        let learningHeight = learningView.arrange(width: inner, maxHeight: learningBudget)
+        let extraHeight = baseExtra + learningHeight + (learningHeight > 0 ? 8 : 0)
+        let maxBody = max(1, min(320, available.height - extraHeight))
         scrollView.hasVerticalScroller = naturalHeight > maxBody
         if scrollView.hasVerticalScroller {
             bodyWidth = max(1, inner - NSScroller.scrollerWidth(for: .small, scrollerStyle: scrollView.scrollerStyle))
@@ -667,6 +694,9 @@ final class CandidateWindow: NSObject {
 
     var learningVisibleForTesting: Bool { !learningView.isHidden }
     var learningActionForTesting: NSButton? { learningView.actionForTesting }
+    var candidateViewportForTesting: NSSize { scrollView.frame.size }
+    var learningScrollOriginForTesting: NSPoint { learningView.detailOriginForTesting }
+    func scrollLearningForTesting(_ y: CGFloat) { learningView.scrollDetailsForTesting(y) }
     var learningTextContrastForTesting: CGFloat {
         var value: CGFloat = 100
         panel.effectiveAppearance.performAsCurrentDrawingAppearance { value = learningView.minimumContrastForTesting }

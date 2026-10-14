@@ -103,3 +103,28 @@ for theme in ["light", "dark"] {
     require(window.learningTextContrastForTesting >= 4.5, "learning text contrast")
 }
 window.hide()
+
+require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "stable detail preference")
+window.update(candidates: [ImeCandidate(text: "中华人民共和国", code: "kwwl", source: .phrase, isPrefix: false)], input: "kwwl")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+let stableAction = window.learningActionForTesting
+var selectionCalls = 0
+window.onSelect = { _ in selectionCalls += 1 }
+window.toggleLearningDetailsForTesting()
+require(window.learningActionForTesting === stableAction, "summary AX identity retained")
+window.scrollLearningForTesting(45)
+let origin = window.learningScrollOriginForTesting
+window.toggleLearningCharacterForTesting(5)
+require(abs(window.learningScrollOriginForTesting.y - origin.y) < 1 && selectionCalls == 0, "disclosure preserves scroll without selection")
+let longCandidates = (0..<9).map { _ in ImeCandidate(text: String(repeating: "中华人民共和国", count: 8), code: "kwwl", source: .phrase, isPrefix: false) }
+let tight = NSRect(x: 0, y: 0, width: 500, height: 500)
+require(ImeConfig.setToml("candidate.show_wubi_learning", "false"), "body baseline")
+window.update(candidates: longCandidates, input: "kwwl")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: tight)
+let baselineViewport = window.candidateViewportForTesting
+require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "body with teaching")
+window.update(candidates: longCandidates, input: "kwwl")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: tight)
+window.toggleLearningDetailsForTesting()
+require(window.candidateViewportForTesting == baselineViewport && tight.contains(window.frame), "teaching cannot steal candidate viewport")
+window.hide()
