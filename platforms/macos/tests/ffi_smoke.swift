@@ -65,6 +65,24 @@ guard pinyinFirst == "你好" else { fail("nihao 首选应为「你好」，实�
 
 print("✅ FFI 运行时冒烟通过：wq→你，nihao→你好")
 
+// Mixed ambiguity must remain selectable with the shipped default tables.
+_ = "mixed".withCString { ime_session_set_mode(session, $0) }
+guard ime_session_configure(session) == IME_OK else { fail("隔离混输配置失败") }
+for scalar in "wang".unicodeScalars {
+    guard ime_session_key(session, scalar.value) == 0 else { fail("混输wang不得提前上屏") }
+}
+let mixedChoices = ime_session_candidates(session)
+guard mixedChoices.len >= 2, let choices = mixedChoices.items,
+      let first = choices[0].text, let second = choices[1].text,
+      String(cString: first) == "佢", String(cString: second) == "王" else {
+    fail("混输wang应保留佢及王")
+}
+guard ime_session_key(session, 50) == 1 else { fail("混输数字2应提交王") }
+let mixedCommit = ime_session_commit(session)
+guard let value = mixedCommit.data, String(cString: value) == "王" else { fail("混输提交目标错误") }
+ime_string_free(mixedCommit)
+print("✅ 混输歧义保护通过：wang保留候选，数字2→王")
+
 // Exercise the actual Swift/C ABI learning path with synthetic private fixtures.
 let learningTable = learningRoot.appendingPathComponent("table.tsv")
 let learningSeed = learningRoot.appendingPathComponent("seed.tsv")
