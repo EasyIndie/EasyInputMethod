@@ -71,3 +71,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [常用多音读音质量014](reviews/014-pinyin-reading-quality.md)
 
 [组合编辑/安全输入边界015](reviews/015-editing-boundary-audit.md)
+
+2026-10-14用户批准ADR-165：基础UI纳入MVP，候选→设置/菜单→既有工具/反馈→外观/AX→重新锁最终包；功能基线66ab513保留，完整教学后移。实施见docs/design/mvp-ui.md及T-MVP-UI；历史“全UI延期”段落被本决策覆盖，新UI尚未原生验收。

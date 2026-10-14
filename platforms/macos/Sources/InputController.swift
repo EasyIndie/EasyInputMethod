@@ -268,22 +268,10 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow?.hide()
     }
 
-    /// 模式显示名（混输/五笔/拼），用于候选窗状态徽标。
-    private func modeName() -> String {
-        let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
-        return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼"][raw] ?? "混输"
-    }
-
-    /// 菜单用的完整模式名（混输/五笔/拼音）。
+    /// Full input-mode label for the input-source menu.
     private func menuModeName() -> String {
         let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
         return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼音"][raw] ?? "混输"
-    }
-
-    /// 候选窗内的紧凑状态徽标：模式（+ 全）。
-    private func statusBadge() -> String {
-        let width = (session?.isFullWidth ?? false) ? "\(modeName())·全" : modeName()
-        return session?.variantErrorMessage == nil ? width : "\(width)·简（异常）"
     }
 
     /// 打开非模态设置面板（ADR-070/075）：面板承载设置/词库/帮助/反馈/关于。
@@ -470,10 +458,15 @@ final class LampyrisInputController: IMKInputController {
             }
             self.candidateWindow?.hide()
         }
+        window.onPage = { [weak self] delta in
+            guard let self, let client = self.activeClient, let session = self.session else { return }
+            session.page(delta)
+            self.showCandidates(client, session: session)
+        }
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            status: statusBadge(), hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
-                english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"))
+            input: session.buffer, hint: WubiHints.text(buffer: session.buffer, mode: session.mode,
+                english: session.isEnglish, wildcard: ImeConfig.string("wubi.z_key") == "wildcard"), warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
     }
 

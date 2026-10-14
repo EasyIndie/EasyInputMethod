@@ -1,7 +1,7 @@
 // 候选窗：纯代码绘制的无边框 NSPanel（不使用 Interface Builder）。
 //
 // 当前页候选共享渲染，超过屏幕宽度时自动竖排。
-// 候选支持鼠标点选；可显示一个紧凑状态徽标（模式/中英/全角，T-MVP-06）。
+// ADR-165：输入码、极简候选与非激活分页；来源留在辅助标签，模式留在菜单。
 
 import Cocoa
 
@@ -130,103 +130,128 @@ final class CandidateLabel: NSTextField {
         guard isHovered != hovered else { return }
         isHovered = hovered
         guard wantsLayer else { return }
-        layer?.backgroundColor =
-            hovered
-            ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
-            : nil
+        effectiveAppearance.performAsCurrentDrawingAppearance {
+            layer?.backgroundColor = hovered ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor : nil
+        }
     }
 }
 
-final class CandidateWindow {
-    private let panel: NSPanel
-    private let stack: NSStackView
-    private let rows: NSStackView
-    private let hintLabel = NSTextField(labelWithString: "")
-    private var themeTimer: Timer?
+private final class CandidatePanel: NSPanel {
+    override var canBecomeKey: Bool { false }
+    override var canBecomeMain: Bool { false }
+}
+
+private final class CandidatePageButton: NSButton {
+    override func acceptsFirstMouse(for event: NSEvent?) -> Bool { true }
+    override func accessibilityPerformPress() -> Bool {
+        guard isEnabled, !isHidden else { return false }
+        performClick(nil)
+        return true
+    }
+}
+
+private final class CandidateDocument: NSView {
+    override var isFlipped: Bool { true }
+}
+
+final class CandidateWindow: NSObject {
+    private let panel: CandidatePanel
+    private let inputLabel = NSTextField(labelWithString: "")
     private let pageLabel = NSTextField(labelWithString: "")
-    private let statusLabel = NSTextField(labelWithString: "")
-    private let separatorLabel = NSTextField(labelWithString: "│")
+    private let hintLabel = NSTextField(labelWithString: "")
+    private let warningLabel = NSTextField(labelWithString: "")
+    private let previousButton = CandidatePageButton()
+    private let nextButton = CandidatePageButton()
+    private let scrollView = NSScrollView()
+    private let document = CandidateDocument()
     private var labels: [CandidateLabel] = []
     private var renderedCount = 0
-    private var widthConstraints: [NSLayoutConstraint] = []
+    private var pageIndex = 0
+    private var pageCount = 0
+    private var themeTimer: Timer?
+    private var available = NSSize(width: 640, height: 800)
+    private var input = ""
+    private var hint: String?
+    private var warning: String?
 
-    /// 光学垂直微调：无边框标签的文本贴在行盒顶部，CJK 字形重心偏上；
-    /// 下移让字形视觉居中（离屏像素实测，见预览冒烟 `DEBUG3`）。
-    private static let verticalNudge = -NSFont.systemFont(ofSize: 16).descender * 0.75
-
-    /// 点击第 `index` 个候选时回调（由宿主执行选字/上屏）。
     var onSelect: ((Int) -> Void)?
-
+    var onPage: ((Int) -> Void)?
     var frame: NSRect { panel.frame }
-
-    /// 当前显示的状态徽标（无则为 nil），供自测断言。
-    var displayedStatus: String? {
-        stack.arrangedSubviews.contains(statusLabel) ? statusLabel.stringValue : nil
-    }
-    var configuredAppearanceForTesting: NSAppearance.Name? { panel.appearance?.name }
-
-    /// 当前已渲染的候选文本（含来源标签），供自测断言。
+    var displayedInput: String { inputLabel.stringValue }
+    var displayedWarning: String? { warningLabel.isHidden ? nil : warningLabel.stringValue }
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
+    var candidateAccessibilityLabelsForTesting: [String] { labels.prefix(renderedCount).map { $0.accessibilityLabel() ?? "" } }
+    var configuredAppearanceForTesting: NSAppearance.Name? { panel.appearance?.name }
+    var pageStateForTesting: (visible: Bool, previous: Bool, next: Bool, text: String) {
+        (!pageLabel.isHidden, previousButton.isEnabled, nextButton.isEnabled, pageLabel.stringValue)
+    }
+    var scrollingForTesting: Bool { scrollView.hasVerticalScroller }
+    var permitsKeyboardFocusForTesting: Bool { panel.canBecomeKey || panel.canBecomeMain }
+    func candidateFontForTesting(at index: Int) -> NSFont? {
+        guard index >= 0, index < renderedCount else { return nil }
+        return labels[index].attributedStringValue.attribute(.font, at: labels[index].attributedStringValue.length - 1, effectiveRange: nil) as? NSFont
+    }
 
-    init() {
-        panel = NSPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 320, height: 30),
-            styleMask: [.borderless, .nonactivatingPanel],
-            backing: .buffered,
-            defer: false
-        )
+    override init() {
+        panel = CandidatePanel(contentRect: NSRect(x: 0, y: 0, width: 320, height: 40),
+            styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        super.init()
         panel.isFloatingPanel = true
         panel.level = .popUpMenu
         panel.hidesOnDeactivate = false
-        panel.becomesKeyOnlyIfNeeded = true
         panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
-
-        stack = NSStackView()
-        stack.orientation = .horizontal
-        stack.spacing = 14
-        stack.alignment = .centerY
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        rows = NSStackView(views: [stack])
-        rows.orientation = .vertical
-        rows.alignment = .leading
-        rows.spacing = 4
-        rows.translatesAutoresizingMaskIntoConstraints = false
-
         let container = NSView()
         container.wantsLayer = true
-        container.layer?.cornerRadius = 6
-        container.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
+        container.layer?.cornerRadius = 8
         container.layer?.borderWidth = 1
-        container.layer?.borderColor = NSColor.separatorColor.cgColor
-        container.addSubview(rows)
-        NSLayoutConstraint.activate([
-            rows.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 10),
-            rows.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -10),
-            rows.topAnchor.constraint(
-                equalTo: container.topAnchor, constant: 5 + Self.verticalNudge),
-            rows.bottomAnchor.constraint(
-                equalTo: container.bottomAnchor, constant: -(5 - Self.verticalNudge)),
-        ])
         panel.contentView = container
+        for field in [inputLabel, pageLabel, hintLabel, warningLabel] {
+            field.usesSingleLineMode = true
+            field.lineBreakMode = .byTruncatingMiddle
+            container.addSubview(field)
+        }
+        inputLabel.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
+        inputLabel.textColor = .labelColor
+        inputLabel.setAccessibilityLabel("输入编码")
+        pageLabel.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+        pageLabel.textColor = ImeAppearance.secondaryText
         hintLabel.font = .systemFont(ofSize: 11)
         hintLabel.textColor = ImeAppearance.secondaryText
-        hintLabel.lineBreakMode = .byTruncatingTail
-        // 空闲不轮询：主题计时器只在候选窗可见时运行（MVP-13）。
-        for label in [pageLabel, statusLabel, separatorLabel] {
-            label.font = NSFont.systemFont(ofSize: 11)
-            label.textColor = ImeAppearance.secondaryText
+        warningLabel.font = .systemFont(ofSize: 11)
+        warningLabel.textColor = ImeAppearance.errorText
+        for (button, symbol, title, action) in [
+            (previousButton, "chevron.left", "上一页", #selector(previousPage)),
+            (nextButton, "chevron.right", "下一页", #selector(nextPage)),
+        ] {
+            button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
+            button.title = button.image == nil ? title : ""
+            button.isBordered = false
+            button.refusesFirstResponder = true
+            button.controlSize = .small
+            button.target = self
+            button.action = action
+            button.setAccessibilityLabel(title)
+            container.addSubview(button)
         }
-        // Warm Chinese font/layout while hidden, before the first input event.
+        scrollView.borderType = .noBorder
+        scrollView.drawsBackground = false
+        scrollView.autohidesScrollers = true
+        scrollView.hasHorizontalScroller = false
+        scrollView.setAccessibilityHelp("内容较长时可滚动查看全部候选，数字序号保持不变")
+        scrollView.documentView = document
+        document.setAccessibilityRole(.group)
+        document.setAccessibilityLabel("候选字词")
+        container.addSubview(scrollView)
+        // Warm native Chinese font layout without showing a window.
         update(candidates: [ImeCandidate(text: "萤火虫", code: "", source: .codeTable, isPrefix: false)])
         update(candidates: [])
     }
 
     deinit { themeTimer?.invalidate() }
 
-    /// 可见期间刷新主题；隐藏时停表，避免空闲唤醒（MVP-13）。
     private func startThemeTimer() {
         guard themeTimer == nil else { return }
         themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
@@ -234,158 +259,193 @@ final class CandidateWindow {
         }
     }
 
-    private func stopThemeTimer() {
-        themeTimer?.invalidate()
-        themeTimer = nil
-    }
-
     func refreshAppearance() {
         ImeAppearance.applyTheme(to: panel)
         panel.effectiveAppearance.performAsCurrentDrawingAppearance {
             panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
             panel.contentView?.layer?.borderColor = NSColor.separatorColor.cgColor
+            for label in labels.prefix(renderedCount) where label.isHovered {
+                label.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
+            }
         }
     }
 
-    /// 候选文本 +（可选）来源标签的富文本。
-    private static func render(index: Int, _ candidate: ImeCandidate, showSource: Bool)
-        -> NSAttributedString
-    {
-        let text = NSMutableAttributedString(
-            string: "\(index + 1). ",
-            attributes: [
-                .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular),
-                .foregroundColor: ImeAppearance.secondaryText,
-            ])
+    private static func render(index: Int, _ candidate: ImeCandidate) -> NSAttributedString {
+        let text = NSMutableAttributedString(string: "\(index + 1) ", attributes: [
+            .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular),
+            .foregroundColor: ImeAppearance.secondaryText,
+        ])
         text.append(NSAttributedString(string: candidate.text, attributes: [
-            .font: NSFont.systemFont(ofSize: 16, weight: index == 0 ? .semibold : .regular),
+            .font: NSFont.systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular),
             .foregroundColor: NSColor.labelColor,
         ]))
-        if showSource {
-            text.append(
-                NSAttributedString(
-                    string: " " + candidate.source.label,
-                    attributes: [
-                        .font: NSFont.systemFont(ofSize: 11),
-                        .foregroundColor: ImeAppearance.secondaryText,
-                    ]))
-        }
         return text
     }
 
-    /// Refresh visible candidates using the current appearance.
-    ///
-    /// `status`（可选）为紧凑状态徽标（模式/中英/全角），仅在非空时显示。
-    func update(
-        candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1, status: String? = nil,
-        hint: String? = nil
-    ) {
+    func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
+                input: String = "", hint: String? = nil, warning: String? = nil) {
         refreshAppearance()
-
-        NSLayoutConstraint.deactivate(widthConstraints)
-        widthConstraints = []
-        hintLabel.removeFromSuperview()
-        if let hint, !hint.isEmpty, !candidates.isEmpty {
-            hintLabel.stringValue = hint
-            hintLabel.toolTip = hint
-            hintLabel.setAccessibilityLabel(hint)
-            rows.addArrangedSubview(hintLabel)
-        }
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 14
-        for view in stack.arrangedSubviews {
-            view.removeFromSuperview()
-        }
+        self.input = candidates.isEmpty ? "" : input
+        self.hint = candidates.isEmpty ? nil : hint
+        self.warning = candidates.isEmpty ? nil : warning
+        self.pageCount = candidates.isEmpty ? 0 : max(1, pageCount)
+        self.pageIndex = min(max(0, pageIndex), max(0, self.pageCount - 1))
+        inputLabel.stringValue = self.input
+        inputLabel.toolTip = self.input
+        inputLabel.setAccessibilityValue(self.input)
+        hintLabel.stringValue = self.hint ?? ""
+        hintLabel.toolTip = self.hint
+        hintLabel.setAccessibilityLabel(self.hint)
+        warningLabel.stringValue = self.warning == nil ? "" : "繁体不可用，当前简体"
+        warningLabel.toolTip = self.warning
+        warningLabel.setAccessibilityLabel(self.warning)
+        pageLabel.stringValue = self.pageCount > 1 ? "\(self.pageIndex + 1)/\(self.pageCount)" : ""
+        pageLabel.setAccessibilityLabel("第\(self.pageIndex + 1)页，共\(self.pageCount)页")
         for label in labels {
             label.onClick = nil
             label.setAccessibilityElement(false)
+            label.isHidden = true
         }
-        // 状态徽标：模式/中英/全角（T-MVP-06）。
-        if let status, !status.isEmpty {
-            statusLabel.stringValue = status
-            statusLabel.toolTip = status
-            stack.addArrangedSubview(statusLabel)
-            stack.addArrangedSubview(separatorLabel)
-        }
-        // 仅在当前页出现多种来源时标注，避免常态噪声（ADR-057）。
-        let showSources = Set(candidates.map(\.source)).count > 1
-        for (i, candidate) in candidates.enumerated() {
-            if i == labels.count { labels.append(CandidateLabel(labelWithString: "")) }
-            let label = labels[i]
-            label.attributedStringValue = Self.render(index: i, candidate, showSource: showSources)
-            label.lineBreakMode = .byTruncatingTail
-            label.usesSingleLineMode = true
-            label.toolTip = candidate.text
+        for (index, candidate) in candidates.enumerated() {
+            if index == labels.count {
+                let label = CandidateLabel(labelWithString: "")
+                labels.append(label)
+                document.addSubview(label)
+            }
+            let label = labels[index]
+            label.isHidden = false
+            label.attributedStringValue = Self.render(index: index, candidate)
+            label.toolTip = "\(candidate.text) · \(candidate.source.label)"
             label.setAccessibilityElement(true)
-            label.setAccessibilityLabel("第\(i + 1)项，\(candidate.text)，\(candidate.source.label)")
-            label.onClick = { [weak self] in self?.onSelect?(i) }
-            // 内容变化后复位悬停，避免旧高亮残留（标签会被复用）。
+            label.setAccessibilityLabel("第\(index + 1)项，\(candidate.text)，\(candidate.source.label)\(index == 0 ? "，首选" : "")")
+            label.onClick = { [weak self] in self?.onSelect?(index) }
             label.setHovered(false)
-            label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-            stack.addArrangedSubview(label)
         }
         renderedCount = candidates.count
-        if !candidates.isEmpty, pageCount > 1 {
-            let commaKeys = ImeConfig.bool("candidate.page_with_comma") ? " · ,/." : ""
-            pageLabel.stringValue = "\(pageIndex + 1)/\(pageCount)  −/= · PgUp/PgDn\(commaKeys)"
-            stack.addArrangedSubview(pageLabel)
-        }
-        panel.contentView?.layoutSubtreeIfNeeded()
-        let fitting = rows.fittingSize
-        panel.setContentSize(
-            NSSize(width: max(fitting.width + 20, 44), height: max(fitting.height + 10, 28)))
+        arrange()
     }
 
-    /// 供自测：模拟点击第 `index` 个候选（不经过真实鼠标事件）。
+    @objc private func previousPage() {
+        guard pageCount > 1, pageIndex > 0 else { return }
+        onPage?(-1)
+    }
+    @objc private func nextPage() {
+        guard pageCount > 1, pageIndex + 1 < pageCount else { return }
+        onPage?(1)
+    }
+
+    private func arrange() {
+        let margin: CGFloat = 12
+        let maxWidth = max(1, min(640, available.width))
+        let innerLimit = max(1, maxWidth - margin * 2)
+        let visible = Array(labels.prefix(renderedCount))
+        let widths = visible.map { ceil($0.attributedStringValue.size().width) + 4 }
+        let horizontalWidth = widths.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 14
+        let vertical = horizontalWidth > innerLimit
+        let pagesVisible = renderedCount > 0 && pageCount > 1
+        let pageWidth = ceil((pageLabel.stringValue as NSString).size(withAttributes: [.font: pageLabel.font ?? .monospacedDigitSystemFont(ofSize: 11, weight: .regular)]).width) + 4
+        let navigationWidth: CGFloat = pagesVisible ? pageWidth + 56 : 0
+        let headerVisible = !input.isEmpty || pagesVisible
+        let inputWidth = ceil((input as NSString).size(withAttributes: [.font: inputLabel.font ?? .monospacedSystemFont(ofSize: 12, weight: .regular)]).width) + 4
+        let hintWidth = ceil((hintLabel.stringValue as NSString).size(withAttributes: [.font: hintLabel.font ?? .systemFont(ofSize: 11)]).width) + 4
+        let warningWidth = warning == nil ? 0 : ceil(warningLabel.intrinsicContentSize.width)
+        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth)
+        let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
+        let inner = max(1, width - margin * 2)
+        let headerHeight: CGFloat = headerVisible ? 24 : 0
+        let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
+        let warningHeight: CGFloat = warning == nil ? 0 : 18
+        let extraHeight = CGFloat(16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
+        let maxBody = max(1, min(320, available.height - extraHeight))
+        func heights(for bodyWidth: CGFloat) -> [CGFloat] {
+            visible.map { label in
+                if !vertical { return ceil(label.attributedStringValue.size().height) + 4 }
+                return ceil(label.attributedStringValue.boundingRect(with: NSSize(width: max(1, bodyWidth - 4), height: .greatestFiniteMagnitude),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 4
+            }
+        }
+        var bodyWidth = inner
+        var rowHeights = heights(for: bodyWidth)
+        func totalHeight() -> CGFloat {
+            vertical ? rowHeights.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 8 : (rowHeights.max() ?? 0)
+        }
+        var naturalHeight = totalHeight()
+        scrollView.hasVerticalScroller = naturalHeight > maxBody
+        if scrollView.hasVerticalScroller {
+            bodyWidth = max(1, inner - NSScroller.scrollerWidth(for: .small, scrollerStyle: scrollView.scrollerStyle))
+            rowHeights = heights(for: bodyWidth)
+            naturalHeight = totalHeight()
+        }
+        let bodyHeight = min(maxBody, naturalHeight)
+        let total = max(32, min(available.height, bodyHeight + extraHeight))
+        panel.setContentSize(NSSize(width: width, height: total))
+        let top = total - 8
+        inputLabel.isHidden = !headerVisible
+        pageLabel.isHidden = !pagesVisible
+        previousButton.isHidden = !pagesVisible
+        nextButton.isHidden = !pagesVisible
+        previousButton.isEnabled = pagesVisible && pageIndex > 0
+        nextButton.isEnabled = pagesVisible && pageIndex + 1 < pageCount
+        inputLabel.frame = NSRect(x: margin, y: top - 20, width: max(1, inner - navigationWidth - (pagesVisible ? 8 : 0)), height: 20)
+        nextButton.frame = NSRect(x: width - margin - 24, y: top - 24, width: 24, height: 24)
+        pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4, y: top - 20, width: pageWidth, height: 20)
+        previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: top - 24, width: 24, height: 24)
+        let bodyTop = top - headerHeight - (headerVisible ? 4 : 0)
+        scrollView.frame = NSRect(x: margin, y: bodyTop - bodyHeight, width: inner, height: bodyHeight)
+        scrollView.tile()
+        document.frame = NSRect(x: 0, y: 0, width: max(bodyWidth, scrollView.contentSize.width), height: naturalHeight)
+        var offset: CGFloat = 0
+        for (index, label) in visible.enumerated() {
+            label.usesSingleLineMode = !vertical
+            label.lineBreakMode = vertical ? .byWordWrapping : .byClipping
+            label.cell?.wraps = vertical
+            label.preferredMaxLayoutWidth = bodyWidth
+            label.frame = vertical
+                ? NSRect(x: 0, y: offset, width: bodyWidth, height: rowHeights[index])
+                : NSRect(x: offset, y: 0, width: widths[index], height: rowHeights[index])
+            offset += vertical ? rowHeights[index] + 8 : widths[index] + 14
+        }
+        scrollView.contentView.scroll(to: .zero)
+        scrollView.reflectScrolledClipView(scrollView.contentView)
+        hintLabel.isHidden = hintHeight == 0
+        warningLabel.isHidden = warningHeight == 0
+        warningLabel.frame = NSRect(x: margin, y: 8 + hintHeight, width: inner, height: warningHeight)
+        hintLabel.frame = NSRect(x: margin, y: 8, width: inner, height: hintHeight)
+    }
+
     func simulateClick(at index: Int) {
+        guard index >= 0, index < renderedCount else { return }
         onSelect?(index)
     }
-
     func accessiblePressForTesting(at index: Int) -> Bool {
         guard index >= 0, index < labels.count else { return false }
         return labels[index].accessibilityPerformPress()
     }
-
-    /// 供自测：模拟鼠标悬停第 `index` 个候选（不经过真实鼠标事件）。
+    func pagePressForTesting(_ delta: Int) -> Bool {
+        (delta < 0 ? previousButton : nextButton).accessibilityPerformPress()
+    }
     func simulateHover(at index: Int, _ hovered: Bool) {
         guard index >= 0, index < renderedCount else { return }
         labels[index].setHovered(hovered)
     }
-
-    /// 供自测：第 `index` 个候选当前是否处于悬停高亮。
     func isHovered(at index: Int) -> Bool {
-        guard index >= 0, index < renderedCount else { return false }
-        return labels[index].isHovered
+        index >= 0 && index < renderedCount && labels[index].isHovered
     }
-
-    /// 供自测：第 `index` 个候选是否具备可渲染高亮的图层（防止高亮静默失效）。
     func isHoverRenderable(at index: Int) -> Bool {
-        guard index >= 0, index < renderedCount else { return false }
-        return labels[index].wantsLayer
+        index >= 0 && index < renderedCount && labels[index].wantsLayer
     }
-
-    /// 供自测：容器 bounds 与已渲染候选标签的 frame（容器坐标系），用于垂直居中回归。
     func layoutForTesting() -> (container: NSRect, labels: [NSRect])? {
         guard let container = panel.contentView else { return nil }
-        return (
-            container.bounds,
-            labels.prefix(renderedCount).map { $0.convert($0.bounds, to: container) }
-        )
+        return (container.bounds, labels.prefix(renderedCount).map { $0.convert($0.bounds, to: container) })
     }
-
-    /// 供自测：把候选窗当前内容渲染为位图（按当前外观），用于浅/暗主题可读性（对比度）断言。
     func renderSnapshotForTesting() -> NSBitmapImageRep? {
         guard let view = panel.contentView, view.bounds.width > 1, view.bounds.height > 1,
-            let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds)
-        else { return nil }
+            let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
+        view.layoutSubtreeIfNeeded()
         view.cacheDisplay(in: view.bounds, to: rep)
         return rep
     }
 
-    /// 从多个屏幕 frame 中选出与光标最相关的一个：
-    /// 优先相交面积最大者（副屏可为负坐标）；退而取包含光标中心的屏幕；再退回第一个。
-    /// 独立于 `NSScreen` 实例，便于隔离几何测试（多屏 / 负坐标 / 高分屏）。
     static func bestScreenIndex(for caret: NSRect, among frames: [NSRect]) -> Int? {
         guard !frames.isEmpty else { return nil }
         var bestIndex: Int?
@@ -393,58 +453,34 @@ final class CandidateWindow {
         for (index, frame) in frames.enumerated() where frame.intersects(caret) {
             let overlap = frame.intersection(caret)
             let area = overlap.isNull ? 0 : overlap.width * overlap.height
-            if bestIndex == nil || area > bestOverlap {
-                bestIndex = index
-                bestOverlap = area
-            }
+            if bestIndex == nil || area > bestOverlap { bestIndex = index; bestOverlap = area }
         }
         if let bestIndex { return bestIndex }
         let center = NSPoint(x: caret.midX, y: caret.midY)
         return frames.firstIndex { $0.contains(center) } ?? 0
     }
-
-    /// 在光标矩形上方显示。
     func show(at caret: NSRect) {
         refreshAppearance()
-        startThemeTimer()
-        // 用 frame 选屏、visibleFrame 钳制，避免跨屏/菜单栏区域错位（体验打磨）。
+        if themeTimer == nil { startThemeTimer() }
         let screens = NSScreen.screens
         let index = Self.bestScreenIndex(for: caret, among: screens.map(\.frame))
         let screen = index.flatMap { $0 < screens.count ? screens[$0] : nil } ?? NSScreen.main
-        let area = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
-        layout(at: caret, within: area)
+        layout(at: caret, within: screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080))
         panel.orderFront(nil)
     }
-
-    /// Bound geometry independently of the display server for deterministic checks.
     func layout(at caret: NSRect, within area: NSRect) {
-        NSLayoutConstraint.deactivate(widthConstraints)
-        widthConstraints = []
-        widthConstraints.append(hintLabel.widthAnchor.constraint(lessThanOrEqualToConstant: max(1, area.width - 20)))
-        stack.orientation = .horizontal
-        stack.alignment = .centerY
-        stack.spacing = 14
-        if stack.fittingSize.width + 20 > area.width {
-            stack.orientation = .vertical
-            stack.alignment = .leading
-            widthConstraints += stack.arrangedSubviews.map {
-                $0.widthAnchor.constraint(lessThanOrEqualToConstant: max(1, area.width - 20))
-            }
-        }
-        NSLayoutConstraint.activate(widthConstraints)
-        panel.contentView?.layoutSubtreeIfNeeded()
-        let fitting = rows.fittingSize
-        panel.setContentSize(NSSize(width: min(area.width, max(fitting.width + 20, 44)),
-            height: min(area.height, max(fitting.height + 10, 28))))
+        available = area.size
+        arrange()
         let size = panel.frame.size
         let x = max(area.minX, min(caret.minX, area.maxX - size.width))
-        let preferredY = caret.maxY + 4
-        let y = preferredY + size.height <= area.maxY ? preferredY : caret.minY - size.height - 4
+        let preferred = caret.maxY + 4
+        let y = preferred + size.height <= area.maxY ? preferred : caret.minY - size.height - 4
         panel.setFrameOrigin(NSPoint(x: x, y: max(area.minY, min(y, area.maxY - size.height))))
     }
-
     func hide() {
-        stopThemeTimer()
+        themeTimer?.invalidate()
+        themeTimer = nil
         panel.orderOut(nil)
+        update(candidates: [])
     }
 }
