@@ -289,9 +289,7 @@ final class WubiLearningView: NSView {
                 y += label("拆字说明暂缺", in: self, x: 0, y: y, width: width)
             } else {
                 // Recognition explanation stays in the summary, separate from real roots.
-                var roots = item.roots
-                if let code = item.recognition?.key { roots.append(WubiLearning.Root(text: "识别码", key: code)) }
-                y += rootRow(roots, in: self, y: y, width: width)
+                y += rootRow(item.roots, in: self, y: y, width: width)
             }
         } else {
             let count = model.characters.count
@@ -324,9 +322,7 @@ final class WubiLearningView: NSView {
                         if item.roots.isEmpty {
                             offset += label("拆字说明暂缺", in: document, x: 12, y: offset, width: inner - 12)
                         } else {
-                            var roots = item.roots
-                            if let key = item.recognition?.key { roots.append(WubiLearning.Root(text: "识别码", key: key)) }
-                            offset += rootRow(roots, in: document, y: offset, width: inner)
+                            offset += rootRow(item.roots, in: document, y: offset, width: inner)
                         }
                         offset += 5
                     }
@@ -490,10 +486,15 @@ final class CandidateWindow: NSObject {
     }
 
     private static func render(index: Int, _ candidate: ImeCandidate) -> NSAttributedString {
-        let text = NSMutableAttributedString(string: "\(index + 1) ", attributes: [
-            .font: NSFont.monospacedDigitSystemFont(ofSize: 11, weight: .regular),
+        let number = "\(index + 1)"
+        let ordinalFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: index == 0 ? .semibold : .regular)
+        let text = NSMutableAttributedString(string: number, attributes: [
+            .font: ordinalFont,
             .foregroundColor: ImeAppearance.secondaryText,
         ])
+        let prefixWidth = ((number + " ") as NSString).size(withAttributes: [.font: ordinalFont]).width
+        text.append(NSAttributedString(string: " ", attributes: [.font: ordinalFont,
+            .kern: max(0, 20 - prefixWidth), .foregroundColor: ImeAppearance.secondaryText]))
         text.append(NSAttributedString(string: candidate.text, attributes: [
             .font: NSFont.systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular),
             .foregroundColor: NSColor.labelColor,
@@ -556,7 +557,7 @@ final class CandidateWindow: NSObject {
     }
 
     private func arrange() {
-        let margin: CGFloat = 12
+        let margin: CGFloat = 16
         let maxWidth = max(1, min(640, available.width))
         let innerLimit = max(1, maxWidth - margin * 2)
         let visible = Array(labels.prefix(renderedCount))
@@ -570,14 +571,14 @@ final class CandidateWindow: NSObject {
         let inputWidth = ceil((input as NSString).size(withAttributes: [.font: inputLabel.font ?? .monospacedSystemFont(ofSize: 12, weight: .regular)]).width) + 4
         let hintWidth = ceil((hintLabel.stringValue as NSString).size(withAttributes: [.font: hintLabel.font ?? .systemFont(ofSize: 11)]).width) + 4
         let warningWidth = warning == nil ? 0 : ceil(warningLabel.intrinsicContentSize.width)
-        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth, learningView.hasContent ? 352 : 0)
+        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth, max(0, min(400, maxWidth) - margin * 2))
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
         let headerHeight: CGFloat = headerVisible ? 24 : 0
         let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
         let learningHeight = learningView.arrange(width: inner, maxHeight: min(270, max(0, available.height - 92)))
-        let extraHeight = learningHeight + (learningHeight > 0 ? 8 : 0) + CGFloat(16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
+        let extraHeight = learningHeight + (learningHeight > 0 ? 8 : 0) + CGFloat(headerVisible ? 22 : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
         let maxBody = max(1, min(320, available.height - extraHeight))
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
@@ -612,10 +613,12 @@ final class CandidateWindow: NSObject {
         nextButton.frame = NSRect(x: width - margin - 24, y: top - 24, width: 24, height: 24)
         pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4, y: top - 20, width: pageWidth, height: 20)
         previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: top - 24, width: 24, height: 24)
-        let bodyTop = top - headerHeight - (headerVisible ? 4 : 0)
+        let bodyTop = top - headerHeight
         scrollView.frame = NSRect(x: margin, y: bodyTop - bodyHeight, width: inner, height: bodyHeight)
         scrollView.tile()
         document.frame = NSRect(x: 0, y: 0, width: max(bodyWidth, scrollView.contentSize.width), height: naturalHeight)
+        let pitch = renderedCount > 0 ? (inner + 8) / CGFloat(renderedCount) : 0
+        let equalColumns = !vertical && (widths.max() ?? 0) <= pitch - 8
         var offset: CGFloat = 0
         for (index, label) in visible.enumerated() {
             label.usesSingleLineMode = !vertical
@@ -624,8 +627,8 @@ final class CandidateWindow: NSObject {
             label.preferredMaxLayoutWidth = bodyWidth
             label.frame = vertical
                 ? NSRect(x: 0, y: offset, width: bodyWidth, height: rowHeights[index])
-                : NSRect(x: offset, y: 0, width: widths[index], height: rowHeights[index])
-            offset += vertical ? rowHeights[index] + 8 : widths[index] + 14
+                : NSRect(x: offset, y: 0, width: equalColumns ? pitch - 8 : widths[index], height: rowHeights[index])
+            offset += vertical ? rowHeights[index] + 8 : equalColumns ? pitch : widths[index] + 14
         }
         scrollView.contentView.scroll(to: .zero)
         scrollView.reflectScrolledClipView(scrollView.contentView)

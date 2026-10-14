@@ -71,3 +71,18 @@ require(session.shortcut(event, persistMode: true) == .handled && ImeConfig.bool
 require(session.buffer == originalBuffer && session.pageIndex == originalPage, "shortcut preserves composition and page")
 require(!ImeConfig.setString("hotkey.toggle_wubi_learning", "ctrl+shift+m"), "shortcut collision rejected")
 print("PASS learning shortcut: same preference, composition preserved, conflict rejected")
+
+require(ImeConfig.setToml("candidate.show_wubi_learning", "false"), "matched collapsed")
+let matched = ["你", "你好", "您", "拟"].map { ImeCandidate(text: $0, code: "wq", source: .codeTable, isPrefix: false) }
+require(ImeConfig.setString("appearance.theme", "light"), "matched theme")
+window.update(candidates: matched, pageIndex: 0, pageCount: 12, input: "wq")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+let stableWidth = window.frame.width
+require(stableWidth == 400, "reviewed standard candidate width")
+snapshot("matched-collapsed-light")
+require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "show stable learning")
+window.update(candidates: matched, pageIndex: 0, pageCount: 12, input: "wq")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+require(window.frame.width == stableWidth, "learning preserves candidate body width")
+snapshot("matched-learning-light")
+window.hide()
