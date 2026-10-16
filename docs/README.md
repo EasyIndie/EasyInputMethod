@@ -79,3 +79,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [全量五笔教学生成与自建结构库调研036](reviews/036-generated-wubi-teaching-research.md)：比较自建/外部结构事实、版本规则与教程复用；包含受限模板原型和准入边界，方案尚未采纳。
 
 [结构模块体积与拆分边界037](reviews/037-structure-module-size-and-boundaries.md)：现有体积实测、运行资源分层与ADR-189；模块目录见modules/hanzi-structure。
+
+[当前MVP剩余工作038](reviews/038-mvp-remaining-work.md)：ADR-190将自建库后移，区分未开始的真实验收、已完成工程及最终候选收口；优先于旧计划中的实施状态。
