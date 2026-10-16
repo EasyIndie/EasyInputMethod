@@ -4,6 +4,34 @@
 // ADR-165：输入码、极简候选与非激活分页；来源留在辅助标签，模式留在菜单。
 
 import Cocoa
+import CoreText
+
+/// Readable display only; candidate identity and commit text remain in ImeSession.
+enum CandidateTextPresentation {
+    private static var cache: [String: Bool] = [:]
+
+    static func display(_ text: String, font: NSFont = .systemFont(ofSize: 17)) -> String {
+        text.map { character in
+            let value = String(character)
+            let key = font.fontName + ":" + value
+            let supported: Bool
+            if let saved = cache[key] { supported = saved }
+            else {
+                let line = CTLineCreateWithAttributedString(NSAttributedString(string: value, attributes: [.font: font]))
+                let runs = CTLineGetGlyphRuns(line) as? [CTRun] ?? []
+                supported = !runs.contains { run in
+                    let attributes = CTRunGetAttributes(run) as NSDictionary
+                    guard let fallback = attributes[kCTFontAttributeName] else { return false }
+                    let name = CTFontCopyPostScriptName(fallback as! CTFont) as String
+                    return name.lowercased().contains("lastresort")
+                }
+                if cache.count >= 256 { cache.removeAll(keepingCapacity: true) }
+                cache[key] = supported
+            }
+            return supported ? value : "〔缺字 " + value.unicodeScalars.map { String(format: "U+%X", $0.value) }.joined(separator: "+") + "〕"
+        }.joined()
+    }
+}
 
 /// Colors used by custom text; resolve them in the view's actual appearance.
 enum ImeAppearance {
@@ -549,7 +577,7 @@ final class CandidateWindow: NSObject {
         let prefixWidth = ((number + " ") as NSString).size(withAttributes: [.font: ordinalFont]).width
         text.append(NSAttributedString(string: " ", attributes: [.font: ordinalFont,
             .kern: max(0, 20 - prefixWidth), .foregroundColor: ImeAppearance.secondaryText]))
-        text.append(NSAttributedString(string: candidate.text, attributes: [
+        text.append(NSAttributedString(string: CandidateTextPresentation.display(candidate.text, font: .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)), attributes: [
             .font: NSFont.systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular),
             .foregroundColor: NSColor.labelColor,
         ]))
@@ -591,9 +619,12 @@ final class CandidateWindow: NSObject {
             label.isHidden = false
             label.font = .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)
             label.attributedStringValue = Self.render(index: index, candidate)
-            label.toolTip = "\(candidate.text) · \(candidate.source.label)"
+            let visibleText = CandidateTextPresentation.display(candidate.text, font: label.font ?? .systemFont(ofSize: 17))
+            let missing = visibleText != candidate.text
+            let detail = missing ? "系统字体缺字；选择仍输入原字符" : candidate.source.label
+            label.toolTip = "\(visibleText) · \(detail)"
             label.setAccessibilityElement(true)
-            label.setAccessibilityLabel("第\(index + 1)项，\(candidate.text)，\(candidate.source.label)\(index == 0 ? "，首选" : "")")
+            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(index == 0 ? "，首选" : "")")
             label.onClick = { [weak self] in self?.onSelect?(index) }
             label.setHovered(false)
         }

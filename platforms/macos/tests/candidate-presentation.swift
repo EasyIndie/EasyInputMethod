@@ -87,6 +87,35 @@ window.layout(at: caret, within: area)
 guard area.contains(window.frame), window.scrollingForTesting,
       window.displayedCandidateTexts.allSatisfy({ $0.contains(long) }) else { fail("bounded long candidates") }
 snapshot("long-dark")
+// Actual shipped a page 2: Unicode remains intact even when native fonts lack glyphs.
+let shipped = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("data/generated/pinyin-chars.tsv")
+guard let pinyin = ImeSession(wubiPath: table.path, pinyinCharsPath: shipped.path, pinyinWordsPath: nil) else { fail("shipped pinyin fixture") }
+pinyin.setMode("pinyin")
+pinyin.setPageSize(7)
+_ = pinyin.feed(97)
+pinyin.page(1)
+let rarePage = pinyin.candidates(limit: 7)
+guard pinyin.pageIndex == 1, pinyin.pageCount == 2,
+      rarePage.map(\.text) == ["錒", "𠼞", "𥥩", "𨉚", "𱚱"] else { fail("shipped a page Unicode identity") }
+guard CandidateTextPresentation.display("你好 ABC ❤️") == "你好 ABC ❤️" else { fail("ordinary glyphs unchanged") }
+for theme in ["light", "dark"] {
+    guard ImeConfig.setString("appearance.theme", theme) else { fail("glyph theme") }
+    window.update(candidates: rarePage, pageIndex: 1, pageCount: 2, input: "a")
+    window.layout(at: caret, within: NSRect(x: 0, y: 0, width: 1000, height: 400))
+    for (index, candidate) in rarePage.enumerated() {
+        let display = CandidateTextPresentation.display(candidate.text)
+        guard window.displayedCandidateTexts[index] == "\(index + 1) " + display else { fail("glyph label mapping") }
+        if display != candidate.text {
+            guard display.contains("U+"), window.candidateAccessibilityLabelsForTesting[index].contains("系统字体缺字") else { fail("missing glyph explained") }
+        }
+    }
+    snapshot("pinyin-a-missing-glyph-" + theme)
+}
+window.onSelect = { index in
+    guard pinyin.select(index) == rarePage[index].text else { fail("glyph replacement must not change committed scalar") }
+    selected = index
+}
+guard window.accessiblePressForTesting(at: 1), selected == 1 else { fail("rare glyph real FFI selection") }
 window.hide()
 selected = -1
 guard !window.accessiblePressForTesting(at: 0), !window.pagePressForTesting(1),

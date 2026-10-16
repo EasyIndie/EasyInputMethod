@@ -98,7 +98,7 @@ final class PreviewInput: NSTextView {
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
-        let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
+        let summary = values.map { "\(CandidateTextPresentation.display($0.text))[\($0.source.label)]" }.joined(separator: " · ")
         status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
             candidates.update(
