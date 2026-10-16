@@ -41,7 +41,8 @@ require(menu.items[0].action != nil && menu.items[0].submenu?.items.count == 3, 
 for expected in ["五笔", "拼音", "混输"] {
     menu.performActionForItem(at: 0)
     require(menu.items[0].accessibilityValue() as? String == expected, "parent cycle refreshes same menu")
-    require(menu.items[0].attributedTitle?.string == "输入模式\t" + expected, "plain trailing status")
+    require((menu.items[0].view as? InputModeMenuView)?.mode == expected, "plain trailing status")
+    require(menu.items[0].title == "输入模式：" + expected, "native proxy fallback retains mode")
     require(menu.items[0].toolTip == nil, "no mode hover hint")
     if #available(macOS 14.0, *) {
         require(menu.items[0].badge == nil, "no tag styling")
@@ -55,10 +56,16 @@ require(menu.items[0].accessibilityValue() as? String == "混输", "wide menu re
 if #available(macOS 14.0, *) {
     require(menu.items[0].badge == nil, "wide menu has no badge")
 }
-let wideTitle = menu.items[0].attributedTitle!
-let wideParagraph = wideTitle.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as! NSParagraphStyle
-require(wideParagraph.tabStops.first?.alignment == .right, "trailing status is right aligned")
-require((wideParagraph.tabStops.first?.location ?? 0) > 160, "trailing status follows expanded menu width")
+let row = menu.items[0].view as! InputModeMenuView
+for width: CGFloat in [160, 240, 360] {
+    row.setFrameSize(NSSize(width: width, height: 24))
+    require(row.arrowFrame.minX - row.statusFrame.maxX == 11, "status stays next to arrow across menu widths")
+    require(row.statusFrame.maxY <= row.bounds.maxY && row.statusFrame.minX > 90, "status avoids title and row bounds")
+}
+row.mode = "五笔"
+let copy = menu.items[0].copy() as! NSMenuItem
+require((copy.view as? InputModeMenuView)?.mode == "五笔", "native menu copy retains status")
+InputStateMenu.refresh(menu, state: owner.snapshot)
 menu.removeItem(wideItem)
 let submenu = menu.items[0].submenu!
 for (index, raw) in [(1,"wubi"),(2,"pinyin"),(0,"mixed")] {

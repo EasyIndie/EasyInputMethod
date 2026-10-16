@@ -58,19 +58,113 @@ enum InputStateMenu {
         modeItem.title = "输入模式"
         modeItem.setAccessibilityValue(mode)
         if #available(macOS 14.0, *) { modeItem.badge = nil }
-        // Keep the status in the native title, with the same trailing text treatment
-        // as shortcut labels, while reserving the native submenu arrow gutter.
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.tabStops = [NSTextTab(textAlignment: .right, location: max(100, menu.size.width - 60))]
-        let title = NSMutableAttributedString(string: "输入模式\t" + mode,
-            attributes: [.paragraphStyle: paragraph, .font: NSFont.menuFont(ofSize: 0)])
-        title.addAttribute(.foregroundColor, value: NSColor.secondaryLabelColor,
-            range: NSRange(location: 5, length: (mode as NSString).length))
-        modeItem.attributedTitle = title
+        let row = (modeItem.view as? InputModeMenuView) ?? InputModeMenuView(frame: NSRect(x: 0, y: 0, width: 160, height: 24))
+        row.mode = mode
+        row.isEnabled = state.enabled
+        modeItem.view = row
+        // Preserve a useful native fallback if an IMK menu proxy drops the view.
+        modeItem.title = "输入模式：" + mode
         modeItem.toolTip = nil
         for (item, mode) in zip(menu.items[0].submenu?.items ?? [], modes) {
             item.state = mode.0 == state.mode ? .on : .off
             item.isEnabled = state.enabled
         }
     }
+}
+
+/// One flexible row; the containing NSMenu retains native submenu tracking.
+final class InputModeMenuView: NSView {
+    private var pointerInside = false
+    private var hoverArea: NSTrackingArea?
+    var mode = "混输" { didSet { setAccessibilityValue(mode); needsDisplay = true } }
+    var isEnabled = true { didSet { setAccessibilityEnabled(isEnabled); needsDisplay = true } }
+    override var isFlipped: Bool { true }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        autoresizingMask = [.width]
+        setAccessibilityElement(true)
+        setAccessibilityRole(.menuItem)
+        setAccessibilityLabel("输入模式")
+    }
+
+    required init?(coder: NSCoder) {
+        super.init(coder: coder)
+        mode = coder.decodeObject(forKey: "mode") as? String ?? "混输"
+        isEnabled = coder.decodeBool(forKey: "modeEnabled")
+        setAccessibilityValue(mode)
+        setAccessibilityEnabled(isEnabled)
+        autoresizingMask = [.width]
+        setAccessibilityElement(true)
+        setAccessibilityRole(.menuItem)
+        setAccessibilityLabel("输入模式")
+    }
+
+    override func encode(with coder: NSCoder) {
+        super.encode(with: coder)
+        coder.encode(mode, forKey: "mode")
+        coder.encode(isEnabled, forKey: "modeEnabled")
+    }
+
+    var statusFrame: NSRect { NSRect(x: bounds.maxX - 68, y: 0, width: 40, height: bounds.height) }
+    var arrowFrame: NSRect { NSRect(x: bounds.maxX - 17, y: bounds.midY - 5, width: 5, height: 10) }
+
+    override func draw(_ dirtyRect: NSRect) {
+        let selected = isEnabled && (pointerInside || enclosingMenuItem?.isHighlighted == true)
+        if selected {
+            NSColor.selectedContentBackgroundColor.setFill()
+            NSBezierPath(roundedRect: bounds.insetBy(dx: 1, dy: 0), xRadius: 5, yRadius: 5).fill()
+        }
+        let foreground: NSColor = !isEnabled ? .disabledControlTextColor : selected ? .selectedMenuItemTextColor : .labelColor
+        let secondary: NSColor = !isEnabled ? .disabledControlTextColor : selected ? .selectedMenuItemTextColor : .secondaryLabelColor
+        let font = NSFont.menuFont(ofSize: 0)
+        func text(_ string: String, in rect: NSRect, color: NSColor, right: Bool = false) {
+            let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color]
+            let size = (string as NSString).size(withAttributes: attributes)
+            (string as NSString).draw(at: NSPoint(x: right ? rect.maxX - size.width : rect.minX,
+                y: rect.midY - size.height / 2), withAttributes: attributes)
+        }
+        text("输入模式", in: NSRect(x: 14, y: 0, width: 85, height: bounds.height), color: foreground)
+        text(mode, in: statusFrame, color: secondary, right: true)
+        foreground.setStroke()
+        let path = NSBezierPath()
+        path.lineWidth = 1.5
+        path.lineCapStyle = .round
+        path.lineJoinStyle = .round
+        path.move(to: NSPoint(x: arrowFrame.minX, y: arrowFrame.minY))
+        path.line(to: NSPoint(x: arrowFrame.maxX, y: arrowFrame.midY))
+        path.line(to: NSPoint(x: arrowFrame.minX, y: arrowFrame.maxY))
+        path.stroke()
+    }
+
+    override func updateTrackingAreas() {
+        if let hoverArea { removeTrackingArea(hoverArea) }
+        let area = NSTrackingArea(rect: .zero,
+            options: [.mouseEnteredAndExited, .activeAlways, .inVisibleRect, .enabledDuringMouseDrag],
+            owner: self, userInfo: nil)
+        addTrackingArea(area)
+        hoverArea = area
+        super.updateTrackingAreas()
+    }
+
+    override func mouseEntered(with event: NSEvent) { pointerInside = true; needsDisplay = true }
+    override func mouseExited(with event: NSEvent) { pointerInside = false; needsDisplay = true }
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        pointerInside = false
+        needsDisplay = true
+    }
+
+    @discardableResult
+    private func cycle() -> Bool {
+        guard isEnabled, let item = enclosingMenuItem, let action = item.action else { return false }
+        return NSApp.sendAction(action, to: item.target, from: item)
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        guard bounds.contains(convert(event.locationInWindow, from: nil)) else { return }
+        cycle()
+    }
+
+    override func accessibilityPerformPress() -> Bool { cycle() }
 }
