@@ -87,3 +87,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [控件标签与说明间距039](reviews/039-controls-labels-and-description-spacing.md)：按钮/菜单无省略号、模式系统符号、四项说明统一基线及亮暗原生渲染证据。
 
 真实IMK的未执行准备材料见 [报告042](reviews/042-imk-acceptance-preparation.md)及[任务卡](tasks/T-IMK-ACCEPTANCE-PREP.md)。
+
+正式包账号数据隔离前置及边界见 [报告043](reviews/043-formal-account-isolation-gate.md)。

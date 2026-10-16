@@ -128,3 +128,16 @@ python3 platforms/macos/tests/prepare-imk-acceptance.py --output platforms/macos
 ```
 
 只接受新目录；输出12组细化步骤、预期、证据与停止/恢复规则，以及全部BLOCKED的正式schema 2模板。候选/应用版本留空；不能用准备成功表示实机通过。入口无执行模式，不调用旧live脚本；真正执行前需当前空闲、同候选/宿主身份、私有数据及逐动作焦点保护。现有隔离驱动不能直接适配正式包，新菜单/VoiceOver交互保护仍待实现/实测。详见报告042与ADR-193。
+
+## 正式包的账号数据隔离前置（ADR-194）
+
+正式宿主固定使用真实登录用户的Application Support，不能用HOME覆盖或测试包冒充正式包。涉及写配置/词库时使用独立macOS测试账号；本工具只验证账号和已知数据路径边界，没有桌面执行能力。
+
+```sh
+# 原操作者账号：绑定精确候选归档及其commit，plan必须不存在
+python3 platforms/macos/tests/formal-profile-guard.py bind --candidate /path/final.zip --commit FULL_SHA --plan /path/new-account-plan.json
+# 独立账号：只读检查；同账号/root/伪HOME/链接/他人可写路径/归档漂移返回3
+python3 platforms/macos/tests/formal-profile-guard.py check --candidate /path/final.zip --plan /path/new-account-plan.json
+```
+
+绑定单须人工核对来源并传入测试账号，它是上下文声明，不是授权凭据。PROFILE_READY仍为formal_result=BLOCKED；需要另验GUI登录会话、签名/公证、安装副本/运行宿主、当前空闲、权限及逐动作保护。路径检查仅代表当时快照，不消除检查后改路径的竞争；执行器仍需自己的保护，不得据此解禁旧live入口。现有隔离测试包继续只证明组件/隔离宿主；本工具不修改包身份或配置通道，也不创建系统账号。
