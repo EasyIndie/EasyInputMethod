@@ -1,0 +1,2238 @@
+{
+  "origin_main": "abdb83ff2a6ff3cd1a63a48e0c446822e18e2f86",
+  "branches": [
+    {
+      "name": "codex/fix-composition-navigation",
+      "sha": "78b6762be08a3a81e123c06c577c59121fd87e35",
+      "merged": true,
+      "ahead_behind": "64\t0"
+    },
+    {
+      "name": "codex/fix-offline-wubi-learning",
+      "sha": "66ab5132d963ce75c9ed4309f152f79406874c0f",
+      "merged": true,
+      "ahead_behind": "56\t0"
+    },
+    {
+      "name": "codex/imk-native-menu-fix",
+      "sha": "abdb83ff2a6ff3cd1a63a48e0c446822e18e2f86",
+      "merged": true,
+      "ahead_behind": "0\t0"
+    },
+    {
+      "name": "codex/isolated-imk-ci-notary",
+      "sha": "f5d1bbf042e9bd09b2269c91e6c112b8d61f49b8",
+      "merged": true,
+      "ahead_behind": "80\t0"
+    },
+    {
+      "name": "codex/menu-state-shortcuts",
+      "sha": "daa7971e6fbebfe30c627aadb4a84fe40a0bf7fa",
+      "merged": true,
+      "ahead_behind": "1\t0"
+    },
+    {
+      "name": "codex/mvp-complete-learning-ui",
+      "sha": "2f38f34d432a8eee67fc1a5cac546c73cfc4c82b",
+      "merged": true,
+      "ahead_behind": "33\t0"
+    },
+    {
+      "name": "codex/mvp-product-candidate",
+      "sha": "186e85c10324eee933f84ae5bf1054556e625096",
+      "merged": true,
+      "ahead_behind": "66\t0"
+    },
+    {
+      "name": "codex/mvp-ui-refinement",
+      "sha": "c2c3b537c5eb1c2cef4399cef05ebd9f8da782ca",
+      "merged": true,
+      "ahead_behind": "50\t0"
+    },
+    {
+      "name": "main",
+      "sha": "c294b6765e814327b6f4f46b86cf7d5f4957aa99",
+      "merged": true,
+      "ahead_behind": "81\t0"
+    },
+    {
+      "name": "origin",
+      "sha": "abdb83ff2a6ff3cd1a63a48e0c446822e18e2f86",
+      "merged": true,
+      "ahead_behind": "0\t0"
+    },
+    {
+      "name": "origin/codex/fix-composition-navigation",
+      "sha": "78b6762be08a3a81e123c06c577c59121fd87e35",
+      "merged": true,
+      "ahead_behind": "64\t0"
+    },
+    {
+      "name": "origin/codex/fix-offline-wubi-learning",
+      "sha": "f90010bbd9f69f2ab097dad2236cced18760ec00",
+      "merged": true,
+      "ahead_behind": "63\t0"
+    },
+    {
+      "name": "origin/codex/isolated-imk-ci-notary",
+      "sha": "f5d1bbf042e9bd09b2269c91e6c112b8d61f49b8",
+      "merged": true,
+      "ahead_behind": "80\t0"
+    },
+    {
+      "name": "origin/codex/menu-state-shortcuts",
+      "sha": "daa7971e6fbebfe30c627aadb4a84fe40a0bf7fa",
+      "merged": true,
+      "ahead_behind": "1\t0"
+    },
+    {
+      "name": "origin/codex/mvp-complete-learning-ui",
+      "sha": "2f38f34d432a8eee67fc1a5cac546c73cfc4c82b",
+      "merged": true,
+      "ahead_behind": "33\t0"
+    },
+    {
+      "name": "origin/codex/mvp-core-refinement",
+      "sha": "66ab5132d963ce75c9ed4309f152f79406874c0f",
+      "merged": true,
+      "ahead_behind": "56\t0"
+    },
+    {
+      "name": "origin/codex/mvp-product-candidate",
+      "sha": "186e85c10324eee933f84ae5bf1054556e625096",
+      "merged": true,
+      "ahead_behind": "66\t0"
+    },
+    {
+      "name": "origin/codex/mvp-ui-refinement",
+      "sha": "c2c3b537c5eb1c2cef4399cef05ebd9f8da782ca",
+      "merged": true,
+      "ahead_behind": "50\t0"
+    },
+    {
+      "name": "origin/main",
+      "sha": "abdb83ff2a6ff3cd1a63a48e0c446822e18e2f86",
+      "merged": true,
+      "ahead_behind": "0\t0"
+    }
+  ],
+  "changed_vs_origin": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "bytes": 7927,
+      "local_blob": "0c2267dde84420dd7c1afc286910c3d90fe3a515",
+      "origin_blob": "008b7ca9444af0dba9767a6a2be072f32756a806",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "HANDOFF.md",
+      "bytes": 17459,
+      "local_blob": "3666f8f83c6d02e88e22d5301dceae36987aedb8",
+      "origin_blob": "e827d6c3d18c69f71c60c59c7695b2e0f1d06ad6",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "Makefile",
+      "bytes": 3614,
+      "local_blob": "78f8b53a8d764d5bc0b7e5cf6f6c5ce78f66d3c1",
+      "origin_blob": "d3e5b5859740c783646a031228557bf96de9ad9d",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "README.md",
+      "bytes": 4609,
+      "local_blob": "c0789334cfb452dbdc8cf6dd584c4a6d2ddd5a50",
+      "origin_blob": "94758f4976fb7304b9a7a92de76dbcb4fce9a0bb",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "ROADMAP.md",
+      "bytes": 25076,
+      "local_blob": "a600cce9f5305bb444e5ddd2d0176eea3bcc1db7",
+      "origin_blob": "f4cabdce323c6dec8d04040b7e1ee813fc995ac4",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "crates/ime-config/src/lib.rs",
+      "bytes": 25732,
+      "local_blob": "69fdaba566f3a5b7e982f4f5cb88e17c77412110",
+      "origin_blob": "533303814997909ebaa4d6e151fd0f07a7aade73",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-config/src/schema.rs",
+      "bytes": 6793,
+      "local_blob": "0ed6a3b83d6308945126d742c6e0b17f1438a504",
+      "origin_blob": "d10d2a6174626eab3df06ed8fbd85c10ac31b910",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-core/src/lib.rs",
+      "bytes": 31555,
+      "local_blob": "d115330a55dfc22f9c4fefd9073a72ab7434f410",
+      "origin_blob": "bde91dd082a76a601c9f839224a55a79b85d88e3",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-dict/src/lib.rs",
+      "bytes": 20507,
+      "local_blob": "92a6b4b2c79e9bbc9ca4d286102269092dab6ee8",
+      "origin_blob": "837898c296436291ea0f6399f05a4c7c30605918",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-ffi/include/ime.h",
+      "bytes": 8412,
+      "local_blob": "a9e5e1aa707a2cb93f1ec644537dbc0a32882435",
+      "origin_blob": "d1efb82cff2a79f04420c2885eb04299713ddd58",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-ffi/src/config.rs",
+      "bytes": 20112,
+      "local_blob": "8170202577a90f612d68a7aae4c962b9833925bd",
+      "origin_blob": "981620e4cd8b8ccfccaa8733cb80767b615777f0",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-ffi/src/session.rs",
+      "bytes": 45084,
+      "local_blob": "b0544bf92f9ca2d7827ff562ad73a6a732c2a755",
+      "origin_blob": "0585ad794ab9d3b5d1ceae3d662361e35aa65df7",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-pinyin/Cargo.toml",
+      "bytes": 619,
+      "local_blob": "a339eccaba4b3430c76c3e053a5f1991b033dba3",
+      "origin_blob": "0c088992def0965ea02cecd2e233bcc23eb00493",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-pinyin/examples/generate.rs",
+      "bytes": 14491,
+      "local_blob": "d720b15cb66abaf4dd6d691e259b495bd0e397ed",
+      "origin_blob": "c47254296ec0c424c8eee60fd1a8a05294813593",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-pinyin/src/syllable.rs",
+      "bytes": 6219,
+      "local_blob": "1ecd2f34eda3033195db49fa4323cedf9966da89",
+      "origin_blob": "1eed21ccf32e3825815a31125415b9a10a4113d3",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-pinyin/src/table.rs",
+      "bytes": 16475,
+      "local_blob": "f431ea5e0d924358da34a9e31d502e88e7f3bb67",
+      "origin_blob": "7b11221fd2095e9931447bc5138c37f2631beb92",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "crates/ime-table/src/lib.rs",
+      "bytes": 22946,
+      "local_blob": "36eb806865d804cb28a36d2b9cbe28d88fc1fcc9",
+      "origin_blob": "8f620dadadad14bd722ae66bc9098c4c4f4be11e",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "data/generated/pinyin-chars.tsv",
+      "bytes": 575473,
+      "local_blob": "c38ab3f69ea8a6ae4f55e5105bc07cf0f9534c47",
+      "origin_blob": "a4545211275d2d2a136a9bcc577cf667e8b1fe12",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "data/sources.toml",
+      "bytes": 7007,
+      "local_blob": "c39fa856ddb99ed27c430ef3c164a89148b9fa8e",
+      "origin_blob": "f5cd01124cbedc1579dae2ac8baf5e8b7f385b24",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "docs/MVP产品验收标准.md",
+      "bytes": 6391,
+      "local_blob": "f31d40d34206409e261ac5a4d5e4d202a7722e24",
+      "origin_blob": "fb17e321e5d36b0c99f9e2bc13019ad2beead00c",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/MVP单人验收清单.md",
+      "bytes": 6768,
+      "local_blob": "0736e44137186405eb0fb273e1eb77b356486e1a",
+      "origin_blob": "3168e6dbbd383e7bf9cff295a9d7fe9f35384696",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/MVP后里程碑.md",
+      "bytes": 3995,
+      "local_blob": "963c0986e182cfea0a97e37abb9f9985fefaf8b0",
+      "origin_blob": "402c64e5fd174bd747959d0cb898461dfd9b9f23",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/MVP自动验收状态.md",
+      "bytes": 8187,
+      "local_blob": "7779ba5b10b1586c5ced85d4094d63a23b43d9d2",
+      "origin_blob": "d75007285454f5aa624096dfac26eae31cc94e34",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/README.md",
+      "bytes": 8838,
+      "local_blob": "c9b97dc3786693d20a182edbe4733595d0bf1c2b",
+      "origin_blob": "78073b54525ec80d3224e25dc47a8df3b3c78bc8",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/design/mvp-ui.md",
+      "bytes": 5494,
+      "local_blob": "5b6b40b02ae371268ef48fb4e755cddcaa1bc251",
+      "origin_blob": "6f048f40ece549108b5651b12398a5627c0b3650",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "docs/reviews/026-complete-learning-ui.md",
+      "bytes": 5447,
+      "local_blob": "42b5f5e96cf500285ee9c8eabfb049413603c63b",
+      "origin_blob": "438e000055f6e5a915cad801d30c120cba92cc29",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/reviews/036-generated-wubi-teaching-research.md",
+      "bytes": 25776,
+      "local_blob": "f98958b40b70a8b9d1a3aacab0ea6f337706b7d3",
+      "origin_blob": "dacd4c1ff75209c2232d55921338400dfc34285a",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/reviews/041-local-automated-acceptance.md",
+      "bytes": 4675,
+      "local_blob": "917e3c09081644bbfe55fb22e0ccdf6bad547b46",
+      "origin_blob": "f305bd9e056d7afe95fce55884258687f4988443",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/NEXT-UI.md",
+      "bytes": 1148,
+      "local_blob": "b0b845a7f499f0edc1b2e53ec5a7a9868b55208b",
+      "origin_blob": "8452c2255d501bcb9ec28b933462d8e3a2c495d5",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/README.md",
+      "bytes": 8577,
+      "local_blob": "3c1c930097603aa98d6bfd3dd3f955cb1da76cd5",
+      "origin_blob": "b3539ee4267db037673a61ad4b4c920fad722087",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-IMK-ACCEPTANCE-PREP.md",
+      "bytes": 2071,
+      "local_blob": "7172aac76a918995a23174e0bd9b80c687b546e2",
+      "origin_blob": "02f168b5377bc6c80ff49f77ba258ab175764a63",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-ITER-01.md",
+      "bytes": 22933,
+      "local_blob": "9a7b5a7e3bde52727a81f7bbdb0aa451c96a86e5",
+      "origin_blob": "1c7230c6709fb57899247f36b46377542a9dcf79",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-ITER-03.md",
+      "bytes": 1816,
+      "local_blob": "6e9f644e0bd2ba5f89cabca1a00e4ba9e295f5a3",
+      "origin_blob": "c714a97268cad643faef3bb5ef4d6a2247c0530e",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-ITER-12.md",
+      "bytes": 1781,
+      "local_blob": "bb4bddbc77865d0c6402c4436647c45114ca44ed",
+      "origin_blob": "5c7ca7ad9d71930a99188da196c1c9af53ce167c",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-ITER-24.md",
+      "bytes": 2054,
+      "local_blob": "24812a020c709d2a58b91a4f7ca312847affcdf0",
+      "origin_blob": "ebb2fc954874764148d62130ce9fc8d8d8533c1d",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-ITER-25.md",
+      "bytes": 2588,
+      "local_blob": "d406378fc8bc12005f3acf5d90e9ea77d2355d70",
+      "origin_blob": "3fa2b81d882c958b98b2358fd4b88dbf30c3720e",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-MVP-FULL-UI.md",
+      "bytes": 3727,
+      "local_blob": "c409c220adf1705d4de4f46941a0fe26a8a84942",
+      "origin_blob": "20808c1442750c74740fb9be85eefc04ef303748",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/tasks/T-MVP-UI.md",
+      "bytes": 3703,
+      "local_blob": "bdf49392f7e2bc275ab13a4fe2bc748ce3f9b966",
+      "origin_blob": "82526bcc32994529b5eb497b7b212a81d2a09589",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/决策记录.md",
+      "bytes": 207970,
+      "local_blob": "87e38a9cb0a7feb038d973a064e40e0098e75275",
+      "origin_blob": "29c2ce3125313709b852230fa4938840a63929db",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/开发工作流.md",
+      "bytes": 7462,
+      "local_blob": "c69f05d06662cda27079685be037f851e5ac1afe",
+      "origin_blob": "a6dee4be741f4d7ba92bd95443bd978c1b966724",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "docs/技术方案.md",
+      "bytes": 27313,
+      "local_blob": "c2da25120212aa57fbe2466770c0df6694c5acae",
+      "origin_blob": "67c450ded14fd928c05bb72ede88b3698469699f",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/数据来源与许可.md",
+      "bytes": 18930,
+      "local_blob": "58f40fb7405f218aa347a2b29ca30fb1ac005b87",
+      "origin_blob": "b8563aa9f5b26354d82e561a50058d3b22d4aba6",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/迭代计划.md",
+      "bytes": 21177,
+      "local_blob": "e46453f27b8ee53bd13890d2e96b26fc69ba4f15",
+      "origin_blob": "8ff2d34e07a65b9d1adaa32076288c8a5f80ba94",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "docs/配置架构.md",
+      "bytes": 16017,
+      "local_blob": "832ff44d2e7b5045e1dfb9d47ff313e1f61abbc4",
+      "origin_blob": "15c67888cfe77575c6c688384c5a50837390cc3c",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "packaging/licenses/README.md",
+      "bytes": 985,
+      "local_blob": "e27de1ecd822e5c5e8a51b7d4268644a1a5312dc",
+      "origin_blob": "d1319af144ba8cc0767c30110d3f45d7014165b4",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Preview/main.swift",
+      "bytes": 47808,
+      "local_blob": "f2921a9389a5479df435759da5cacb657353b8b1",
+      "origin_blob": "7d0fb50aea17187c58e31e2a688d6023c3cc7bcd",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/README.md",
+      "bytes": 21361,
+      "local_blob": "13ef008ce58e9712c4fe724fd68be27fce05ea87",
+      "origin_blob": "c16d4768cf9763d287cf1306242144ccf2f079c7",
+      "historical_blob_in_main": false
+    },
+    {
+      "path": "platforms/macos/Sources/CandidateWindow.swift",
+      "bytes": 19658,
+      "local_blob": "fa85c48c44980ebe93fe1b6f14799b5ffbc63a81",
+      "origin_blob": "7ae876f59d614dd8f28a7dd4b6bd8e69555b98ab",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/Config.swift",
+      "bytes": 7919,
+      "local_blob": "e943c04983bdb5d6c3508473c8ee936eb087554d",
+      "origin_blob": "50de46cf57e07d3f91970ddd578d4e060b661dfb",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/ImeSession.swift",
+      "bytes": 11645,
+      "local_blob": "12f816ffb52f17abf3a016ab9c749ecd4fd8a2e3",
+      "origin_blob": "dc74b3eb3c51acc77d91f1772de08045d393af12",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/InfoWindow.swift",
+      "bytes": 8055,
+      "local_blob": "c72bbcab201dbee37af64777aeff77b63ac222ed",
+      "origin_blob": "9bc983ac8901e17765f37905f5ecebe9d92d9e09",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/InputController.swift",
+      "bytes": 20879,
+      "local_blob": "d002c566b7a621e06a7f1ea6c230306b42017bf5",
+      "origin_blob": "e783021b15e24d0170551056e8cc8fbb6a0280e0",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/Lookup.swift",
+      "bytes": 1182,
+      "local_blob": "997c463d41b17b1c45e54161f2d03450579c3147",
+      "origin_blob": "77dbfb5652ec70c24b0dbe322db66593f4b13595",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/Settings.swift",
+      "bytes": 21910,
+      "local_blob": "2b641f890591a6c01942aea4a06670116ae743f8",
+      "origin_blob": "0c335f1ee3c3b67dab4fc403377ba0a0a37319ab",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/Sources/UserDictionary.swift",
+      "bytes": 5056,
+      "local_blob": "10e79639d2e2f2661c266691ea32f3902c92038b",
+      "origin_blob": "f1ceedf4b9fbc0b7f5cf7c121e509f0859fad85c",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/dev-preview.sh",
+      "bytes": 2493,
+      "local_blob": "9ff238a8c11729411f4c8399b4cba8f047087b5e",
+      "origin_blob": "0210b5ed4a7392ca2541194e9077a2aaedf74d33",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/tests/README.md",
+      "bytes": 13538,
+      "local_blob": "a2b9525b6fa7a64a71dc5240dc50b2453055d934",
+      "origin_blob": "c83a72d442febd7dcea12be158244bda1fa4f469",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/tests/ffi_smoke.swift",
+      "bytes": 2010,
+      "local_blob": "79be9f0d63dbff28471872849a10481ae6e6a2c3",
+      "origin_blob": "e3ff6d37c24f9668a50dbe076bbab3a3425842f5",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/tests/run-offline-tests.py",
+      "bytes": 1958,
+      "local_blob": "1d070ee5bf6b9dd33c5a70a47b1286c528d277cc",
+      "origin_blob": "c5b4a8b47a838439ccafe645da4dc6b10c255a4d",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "platforms/macos/tests/run-panel-interactive.py",
+      "bytes": 2792,
+      "local_blob": "42b0b7f9198013e70a1a2c3930d7c0ddc2504c17",
+      "origin_blob": "75744bb3988ec0e2c824b6d4ce6192d6d1edc0cb",
+      "historical_blob_in_main": true
+    },
+    {
+      "path": "tools/README.md",
+      "bytes": 769,
+      "local_blob": "584213aac1f0768f28b6bdd8ed90d4e69feb2b80",
+      "origin_blob": "b8b340436ea363021d99293fba795ce1fa40fbff",
+      "historical_blob_in_main": true
+    }
+  ],
+  "local_only": [
+    {
+      "path": "docs/design/candidate-v3/SHA256SUMS",
+      "bytes": 1155,
+      "local_blob": "afd5c4fde306438ff3ad6734a1474921532ad250"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-dark-high.png",
+      "bytes": 15533,
+      "local_blob": "1b54b22261a6855f031103dc8d459b79f90a7203"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-dark.png",
+      "bytes": 15533,
+      "local_blob": "1b54b22261a6855f031103dc8d459b79f90a7203"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-empty-dark.png",
+      "bytes": 9598,
+      "local_blob": "fd2a1bfe6a7e15f055afa77a8ebec94065b8cfca"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-empty-light.png",
+      "bytes": 9413,
+      "local_blob": "10a8e126e2a041ec7177b8dd0cc0e7223afb53cc"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-light-high.png",
+      "bytes": 15301,
+      "local_blob": "8b68886c2c48012f4bd53bdc2a2a80e7b959f9e7"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-light.png",
+      "bytes": 15301,
+      "local_blob": "8b68886c2c48012f4bd53bdc2a2a80e7b959f9e7"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-long-dark.png",
+      "bytes": 24446,
+      "local_blob": "edfcd778c97c9d52f836b915a491d2185eae98f2"
+    },
+    {
+      "path": "docs/design/candidate-v3/candidate-long-light.png",
+      "bytes": 24179,
+      "local_blob": "f17ca5e487be1302e5d7b2409780b502b32a818e"
+    },
+    {
+      "path": "docs/design/candidate-v3/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/candidate-v3/native-render-report.json",
+      "bytes": 2196,
+      "local_blob": "7996c6f5a3b9c469ac1745ac8142e1b5aa9ef0f6"
+    },
+    {
+      "path": "docs/design/candidate-v3/native-render.swift",
+      "bytes": 20882,
+      "local_blob": "8a20b8ce462b518888408b38f4f989761520bb1f"
+    },
+    {
+      "path": "docs/design/candidate-v3/validation.json",
+      "bytes": 233,
+      "local_blob": "07abbc56de80b014f2efcdbb6e2e5caa0cd014ee"
+    },
+    {
+      "path": "docs/design/candidate-v3/候选框设计.md",
+      "bytes": 3693,
+      "local_blob": "3b1ef7f84813c8d6eeaec312d6697ebd8ab4b573"
+    },
+    {
+      "path": "docs/design/candidate-v4/SHA256SUMS",
+      "bytes": 1161,
+      "local_blob": "d52e42b04a04fc22f0872812747f6a1143154677"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-dark-high.png",
+      "bytes": 28749,
+      "local_blob": "2f57aa611c6490534df4cf6a9019295ac4fb7779"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-dark.png",
+      "bytes": 28749,
+      "local_blob": "2f57aa611c6490534df4cf6a9019295ac4fb7779"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-light-high.png",
+      "bytes": 28527,
+      "local_blob": "c3a0adcfd9f2a691f6f7e2f3de6270dc22789504"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-light.png",
+      "bytes": 28527,
+      "local_blob": "c3a0adcfd9f2a691f6f7e2f3de6270dc22789504"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-phrase-dark.png",
+      "bytes": 35659,
+      "local_blob": "54b223f06c2dd4d36805db0c4d137573f2c49e69"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-phrase-light.png",
+      "bytes": 35325,
+      "local_blob": "bf9215e22a0b30bb2c34284789a24d0e55a9f7f2"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-pinyin-dark.png",
+      "bytes": 14913,
+      "local_blob": "8ac92047e06607604b6533232c0c11c80881bde1"
+    },
+    {
+      "path": "docs/design/candidate-v4/candidate-pinyin-light.png",
+      "bytes": 14832,
+      "local_blob": "8cb77e7a29ae98afda15a68ceb225cf23795ac1a"
+    },
+    {
+      "path": "docs/design/candidate-v4/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/candidate-v4/native-render-report.json",
+      "bytes": 2226,
+      "local_blob": "5be6998accb511678b7d7b3a05a4dc2f3488c7fb"
+    },
+    {
+      "path": "docs/design/candidate-v4/native-render.swift",
+      "bytes": 20757,
+      "local_blob": "e2e4890017e0ba15844168b79ca683fd373d4b2f"
+    },
+    {
+      "path": "docs/design/candidate-v4/validation.json",
+      "bytes": 272,
+      "local_blob": "b4b2c3443e3b22b3cf641ea6d63efb7d4de32434"
+    },
+    {
+      "path": "docs/design/candidate-v4/候选框设计.md",
+      "bytes": 3696,
+      "local_blob": "e85be32669eea7be960454ff9577a2b51364854a"
+    },
+    {
+      "path": "docs/design/candidate-v5/SHA256SUMS",
+      "bytes": 1354,
+      "local_blob": "ecd91b8da5051a3c6956b59f38e5d90a29987e49"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-collapsed-dark.png",
+      "bytes": 14913,
+      "local_blob": "8ac92047e06607604b6533232c0c11c80881bde1"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-collapsed-light.png",
+      "bytes": 14832,
+      "local_blob": "8cb77e7a29ae98afda15a68ceb225cf23795ac1a"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-dark-high.png",
+      "bytes": 28749,
+      "local_blob": "2f57aa611c6490534df4cf6a9019295ac4fb7779"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-dark.png",
+      "bytes": 28749,
+      "local_blob": "2f57aa611c6490534df4cf6a9019295ac4fb7779"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-light-high.png",
+      "bytes": 28527,
+      "local_blob": "c3a0adcfd9f2a691f6f7e2f3de6270dc22789504"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-light.png",
+      "bytes": 28527,
+      "local_blob": "c3a0adcfd9f2a691f6f7e2f3de6270dc22789504"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-phrase-dark.png",
+      "bytes": 35659,
+      "local_blob": "54b223f06c2dd4d36805db0c4d137573f2c49e69"
+    },
+    {
+      "path": "docs/design/candidate-v5/candidate-phrase-light.png",
+      "bytes": 35325,
+      "local_blob": "bf9215e22a0b30bb2c34284789a24d0e55a9f7f2"
+    },
+    {
+      "path": "docs/design/candidate-v5/learning-settings-dark.png",
+      "bytes": 47552,
+      "local_blob": "3b2457cbd297f69076f3ec504a058031757fd9c0"
+    },
+    {
+      "path": "docs/design/candidate-v5/learning-settings-light.png",
+      "bytes": 47828,
+      "local_blob": "26b581a041f5f8f9abcf108a3e04908d347712ac"
+    },
+    {
+      "path": "docs/design/candidate-v5/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/candidate-v5/native-render-report.json",
+      "bytes": 2761,
+      "local_blob": "cbd4e2e9d1ca9a274803f4f67f312b552688078e"
+    },
+    {
+      "path": "docs/design/candidate-v5/native-render.swift",
+      "bytes": 21615,
+      "local_blob": "8470ea3ab8b4a9b54406c878f805c63488f927bb"
+    },
+    {
+      "path": "docs/design/candidate-v5/validation.json",
+      "bytes": 242,
+      "local_blob": "dcd442a44bc804ffefea49639a3807f5afbeea94"
+    },
+    {
+      "path": "docs/design/candidate-v5/候选框设计.md",
+      "bytes": 4145,
+      "local_blob": "f0b5a5ffd0eba08bc44c5db13906bcfd023d60d0"
+    },
+    {
+      "path": "docs/design/candidate-v7/SHA256SUMS",
+      "bytes": 2155,
+      "local_blob": "8dea47ddf099321b0ce89f56c364aebe163ea31c"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-collapsed-dark.png",
+      "bytes": 16000,
+      "local_blob": "d05c3113c60d0c84c076c5094c1f5ab2dbf2e6e5"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-collapsed-light.png",
+      "bytes": 15847,
+      "local_blob": "5b31c1d9af1c36662eb7279c5b6906cdef128fda"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-dark-high.png",
+      "bytes": 30998,
+      "local_blob": "240ed0acfe8f0b1abf5f7d3721c274cc2a4a35de"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-dark.png",
+      "bytes": 30998,
+      "local_blob": "240ed0acfe8f0b1abf5f7d3721c274cc2a4a35de"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-light-high.png",
+      "bytes": 30566,
+      "local_blob": "cb87bd1228c0676313f316e06955ba905241d95e"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-light.png",
+      "bytes": 30566,
+      "local_blob": "cb87bd1228c0676313f316e06955ba905241d95e"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-phrase-dark.png",
+      "bytes": 46012,
+      "local_blob": "17898a18edef38fba8faaf4a411199d946b9c9d1"
+    },
+    {
+      "path": "docs/design/candidate-v7/candidate-phrase-light.png",
+      "bytes": 45539,
+      "local_blob": "2aa84d0d865c84c056a47a3edda1d418f1134e2d"
+    },
+    {
+      "path": "docs/design/candidate-v7/index.html",
+      "bytes": 2468,
+      "local_blob": "7872c6b9c69322a2ff2c10f2f133e87d6be1785a"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-no-code-dark.png",
+      "bytes": 21553,
+      "local_blob": "b0e1970d7ace8d6a70865554cfbbf542c73688b0"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-no-code-light.png",
+      "bytes": 21444,
+      "local_blob": "d0cb7c30c055824662dba2757df922ade7e9787c"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-no-roots-dark.png",
+      "bytes": 25344,
+      "local_blob": "32e60b8ae1b408ed9f06fc455afb358ae81c898a"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-no-roots-light.png",
+      "bytes": 25005,
+      "local_blob": "4acf0c9736752db702e11f9996dd8d73f87a8d8a"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-settings-dark.png",
+      "bytes": 47552,
+      "local_blob": "3b2457cbd297f69076f3ec504a058031757fd9c0"
+    },
+    {
+      "path": "docs/design/candidate-v7/learning-settings-light.png",
+      "bytes": 47828,
+      "local_blob": "26b581a041f5f8f9abcf108a3e04908d347712ac"
+    },
+    {
+      "path": "docs/design/candidate-v7/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/candidate-v7/native-render-report.json",
+      "bytes": 4487,
+      "local_blob": "fdcf4cc5a3573014d38bcd042b633f1ff0057abe"
+    },
+    {
+      "path": "docs/design/candidate-v7/native-render.swift",
+      "bytes": 23550,
+      "local_blob": "49439dc03188bbb020b66ddd1444eef218693b3b"
+    },
+    {
+      "path": "docs/design/candidate-v7/page-last-dark.png",
+      "bytes": 16370,
+      "local_blob": "02a258cd615a24f42df7d071400e001e0f7f2be7"
+    },
+    {
+      "path": "docs/design/candidate-v7/page-last-light.png",
+      "bytes": 16138,
+      "local_blob": "5570932f6ec130cad84e48f4893d9f36df7f29c5"
+    },
+    {
+      "path": "docs/design/candidate-v7/page-single-dark.png",
+      "bytes": 14789,
+      "local_blob": "9f4f9076af87b1c8e213fd226a266dc0765f2315"
+    },
+    {
+      "path": "docs/design/candidate-v7/page-single-light.png",
+      "bytes": 14611,
+      "local_blob": "4c38310011ee2032288b854fe85c42bb1b063c5b"
+    },
+    {
+      "path": "docs/design/candidate-v7/validation.json",
+      "bytes": 343,
+      "local_blob": "705f1a33af374d4167dc3f6be51cc652a5142ffc"
+    },
+    {
+      "path": "docs/design/candidate-v7/候选框与学习区.md",
+      "bytes": 4587,
+      "local_blob": "a4cdad60828c93aa3aef79370ecdec97ddac85eb"
+    },
+    {
+      "path": "docs/design/candidate-v8/SHA256SUMS",
+      "bytes": 2155,
+      "local_blob": "cca4d4f1b9c5fdd6d1e1db439cd8668518f6eaf2"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-collapsed-dark.png",
+      "bytes": 16000,
+      "local_blob": "d05c3113c60d0c84c076c5094c1f5ab2dbf2e6e5"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-collapsed-light.png",
+      "bytes": 15847,
+      "local_blob": "5b31c1d9af1c36662eb7279c5b6906cdef128fda"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-dark-high.png",
+      "bytes": 32554,
+      "local_blob": "6f57aea19cfe690565b4456a64692b5283156d23"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-dark.png",
+      "bytes": 32554,
+      "local_blob": "6f57aea19cfe690565b4456a64692b5283156d23"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-light-high.png",
+      "bytes": 32146,
+      "local_blob": "f3f281be9c1b6b51a455831d50a3e0adf7a03643"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-light.png",
+      "bytes": 32146,
+      "local_blob": "f3f281be9c1b6b51a455831d50a3e0adf7a03643"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-phrase-dark.png",
+      "bytes": 51829,
+      "local_blob": "0b7d0c70e6174761d833557f1bf59586b4d1e39e"
+    },
+    {
+      "path": "docs/design/candidate-v8/candidate-phrase-light.png",
+      "bytes": 50996,
+      "local_blob": "8dd19a590d59a36b03c25e49724a49e2168c4801"
+    },
+    {
+      "path": "docs/design/candidate-v8/index.html",
+      "bytes": 2459,
+      "local_blob": "1f9ec670f1c01169e4cfdb780afcbec9985ce407"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-no-code-dark.png",
+      "bytes": 21553,
+      "local_blob": "b0e1970d7ace8d6a70865554cfbbf542c73688b0"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-no-code-light.png",
+      "bytes": 21444,
+      "local_blob": "d0cb7c30c055824662dba2757df922ade7e9787c"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-no-roots-dark.png",
+      "bytes": 25344,
+      "local_blob": "32e60b8ae1b408ed9f06fc455afb358ae81c898a"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-no-roots-light.png",
+      "bytes": 25005,
+      "local_blob": "4acf0c9736752db702e11f9996dd8d73f87a8d8a"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-settings-dark.png",
+      "bytes": 47552,
+      "local_blob": "3b2457cbd297f69076f3ec504a058031757fd9c0"
+    },
+    {
+      "path": "docs/design/candidate-v8/learning-settings-light.png",
+      "bytes": 47828,
+      "local_blob": "26b581a041f5f8f9abcf108a3e04908d347712ac"
+    },
+    {
+      "path": "docs/design/candidate-v8/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/candidate-v8/native-render-report.json",
+      "bytes": 4487,
+      "local_blob": "49bd2c52fe7d95d0fe66db0c4e203a190bf5baea"
+    },
+    {
+      "path": "docs/design/candidate-v8/native-render.swift",
+      "bytes": 24508,
+      "local_blob": "b345a0468969c8a9bf87d39a0dc94975b2bf3fdf"
+    },
+    {
+      "path": "docs/design/candidate-v8/page-last-dark.png",
+      "bytes": 16370,
+      "local_blob": "02a258cd615a24f42df7d071400e001e0f7f2be7"
+    },
+    {
+      "path": "docs/design/candidate-v8/page-last-light.png",
+      "bytes": 16138,
+      "local_blob": "5570932f6ec130cad84e48f4893d9f36df7f29c5"
+    },
+    {
+      "path": "docs/design/candidate-v8/page-single-dark.png",
+      "bytes": 14789,
+      "local_blob": "9f4f9076af87b1c8e213fd226a266dc0765f2315"
+    },
+    {
+      "path": "docs/design/candidate-v8/page-single-light.png",
+      "bytes": 14611,
+      "local_blob": "4c38310011ee2032288b854fe85c42bb1b063c5b"
+    },
+    {
+      "path": "docs/design/candidate-v8/validation.json",
+      "bytes": 330,
+      "local_blob": "d13e9917805d4041fdebb8b13a995e9071f53e5c"
+    },
+    {
+      "path": "docs/design/candidate-v8/学习区上下对应.md",
+      "bytes": 2408,
+      "local_blob": "66808974f338378034ff8627b6932c7c5bcb2fe3"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/SHA256SUMS",
+      "bytes": 982,
+      "local_blob": "9dfe0cea47a20bc331235af6b5f3c421f91d2feb"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-expanded-dark.png",
+      "bytes": 70296,
+      "local_blob": "06ec6676e8a0d8a009fa9e753c85249b5b38cd9d"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-expanded-light.png",
+      "bytes": 68946,
+      "local_blob": "2f52ff517908c244d4269f205d050cf31e36db9f"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-summary-dark-high.png",
+      "bytes": 44633,
+      "local_blob": "1a8f6eee074e45787bea1c94de6d717c672785fe"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-summary-dark.png",
+      "bytes": 44633,
+      "local_blob": "1a8f6eee074e45787bea1c94de6d717c672785fe"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-summary-light-high.png",
+      "bytes": 43794,
+      "local_blob": "080f5e453a4f5e3ac99387e065663b464d3f7b6d"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/long-summary-light.png",
+      "bytes": 43794,
+      "local_blob": "080f5e453a4f5e3ac99387e065663b464d3f7b6d"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/native-render-report.json",
+      "bytes": 1845,
+      "local_blob": "b2e51a06b9b4b365515397f9439371b840f06acf"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/native-render.swift",
+      "bytes": 23694,
+      "local_blob": "82c7c7ffc016a95b7addf0e7a66238d9b3db8267"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/validation.json",
+      "bytes": 206,
+      "local_blob": "4dd60d56d0d77d071b2dafa13ffbcfc9739126da"
+    },
+    {
+      "path": "docs/design/compact-learning-v10/紧凑学习区.md",
+      "bytes": 2033,
+      "local_blob": "0b1a00565921587a48321890592a194a7eb6e92b"
+    },
+    {
+      "path": "docs/design/learning-v6/SHA256SUMS",
+      "bytes": 1799,
+      "local_blob": "ee48c11dd0c531b7dd6bf2996952f09152510b38"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-collapsed-dark.png",
+      "bytes": 15226,
+      "local_blob": "e260926f267daa14febbcded7597c67aa2b7e4dc"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-collapsed-light.png",
+      "bytes": 15047,
+      "local_blob": "7de1700cfc562461a897602e268025c9b39eeb6c"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-dark-high.png",
+      "bytes": 37644,
+      "local_blob": "da4a8b217bd208c8e97ba60f09d9e9281b834d26"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-dark.png",
+      "bytes": 37644,
+      "local_blob": "da4a8b217bd208c8e97ba60f09d9e9281b834d26"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-light-high.png",
+      "bytes": 37449,
+      "local_blob": "c592c9901c227015b5c1b9708b74a00a187d09f4"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-light.png",
+      "bytes": 37449,
+      "local_blob": "c592c9901c227015b5c1b9708b74a00a187d09f4"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-phrase-dark.png",
+      "bytes": 51629,
+      "local_blob": "a96594d59252e6fff034d1062340fe46e915f4d5"
+    },
+    {
+      "path": "docs/design/learning-v6/candidate-phrase-light.png",
+      "bytes": 51545,
+      "local_blob": "0f10b09450a4a9f7eee75b488f1e92bab12cc21d"
+    },
+    {
+      "path": "docs/design/learning-v6/index.html",
+      "bytes": 2060,
+      "local_blob": "22b892b113fdc04d2600cefcfb08d5ef58cfd9b9"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-no-code-dark.png",
+      "bytes": 23120,
+      "local_blob": "77be1a8da8d53ba6f99fdea6e9146cf3a544ff1a"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-no-code-light.png",
+      "bytes": 22870,
+      "local_blob": "3b6030a38aefda67ede03e1b627fb9e71c64140e"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-no-roots-dark.png",
+      "bytes": 29085,
+      "local_blob": "b23329671bafdb9167f2aeb6d25f93607918a20e"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-no-roots-light.png",
+      "bytes": 28701,
+      "local_blob": "38b72d14d6c40ba265a9c9efdc124fbbf086e864"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-settings-dark.png",
+      "bytes": 47552,
+      "local_blob": "3b2457cbd297f69076f3ec504a058031757fd9c0"
+    },
+    {
+      "path": "docs/design/learning-v6/learning-settings-light.png",
+      "bytes": 47828,
+      "local_blob": "26b581a041f5f8f9abcf108a3e04908d347712ac"
+    },
+    {
+      "path": "docs/design/learning-v6/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/learning-v6/native-render-report.json",
+      "bytes": 3633,
+      "local_blob": "7390a2594610d8376601d8a55ea8ead1dd1b47e3"
+    },
+    {
+      "path": "docs/design/learning-v6/native-render.swift",
+      "bytes": 23398,
+      "local_blob": "8363a86088eebba1f9c0ff3482a188d31c9c5d40"
+    },
+    {
+      "path": "docs/design/learning-v6/validation.json",
+      "bytes": 363,
+      "local_blob": "5c827bd0f1d5652d5a868382b0cfca514117ff28"
+    },
+    {
+      "path": "docs/design/learning-v6/学习区UI.md",
+      "bytes": 4103,
+      "local_blob": "37b5127c6613cf8f5db43ecbb983a370c648c246"
+    },
+    {
+      "path": "docs/design/long-word-v9/SHA256SUMS",
+      "bytes": 1059,
+      "local_blob": "fffd0bdcbfa3dcbbe91b1039b8a08eda32d07ef2"
+    },
+    {
+      "path": "docs/design/long-word-v9/index.html",
+      "bytes": 1078,
+      "local_blob": "f60e7181147007fc8134b369233bd95c3bda5656"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-expanded-dark.png",
+      "bytes": 78040,
+      "local_blob": "c59a1c324f382807f2067cea1789a6e65385a2e5"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-expanded-light.png",
+      "bytes": 76829,
+      "local_blob": "cac32cf1e59be61c1387d6befce44d15f1963fb2"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-summary-dark-high.png",
+      "bytes": 47420,
+      "local_blob": "61ec44a6749a403ab43fb04e61eebed3b12bfbc4"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-summary-dark.png",
+      "bytes": 47420,
+      "local_blob": "61ec44a6749a403ab43fb04e61eebed3b12bfbc4"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-summary-light-high.png",
+      "bytes": 46565,
+      "local_blob": "ea76437994b44e9395dfb2b060e1ddcfcbea054b"
+    },
+    {
+      "path": "docs/design/long-word-v9/long-summary-light.png",
+      "bytes": 46565,
+      "local_blob": "ea76437994b44e9395dfb2b060e1ddcfcbea054b"
+    },
+    {
+      "path": "docs/design/long-word-v9/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/long-word-v9/native-render-report.json",
+      "bytes": 1847,
+      "local_blob": "29c25750722c312596145eac874cc7cca10e5d76"
+    },
+    {
+      "path": "docs/design/long-word-v9/native-render.swift",
+      "bytes": 23689,
+      "local_blob": "4dee8fa2043c4a00e12d630a3ef8dd9fb6810030"
+    },
+    {
+      "path": "docs/design/long-word-v9/validation.json",
+      "bytes": 372,
+      "local_blob": "73f5d9c0cf15abe38f8887a4708b47b888fed623"
+    },
+    {
+      "path": "docs/design/long-word-v9/长词学习区.md",
+      "bytes": 2843,
+      "local_blob": "c7750496ed8a3f6f9fcbd2110a16bb1f5598de72"
+    },
+    {
+      "path": "docs/design/macos-2026/SHA256SUMS",
+      "bytes": 1773,
+      "local_blob": "955e5a33061dd83d8e5ed6bdabb0fa0e9c56405a"
+    },
+    {
+      "path": "docs/design/macos-2026/app-icon.png",
+      "bytes": 993731,
+      "local_blob": "f7cd2fb9ef32a6c4cde96176238385da039c0d18"
+    },
+    {
+      "path": "docs/design/macos-2026/apple-native-product-design.skill.zip",
+      "bytes": 19269,
+      "local_blob": "a793e32b00b7805424fdf0b1fc944f3af3341096"
+    },
+    {
+      "path": "docs/design/macos-2026/input-settings-dark.png",
+      "bytes": 337982,
+      "local_blob": "84876e04f96ff8a5ad7580bd518ecedab2d0f6c8"
+    },
+    {
+      "path": "docs/design/macos-2026/input-settings-dark.svg",
+      "bytes": 12500,
+      "local_blob": "86fc87c0e0d0bdbd8cb5feecabd4cd81b41ab653"
+    },
+    {
+      "path": "docs/design/macos-2026/input-settings-light.png",
+      "bytes": 345976,
+      "local_blob": "d40741be563c0e4a8c1f01d013a4d21514b3163a"
+    },
+    {
+      "path": "docs/design/macos-2026/input-settings-light.svg",
+      "bytes": 12500,
+      "local_blob": "fd39ea546f741bfe333bbe9cea343c759551ea2c"
+    },
+    {
+      "path": "docs/design/macos-2026/overview-light-dark.png",
+      "bytes": 251160,
+      "local_blob": "b91ad998b98639c045308a0e16ec84da560bc1b2"
+    },
+    {
+      "path": "docs/design/macos-2026/settings-colors-dark.png",
+      "bytes": 514033,
+      "local_blob": "c5316d6ca5419d7fbc3e62183878df08ff698818"
+    },
+    {
+      "path": "docs/design/macos-2026/settings-colors-dark.svg",
+      "bytes": 22675,
+      "local_blob": "82d9d786a78487091cc7667c946684eb1d83d013"
+    },
+    {
+      "path": "docs/design/macos-2026/settings-colors-light.png",
+      "bytes": 522021,
+      "local_blob": "83ddc469ae8789cdd251215c811d924d7e8ed3f8"
+    },
+    {
+      "path": "docs/design/macos-2026/settings-colors-light.svg",
+      "bytes": 22675,
+      "local_blob": "9d9e226b14f793991f9e6026172551b311874559"
+    },
+    {
+      "path": "docs/design/macos-2026/tokens.json",
+      "bytes": 4431,
+      "local_blob": "8baa7f0d56776471904aebe3145ffd92f0f8d5de"
+    },
+    {
+      "path": "docs/design/macos-2026/tools-feedback-dark.png",
+      "bytes": 321326,
+      "local_blob": "ba8b54c82782a71199729fd89b200721028a160d"
+    },
+    {
+      "path": "docs/design/macos-2026/tools-feedback-dark.svg",
+      "bytes": 11653,
+      "local_blob": "e9fed8a564aef8a4a884c388da251241bd0aa1e8"
+    },
+    {
+      "path": "docs/design/macos-2026/tools-feedback-light.png",
+      "bytes": 328018,
+      "local_blob": "d64a7037390937606aaad9cf916378815b2b1c00"
+    },
+    {
+      "path": "docs/design/macos-2026/tools-feedback-light.svg",
+      "bytes": 11653,
+      "local_blob": "fa1558adbe655c823e26247d042374071cb033f5"
+    },
+    {
+      "path": "docs/design/macos-2026/validation.json",
+      "bytes": 8321,
+      "local_blob": "a584192c8f73a0b45dc2351b51e13b615dbf8185"
+    },
+    {
+      "path": "docs/design/macos-2026/visual-spec.html",
+      "bytes": 34298,
+      "local_blob": "19908edd60c23cb491a5d59bac227e8a4cb7a444"
+    },
+    {
+      "path": "docs/design/macos-2026/来源与评估.md",
+      "bytes": 4572,
+      "local_blob": "b11bdbe6f7c945c773c79c6d9fb1e2ad3dd6bf65"
+    },
+    {
+      "path": "docs/design/macos-2026/设计方案.md",
+      "bytes": 15075,
+      "local_blob": "071143e6a857c121a212eb6f2bbd512bc1d739e2"
+    },
+    {
+      "path": "docs/design/macos-native-v2/SHA256SUMS",
+      "bytes": 4135,
+      "local_blob": "ac803064da5e47e649907d75995e03ec919c62b8"
+    },
+    {
+      "path": "docs/design/macos-native-v2/about-dark.png",
+      "bytes": 71449,
+      "local_blob": "a8be279b625e7a6f5888fb43ff1ffa9cf6c7dae1"
+    },
+    {
+      "path": "docs/design/macos-native-v2/about-light.png",
+      "bytes": 72369,
+      "local_blob": "363fdd3040a6a6b3d36e33b146d8fd179df0f31e"
+    },
+    {
+      "path": "docs/design/macos-native-v2/add-sheet-content-dark.png",
+      "bytes": 48357,
+      "local_blob": "dc4b477603867560569dc2f33605acf652ebb32c"
+    },
+    {
+      "path": "docs/design/macos-native-v2/add-sheet-content-light.png",
+      "bytes": 47598,
+      "local_blob": "7d257cc09466e62edc9ec5fd40591d33c8da7eab"
+    },
+    {
+      "path": "docs/design/macos-native-v2/apple-native-product-design.skill.zip",
+      "bytes": 21597,
+      "local_blob": "c0a9affbf7235f09ad9adf52f845ebbad36b16a3"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-dark-high.png",
+      "bytes": 26604,
+      "local_blob": "f6506fbcab3c78f2b601d060b430f240c3e4ddc1"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-dark.png",
+      "bytes": 26604,
+      "local_blob": "f6506fbcab3c78f2b601d060b430f240c3e4ddc1"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-empty-dark.png",
+      "bytes": 22774,
+      "local_blob": "79e96200ee8dd21ac0c78fb133fd353ce1f21581"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-empty-light.png",
+      "bytes": 22384,
+      "local_blob": "1be6a1bdff6e65c92f320c4a08c438a159a6b89e"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-light-high.png",
+      "bytes": 26311,
+      "local_blob": "2cfdb461ca62a7f030ce3e4e79d52e4359cd53fb"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-light.png",
+      "bytes": 26311,
+      "local_blob": "2cfdb461ca62a7f030ce3e4e79d52e4359cd53fb"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-long-dark.png",
+      "bytes": 32003,
+      "local_blob": "9a713ce73e75aea68b67baec1ced63748abc752f"
+    },
+    {
+      "path": "docs/design/macos-native-v2/candidate-long-light.png",
+      "bytes": 31614,
+      "local_blob": "3831675505ae137c9b16f1cb6a1db3d52c792d69"
+    },
+    {
+      "path": "docs/design/macos-native-v2/components-dark.png",
+      "bytes": 68606,
+      "local_blob": "84e473010222aa880dd77eac0257dec1e4ed7cef"
+    },
+    {
+      "path": "docs/design/macos-native-v2/components-light.png",
+      "bytes": 68696,
+      "local_blob": "89e3c7989b9b7ca1e34a589761f36697e92b1fd9"
+    },
+    {
+      "path": "docs/design/macos-native-v2/delete-sheet-content-dark.png",
+      "bytes": 50907,
+      "local_blob": "f8fa6afd125a7e2cdd94043c43d5ef220f3d6113"
+    },
+    {
+      "path": "docs/design/macos-native-v2/delete-sheet-content-light.png",
+      "bytes": 50388,
+      "local_blob": "ade3205bc5b851062c32ec0aa46b053a52b94893"
+    },
+    {
+      "path": "docs/design/macos-native-v2/feedback-dark.png",
+      "bytes": 48913,
+      "local_blob": "546d4fd0bc9a696fb4af68ce2e81623ebe00a301"
+    },
+    {
+      "path": "docs/design/macos-native-v2/feedback-light.png",
+      "bytes": 49378,
+      "local_blob": "9aebb63b503dbb517e73fb67f643793b8bb8deaa"
+    },
+    {
+      "path": "docs/design/macos-native-v2/index.html",
+      "bytes": 11258,
+      "local_blob": "0e5c9d633cb20952d157fb6f6c147cd7d8963a5f"
+    },
+    {
+      "path": "docs/design/macos-native-v2/lookup-dark.png",
+      "bytes": 35508,
+      "local_blob": "d0375dfdedd2432d041b87bed135357a657023af"
+    },
+    {
+      "path": "docs/design/macos-native-v2/lookup-light.png",
+      "bytes": 35968,
+      "local_blob": "625a3b4bc0ae152a6a0f8cf32fa66955ef5f0dc6"
+    },
+    {
+      "path": "docs/design/macos-native-v2/menu-layout-dark.png",
+      "bytes": 38185,
+      "local_blob": "3aee9bed5d0c73480bc1afdadb52ba9a94d8f80c"
+    },
+    {
+      "path": "docs/design/macos-native-v2/menu-layout-light.png",
+      "bytes": 37209,
+      "local_blob": "37521305a449d53e10e8b4ec34ecf0f6e6926f0d"
+    },
+    {
+      "path": "docs/design/macos-native-v2/mode-submenu-dark.png",
+      "bytes": 11688,
+      "local_blob": "8134b3346852a5ef20e63b40a857745c058a5367"
+    },
+    {
+      "path": "docs/design/macos-native-v2/mode-submenu-light.png",
+      "bytes": 11521,
+      "local_blob": "1e05d349f998310d25988abb6ba73824951896f0"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-comparison.png",
+      "bytes": 307790,
+      "local_blob": "e372374f5cc35500665e466e7d02032331b525d5"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-overview-dark.png",
+      "bytes": 292081,
+      "local_blob": "4f51f95db5f8933cbe0dc67dbc4515f74c3e1e8c"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-overview-light.png",
+      "bytes": 288649,
+      "local_blob": "897ea225608fcae91c88c4200af8857129b3d144"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-render-report.json",
+      "bytes": 8622,
+      "local_blob": "9f8391c33876917bae2fa1b2dbf43b7a000d34c6"
+    },
+    {
+      "path": "docs/design/macos-native-v2/native-render.swift",
+      "bytes": 22592,
+      "local_blob": "72e23b7fda68bfb3744ffed3db604bc470ee5d81"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-候选-dark.png",
+      "bytes": 99242,
+      "local_blob": "2ca02bf57f719b82181aa77798df7cc54e6ddd29"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-候选-light.png",
+      "bytes": 99065,
+      "local_blob": "f9a154e53b0e160905e93a7f02db9f1996771ee2"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-快捷键-dark.png",
+      "bytes": 111389,
+      "local_blob": "1034f5d87170e3e1a3d97b5badd0ce21588cce6c"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-快捷键-light.png",
+      "bytes": 110689,
+      "local_blob": "84cf26883c13692617f7cbed84458b3609625c76"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-词库-dark.png",
+      "bytes": 83102,
+      "local_blob": "51291245ba83c2fbe9810510c0748b84c1f0c165"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-词库-light.png",
+      "bytes": 83282,
+      "local_blob": "5b078975e99f7b1f29e95db43481265bd0e26ddf"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-输入-dark-high.png",
+      "bytes": 123992,
+      "local_blob": "492352d9817486fd007b37b3b947698d1869f861"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-输入-dark.png",
+      "bytes": 123992,
+      "local_blob": "492352d9817486fd007b37b3b947698d1869f861"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-输入-light-high.png",
+      "bytes": 123116,
+      "local_blob": "d11ec94423ebea01ae3e4aaea4a2bf91d1c2587b"
+    },
+    {
+      "path": "docs/design/macos-native-v2/settings-输入-light.png",
+      "bytes": 123116,
+      "local_blob": "d11ec94423ebea01ae3e4aaea4a2bf91d1c2587b"
+    },
+    {
+      "path": "docs/design/macos-native-v2/shortcut-edit-content-dark.png",
+      "bytes": 39271,
+      "local_blob": "d835271bbdc7245eaeba4144da2d836e733a6d72"
+    },
+    {
+      "path": "docs/design/macos-native-v2/shortcut-edit-content-light.png",
+      "bytes": 38965,
+      "local_blob": "553300fdf449dbb549ee012429289e9c6daf70c0"
+    },
+    {
+      "path": "docs/design/macos-native-v2/validation.json",
+      "bytes": 2112,
+      "local_blob": "602f0cdced285f08ed7d328ace0d7c8d9e0b99e5"
+    },
+    {
+      "path": "docs/design/macos-native-v2/设计方案-v2.md",
+      "bytes": 10945,
+      "local_blob": "65ccee39e66153196a58e139d61989b6c157d516"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/README.md",
+      "bytes": 451,
+      "local_blob": "2641ee1b9fc89d5eb5c5b95f85fb5134f6729764"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/contrast.json",
+      "bytes": 4395,
+      "local_blob": "be54ce5820d113c4743907e363baa2e5a1c10abc"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui01-dark.png",
+      "bytes": 14463,
+      "local_blob": "e87f20226ec6f6a4a5fcc869c693c9d04eef8fce"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui01-light.png",
+      "bytes": 14306,
+      "local_blob": "96b55e20b15994639c937aa2cb7d4801bc599266"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui01-long-dark.png",
+      "bytes": 74034,
+      "local_blob": "5d289c1ed3742c3f94d48161f0597fefc6452418"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui01-warning-dark.png",
+      "bytes": 13248,
+      "local_blob": "797a415f755e363758a2d04bac8b0cb91c08b971"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-minimum-1-dark.png",
+      "bytes": 108247,
+      "local_blob": "ae45e437442bd58a002cc2e01367af15d1d5ab2f"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-minimum-1-light.png",
+      "bytes": 108207,
+      "local_blob": "6b2524b19d39c96a18caf07b90d19aa8699134bb"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-minimum-2-dark.png",
+      "bytes": 142575,
+      "local_blob": "06d55a4533705df4d18e8a8be008f1e23fd00228"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-minimum-2-light.png",
+      "bytes": 141935,
+      "local_blob": "2df878f0d928d3de09f22e6501bae35975c5c4e0"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-0-dark.png",
+      "bytes": 150023,
+      "local_blob": "6659bdb4f223926f8efb2b49e6ef0de710d1e0da"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-0-light.png",
+      "bytes": 147718,
+      "local_blob": "10216f1a862c93e2d8d174a73c182eeeebc826a5"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-1-dark.png",
+      "bytes": 88399,
+      "local_blob": "ceb49748081e96869550e687d00ca8bb87d69e3b"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-1-light.png",
+      "bytes": 88142,
+      "local_blob": "b044d3002d73727544f87d729d9c10a3475dd953"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-2-dark.png",
+      "bytes": 124340,
+      "local_blob": "da559e532646f73c3b7355a046f8c67baea99433"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-2-light.png",
+      "bytes": 123250,
+      "local_blob": "9fd247d40adf960b0dce0602ccf6053f92c1b9b4"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-3-dark.png",
+      "bytes": 77489,
+      "local_blob": "cdd0ed87ee2d92e2ab7379ef6627cab8c2cb86f7"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui02-pane-3-light.png",
+      "bytes": 78140,
+      "local_blob": "3a72f0bfd80c03b73b30de48adf67aa5e80b7c8a"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-about-dark.png",
+      "bytes": 57668,
+      "local_blob": "7749dd77efd5660c637adfc43a91d8bf527a082d"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-about-light.png",
+      "bytes": 63367,
+      "local_blob": "22ce0567469e67c451ca8c01131b3e1d3ccccd43"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-add-dark.png",
+      "bytes": 34831,
+      "local_blob": "ccef772f127709513deaf23c49774fb15ccbaa80"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-add-light.png",
+      "bytes": 34926,
+      "local_blob": "aa3225948529fb1ccb4fe206090f312debca3da4"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-delete-dark.png",
+      "bytes": 34831,
+      "local_blob": "ccef772f127709513deaf23c49774fb15ccbaa80"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-delete-light.png",
+      "bytes": 34926,
+      "local_blob": "aa3225948529fb1ccb4fe206090f312debca3da4"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-feedback-failure-dark.png",
+      "bytes": 78783,
+      "local_blob": "cea940757b30f73e5f5058a951693abfa2d37f01"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-feedback-failure-light.png",
+      "bytes": 77629,
+      "local_blob": "794ef515ba5d670d2a72e0abee002be4d5c085c0"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-lookup-long-dark.png",
+      "bytes": 100147,
+      "local_blob": "085c76f22146b52cff9e16dad6de956a69ae9f3f"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui03-lookup-long-light.png",
+      "bytes": 97299,
+      "local_blob": "d69d0a1e95cced2fba15aa437937c821a0b4c2e6"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui04-candidate-dark.png",
+      "bytes": 21747,
+      "local_blob": "38c278a50948b9d0224c89079abc0b48bb7874e6"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/images/ui04-candidate-light.png",
+      "bytes": 21600,
+      "local_blob": "e40aa3791d39c2e1de5b9ef25df1c9f62d77767f"
+    },
+    {
+      "path": "docs/design/mvp-ui-review/index.html",
+      "bytes": 7913,
+      "local_blob": "b342605f53c5c3b9a833c4d500b3e72bf60706b2"
+    },
+    {
+      "path": "docs/design/review-20261014/SHA256SUMS",
+      "bytes": 5679,
+      "local_blob": "e4a7ead1349692ca2cabc19a8416a1208bffc25c"
+    },
+    {
+      "path": "docs/design/review-20261014/about-dark.png",
+      "bytes": 71449,
+      "local_blob": "a8be279b625e7a6f5888fb43ff1ffa9cf6c7dae1"
+    },
+    {
+      "path": "docs/design/review-20261014/about-light.png",
+      "bytes": 72369,
+      "local_blob": "363fdd3040a6a6b3d36e33b146d8fd179df0f31e"
+    },
+    {
+      "path": "docs/design/review-20261014/add-sheet-content-dark.png",
+      "bytes": 48357,
+      "local_blob": "dc4b477603867560569dc2f33605acf652ebb32c"
+    },
+    {
+      "path": "docs/design/review-20261014/add-sheet-content-light.png",
+      "bytes": 47598,
+      "local_blob": "7d257cc09466e62edc9ec5fd40591d33c8da7eab"
+    },
+    {
+      "path": "docs/design/review-20261014/apple-native-product-design.skill.zip",
+      "bytes": 21597,
+      "local_blob": "c0a9affbf7235f09ad9adf52f845ebbad36b16a3"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-collapsed-dark.png",
+      "bytes": 16000,
+      "local_blob": "d05c3113c60d0c84c076c5094c1f5ab2dbf2e6e5"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-collapsed-light.png",
+      "bytes": 15847,
+      "local_blob": "5b31c1d9af1c36662eb7279c5b6906cdef128fda"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-dark-high.png",
+      "bytes": 30496,
+      "local_blob": "e9ef7d8cbd7d6eadd991d99ab390f9319b6c31de"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-dark.png",
+      "bytes": 30496,
+      "local_blob": "e9ef7d8cbd7d6eadd991d99ab390f9319b6c31de"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-light-high.png",
+      "bytes": 30016,
+      "local_blob": "c7d774913779113210ab19f84e518a67a8f850ef"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-light.png",
+      "bytes": 30016,
+      "local_blob": "c7d774913779113210ab19f84e518a67a8f850ef"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-phrase-dark.png",
+      "bytes": 49108,
+      "local_blob": "6b157af4c7383e1ce88b02838c5ef75eb20c229d"
+    },
+    {
+      "path": "docs/design/review-20261014/candidate-phrase-light.png",
+      "bytes": 48212,
+      "local_blob": "bd1d44aaadbcd797519515d6aeb2f9fa0a6dbd4b"
+    },
+    {
+      "path": "docs/design/review-20261014/components-dark.png",
+      "bytes": 68606,
+      "local_blob": "84e473010222aa880dd77eac0257dec1e4ed7cef"
+    },
+    {
+      "path": "docs/design/review-20261014/components-light.png",
+      "bytes": 68696,
+      "local_blob": "89e3c7989b9b7ca1e34a589761f36697e92b1fd9"
+    },
+    {
+      "path": "docs/design/review-20261014/delete-sheet-content-dark.png",
+      "bytes": 50907,
+      "local_blob": "f8fa6afd125a7e2cdd94043c43d5ef220f3d6113"
+    },
+    {
+      "path": "docs/design/review-20261014/delete-sheet-content-light.png",
+      "bytes": 50388,
+      "local_blob": "ade3205bc5b851062c32ec0aa46b053a52b94893"
+    },
+    {
+      "path": "docs/design/review-20261014/feedback-dark.png",
+      "bytes": 48913,
+      "local_blob": "546d4fd0bc9a696fb4af68ce2e81623ebe00a301"
+    },
+    {
+      "path": "docs/design/review-20261014/feedback-light.png",
+      "bytes": 49378,
+      "local_blob": "9aebb63b503dbb517e73fb67f643793b8bb8deaa"
+    },
+    {
+      "path": "docs/design/review-20261014/index.html",
+      "bytes": 18554,
+      "local_blob": "70dcfcd88d7e5884be10a214086cae8a4f9246e9"
+    },
+    {
+      "path": "docs/design/review-20261014/learning-no-code-dark.png",
+      "bytes": 21553,
+      "local_blob": "b0e1970d7ace8d6a70865554cfbbf542c73688b0"
+    },
+    {
+      "path": "docs/design/review-20261014/learning-no-code-light.png",
+      "bytes": 21444,
+      "local_blob": "d0cb7c30c055824662dba2757df922ade7e9787c"
+    },
+    {
+      "path": "docs/design/review-20261014/learning-no-roots-dark.png",
+      "bytes": 25344,
+      "local_blob": "32e60b8ae1b408ed9f06fc455afb358ae81c898a"
+    },
+    {
+      "path": "docs/design/review-20261014/learning-no-roots-light.png",
+      "bytes": 25005,
+      "local_blob": "4acf0c9736752db702e11f9996dd8d73f87a8d8a"
+    },
+    {
+      "path": "docs/design/review-20261014/long-expanded-dark.png",
+      "bytes": 70296,
+      "local_blob": "06ec6676e8a0d8a009fa9e753c85249b5b38cd9d"
+    },
+    {
+      "path": "docs/design/review-20261014/long-expanded-light.png",
+      "bytes": 68946,
+      "local_blob": "2f52ff517908c244d4269f205d050cf31e36db9f"
+    },
+    {
+      "path": "docs/design/review-20261014/long-summary-dark-high.png",
+      "bytes": 44633,
+      "local_blob": "1a8f6eee074e45787bea1c94de6d717c672785fe"
+    },
+    {
+      "path": "docs/design/review-20261014/long-summary-dark.png",
+      "bytes": 44633,
+      "local_blob": "1a8f6eee074e45787bea1c94de6d717c672785fe"
+    },
+    {
+      "path": "docs/design/review-20261014/long-summary-light-high.png",
+      "bytes": 43794,
+      "local_blob": "080f5e453a4f5e3ac99387e065663b464d3f7b6d"
+    },
+    {
+      "path": "docs/design/review-20261014/long-summary-light.png",
+      "bytes": 43794,
+      "local_blob": "080f5e453a4f5e3ac99387e065663b464d3f7b6d"
+    },
+    {
+      "path": "docs/design/review-20261014/long-word-render.swift",
+      "bytes": 23694,
+      "local_blob": "82c7c7ffc016a95b7addf0e7a66238d9b3db8267"
+    },
+    {
+      "path": "docs/design/review-20261014/lookup-dark.png",
+      "bytes": 35508,
+      "local_blob": "d0375dfdedd2432d041b87bed135357a657023af"
+    },
+    {
+      "path": "docs/design/review-20261014/lookup-light.png",
+      "bytes": 35968,
+      "local_blob": "625a3b4bc0ae152a6a0f8cf32fa66955ef5f0dc6"
+    },
+    {
+      "path": "docs/design/review-20261014/menu-layout-dark.png",
+      "bytes": 38185,
+      "local_blob": "3aee9bed5d0c73480bc1afdadb52ba9a94d8f80c"
+    },
+    {
+      "path": "docs/design/review-20261014/menu-layout-light.png",
+      "bytes": 37209,
+      "local_blob": "37521305a449d53e10e8b4ec34ecf0f6e6926f0d"
+    },
+    {
+      "path": "docs/design/review-20261014/mode-submenu-dark.png",
+      "bytes": 11688,
+      "local_blob": "8134b3346852a5ef20e63b40a857745c058a5367"
+    },
+    {
+      "path": "docs/design/review-20261014/mode-submenu-light.png",
+      "bytes": 11521,
+      "local_blob": "1e05d349f998310d25988abb6ba73824951896f0"
+    },
+    {
+      "path": "docs/design/review-20261014/native-color-reference.json",
+      "bytes": 7762,
+      "local_blob": "b516c253c3dea0f831b8d10f95af65170a823057"
+    },
+    {
+      "path": "docs/design/review-20261014/native-render-report.json",
+      "bytes": 10092,
+      "local_blob": "fab4605a6fc5a36c35cd3da044828fc1f86395b8"
+    },
+    {
+      "path": "docs/design/review-20261014/native-render.swift",
+      "bytes": 25907,
+      "local_blob": "ab74090c0e169e4facc9b66cb2d257b08b529d58"
+    },
+    {
+      "path": "docs/design/review-20261014/page-last-dark.png",
+      "bytes": 16370,
+      "local_blob": "02a258cd615a24f42df7d071400e001e0f7f2be7"
+    },
+    {
+      "path": "docs/design/review-20261014/page-last-light.png",
+      "bytes": 16138,
+      "local_blob": "5570932f6ec130cad84e48f4893d9f36df7f29c5"
+    },
+    {
+      "path": "docs/design/review-20261014/page-single-dark.png",
+      "bytes": 14789,
+      "local_blob": "9f4f9076af87b1c8e213fd226a266dc0765f2315"
+    },
+    {
+      "path": "docs/design/review-20261014/page-single-light.png",
+      "bytes": 14611,
+      "local_blob": "4c38310011ee2032288b854fe85c42bb1b063c5b"
+    },
+    {
+      "path": "docs/design/review-20261014/review-manifest.json",
+      "bytes": 10931,
+      "local_blob": "53285f2ffea3a9284131e14e7bd90432b44b3c73"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-候选-dark.png",
+      "bytes": 125914,
+      "local_blob": "4568d599e67ccbff945cd5d61778b6418884eac4"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-候选-light.png",
+      "bytes": 125316,
+      "local_blob": "7fa62de84859b973b415520babd650d0ae50a7d8"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-快捷键-dark.png",
+      "bytes": 123387,
+      "local_blob": "b42793d7c14140c28f714cc6bddbecb430d563fd"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-快捷键-light.png",
+      "bytes": 122415,
+      "local_blob": "ac9eb427bed4808cc7a2ce43671669614ff80f2f"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-词库-dark.png",
+      "bytes": 83102,
+      "local_blob": "51291245ba83c2fbe9810510c0748b84c1f0c165"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-词库-light.png",
+      "bytes": 83282,
+      "local_blob": "5b078975e99f7b1f29e95db43481265bd0e26ddf"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-输入-dark-high.png",
+      "bytes": 123992,
+      "local_blob": "492352d9817486fd007b37b3b947698d1869f861"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-输入-dark.png",
+      "bytes": 123992,
+      "local_blob": "492352d9817486fd007b37b3b947698d1869f861"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-输入-light-high.png",
+      "bytes": 123116,
+      "local_blob": "d11ec94423ebea01ae3e4aaea4a2bf91d1c2587b"
+    },
+    {
+      "path": "docs/design/review-20261014/settings-输入-light.png",
+      "bytes": 123116,
+      "local_blob": "d11ec94423ebea01ae3e4aaea4a2bf91d1c2587b"
+    },
+    {
+      "path": "docs/design/review-20261014/shortcut-edit-content-dark.png",
+      "bytes": 39271,
+      "local_blob": "d835271bbdc7245eaeba4144da2d836e733a6d72"
+    },
+    {
+      "path": "docs/design/review-20261014/shortcut-edit-content-light.png",
+      "bytes": 38965,
+      "local_blob": "553300fdf449dbb549ee012429289e9c6daf70c0"
+    },
+    {
+      "path": "docs/design/review-20261014/validation.json",
+      "bytes": 1581,
+      "local_blob": "000caecc80d90a3be678019f9abeb48176e36165"
+    },
+    {
+      "path": "docs/design/review-20261014/下一里程碑计划.md",
+      "bytes": 3075,
+      "local_blob": "b13197dd3192e89a5b39dd89124f8860b5c57168"
+    },
+    {
+      "path": "docs/design/review-20261014/审阅反馈.md",
+      "bytes": 402,
+      "local_blob": "48b2e3ebf616acabcf4dfe6371061119fa2bbbe2"
+    },
+    {
+      "path": "docs/design/review-20261014/统一设计方案.md",
+      "bytes": 13409,
+      "local_blob": "ff49054808d263a547aee970acfe7427ee1c5a8d"
+    },
+    {
+      "path": "docs/design/review-20261014/萤火虫-macOS-设计审阅包.zip",
+      "bytes": 2294297,
+      "local_blob": "49eaf102162747abab59706d1c9c077890f11bd7"
+    },
+    {
+      "path": "docs/design/review-20261014/长词参考说明.md",
+      "bytes": 2033,
+      "local_blob": "0b1a00565921587a48321890592a194a7eb6e92b"
+    },
+    {
+      "path": "docs/reviews/016-mvp-core-refinement-candidate.md",
+      "bytes": 3069,
+      "local_blob": "561a99d8b336e524d363ec3322fa61164dbf977a"
+    },
+    {
+      "path": "docs/reviews/019-mvp-ui-candidate.md",
+      "bytes": 2685,
+      "local_blob": "5bf6394d558a91996d016d54806fb372ba78c25a"
+    },
+    {
+      "path": "docs/reviews/020-core-pr42-publication.md",
+      "bytes": 2055,
+      "local_blob": "203255fc5526e1e3accf3de2fcb8e3ec3f13698f"
+    },
+    {
+      "path": "docs/reviews/021-ui-pr43-publication.md",
+      "bytes": 2676,
+      "local_blob": "864e5e200bdd2f6cb92e0cbdf2fbc2e87e55553b"
+    },
+    {
+      "path": "docs/reviews/022-ui05-native-preflight.md",
+      "bytes": 1345,
+      "local_blob": "515bc33b180e9aa2e684fc9f12b5aac7db03a19e"
+    },
+    {
+      "path": "docs/reviews/023-ui05-device-b-install.md",
+      "bytes": 1993,
+      "local_blob": "a5d1cd43ec3bd1357cd57b88fc6224e1c3c22888"
+    },
+    {
+      "path": "docs/reviews/024-ui05-post-login-native.md",
+      "bytes": 2652,
+      "local_blob": "76abd5fb207a2a756092dfb24c617d9f6e1e9695"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity.md",
+      "bytes": 7394,
+      "local_blob": "998707587841efe4c5690917bf267cbcc205d698"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/evidence.json",
+      "bytes": 1569,
+      "local_blob": "cf34f5650e91931ee946c4a34cb3a61820f158ae"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/about-current.png",
+      "bytes": 63367,
+      "local_blob": "22ce0567469e67c451ca8c01131b3e1d3ccccd43"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/about-design.png",
+      "bytes": 72369,
+      "local_blob": "363fdd3040a6a6b3d36e33b146d8fd179df0f31e"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/candidate-current.png",
+      "bytes": 14306,
+      "local_blob": "96b55e20b15994639c937aa2cb7d4801bc599266"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/candidate-design.png",
+      "bytes": 15847,
+      "local_blob": "5b31c1d9af1c36662eb7279c5b6906cdef128fda"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/candidate-matched-clean.png",
+      "bytes": 14015,
+      "local_blob": "c7903673b004f28b68cbc26a8dbe85222193e007"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/candidate-matched-hint.png",
+      "bytes": 18758,
+      "local_blob": "a7425b28127fdb0c1cfa9d836ba1239a90e57efc"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/settings-current.png",
+      "bytes": 147718,
+      "local_blob": "10216f1a862c93e2d8d174a73c182eeeebc826a5"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/images/settings-design.png",
+      "bytes": 123116,
+      "local_blob": "d11ec94423ebea01ae3e4aaea4a2bf91d1c2587b"
+    },
+    {
+      "path": "docs/reviews/025-ui-fidelity/index.html",
+      "bytes": 2850,
+      "local_blob": "0b19facd931c66aa34c521d180abf4c6bcbf1d2c"
+    },
+    {
+      "path": "docs/reviews/027-complete-ui-native-preflight.md",
+      "bytes": 1831,
+      "local_blob": "14eea7d47bc256074b1ca027352bcc21d0e0f84d"
+    },
+    {
+      "path": "docs/reviews/028-complete-ui-device-b-install.md",
+      "bytes": 1512,
+      "local_blob": "88171d658bafb1b30c79d9e77ac1f8cba2efd1a6"
+    },
+    {
+      "path": "docs/reviews/029-complete-ui-device-b-post-login.md",
+      "bytes": 4096,
+      "local_blob": "5f3061daee04b734d5f71f27c6eeb617f3fa66af"
+    },
+    {
+      "path": "docs/reviews/040-menu-candidate-preflight.md",
+      "bytes": 3994,
+      "local_blob": "2ff0d619eae868a7445f5c41127f2617c468365f"
+    },
+    {
+      "path": "docs/reviews/045-signed-menu-candidate-preflight.md",
+      "bytes": 5570,
+      "local_blob": "624e7d91746a2ea39e0db8212d217c56a4f14151"
+    },
+    {
+      "path": "docs/reviews/046-ab-latest-package-install.md",
+      "bytes": 3925,
+      "local_blob": "0765131f6e005aa74af554a37180703cd1610591"
+    },
+    {
+      "path": "docs/当前体验待办.md",
+      "bytes": 4803,
+      "local_blob": "19c8204f59e97ba3c93d4d5ec2ab3ff414e4b8c8"
+    }
+  ],
+  "same_count": 408,
+  "missing_vs_origin": [
+    ".github/workflows/isolated-imk-notary.yml",
+    "crates/ime-pinyin/tests/reading_quality.rs",
+    "crates/ime-table/src/learning.rs",
+    "data/generated/wubi86-learning-codes.bin",
+    "data/generated/wubi86-learning-report.json",
+    "data/learning/wubi86-readable-keys.tsv",
+    "data/learning/wubi86-roots.tsv",
+    "data/learning/wubi86-verified.tsv",
+    "packaging/licenses/D2-MIT.txt",
+    "packaging/macos/ISOLATED-CI.md",
+    "packaging/macos/prepare-isolated-ci.py",
+    "packaging/macos/tests/test-isolated-ci.py",
+    "platforms/macos/Preview/InputMenuPreview.swift",
+    "platforms/macos/Sources/InputMenu.swift",
+    "platforms/macos/tests/GuardedAXPress.swift",
+    "platforms/macos/tests/LocalAcceptanceEvidence.swift",
+    "platforms/macos/tests/appearance-contract.swift",
+    "platforms/macos/tests/candidate-presentation.swift",
+    "platforms/macos/tests/composition-navigation.swift",
+    "platforms/macos/tests/formal-profile-guard.py",
+    "platforms/macos/tests/guarded-ax-main.swift",
+    "platforms/macos/tests/guarded-ax-tests.swift",
+    "platforms/macos/tests/input-menu.swift",
+    "platforms/macos/tests/local_acceptance_support.py",
+    "platforms/macos/tests/prepare-imk-acceptance.py",
+    "platforms/macos/tests/preview-menu.swift",
+    "platforms/macos/tests/run-local-acceptance.py",
+    "platforms/macos/tests/settings-presentation.swift",
+    "platforms/macos/tests/test-appearance-contract.py",
+    "platforms/macos/tests/test-candidate-presentation.py",
+    "platforms/macos/tests/test-composition-navigation.py",
+    "platforms/macos/tests/test-formal-profile-guard.py",
+    "platforms/macos/tests/test-guarded-ax.py",
+    "platforms/macos/tests/test-input-menu.py",
+    "platforms/macos/tests/test-local-acceptance.py",
+    "platforms/macos/tests/test-offline-reporting.py",
+    "platforms/macos/tests/test-prepare-imk-acceptance.py",
+    "platforms/macos/tests/test-preview-menu.py",
+    "platforms/macos/tests/test-settings-presentation.py",
+    "platforms/macos/tests/test-tools-presentation.py",
+    "platforms/macos/tests/test-wubi-learning.py",
+    "platforms/macos/tests/tools-presentation.swift",
+    "platforms/macos/tests/wubi-learning.swift",
+    "tools/audit-wubi-learning-coverage.py",
+    "tools/prepare-wubi-learning.py"
+  ]
+}

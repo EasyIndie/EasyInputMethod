@@ -1,0 +1,16 @@
+{
+  "captures": 14,
+  "compile": "warnings-as-errors passed",
+  "visuallyInspected": [
+    "single light",
+    "phrase dark",
+    "missing decomposition light"
+  ],
+  "result": "no observed clipping in inspected examples",
+  "limitations": [
+    "static data",
+    "no VoiceOver proof",
+    "no dynamic long-word/layout proof"
+  ],
+  "productionChanged": false
+}

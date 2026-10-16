@@ -1,0 +1,415 @@
+{
+  "version": "2026-10-14 / Review 1",
+  "captures": [
+    {
+      "file": "settings-输入-light.png",
+      "heightPt": 588,
+      "pixelsHigh": 1176,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-候选-light.png",
+      "heightPt": 554,
+      "pixelsHigh": 1108,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-快捷键-light.png",
+      "heightPt": 520,
+      "pixelsHigh": 1040,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-词库-light.png",
+      "heightPt": 458,
+      "pixelsHigh": 916,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "candidate-light.png",
+      "heightPt": 154,
+      "pixelsHigh": 308,
+      "pixelsWide": 800,
+      "scope": "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt": 400
+    },
+    {
+      "file": "page-last-light.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Last page, next disabled; structural control specification",
+      "widthPt": 400
+    },
+    {
+      "file": "page-single-light.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Single page: pager fully omitted",
+      "widthPt": 400
+    },
+    {
+      "file": "learning-no-code-light.png",
+      "heightPt": 112,
+      "pixelsHigh": 224,
+      "pixelsWide": 800,
+      "scope": "Missing reliable Wubi code, no invented details",
+      "widthPt": 400
+    },
+    {
+      "file": "learning-no-roots-light.png",
+      "heightPt": 132,
+      "pixelsHigh": 264,
+      "pixelsWide": 800,
+      "scope": "Code available, decomposition missing",
+      "widthPt": 400
+    },
+    {
+      "file": "candidate-phrase-light.png",
+      "heightPt": 232,
+      "pixelsHigh": 464,
+      "pixelsWide": 800,
+      "scope": "Mixed pinyin lookup phrase proposal",
+      "widthPt": 400
+    },
+    {
+      "file": "candidate-collapsed-light.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Collapsed learning area, independent of input mode",
+      "widthPt": 400
+    },
+    {
+      "file": "menu-layout-light.png",
+      "heightPt": 258,
+      "pixelsHigh": 516,
+      "pixelsWide": 576,
+      "scope": "NSMenu layout specification, not actual popup",
+      "widthPt": 288
+    },
+    {
+      "file": "mode-submenu-light.png",
+      "heightPt": 110,
+      "pixelsHigh": 220,
+      "pixelsWide": 312,
+      "scope": "Mode submenu structure proposal",
+      "widthPt": 156
+    },
+    {
+      "file": "add-sheet-content-light.png",
+      "heightPt": 300,
+      "pixelsHigh": 600,
+      "pixelsWide": 864,
+      "scope": "Native sheet contents, not presented modal",
+      "widthPt": 432
+    },
+    {
+      "file": "delete-sheet-content-light.png",
+      "heightPt": 300,
+      "pixelsHigh": 600,
+      "pixelsWide": 864,
+      "scope": "Deletion contents, safe cancellation default",
+      "widthPt": 432
+    },
+    {
+      "file": "shortcut-edit-content-light.png",
+      "heightPt": 227,
+      "pixelsHigh": 454,
+      "pixelsWide": 864,
+      "scope": "Shortcut expression editor contents",
+      "widthPt": 432
+    },
+    {
+      "file": "lookup-light.png",
+      "heightPt": 282,
+      "pixelsHigh": 564,
+      "pixelsWide": 900,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 450
+    },
+    {
+      "file": "about-light.png",
+      "heightPt": 356,
+      "pixelsHigh": 712,
+      "pixelsWide": 900,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 450
+    },
+    {
+      "file": "feedback-light.png",
+      "heightPt": 274,
+      "pixelsHigh": 548,
+      "pixelsWide": 1300,
+      "scope": "Feedback specimens; not additional product window",
+      "widthPt": 650
+    },
+    {
+      "file": "components-light.png",
+      "heightPt": 327,
+      "pixelsHigh": 654,
+      "pixelsWide": 1300,
+      "scope": "Native control state specimen",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-输入-dark.png",
+      "heightPt": 588,
+      "pixelsHigh": 1176,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-候选-dark.png",
+      "heightPt": 554,
+      "pixelsHigh": 1108,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-快捷键-dark.png",
+      "heightPt": 520,
+      "pixelsHigh": 1040,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-词库-dark.png",
+      "heightPt": 458,
+      "pixelsHigh": 916,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "candidate-dark.png",
+      "heightPt": 154,
+      "pixelsHigh": 308,
+      "pixelsWide": 800,
+      "scope": "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt": 400
+    },
+    {
+      "file": "page-last-dark.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Last page, next disabled; structural control specification",
+      "widthPt": 400
+    },
+    {
+      "file": "page-single-dark.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Single page: pager fully omitted",
+      "widthPt": 400
+    },
+    {
+      "file": "learning-no-code-dark.png",
+      "heightPt": 112,
+      "pixelsHigh": 224,
+      "pixelsWide": 800,
+      "scope": "Missing reliable Wubi code, no invented details",
+      "widthPt": 400
+    },
+    {
+      "file": "learning-no-roots-dark.png",
+      "heightPt": 132,
+      "pixelsHigh": 264,
+      "pixelsWide": 800,
+      "scope": "Code available, decomposition missing",
+      "widthPt": 400
+    },
+    {
+      "file": "candidate-phrase-dark.png",
+      "heightPt": 232,
+      "pixelsHigh": 464,
+      "pixelsWide": 800,
+      "scope": "Mixed pinyin lookup phrase proposal",
+      "widthPt": 400
+    },
+    {
+      "file": "candidate-collapsed-dark.png",
+      "heightPt": 74,
+      "pixelsHigh": 148,
+      "pixelsWide": 800,
+      "scope": "Collapsed learning area, independent of input mode",
+      "widthPt": 400
+    },
+    {
+      "file": "menu-layout-dark.png",
+      "heightPt": 258,
+      "pixelsHigh": 516,
+      "pixelsWide": 576,
+      "scope": "NSMenu layout specification, not actual popup",
+      "widthPt": 288
+    },
+    {
+      "file": "mode-submenu-dark.png",
+      "heightPt": 110,
+      "pixelsHigh": 220,
+      "pixelsWide": 312,
+      "scope": "Mode submenu structure proposal",
+      "widthPt": 156
+    },
+    {
+      "file": "add-sheet-content-dark.png",
+      "heightPt": 300,
+      "pixelsHigh": 600,
+      "pixelsWide": 864,
+      "scope": "Native sheet contents, not presented modal",
+      "widthPt": 432
+    },
+    {
+      "file": "delete-sheet-content-dark.png",
+      "heightPt": 300,
+      "pixelsHigh": 600,
+      "pixelsWide": 864,
+      "scope": "Deletion contents, safe cancellation default",
+      "widthPt": 432
+    },
+    {
+      "file": "shortcut-edit-content-dark.png",
+      "heightPt": 227,
+      "pixelsHigh": 454,
+      "pixelsWide": 864,
+      "scope": "Shortcut expression editor contents",
+      "widthPt": 432
+    },
+    {
+      "file": "lookup-dark.png",
+      "heightPt": 282,
+      "pixelsHigh": 564,
+      "pixelsWide": 900,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 450
+    },
+    {
+      "file": "about-dark.png",
+      "heightPt": 356,
+      "pixelsHigh": 712,
+      "pixelsWide": 900,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 450
+    },
+    {
+      "file": "feedback-dark.png",
+      "heightPt": 274,
+      "pixelsHigh": 548,
+      "pixelsWide": 1300,
+      "scope": "Feedback specimens; not additional product window",
+      "widthPt": 650
+    },
+    {
+      "file": "components-dark.png",
+      "heightPt": 327,
+      "pixelsHigh": 654,
+      "pixelsWide": 1300,
+      "scope": "Native control state specimen",
+      "widthPt": 650
+    },
+    {
+      "file": "settings-输入-light-high.png",
+      "heightPt": 588,
+      "pixelsHigh": 1176,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "candidate-light-high.png",
+      "heightPt": 154,
+      "pixelsHigh": 308,
+      "pixelsWide": 800,
+      "scope": "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt": 400
+    },
+    {
+      "file": "settings-输入-dark-high.png",
+      "heightPt": 588,
+      "pixelsHigh": 1176,
+      "pixelsWide": 1300,
+      "scope": "AppKit native controls; offscreen non-key window",
+      "widthPt": 650
+    },
+    {
+      "file": "candidate-dark-high.png",
+      "heightPt": 154,
+      "pixelsHigh": 308,
+      "pixelsWide": 800,
+      "scope": "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt": 400
+    },
+    {
+      "file": "long-summary-light.png",
+      "heightPt": 242,
+      "pixelsHigh": 484,
+      "pixelsWide": 840,
+      "scope": "Long word summary; static layout example",
+      "widthPt": 420
+    },
+    {
+      "file": "long-expanded-light.png",
+      "heightPt": 428,
+      "pixelsHigh": 856,
+      "pixelsWide": 840,
+      "scope": "Native scrolling content with expanded character; teaching roots are draft examples",
+      "widthPt": 420
+    },
+    {
+      "file": "long-summary-dark.png",
+      "heightPt": 242,
+      "pixelsHigh": 484,
+      "pixelsWide": 840,
+      "scope": "Long word summary; static layout example",
+      "widthPt": 420
+    },
+    {
+      "file": "long-expanded-dark.png",
+      "heightPt": 428,
+      "pixelsHigh": 856,
+      "pixelsWide": 840,
+      "scope": "Native scrolling content with expanded character; teaching roots are draft examples",
+      "widthPt": 420
+    },
+    {
+      "file": "long-summary-light-high.png",
+      "heightPt": 242,
+      "pixelsHigh": 484,
+      "pixelsWide": 840,
+      "scope": "Long word summary; static layout example",
+      "widthPt": 420
+    },
+    {
+      "file": "long-summary-dark-high.png",
+      "heightPt": 242,
+      "pixelsHigh": 484,
+      "pixelsWide": 840,
+      "scope": "Long word summary; static layout example",
+      "widthPt": 420
+    }
+  ],
+  "count": 50,
+  "groups": [
+    "候选与学习",
+    "长词学习",
+    "功能菜单",
+    "设置",
+    "词库与工具",
+    "反馈与状态"
+  ],
+  "scope": "design review only"
+}

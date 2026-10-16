@@ -1,0 +1,369 @@
+{
+  "scope": "设计固色稿件，非真实系统材质或VoiceOver验收",
+  "contrastPairs": [
+    {
+      "appearance": "light",
+      "foreground": "text",
+      "background": "surface",
+      "ratio": 16.1,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "secondary",
+      "background": "surface",
+      "ratio": 6.04,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "secondary",
+      "background": "raised",
+      "ratio": 5.79,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "selectionText",
+      "background": "selection",
+      "ratio": 7.51,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "onAccent",
+      "background": "accent",
+      "ratio": 5.98,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "error",
+      "background": "errorFill",
+      "ratio": 5.98,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "success",
+      "background": "surface",
+      "ratio": 6.56,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "warning",
+      "background": "surface",
+      "ratio": 6.37,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "controlBorder",
+      "background": "surface",
+      "ratio": 3.62,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "foreground": "focus",
+      "background": "surface",
+      "ratio": 5.98,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "text",
+      "background": "surface",
+      "ratio": 14.23,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "secondary",
+      "background": "surface",
+      "ratio": 7.19,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "secondary",
+      "background": "raised",
+      "ratio": 6.37,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "selectionText",
+      "background": "selection",
+      "ratio": 8.97,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "onAccent",
+      "background": "accent",
+      "ratio": 9.09,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "error",
+      "background": "errorFill",
+      "ratio": 7.71,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "success",
+      "background": "surface",
+      "ratio": 9.2,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "warning",
+      "background": "surface",
+      "ratio": 10.28,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "controlBorder",
+      "background": "surface",
+      "ratio": 4.64,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "foreground": "focus",
+      "background": "surface",
+      "ratio": 7.62,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "text",
+      "background": "surface",
+      "ratio": 21.0,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "secondary",
+      "background": "surface",
+      "ratio": 10.05,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "secondary",
+      "background": "raised",
+      "ratio": 10.05,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "selectionText",
+      "background": "selection",
+      "ratio": 9.82,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "onAccent",
+      "background": "accent",
+      "ratio": 10.21,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "error",
+      "background": "errorFill",
+      "ratio": 7.92,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "success",
+      "background": "surface",
+      "ratio": 8.44,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "warning",
+      "background": "surface",
+      "ratio": 9.05,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "controlBorder",
+      "background": "surface",
+      "ratio": 7.46,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "foreground": "focus",
+      "background": "surface",
+      "ratio": 10.21,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "text",
+      "background": "surface",
+      "ratio": 18.42,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "secondary",
+      "background": "surface",
+      "ratio": 11.94,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "secondary",
+      "background": "raised",
+      "ratio": 10.56,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "selectionText",
+      "background": "selection",
+      "ratio": 9.67,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "onAccent",
+      "background": "accent",
+      "ratio": 13.8,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "error",
+      "background": "errorFill",
+      "ratio": 9.6,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "success",
+      "background": "surface",
+      "ratio": 13.84,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "warning",
+      "background": "surface",
+      "ratio": 14.41,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "controlBorder",
+      "background": "surface",
+      "ratio": 9.6,
+      "target": 3,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "foreground": "focus",
+      "background": "surface",
+      "ratio": 12.11,
+      "target": 3,
+      "passed": true
+    }
+  ],
+  "allContrastPassed": true,
+  "boards": "6 PNG + 6 SVG, bounds checked by generator",
+  "htmlValidation": "结构/脚本检查；file://浏览器策略阻止原型运行，未进行浏览器交互验收",
+  "productionCodeChanged": false,
+  "skillValidation": "quick_validate.py passed, tool-only PyYAML6.0.2 in /private/tmp",
+  "visualInspection": "已检查亮暗画板；修正静态稿缺字及输入模式控件一致性，重新导出。静态图是视觉说明，不是HTML浏览器截图。",
+  "schemaCoverage": {
+    "keys": [
+      "mode",
+      "wubi.auto_commit",
+      "wubi.z_key",
+      "pinyin.fuzzy",
+      "candidate.count",
+      "candidate.page_with_comma",
+      "appearance.theme",
+      "hotkey.toggle_mode",
+      "hotkey.toggle_english",
+      "hotkey.toggle_width",
+      "hotkey.toggle_punctuation",
+      "hotkey.toggle_variant",
+      "input.punctuation",
+      "input.full_width",
+      "input.chinese_variant"
+    ],
+    "count": 15,
+    "allCovered": true
+  },
+  "htmlStructure": {
+    "uniqueIds": 18,
+    "pages": [
+      "input",
+      "appearance",
+      "shortcuts",
+      "dictionary"
+    ],
+    "localAssetLinks": [
+      "app-icon.png",
+      "app-icon.png",
+      "app-icon.png"
+    ],
+    "allLocal": true
+  },
+  "javascriptSyntax": "node --check passed",
+  "productionCodeScope": "仅本次UI设计交付；另行已批准的既有IT-24修复PR #40不属于设计实施"
+}

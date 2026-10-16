@@ -1,0 +1,60 @@
+# MVP 自动工程验收状态
+
+> 2026-10-16当前覆盖：以[报告038](reviews/038-mvp-remaining-work.md)及主目录HANDOFF为准。B已装1621a6d，新反馈修正在草稿PR #45，尚未安装；自建库按ADR-190移至MVP后。下文较早包身份、计划日期和进行中状态保留历史，不能当作最新任务或通过证据。
+
+更新：2026-10-13。这里区分工程证据、发布操作和人工产品验收；不将旧隔离包报告提升为最终候选报告。
+
+| 自动工程项 | 当前结果 | 证据 |
+|---|---|---|
+| 源码归并 | 独立codex/mvp-product-candidate分支，按文档、CI、配置、引擎、词库、FFI、宿主、隔离工具、发布门禁保存；已同步main的PR #38 | 分支git历史，主工作区未覆盖 |
+| Rust/许可/隐私 | make verify零诊断；无核心网络依赖或网络符号 | /private/tmp/lampyris-verify-merged-candidate-20261013.log |
+| 离线平台/发布回归 | 17文件、75测试通过；普通macOS CI和候选CI共用make macos-offline-tests | /private/tmp/lampyris-offline-merged-candidate-20261013.log |
+| 双架构宿主 | strict universal成功，真实SDK/Xcode与产品契约检查通过 | /private/tmp/lampyris-build-candidate-20261013.log；后续审核包重建日志 |
+| 独立预览 | 亮暗/最小窗口/长错误/候选/词库/辅助动作冒烟通过，截图已检查 | /private/tmp/lampyris-preview-auto-20261013.log |
+| FFI | wq→你、nihao→你好通过 | /private/tmp/lampyris-ffi-auto-20261013.log |
+| 满词库渲染压力 | 2200keys；cold7.334ms、warm p95 6.089ms、max10.207ms、无一次≥16ms；footprint26.52MiB | /private/tmp/lampyris-perf-auto-20261013.log |
+| 解析器fuzz | 三目标各30秒，无发现崩溃；临时固定cargo-fuzz0.13.2，不改系统工具 | /private/tmp/lampyris-fuzz-auto-20261013.log |
+| 数据生成/文档 | 五笔提示逐字生成一致，主要文档本地链接有效 | ADR-109/148/149及本轮核验 |
+| 审核包/源码包 | 186e85c审核包真实附件核验通过，离线可执行文件/默认数据逐字节一致，结果独立保存 | packaging/out/candidate-*；/private/tmp/lampyris-repro-auto-20261013.log |
+
+## 仍需外部操作或人工验收
+
+- 当前本地审核包为ad-hoc，不能对外发布或替换正式安装包。公开推送及draft PR #39已获明确批准并完成；最终CI签名公证已获补充批准并通过，最新结果见下文。
+- 需要同一最终签名包的目标应用、真实IMK性能/功耗、VoiceOver、系统辅助外观、多屏/缩放/Spaces/睡眠唤醒验收；预览与固定旧隔离包场景不能代替这些结果。
+- 设备A Intel/macOS13、设备B新版macOS的最终包验收，用户独立核验及一人累计五工作日试用保持待验。
+- IT-01/03/10…18/20/22/23与产品MVP不因自动工程门禁通过而整体关闭；正式Release须全部发布门禁通过。
+
+实体打包经验见ADR-149：ZIP不包含._资源叉/扩展属性副本，摘要覆盖不放宽；源码内链接仅允许安全相对目标。--review只能验未签名包，不能与--assets-only一起用于正式发布输出。
+
+2026-10-13收尾：当前候选186e85c10324eee933f84ae5bf1054556e625096，13个本地提交、相对main 133个文件。设备A Intel/macOS13.7.8/Swift5.8.1的严格离线构建通过，验证源码b8b1dad与最终提交仅HANDOFF.md不同，产品代码一致；本次临时目录已清理、未安装。审核附件及SHA记录在/private/tmp/lampyris-mvp-engineering-ready-20261013.json。
+
+用户批准本次精确载荷后，已推送186e85c到EasyIndie/EasyInputMethod的codex/mvp-product-candidate并创建[draft PR #39](https://github.com/EasyIndie/EasyInputMethod/pull/39)。远端提交身份一致、无冲突，check/DCO/fuzz/macos全部通过；此前自动审批阻塞已解除。后续用户批准后已合入main并完成签名公证；未安装或发布。
+
+## 最终签名验收包
+
+PR #39已合入d429cec714067adba9ca7a362297f6e9fe38b545；最终签名公证运行38290875467成功。附件摘要/身份/对应源码通过，CI离线去签名重建逐字节一致，设备B签名/stapler/Gatekeeper通过（Notarized Developer ID）。未安装或发布；最终包双设备产品验收及用户独立核验/五工作日试用待验。
+
+[CI运行与验收附件](https://github.com/EasyIndie/EasyInputMethod/actions/runs/38290875467)；本地附件目录 `/private/tmp/lampyris-final-acceptance-38290875467/candidate-CAZRcC`。
+
+- universal ZIP SHA-256：`55ebe1caf589636b410e507d095bb225ab438ddce0d98cdfe05713565b3eeee8`
+- 对应源码 SHA-256：`8e15830a0cbb1f6dfb32d3ab1225fb5c9ce8dcc199868ab73de8621a04f703e3`
+- CI证据：`/private/tmp/lampyris-final-acceptance-38290875467.log`；正式Release未创建。
+
+2026-10-13安装清理：设备A/B已安装同一最终签名包d429cec，已装可执行文件SHA-256均为511744095c2ba8f091c69bc473da5b6e27b43516a9e66d8f853a317813719fe2。旧包/数据已备份，真实配置/词库摘要和其他启用输入源保持；B测试7bb55aa3已禁用并归档，A无测试包。用户最新要求仅安装清理，本轮未发送按键或执行产品输入验收。
+
+2026-10-13最终包阶段验收：最终已装d429cec包：设备B TextEdit/Safari/Terminal各normal/failure/INT/TERM，共12条固定场景通过；TextEdit marked range建立/清除通过。正常提交逐条核验仅测试字“你”学习+1；未提交中断真实数据完全不变。源/启用集合/自有资源恢复通过。首次数据门禁缺逐条证据及Safari AX加载阻塞报告保留，不计通过。A SSH UI脚本false，用户处理中；完整产品验收未完成。
+
+2026-10-13新增验收：设备B同一d429cec最终包新增Esc取消、数字1选字、混输nihao→你好及提交后撤销4项通过；累计16条基础/功能场景通过。每条原源/启用集合恢复，自有文档清理；提交仅允许已知测试文本学习+1。A本轮SSH连接超时，待恢复及权限复核；未关闭完整产品验收。
+
+2026-10-13设备B继续验收：按用户安排A暂缓，仅推进B。B新增退格重输及首候选AX标签2项通过，累计18条。方向键组合wq→↓→↑→空格两次未提交预期字，定向复查产生空格+U+001F，登记IT-24发布阻塞；根因未确认。源/启用集合/自有资源与非测试数据保护正常；VoiceOver实际朗读及完整产品验收仍未通过。
+
+2026-10-13 IT-24候选：IT-24 PR #40精确78b6762在全部门禁通过后合入809efdb2dc99f86749de9464168f06bfb3728acd；验收签名公证运行38404972406成功。附件摘要/版本/双架构/对应源码核验通过，B私有解压副本codesign/stapler/Gatekeeper通过（Notarized Developer ID）。已装d429cec未替换；新包原生复验前IT-24保持阻塞。
+[CI运行与附件](https://github.com/EasyIndie/EasyInputMethod/actions/runs/38404972406)；本地/private/tmp/lampyris-it24-signed-38404972406/candidate-ordFPy。
+
+2026-10-14独立候选本地收口：IT-27读音修复6f487a4、IT-28导航保护66ab513；144 Rust/1既有忽略、18文件76离线测试、Swift零诊断及strict universal通过（报告014/015）。完整候选66ab5132d963ce75c9ed4309f152f79406874c0f相对main b62b70d共7提交39文件，尚未公开/公证/安装。只f90010b曾批准并合入公证；下一步完整候选审核，再最终包B→A原生、布局/安全字段及单人五日试用，UI暂缓。主目录源码/码表不覆盖。
+
+
+2026-10-14当前覆盖：基础UI01…04代码改造已完成，本地HEAD4e660af；make verify零诊断/137产物、22文件80离线测试、strict universal及完整私有预览通过。真实全局高对比/VoiceOver与最终签名同包A/B、五工作日仍待；完整教学后移。见[工程验收018](reviews/018-mvp-ui-engineering.md)。
+
+
+2026-10-14核心公开闭环：批准载荷66ab513经PR #42四门禁全绿合入7778070（树与66ab513一致），CI38580600884公证/离线重建成功，本机附件/Developer ID/Gatekeeper复查通过；不含UI、不安装/发布。UI4e660af仅本地，独立公开批准待答，工程已全部完成；最终完整UI包原生/VoiceOver/双设备及用户试用仍待。

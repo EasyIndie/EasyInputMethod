@@ -1,0 +1,14 @@
+{
+  "captures": 18,
+  "compile": "warnings-as-errors passed",
+  "visuallyReviewed": [
+    "single light",
+    "phrase dark"
+  ],
+  "result": "root/key columns aligned; no observed clipping in reviewed examples",
+  "productionChanged": false,
+  "limitations": [
+    "static data",
+    "real AX and dynamic layout unverified"
+  ]
+}

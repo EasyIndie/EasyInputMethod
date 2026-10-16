@@ -1,0 +1,79 @@
+{
+  "captures" : [
+    {
+      "file" : "candidate-light.png",
+      "heightPt" : 154,
+      "pixelsHigh" : 308,
+      "pixelsWide" : 720,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-phrase-light.png",
+      "heightPt" : 178,
+      "pixelsHigh" : 356,
+      "pixelsWide" : 720,
+      "scope" : "Mixed pinyin lookup phrase proposal",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-pinyin-light.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 720,
+      "scope" : "Pure pinyin, no Wubi study area",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-dark.png",
+      "heightPt" : 154,
+      "pixelsHigh" : 308,
+      "pixelsWide" : 720,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-phrase-dark.png",
+      "heightPt" : 178,
+      "pixelsHigh" : 356,
+      "pixelsWide" : 720,
+      "scope" : "Mixed pinyin lookup phrase proposal",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-pinyin-dark.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 720,
+      "scope" : "Pure pinyin, no Wubi study area",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-light-high.png",
+      "heightPt" : 154,
+      "pixelsHigh" : 308,
+      "pixelsWide" : 720,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 360
+    },
+    {
+      "file" : "candidate-dark-high.png",
+      "heightPt" : 154,
+      "pixelsHigh" : 308,
+      "pixelsWide" : 720,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 360
+    }
+  ],
+  "inputSent" : false,
+  "limits" : [
+    "Window chrome is non-key\/offscreen; does not prove active focus\/hover\/press",
+    "No desktop backdrop for optical material validation",
+    "No real VoiceOver or modal-flow validation",
+    "Menu is layout specification, not screenshot of NSMenu popup"
+  ],
+  "shownWindows" : false,
+  "status" : "design-only, not implemented",
+  "system" : "AppKit\/macOS27 runtime",
+  "userConfigurationAccessed" : false
+}

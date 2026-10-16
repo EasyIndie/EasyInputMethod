@@ -1,0 +1,54 @@
+{
+  "date": "2026-10-15",
+  "basis": "review-20261014 unified design vs production c2c3b53 runtime equal installed50fdac3",
+  "capture": "fresh offscreen AppKit production components; no active app screenshot",
+  "native_capture_blocker": "cua.getApp installed Lampyris: timeoutReached -10005",
+  "private_sample_candidate_pt": {
+    "with_hint": [
+      210,
+      86
+    ],
+    "without_hint": [
+      210,
+      68
+    ],
+    "design": [
+      400,
+      74
+    ]
+  },
+  "images": [
+    {
+      "file": "about-current.png",
+      "sha256": "934f8dd025ef480ae5dc6849b6bd6b5b787481b054dd4a3d92eba2960685bf95"
+    },
+    {
+      "file": "about-design.png",
+      "sha256": "25320a86bcfb74897751b65312049bced58d676aa7e1640f4ff68b69d8750e63"
+    },
+    {
+      "file": "candidate-current.png",
+      "sha256": "1e0fe33695ce783dc889315320a1d2ca9d3600fae061cb3af39de8ccccad4a73"
+    },
+    {
+      "file": "candidate-design.png",
+      "sha256": "06635961181faee6ff708e7473b75d37b20fd0ec9c3984ced12d12dd5ec58da0"
+    },
+    {
+      "file": "candidate-matched-clean.png",
+      "sha256": "df462d02e121102e58fa7583e055ba960c86bb3c9e9bedac4004cba3df840cee"
+    },
+    {
+      "file": "candidate-matched-hint.png",
+      "sha256": "636a089f5867f853e6c46bb04f68b14360e5b5b92b313433e997e7254e758e92"
+    },
+    {
+      "file": "settings-current.png",
+      "sha256": "a5432fdae2879badb88d31113032ab300b7891aa9bf848e529ee8b42a66365e1"
+    },
+    {
+      "file": "settings-design.png",
+      "sha256": "7d33a8fb6277cad0532a451903dd2297ce851da960c0beb6c3d281d3359b61c5"
+    }
+  ]
+}

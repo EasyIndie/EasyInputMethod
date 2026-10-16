@@ -1,0 +1,7 @@
+{
+  "captures": 6,
+  "compile": "warnings-as-errors passed",
+  "reviewed": "summary light",
+  "productionChanged": false,
+  "limits": "static viewport proposal; dynamic layout and interaction unverified"
+}

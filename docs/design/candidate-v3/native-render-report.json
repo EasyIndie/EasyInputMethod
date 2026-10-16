@@ -1,0 +1,79 @@
+{
+  "captures" : [
+    {
+      "file" : "candidate-light.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 640,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 320
+    },
+    {
+      "file" : "candidate-long-light.png",
+      "heightPt" : 150,
+      "pixelsHigh" : 300,
+      "pixelsWide" : 576,
+      "scope" : "Long candidate minimal proposal",
+      "widthPt" : 288
+    },
+    {
+      "file" : "candidate-empty-light.png",
+      "heightPt" : 66,
+      "pixelsHigh" : 132,
+      "pixelsWide" : 640,
+      "scope" : "No-match minimal proposal",
+      "widthPt" : 320
+    },
+    {
+      "file" : "candidate-dark.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 640,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 320
+    },
+    {
+      "file" : "candidate-long-dark.png",
+      "heightPt" : 150,
+      "pixelsHigh" : 300,
+      "pixelsWide" : 576,
+      "scope" : "Long candidate minimal proposal",
+      "widthPt" : 288
+    },
+    {
+      "file" : "candidate-empty-dark.png",
+      "heightPt" : 66,
+      "pixelsHigh" : 132,
+      "pixelsWide" : 640,
+      "scope" : "No-match minimal proposal",
+      "widthPt" : 320
+    },
+    {
+      "file" : "candidate-light-high.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 640,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 320
+    },
+    {
+      "file" : "candidate-dark-high.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 640,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 320
+    }
+  ],
+  "inputSent" : false,
+  "limits" : [
+    "Window chrome is non-key\/offscreen; does not prove active focus\/hover\/press",
+    "No desktop backdrop for optical material validation",
+    "No real VoiceOver or modal-flow validation",
+    "Menu is layout specification, not screenshot of NSMenu popup"
+  ],
+  "shownWindows" : false,
+  "status" : "design-only, not implemented",
+  "system" : "AppKit\/macOS27 runtime",
+  "userConfigurationAccessed" : false
+}

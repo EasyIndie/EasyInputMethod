@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1910" viewBox="0 0 1440 1910"><rect width="100%" height="100%" fill="#F3F3F5"/>
+<text x="50" y="46.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">LAMPYRIS   /   MACOS DESIGN PROPOSAL   /   2026.10</text>
+<text x="50" y="94.88" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="36" font-weight="600" fill="#202124">候选清楚，打字不断。</text>
+<text x="50" y="128.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#62626A">03 设置各页与语义色彩 · 默认跟随系统 · 全状态可读</text>
+<text x="1100" y="58.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">浅色参考稿</text>
+<rect x="50" y="180" width="645" height="580" rx="12" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="51" y="181" width="643" height="42" rx="10" fill="#FAFAFB"/>
+<rect x="50" y="223" width="645" height="1" rx="0" fill="#DEDEE3"/>
+<rect x="66" y="196" width="12" height="12" rx="6" fill="#FC6059"/>
+<rect x="86" y="196" width="12" height="12" rx="6" fill="#FBBF3D"/>
+<rect x="106" y="196" width="12" height="12" rx="6" fill="#34C84A"/>
+<text x="150" y="206.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">萤火虫设置</text>
+<rect x="51" y="224" width="145" height="535" rx="0" fill="#FAFAFB"/>
+<text x="70" y="261.6" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="20" font-weight="400" fill="#202124">萤火虫</text>
+<text x="70" y="315.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">输入</text>
+<rect x="60" y="337" width="127" height="34" rx="6" fill="#E6EFFF"/>
+<text x="70" y="357.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#144A91">候选与外观</text>
+<text x="70" y="399.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">快捷键</text>
+<text x="70" y="441.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">词库与工具</text>
+<text x="219" y="269.92" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="24" font-weight="600" fill="#202124">候选与外观</text>
+<text x="219" y="315.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">每页候选数</text>
+<rect x="551" y="295" width="120" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="561" y="314.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">5</text>
+<text x="219" y="373.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">逗号 / 句号翻页</text>
+<rect x="641" y="358" width="20" height="20" rx="4" fill="#005FCC" stroke="#005FCC"/>
+<polyline points="645,368 650,373 657,363" fill="none" stroke="#FFFFFF" stroke-width="2"/>
+<text x="219" y="431.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">外观</text>
+<rect x="551" y="411" width="120" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="561" y="430.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">跟随系统</text>
+<text x="219" y="490.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">推荐系统外观；保留现有浅深覆盖。</text>
+<rect x="219" y="524" width="452" height="62" rx="6" fill="#E6EFFF"/>
+<text x="231" y="550.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#144A91">1  中华人民共和国</text>
+<text x="231" y="572.79" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="13" font-weight="400" fill="#62626A">空间不足时整页纵向，数字映射不变。</text>
+<rect x="745" y="180" width="645" height="580" rx="12" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="746" y="181" width="643" height="42" rx="10" fill="#FAFAFB"/>
+<rect x="745" y="223" width="645" height="1" rx="0" fill="#DEDEE3"/>
+<rect x="761" y="196" width="12" height="12" rx="6" fill="#FC6059"/>
+<rect x="781" y="196" width="12" height="12" rx="6" fill="#FBBF3D"/>
+<rect x="801" y="196" width="12" height="12" rx="6" fill="#34C84A"/>
+<text x="845" y="206.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">萤火虫设置</text>
+<rect x="746" y="224" width="145" height="535" rx="0" fill="#FAFAFB"/>
+<text x="765" y="261.6" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="20" font-weight="400" fill="#202124">萤火虫</text>
+<text x="765" y="315.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">输入</text>
+<text x="765" y="357.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">候选与外观</text>
+<rect x="755" y="379" width="127" height="34" rx="6" fill="#E6EFFF"/>
+<text x="765" y="399.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#144A91">快捷键</text>
+<text x="765" y="441.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">词库与工具</text>
+<text x="914" y="269.92" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="24" font-weight="600" fill="#202124">快捷键</text>
+<text x="914" y="315.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">输入模式</text>
+<rect x="1122" y="295" width="244" height="32" rx="5" fill="#FFFFFF" stroke="#B42318"/>
+<text x="1132" y="314.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">ctrl+shift+m</text>
+<text x="914" y="363.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">中英切换</text>
+<rect x="1122" y="343" width="244" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="1132" y="362.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">ctrl+shift+m</text>
+<text x="914" y="411.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">全 / 半角</text>
+<rect x="1140" y="391" width="226" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="1150" y="410.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">shift+space</text>
+<text x="914" y="459.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">标点切换</text>
+<rect x="1230" y="439" width="136" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="1240" y="458.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">ctrl+.</text>
+<text x="914" y="507.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">简 / 繁</text>
+<rect x="1122" y="487" width="244" height="32" rx="5" fill="#FFFFFF" stroke="#86868B"/>
+<text x="1132" y="506.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">ctrl+shift+f</text>
+<rect x="914" y="542" width="452" height="70" rx="6" fill="#FFF1F0" stroke="#B42318"/>
+<text x="926" y="568.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#B42318">未保存，仍使用上一份设置</text>
+<text x="926" y="594.62" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="14" font-weight="400" fill="#B42318">本行与“中英切换”冲突。</text>
+<rect x="50" y="810" width="645" height="580" rx="12" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="51" y="811" width="643" height="42" rx="10" fill="#FAFAFB"/>
+<rect x="50" y="853" width="645" height="1" rx="0" fill="#DEDEE3"/>
+<rect x="66" y="826" width="12" height="12" rx="6" fill="#FC6059"/>
+<rect x="86" y="826" width="12" height="12" rx="6" fill="#FBBF3D"/>
+<rect x="106" y="826" width="12" height="12" rx="6" fill="#34C84A"/>
+<text x="150" y="836.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">萤火虫设置</text>
+<rect x="51" y="854" width="145" height="535" rx="0" fill="#FAFAFB"/>
+<text x="70" y="891.6" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="20" font-weight="400" fill="#202124">萤火虫</text>
+<text x="70" y="945.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">输入</text>
+<text x="70" y="987.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">候选与外观</text>
+<text x="70" y="1029.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#62626A">快捷键</text>
+<rect x="60" y="1051" width="127" height="34" rx="6" fill="#E6EFFF"/>
+<text x="70" y="1071.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#144A91">词库与工具</text>
+<text x="219" y="899.92" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="24" font-weight="600" fill="#202124">词库与工具</text>
+<text x="219" y="937.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">只存本地，不上传词条或输入内容。</text>
+<text x="219" y="988.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">用户词库</text>
+<rect x="219" y="1016" width="107" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="231" y="1036.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">新增词条…</text>
+<rect x="364" y="1016" width="107" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="376" y="1036.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">删除词条…</text>
+<rect x="219" y="1070" width="90" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="231" y="1090.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导入…</text>
+<rect x="364" y="1070" width="90" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="376" y="1090.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导出…</text>
+<rect x="219" y="1135" width="452" height="1" rx="0" fill="#DEDEE3"/>
+<text x="219" y="1175.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#202124">编码工具</text>
+<rect x="219" y="1203" width="107" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="231" y="1223.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">拼音反查…</text>
+<text x="219" y="1271.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">纠错时精确删除，再添加正确词条。</text>
+<rect x="745" y="810" width="645" height="580" rx="12" fill="#FFFFFF" stroke="#DEDEE3"/>
+<text x="770" y="856.92" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="24" font-weight="400" fill="#202124">组件状态与字段反馈</text>
+<text x="777" y="911.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">普通</text>
+<rect x="870" y="895" width="122" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="882" y="916.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导出…</text>
+<text x="1077" y="911.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">悬停</text>
+<rect x="1170" y="895" width="122" height="32" rx="6" fill="#EFEFF2" stroke="#86868B"/>
+<text x="1182" y="916.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导出…</text>
+<text x="777" y="975.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">按下</text>
+<rect x="870" y="959" width="122" height="32" rx="6" fill="#EFEFF2" stroke="#86868B"/>
+<text x="882" y="980.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导出…</text>
+<text x="1077" y="975.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">键盘焦点</text>
+<rect x="1165" y="954" width="132" height="43" rx="8" fill="#005FCC"/>
+<rect x="1170" y="959" width="122" height="32" rx="6" fill="#FFFFFF" stroke="#86868B"/>
+<text x="1182" y="980.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#202124">导出…</text>
+<text x="777" y="1039.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">主要操作</text>
+<rect x="870" y="1023" width="122" height="32" rx="6" fill="#005FCC" stroke="#86868B"/>
+<text x="882" y="1044.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#FFFFFF">添加</text>
+<text x="1077" y="1039.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">禁用</text>
+<rect x="1170" y="1023" width="122" height="32" rx="6" fill="#EFEFF2" stroke="#86868B"/>
+<text x="1182" y="1044.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#8D8D93">导出…</text>
+<text x="777" y="1103.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">进行中</text>
+<rect x="870" y="1087" width="122" height="32" rx="6" fill="#EFEFF2" stroke="#86868B"/>
+<text x="882" y="1108.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#8D8D93">导入中…</text>
+<text x="1077" y="1103.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">危险动作</text>
+<rect x="1170" y="1087" width="122" height="32" rx="6" fill="#FFFFFF" stroke="#B42318"/>
+<text x="1182" y="1108.28" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="16" font-weight="400" fill="#B42318">删除</text>
+<rect x="770" y="1172" width="595" height="110" rx="7" fill="#FFF1F0" stroke="#B42318"/>
+<text x="789" y="1206.6" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="20" font-weight="400" fill="#B42318">完整编码：wq!</text>
+<text x="789" y="1241.11" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="17" font-weight="400" fill="#B42318">只允许 a–z，输入已保留，尚未添加。</text>
+<text x="777" y="1325.94" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="18" font-weight="400" fill="#176B3A">已导出用户词库</text>
+<text x="50" y="1463.92" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="24" font-weight="400" fill="#202124">语义角色 / 稿件参考值</text>
+<text x="50" y="1494.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">实际AppKit实现使用动态系统色与用户强调色，HEX不是Apple固定颜色。</text>
+<rect x="50" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="51" y="1531" width="206" height="40" rx="7" fill="#202124"/>
+<text x="60" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">text</text>
+<text x="60" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#202124</text>
+<rect x="276" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="277" y="1531" width="206" height="40" rx="7" fill="#62626A"/>
+<text x="286" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">secondary</text>
+<text x="286" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#62626A</text>
+<rect x="502" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="503" y="1531" width="206" height="40" rx="7" fill="#005FCC"/>
+<text x="512" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">accent</text>
+<text x="512" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#005FCC</text>
+<rect x="728" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="729" y="1531" width="206" height="40" rx="7" fill="#E6EFFF"/>
+<text x="738" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">selection</text>
+<text x="738" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#E6EFFF</text>
+<rect x="954" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="955" y="1531" width="206" height="40" rx="7" fill="#B42318"/>
+<text x="964" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">error</text>
+<text x="964" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#B42318</text>
+<rect x="1180" y="1530" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="1181" y="1531" width="206" height="40" rx="7" fill="#176B3A"/>
+<text x="1190" y="1595.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">success</text>
+<text x="1190" y="1621.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#176B3A</text>
+<rect x="50" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="51" y="1656" width="206" height="40" rx="7" fill="#F3F3F5"/>
+<text x="60" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">canvas</text>
+<text x="60" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#F3F3F5</text>
+<rect x="276" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="277" y="1656" width="206" height="40" rx="7" fill="#FFFFFF"/>
+<text x="286" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">surface</text>
+<text x="286" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#FFFFFF</text>
+<rect x="502" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="503" y="1656" width="206" height="40" rx="7" fill="#86868B"/>
+<text x="512" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">controlBorder</text>
+<text x="512" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#86868B</text>
+<rect x="728" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="729" y="1656" width="206" height="40" rx="7" fill="#005FCC"/>
+<text x="738" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">focus</text>
+<text x="738" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#005FCC</text>
+<rect x="954" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="955" y="1656" width="206" height="40" rx="7" fill="#855500"/>
+<text x="964" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">warning</text>
+<text x="964" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#855500</text>
+<rect x="1180" y="1655" width="208" height="105" rx="8" fill="#FFFFFF" stroke="#DEDEE3"/>
+<rect x="1181" y="1656" width="206" height="40" rx="7" fill="#DEDEE3"/>
+<text x="1190" y="1720.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#202124">separator</text>
+<text x="1190" y="1746.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">#DEDEE3</text>
+<text x="50" y="1810.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">高对比提高文字/边界；减少透明改不透明表面；减少动态取消自定义动画。</text>
+<rect x="50" y="1845" width="1340" height="1" rx="0" fill="#DEDEE3"/>
+<text x="50" y="1879.45" font-family="-apple-system, PingFang SC, Heiti SC, sans-serif" font-size="15" font-weight="400" fill="#62626A">设计提案 · sRGB参考色 · 未实现 · 不以稿件替代最终包实机验收</text>
+</svg>

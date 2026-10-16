@@ -1,0 +1,10 @@
+{
+  "captures": 8,
+  "compile": "warnings-as-errors passed",
+  "visualReview": [
+    "single light",
+    "phrase dark"
+  ],
+  "codeExamples": "existing Wubi86 table checked; decompositions are draft examples, publishing data not validated",
+  "productionChanged": false
+}

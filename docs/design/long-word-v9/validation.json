@@ -1,0 +1,14 @@
+{
+  "captures": 6,
+  "compile": "warnings-as-errors passed",
+  "visuallyReviewed": [
+    "summary light",
+    "expanded dark"
+  ],
+  "verifiedCodeExamples": "KWWL and seven full single codes checked against current tables",
+  "limitations": [
+    "root explanations are draft examples",
+    "no real disclosure/scroll routing/AX proof"
+  ],
+  "productionChanged": false
+}

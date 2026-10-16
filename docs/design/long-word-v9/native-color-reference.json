@@ -1,0 +1,276 @@
+{
+  "hardcodedProductionColors" : false,
+  "modes" : {
+    "dark" : {
+      "accent" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 6.8521118125608886,
+        "hex" : "#62BA46"
+      },
+      "contentBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#1E1E1E"
+      },
+      "disabled" : {
+        "alpha" : 0.24705882352941178,
+        "contrastOnWindowBackground" : 2.2568332112628418,
+        "hex" : "#FFFFFF"
+      },
+      "errorSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 4.8562445111458947,
+        "hex" : "#FF4245"
+      },
+      "focus" : {
+        "alpha" : 0.49803921580314636,
+        "contrastOnWindowBackground" : 4.0147225048423039,
+        "hex" : "#8DF56C"
+      },
+      "informationSecondary" : {
+        "alpha" : 0.5490196078431373,
+        "contrastOnWindowBackground" : 5.890084741120539,
+        "hex" : "#FFFFFF"
+      },
+      "secondary" : {
+        "alpha" : 0.5490196078431373,
+        "contrastOnWindowBackground" : 5.890084741120539,
+        "hex" : "#FFFFFF"
+      },
+      "selection" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 4.3230528927465661,
+        "hex" : "#43932A"
+      },
+      "separator" : {
+        "alpha" : 0.098039215686274508,
+        "contrastOnWindowBackground" : 1.3402542841544161,
+        "hex" : "#FFFFFF"
+      },
+      "successSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 8.245694982169141,
+        "hex" : "#30D158"
+      },
+      "text" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 12.225809383321625,
+        "hex" : "#FFFFFF"
+      },
+      "warningSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 7.4672760757786456,
+        "hex" : "#FF9230"
+      },
+      "windowBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#1E1E1E"
+      }
+    },
+    "dark-high" : {
+      "accent" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 6.8521118125608886,
+        "hex" : "#62BA46"
+      },
+      "contentBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#1E1E1E"
+      },
+      "disabled" : {
+        "alpha" : 0.24705882352941178,
+        "contrastOnWindowBackground" : 2.2568332112628418,
+        "hex" : "#FFFFFF"
+      },
+      "errorSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 4.8562445111458947,
+        "hex" : "#FF4245"
+      },
+      "focus" : {
+        "alpha" : 0.49803921580314636,
+        "contrastOnWindowBackground" : 4.0147225048423039,
+        "hex" : "#8DF56C"
+      },
+      "informationSecondary" : {
+        "alpha" : 0.5490196078431373,
+        "contrastOnWindowBackground" : 5.890084741120539,
+        "hex" : "#FFFFFF"
+      },
+      "secondary" : {
+        "alpha" : 0.5490196078431373,
+        "contrastOnWindowBackground" : 5.890084741120539,
+        "hex" : "#FFFFFF"
+      },
+      "selection" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 4.3230528927465661,
+        "hex" : "#43932A"
+      },
+      "separator" : {
+        "alpha" : 0.098039215686274508,
+        "contrastOnWindowBackground" : 1.3402542841544161,
+        "hex" : "#FFFFFF"
+      },
+      "successSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 8.245694982169141,
+        "hex" : "#30D158"
+      },
+      "text" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 12.225809383321625,
+        "hex" : "#FFFFFF"
+      },
+      "warningSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 7.4672760757786456,
+        "hex" : "#FF9230"
+      },
+      "windowBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#1E1E1E"
+      }
+    },
+    "light" : {
+      "accent" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.432995422485277,
+        "hex" : "#62BA46"
+      },
+      "contentBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#FFFFFF"
+      },
+      "disabled" : {
+        "alpha" : 0.24705882352941178,
+        "contrastOnWindowBackground" : 1.8193943517176883,
+        "hex" : "#000000"
+      },
+      "errorSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 3.569656960070096,
+        "hex" : "#FF383C"
+      },
+      "focus" : {
+        "alpha" : 0.49803921580314636,
+        "contrastOnWindowBackground" : 1.6631249885863766,
+        "hex" : "#4EAB30"
+      },
+      "informationSecondary" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 14.938418916797357,
+        "hex" : "#000000"
+      },
+      "secondary" : {
+        "alpha" : 0.49803921568627452,
+        "contrastOnWindowBackground" : 3.9494396480491156,
+        "hex" : "#000000"
+      },
+      "selection" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 3.2855200991002182,
+        "hex" : "#4DA033"
+      },
+      "separator" : {
+        "alpha" : 0.098039215686274508,
+        "contrastOnWindowBackground" : 1.2480715209939224,
+        "hex" : "#000000"
+      },
+      "successSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.2199585263302648,
+        "hex" : "#34C759"
+      },
+      "text" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 14.938418916797357,
+        "hex" : "#000000"
+      },
+      "warningSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.3095727511456348,
+        "hex" : "#FF8D28"
+      },
+      "windowBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#FFFFFF"
+      }
+    },
+    "light-high" : {
+      "accent" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.432995422485277,
+        "hex" : "#62BA46"
+      },
+      "contentBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#FFFFFF"
+      },
+      "disabled" : {
+        "alpha" : 0.24705882352941178,
+        "contrastOnWindowBackground" : 1.8193943517176883,
+        "hex" : "#000000"
+      },
+      "errorSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 3.569656960070096,
+        "hex" : "#FF383C"
+      },
+      "focus" : {
+        "alpha" : 0.49803921580314636,
+        "contrastOnWindowBackground" : 1.6631249885863766,
+        "hex" : "#4EAB30"
+      },
+      "informationSecondary" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 14.938418916797357,
+        "hex" : "#000000"
+      },
+      "secondary" : {
+        "alpha" : 0.49803921568627452,
+        "contrastOnWindowBackground" : 3.9494396480491156,
+        "hex" : "#000000"
+      },
+      "selection" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 3.2855200991002182,
+        "hex" : "#4DA033"
+      },
+      "separator" : {
+        "alpha" : 0.098039215686274508,
+        "contrastOnWindowBackground" : 1.2480715209939224,
+        "hex" : "#000000"
+      },
+      "successSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.2199585263302648,
+        "hex" : "#34C759"
+      },
+      "text" : {
+        "alpha" : 0.84705882352941175,
+        "contrastOnWindowBackground" : 14.938418916797357,
+        "hex" : "#000000"
+      },
+      "warningSymbol" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 2.3095727511456348,
+        "hex" : "#FF8D28"
+      },
+      "windowBackground" : {
+        "alpha" : 1,
+        "contrastOnWindowBackground" : 1,
+        "hex" : "#FFFFFF"
+      }
+    }
+  },
+  "observedRuntime" : "macOS27",
+  "referenceOnly" : true,
+  "source" : "NSColor dynamic semantic APIs"
+}

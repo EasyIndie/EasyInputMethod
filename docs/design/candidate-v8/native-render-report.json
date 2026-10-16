@@ -1,0 +1,159 @@
+{
+  "captures" : [
+    {
+      "file" : "candidate-light.png",
+      "heightPt" : 176,
+      "pixelsHigh" : 352,
+      "pixelsWide" : 800,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 400
+    },
+    {
+      "file" : "page-last-light.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Last page, next disabled; structural control specification",
+      "widthPt" : 400
+    },
+    {
+      "file" : "page-single-light.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Single page: pager fully omitted",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-no-code-light.png",
+      "heightPt" : 112,
+      "pixelsHigh" : 224,
+      "pixelsWide" : 800,
+      "scope" : "Missing reliable Wubi code, no invented details",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-no-roots-light.png",
+      "heightPt" : 132,
+      "pixelsHigh" : 264,
+      "pixelsWide" : 800,
+      "scope" : "Code available, decomposition missing",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-settings-light.png",
+      "heightPt" : 242,
+      "pixelsHigh" : 484,
+      "pixelsWide" : 960,
+      "scope" : "Native configuration layout proposal; not connected to product config",
+      "widthPt" : 480
+    },
+    {
+      "file" : "candidate-phrase-light.png",
+      "heightPt" : 254,
+      "pixelsHigh" : 508,
+      "pixelsWide" : 800,
+      "scope" : "Mixed pinyin lookup phrase proposal",
+      "widthPt" : 400
+    },
+    {
+      "file" : "candidate-collapsed-light.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Collapsed learning area, independent of input mode",
+      "widthPt" : 400
+    },
+    {
+      "file" : "candidate-dark.png",
+      "heightPt" : 176,
+      "pixelsHigh" : 352,
+      "pixelsWide" : 800,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 400
+    },
+    {
+      "file" : "page-last-dark.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Last page, next disabled; structural control specification",
+      "widthPt" : 400
+    },
+    {
+      "file" : "page-single-dark.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Single page: pager fully omitted",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-no-code-dark.png",
+      "heightPt" : 112,
+      "pixelsHigh" : 224,
+      "pixelsWide" : 800,
+      "scope" : "Missing reliable Wubi code, no invented details",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-no-roots-dark.png",
+      "heightPt" : 132,
+      "pixelsHigh" : 264,
+      "pixelsWide" : 800,
+      "scope" : "Code available, decomposition missing",
+      "widthPt" : 400
+    },
+    {
+      "file" : "learning-settings-dark.png",
+      "heightPt" : 242,
+      "pixelsHigh" : 484,
+      "pixelsWide" : 960,
+      "scope" : "Native configuration layout proposal; not connected to product config",
+      "widthPt" : 480
+    },
+    {
+      "file" : "candidate-phrase-dark.png",
+      "heightPt" : 254,
+      "pixelsHigh" : 508,
+      "pixelsWide" : 800,
+      "scope" : "Mixed pinyin lookup phrase proposal",
+      "widthPt" : 400
+    },
+    {
+      "file" : "candidate-collapsed-dark.png",
+      "heightPt" : 74,
+      "pixelsHigh" : 148,
+      "pixelsWide" : 800,
+      "scope" : "Collapsed learning area, independent of input mode",
+      "widthPt" : 400
+    },
+    {
+      "file" : "candidate-light-high.png",
+      "heightPt" : 176,
+      "pixelsHigh" : 352,
+      "pixelsWide" : 800,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 400
+    },
+    {
+      "file" : "candidate-dark-high.png",
+      "heightPt" : 176,
+      "pixelsHigh" : 352,
+      "pixelsWide" : 800,
+      "scope" : "Minimal candidate proposal; offscreen, no IMK registration",
+      "widthPt" : 400
+    }
+  ],
+  "inputSent" : false,
+  "limits" : [
+    "Window chrome is non-key\/offscreen; does not prove active focus\/hover\/press",
+    "No desktop backdrop for optical material validation",
+    "No real VoiceOver or modal-flow validation",
+    "Menu is layout specification, not screenshot of NSMenu popup"
+  ],
+  "shownWindows" : false,
+  "status" : "design-only, not implemented",
+  "system" : "AppKit\/macOS27 runtime",
+  "userConfigurationAccessed" : false
+}

@@ -1,0 +1,10 @@
+{
+  "captures": 8,
+  "compile": "warnings-as-errors passed",
+  "reviewed": [
+    "candidate-light.png",
+    "candidate-long-dark.png"
+  ],
+  "productionChanged": false,
+  "status": "draft; real focus/AX/multi-display not verified"
+}

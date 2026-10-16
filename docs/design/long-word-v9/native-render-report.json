@@ -1,0 +1,63 @@
+{
+  "captures" : [
+    {
+      "file" : "long-summary-light.png",
+      "heightPt" : 264,
+      "pixelsHigh" : 528,
+      "pixelsWide" : 840,
+      "scope" : "Long word summary; static layout example",
+      "widthPt" : 420
+    },
+    {
+      "file" : "long-expanded-light.png",
+      "heightPt" : 520,
+      "pixelsHigh" : 1040,
+      "pixelsWide" : 840,
+      "scope" : "Native scrolling content with expanded character; teaching roots are draft examples",
+      "widthPt" : 420
+    },
+    {
+      "file" : "long-summary-dark.png",
+      "heightPt" : 264,
+      "pixelsHigh" : 528,
+      "pixelsWide" : 840,
+      "scope" : "Long word summary; static layout example",
+      "widthPt" : 420
+    },
+    {
+      "file" : "long-expanded-dark.png",
+      "heightPt" : 520,
+      "pixelsHigh" : 1040,
+      "pixelsWide" : 840,
+      "scope" : "Native scrolling content with expanded character; teaching roots are draft examples",
+      "widthPt" : 420
+    },
+    {
+      "file" : "long-summary-light-high.png",
+      "heightPt" : 264,
+      "pixelsHigh" : 528,
+      "pixelsWide" : 840,
+      "scope" : "Long word summary; static layout example",
+      "widthPt" : 420
+    },
+    {
+      "file" : "long-summary-dark-high.png",
+      "heightPt" : 264,
+      "pixelsHigh" : 528,
+      "pixelsWide" : 840,
+      "scope" : "Long word summary; static layout example",
+      "widthPt" : 420
+    }
+  ],
+  "inputSent" : false,
+  "limits" : [
+    "Window chrome is non-key\/offscreen; does not prove active focus\/hover\/press",
+    "No desktop backdrop for optical material validation",
+    "No real VoiceOver or modal-flow validation",
+    "Menu is layout specification, not screenshot of NSMenu popup"
+  ],
+  "shownWindows" : false,
+  "status" : "design-only, not implemented",
+  "system" : "AppKit\/macOS27 runtime",
+  "userConfigurationAccessed" : false
+}
