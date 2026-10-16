@@ -1,0 +1,53 @@
+{
+  "current_input_total_bytes": 548090,
+  "files": [
+    {
+      "bytes": 222584,
+      "path": "data/generated/wubi86-learning-codes.bin",
+      "sha256": "8476f52b422c81b9bfcd402bd9669c926c0463f7796be4817932241e7d83e78e"
+    },
+    {
+      "bytes": 325506,
+      "path": "data/learning/wubi86-roots.tsv",
+      "sha256": "0e201df25c0fb9c00f98616b47fda770a0c17dd70ec84d827685cd86fc856082"
+    }
+  ],
+  "installed_app_baseline": {
+    "file_content_bytes": 11084562,
+    "scope": "Sum of regular file lengths, not allocated disk blocks or installer download size",
+    "source_commit": "1621a6d5013cbab8cc0d95a5f89c17c5d40b6166"
+  },
+  "scenario_excludes": [
+    "shared root/rule pools",
+    "headers/indexes",
+    "reader/render code",
+    "geometry/fonts",
+    "signing/alignment",
+    "replaced old data",
+    "compression"
+  ],
+  "scenario_not_benchmark": [
+    {
+      "MiB": 1.698,
+      "bytes_per_character": 64,
+      "character_bytes": 1780672
+    },
+    {
+      "MiB": 3.396,
+      "bytes_per_character": 128,
+      "character_bytes": 3561344
+    },
+    {
+      "MiB": 6.793,
+      "bytes_per_character": 256,
+      "character_bytes": 7122688
+    },
+    {
+      "MiB": 13.585,
+      "bytes_per_character": 512,
+      "character_bytes": 14245376
+    }
+  ],
+  "scope": "Current inputs; not the size or coverage of a new structure library",
+  "target_characters": 27823
+}

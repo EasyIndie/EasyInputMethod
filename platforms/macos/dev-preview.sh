@@ -38,6 +38,8 @@ export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
 swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   -I "${ROOT}/crates/ime-ffi/include" \
   "${SCRIPT_DIR}/Preview/main.swift" \
+  "${SCRIPT_DIR}/Preview/InputMenuPreview.swift" \
+  "${SCRIPT_DIR}/Sources/InputMenu.swift" \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \
   "${SCRIPT_DIR}/Sources/CandidateWindow.swift" \
   "${SCRIPT_DIR}/Sources/Config.swift" \

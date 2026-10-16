@@ -5,12 +5,18 @@ CARGO ?= cargo
 CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流.md §4
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-offline-tests hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-offline-tests macos-local-acceptance hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py
 
-macos-preview: ## 构建并启动 macOS 独立调试窗口
+macos-local-acceptance: ## 本地逐场景自动验收及持久证据（离屏，不操作桌面）
+	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-local-acceptance.py
+
+macos-dev: ## 重建并启动隔离验收窗口（私有配置/词库与正式菜单组件）
+	./platforms/macos/tests/run-panel-acceptance.sh --interactive
+
+macos-preview: ## 历史调试窗口（使用真实配置；日常迭代推荐 macos-dev）
 	./platforms/macos/dev-preview.sh
 
 help: ## 列出所有命令

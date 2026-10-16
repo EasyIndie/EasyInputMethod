@@ -4,6 +4,8 @@
 
 ## 安全入口与范围
 
+日常迭代优先`make macos-dev`：构建并启动下表interactive入口，窗口提供正式InputStateMenu的“输入法菜单”按钮和正式设置面板。每轮私有配置/词库；关闭窗口或终端`close`结束，再次运行重建。菜单/设置/快捷键/模式控件实时同步；不注册输入源，不替换已装包。普通`make macos-preview`使用真实配置，不能当作数据隔离入口。
+
 | 命令 | 实际范围 |
 |---|---|
 | `run-panel-acceptance.sh --isolation-probe` | 独有配置/词库和子进程，normal/failure/INT/TERM；不代表完整产品UI通过 |
@@ -101,3 +103,51 @@ Terminal结果门禁新增`test-installed-terminal-probe.py`两项回归：正�
 ADR-151：独立预览冒烟新增真实NSEvent+FFI组合导航回归，覆盖四方向/Shift、修饰透传、控制字符/函数键/空字符表示与退格/Esc/选字交互。此处不构成已装IMK客户端复验；IT-24须新签名包原生复验后关闭。
 
 ADR-170/171：test-wubi-learning.py通过真实Rust只读ABI与Swift/生产CandidateWindow测试完整码、核验根码/识别码、长词摘要/逐字披露、137pt明细上限、独立Schema显示开关/快捷键及组合保持。只用私有数据和离屏图，不激活窗口/发键；不代替根码覆盖或最终实机验收。
+
+ADR-182：`test-preview-menu.py`以真实Rust/Swift会话核验同组件菜单、私有配置、模式与四状态、外部设置/快捷键通知、写失败恢复与无学习副作用；不显示窗口，不替代系统IMK代理实机结果。
+
+### 逐场景本地验收（ADR-192）
+
+`make macos-local-acceptance`复用生产组件/真实FFI执行六组原生离屏场景，自动创建独立运行目录。不是安装包或正式系统IMK验收，不显示窗口、不发送桌面事件、不打开外链；只使用私有配置/词库及命名剪贴板。既有保护用例仅核对真实配置/词库摘要，不记录内容。
+
+```sh
+python3 platforms/macos/tests/run-local-acceptance.py --output platforms/macos/build/local-acceptance/my-new-run
+python3 platforms/macos/tests/run-local-acceptance.py --check platforms/macos/build/local-acceptance/my-new-run
+```
+
+输出report.html/report.md/report.json、逐组observations.json和run.log、探针/依赖锁哈希、测试源码快照、截图及逐文件SHA。已存在目录拒绝覆盖，失败/中断的记录保留。直接动作派发/合成NSEvent/反馈打开模拟会在场景预期中标明，不改写为物理键盘、VoiceOver或实际浏览器测试。
+
+本地PASS要求所有必需场景齐全、探针退出正常、观测和汇总一致、所需图像和源码快照存在且SHA一致、测试前后源树不变。`--check`检查保留下来的证据，不执行其中的程序；校验器的合成fixture只是拒绝假通过回归，不是产品通过证据。
+
+正式schema 2门禁保持。报告中的MVP结果始终BLOCKED，23项正式必测单列；没有确定观察记录的历史手工操作不补填PASS。真正系统菜单/VoiceOver/客户端/安全字段/多屏/真实IMK性能/独立试用仍需后续记录。
+
+## 真实IMK验收准备（不执行桌面动作）
+
+```sh
+python3 platforms/macos/tests/prepare-imk-acceptance.py --output platforms/macos/build/imk-preparation-NEW
+```
+
+只接受新目录；输出12组细化步骤、预期、证据与停止/恢复规则，以及全部BLOCKED的正式schema 2模板。候选/应用版本留空；不能用准备成功表示实机通过。入口无执行模式，不调用旧live脚本；真正执行前需当前空闲、同候选/宿主身份、私有数据及逐动作焦点保护。现有隔离驱动不能直接适配正式包，新菜单/VoiceOver交互保护仍待实现/实测。详见报告042与ADR-193。
+
+## 正式包的账号数据隔离前置（ADR-194）
+
+正式宿主固定使用真实登录用户的Application Support，不能用HOME覆盖或测试包冒充正式包。涉及写配置/词库时使用独立macOS测试账号；本工具只验证账号和已知数据路径边界，没有桌面执行能力。
+
+```sh
+# 原操作者账号：绑定精确候选归档及其commit，plan必须不存在
+python3 platforms/macos/tests/formal-profile-guard.py bind --candidate /path/final.zip --commit FULL_SHA --plan /path/new-account-plan.json
+# 独立账号：只读检查；同账号/root/伪HOME/链接/他人可写路径/归档漂移返回3
+python3 platforms/macos/tests/formal-profile-guard.py check --candidate /path/final.zip --plan /path/new-account-plan.json
+```
+
+绑定单须人工核对来源并传入测试账号，它是上下文声明，不是授权凭据。PROFILE_READY仍为formal_result=BLOCKED；需要另验GUI登录会话、签名/公证、安装副本/运行宿主、当前空闲、权限及逐动作保护。路径检查仅代表当时快照，不消除检查后改路径的竞争；执行器仍需自己的保护，不得据此解禁旧live入口。现有隔离测试包继续只证明组件/隔离宿主；本工具不修改包身份或配置通道，也不创建系统账号。
+
+## 候选/学习区逐动作原生AX保护（ADR-195）
+
+`GuardedAXPress.swift` + `guarded-ax-main.swift`为测试专用工具，不编入产品；test-guarded-ax.py编译原生适配器并以注入后端执行保护回归。实际执行须独立测试账号、同账号GUI会话、可信最终候选/安装与宿主身份、当前空闲及拥有式TextEdit文档。旧live入口未开放。
+
+编译时将guarded-ax-main.swift复制到临时目录main.swift，使用`swiftc -warnings-as-errors GuardedAXPress.swift 临时目录/main.swift -o 临时目录/guarded-ax`。CLI只接受`--inspect plan.json`（指定路径只读观察）和`--press plan.json`（一个AXPress）；不自动发现、激活或重试。
+
+计划结构对应GuardedPressPlan：operatorUID/testUID/home/sourceID；runDirectory必须为700私有的lampyris-formal-UUID目录，fixture为其直接子文件（600、无符号/硬链接），fixtureTitle匹配文件名；client/host包含pid、executable规范绝对路径、sha256、launchedAt（实际launchDate.timeIntervalSince1970）。target包含windowIndex、childPath索引数组、windowTitle、windowFrame（NSStringFromRect格式）、label（AXDescription优先，非空时精确匹配）。绑定必须来自当次已验证自有测试对象，不能猜测PID/子路径或使用旧运行值。
+
+当前仅支持com.apple.TextEdit和正式cn.jokerhub.inputmethod.Lampyris宿主内AXButton；输入源固定正式.default。核对账号/GUI/权限、私有文件、客户端/宿主实际执行文件摘要和启动时间、前台/焦点文档/文本域、输入源，再解析明确窗口/控件路径；解析后再次核对上下文与目标。失败无后续Press、无抢焦点、无模糊匹配/坐标点击。跨进程检查与动作非系统原子事务，必须保持空闲；源与文档恢复由外层驱动负责，不能将单动作返回成功等同于业务或正式MVP通过。系统菜单代理、滚动、按键和VoiceOver不在此入口范围。

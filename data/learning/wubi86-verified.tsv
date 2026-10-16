@@ -60,3 +60,11 @@
 丿	ttll	stroke	单笔画：所在键连打两次，再补LL	丿:t 丿:t 补位:l 补位:l	-
 丶	yyll	stroke	单笔画：所在键连打两次，再补LL	丶:y 丶:y 补位:l 补位:l	-
 乙	nnll	stroke	单笔画：所在键连打两次，再补LL	乙:n 乙:n 补位:l 补位:l	-
+我	trnt	compound	依次取丿、扌、斜钩；约定取末撇	丿:t 扌:r 斜钩:n 末撇:t	-
+特	trff	compound	牜拆为丿、扌，再取土、寸	丿:t 扌:r 土:f 寸:f	-
+别	kljh	compound	依次取口、力、刂；末笔竖，左右结构，补识别码H	口:k 力:l 刂:j	竖/左右:h
+点	hkou	compound	依次取卜、口、灬；末笔点，上下结构，补识别码U	卜:h 口:k 灬:o	点/上下:u
+突	pwdu	compound	依次取宀、八、犬；末笔捺，上下结构，补识别码U	宀:p 八:w 犬:d	捺/上下:u
+然	qdou	compound	依次取然左上形、犬、灬；末笔点，上下结构，补识别码U	然左上形:q 犬:d 灬:o	点/上下:u
+投	rmcy	compound	依次取扌、几、又；末笔捺，左右结构，补识别码Y	扌:r 几:m 又:c	捺/左右:y
+入	tyi	compound	依次取丿、捺；末笔捺，杂合结构，补识别码I	丿:t 捺:y	捺/杂合:i

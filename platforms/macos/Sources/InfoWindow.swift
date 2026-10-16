@@ -255,11 +255,14 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         label("五笔优先，拼音兜底。默认离线。", y: 187, size: 13)
         let copy = NSButton(title: "复制诊断", target: self, action: #selector(copyDiagnostics(_:)))
         copy.bezelStyle = .rounded
-        copy.frame = NSRect(x: 99, y: 229, width: 116, height: 30)
+        copy.controlSize = .regular
+        copy.frame = NSRect(x: 99, y: 229, width: 120, height: 30)
         copy.setAccessibilityHelp("仅复制本地版本与环境信息，不发送任何诊断。")
         content.addSubview(copy)
         let feedback = NSPopUpButton(frame: NSRect(x: 231, y: 229, width: 120, height: 30), pullsDown: true)
-        feedback.addItems(withTitles: ["反馈问题…", "报告问题…", "报告安全漏洞…"])
+        feedback.bezelStyle = .rounded
+        feedback.controlSize = .regular
+        feedback.addItems(withTitles: ["反馈问题", "报告问题", "报告安全漏洞"])
         feedback.target = self
         feedback.action = #selector(openFeedback(_:))
         feedback.setAccessibilityLabel("选择问题或安全漏洞反馈渠道")
@@ -304,7 +307,7 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         status.stringValue = opened ? "已交给默认浏览器打开。" : "打开失败，已保留反馈地址。"
         if !opened {
             InfoWindow.show(title: "无法打开反馈", text: "请复制地址后手动打开：\n" + url.absoluteString,
-                allowsCopy: true, links: [InfoLink(title: "重新打开…", url: url)])
+                allowsCopy: true, links: [InfoLink(title: "重新打开", url: url)])
         }
     }
     func windowWillClose(_ notification: Notification) { panel = nil; status.stringValue = "" }

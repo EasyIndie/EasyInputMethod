@@ -9,6 +9,8 @@
 
 MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；首版后的路线见 [MVP后里程碑](MVP后里程碑.md)。
 
+本地逐场景自动验收及证据边界见 [报告041](reviews/041-local-automated-acceptance.md)；可重复入口见 [任务卡](tasks/T-LOCAL-ACCEPTANCE.md)。
+
 ## 权威文档（当前有效）
 
 | 文档 | 内容 | 读者 |
@@ -75,3 +77,17 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 2026-10-14用户批准ADR-165：基础UI纳入MVP，候选→设置/菜单→既有工具/反馈→外观/AX→重新锁最终包；功能基线66ab513保留，完整教学后移。实施见docs/design/mvp-ui.md及T-MVP-UI；历史“全UI延期”段落被本决策覆盖，新UI尚未原生验收。
 
 [MVP基础UI工程验收018](reviews/018-mvp-ui-engineering.md)：UI01…04代码改造及22文件80离线测试完成，最终签名包实机门禁保持待验。
+
+[全量五笔教学生成与自建结构库调研036](reviews/036-generated-wubi-teaching-research.md)：比较自建/外部结构事实、版本规则与教程复用；包含受限模板原型和准入边界，方案尚未采纳。
+
+[结构模块体积与拆分边界037](reviews/037-structure-module-size-and-boundaries.md)：现有体积实测、运行资源分层与ADR-189；模块目录见modules/hanzi-structure。
+
+[当前MVP剩余工作038](reviews/038-mvp-remaining-work.md)：ADR-190将自建库后移，区分未开始的真实验收、已完成工程及最终候选收口；优先于旧计划中的实施状态。
+
+[控件标签与说明间距039](reviews/039-controls-labels-and-description-spacing.md)：按钮/菜单无省略号、模式系统符号、四项说明统一基线及亮暗原生渲染证据。
+
+真实IMK的未执行准备材料见 [报告042](reviews/042-imk-acceptance-preparation.md)及[任务卡](tasks/T-IMK-ACCEPTANCE-PREP.md)。
+
+正式包账号数据隔离前置及边界见 [报告043](reviews/043-formal-account-isolation-gate.md)。
+
+候选/学习区单动作保护及候选收口见 [报告044](reviews/044-guarded-candidate-learning-actions.md)。

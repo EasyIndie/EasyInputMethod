@@ -201,3 +201,20 @@ final class ProcessErrorPresenter {
         drain()
     }
 }
+
+extension NSMenuItem {
+    /// 按 `config.toml` 的快捷键写法（如 `ctrl+shift+m` / `shift+space`）显示并绑定菜单快捷键。
+    ///
+    /// 成功返回 `true`；`none`/空/无法表示为菜单快捷键（如单 `shift`）返回 `false`。
+    @discardableResult
+    func applyConfiguredHotkey(_ binding: ConfiguredHotkey) -> Bool {
+        guard binding.kind == 2 else { return false }
+        keyEquivalent = binding.equivalent
+        keyEquivalentModifierMask = binding.modifiers
+        return true
+    }
+
+    static func singleModifierSymbol(_ binding: ConfiguredHotkey) -> String? {
+        binding.kind == 1 ? "⇧" : nil
+    }
+}

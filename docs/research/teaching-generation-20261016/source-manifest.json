@@ -1,0 +1,62 @@
+{
+  "status": "Research references only; external data/code not admitted into the product.",
+  "snapshots": [
+    {
+      "project": "hanzi-chai/hanzi-chai.github.io",
+      "commit": "00f4f1b9d652b2db0868f30050d7d5608c35334c",
+      "role": "Candidate build-time decomposition algorithm",
+      "code_license_observed": "GPL-3.0 LICENSE; exact licensing scope to be checked at admission",
+      "data_license_status": "API/assets database not covered by an identified independent grant in reviewed backend README",
+      "files": [
+        "packages/hanzi-chai/src/component.ts",
+        "packages/hanzi-chai/src/selector.ts",
+        "packages/hanzi-chai/src/data.ts",
+        "scripts/fetch.ts"
+      ]
+    },
+    {
+      "project": "hanzi-chai/libchai",
+      "commit": "29d01d60e035717fa707b9f068168ffcff945573",
+      "role": "Encoding/optimization library, not the shape decomposition engine",
+      "notes": "Default server feature includes network-server dependencies; not recommended as runtime core dependency"
+    },
+    {
+      "project": "aardio/wubi-lex",
+      "commit": "92226ef6c1409377cf2dff375a8970a1c7fa43fc",
+      "code_license_observed": "MIT",
+      "file": "sepllingData/06.txt",
+      "sha256": "5dc4d31db9d2aa671a80e078cc9b1532b17aa649be798c091b96f854765603d4",
+      "local_research_name": "06-split.txt"
+    },
+    {
+      "project": "huanfeng/WindInput",
+      "commit": "33d1a6c5edef491dc363787fcb53a8c5a581a1c4",
+      "code_license_observed": "MIT at this historical commit",
+      "license_sha256": "43619c691546f1967bf997b0eab75a57cb5513d5c2679d444dfd1c087e53d310",
+      "file": "data/schemas/wubi86/wubi86_chaizi.txt",
+      "sha256": "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6",
+      "local_research_name": "d3-current.txt",
+      "notes": "Same bytes at inspected current commit 7bfdba57978779c0eceabe97aa4c6bce43e112b6. License changed at f92fed389a4a3adcea868fc62d9f3f12b3ceeac6 on 2026-10-15; do not conflate current and historical licensing."
+    },
+    {
+      "project": "yanhuacuo/98wubi-tables",
+      "commit": "6b8b6fb9d3c34e0d5e3b17211e1f1c100e7eb697",
+      "code_license_observed": "Unlicense at repository root; bundled fonts/PDF/image provenance not admitted",
+      "file": "Wubi98-Unicode15.1.txt",
+      "sha256": "1d63352c5f6498af0890494af551d698cdca77c7dfc8f9b04178df87defb27f6",
+      "encoding": "UTF-16 with BOM",
+      "local_research_name": "98-full.txt"
+    },
+    {
+      "project": "hanzi-chai/hanzi-chai-data",
+      "commit": "678c6053679141f0ace4e465c3958ee77b19c5ca",
+      "license_status": "No independent license found in inspected root; backend repository is not itself a licensed database snapshot"
+    },
+    {
+      "project": "CNMan/UnicodeCJK-WuBi06",
+      "commit": "85f99fb9654f7f5a8427ff3431e94e3a08eb877b",
+      "license_status": "No license identified by repository metadata; not admitted"
+    }
+  ],
+  "scope": "No upstream code executed or dependency installed. No external dataset, font, or SVG is included in these research files."
+}

@@ -8,6 +8,8 @@ final class PreviewInput: NSTextView {
     private var committed = ""
     private let previewStorage = NSTextStorage()
     var status: ((String) -> Void)?
+    var stateChanged: (() -> Void)?
+    var persistModeChanges = false
 
     init(session: ImeSession) {
         self.session = session
@@ -34,7 +36,7 @@ final class PreviewInput: NSTextView {
 
     override func keyDown(with event: NSEvent) {
         session.markKeyWhileShift()
-        let shortcut = session.shortcut(event, persistMode: false)
+        let shortcut = session.shortcut(event, persistMode: persistModeChanges)
         if shortcut.consumed {
             refresh()
             if shortcut == .failed { status?(ImeConfig.errorMessage() ?? "设置未保存，请重试。") }
@@ -87,6 +89,7 @@ final class PreviewInput: NSTextView {
     }
 
     func refresh() {
+        stateChanged?()
         let content = NSMutableAttributedString(string: committed, attributes: [.font: NSFont.systemFont(ofSize: 24)])
         content.append(NSAttributedString(string: session.buffer, attributes: [
             .font: NSFont.systemFont(ofSize: 24), .underlineStyle: NSUnderlineStyle.single.rawValue,
@@ -95,7 +98,7 @@ final class PreviewInput: NSTextView {
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
-        let summary = values.map { "\($0.text)[\($0.source.label)]" }.joined(separator: " · ")
+        let summary = values.map { "\(CandidateTextPresentation.display($0.text))[\($0.source.label)]" }.joined(separator: " · ")
         status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         if session.isComposing, !values.isEmpty, window != nil {
             candidates.update(
@@ -123,15 +126,19 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
     let session: ImeSession
     var window: NSWindow?
     var input: PreviewInput?
-    init(session: ImeSession) { self.session = session }
+    var modeControl: NSPopUpButton?
+    var previewMenu: PreviewInputMenu?
+    let isolated: Bool
+    init(session: ImeSession, isolated: Bool) { self.session = session; self.isolated = isolated }
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 780, height: 430),
             styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
-        window.title = "萤火虫 · 独立调试窗口"
+        window.title = isolated ? "萤火虫 · 隔离验收" : "萤火虫 · 独立调试窗口"
         window.delegate = self
         window.isReleasedWhenClosed = false
         let input = PreviewInput(session: session)
+        input.persistModeChanges = isolated
         self.input = input
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
@@ -144,6 +151,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let status = NSTextField(wrappingLabelWithString: "组合：（空）")
         input.status = { status.stringValue = $0 }
         let mode = NSPopUpButton()
+        modeControl = mode
         mode.addItems(withTitles: ["混输", "五笔", "拼音"])
         mode.target = self
         mode.action = #selector(changeMode(_:))
@@ -158,7 +166,29 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let settingsButton = NSButton(title: "偏好设置", target: self, action: #selector(openSettings))
         let controls = NSStackView(views: [NSTextField(labelWithString: "会话模式"), mode, clear, add, importButton, exportButton, lookup, settingsButton])
         controls.orientation = .horizontal
-        let stack = NSStackView(views: [hint, controls, scroll, status])
+        var sections: [NSView] = [hint]
+        if isolated {
+            let menu = PreviewInputMenu(session: session)
+            menu.onCancelComposition = { [weak input] in input?.cancelComposition() }
+            menu.onChange = { [weak self] in self?.input?.refresh() }
+            menu.onFailure = { [weak input] message in input?.status?(message) }
+            menu.onClose = { [weak self] in self?.restoreInputFocus() }
+            menu.onSettings = { [weak self] in self?.openSettings() }
+            menu.onAbout = { AboutUI.show() }
+            previewMenu = menu
+            input.stateChanged = { [weak self] in self?.syncMenuControls() }
+            let menuButton = NSButton(title: "输入法菜单", target: self, action: #selector(openInputMenu(_:)))
+            let note = NSTextField(wrappingLabelWithString: "本轮使用独立配置和词库；关闭窗口结束，修改代码后重新运行。")
+            note.font = .systemFont(ofSize: 11)
+            note.textColor = .secondaryLabelColor
+            let menuRow = NSStackView(views: [menuButton, note])
+            menuRow.orientation = .horizontal
+            menuRow.spacing = 12
+            sections.append(menuRow)
+            menu.refresh()
+        }
+        sections += [controls, scroll, status]
+        let stack = NSStackView(views: sections)
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 14
@@ -183,9 +213,22 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
     @objc func changeMode(_ sender: NSPopUpButton) {
-        input?.cancelComposition()
-        session.setMode(["mixed", "wubi", "pinyin"][sender.indexOfSelectedItem])
-        window?.makeFirstResponder(input)
+        let next = InputStateMenu.modes[sender.indexOfSelectedItem].0
+        if let previewMenu { previewMenu.selectMode(next) }
+        else { input?.cancelComposition(); session.setMode(next) }
+        restoreInputFocus()
+    }
+    private func syncMenuControls() {
+        modeControl?.selectItem(at: InputStateMenu.modes.firstIndex(where: { $0.0 == session.mode }) ?? 0)
+        previewMenu?.refresh()
+    }
+    private func restoreInputFocus() {
+        if window?.isKeyWindow == true { window?.makeFirstResponder(input) }
+    }
+    @objc private func openInputMenu(_ sender: NSButton) {
+        guard let previewMenu else { return }
+        previewMenu.refresh()
+        previewMenu.menu.popUp(positioning: nil, at: NSPoint(x: 0, y: sender.bounds.minY), in: sender)
     }
     @objc func lookupPinyin() { input?.cancelComposition(); LookupUI.show(session); input?.refresh(); window?.makeFirstResponder(input) }
     @objc func openSettings() { input?.cancelComposition(); SettingsPanel.shared.show(session: session) }
@@ -517,9 +560,9 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.isEnglish == englishBeforeCombo else {
         fputs("修饰键组合不应触发中英切换。\n", stderr); exit(1)
     }
-    // 全/半角：默认 Shift+Space（此刻中英为“英”，故 A1 → Ａ１）。
-    keys(" ", flags: [.shift]); view.clear(); keys("A1"); check("Ａ１")
-    keys(" ", flags: [.shift])
+    // 全/半角：默认 Ctrl+Shift+Space（此刻中英为“英”，故 A1 → Ａ１）。
+    keys(" ", flags: [.control, .shift]); view.clear(); keys("A1"); check("Ａ１")
+    keys(" ", flags: [.control, .shift])
     // 中英切回中文。
     _ = session.shiftTransition(isDown: true); _ = session.shiftTransition(isDown: false)
     guard !session.isEnglish else { exit(1) }
@@ -816,7 +859,7 @@ if CommandLine.arguments.contains("--smoke-test") {
         normalizedHotkey.modifiers == [.control, .option],
         ImeConfig.string("hotkey.toggle_mode") == "ctrl+alt+m",
         !ImeConfig.setString("hotkey.toggle_mode", "banana"),
-        !ImeConfig.setString("hotkey.toggle_mode", "shift+space"),
+        !ImeConfig.setString("hotkey.toggle_mode", "ctrl+shift+space"),
         ImeConfig.setString("hotkey.toggle_mode", "none"),
         ImeConfig.hotkey("hotkey.toggle_mode").kind == 0
     else { fputs("快捷键规范/非法值/冲突校验失败。\n", stderr); exit(1) }
@@ -864,6 +907,6 @@ submenu.addItem(withTitle: "退出调试窗口", action: #selector(NSApplication
 root.submenu = submenu
 menu.addItem(root)
 app.mainMenu = menu
-let delegate = PreviewDelegate(session: session)
+let delegate = PreviewDelegate(session: session, isolated: panelProbe)
 app.delegate = delegate
 withExtendedLifetime(delegate) { app.run() }
