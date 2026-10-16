@@ -26,3 +26,7 @@
 没有把离屏NSMenu.performActionForItem当作系统TextInputMenuAgent的物理点击结果。一级项带子菜单时系统菜单的派发、闭合及右对齐跨进程呈现，须新签名包安装后实机核验；本轮不声称该实机问题已关闭。没有新增状态栏图标、私有系统菜单钩子或自动重新打开系统菜单。
 
 1621a6d已通过的输入/学习成绩仍属于旧包，新修正包须按影响范围重新验收。MVP、VoiceOver/多屏/A/独立五日和Release保持开放。
+
+## 本地提交与公开状态
+
+ADR提交b3fcf44，实现提交e6427050241a49c1e8c4d67049511b35004542af，分支codex/menu-state-shortcuts。本地代码验证完成；自动审批拒绝向origin（https://github.com/EasyIndie/EasyInputMethod.git）推送及创建草稿PR，理由为本次请求未明确授权远程目的地和代码外发。未绕过、未推送、未创建PR；待用户明确确认。

@@ -1,5 +1,14 @@
 # HANDOFF — 当前状态
 
+## 本轮续接覆盖（2026-10-16）
+
+- 当前状态唯一入口仍为`/Users/joker/Documents/EasyInputMethod/HANDOFF.md`；下文是1621a6d冻结时的历史快照。
+- 本工作树分支codex/menu-state-shortcuts：ADR b3fcf44，实现e642705；菜单状态文案/模式动作/按钮文本及新默认键已完成，报告030。
+- make verify零诊断、strict universal/预览build-only、25文件84离线项及最终菜单定向回归通过；未安装，B实际仍1621a6d。
+- 自动审批拒绝向https://github.com/EasyIndie/EasyInputMethod.git推送/创建草稿PR（目的地与代码外发授权不足）；未绕过，等用户明确确认。
+- 系统菜单一级项带子菜单时的实际点击/闭合与右对齐跨进程呈现仍待新签名包验证；本地NSMenu动作不代替实机。
+
+
 ## 0. 元信息
 
 - 更新：2026-10-15 / Codex。
