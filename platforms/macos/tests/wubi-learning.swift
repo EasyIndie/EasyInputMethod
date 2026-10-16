@@ -25,6 +25,7 @@ for input in ["", "你\t好", String(repeating: "你", count: 86)] {
     require(WubiLearning.lookup(input) == nil, "bounded invalid input")
 }
 print("PASS wubi-learning: real Rust ABI, ownership, full codes, readable roots, long words, missing data and bounds")
+LocalAcceptanceEvidence.record("learning.facts", expected: "真实ABI返回完整码/字根/识别码，缺失说明不猜写", actual: ["你_code": single?.code ?? "", "你_roots": single?.characters.first?.roots.map(\.text) ?? [], "我_code": me?.code ?? "", "long_word_characters": phrase?.characters.count ?? 0])
 
 let application = NSApplication.shared
 application.setActivationPolicy(.prohibited)
@@ -33,6 +34,7 @@ let output = URL(fileURLWithPath: CommandLine.arguments[2])
 require(ime_config_init(privateRoot.appendingPathComponent("config.toml").path) == IME_OK, "private config")
 require(!ImeConfig.bool("candidate.show_wubi_learning"), "collapsed default from schema")
 require(ImeConfig.string("hotkey.toggle_wubi_learning") == "ctrl+shift+l", "learning shortcut default from schema")
+LocalAcceptanceEvidence.record("learning.defaults", expected: "Schema默认收起，学习快捷键control+shift+l", actual: ["shown": ImeConfig.bool("candidate.show_wubi_learning"), "shortcut": ImeConfig.string("hotkey.toggle_wubi_learning") ?? ""])
 require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "save display preference")
 let window = CandidateWindow()
 let area = NSRect(x: 0, y: 0, width: 1000, height: 800)
@@ -57,11 +59,13 @@ for theme in ["light", "dark"] {
     }
 }
 require(ImeConfig.setToml("candidate.show_wubi_learning", "false"), "hide preference")
+LocalAcceptanceEvidence.record("learning.display", expected: "亮暗八类候选可显示学习区，七字逐字展开有界且不夺焦点", actual: ["visible": window.learningVisibleForTesting, "keyboard_focus": window.permitsKeyboardFocusForTesting, "frame": NSStringFromRect(window.frame)])
 window.update(candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)], input: "wq")
 window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
 require(!window.learningVisibleForTesting, "preference hides extension")
 window.hide()
 require(!window.learningVisibleForTesting, "hidden panel clears learning")
+LocalAcceptanceEvidence.record("learning.hidden", expected: "关闭偏好/隐藏面板清理学习内容", actual: window.learningVisibleForTesting)
 print("PASS wubi-learning-presentation: private schema, mode-independent extension, long-word disclosure, bounded details, light/dark and stale clearing")
 
 // Exercise the actual default through the session, without rebinding it.
@@ -76,6 +80,7 @@ let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.c
     timestamp: 0, windowNumber: 0, context: nil, characters: "L", charactersIgnoringModifiers: "l", isARepeat: false, keyCode: 37)!
 require(session.shortcut(event, persistMode: true) == .handled && ImeConfig.bool("candidate.show_wubi_learning"), "shortcut toggles same persisted preference")
 require(session.buffer == originalBuffer && session.pageIndex == originalPage, "shortcut preserves composition and page")
+LocalAcceptanceEvidence.record("learning.shortcut", expected: "合成学习快捷键切换同一偏好，保留wq和页码；非物理键盘", actual: ["buffer": session.buffer, "page": session.pageIndex, "shown": ImeConfig.bool("candidate.show_wubi_learning")])
 let oldWidth = session.isFullWidth
 let oldWidthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.shift],
     timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
@@ -84,8 +89,10 @@ let widthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags
     timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
 require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth != oldWidth, "new width shortcut toggles")
 require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth == oldWidth, "new width shortcut restores")
+LocalAcceptanceEvidence.record("learning.width-shortcut", expected: "shift-space不切换；control-shift-space双向切换恢复", actual: ["restored": session.isFullWidth == oldWidth, "buffer": session.buffer])
 
 require(!ImeConfig.setString("hotkey.toggle_wubi_learning", "ctrl+shift+m"), "shortcut collision rejected")
+LocalAcceptanceEvidence.record("learning.conflict", expected: "拒绝与模式快捷键冲突的学习绑定", actual: ImeConfig.string("hotkey.toggle_wubi_learning") ?? "missing")
 print("PASS learning shortcut: same preference, composition preserved, conflict rejected")
 
 require(ImeConfig.setToml("candidate.show_wubi_learning", "false"), "matched collapsed")
@@ -100,6 +107,7 @@ require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "show stable 
 window.update(candidates: matched, pageIndex: 0, pageCount: 12, input: "wq")
 window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
 require(window.frame.width == stableWidth, "learning preserves candidate body width")
+LocalAcceptanceEvidence.record("learning.body-width", expected: "开关学习区不改变400pt候选主体宽度", actual: ["before": stableWidth, "after": window.frame.width])
 snapshot("matched-learning-light")
 window.hide()
 
@@ -111,11 +119,13 @@ window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
 guard let oldAction = window.learningActionForTesting else { exit(1) }
 window.hide()
 require(oldAction.target == nil && oldAction.action == nil, "old learning actions invalidated")
+LocalAcceptanceEvidence.record("learning.stale", expected: "隐藏后旧学习按钮target/action失效", actual: ["target_nil": oldAction.target == nil, "action_nil": oldAction.action == nil])
 for theme in ["light", "dark"] {
     require(ImeConfig.setString("appearance.theme", theme), "learning contrast theme")
     window.update(candidates: [ImeCandidate(text: "你", code: "wq", source: .codeTable, isPrefix: false)], input: "wq")
     window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
     require(window.learningTextContrastForTesting >= 4.5, "learning text contrast")
+    LocalAcceptanceEvidence.record("learning.contrast." + theme, expected: "实际语义文字/背景对比度>=4.5", actual: window.learningTextContrastForTesting)
 }
 window.hide()
 
@@ -131,6 +141,7 @@ window.scrollLearningForTesting(45)
 let origin = window.learningScrollOriginForTesting
 window.toggleLearningCharacterForTesting(5)
 require(abs(window.learningScrollOriginForTesting.y - origin.y) < 1 && selectionCalls == 0, "disclosure preserves scroll without selection")
+LocalAcceptanceEvidence.record("learning.scroll", expected: "逐字披露保留滚动和摘要AX对象，不触发选词", actual: ["before_y": origin.y, "after_y": window.learningScrollOriginForTesting.y, "selection_calls": selectionCalls, "same_action": window.learningActionForTesting === stableAction])
 let longCandidates = (0..<9).map { _ in ImeCandidate(text: String(repeating: "中华人民共和国", count: 8), code: "kwwl", source: .phrase, isPrefix: false) }
 let tight = NSRect(x: 0, y: 0, width: 500, height: 500)
 require(ImeConfig.setToml("candidate.show_wubi_learning", "false"), "body baseline")
@@ -142,6 +153,7 @@ window.update(candidates: longCandidates, input: "kwwl")
 window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: tight)
 window.toggleLearningDetailsForTesting()
 require(window.candidateViewportForTesting == baselineViewport && tight.contains(window.frame), "teaching cannot steal candidate viewport")
+LocalAcceptanceEvidence.record("learning.viewport", expected: "长候选开关学习区保持主体视口，组合/焦点及滚动约束通过", actual: ["baseline_viewport": NSStringFromSize(baselineViewport), "current_viewport": NSStringFromSize(window.candidateViewportForTesting)])
 window.hide()
 
 // Reproduce the reported seven-candidate header and teaching layout at the same time.

@@ -25,9 +25,11 @@ guard !window.permitsKeyboardFocusForTesting, area.contains(window.frame),
       window.candidateFontForTesting(at: 0)?.pointSize == 17,
       window.candidateFontForTesting(at: 0) != window.candidateFontForTesting(at: 1)
 else { fail("minimal body/source accessibility/font/focus") }
+LocalAcceptanceEvidence.record("candidate.body", expected: "候选正文/来源AX正确，非key且在边界内", actual: ["labels": window.displayedCandidateTexts, "input": window.displayedInput, "keyboard_focus": window.permitsKeyboardFocusForTesting])
 var selected = -1
 window.onSelect = { selected = $0 }
 guard window.accessiblePressForTesting(at: 1), selected == 1 else { fail("candidate AX selection") }
+LocalAcceptanceEvidence.record("candidate.ax-selection", expected: "直接AX动作映射到候选索引1，不等同VoiceOver", actual: selected)
 
 // Use a real private FFI session for paging; no desktop client or posted events.
 let table = root.appendingPathComponent("table.tsv")
@@ -49,6 +51,7 @@ guard session.pageCount == 3, window.pageStateForTesting.text == "1/3",
       !window.pagePressForTesting(1), window.pageStateForTesting.text == "3/3",
       window.pagePressForTesting(-1), session.pageIndex == 1, session.buffer == "ab"
 else { fail("real bounded paging without commit") }
+LocalAcceptanceEvidence.record("candidate.paging", expected: "1/3→2/3→3/3→2/3，首尾拒绝越界，保留ab组合", actual: ["label": window.pageStateForTesting.text, "page_index": session.pageIndex, "buffer": session.buffer])
 
 func snapshot(_ name: String) {
     guard let image = window.renderSnapshotForTesting(),
@@ -76,9 +79,11 @@ for pages in [3, 30, 120] {
 window.update(candidates: values, pageIndex: 0, pageCount: 30, input: "tr")
 window.layout(at: caret, within: area)
 snapshot("page-aligned-dark")
+LocalAcceptanceEvidence.record("candidate.page-centres", expected: "3/30/120页首尾箭头和页码中心差<0.5pt", actual: window.pageFramesForTesting.map { ["mid_y": $0.midY, "height": $0.height] })
 window.update(candidates: values, input: "wq", warning: "虚构繁体资源失败：用于验证错误仍可见，不读取真实文件")
 window.layout(at: caret, within: area)
 guard window.displayedWarning == "繁体不可用，当前简体" else { fail("fallback visible") }
+LocalAcceptanceEvidence.record("candidate.warning", expected: "模拟繁体资源失败时明确当前简体", actual: window.displayedWarning ?? "missing")
 snapshot("warning-dark")
 let long = String(repeating: "中华人民共和国", count: 10)
 window.update(candidates: (0..<9).map { ImeCandidate(text: "\($0)" + long, code: "", source: .phrase, isPrefix: false) },
@@ -86,6 +91,7 @@ window.update(candidates: (0..<9).map { ImeCandidate(text: "\($0)" + long, code:
 window.layout(at: caret, within: area)
 guard area.contains(window.frame), window.scrollingForTesting,
       window.displayedCandidateTexts.allSatisfy({ $0.contains(long) }) else { fail("bounded long candidates") }
+LocalAcceptanceEvidence.record("candidate.long", expected: "九条长词保留全文，可滚动且在给定边界内", actual: ["scrolling": window.scrollingForTesting, "candidate_count": window.displayedCandidateTexts.count, "frame": NSStringFromRect(window.frame)])
 snapshot("long-dark")
 // Actual shipped a page 2: Unicode remains intact even when native fonts lack glyphs.
 let shipped = URL(fileURLWithPath: FileManager.default.currentDirectoryPath).appendingPathComponent("data/generated/pinyin-chars.tsv")
@@ -111,8 +117,11 @@ for theme in ["light", "dark"] {
     }
     snapshot("pinyin-a-missing-glyph-" + theme)
 }
+LocalAcceptanceEvidence.record("candidate.glyph-display", expected: "a第二页保留原Unicode；亮暗显示标签和AX与原候选对应", actual: ["original": rarePage.map(\.text), "display": window.displayedCandidateTexts])
 window.onSelect = { index in
-    guard pinyin.select(index) == rarePage[index].text else { fail("glyph replacement must not change committed scalar") }
+    let committed = pinyin.select(index)
+    guard committed == rarePage[index].text else { fail("glyph replacement must not change committed scalar") }
+    LocalAcceptanceEvidence.record("candidate.glyph-commit", expected: "缺字显示不修改选择提交的原字符U+20F1E", actual: committed ?? "missing")
     selected = index
 }
 guard window.accessiblePressForTesting(at: 1), selected == 1 else { fail("rare glyph real FFI selection") }
@@ -121,4 +130,5 @@ selected = -1
 guard !window.accessiblePressForTesting(at: 0), !window.pagePressForTesting(1),
       selected == -1, window.displayedInput.isEmpty, !window.pageStateForTesting.visible
 else { fail("hidden stale actions") }
+LocalAcceptanceEvidence.record("candidate.stale", expected: "隐藏后旧选词和翻页动作失效", actual: ["selected": selected, "input": window.displayedInput, "page_visible": window.pageStateForTesting.visible])
 print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions")

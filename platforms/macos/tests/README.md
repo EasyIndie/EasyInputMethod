@@ -105,3 +105,18 @@ ADR-151：独立预览冒烟新增真实NSEvent+FFI组合导航回归，覆盖�
 ADR-170/171：test-wubi-learning.py通过真实Rust只读ABI与Swift/生产CandidateWindow测试完整码、核验根码/识别码、长词摘要/逐字披露、137pt明细上限、独立Schema显示开关/快捷键及组合保持。只用私有数据和离屏图，不激活窗口/发键；不代替根码覆盖或最终实机验收。
 
 ADR-182：`test-preview-menu.py`以真实Rust/Swift会话核验同组件菜单、私有配置、模式与四状态、外部设置/快捷键通知、写失败恢复与无学习副作用；不显示窗口，不替代系统IMK代理实机结果。
+
+### 逐场景本地验收（ADR-192）
+
+`make macos-local-acceptance`复用生产组件/真实FFI执行六组原生离屏场景，自动创建独立运行目录。不是安装包或正式系统IMK验收，不显示窗口、不发送桌面事件、不打开外链；只使用私有配置/词库及命名剪贴板。既有保护用例仅核对真实配置/词库摘要，不记录内容。
+
+```sh
+python3 platforms/macos/tests/run-local-acceptance.py --output platforms/macos/build/local-acceptance/my-new-run
+python3 platforms/macos/tests/run-local-acceptance.py --check platforms/macos/build/local-acceptance/my-new-run
+```
+
+输出report.html/report.md/report.json、逐组observations.json和run.log、探针/依赖锁哈希、测试源码快照、截图及逐文件SHA。已存在目录拒绝覆盖，失败/中断的记录保留。直接动作派发/合成NSEvent/反馈打开模拟会在场景预期中标明，不改写为物理键盘、VoiceOver或实际浏览器测试。
+
+本地PASS要求所有必需场景齐全、探针退出正常、观测和汇总一致、所需图像和源码快照存在且SHA一致、测试前后源树不变。`--check`检查保留下来的证据，不执行其中的程序；校验器的合成fixture只是拒绝假通过回归，不是产品通过证据。
+
+正式schema 2门禁保持。报告中的MVP结果始终BLOCKED，23项正式必测单列；没有确定观察记录的历史手工操作不补填PASS。真正系统菜单/VoiceOver/客户端/安全字段/多屏/真实IMK性能/独立试用仍需后续记录。

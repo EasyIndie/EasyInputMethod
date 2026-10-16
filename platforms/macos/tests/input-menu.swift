@@ -38,6 +38,7 @@ require(menu.items.dropFirst().map(\.title) == ["中文输入", "半角输入", 
 require(menu.items[0].accessibilityValue() as? String == "混输", "accessible current mode")
 require(menu.items.allSatisfy { $0.state == .off }, "state rows must not use checkmarks")
 require(menu.items[0].action != nil && menu.items[0].submenu?.items.count == 3, "parent action and native submenu coexist")
+LocalAcceptanceEvidence.record("menu-view.state", expected: "四状态显示当前值且无勾选，模式父子入口同时存在", actual: ["titles": menu.items.dropFirst().map(\.title), "checks": menu.items.map { $0.state.rawValue }, "mode": menu.items[0].accessibilityValue() as? String ?? ""])
 for expected in ["五笔", "拼音", "混输"] {
     menu.performActionForItem(at: 0)
     require(menu.items[0].accessibilityValue() as? String == expected, "parent cycle refreshes same menu")
@@ -57,14 +58,18 @@ if #available(macOS 14.0, *) {
     require(menu.items[0].badge == nil, "wide menu has no badge")
 }
 let row = menu.items[0].view as! InputModeMenuView
+var layoutFrames: [[String: Any]] = []
 for width: CGFloat in [160, 240, 360] {
     row.setFrameSize(NSSize(width: width, height: 24))
     require(row.arrowFrame.minX - row.statusFrame.maxX == 11, "status stays next to arrow across menu widths")
     require(row.statusFrame.maxY <= row.bounds.maxY && row.statusFrame.minX > 90, "status avoids title and row bounds")
+    layoutFrames.append(["width": width, "status": NSStringFromRect(row.statusFrame), "arrow": NSStringFromRect(row.arrowFrame)])
 }
+LocalAcceptanceEvidence.record("menu-view.layout", expected: "160/240/360pt宽度下状态靠右并紧邻箭头，不与标题重叠", actual: layoutFrames)
 row.mode = "五笔"
 let copy = menu.items[0].copy() as! NSMenuItem
 require((copy.view as? InputModeMenuView)?.mode == "五笔", "native menu copy retains status")
+LocalAcceptanceEvidence.record("menu-view.copy", expected: "菜单复制保留当前模式", actual: (copy.view as? InputModeMenuView)?.mode ?? "missing")
 InputStateMenu.refresh(menu, state: owner.snapshot)
 menu.removeItem(wideItem)
 let submenu = menu.items[0].submenu!
@@ -84,3 +89,36 @@ for (index, switched, restored) in [(1,"英文输入","中文输入"),(2,"全角
     require(menu.items[index].title == restored && menu.items[index].state == .off, "toggle restores current title")
 }
 print("PASS input-menu: current-state titles, parent cycle, explicit IMK dictionary callbacks, unique mode check, failed change and bidirectional toggles")
+
+if let output = ProcessInfo.processInfo.environment["LAMPYRIS_ACCEPTANCE_OUTPUT"] {
+    guard NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: nil) != nil else { exit(1) }
+    var snapshots: [String] = []
+    for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
+        let view = InputModeMenuView(frame: NSRect(x: 0, y: 0, width: 240, height: 24))
+        guard let appearance = NSAppearance(named: name) else { exit(1) }
+        view.appearance = appearance
+        for state in ["normal", "highlight", "disabled"] {
+            view.isEnabled = state != "disabled"
+            if state == "highlight", let event = NSEvent.otherEvent(with: .applicationDefined, location: .zero,
+                modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, subtype: 0, data1: 0, data2: 0) {
+                view.mouseEntered(with: event)
+            }
+            var data: Data?
+            appearance.performAsCurrentDrawingAppearance {
+                let image = NSImage(size: view.bounds.size, flipped: true) { rect in
+                    NSColor.windowBackgroundColor.setFill(); rect.fill()
+                    view.draw(rect)
+                    return true
+                }
+                if let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) {
+                    data = rep.representation(using: .png, properties: [:])
+                }
+            }
+            guard let data else { exit(1) }
+            let filename = "mode-\(theme)-\(state).png"
+            try data.write(to: URL(fileURLWithPath: output).appendingPathComponent(filename))
+            snapshots.append(filename)
+        }
+    }
+    LocalAcceptanceEvidence.record("menu-view.render", expected: "系统SF箭头与原生菜单字体亮暗/模拟高亮/禁用可绘制；非系统菜单跟踪", actual: snapshots)
+}

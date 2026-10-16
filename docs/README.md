@@ -9,6 +9,8 @@
 
 MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；首版后的路线见 [MVP后里程碑](MVP后里程碑.md)。
 
+本地逐场景自动验收及证据边界见 [报告041](reviews/041-local-automated-acceptance.md)；可重复入口见 [任务卡](tasks/T-LOCAL-ACCEPTANCE.md)。
+
 ## 权威文档（当前有效）
 
 | 文档 | 内容 | 读者 |

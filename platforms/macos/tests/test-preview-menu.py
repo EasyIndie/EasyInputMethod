@@ -8,6 +8,8 @@ import sys
 import tempfile
 import unittest
 
+from local_acceptance_support import output_directory, record_probe
+
 ROOT = Path(__file__).resolve().parents[3]
 
 
@@ -30,6 +32,7 @@ class PreviewMenuTests(unittest.TestCase):
                 (['cargo', 'build', '--release', '-p', 'ime-ffi'], 60),
                 (['swiftc', '-warnings-as-errors', '-I', str(ROOT / 'crates/ime-ffi/include'),
                   str(temporary / 'main.swift'),
+                  str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / 'platforms/macos/Sources' / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'InputMenu.swift']],
                   str(ROOT / 'platforms/macos/Preview/InputMenuPreview.swift'),
                   str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 45),
@@ -37,6 +40,8 @@ class PreviewMenuTests(unittest.TestCase):
             ]
             try:
                 for command, timeout in commands:
+                    if command[0] == str(temporary / "probe"):
+                        record_probe(temporary / "probe")
                     result = subprocess.run(command, cwd=ROOT, env=environment, capture_output=True, text=True, timeout=timeout)
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertIn('PASS preview-menu', result.stdout)
