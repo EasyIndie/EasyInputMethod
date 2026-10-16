@@ -2,6 +2,8 @@
 
 ## 本轮续接覆盖（2026-10-16）
 
+- 最新本地迭代入口：实现93356e6、ADR-182（939dde5），make macos-dev共享正式菜单/设置，使用私有配置/词库；26文件85项/verify/strict universal/预览冒烟及实窗启动清理通过，报告031。修改代码后关闭并重跑；主目录既有源码不改。
+
 - 当前状态唯一入口仍为`/Users/joker/Documents/EasyInputMethod/HANDOFF.md`；下文是1621a6d冻结时的历史快照。
 - 本工作树分支codex/menu-state-shortcuts：ADR b3fcf44，实现e642705；菜单状态文案/模式动作/按钮文本及新默认键已完成，报告030。
 - make verify零诊断、strict universal/预览build-only、25文件84离线项及最终菜单定向回归通过；未安装，B实际仍1621a6d。
