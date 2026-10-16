@@ -120,3 +120,11 @@ python3 platforms/macos/tests/run-local-acceptance.py --check platforms/macos/bu
 本地PASS要求所有必需场景齐全、探针退出正常、观测和汇总一致、所需图像和源码快照存在且SHA一致、测试前后源树不变。`--check`检查保留下来的证据，不执行其中的程序；校验器的合成fixture只是拒绝假通过回归，不是产品通过证据。
 
 正式schema 2门禁保持。报告中的MVP结果始终BLOCKED，23项正式必测单列；没有确定观察记录的历史手工操作不补填PASS。真正系统菜单/VoiceOver/客户端/安全字段/多屏/真实IMK性能/独立试用仍需后续记录。
+
+## 真实IMK验收准备（不执行桌面动作）
+
+```sh
+python3 platforms/macos/tests/prepare-imk-acceptance.py --output platforms/macos/build/imk-preparation-NEW
+```
+
+只接受新目录；输出12组细化步骤、预期、证据与停止/恢复规则，以及全部BLOCKED的正式schema 2模板。候选/应用版本留空；不能用准备成功表示实机通过。入口无执行模式，不调用旧live脚本；真正执行前需当前空闲、同候选/宿主身份、私有数据及逐动作焦点保护。现有隔离驱动不能直接适配正式包，新菜单/VoiceOver交互保护仍待实现/实测。详见报告042与ADR-193。

@@ -23,6 +23,8 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 
 - [x] **T-LOCAL-ACCEPTANCE** 本地六组逐场景自动化与证据复核（ADR-192，报告041）；正式MVP仍待验。
 
+- [x] **T-IMK-ACCEPTANCE-PREP** 离线生成真实IMK逐项验收材料（报告042）；实机执行与保护适配仍待。
+
 ## 前置：方案审核
 
 - [x] **REV-1** 交叉审核 `docs/技术方案.md`（方向、架构、技术可行性）→ 见 `docs/reviews/001.md`

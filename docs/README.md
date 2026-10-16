@@ -85,3 +85,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [当前MVP剩余工作038](reviews/038-mvp-remaining-work.md)：ADR-190将自建库后移，区分未开始的真实验收、已完成工程及最终候选收口；优先于旧计划中的实施状态。
 
 [控件标签与说明间距039](reviews/039-controls-labels-and-description-spacing.md)：按钮/菜单无省略号、模式系统符号、四项说明统一基线及亮暗原生渲染证据。
+
+真实IMK的未执行准备材料见 [报告042](reviews/042-imk-acceptance-preparation.md)及[任务卡](tasks/T-IMK-ACCEPTANCE-PREP.md)。
