@@ -34,6 +34,19 @@ numberRow.commitNumberForTesting("7")
 panel.reportSaved()
 panel.selectSectionForTesting(2)
 guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
+for (key, title) in [("hotkey.toggle_width", "⌃⇧空格"), ("hotkey.toggle_wubi_learning", "⌃⇧L"), ("hotkey.toggle_english", "⇧")] {
+    panel.rowForTesting(key)?.reload() // The visible show path reloads rows after prepare.
+    guard let row = panel.rowForTesting(key), row.shortcutTitleForTesting == title else { fail("shortcut title " + key + " actual=" + (panel.rowForTesting(key)?.shortcutTitleForTesting ?? "missing") + " configured=" + (ImeConfig.string(key) ?? "missing")) }
+}
+guard let learningRow = panel.rowForTesting("hotkey.toggle_wubi_learning") else { fail("learning row") }
+for (value, title) in [("", "未设置"), ("ctrl+shift+l", "⌃⇧L")] {
+    guard learningRow.commitTextForTesting(value) else { fail("shortcut write") }
+    let deadline = Date().addingTimeInterval(1)
+    while learningRow.shortcutTitleForTesting != title && Date() < deadline {
+        RunLoop.current.run(until: Date().addingTimeInterval(0.01))
+    }
+    guard learningRow.shortcutTitleForTesting == title else { fail("shortcut notification/rebind title") }
+}
 func snapshot(_ image: NSBitmapImageRep?, _ name: String) {
     guard let data = image?.representation(using: .png, properties: [:]) else { fail("snapshot " + name) }
     do { try data.write(to: output.appendingPathComponent(name + ".png")) } catch { fail("snapshot write") }

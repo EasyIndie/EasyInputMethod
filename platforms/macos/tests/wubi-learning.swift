@@ -26,7 +26,7 @@ let privateRoot = URL(fileURLWithPath: CommandLine.arguments[1])
 let output = URL(fileURLWithPath: CommandLine.arguments[2])
 require(ime_config_init(privateRoot.appendingPathComponent("config.toml").path) == IME_OK, "private config")
 require(!ImeConfig.bool("candidate.show_wubi_learning"), "collapsed default from schema")
-require(ImeConfig.string("hotkey.toggle_wubi_learning") == "none", "unbound shortcut default")
+require(ImeConfig.string("hotkey.toggle_wubi_learning") == "ctrl+shift+l", "learning shortcut default from schema")
 require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "save display preference")
 let window = CandidateWindow()
 let area = NSRect(x: 0, y: 0, width: 1000, height: 800)
@@ -58,7 +58,7 @@ window.hide()
 require(!window.learningVisibleForTesting, "hidden panel clears learning")
 print("PASS wubi-learning-presentation: private schema, mode-independent extension, long-word disclosure, bounded details, light/dark and stale clearing")
 
-require(ImeConfig.setString("hotkey.toggle_wubi_learning", "ctrl+shift+k"), "bind learning shortcut")
+// Exercise the actual default through the session, without rebinding it.
 let table = privateRoot.appendingPathComponent("learning-test.tsv")
 try "wq\t你\t10\nwqiy\t你\t10\n".write(to: table, atomically: true, encoding: .utf8)
 guard let session = ImeSession(wubiPath: table.path, pinyinCharsPath: nil, pinyinWordsPath: nil) else { exit(1) }
@@ -67,9 +67,18 @@ _ = session.feed(119); _ = session.feed(113)
 let originalBuffer = session.buffer
 let originalPage = session.pageIndex
 let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control, .shift],
-    timestamp: 0, windowNumber: 0, context: nil, characters: "K", charactersIgnoringModifiers: "k", isARepeat: false, keyCode: 40)!
+    timestamp: 0, windowNumber: 0, context: nil, characters: "L", charactersIgnoringModifiers: "l", isARepeat: false, keyCode: 37)!
 require(session.shortcut(event, persistMode: true) == .handled && ImeConfig.bool("candidate.show_wubi_learning"), "shortcut toggles same persisted preference")
 require(session.buffer == originalBuffer && session.pageIndex == originalPage, "shortcut preserves composition and page")
+let oldWidth = session.isFullWidth
+let oldWidthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.shift],
+    timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
+require(session.shortcut(oldWidthEvent, persistMode: true) == .unmatched && session.isFullWidth == oldWidth, "shift-space no longer toggles by default")
+let widthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control, .shift],
+    timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
+require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth != oldWidth, "new width shortcut toggles")
+require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth == oldWidth, "new width shortcut restores")
+
 require(!ImeConfig.setString("hotkey.toggle_wubi_learning", "ctrl+shift+m"), "shortcut collision rejected")
 print("PASS learning shortcut: same preference, composition preserved, conflict rejected")
 

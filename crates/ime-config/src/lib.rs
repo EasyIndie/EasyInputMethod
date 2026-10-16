@@ -438,11 +438,47 @@ mod tests {
             assert_eq!(read(tmp.path()), original);
             assert_eq!(*store.snapshot(), *snapshot);
         }
-        assert!(store.set("hotkey.toggle_mode", "\"shift+space\"").is_err());
+        assert!(store
+            .set("hotkey.toggle_mode", "\"ctrl+shift+space\"")
+            .is_err());
         assert_eq!(read(tmp.path()), original);
         store.set("hotkey.toggle_width", "\"none\"").unwrap();
-        store.set("hotkey.toggle_mode", "\"shift+space\"").unwrap();
-        assert!(store.set("hotkey.toggle_width", "\"space+shift\"").is_err());
+        store
+            .set("hotkey.toggle_mode", "\"ctrl+shift+space\"")
+            .unwrap();
+        assert!(store
+            .set("hotkey.toggle_width", "\"space+shift+ctrl\"")
+            .is_err());
+    }
+
+    #[test]
+    fn shortcut_defaults_reduce_accidental_toggles_without_overwriting_explicit_values() {
+        let tmp = TempFile::new("hotkey-defaults");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        assert_eq!(
+            store.get("hotkey.toggle_width").unwrap().as_str(),
+            Some("ctrl+shift+space")
+        );
+        assert_eq!(
+            store.get("hotkey.toggle_wubi_learning").unwrap().as_str(),
+            Some("ctrl+shift+l")
+        );
+        assert!(store.set("hotkey.toggle_mode", "\"ctrl+shift+l\"").is_err());
+        let old = "[hotkey]\ntoggle_width = \"shift+space\"\ntoggle_wubi_learning = \"none\"\n";
+        write(tmp.path(), old);
+        let explicit = ConfigStore::load(tmp.path()).unwrap();
+        assert_eq!(
+            explicit.get("hotkey.toggle_width").unwrap().as_str(),
+            Some("shift+space")
+        );
+        assert_eq!(
+            explicit
+                .get("hotkey.toggle_wubi_learning")
+                .unwrap()
+                .as_str(),
+            Some("none")
+        );
+        assert_eq!(read(tmp.path()), old);
     }
 
     #[test]

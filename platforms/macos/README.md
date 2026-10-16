@@ -177,7 +177,7 @@ macOS job 独立运行 Rust 全量验证、正式宿主构建、按登记许可�
 
 ## 输入交互
 
-单独按 Shift（松开且期间无其它键，默认）临时中英切换，Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。
+单独按 Shift（松开且期间无其它键，默认）临时中英切换，Ctrl+Shift+Space 临时全半角；切换取消当前组合。三模式循环快捷键来自 hotkey.toggle_mode（默认 Ctrl+Shift+M），正式宿主经 ime-config 保存模式，预览只改变会话。中文标点通过 input.punctuation 控制，双/单引号依次输出成对引号；全角偏好通过 input.full_width 控制。组合中标点先上屏当前页首候选；没有候选时保留原码。
 
 ## 用户词库与学习
 
@@ -243,3 +243,5 @@ Codex辅助功能/自动化显示允许，不保证子进程执行路径都已�
 2026-10-12责任归属对照（ADR-136）：本机实际链ChatGPT.app→内嵌CodexCLI→Python→osascript。TCC责任主体com.openai.codex、路径/Applications/ChatGPT.app，显示名称ChatGPT；允许该精确宿主后UI elements enabled=true且AX检查通过。不要按应用显示名或osascript报错猜测需授权哪个实体，先用进程PID对应日志。证据build/tcc-chain-2n0505ky；未重置TCC或读取其数据库。原生提交断言仍单独待诊断，不等同最终MVP通过。
 
 组合中四方向键（含Shift）保持预编辑与候选，不移动客户端光标或选择候选；非组合态及Command/Control/Option导航透传。使用数字/空格选字、既有翻页键翻页（ADR-151）。
+
+2026-10-16（ADR-181）：四个状态菜单以当前中文/英文、全角/半角、简体/繁体及中文/英文标点文案呈现，无布尔勾选；输入模式一级项显示当前模式并循环切换，二级项直接选择并同步唯一勾选。快捷键按钮不带省略号，学习区默认Ctrl+Shift+L、全/半角默认Ctrl+Shift+Space。已有显式配置（含none或旧Shift+Space）保持原值，需在设置中修改；不静默覆盖。

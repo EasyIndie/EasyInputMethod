@@ -134,6 +134,7 @@ final class LampyrisInputController: IMKInputController {
             if let client = activeClient { clearMarked(client) }
             candidateWindow?.hide()
         }
+        refreshStateMenu()
         candidateWindow?.refreshAppearance()
         if session.isComposing, let client = activeClient {
             updateMarked(client, session.buffer)
@@ -156,37 +157,9 @@ final class LampyrisInputController: IMKInputController {
     }
 
     override func menu() -> NSMenu! {
-        let menu = NSMenu()
-        menu.autoenablesItems = false
-        let modeItem = NSMenuItem(title: "输入模式", action: nil, keyEquivalent: "")
-        let modes = NSMenu(title: "输入模式")
-        modes.autoenablesItems = false
-        let selectedMode = session?.mode ?? ImeConfig.string("mode")
-        for (raw, title) in [("mixed", "混输"), ("wubi", "五笔"), ("pinyin", "拼音")] {
-            let item = NSMenuItem(title: title, action: #selector(chooseMode(_:)), keyEquivalent: "")
-            item.target = self
-            item.representedObject = raw
-            item.state = selectedMode == raw ? .on : .off
-            modes.addItem(item)
-        }
-        modeItem.submenu = modes
-        menu.addItem(modeItem)
-        let chinese = stateItem("中文输入", action: #selector(toggleEnglish(_:)), hotkeyKey: "hotkey.toggle_english")
-        chinese.state = session?.isEnglish == false ? .on : .off
-        chinese.isEnabled = session != nil
-        menu.addItem(chinese)
-        let width = stateItem("全角 ASCII", action: #selector(toggleWidth(_:)), hotkeyKey: "hotkey.toggle_width")
-        width.state = session?.isFullWidth == true ? .on : .off
-        width.isEnabled = session != nil
-        menu.addItem(width)
-        let variant = stateItem("繁体输出", action: #selector(toggleVariant(_:)), hotkeyKey: "hotkey.toggle_variant")
-        variant.state = session?.isTraditional == true ? .on : .off
-        variant.isEnabled = session != nil
-        menu.addItem(variant)
-        let punctuation = stateItem("中文标点", action: #selector(togglePunctuation(_:)), hotkeyKey: "hotkey.toggle_punctuation")
-        punctuation.state = ImeConfig.string("input.punctuation") == "chinese" ? .on : .off
-        punctuation.isEnabled = session != nil
-        menu.addItem(punctuation)
+        let menu = InputStateMenu.make(state: inputMenuState(), target: self)
+        stateMenu = menu
+        refreshStateMenu()
         menu.addItem(NSMenuItem.separator())
         let settings = NSMenuItem(
             title: "设置…", action: #selector(showSettings), keyEquivalent: "")
@@ -218,20 +191,26 @@ final class LampyrisInputController: IMKInputController {
         return menu
     }
 
-    /// 构造「输入状态」菜单项：标题含当前值，右侧显示当前快捷键。
-    private func stateItem(_ title: String, action: Selector, hotkeyKey: String) -> NSMenuItem {
-        let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
-        item.target = self
-        item.toolTip = hotkeyKey == "hotkey.toggle_mode" ? "点击依次切换混输、五笔、拼音；设置中可直接选择。" : "点击切换此输入状态。"
-        let binding = ImeConfig.hotkey(hotkeyKey)
-        if !item.applyConfiguredHotkey(binding),
-            let symbol = NSMenuItem.singleModifierSymbol(binding)
-        {
-            // 单修饰键（如 Shift）无法成为菜单快捷键；放在快捷键位显示以保持右对齐（与其它项一致）。
-            item.keyEquivalent = symbol
+    private var stateMenu: NSMenu?
+
+    private func inputMenuState() -> InputMenuState {
+        InputMenuState(mode: session?.mode ?? ImeConfig.string("mode") ?? "mixed",
+            language: languageState(), width: widthState(), variant: variantState(),
+            punctuation: punctuationState(), enabled: session != nil)
+    }
+
+    private func refreshStateMenu() {
+        guard let menu = stateMenu else { return }
+        InputStateMenu.refresh(menu, state: inputMenuState())
+        for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
+            item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
+            let binding = ImeConfig.hotkey(key)
+            if !item.applyConfiguredHotkey(binding), let symbol = NSMenuItem.singleModifierSymbol(binding) {
+                item.keyEquivalent = symbol
+                item.keyEquivalentModifierMask = []
+            }
         }
-        return item
     }
 
     private func languageState() -> String { (session?.isEnglish ?? false) ? "英文" : "中文" }
@@ -259,6 +238,7 @@ final class LampyrisInputController: IMKInputController {
 
     /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
     private func refreshAfterStateChange() {
+        refreshStateMenu()
         guard let session else { return }
         guard let textClient = activeClient ?? client() else {
             candidateWindow?.hide()
@@ -279,12 +259,6 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow?.hide()
     }
 
-    /// Full input-mode label for the input-source menu.
-    private func menuModeName() -> String {
-        let raw = session?.mode ?? ImeConfig.string("mode") ?? "mixed"
-        return ["mixed": "混输", "wubi": "五笔", "pinyin": "拼音"][raw] ?? "混输"
-    }
-
     /// 打开非模态设置面板（ADR-070/075）：面板承载设置/词库/帮助/反馈/关于。
     @objc private func showSettings() {
         cancelClientComposition()
@@ -295,9 +269,18 @@ final class LampyrisInputController: IMKInputController {
         AboutUI.show()
     }
 
-    @objc private func chooseMode(_ sender: NSMenuItem) {
-        guard let next = sender.representedObject as? String,
-            ["mixed", "wubi", "pinyin"].contains(next) else { return }
+    @objc private func cycleInputMode(_ sender: Any?) {
+        applyInputMode(InputStateMenu.nextMode(session?.mode ?? ImeConfig.string("mode") ?? "mixed"))
+    }
+
+    // IMK supplies a command dictionary, while local AppKit supplies the item.
+    // Explicit selectors need neither a sender cast nor serialized representedObject.
+    @objc private func chooseMixedMode(_ sender: Any?) { applyInputMode("mixed") }
+    @objc private func chooseWubiMode(_ sender: Any?) { applyInputMode("wubi") }
+    @objc private func choosePinyinMode(_ sender: Any?) { applyInputMode("pinyin") }
+
+    private func applyInputMode(_ next: String) {
+        defer { refreshStateMenu() }
         if ImeConfig.string("mode") != next, !ImeConfig.setString("mode", next) { presentConfigError(); return }
         guard session?.mode != next else { return }
         cancelClientComposition()

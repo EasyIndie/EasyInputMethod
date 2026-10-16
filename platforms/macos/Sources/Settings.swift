@@ -213,10 +213,11 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             let symbols = (flags.contains(.control) ? "⌃" : "") + (flags.contains(.option) ? "⌥" : "")
                 + (flags.contains(.shift) ? "⇧" : "") + (flags.contains(.command) ? "⌘" : "")
             let key = binding.key == 32 ? "空格" : binding.equivalent.uppercased()
-            shortcutButton?.title = binding.kind == 0 ? "未设置…" : binding.kind == 1 ? "⇧…" : symbols + key + "…"
+            shortcutButton?.title = binding.kind == 0 ? "未设置" : binding.kind == 1 ? "⇧" : symbols + key
         }
     }
 
+    var shortcutTitleForTesting: String? { shortcutButton?.title }
     var textValueForTesting: String? { textField?.stringValue }
     func commitTextForTesting(_ value: String) -> Bool {
         guard let field = textField, let action = field.action else { return false }
