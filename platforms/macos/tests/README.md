@@ -141,3 +141,13 @@ python3 platforms/macos/tests/formal-profile-guard.py check --candidate /path/fi
 ```
 
 绑定单须人工核对来源并传入测试账号，它是上下文声明，不是授权凭据。PROFILE_READY仍为formal_result=BLOCKED；需要另验GUI登录会话、签名/公证、安装副本/运行宿主、当前空闲、权限及逐动作保护。路径检查仅代表当时快照，不消除检查后改路径的竞争；执行器仍需自己的保护，不得据此解禁旧live入口。现有隔离测试包继续只证明组件/隔离宿主；本工具不修改包身份或配置通道，也不创建系统账号。
+
+## 候选/学习区逐动作原生AX保护（ADR-195）
+
+`GuardedAXPress.swift` + `guarded-ax-main.swift`为测试专用工具，不编入产品；test-guarded-ax.py编译原生适配器并以注入后端执行保护回归。实际执行须独立测试账号、同账号GUI会话、可信最终候选/安装与宿主身份、当前空闲及拥有式TextEdit文档。旧live入口未开放。
+
+编译时将guarded-ax-main.swift复制到临时目录main.swift，使用`swiftc -warnings-as-errors GuardedAXPress.swift 临时目录/main.swift -o 临时目录/guarded-ax`。CLI只接受`--inspect plan.json`（指定路径只读观察）和`--press plan.json`（一个AXPress）；不自动发现、激活或重试。
+
+计划结构对应GuardedPressPlan：operatorUID/testUID/home/sourceID；runDirectory必须为700私有的lampyris-formal-UUID目录，fixture为其直接子文件（600、无符号/硬链接），fixtureTitle匹配文件名；client/host包含pid、executable规范绝对路径、sha256、launchedAt（实际launchDate.timeIntervalSince1970）。target包含windowIndex、childPath索引数组、windowTitle、windowFrame（NSStringFromRect格式）、label（AXDescription优先，非空时精确匹配）。绑定必须来自当次已验证自有测试对象，不能猜测PID/子路径或使用旧运行值。
+
+当前仅支持com.apple.TextEdit和正式cn.jokerhub.inputmethod.Lampyris宿主内AXButton；输入源固定正式.default。核对账号/GUI/权限、私有文件、客户端/宿主实际执行文件摘要和启动时间、前台/焦点文档/文本域、输入源，再解析明确窗口/控件路径；解析后再次核对上下文与目标。失败无后续Press、无抢焦点、无模糊匹配/坐标点击。跨进程检查与动作非系统原子事务，必须保持空闲；源与文档恢复由外层驱动负责，不能将单动作返回成功等同于业务或正式MVP通过。系统菜单代理、滚动、按键和VoiceOver不在此入口范围。

@@ -89,3 +89,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 真实IMK的未执行准备材料见 [报告042](reviews/042-imk-acceptance-preparation.md)及[任务卡](tasks/T-IMK-ACCEPTANCE-PREP.md)。
 
 正式包账号数据隔离前置及边界见 [报告043](reviews/043-formal-account-isolation-gate.md)。
+
+候选/学习区单动作保护及候选收口见 [报告044](reviews/044-guarded-candidate-learning-actions.md)。
