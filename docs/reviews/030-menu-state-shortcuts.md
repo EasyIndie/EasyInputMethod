@@ -32,3 +32,5 @@
 ADR提交b3fcf44，实现提交e6427050241a49c1e8c4d67049511b35004542af，分支codex/menu-state-shortcuts。本地代码验证完成；自动审批拒绝向origin（https://github.com/EasyIndie/EasyInputMethod.git）推送及创建草稿PR，理由为本次请求未明确授权远程目的地和代码外发。未绕过、未推送、未创建PR；待用户明确确认。
 
 2026-10-16授权补充：用户明确允许本次及以后向该项目仓库推送；此前自动审批缺少的明确目的地/代码外发授权已补齐，现推进推送及草稿PR。安装与Release仍单独安排。
+
+公开结果：修正分支已推送，草稿PR #45：https://github.com/EasyIndie/EasyInputMethod/pull/45。此前审批阻塞已解除；未合入、未安装、未发布Release，CI结果以后续实际检查为准。

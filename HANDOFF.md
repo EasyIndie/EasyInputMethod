@@ -5,7 +5,7 @@
 - 当前状态唯一入口仍为`/Users/joker/Documents/EasyInputMethod/HANDOFF.md`；下文是1621a6d冻结时的历史快照。
 - 本工作树分支codex/menu-state-shortcuts：ADR b3fcf44，实现e642705；菜单状态文案/模式动作/按钮文本及新默认键已完成，报告030。
 - make verify零诊断、strict universal/预览build-only、25文件84离线项及最终菜单定向回归通过；未安装，B实际仍1621a6d。
-- 自动审批拒绝向https://github.com/EasyIndie/EasyInputMethod.git推送/创建草稿PR（目的地与代码外发授权不足）；未绕过，等用户明确确认。
+- 自动审批拒绝向https://github.com/EasyIndie/EasyInputMethod.git推送/创建草稿PR（目的地与代码外发授权不足）；未绕过；用户已补充确认，现已推送并创建草稿PR #45。
 - 系统菜单一级项带子菜单时的实际点击/闭合与右对齐跨进程呈现仍待新签名包验证；本地NSMenu动作不代替实机。
 
 
@@ -116,3 +116,5 @@ B：本机arm64/macOS27.0.1。A：pro，Intel/macOS13.7.8/Swift5.8.1，暂不可
 - ADR-167：词条显式标签/错误保留、删除默认取消，关于/反查信息窗及系统文件操作统一。
 - make verify零诊断/137产物、21文件79离线测试、预览构建通过，亮暗/最小窗/长文本离屏图检查。
 - 私有剪贴板与反馈成功/失败测试通过，未打开外链/用户窗口；下一步UI04。
+
+2026-10-16公开结果：草稿PR #45（https://github.com/EasyIndie/EasyInputMethod/pull/45）已创建并附到本聊天，代码实现e642705；持续推送授权已明确。未合入/安装/Release，系统菜单实际点击与闭合仍待新签名包复验。
