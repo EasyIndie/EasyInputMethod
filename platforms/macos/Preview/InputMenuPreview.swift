@@ -41,7 +41,6 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     }
 
     func refresh() {
-        InputStateMenu.refresh(menu, state: state)
         for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
@@ -51,6 +50,7 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
                 item.keyEquivalentModifierMask = []
             }
         }
+        InputStateMenu.refresh(menu, state: state)
     }
 
     func menuWillOpen(_ menu: NSMenu) { refresh() }

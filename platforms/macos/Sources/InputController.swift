@@ -188,6 +188,7 @@ final class LampyrisInputController: IMKInputController {
                 menu.addItem(status)
             }
         }
+        refreshStateMenu()
         return menu
     }
 
@@ -201,7 +202,6 @@ final class LampyrisInputController: IMKInputController {
 
     private func refreshStateMenu() {
         guard let menu = stateMenu else { return }
-        InputStateMenu.refresh(menu, state: inputMenuState())
         for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
@@ -211,6 +211,7 @@ final class LampyrisInputController: IMKInputController {
                 item.keyEquivalentModifierMask = []
             }
         }
+        InputStateMenu.refresh(menu, state: inputMenuState())
     }
 
     private func languageState() -> String { (session?.isEnglish ?? false) ? "英文" : "中文" }

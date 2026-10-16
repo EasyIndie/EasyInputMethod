@@ -56,19 +56,19 @@ for (index, title) in [(1,"英文输入"),(2,"全角输入"),(3,"繁体输入"),
 RunLoop.current.run(until: Date().addingTimeInterval(0.05))
 let oldChanges = changes
 require(ImeConfig.setString("mode", "pinyin"), "external settings mode")
-require(pump { changes > oldChanges && session.mode == "pinyin" && menu.items[0].title.contains("拼音") }, "settings notification updates session and menu")
+require(pump { changes > oldChanges && session.mode == "pinyin" && menu.items[0].accessibilityValue() as? String == "拼音" }, "settings notification updates session and menu")
 require(ImeConfig.setString("hotkey.toggle_width", "ctrl+alt+w"), "external shortcut change")
 require(pump { menu.items[2].keyEquivalent == "w" && menu.items[2].keyEquivalentModifierMask == [.control, .option] }, "shortcut labels refresh through real config subscription")
 let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control,.shift], timestamp: 0,
     windowNumber: 0, context: nil, characters: "M", charactersIgnoringModifiers: "m", isARepeat: false, keyCode: 46)!
 require(session.shortcut(event, persistMode: true) == .handled, "preview keyboard persists owned mode")
-require(pump { session.mode == "mixed" && menu.items[0].title.contains("混输") }, "keyboard mode updates same menu")
+require(pump { session.mode == "mixed" && menu.items[0].accessibilityValue() as? String == "混输" }, "keyboard mode updates same menu")
 RunLoop.current.run(until: Date().addingTimeInterval(0.05))
 let beforeBytes = try Data(contentsOf: config)
 let lock = URL(fileURLWithPath: config.path + ".lock")
 try Data("owned test lock".utf8).write(to: lock)
 adapter.selectMode("wubi")
-require(session.mode == "mixed" && menu.items[0].title.contains("混输") && !failures.isEmpty, "write failure keeps actual mode and reports error")
+require(session.mode == "mixed" && menu.items[0].accessibilityValue() as? String == "混输" && !failures.isEmpty, "write failure keeps actual mode and reports error")
 require(try Data(contentsOf: config) == beforeBytes, "failed write leaves private bytes unchanged")
 try FileManager.default.removeItem(at: lock)
 adapter.selectMode("wubi")

@@ -53,12 +53,21 @@ enum InputStateMenu {
             item.state = .off
             item.isEnabled = state.enabled
         }
-        // A native tab stop places the current mode at the trailing edge of the label.
-        // AppKit also exposes the complete attributed string through the plain title.
-        let paragraph = NSMutableParagraphStyle()
-        paragraph.tabStops = [NSTextTab(textAlignment: .right, location: 160)]
-        menu.items[0].attributedTitle = NSAttributedString(string: "输入模式\t" + mode,
-            attributes: [.paragraphStyle: paragraph, .font: NSFont.menuFont(ofSize: 0)])
+        let modeItem = menu.items[0]
+        modeItem.attributedTitle = nil
+        modeItem.title = "输入模式"
+        modeItem.setAccessibilityValue(mode)
+        if #available(macOS 14.0, *) {
+            // AppKit lays out the trailing status immediately before the submenu arrow.
+            if modeItem.badge?.stringValue != mode { modeItem.badge = NSMenuItemBadge(string: mode) }
+        } else {
+            // The older native menu has no trailing status API. Measure the whole menu,
+            // including configured shortcuts, rather than pinning a tab to a fixed x.
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.tabStops = [NSTextTab(textAlignment: .right, location: max(100, menu.size.width - 60))]
+            modeItem.attributedTitle = NSAttributedString(string: "输入模式\t" + mode,
+                attributes: [.paragraphStyle: paragraph, .font: NSFont.menuFont(ofSize: 0)])
+        }
         menu.items[0].toolTip = "点击循环切换；移到右侧子菜单可直接选择。"
         for (item, mode) in zip(menu.items[0].submenu?.items ?? [], modes) {
             item.state = mode.0 == state.mode ? .on : .off

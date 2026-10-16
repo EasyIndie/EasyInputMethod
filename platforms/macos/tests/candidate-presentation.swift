@@ -62,6 +62,20 @@ for theme in ["light", "dark"] {
     window.layout(at: caret, within: area)
     snapshot(theme)
 }
+// Keep the page counter and both 24pt arrows centered across single/multi-digit pages.
+for pages in [3, 30, 120] {
+    for page in [0, pages - 1] {
+        window.update(candidates: values, pageIndex: page, pageCount: pages, input: "tr")
+        window.layout(at: caret, within: area)
+        let frames = window.pageFramesForTesting
+        guard frames.count == 3, abs(frames[0].midY - frames[1].midY) < 0.5,
+              abs(frames[1].midY - frames[2].midY) < 0.5,
+              frames[0].height == 24, frames[2].height == 24 else { fail("page header common center") }
+    }
+}
+window.update(candidates: values, pageIndex: 0, pageCount: 30, input: "tr")
+window.layout(at: caret, within: area)
+snapshot("page-aligned-dark")
 window.update(candidates: values, input: "wq", warning: "虚构繁体资源失败：用于验证错误仍可见，不读取真实文件")
 window.layout(at: caret, within: area)
 guard window.displayedWarning == "繁体不可用，当前简体" else { fail("fallback visible") }

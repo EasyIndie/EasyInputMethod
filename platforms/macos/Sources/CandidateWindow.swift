@@ -436,6 +436,7 @@ final class CandidateWindow: NSObject {
     var pageStateForTesting: (visible: Bool, previous: Bool, next: Bool, text: String) {
         (!pageLabel.isHidden, previousButton.isEnabled, nextButton.isEnabled, pageLabel.stringValue)
     }
+    var pageFramesForTesting: [NSRect] { [previousButton.frame, pageLabel.frame, nextButton.frame] }
     var scrollingForTesting: Bool { scrollView.hasVerticalScroller }
     var permitsKeyboardFocusForTesting: Bool { panel.canBecomeKey || panel.canBecomeMain }
     func candidateFontForTesting(at index: Int) -> NSFont? {
@@ -469,6 +470,7 @@ final class CandidateWindow: NSObject {
         inputLabel.textColor = .labelColor
         inputLabel.setAccessibilityLabel("输入编码")
         pageLabel.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+        pageLabel.alignment = .center
         pageLabel.textColor = ImeAppearance.secondaryText
         hintLabel.font = .systemFont(ofSize: 11)
         hintLabel.textColor = ImeAppearance.secondaryText
@@ -617,7 +619,8 @@ final class CandidateWindow: NSObject {
         let horizontalWidth = widths.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 14
         let vertical = horizontalWidth > innerLimit
         let pagesVisible = renderedCount > 0 && pageCount > 1
-        let pageWidth = ceil((pageLabel.stringValue as NSString).size(withAttributes: [.font: pageLabel.font ?? .monospacedDigitSystemFont(ofSize: 11, weight: .regular)]).width) + 4
+        let pageSize = pageLabel.cell?.cellSize ?? pageLabel.intrinsicContentSize
+        let pageWidth = ceil(pageSize.width)
         let navigationWidth: CGFloat = pagesVisible ? pageWidth + 56 : 0
         let headerVisible = !input.isEmpty || pagesVisible
         let inputWidth = ceil((input as NSString).size(withAttributes: [.font: inputLabel.font ?? .monospacedSystemFont(ofSize: 12, weight: .regular)]).width) + 4
@@ -665,9 +668,12 @@ final class CandidateWindow: NSObject {
         previousButton.isEnabled = pagesVisible && pageIndex > 0
         nextButton.isEnabled = pagesVisible && pageIndex + 1 < pageCount
         inputLabel.frame = NSRect(x: margin, y: top - 20, width: max(1, inner - navigationWidth - (pagesVisible ? 8 : 0)), height: 20)
-        nextButton.frame = NSRect(x: width - margin - 24, y: top - 24, width: 24, height: 24)
-        pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4, y: top - 20, width: pageWidth, height: 20)
-        previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: top - 24, width: 24, height: 24)
+        let navigationCenterY = top - headerHeight / 2
+        let pageHeight = ceil(pageSize.height)
+        nextButton.frame = NSRect(x: width - margin - 24, y: navigationCenterY - 12, width: 24, height: 24)
+        pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4,
+            y: navigationCenterY - pageHeight / 2, width: pageWidth, height: pageHeight)
+        previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: navigationCenterY - 12, width: 24, height: 24)
         let bodyTop = top - headerHeight
         scrollView.frame = NSRect(x: margin, y: bodyTop - bodyHeight, width: inner, height: bodyHeight)
         scrollView.tile()
