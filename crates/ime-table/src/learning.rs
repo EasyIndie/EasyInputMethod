@@ -195,6 +195,50 @@ mod tests {
     }
 
     #[test]
+    fn feedback_characters_have_verified_roots_without_invented_suffixes() {
+        for (text, code) in [
+            ("我", "trnt"),
+            ("特", "trff"),
+            ("别", "kljh"),
+            ("点", "hkou"),
+            ("突", "pwdu"),
+            ("然", "qdou"),
+            ("投", "rmcy"),
+            ("入", "tyi"),
+        ] {
+            let result = query(text).unwrap();
+            assert_eq!(result.full_code.as_deref(), Some(code));
+            let d = result.characters[0].decomposition.as_ref().unwrap();
+            assert_eq!(d.category, "compound");
+            let keys: String = d
+                .roots
+                .iter()
+                .map(|r| r.key)
+                .chain(d.recognition.iter().map(|r| r.key))
+                .collect();
+            assert_eq!(keys, code);
+        }
+        let me = query("我").unwrap();
+        let d = me.characters[0].decomposition.as_ref().unwrap();
+        assert!(d.recognition.is_none());
+        assert!(d.rule.contains("约定取末撇"));
+        assert_eq!(
+            d.roots.iter().map(|r| r.root).collect::<Vec<_>>(),
+            ["丿", "扌", "斜钩", "末撇"]
+        );
+        assert!(query("特").unwrap().characters[0]
+            .decomposition
+            .as_ref()
+            .unwrap()
+            .recognition
+            .is_none());
+        for text in ["我们", "我国", "特别", "特点", "突然", "投入"] {
+            let result = query(text).unwrap();
+            assert!(result.characters.iter().all(|c| c.decomposition.is_some()));
+        }
+    }
+
+    #[test]
     fn phrases_use_full_codes_and_preserve_every_character() {
         assert_eq!(query("你好").unwrap().full_code.as_deref(), Some("wqvb"));
         assert_eq!(query("中国人").unwrap().full_code.as_deref(), Some("klww"));
@@ -252,7 +296,15 @@ mod tests {
                     assert!(d.recognition.is_none());
                 }
                 "key_name" => assert_eq!(keys.repeat(4), fields[1]),
-                "compound" => assert_eq!(keys + d.recognition.as_ref().unwrap().key, fields[1]),
+                "compound" => {
+                    if d.recognition.is_none() {
+                        assert_eq!(d.roots.len(), 4, "four roots need no recognition code");
+                    }
+                    assert_eq!(
+                        keys + d.recognition.as_ref().map_or("", |r| r.key),
+                        fields[1]
+                    );
+                }
                 _ => panic!("unknown teaching category"),
             }
         }

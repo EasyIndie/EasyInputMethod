@@ -175,10 +175,10 @@ url = "https://github.com/EasyIndie/EasyInputMethod"
 upstream = "本项目公开五笔86规则与既有自建码表"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "26a48f3e41d263e88eccecf05d4def3b8743d3d3c05855ea7dbdffdcdd84635a"
+sha256 = "7d9ebc03acbfd4409eff9eb1d59e09c78ba46fb9084bd8404fd8166d10b89b4c"
 used_for = ["offline-wubi-learning"]
 added_at = "2026-10-15"
-notes = "项目逐条核验；不含oracle编码列或PUA；未覆盖解释明确缺失。摘要由生成步骤补齐。"
+notes = "项目逐条核验；ADR-184补我/特/别/点/突/然/投/入。无oracle编码列或PUA；未覆盖解释明确缺失。"
 
 [[derived]]
 path = "data/generated/wubi86-learning-codes.bin"
@@ -193,7 +193,7 @@ path = "data/learning/wubi86-roots.tsv"
 source_ids = ["D2", "D14"]
 license = "CC-BY-SA-4.0"
 generator = "tools/prepare-wubi-learning.py"
-sha256 = "92904255229ab8be55ab1756ea42ba8d2b08480feba7b403cb1b835ae44d41f1"
+sha256 = "0e201df25c0fb9c00f98616b47fda770a0c17dd70ec84d827685cd86fc856082"
 notes = "D2纯Unicode根经独立键位事实与primary全码核对，类型区分完整核验/取码/部分；附D2 MIT归属，不含字体或PUA。"
 
 [[derived]]

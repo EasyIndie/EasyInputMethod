@@ -8,6 +8,12 @@ require(single?.code == "wqiy", "full code rather than short input")
 require(single?.characters.first?.roots.map(\.text) == ["亻", "⺈", "小"], "readable actual roots")
 require(single?.characters.first?.roots.map(\.key) == ["W", "Q", "I"], "aligned root codes")
 require(single?.characters.first?.recognition?.key == "Y", "separate recognition")
+let me = WubiLearning.lookup("我")
+require(me?.code == "trnt" && me?.characters.first?.roots.map(\.text) == ["丿", "扌", "斜钩", "末撇"], "verified special last-stroke roots")
+require(me?.characters.first?.recognition == nil, "four-root code has no invented recognition")
+for text in ["我们", "我国", "特别", "特点", "突然", "投入"] {
+    require(WubiLearning.lookup(text)?.characters.allSatisfy { !$0.roots.isEmpty } == true, "feedback phrase coverage " + text)
+}
 let phrase = WubiLearning.lookup("中华人民共和国")
 require(phrase?.code == "kwwl" && phrase?.characters.count == 7, "long phrase summary and every character")
 require(phrase?.characters[3].code == "nav" && phrase?.characters[3].recognition?.key == "V", "verified long-word decomposition")
@@ -36,7 +42,7 @@ func snapshot(_ name: String) {
 }
 for theme in ["light", "dark"] {
     require(ImeConfig.setString("appearance.theme", theme), "theme")
-    for text in ["你", "你好", "中华人民共和国", "😀"] {
+    for text in ["你", "我", "我们", "特点", "突然", "投入", "中华人民共和国", "😀"] {
         window.update(candidates: [ImeCandidate(text: text, code: "ni", source: .pinyin, isPrefix: false)], input: "ni")
         window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
         require(window.learningVisibleForTesting && !window.permitsKeyboardFocusForTesting && area.contains(window.frame), "mode-independent non-key bounded extension")

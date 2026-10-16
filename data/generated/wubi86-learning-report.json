@@ -1,24 +1,24 @@
 {
   "source_sha256": "72328b6966e323deafa4e85ae751b07801040146ce7e153bc14e6b8e63202686",
-  "roots_sha256": "92904255229ab8be55ab1756ea42ba8d2b08480feba7b403cb1b835ae44d41f1",
+  "roots_sha256": "0e201df25c0fb9c00f98616b47fda770a0c17dd70ec84d827685cd86fc856082",
   "index_sha256": "8476f52b422c81b9bfcd402bd9669c926c0463f7796be4817932241e7d83e78e",
   "index_bytes": 222584,
   "full_code_characters": 27823,
-  "teaching_records": 3592,
+  "teaching_records": 3597,
   "categories": {
-    "compound": 29,
+    "compound": 37,
     "key_name": 25,
     "stroke": 5,
-    "partial": 2140,
+    "partial": 2137,
     "selected_roots": 1348,
     "chengzi": 45
   },
-  "fully_verified_explanations": 104,
-  "verified_source_sha256": "26a48f3e41d263e88eccecf05d4def3b8743d3d3c05855ea7dbdffdcdd84635a",
+  "fully_verified_explanations": 112,
+  "verified_source_sha256": "7d9ebc03acbfd4409eff9eb1d59e09c78ba46fb9084bd8404fd8166d10b89b4c",
   "key_facts_sha256": "425fb2769a0f8ff6754babb036a5db500c2454d0a1363588e47083702220f504",
   "d2_sha256": "da8a20e6af3446348d5d68a89ac71d5e3b9b17b00446d8204ac1e9529626697f",
   "generator_sha256": "418d64b2e49246fb48b3e38ed046da6cd538d419d6ff8e793005813b59dd434b",
-  "unexplained_characters": 24231,
+  "unexplained_characters": 24226,
   "oracle_code_columns_published": false,
   "note": "Types distinguish verified explanation, selected roots and partial data. Partial suffix semantics are explicitly missing."
 }

@@ -196,6 +196,7 @@
 兖	ucqb	partial	已核验取码字根；末码B说明暂缺	六:u 厶:c 儿:q	-
 党	ipkq	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	⺌:i 冖:p 口:k 儿:q	-
 兢	dqdq	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	古:d 儿:q 古:d 儿:q	-
+入	tyi	compound	依次取丿、捺；末笔捺，杂合结构，补识别码I	丿:t 捺:y	捺/杂合:i
 全	wgf	partial	已核验取码字根；末码F说明暂缺	人:w 王:g	-
 公	wcu	partial	已核验取码字根；末码U说明暂缺	八:w 厶:c	-
 六	uygy	chengzi	成字字根：报户口U，再取首、次、末笔	六:u 首笔丶:y 次笔一:g 末笔丶:y	-
@@ -253,7 +254,7 @@
 刚	mqjh	partial	已核验取码字根；末码H说明暂缺	冂:m 乂:q 刂:j	-
 刨	qnjh	partial	已核验取码字根；末码H说明暂缺	勹:q 巳:n 刂:j	-
 利	tjh	partial	已核验取码字根；末码H说明暂缺	禾:t 刂:j	-
-别	kljh	partial	已核验取码字根；末码H说明暂缺	口:k 力:l 刂:j	-
+别	kljh	compound	依次取口、力、刂；末笔竖，左右结构，补识别码H	口:k 力:l 刂:j	竖/左右:h
 刮	tdjh	partial	已核验取码字根；末码H说明暂缺	丿:t 古:d 刂:j	-
 到	gcfj	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	一:g 厶:c 土:f 刂:j	-
 刷	nmhj	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	尸:n 冂:m 丨:h 刂:j	-
@@ -1154,6 +1155,7 @@
 懿	fpgn	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	士:f 冖:p 一:g 心:n	-
 戆	ujtn	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	立:u 早:j 夂:t 心:n	-
 戏	cat	partial	已核验取码字根；末码T说明暂缺	又:c 戈:a	-
+我	trnt	compound	依次取丿、扌、斜钩；约定取末撇	丿:t 扌:r 斜钩:n 末撇:t	-
 戒	aak	partial	已核验取码字根；末码K说明暂缺	戈:a 廾:a	-
 戡	adwa	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	艹:a 三:d 八:w 戈:a	-
 戤	ecla	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	乃:e 又:c 皿:l 戈:a	-
@@ -1187,7 +1189,7 @@
 技	rfcy	partial	已核验取码字根；末码Y说明暂缺	扌:r 十:f 又:c	-
 抄	ritt	partial	已核验取码字根；末码T说明暂缺	扌:r 小:i 丿:t	-
 把	rcn	partial	已核验取码字根；末码N说明暂缺	扌:r 巴:c	-
-投	rmcy	partial	已核验取码字根；末码Y说明暂缺	扌:r 几:m 又:c	-
+投	rmcy	compound	依次取扌、几、又；末笔捺，左右结构，补识别码Y	扌:r 几:m 又:c	捺/左右:y
 抗	rymn	partial	已核验取码字根；末码N说明暂缺	扌:r 亠:y 几:m	-
 折	rrh	partial	已核验取码字根；末码H说明暂缺	扌:r 斤:r	-
 抛	rvln	partial	已核验取码字根；末码N说明暂缺	扌:r 九:v 力:l	-
@@ -1914,6 +1916,7 @@
 炱	ckou	partial	已核验取码字根；末码U说明暂缺	厶:c 口:k 火:o	-
 炳	ogmw	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	火:o 一:g 冂:m 人:w	-
 炷	oygg	partial	已核验取码字根；末码G说明暂缺	火:o 丶:y 王:g	-
+点	hkou	compound	依次取卜、口、灬；末笔点，上下结构，补识别码U	卜:h 口:k 灬:o	点/上下:u
 炻	odg	partial	已核验取码字根；末码G说明暂缺	火:o 石:d	-
 炽	okwy	partial	已核验取码字根；末码Y说明暂缺	火:o 口:k 八:w	-
 烈	gqjo	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	一:g 夕:q 刂:j 灬:o	-
@@ -1936,6 +1939,7 @@
 焚	ssou	partial	已核验取码字根；末码U说明暂缺	木:s 木:s 火:o	-
 焰	oqvg	partial	已核验取码字根；末码G说明暂缺	火:o ⺈:q 臼:v	-
 焱	ooou	partial	已核验取码字根；末码U说明暂缺	火:o 火:o 火:o	-
+然	qdou	compound	依次取然左上形、犬、灬；末笔点，上下结构，补识别码U	然左上形:q 犬:d 灬:o	点/上下:u
 煅	owdc	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	火:o 亻:w 三:d 又:c	-
 煊	opgg	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	火:o 宀:p 一:g 一:g	-
 煌	orgg	partial	已核验取码字根；末码G说明暂缺	火:o 白:r 王:g	-
@@ -1969,6 +1973,7 @@
 牍	thgd	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	丿:t 丨:h 一:g 大:d	-
 牒	thgs	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	丿:t 丨:h 一:g 木:s	-
 牖	thgy	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	丿:t 丨:h 一:g 丶:y	-
+特	trff	compound	牜拆为丿、扌，再取土、寸	丿:t 扌:r 土:f 寸:f	-
 犟	xkjh	partial	已核验取码字根；末码H说明暂缺	弓:x 口:k 虫:j	-
 犬	dgty	chengzi	成字字根：报户口D，再取首、次、末笔	犬:d 首笔一:g 次笔丿:t 末笔丶:y	-
 状	udy	partial	已核验取码字根；末码Y说明暂缺	丬:u 犬:d	-
@@ -2295,7 +2300,7 @@
 穹	pwxb	partial	已核验取码字根；末码B说明暂缺	宀:p 八:w 弓:x	-
 空	pwaf	partial	已核验取码字根；末码F说明暂缺	宀:p 八:w 工:a	-
 窀	pwgn	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	宀:p 八:w 一:g 乚:n	-
-突	pwdu	partial	已核验取码字根；末码U说明暂缺	宀:p 八:w 犬:d	-
+突	pwdu	compound	依次取宀、八、犬；末笔捺，上下结构，补识别码U	宀:p 八:w 犬:d	捺/上下:u
 窃	pwav	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	宀:p 八:w 七:a 刀:v	-
 窆	pwtp	selected_roots	按码位展示已核验字形；完整拆分说明暂缺	宀:p 八:w 丿:t 之:p	-
 窍	pwan	partial	已核验取码字根；末码N说明暂缺	宀:p 八:w 工:a	-
