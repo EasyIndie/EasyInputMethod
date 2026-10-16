@@ -77,3 +77,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [MVP基础UI工程验收018](reviews/018-mvp-ui-engineering.md)：UI01…04代码改造及22文件80离线测试完成，最终签名包实机门禁保持待验。
 
 [全量五笔教学生成与自建结构库调研036](reviews/036-generated-wubi-teaching-research.md)：比较自建/外部结构事实、版本规则与教程复用；包含受限模板原型和准入边界，方案尚未采纳。
+
+[结构模块体积与拆分边界037](reviews/037-structure-module-size-and-boundaries.md)：现有体积实测、运行资源分层与ADR-189；模块目录见modules/hanzi-structure。
