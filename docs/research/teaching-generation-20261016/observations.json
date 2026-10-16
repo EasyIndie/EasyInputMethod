@@ -1,0 +1,75 @@
+{
+  "D2": {
+    "pua_rows": 4444,
+    "rows": 6862,
+    "unique_pua": 103,
+    "unit_counts": {
+      "1": 15,
+      "2": 10,
+      "3": 859,
+      "4": 5978
+    }
+  },
+  "D3": {
+    "pua_rows": 27822,
+    "rows": 27823,
+    "unique_pua": 341,
+    "unit_counts": {
+      "3": 1930,
+      "4": 25893
+    }
+  },
+  "candidate06": {
+    "physical_lines": 6860,
+    "two_column_rows": 6859
+  },
+  "candidate98": {
+    "characters_with_multiple_rows": 1816,
+    "encoding": "UTF-16 with BOM",
+    "non_pua_character_rows": 101005,
+    "physical_lines": 101729,
+    "pua_annotation_rows": 101004,
+    "unique_non_pua_characters": 99049
+  },
+  "input_sha256": {
+    "D2": "da8a20e6af3446348d5d68a89ac71d5e3b9b17b00446d8204ac1e9529626697f",
+    "D3": "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6",
+    "candidate06": "5dc4d31db9d2aa671a80e078cc9b1532b17aa649be798c091b96f854765603d4",
+    "candidate98": "1d63352c5f6498af0890494af551d698cdca77c7dfc8f9b04178df87defb27f6",
+    "verified_teaching": "0e201df25c0fb9c00f98616b47fda770a0c17dd70ec84d827685cd86fc856082"
+  },
+  "limitations": [
+    "Only projects already verified selected-unit facts, not newly discovered decompositions.",
+    "Roundtrip does not establish independent semantic correctness or full stroke geometry.",
+    "External inputs are research candidates, not approved product data."
+  ],
+  "projection": {
+    "families": {
+      "chengzi": 45,
+      "compound": 37,
+      "key_name": 25,
+      "stroke": 5
+    },
+    "matching_codes": 112,
+    "per_character_prose_used": false,
+    "recognition_keys": [
+      "b",
+      "d",
+      "e",
+      "f",
+      "g",
+      "h",
+      "i",
+      "j",
+      "k",
+      "n",
+      "r",
+      "t",
+      "u",
+      "v",
+      "y"
+    ],
+    "records": 112,
+    "shared_templates": 4
+  }
+}
