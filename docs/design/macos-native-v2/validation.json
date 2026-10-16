@@ -1,0 +1,82 @@
+{
+  "status": "design draft, not implemented",
+  "renderCompiler": "Swift6.4/macOS27 SDK, warnings-as-errors passed",
+  "captures": 36,
+  "configKeysCovered": 15,
+  "opaqueTextPairs": [
+    {
+      "mode": "dark",
+      "role": "text",
+      "ratio": 12.23,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "dark",
+      "role": "informationSecondary",
+      "ratio": 5.89,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "dark-high",
+      "role": "text",
+      "ratio": 12.23,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "dark-high",
+      "role": "informationSecondary",
+      "ratio": 5.89,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "light",
+      "role": "text",
+      "ratio": 14.94,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "light",
+      "role": "informationSecondary",
+      "ratio": 14.94,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "light-high",
+      "role": "text",
+      "ratio": 14.94,
+      "target": 4.5,
+      "passed": true
+    },
+    {
+      "mode": "light-high",
+      "role": "informationSecondary",
+      "ratio": 14.94,
+      "target": 4.5,
+      "passed": true
+    }
+  ],
+  "nativePixelDimensionsMatched": true,
+  "limitations": [
+    "Window chrome is non-key/offscreen; does not prove active focus/hover/press",
+    "No desktop backdrop for optical material validation",
+    "No real VoiceOver or modal-flow validation",
+    "Menu is layout specification, not screenshot of NSMenu popup"
+  ],
+  "thirdPartySkill": "apple-design read-only references; not installed or redistributed",
+  "productionCodeChanged": false,
+  "usedSkills": [
+    "apple-native-product-design",
+    "apple-design (third-party read-only review)",
+    "figma-swiftui (shared native principles only)"
+  ],
+  "visualQA": {
+    "reviewed": "settings, candidate, menu layout, add/delete/shortcut editing contents, about, feedback, components, light/dark overview",
+    "result": "no observed clipping in reviewed captures; non-key/offscreen limitations retained"
+  }
+}

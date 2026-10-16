@@ -1,0 +1,16 @@
+{
+  "captures": 18,
+  "compile": "warnings-as-errors passed",
+  "reviewed": [
+    "single light",
+    "phrase dark",
+    "last-page light"
+  ],
+  "scope": "native primitive offscreen layout only",
+  "productionChanged": false,
+  "unverified": [
+    "pager click/AX",
+    "engine boundary behavior",
+    "dynamic long text/multi-display"
+  ]
+}

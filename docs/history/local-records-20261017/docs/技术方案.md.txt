@@ -1,0 +1,486 @@
+# 萤火虫输入法 · 技术方案（v1.0，权威版）
+
+> **本文是项目的权威技术方案**，取代 `docs/archive/` 下的 v0.1–v0.5 讨论稿。
+> 配套文档：`配置架构.md`（配置子系统）、`数据来源与许可.md`（数据合规）、`隐私与安全.md`（安全工程）、`决策记录.md`（ADR）、`参考与致谢.md`（借鉴来源）。
+>
+> 状态：**已交叉审核（有条件通过，见 `docs/reviews/001.md`），进入实现（P1-M0）**。
+
+---
+
+## 1. 项目概述
+
+### 1.1 一句话定位
+
+**萤火虫：一款跨平台、开源可审计、默认离线、只做核心输入的中文输入法。**
+
+### 1.2 目标
+
+| 目标 | 含义 |
+|---|---|
+| 核心输入能力 | 五笔（默认）+ 拼音（兜底），默认**混合输入** |
+| 隐私安全 | 零网络、零遥测、默认离线；安全是**可验证的事实**，不是口号 |
+| 开源可审计 | 代码 + 设置 + 数据生成脚本全部开源；可复现构建 |
+| 小而美 | 只做输入，不被广告/账号/皮肤商店/内容分发污染 |
+| 跨平台 | macOS → Windows → Linux → Android/iOS，共享同一 Rust 引擎 |
+| 可扩展 | 引擎/后端/方案以 trait 抽象，后续可无痛替换 |
+
+### 1.3 非目标（明确不做）
+
+- ❌ 云输入/云同步/账号体系
+- ❌ 广告、推广、弹窗、"热点"内容
+- ❌ 皮肤商店、表情包商店、AI 写作/翻译/搜索
+- ❌ 打字速度统计、用户画像、任何遥测
+- ❌ 剪贴板历史、跨设备同步
+
+> 原则：**任何"顺带"的功能都不要**。要加，必须先证明它属于"核心输入能力"。
+
+### 1.4 差异化（为什么不是又一个输入法）
+
+同类项目已存在（`huanfeng/WindInput` 五笔+Rust+MIT、`metasequoiaime/msime` 六平台+GPL、`goliajp/inputx` 五笔+拼音+隐私、`SamsonLab/pure-ime` Rust+macOS）——详见 `参考与致谢.md`。我们的差异不在功能多，而在：
+
+1. **极简**——功能面收窄到"输入"本身；
+2. **零遥测 + 编译期断网 + 可抓包验证**；
+3. **全开源**（含设置）**+ 可复现构建 + 码表可复现生成**；
+4. **GPL-3.0-or-later**——不允许被闭源包装成"劣币"。
+
+---
+
+## 2. 产品定义
+
+### 2.1 名称
+
+- 中文名：**萤火虫**；寓意：**小、自带微光（不依赖云端）、安静不打扰**。
+- 英文/包名：**`Lampyris`**（读 /læmˈpɪərɪs/，近似 “lam-PEER-iss”）。词源为希腊语 λαμπυρίς（“发光的虫”），萤科 Lampyridae 下的一属，模式种 *Lampyris noctiluca* 即常见萤火虫；寓意“自带微光”，与默认离线一致。**不用 `Firefly`**（与 Adobe Firefly 等冲突）。
+- bundle 标识：`cn.jokerhub.inputmethod.Lampyris`（自有域名 `jokerhub.cn` 的反向 DNS）；见 ADR-056。
+- 仓库：`EasyIndie/EasyInputMethod`。
+
+### 2.2 核心体验
+
+- **默认混合输入**：五笔优先，想不起码时自动用拼音兜底，无需切换模式。
+- 三种模式：`mixed`（默认）/ `wubi` / `pinyin`，可显式切换并记住。
+- 五笔用户的生字兜底：**拼音反查**。
+
+### 2.3 输入模式
+
+```rust
+pub enum InputMode { Mixed, WubiOnly, PinyinOnly }
+```
+
+- 模式是**单一状态**（收敛为一个枚举，不用散装 bool）。
+- 混输合并规则：
+  1. 输入串先交**五笔引擎**（精确 + 前缀）；
+  2. 同时判断是否构成合法拼音音节序列，能则交**拼音引擎**；
+  3. 五笔候选在前（标注"五笔"），拼音候选在后（标注"拼"）；重复项去重取权重高者；
+  4. **空码时全部展示拼音候选**（想不出五笔时的兜底）；
+  5. **自动上屏保守**：仅在"五笔精确唯一匹配"时触发，避免拼音兜底误上屏；
+  6. 候选携带 `source` 标记，贯穿排序与词频记账。
+
+---
+
+## 3. 竞品与生态（摘要）
+
+> 完整表格见 `docs/archive/中文输入法调研.md`。
+
+| 项目 | 许可 | 语言 | 平台 | 对我们的意义 |
+|---|---|---|---|---|
+| huanfeng/WindInput 清风 | MIT | Rust+C++/Swift | Win/mac/Linux | **最强直接竞品**（五笔+混输+主题+设置）；功能面超过"最小"；**学习其设计文档，不复用代码** |
+| metasequoiaime/msime 水杉 | GPL-3 | Rust+Tauri | 6 平台 | 功能全家桶 + **默认开启匿名统计**（反面教材） |
+| goliajp/inputx | MIT/Apache | Rust | iOS/mac | 理念最近：五笔主 + 拼音兜底、零网络零遥测；`inputx-pinyin` 可复用 |
+| SamsonLab/pure-ime | Apache-2.0 | Rust+Swift | macOS | **架构蓝图**：core + tools + ffi + Swift 宿主 |
+| togatoga/karukan | MIT/Apache | Rust | Linux/mac | Rust→Fcitx5 / Rust→Swift 的完整样板 |
+| marixdev/vnkey | GPL-3 | Rust | Win/mac/Linux | 同一引擎接四种前端的样板 |
+| osfans/trime 同文 | GPL-3 | Kotlin | Android | Android IME 宿主范例 |
+| RIME 全家桶 | librime BSD-3 / 前端 GPL-3 | C++ | 全平台 | 引擎/词典格式事实标准；**前端代码 GPL，只读不抄** |
+
+**结论**：读 WindInput 的 `docs/architecture`、`docs/design`（上百个设计文档，含平台兼容坑清单），内化为自己的设计；**代码全部自研**。
+
+---
+
+## 4. 技术选型
+
+| 项 | 选择 | 说明 |
+|---|---|---|
+| 实现语言 | **Rust**（edition 2021，固定 MSRV） | 内存安全、单一核心跨平台 |
+| 许可证 | **GPL-3.0-or-later** | 防闭源抄袭；开源输入法主流；解锁 GPL/LGPL 资源 |
+| 核心依赖策略 | Apache-2.0/MIT 优先 | 仍以"可复现、体积小"为准；详见 `决策记录.md` |
+| 词典结构 | **文本 TSV 真值 + 排序数组内存索引**（精确二分 + 前缀区间）；`cedarwood`/二进制/mmap 为**带触发条件的可选优化**（ADR-060） | 系统码表 |
+| 用户词库 | **有界 TSV v1**（`ime-dict`，ADR-029），与系统表分离、查询期合并 | 动态学习 |
+| 配置 | TOML + Schema 驱动 | 详见 `配置架构.md` |
+| 拼音 | 后端 trait 化；Phase 1 用**内置轻量兜底**，`inputx-pinyin` spike 已完成并因体积否决（报告002） | 可替换 |
+| 本地语音（P6，可选） | `sherpa-onnx`（Apache-2.0） | 纯本地推理 |
+
+---
+
+## 5. 架构
+
+### 5.1 总体
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  平台宿主 (Native hosts)                                      │
+│  macOS:   Swift + InputMethodKit (.app)                      │
+│  Windows: Rust + windows crate (TSF COM)                     │
+│  Linux:   Fcitx5 addon (C++ 薄壳) + 可选 IBus                │
+│  Android: Kotlin InputMethodService + JNI                    │
+│  iOS:     Swift KeyboardExtension + static lib               │
+└───────────────▲──────────────────────────────────────────────┘
+                │  窄 C ABI（不透明句柄 + 显式释放 + UTF-8）
+┌───────────────┴──────────────────────────────────────────────┐
+│  ime-core（纯 Rust，无 IO / 无网络 / 无平台）                │
+│  Session 状态机 │ Engine trait │ InputMode │ Candidate 模型   │
+│  ┌──────────────┐  ┌──────────────┐                         │
+│  │ ime-table    │  │ ime-pinyin   │   ← 横向扩展点           │
+│  │ 五笔/码表    │  │ (后端 trait)  │                         │
+│  └──────────────┘  └──────────────┘                         │
+│  ime-config（Schema + ArcSwap 快照 + 原子写 + 广播）           │
+└───────────────▲──────────────────────────────────────────────┘
+                │  ime-table：TSV → 内存排序数组（精确/前缀）
+                │  ime-dict：用户词库有界 TSV（原子持久化）
+┌───────────────┴──────────────────────────────────────────────┐
+│  data/generated/*.tsv（可审计真值）+ user-dictionary.tsv        │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### 5.2 Cargo workspace
+
+```
+EasyInputMethod/
+├── Cargo.toml                # [workspace]
+├── rust-toolchain.toml
+├── LICENSE                   # GPL-3.0
+├── NOTICE
+├── deny.toml                 # cargo-deny 许可与安全策略
+├── crates/
+│   ├── ime-core/             # 状态机、Engine trait、InputMode、候选模型（纯逻辑）
+│   ├── ime-table/            # 码表引擎（五笔）
+│   ├── ime-pinyin/           # 拼音引擎（后端可插拔）
+│   ├── ime-dict/             # 词典格式 + 编译器 + mmap 加载
+│   ├── ime-config/           # 配置子系统（见 配置架构.md）
+│   ├── ime-ffi/              # 窄 C ABI（cdylib + staticlib），唯一 unsafe 集中地
+│   └── ime-cli/              # 开发/测试 CLI + REPL + bench
+├── data/                     # 源数据 + sources.toml（每份数据的来源/许可/校验和）
+├── tools/                    # wubi-encoder、码表/词组生成脚本
+├── platforms/                # macos / windows / linux / android / ios
+├── packaging/                # 安装包脚本
+├── scripts/                  # 构建、复现、抓包验证
+└── docs/
+```
+
+### 5.3 C ABI（`ime-ffi`）
+
+```c
+typedef struct ImeSession ImeSession;
+
+ImeSession* ime_session_new(void);                                  // 内置样本引擎
+ImeSession* ime_session_new_with_data(const char* wubi_path,        // 真实 TSV 数据
+                                      const char* pinyin_chars_path,
+                                      const char* pinyin_words_path);
+void        ime_session_free(ImeSession*);
+
+int32_t     ime_session_key(ImeSession*, uint32_t codepoint);       // IME_KEY_* 或负错误码
+const char* ime_session_buffer(ImeSession*);                        // 借用组合缓冲区
+int32_t     ime_session_set_mode(ImeSession*, const char* mode);
+ImeCandidates ime_session_candidates(ImeSession*);
+int32_t     ime_session_select(ImeSession*, int32_t index);
+int32_t     ime_session_page(ImeSession*, int32_t delta);
+ImeString   ime_session_commit(ImeSession*);   // 调用方负责 ime_string_free
+void        ime_string_free(ImeString);
+void        ime_session_focus_out(ImeSession*);
+void        ime_session_reset(ImeSession*);
+```
+
+> 唯一权威签名以 `crates/ime-ffi/include/ime.h` 为准（本文仅为摘要）。
+
+**契约**：纯 C；不透明句柄；**会话句柄单线程绑定**（配置接口线程安全，见 `配置架构.md` §9）；UTF-8；错误用返回码；`catch_unwind` 兜底，**绝不 panic 穿越 FFI**；所有 `unsafe` 仅在 `ime-ffi`。
+
+---
+
+## 6. 引擎设计
+
+### 6.1 核心 trait（`ime-core`）
+
+```rust
+pub trait Engine: Send {
+    fn convert(&self, input: &str, max: usize) -> ConvertResult;
+    fn reset(&mut self);
+    fn engine_type(&self) -> EngineType;   // CodeTable | Pinyin
+    fn max_code_length(&self) -> usize;
+    fn recheck_auto_commit(&self, ctx: &CommitCtx) -> Option<String>;
+}
+
+pub struct ConvertResult {
+    pub candidates: Vec<Candidate>,
+    pub preedit: String,
+    pub should_commit: Option<String>,   // 自动上屏意向（协调器复核后放行）
+    pub should_clear: bool,
+}
+
+pub struct Candidate {
+    pub text: String,
+    pub code: String,
+    pub weight: i32,
+    pub source: CandidateSource,   // CodeTable | Pinyin | Phrase
+    pub comment: Option<String>,   // 字根提示 / "拼" 标记
+    pub is_prefix: bool,
+}
+```
+
+> 借鉴 WindInput 的 `Engine`/`ConvertResult`/`Candidate` 契约，**裁剪到最小**。
+
+### 6.2 五笔引擎（`ime-table`）
+
+| 能力 | 说明 |
+|---|---|
+| 单字码表 | `code(≤4) → [字 + 权重]`；**排序数组**（精确二分 + 前缀区间，ADR-060） |
+| 词组码表 | 2–4+ 字词，规则生成 |
+| 简码 | 一级(25)/二级(625)/三级 |
+| 键名字 / 成字字根 | 特殊规则 |
+| 前缀提示 | 输入 1–3 码时预览 |
+| 四码唯一自动上屏 | 可配置 |
+| `z` 万能键 | 可配置 |
+| 字根提示 | 用自建编码器产出的"字→字根拆分" |
+| 用户词库 + 学习 | **有界 TSV v1**（`ime-dict`，ADR-029），本地持久化 |
+
+> **重码存储**：一个码映射多个候选（重码）。排序数组的键 = 码，值 = 候选 `Vec`（`text` / `weight` / `source`）；精确查询用二分，前缀预测用同前缀连续的区间扫描。若未来数据规模越过触发条件，再评估编译期二进制索引 + mmap（ADR-060）。
+> **选型记录**：`yada` 因**不支持预测搜索**（只有 `common_prefix_search`，语义相反）被弃用；`cedarwood`（BSD-2）曾被选为计划方案（ADR-015），但 M1 从未迁移，**ADR-060** 将其降级为带触发条件的可选优化，当前实现为排序数组 + 文本 TSV。
+
+### 6.3 排序模型（两层）
+
+基础词表按精确匹配和weight提供有界候选；个性化合并时依次保持来源优先（五笔在拼音前）、精确码在补全前、精确拼音在模糊前，再按本地学习权重、基础weight与文字稳定排序。
+
+ADR-159：五笔非首项主动选择（数字/显式选择、后页空格）给予自适应学习增量，首页默认首项仍加1，拼音策略不变。增量为当前输入同来源/同精确类别中其他已学候选最大权重的四分之一向下取整加1；只在下一组合反映。TSV v1第四列是本地排序权重，不等同实际打字次数，不增加输入历史、时间或网络。极大权重同组减半后更新，事务失败恢复旧值。旧词库兼容，四码唯一自动上屏保持。
+
+实施状态见HANDOFF：独立修复分支已验证，主工作区代码和已装包未自动同步；完整安装包原生验收仍待。
+
+### 6.4 输入流程状态机
+
+```
+Idle ──按键──▶ Composing(keys, candidates)
+                  │ 1. 累积 code
+                  │ 2. 码表查询：exact + prefix
+                  │ 3. （混输）拼音引擎并行查询
+                  │ 4. 合并/去重/排序
+                  ▼
+      ┌── 选字(数字/空格) ──▶ Commit ──▶ 学习(可选) ──▶ Idle
+      ├── 退格 ──▶ 删除一个 code
+      ├── Esc ──▶ Cancel
+      └── 无效键 ──▶ 透传系统
+```
+
+---
+
+## 7. 词库与数据
+
+### 7.1 自建流水线（关键决策）
+
+实测结论：**词组码可由单字全码 99.90% 自动推导**（62,657 条词组命中 62,592；不符的 65 条全是含英文的词）。
+
+```
+[字根表 25 键 → 字根]（公开规范）
+      +
+[编码器] 键名字 / 成字字根 / 合体字 / 末笔字型识别码   ← 自研 Rust，约 400–600 行
+      ↓
+[字 → 字根拆分]  ← 多份 MIT 拆字表交叉校验
+      ↓
+[字 → 全码] → code → [字]（单字码表）
+      ↓
+[词表]（MIT）+ [词组编码规则] → code → [词]
+      ↓
+[词频权重] → 排序
+      ↓
+        .tsv（出厂码表 = 我们自己生成的，ADR-060）
+```
+
+- 词组规则：2 字词 `AaAbBaBb`；3 字词 `AaBaCaCb`；4–10 字词 `AaBaCaZa`。
+- 复杂度：**中等偏低**，约 1–2 周（主要工作是拆字数据交叉校验）。
+- 收益：许可最干净、可复现、可扩展到五笔98/新世纪/郑码。
+- 数据源与许可详见 `数据来源与许可.md`。
+
+### 7.2 体积策略
+
+| 层 | 内容 | 目标 |
+|---|---|---|
+| 内置核心 | 五笔86 单字全量 + 精选高频词组（~10k） | ≤ 0.6 MB（编译后） |
+| 可选包 1 | 五笔86 全量词组 | ~1 MB |
+| 可选包 2 | 五笔98 / 新世纪 / 郑码 / 小鹤音形 | 各 0.3–0.6 MB |
+| 可选包 3 | 拼音词库 | ~2 MB |
+| 可选包 4 | 反查/拆字表 | ~0.2 MB |
+
+实测参考：单字部分 186–313 KB，词组是大头（1–1.9 MB）。
+
+---
+
+## 8. 拼音
+
+### 8.1 可插拔后端
+
+```rust
+pub trait PinyinBackend: Send {
+    fn segment(&self, input: &str) -> Vec<Syllable>;
+    fn convert(&self, input: &str, max: usize) -> Vec<PinyinCandidate>;
+    fn reverse_lookup(&self, text: &str) -> Option<String>;  // 反查：字/词 → 拼音
+    fn name(&self) -> &'static str;
+}
+```
+
+### 8.2 后端优先级（含 spike 决策，见 ADR-008）
+
+| 优先级 | 后端 | 许可 | 语言 | 说明 |
+|---|---|---|---|---|
+| **1（Phase 1 兜底）** | **内置轻量拼音**（音节→高频字词表 + 简拼） | 项目自有 | 纯 Rust | 满足混输"空码兜底"与反查；数据几百 KB |
+| 历史 spike（未接入） | `inputx-pinyin` | MIT OR Apache-2.0 | 纯 Rust | 已完成评估，因体积否决；见报告002 |
+| 后续评估 | 自研 FSA | GPL-3 | Rust | 先改善并评估现有后端，有质量/性能证据再决定 |
+| 4 | `librime` FFI | BSD-3 | C++ | 质量备选，非默认 |
+| ✅ 可用（GPL-3 后） | `libpinyin` | GPL-3 | C++ | 许可已解锁，但不优先 |
+
+- **原则：不把"混输兜底"绑定到任何单一第三方引擎上。** Phase 1 用内置轻量兜底保证"默认可混输"；完整拼音引擎在 P2 打磨。
+- Phase 1 已实现**拼音反查**（字→拼音数据 + `mozillazg/pinyin-data` MIT），与内置兜底共用数据。
+
+---
+
+## 9. 配置
+
+**详见 `配置架构.md`。** 摘要：
+
+- **四条铁律**：文件是唯一持久真值；运行时只有一份 `Arc<Config>` 快照；只有 `ime_config_set()` 能改；选项只在 Rust Schema 定义一次。
+- **实时生效**：`ArcSwap` 无锁快照 + 变更广播，改动**无需重启**，候选窗即时重绘。
+- **跨进程唯一**：设置界面不自己解析 TOML，只调 `ime-config` 接口；写入用「文件锁 + 原子替换」。
+- **v1 仅 7 个选项**（见 `配置架构.md` §6）。
+
+---
+
+## 10. 平台宿主（顺序：macOS → Windows → Linux → Android/iOS）
+
+| 平台 | 宿主 | 技术 | 关键点 |
+|---|---|---|---|
+| **macOS** | Swift + InputMethodKit | `IMKInputController` 子类；Rust `staticlib` + C ABI | 需"输入监控"权限；候选窗自绘 `NSPanel`；通用二进制；保住 `Cmd+Z` |
+| **Windows** | Rust + `windows` crate | 实现 TSF COM（`ITfTextInputProcessorEx` 等），feature `Win32_UI_TextServices` | 先试纯 Rust（**timebox 1–2 周 spike**）；到期不成就退 C++ 薄壳；32/64 位；高 DPI |
+| **Linux** | Fcitx5 addon | C++ 薄壳调 Rust C ABI；可选 IBus | Wayland 优先；打包 deb/rpm/AUR/Flatpak |
+| **Android** | Kotlin + JNI | `InputMethodService` + `jni` crate | 参考 `trime`、`retype` |
+| **iOS** | Swift + staticlib | `UIInputViewController` 键盘扩展 | **不申请 Full Access**；参考 `inputx` |
+
+**原则**：能用 Rust 就用 Rust；macOS/iOS 因 IMK/键盘扩展的现实用 Swift 薄宿主；**引擎 100% Rust**。
+
+macOS 日常功能开发使用独立 AppKit 调试窗口（ADR-024），复用正式宿主的会话封装、FFI 与候选窗，直接运行 debug 构建，避免每轮系统装载。该窗口只验证本地输入流程；InputMethodKit 集成及系统生命周期仍走实机验收。启动与验证命令见 `platforms/macos/README.md`。
+
+发布：macOS 分发须 Developer ID + hardened runtime + 公证及 stapler（ADR-032；本机 SIG-1 实测修正早期不签名前提）。日常调试使用独立窗口；本地 ad-hoc 产物不能用于分发安装。发布候选附 SBOM 与许可；源码按 GPL-3.0 §6(d) 与二进制同处提供（ADR-064），不自动上传或安装。
+
+---
+
+## 11. 隐私与安全工程
+
+**详见 `隐私与安全.md`。** 摘要：
+
+1. 核心 crate **不链接任何网络库**；CI 检查产物无 socket/DNS 符号；
+2. **零遥测**；网络行为可被第三方抓包验证（附脚本）；
+3. `ime-core`/`ime-table`/`ime-pinyin` `#![forbid(unsafe_code)]`，unsafe 只在 `ime-ffi`；
+4. 词典/配置文件是**唯一不可信输入** → 解析器 fuzz + 长度/深度上限；
+5. 可复现构建 + `cargo-deny` + `cargo-audit` + SBOM；
+6. 威胁模型与验证方法见文档。
+
+---
+
+## 12. 里程碑
+
+**Phase 1 = macOS 上"默认可混输"的完整五笔输入法（不是 MVP）。**
+
+| 阶段 | 交付 | 完成标志 |
+|---|---|---|
+| **P1-M0** | workspace + `ime-core`（`Engine`/`InputMode`）+ `ime-table` + `ime-cli repl` | 纯逻辑：码→候选→上屏→模式切换跑通 |
+| **P1-M1** | 自建码表流水线（`wubi-encoder` + 交叉校验 + 词组生成 + **词频权重（P1-1）**）+ `sources.toml` | 生成文本码表（`data/generated/*.tsv`），体积达标，许可可审（ADR-060） |
+| **P1-M2** | `ime-config` 完整实现（Schema/快照/原子写/广播）+ `PinyinBackend`（内置轻量兜底 + `inputx-pinyin` spike）+ 混输合并 | 改配置即时生效；空码自动出拼音候选 |
+| **P1-M3** | Swift/IMK 宿主 + C ABI | 系统内可安装、可打字 |
+| **P1-M4** | 候选窗 + 用户词库/学习 + 拼音反查 | 达到 DoD |
+| **P1-M5** | 打包脚本 + 隐私文档 + 抓包验证 + 可复现构建 | 发布工程验收；产品MVP还须满足ADR-084的完整体验标准 |
+| P2 | 拼音体验深化（整句、基础模糊音/简拼质量进一步优化）+ 自研引擎替换；基础模糊音/简拼属MVP IT-19 | |
+| P3 | Windows（Rust TSF） | |
+| P4 | Linux（Fcitx5） | |
+| P5 | Android / iOS | |
+| P6 | 本地语音（可选，纯本地） | |
+
+### Phase 1 验收（DoD）
+
+ADR-084将产品MVP定义为首个macOS正式分发就绪版本。下列基础DoD继续有效，新增交互/视觉、基础拼音质量、词库纠错、字根提示、无障碍及日常试用要求以 [MVP产品验收标准](MVP产品验收标准.md) 为准；所有标准通过才关闭产品MVP。历史完成记录不撤销。
+
+1. TextEdit / Safari / VS Code / 微信 / Terminal 长时间稳定，候选窗不错位、无残留、`Cmd+Z` 正常；
+2. **默认混输**：五笔能打则快，空码自动出拼音候选；三模式切换生效并持久化；
+3. 拼音反查可用；
+4. 按键→候选 < 16 ms；常驻内存 ≤ 30 MB（不含 mmap）；
+5. 用户词库与词频重启保留，可导出/导入；
+6. 安装包 ≤ 15 MB；手动安装流程文档清晰；
+7. `scripts/verify-no-network.sh` 证明零外联；
+8. **配置改动实时生效**（见 `配置架构.md` §11）。
+
+---
+
+## 13. 风险登记
+
+| 风险 | 影响 | 对策 |
+|---|---|---|
+| 与 WindInput 同质化 | 无人使用 | 靠"极简 + 零遥测 + 全开源 + 码表可复现"差异化，不追功能 |
+| 码表 provenance | 法律风险 | 自建流水线 + `sources.toml` 准入制度，只用 MIT/自生成数据 |
+| 混输体验难做 | 用户不用 | trait 预留 + M2 专项；参考 inputx/WindInput |
+| Windows TSF COM 样板重 | 拖慢进度 | 先纯 Rust，卡壳退 C++ 薄壳 |
+| macOS 权限/分发 | 装不上 | Phase 1 手动安装说明；正式阶段补签名 |
+| 单人跨 5 平台 | 不可持续 | 竖切优先，宿主薄，社区化 |
+| 拼音质量不足 | P2 受挫 | 明确"不做最准，做最干净"；必要时上 librime 后端 |
+| 依赖许可污染 | 授权被动 | `cargo-deny` 白名单 + CI |
+
+---
+
+## 14. 术语速查
+
+| 名词 | 解释 |
+|---|---|
+| 形码 / 音码 | 按字形 / 按读音编码 |
+| 五笔 86 / 98 / 新世纪 | 王码五笔的三个代表版本（86 最通用）；同一引擎换数据即可 |
+| 郑码 | 另一种形码（非五笔版本），擅长生僻字/繁体 |
+| 字根 | 构成汉字的基本部件，五笔分配到 25 键 |
+| 键名字 | 每键代表字，连按四次打出 |
+| 成字字根 | 本身是字的字根："键名+首笔+次笔+末笔" |
+| 末笔字型识别码 | 不足四码时补"末笔笔画 + 字型结构" |
+| 简码 | 一/二/三码直出的高频字 |
+| 词组码 | 2字=各前2码；3字=1首2首3首3次；4字+=1首2首3首末首 |
+| 混输 | 同一串输入用两种引擎解，合并候选 |
+| 真值唯一 | 配置只有一个持久化来源（见 `配置架构.md`） |
+
+---
+
+## 15. 文档索引
+
+| 文档 | 内容 |
+|---|---|
+| `技术方案.md` | 本文，权威方案 |
+| `配置架构.md` | 配置子系统（真值唯一/实时生效） |
+| `数据来源与许可.md` | 数据合规与准入制度 |
+| `隐私与安全.md` | 安全工程与可验证性 |
+| `决策记录.md` | ADR（已冻结的决策） |
+| `参考与致谢.md` | 借鉴的项目与来源 |
+| `reviews/` | 交叉审核报告 |
+| `archive/` | v0.1–v0.5 讨论稿 + 完整竞品调研 |
+
+### macOS 开发交互补充（ADR-025）
+
+候选分页由核心会话维护；候选 ABI 返回当前页，选字索引为页内索引。每页大小来自 candidate.count；每引擎取最多 256 条候选。翻页不循环，组合变更回第一页。
+
+用户词库采用 ADR-029 的有界 TSV 数据格式，通过 ime-dict 原子持久化及窄 FFI 导入导出；核心只处理内存候选。TBD-3 已选择 TSV v1，不新增数据库依赖。
+
+### 基础拼音匹配（ADR-104）
+
+基础模糊音按音节声母作有界扩展，最多32种查询；精确匹配在拼音来源内优先于模糊匹配，学习频次不越过此边界。无法切分保留首部兜底，保持五笔优先和拼音不自动提交。不增加整句模型或新数据。
+
+### 2026-10-14 核心混输排序与自动提交补充（ADR-160/161）
+
+混输自动提交先核对跨引擎不同拼音文本，存在歧义时保留组合；纯五笔唯一规则不变。混输跨来源去重及个性化后，首页末尾最多保留两个非模糊拼音候选，五笔仍首选，各来源内部既有学习与基础权重顺序保留；不足一页时拼音自然接续。页长3…9、纯模式及翻页操作不变。
+
+### 拼音显式音节边界（ADR-162）
+
+纯拼音/混输组合有拼音后端时ASCII单引号分隔音节，xi'an命中xi an，xian继续沿普通切分。未完成尾段不提交；重复分隔不重复加入。非组合、英文及纯五笔保留引号标点。显式边界不展开模糊音，候选学习沿标准字母码；基础读音权重优化另行量化。
+
+### 构建期拼音次读音质量（ADR-163）
+
+字表D5首读维持D10单字频次W，次读分数=max(1,min(W,W/3向下取整＋D4词读音/D10词频的对齐证据))。保守底线避免未被词组语料覆盖的独立用字/助词失去可达性；不是读音真实频次。全部读音与反查顺序保持，词表/五笔/学习层不变，运行时沿三列TSV无需全量语料或配置。
+
+### 组合态编辑导航所有权（ADR-164）
+
+无Command/Control/Option的Home/End/前向Delete沿方向键保护消费，组合保持、不新增光标编辑；空闲/取消后及命令修饰仍交客户端。真实焦点、布局与安全输入待最终包取证。

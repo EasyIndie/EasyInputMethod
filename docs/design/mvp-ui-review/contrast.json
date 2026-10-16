@@ -1,0 +1,188 @@
+{
+  "appearanceRequests" : [
+    {
+      "highContrastPolicy" : false,
+      "requested" : "NSAppearanceNameAqua",
+      "resolved" : "NSAppearanceNameAqua",
+      "systemHighContrast" : false
+    },
+    {
+      "highContrastPolicy" : false,
+      "requested" : "NSAppearanceNameDarkAqua",
+      "resolved" : "NSAppearanceNameDarkAqua",
+      "systemHighContrast" : false
+    },
+    {
+      "highContrastPolicy" : true,
+      "requested" : "NSAppearanceNameAccessibilityAqua",
+      "resolved" : "NSAppearanceNameAqua",
+      "systemHighContrast" : false
+    },
+    {
+      "highContrastPolicy" : true,
+      "requested" : "NSAppearanceNameAccessibilityDarkAqua",
+      "resolved" : "NSAppearanceNameDarkAqua",
+      "systemHighContrast" : false
+    }
+  ],
+  "pairs" : [
+    {
+      "appearance" : "light",
+      "ratio" : 14.938418916797357,
+      "role" : "body",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "light",
+      "ratio" : 11.708046874842902,
+      "role" : "secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "light",
+      "ratio" : 7.5707350001159703,
+      "role" : "error",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "light",
+      "ratio" : 14.938418916797357,
+      "role" : "readonly",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "light",
+      "ratio" : 11.590308332161797,
+      "role" : "hover",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "light",
+      "ratio" : 9.5282230606506317,
+      "role" : "hover-secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 12.225809383321625,
+      "role" : "body",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 10.540072335209313,
+      "role" : "secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 8.1517785664300622,
+      "role" : "error",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 12.225809383321625,
+      "role" : "readonly",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 8.5482182848773434,
+      "role" : "hover",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "dark",
+      "ratio" : 7.5246829730583347,
+      "role" : "hover-secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 14.938418916797357,
+      "role" : "body",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 21,
+      "role" : "secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 7.5707350001159703,
+      "role" : "error",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 14.938418916797357,
+      "role" : "readonly",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 11.590308332161797,
+      "role" : "hover",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 15.210386880106439,
+      "role" : "hover-secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-light",
+      "ratio" : 3.9766530249124381,
+      "role" : "boundary",
+      "threshold" : 3
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 12.225809383321625,
+      "role" : "body",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 16.671156674317938,
+      "role" : "secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 8.1517785664300622,
+      "role" : "error",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 12.225809383321625,
+      "role" : "readonly",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 8.5482182848773434,
+      "role" : "hover",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 11.195510817956317,
+      "role" : "hover-secondary",
+      "threshold" : 4.5
+    },
+    {
+      "appearance" : "contrast-dark",
+      "ratio" : 5.1217425821962879,
+      "role" : "boundary",
+      "threshold" : 3
+    }
+  ],
+  "passed" : true,
+  "scope" : "native light\/dark colors and explicit production high-contrast color policy; not actual global high-contrast\/VoiceOver"
+}

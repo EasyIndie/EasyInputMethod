@@ -1,0 +1,6 @@
+{
+  "captures": 10,
+  "compile": "warnings-as-errors passed",
+  "review": "native settings layout inspected; candidate content reused from reviewed v4; no mode-controlled visibility",
+  "status": "design only, no product settings modified"
+}

@@ -1,0 +1,70 @@
+{
+  "captures": 50,
+  "renderCompiler": "warnings-as-errors passed",
+  "informationTextContrast": [
+    {
+      "appearance": "dark",
+      "role": "text",
+      "ratio": 12.23,
+      "passed": true
+    },
+    {
+      "appearance": "dark",
+      "role": "informationSecondary",
+      "ratio": 5.89,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "role": "text",
+      "ratio": 12.23,
+      "passed": true
+    },
+    {
+      "appearance": "dark-high",
+      "role": "informationSecondary",
+      "ratio": 5.89,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "role": "text",
+      "ratio": 14.94,
+      "passed": true
+    },
+    {
+      "appearance": "light",
+      "role": "informationSecondary",
+      "ratio": 14.94,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "role": "text",
+      "ratio": 14.94,
+      "passed": true
+    },
+    {
+      "appearance": "light-high",
+      "role": "informationSecondary",
+      "ratio": 14.94,
+      "passed": true
+    }
+  ],
+  "inspected": [
+    "updated single light",
+    "two-character dark",
+    "candidate settings light",
+    "shortcut settings dark",
+    "previous long-word light/dark"
+  ],
+  "html": "resource and structure checked, browser interactions untested",
+  "productCodeChanged": false,
+  "unverified": [
+    "real click/focus/AX",
+    "backdrop materials",
+    "dynamic long text and displays",
+    "published teaching data correctness"
+  ],
+  "executionStatus": "Deferred NEXT-UI by user instruction; current functional and usability work first"
+}
