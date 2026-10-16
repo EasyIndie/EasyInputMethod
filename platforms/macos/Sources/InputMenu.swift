@@ -57,18 +57,17 @@ enum InputStateMenu {
         modeItem.attributedTitle = nil
         modeItem.title = "输入模式"
         modeItem.setAccessibilityValue(mode)
-        if #available(macOS 14.0, *) {
-            // AppKit lays out the trailing status immediately before the submenu arrow.
-            if modeItem.badge?.stringValue != mode { modeItem.badge = NSMenuItemBadge(string: mode) }
-        } else {
-            // The older native menu has no trailing status API. Measure the whole menu,
-            // including configured shortcuts, rather than pinning a tab to a fixed x.
-            let paragraph = NSMutableParagraphStyle()
-            paragraph.tabStops = [NSTextTab(textAlignment: .right, location: max(100, menu.size.width - 60))]
-            modeItem.attributedTitle = NSAttributedString(string: "输入模式\t" + mode,
-                attributes: [.paragraphStyle: paragraph, .font: NSFont.menuFont(ofSize: 0)])
-        }
-        menu.items[0].toolTip = "点击循环切换；移到右侧子菜单可直接选择。"
+        if #available(macOS 14.0, *) { modeItem.badge = nil }
+        // Keep the status in the native title, with the same trailing text treatment
+        // as shortcut labels, while reserving the native submenu arrow gutter.
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.tabStops = [NSTextTab(textAlignment: .right, location: max(100, menu.size.width - 60))]
+        let title = NSMutableAttributedString(string: "输入模式\t" + mode,
+            attributes: [.paragraphStyle: paragraph, .font: NSFont.menuFont(ofSize: 0)])
+        title.addAttribute(.foregroundColor, value: NSColor.secondaryLabelColor,
+            range: NSRange(location: 5, length: (mode as NSString).length))
+        modeItem.attributedTitle = title
+        modeItem.toolTip = nil
         for (item, mode) in zip(menu.items[0].submenu?.items ?? [], modes) {
             item.state = mode.0 == state.mode ? .on : .off
             item.isEnabled = state.enabled

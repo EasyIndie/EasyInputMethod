@@ -41,12 +41,10 @@ require(menu.items[0].action != nil && menu.items[0].submenu?.items.count == 3, 
 for expected in ["五笔", "拼音", "混输"] {
     menu.performActionForItem(at: 0)
     require(menu.items[0].accessibilityValue() as? String == expected, "parent cycle refreshes same menu")
+    require(menu.items[0].attributedTitle?.string == "输入模式\t" + expected, "plain trailing status")
+    require(menu.items[0].toolTip == nil, "no mode hover hint")
     if #available(macOS 14.0, *) {
-        require(menu.items[0].title == "输入模式" && menu.items[0].attributedTitle == nil,
-                "no fixed tab in modern native menu")
-        require(menu.items[0].badge?.stringValue == expected, "native trailing current mode")
-    } else {
-        require(menu.items[0].attributedTitle?.string == "输入模式\t" + expected, "fallback complete state")
+        require(menu.items[0].badge == nil, "no tag styling")
     }
     require(menu.items[0].submenu!.items.filter { $0.state == .on }.map(\.title) == [expected], "unique submenu check")
 }
@@ -55,8 +53,12 @@ menu.addItem(wideItem)
 InputStateMenu.refresh(menu, state: owner.snapshot)
 require(menu.items[0].accessibilityValue() as? String == "混输", "wide menu retains current mode")
 if #available(macOS 14.0, *) {
-    require(menu.items[0].badge?.stringValue == "混输", "wide menu uses native trailing layout")
+    require(menu.items[0].badge == nil, "wide menu has no badge")
 }
+let wideTitle = menu.items[0].attributedTitle!
+let wideParagraph = wideTitle.attribute(.paragraphStyle, at: 0, effectiveRange: nil) as! NSParagraphStyle
+require(wideParagraph.tabStops.first?.alignment == .right, "trailing status is right aligned")
+require((wideParagraph.tabStops.first?.location ?? 0) > 160, "trailing status follows expanded menu width")
 menu.removeItem(wideItem)
 let submenu = menu.items[0].submenu!
 for (index, raw) in [(1,"wubi"),(2,"pinyin"),(0,"mixed")] {
