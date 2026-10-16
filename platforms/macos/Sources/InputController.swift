@@ -162,11 +162,11 @@ final class LampyrisInputController: IMKInputController {
         refreshStateMenu()
         menu.addItem(NSMenuItem.separator())
         let settings = NSMenuItem(
-            title: "设置…", action: #selector(showSettings), keyEquivalent: "")
+            title: "设置", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
         menu.addItem(settings)
         let about = NSMenuItem(
-            title: "关于萤火虫…", action: #selector(showAbout), keyEquivalent: "")
+            title: "关于", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
         // 异常状态（仅在出错时出现）

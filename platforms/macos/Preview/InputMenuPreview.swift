@@ -32,7 +32,7 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
         let result = InputStateMenu.make(state: state, target: self)
         result.delegate = self
         result.addItem(.separator())
-        for (title, action) in [("设置…", #selector(showSettings(_:))), ("关于萤火虫…", #selector(showAbout(_:)))] {
+        for (title, action) in [("设置", #selector(showSettings(_:))), ("关于", #selector(showAbout(_:)))] {
             let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
             item.target = self
             result.addItem(item)

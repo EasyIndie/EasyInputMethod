@@ -74,6 +74,7 @@ enum InputStateMenu {
 
 /// One flexible row; the containing NSMenu retains native submenu tracking.
 final class InputModeMenuView: NSView {
+    private let submenuArrow = NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: nil)
     private var pointerInside = false
     private var hoverArea: NSTrackingArea?
     var mode = "混输" { didSet { setAccessibilityValue(mode); needsDisplay = true } }
@@ -107,7 +108,7 @@ final class InputModeMenuView: NSView {
     }
 
     var statusFrame: NSRect { NSRect(x: bounds.maxX - 68, y: 0, width: 40, height: bounds.height) }
-    var arrowFrame: NSRect { NSRect(x: bounds.maxX - 17, y: bounds.midY - 5, width: 5, height: 10) }
+    var arrowFrame: NSRect { NSRect(x: bounds.maxX - 17, y: bounds.midY - 6, width: 8, height: 12) }
 
     override func draw(_ dirtyRect: NSRect) {
         let selected = isEnabled && (pointerInside || enclosingMenuItem?.isHighlighted == true)
@@ -126,15 +127,16 @@ final class InputModeMenuView: NSView {
         }
         text("输入模式", in: NSRect(x: 14, y: 0, width: 85, height: bounds.height), color: foreground)
         text(mode, in: statusFrame, color: secondary, right: true)
-        foreground.setStroke()
-        let path = NSBezierPath()
-        path.lineWidth = 1.5
-        path.lineCapStyle = .round
-        path.lineJoinStyle = .round
-        path.move(to: NSPoint(x: arrowFrame.minX, y: arrowFrame.minY))
-        path.line(to: NSPoint(x: arrowFrame.maxX, y: arrowFrame.midY))
-        path.line(to: NSPoint(x: arrowFrame.minX, y: arrowFrame.maxY))
-        path.stroke()
+        if let symbol = submenuArrow?
+            .withSymbolConfiguration(.init(pointSize: font.pointSize, weight: .semibold))?
+            .withSymbolConfiguration(.init(paletteColors: [foreground])) {
+            let scale = min(arrowFrame.width / symbol.size.width, arrowFrame.height / symbol.size.height)
+            let size = NSSize(width: symbol.size.width * scale, height: symbol.size.height * scale)
+            let frame = NSRect(x: arrowFrame.midX - size.width / 2, y: arrowFrame.midY - size.height / 2,
+                width: size.width, height: size.height)
+            symbol.draw(in: frame, from: .zero, operation: .sourceOver, fraction: 1,
+                respectFlipped: true, hints: nil)
+        }
     }
 
     override func updateTrackingAreas() {

@@ -51,6 +51,21 @@ func snapshot(_ image: NSBitmapImageRep?, _ name: String) {
     guard let data = image?.representation(using: .png, properties: [:]) else { fail("snapshot " + name) }
     do { try data.write(to: output.appendingPathComponent(name + ".png")) } catch { fail("snapshot write") }
 }
+var helpBaselineGaps: [String: CGFloat] = [:]
+func recordHelpBaselines(theme: String) {
+    for key in ["mode", "input.full_width", "pinyin.fuzzy", "candidate.show_wubi_learning"] {
+        guard panel.visibleOptionKeysForTesting.contains(key), let row = panel.rowForTesting(key),
+              let top = row.arrangedSubviews.first as? NSStackView,
+              let title = top.arrangedSubviews.first,
+              let help = row.arrangedSubviews.last as? NSTextField else { continue }
+        func baseline(_ view: NSView) -> CGFloat {
+            let y = view.isFlipped ? view.bounds.minY + view.firstBaselineOffsetFromTop
+                : view.bounds.maxY - view.firstBaselineOffsetFromTop
+            return row.convert(NSPoint(x: 0, y: y), from: view).y
+        }
+        helpBaselineGaps[theme + ":" + key] = abs(baseline(title) - baseline(help))
+    }
+}
 let scopes = [[0], [1,2], [3], []]
 for index in 0..<4 {
     panel.selectSectionForTesting(index)
@@ -60,10 +75,20 @@ for index in 0..<4 {
     for (theme, appearance) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
         guard let appearance = NSAppearance(named: appearance) else { fail("appearance") }
         snapshot(panel.renderSnapshotForTesting(appearance: appearance, includingChrome: true), "pane-\(index)-\(theme)")
+        recordHelpBaselines(theme: theme)
         snapshot(panel.renderMinimumSizeForTesting(appearance: appearance), "minimum-\(index)-\(theme)")
         guard !panel.isVisibleForTesting else { fail("offscreen render became visible") }
     }
 }
+for theme in ["light", "dark"] {
+    let gaps = ["mode", "input.full_width", "pinyin.fuzzy", "candidate.show_wubi_learning"].compactMap {
+        helpBaselineGaps[theme + ":" + $0]
+    }
+    guard gaps.count == 4, let minimum = gaps.min(), let maximum = gaps.max(), minimum >= 20,
+          maximum - minimum <= 1.5 else { fail("description baseline spacing: \(helpBaselineGaps)") }
+}
+let gapData = try JSONSerialization.data(withJSONObject: helpBaselineGaps, options: [.sortedKeys])
+try gapData.write(to: output.appendingPathComponent("description-baselines.json"))
 guard ImeConfig.setString("appearance.theme", "dark") else { fail("theme write") }
 panel.configChanged("appearance.theme")
 guard panel.configuredAppearanceForTesting == .darkAqua else { fail("theme update") }

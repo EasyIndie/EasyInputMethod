@@ -92,7 +92,7 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         super.init(frame: .zero)
         orientation = .vertical
         alignment = .leading
-        spacing = 2
+        spacing = 6
 
         let title = NSTextField(labelWithString: option.title)
         title.font = .systemFont(ofSize: 13)
@@ -100,7 +100,8 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
 
         let top = NSStackView()
         top.orientation = .horizontal
-        top.alignment = .firstBaseline
+        top.alignment = .centerY
+        top.heightAnchor.constraint(greaterThanOrEqualToConstant: 24).isActive = true
         top.spacing = 10
         let isBoolean: Bool
         if case .bool = option.kind { isBoolean = true } else { isBoolean = false }
@@ -706,13 +707,15 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         stack.setCustomSpacing(16, after: intro)
 
         for (title, action) in [
-            ("新增词条…", #selector(addWord)),
-            ("删除用户词条…", #selector(removeWord)),
-            ("导入用户词库…", #selector(importWords)),
-            ("导出用户词库…", #selector(exportWords)),
-            ("拼音反查…", #selector(lookupPinyin)),
+            ("新增词条", #selector(addWord)),
+            ("删除用户词条", #selector(removeWord)),
+            ("导入用户词库", #selector(importWords)),
+            ("导出用户词库", #selector(exportWords)),
+            ("拼音反查", #selector(lookupPinyin)),
         ] as [(String, Selector)] {
             let button = NSButton(title: title, target: self, action: action)
+            button.bezelStyle = .rounded
+            button.controlSize = .regular
             button.isEnabled = session != nil
             button.setAccessibilityHelp("仅在本地操作用户词库；需要当前输入会话。")
             dictionaryButtons.append(button)

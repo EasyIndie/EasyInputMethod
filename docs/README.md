@@ -81,3 +81,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 [结构模块体积与拆分边界037](reviews/037-structure-module-size-and-boundaries.md)：现有体积实测、运行资源分层与ADR-189；模块目录见modules/hanzi-structure。
 
 [当前MVP剩余工作038](reviews/038-mvp-remaining-work.md)：ADR-190将自建库后移，区分未开始的真实验收、已完成工程及最终候选收口；优先于旧计划中的实施状态。
+
+[控件标签与说明间距039](reviews/039-controls-labels-and-description-spacing.md)：按钮/菜单无省略号、模式系统符号、四项说明统一基线及亮暗原生渲染证据。
