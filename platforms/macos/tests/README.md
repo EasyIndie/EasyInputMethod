@@ -4,6 +4,8 @@
 
 ## 安全入口与范围
 
+日常迭代优先`make macos-dev`：构建并启动下表interactive入口，窗口提供正式InputStateMenu的“输入法菜单”按钮和正式设置面板。每轮私有配置/词库；关闭窗口或终端`close`结束，再次运行重建。菜单/设置/快捷键/模式控件实时同步；不注册输入源，不替换已装包。普通`make macos-preview`使用真实配置，不能当作数据隔离入口。
+
 | 命令 | 实际范围 |
 |---|---|
 | `run-panel-acceptance.sh --isolation-probe` | 独有配置/词库和子进程，normal/failure/INT/TERM；不代表完整产品UI通过 |
@@ -101,3 +103,5 @@ Terminal结果门禁新增`test-installed-terminal-probe.py`两项回归：正�
 ADR-151：独立预览冒烟新增真实NSEvent+FFI组合导航回归，覆盖四方向/Shift、修饰透传、控制字符/函数键/空字符表示与退格/Esc/选字交互。此处不构成已装IMK客户端复验；IT-24须新签名包原生复验后关闭。
 
 ADR-170/171：test-wubi-learning.py通过真实Rust只读ABI与Swift/生产CandidateWindow测试完整码、核验根码/识别码、长词摘要/逐字披露、137pt明细上限、独立Schema显示开关/快捷键及组合保持。只用私有数据和离屏图，不激活窗口/发键；不代替根码覆盖或最终实机验收。
+
+ADR-182：`test-preview-menu.py`以真实Rust/Swift会话核验同组件菜单、私有配置、模式与四状态、外部设置/快捷键通知、写失败恢复与无学习副作用；不显示窗口，不替代系统IMK代理实机结果。

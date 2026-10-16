@@ -38,6 +38,7 @@ before = [stamp(path) for path in protected]
 process = subprocess.Popen([str(contents / 'MacOS/LampyrisIsolated'),
     '--panel-isolation-probe', 'interactive', str(work), str(ROOT / 'data/generated')])
 print(f'OWNED_APP={bundle}\nOWNED_PID={process.pid}\nOWNED_ROOT={work}', flush=True)
+print('请在隔离窗口点击“输入法菜单”或“偏好设置”；关闭窗口或在此输入 close 结束。', flush=True)
 reader = selectors.DefaultSelector()
 completed = False
 try:

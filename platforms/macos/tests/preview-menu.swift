@@ -1,0 +1,84 @@
+import AppKit
+import ime
+
+func require(_ condition: Bool, _ message: String) {
+    if !condition { fputs("FAIL \(message)\n", stderr); exit(1) }
+}
+func pump(_ condition: () -> Bool) -> Bool {
+    let deadline = Date().addingTimeInterval(1)
+    while !condition() && Date() < deadline { RunLoop.current.run(until: Date().addingTimeInterval(0.01)) }
+    return condition()
+}
+let app = NSApplication.shared
+app.setActivationPolicy(.prohibited)
+let root = URL(fileURLWithPath: CommandLine.arguments[1])
+let data = URL(fileURLWithPath: CommandLine.arguments[2])
+let config = root.appendingPathComponent("config.toml")
+require(ime_config_init(config.path) == IME_OK, "private configuration")
+guard let session = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
+    pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
+    pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else { exit(1) }
+require(session.setVariantData(data.appendingPathComponent("variant-s2t.tsv").path) == IME_OK, "real variant data")
+session.prepare()
+let dictionary = root.appendingPathComponent("user-dictionary.tsv")
+let dictionaryBefore = try? Data(contentsOf: dictionary)
+let adapter = PreviewInputMenu(session: session)
+var cancellations = 0
+var changes = 0
+var failures: [String] = []
+adapter.onCancelComposition = { cancellations += 1; session.focusOut() }
+adapter.onChange = { changes += 1 }
+adapter.onFailure = { failures.append($0) }
+adapter.refresh()
+let menu = adapter.menu
+require(menu.delegate === adapter && menu.items[0].submenu?.items.count == 3, "real shared native menu")
+for expected in ["wubi", "pinyin", "mixed"] {
+    menu.performActionForItem(at: 0)
+    require(session.mode == expected && ImeConfig.string("mode") == expected, "parent cycle persists only private config")
+    require(menu.items[0].submenu!.items.filter { $0.state == .on }.count == 1, "single selected mode")
+}
+let submenu = menu.items[0].submenu!
+_ = adapter.perform(submenu.items[1].action!, with: ["IMKCommandMenuItemName": submenu.items[1]] as NSDictionary)
+require(session.mode == "wubi" && ImeConfig.string("mode") == "wubi", "explicit dictionary callback")
+_ = session.feed(119); _ = session.feed(113)
+let prefix = session.buffer
+let beforeCancel = cancellations
+adapter.selectMode("wubi")
+require(session.buffer == prefix && cancellations == beforeCancel, "same mode preserves composition")
+adapter.selectMode("mixed")
+require(!session.isComposing && cancellations == beforeCancel + 1, "different mode cancels without commit")
+for (index, title) in [(1,"英文输入"),(2,"全角输入"),(3,"繁体输入"),(4,"英文标点")] {
+    menu.performActionForItem(at: index)
+    require(menu.items[index].title == title && menu.items[index].state == .off, "session state label " + title)
+    menu.performActionForItem(at: index)
+}
+// Drain queued changes before checking a fresh external preference update.
+RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+let oldChanges = changes
+require(ImeConfig.setString("mode", "pinyin"), "external settings mode")
+require(pump { changes > oldChanges && session.mode == "pinyin" && menu.items[0].title.contains("拼音") }, "settings notification updates session and menu")
+require(ImeConfig.setString("hotkey.toggle_width", "ctrl+alt+w"), "external shortcut change")
+require(pump { menu.items[2].keyEquivalent == "w" && menu.items[2].keyEquivalentModifierMask == [.control, .option] }, "shortcut labels refresh through real config subscription")
+let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control,.shift], timestamp: 0,
+    windowNumber: 0, context: nil, characters: "M", charactersIgnoringModifiers: "m", isARepeat: false, keyCode: 46)!
+require(session.shortcut(event, persistMode: true) == .handled, "preview keyboard persists owned mode")
+require(pump { session.mode == "mixed" && menu.items[0].title.contains("混输") }, "keyboard mode updates same menu")
+RunLoop.current.run(until: Date().addingTimeInterval(0.05))
+let beforeBytes = try Data(contentsOf: config)
+let lock = URL(fileURLWithPath: config.path + ".lock")
+try Data("owned test lock".utf8).write(to: lock)
+adapter.selectMode("wubi")
+require(session.mode == "mixed" && menu.items[0].title.contains("混输") && !failures.isEmpty, "write failure keeps actual mode and reports error")
+require(try Data(contentsOf: config) == beforeBytes, "failed write leaves private bytes unchanged")
+try FileManager.default.removeItem(at: lock)
+adapter.selectMode("wubi")
+require(session.mode == "wubi", "recover after lock removal")
+var settings = 0
+var about = 0
+adapter.onSettings = { settings += 1 }
+adapter.onAbout = { about += 1 }
+menu.performActionForItem(at: 6)
+menu.performActionForItem(at: 7)
+require(settings == 1 && about == 1, "settings and about route through preview callbacks")
+require((try? Data(contentsOf: dictionary)) == dictionaryBefore, "no learned or committed text")
+print("PASS preview-menu: real session/shared menu/private configuration, parent/submenu, state toggles, external preferences, keyboard, failure recovery and no learning")
