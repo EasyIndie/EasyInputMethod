@@ -16,3 +16,7 @@
 - 工具**必须可复现**：同输入产出同输出；
 - 生成用到的源数据必须已在 `data/sources.toml` 登记；
 - 工具的输出不提交（除非是有意发布的数据包）。
+
+## 五笔教学覆盖审计
+
+`python3 tools/audit-wubi-learning-coverage.py --output platforms/macos/build/learning-coverage-review/coverage.json`只读既有登记码表/词频/教学，输出分型覆盖、输入SHA和优先缺口队列。词频优先层不是实际输入统计；不会修改数据或把部分说明算完整，见报告034与T-MVP-LEARNING-COVERAGE。
