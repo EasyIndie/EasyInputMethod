@@ -143,3 +143,17 @@ window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: tight)
 window.toggleLearningDetailsForTesting()
 require(window.candidateViewportForTesting == baselineViewport && tight.contains(window.frame), "teaching cannot steal candidate viewport")
 window.hide()
+
+// Reproduce the reported seven-candidate header and teaching layout at the same time.
+require(ImeConfig.setString("appearance.theme", "light"), "feedback fixture appearance")
+let feedbackCandidates = ["我", "我们", "我国", "特别", "特点", "突然", "投入"].map {
+    ImeCandidate(text: $0, code: "tr", source: .codeTable, isPrefix: false)
+}
+window.update(candidates: feedbackCandidates, pageIndex: 0, pageCount: 30, input: "tr")
+window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
+let headerFrames = window.pageFramesForTesting
+require(window.learningVisibleForTesting && window.pageStateForTesting.text == "1/30"
+    && abs(headerFrames[0].midY - headerFrames[1].midY) < 0.5
+    && abs(headerFrames[1].midY - headerFrames[2].midY) < 0.5, "reported page header and teaching together")
+snapshot("feedback-tr-light")
+window.hide()
