@@ -23,3 +23,35 @@
 ## 数据与结果边界
 
 锁屏后仅文件摘要审计：config SHA前后均65643c64fcfd6dd548e20b0c949403e7ff1e440dfe1d4abf9585865e86940c7c；词库SHA均1ebe66cdd09fa7c3c0f8379838506708cb2add0e6e8f226769d2e062cdf53f62；mode仍mixed。临时全半角在锁屏前已读回恢复半角、菜单已取消。锁屏后的源/窗口最终核验未执行，明确待解锁，不冒记完整恢复通过。无配置/词库全文备份、无文字提交、无新权限。正式验收不提升。
+
+## 后续受控鼠标对照（用户确认B空闲后）
+
+用户明确授权Swift CGEvent，并确认此前成功入口是系统菜单栏输入法图标的二级菜单。B已解锁。本轮宿主仍为abdb83f/PID1569；配置摘要未变，现用词库在会话间发生变化，旧基线被保护拒绝，随后保留旧证据、建立mouse-round2-before.json新摘要，没有回写或复制词库正文。
+
+- 全局AXFocusedUIElement读取返回-25204，TextEdit自身的焦点读取返回0/AXTextArea。诊断探针仅在前台是精确TextEdit、焦点窗口CFEqual自有文档窗口、焦点元素确属该客户端文本区域时接受客户端焦点；宿主/源/数据校验保留。
+- 已打开系统菜单后，模式父项中心CGEvent点击关闭菜单，配置仍mixed。重新打开后，用AX展开确认三项二级菜单可见，再对可见“五笔”精确矩形中心发送CGEvent鼠标移动及配对按下/抬起。菜单关闭，持久mode仍mixed；因此AX点击适配器单独失效不足以解释当前现象。此处是合成鼠标事件对照，不能称为物理鼠标或硬件验收。
+- CGPreflightPostEventAccess与AXIsProcessTrusted均true；没有请求新权限。系统日志只取得IMK Menu调用，未提供模式命令接收/写入结果。尚不能区分命令未到、接收后失败或后续覆盖，不能宣称已定位根因。
+- 本轮config/词库SHA和完整输入源集合前后相同，mode=mixed；自有menu-test.txt窗口已关闭，原未命名窗口保留；测试指针位置已恢复，无文字输入、无安装。摘要见build/menu-recheck-b-c2a079eb/mouse-round2-result.json及round2-*原始记录。
+
+下一步离线准备两份诊断候选于build/menu-proxy-diagnostics-20261017：current保留当前模型；standard-parent仅使用标准setSubmenu父项并去掉customView。二者均加入标准错误输出的有限模式命令接收/返回及持久/会话状态，排除输入文本、候选、客户端和剪贴板内容；使用-O/-whole-module-optimization/-warnings-as-errors编译，零诊断。仅为本轮诊断，不提交为产品交互改版；均未运行、未注册、未安装、未签名公证。因此前实机授权排除了宿主替换，已明确请求临时运行/替换并恢复正式包的许可，答复前不执行。正式验收维持1PASS/22BLOCKED。
+
+本轮make verify首轮因沙箱无法取得只读Cargo漏洞库锁失败；允许规范命令获取本机锁后重试全绿、零诊断，扫描176个产物。原失败和重试日志均保留在诊断产物目录。当前跟踪变更仅交接/进度/报告，产品源码未改。
+
+## 临时诊断执行与无会话缺陷修复（ADR-201）
+
+用户已明确允许临时替换两份本地候选并恢复原包。恢复源来自已有abdb83f发布产物，执行文件SHA核对一致，codesign深度严格验证通过；没有为此新建安装/配置/词库备份。
+
+本地候选启动后最初没有产品菜单，原签名包恢复后也一度如此。刷新同一输入源注册、重建并激活自建文档会话后可见产品菜单；不能把这段连接准备不足当作父项A/B结果，也不能据此断言ad-hoc签名就是根因。源选择与菜单检查现用同一try/finally取消菜单并还原ABC；一次未带同操作恢复的核验请求被自动审批拒绝，未执行，补齐finally后通过。
+
+随后current候选出现产品菜单但模式父/子项不可用，未通过三项子菜单可见性门禁，没有点击不可用子项。standard-parent诊断日志得到：
+
+```text
+MENU_DIAGNOSTIC menu command=other persisted=mixed session=none
+MENU_DIAGNOSTIC local parent-enabled=false child-enabled=false responds-wubi=true
+```
+
+因此这两份临时诊断没有完成有效的子项鼠标A/B，也没有取得模式命令接收日志；父项形式差异的因果关系仍未证明。不过日志直接确认另一独立缺陷：menu可以在没有文本会话的控制器上调用，现有代码主动禁用所有模式项，而模式命令本已支持通过ime-config先持久化选择。
+
+ADR-201最小修复只放开模式父项、其自定义视图及三种子项；其余四个会话状态项保持原启用条件。真实私有IMK回归先失败于`mode parent enabled before activation`，修复后验证冷控制器子项持久化、父项真实视图accessibilityPerformPress循环、首次激活状态一致和原停用重激活路径通过。菜单组件测试及make verify零诊断通过、176产物无网络符号；临时工具编译时两处语法错误已更正，未冒记首次编译成功。
+
+本轮最终已恢复原正式包abdb83f（PID20605，执行文件SHA仍c4a070…93151），刷新同一输入源注册，codesign深度严格通过；原模式mixed、原输入源ABC及完整启用集合、config/词库摘要均保持，自有文档已关闭，原未命名窗口保留。最后恢复后的新宿主产品菜单尚未再激活复核；此前原签名包一次激活核验为可见，不能替代最后一次菜单/实际输入验收。恢复摘要见build/menu-proxy-diagnostics-20261017/restoration-result.json。修复尚未安装，临时日志与标准父项实验均不进入产品代码。原正式包条目已启用但切换无效及右对齐问题仍待，正式1PASS/22BLOCKED不提升。
