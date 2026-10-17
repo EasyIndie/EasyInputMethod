@@ -19,3 +19,7 @@ make verify零诊断全绿，176产物隐私断言通过；严格arm64+x86_64生
 本轮尚未收到设备B当前空闲答复；已安装abdb83f宿主正在运行，未替换正式包、未切源或发键。后续须实机观察代理字段/动作与新签名候选验证，完整RC-UI-01保持未完成。正式验收仍沿用1PASS/22BLOCKED。
 
 协议依据：[Apple IMKInputController命令分发](https://developer.apple.com/documentation/inputmethodkit/imkinputcontroller/docommand(by:command:))；原生文档说明命令携带菜单项及客户端字典，默认按selector派发。这里的本地IMK探针通过不能替代跨进程状态栏代理通过。
+
+## CI首轮阻断与验收工具修正
+
+CI38986778222中真实IMK/关于/预览均通过；完整门禁因test-terminal-input-sink的INT/TERM退出3秒超时失败，并伴stderr未关闭ResourceWarning，与历史现象相同但不能据此断定根因同一。ADR-200改用信号标记+现有100ms轮询检查，保留3秒门限；fixture失败kill后communicate并在finally关闭管道和PTY。4项回归（ResourceWarning视为错误）、100轮信号恢复及make verify再次通过；等待新提交隔离CI，不抹去首轮失败。

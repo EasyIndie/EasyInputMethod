@@ -46,11 +46,15 @@ class SinkTests(unittest.TestCase):
                 self.assertEqual((root / 'result.json').stat().st_mode & 0o777, 0o600)
                 return result
             finally:
-                if process.poll() is None:
-                    process.kill()
-                    process.wait()
-                os.close(master)
-                os.close(slave)
+                try:
+                    if process.poll() is None:
+                        process.kill()
+                        process.communicate(timeout=3)
+                finally:
+                    if process.stderr is not None:
+                        process.stderr.close()
+                    os.close(master)
+                    os.close(slave)
 
     def test_committed_bytes(self):
         self.assertEqual(self.exercise('你'.encode())['classification'], 'committed')
