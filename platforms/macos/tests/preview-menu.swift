@@ -1,4 +1,5 @@
 import AppKit
+import InputMethodKit
 import ime
 
 func require(_ condition: Bool, _ message: String) {
@@ -39,7 +40,7 @@ for expected in ["wubi", "pinyin", "mixed"] {
 }
 let submenu = menu.items[0].submenu!
 LocalAcceptanceEvidence.record("menu.mode-cycle", expected: "父项依次切换五笔/拼音/混输，并唯一选中", actual: ["mode": session.mode, "selected": menu.items[0].submenu!.items.filter { $0.state == .on }.map(\.title)])
-_ = adapter.perform(submenu.items[1].action!, with: ["IMKCommandMenuItemName": submenu.items[1]] as NSDictionary)
+_ = adapter.perform(submenu.items[1].action!, with: [kIMKCommandMenuItemName as String: submenu.items[1]] as NSDictionary)
 require(session.mode == "wubi" && ImeConfig.string("mode") == "wubi", "explicit dictionary callback")
 LocalAcceptanceEvidence.record("menu.explicit-mode", expected: "二级菜单选择五笔，配置和会话一致", actual: ["session": session.mode, "configured": ImeConfig.string("mode") ?? ""])
 _ = session.feed(119); _ = session.feed(113)

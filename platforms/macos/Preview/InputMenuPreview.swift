@@ -84,10 +84,19 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
         changed()
     }
 
-    @objc func cycleInputMode(_ sender: Any?) { selectMode(InputStateMenu.nextMode(session.mode)) }
-    @objc func chooseMixedMode(_ sender: Any?) { selectMode("mixed") }
-    @objc func chooseWubiMode(_ sender: Any?) { selectMode("wubi") }
-    @objc func choosePinyinMode(_ sender: Any?) { selectMode("pinyin") }
+    @objc func performInputMenuCommand(_ sender: Any?) {
+        guard let command = InputStateMenu.command(from: sender) else { return }
+        switch command {
+        case .cycleMode: selectMode(InputStateMenu.nextMode(session.mode))
+        case .mixed: selectMode("mixed")
+        case .wubi: selectMode("wubi")
+        case .pinyin: selectMode("pinyin")
+        case .toggleEnglish: toggleEnglish(sender)
+        case .toggleWidth: toggleWidth(sender)
+        case .toggleVariant: toggleVariant(sender)
+        case .togglePunctuation: togglePunctuation(sender)
+        }
+    }
     @objc func toggleEnglish(_ sender: Any?) { session.toggleEnglish(); changed() }
     @objc func toggleWidth(_ sender: Any?) { session.toggleWidth(); changed() }
     @objc func toggleVariant(_ sender: Any?) { changed(session.toggleVariant()) }

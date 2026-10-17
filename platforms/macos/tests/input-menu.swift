@@ -1,4 +1,5 @@
 import AppKit
+import InputMethodKit
 
 func require(_ value: Bool, _ message: String) {
     guard value else { fputs("FAIL \(message)\n", stderr); exit(1) }
@@ -23,17 +24,38 @@ final class MenuOwner: NSObject {
         if permitsChange { mode = next }
         InputStateMenu.refresh(menu, state: snapshot)
     }
-    @objc func cycleInputMode(_ sender: Any?) { change(InputStateMenu.nextMode(mode)) }
-    @objc func chooseMixedMode(_ sender: Any?) { change("mixed") }
-    @objc func chooseWubiMode(_ sender: Any?) { change("wubi") }
-    @objc func choosePinyinMode(_ sender: Any?) { change("pinyin") }
-    @objc func toggleEnglish(_ sender: Any?) { english.toggle(); InputStateMenu.refresh(menu, state: snapshot) }
-    @objc func toggleWidth(_ sender: Any?) { fullWidth.toggle(); InputStateMenu.refresh(menu, state: snapshot) }
-    @objc func toggleVariant(_ sender: Any?) { traditional.toggle(); InputStateMenu.refresh(menu, state: snapshot) }
-    @objc func togglePunctuation(_ sender: Any?) { chinesePunctuation.toggle(); InputStateMenu.refresh(menu, state: snapshot) }
+    @objc func performInputMenuCommand(_ sender: Any?) {
+        guard let command = InputStateMenu.command(from: sender) else { return }
+        switch command {
+        case .cycleMode: change(InputStateMenu.nextMode(mode))
+        case .mixed: change("mixed")
+        case .wubi: change("wubi")
+        case .pinyin: change("pinyin")
+        case .toggleEnglish: english.toggle()
+        case .toggleWidth: fullWidth.toggle()
+        case .toggleVariant: traditional.toggle()
+        case .togglePunctuation: chinesePunctuation.toggle()
+        }
+        InputStateMenu.refresh(menu, state: snapshot)
+    }
 }
 let owner = MenuOwner()
 let menu = owner.menu
+let commands = menu.items + menu.items[0].submenu!.items
+require(menu.items.count == 5 && menu.items[0].submenu!.items.count == 3, "visible hierarchy unchanged")
+require(commands.allSatisfy { $0.action == InputStateMenu.action && !$0.isHidden }, "shared action without hidden relays")
+require(Set(commands.map(\.tag)).count == commands.count, "commands have distinct stable identities")
+let unknown = NSMenuItem(title: "五笔", action: InputStateMenu.action, keyEquivalent: "")
+unknown.tag = 999
+for sender: Any in [unknown, [:] as [String: Any], "wubi"] {
+    owner.performInputMenuCommand(sender)
+    require(owner.mode == "mixed" && !owner.english, "malformed command must not mutate state")
+}
+let disabled = menu.items[0].submenu!.items[1]
+disabled.isEnabled = false
+owner.performInputMenuCommand([kIMKCommandMenuItemName as String: disabled])
+require(owner.mode == "mixed", "disabled command must not change mode")
+disabled.isEnabled = true
 require(menu.items.dropFirst().map(\.title) == ["中文输入", "半角输入", "简体输入", "中文标点"], "initial current-state titles")
 require(menu.items[0].accessibilityValue() as? String == "混输", "accessible current mode")
 require(menu.items.allSatisfy { $0.state == .off }, "state rows must not use checkmarks")
@@ -76,7 +98,7 @@ let submenu = menu.items[0].submenu!
 for (index, raw) in [(1,"wubi"),(2,"pinyin"),(0,"mixed")] {
     let item = submenu.items[index]
     // IMK's doCommand forwards its dictionary rather than the NSMenuItem sender.
-    _ = owner.perform(item.action!, with: ["IMKCommandMenuItemName": item] as NSDictionary)
+    _ = owner.perform(item.action!, with: [kIMKCommandMenuItemName as String: item] as NSDictionary)
     require(owner.mode == raw && submenu.items[index].state == .on, "dictionary callback explicit mode choice")
 }
 owner.permitsChange = false

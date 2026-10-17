@@ -32,10 +32,16 @@ class ControllerMenuTests(unittest.TestCase):
                            "CLANG_MODULE_CACHE_PATH": str(root / "cache")}
             commands = [
                 ["cargo", "build", "--release", "-p", "ime-ffi"],
+                ["clang", "-fmodules", "-fmodules-cache-path=" + str(root / "cache"),
+                 "-Wall", "-Wextra", "-Werror", "-c",
+                 str(ROOT / "platforms/macos/tests/IMKMenuServiceProbe.m"),
+                 "-o", str(root / "service-probe.o")],
                 ["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
+                 "-import-objc-header", str(ROOT / "platforms/macos/tests/IMKMenuServiceProbe.h"),
                  str(root / "main.swift"),
                  *[str(p) for p in sorted((ROOT / "platforms/macos/Sources").glob("*.swift"))
                    if p.name != "main.swift"], str(ROOT / "target/release/libime_ffi.a"),
+                 str(root / "service-probe.o"),
                  "-framework", "AppKit", "-framework", "InputMethodKit", "-o", str(binary)],
                 [str(binary), str(root)],
             ]

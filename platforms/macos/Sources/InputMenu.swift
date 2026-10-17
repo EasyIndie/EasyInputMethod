@@ -1,4 +1,5 @@
 import AppKit
+import InputMethodKit
 
 /// Current values, rebuilt from the session and the shared configuration snapshot.
 struct InputMenuState {
@@ -12,6 +13,12 @@ struct InputMenuState {
 
 /// Public AppKit menu contract; callbacks also accept IMK command dictionaries.
 enum InputStateMenu {
+    enum Command: Int {
+        case cycleMode = 1, toggleEnglish, toggleWidth, toggleVariant, togglePunctuation
+        case mixed, wubi, pinyin
+    }
+
+    static let action = NSSelectorFromString("performInputMenuCommand:")
     static let modes = [("mixed", "混输"), ("wubi", "五笔"), ("pinyin", "拼音")]
     static let shortcuts = ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
                             "hotkey.toggle_variant", "hotkey.toggle_punctuation"]
@@ -19,23 +26,35 @@ enum InputStateMenu {
     static func make(state: InputMenuState, target: AnyObject) -> NSMenu {
         let menu = NSMenu()
         menu.autoenablesItems = false
-        let actions = ["cycleInputMode:", "toggleEnglish:", "toggleWidth:", "toggleVariant:", "togglePunctuation:"]
-        for action in actions {
-            let item = NSMenuItem(title: "", action: NSSelectorFromString(action), keyEquivalent: "")
+        let commands: [Command] = [.cycleMode, .toggleEnglish, .toggleWidth, .toggleVariant, .togglePunctuation]
+        for command in commands {
+            let item = NSMenuItem(title: "", action: action, keyEquivalent: "")
+            item.tag = command.rawValue
             item.target = target
             menu.addItem(item)
         }
         let modesMenu = NSMenu(title: "输入模式")
         modesMenu.autoenablesItems = false
         for (index, mode) in modes.enumerated() {
-            let actions = ["chooseMixedMode:", "chooseWubiMode:", "choosePinyinMode:"]
-            let item = NSMenuItem(title: mode.1, action: NSSelectorFromString(actions[index]), keyEquivalent: "")
+            let item = NSMenuItem(title: mode.1, action: action, keyEquivalent: "")
+            item.tag = [Command.mixed, .wubi, .pinyin][index].rawValue
             item.target = target
             modesMenu.addItem(item)
         }
         menu.items[0].submenu = modesMenu
         refresh(menu, state: state)
         return menu
+    }
+
+    static func command(from sender: Any?) -> Command? {
+        let item: NSMenuItem?
+        if let direct = sender as? NSMenuItem {
+            item = direct
+        } else {
+            item = (sender as? [AnyHashable: Any])?[kIMKCommandMenuItemName as String] as? NSMenuItem
+        }
+        guard let item, item.isEnabled, item.action == action else { return nil }
+        return Command(rawValue: item.tag)
     }
 
     static func nextMode(_ current: String) -> String {
