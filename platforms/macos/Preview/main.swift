@@ -569,13 +569,13 @@ if CommandLine.arguments.contains("--smoke-test") {
     // 模式：默认 ctrl+shift+m。
     keys("m", flags: [.control, .shift])
     guard session.mode == "mixed" else { exit(1) }
-    // 中英标点：默认 ctrl+.（写回配置）。
+    // 中英标点：默认 ctrl+shift+.（写回配置）。
     let punctuationBefore = ImeConfig.string("input.punctuation")
-    keys(".", flags: [.control])
+    keys(".", flags: [.control, .shift])
     guard ImeConfig.string("input.punctuation") != punctuationBefore else {
-        fputs("Ctrl+. 未切换中英标点。\n", stderr); exit(1)
+        fputs("Ctrl+Shift+. 未切换中英标点。\n", stderr); exit(1)
     }
-    keys(".", flags: [.control])
+    keys(".", flags: [.control, .shift])
     guard ImeConfig.string("input.punctuation") == punctuationBefore else { exit(1) }
     // 组合态 , / . 翻页（对齐搜狗/微信）。
     session.setMode("mixed"); view.clear(); keys("a")
@@ -813,7 +813,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     let lockedBytes = try Data(contentsOf: external)
     let configLock = URL(fileURLWithPath: external.path + ".lock")
     try Data("test lock".utf8).write(to: configLock, options: .withoutOverwriting)
-    for (text, flags) in [("m", NSEvent.ModifierFlags([.control, .shift])), (".", .control), ("t", [.control, .shift])] {
+    for (text, flags) in [("m", NSEvent.ModifierFlags([.control, .shift])), (".", [.control, .shift]), ("t", [.control, .shift])] {
         guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
             timestamp: 0, windowNumber: 0, context: nil, characters: text,
             charactersIgnoringModifiers: text, isARepeat: false, keyCode: 0),

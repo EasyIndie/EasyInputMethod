@@ -163,9 +163,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         key: "hotkey.toggle_punctuation",
         value_type: ValueType::String,
         enum_labels_zh: &[],
-        default: "\"ctrl+.\"",
+        default: "\"ctrl+shift+.\"",
         title_zh: "中英标点切换",
-        doc_zh: "组合键如 ctrl+.（默认，对齐搜狗/微软） | none = 关闭",
+        doc_zh: "组合键如 ctrl+shift+.（默认；单个 ctrl+. 会被系统当作取消键吞掉） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
