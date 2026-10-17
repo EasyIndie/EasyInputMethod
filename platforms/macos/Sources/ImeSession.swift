@@ -204,7 +204,7 @@ final class ImeSession {
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 
-    /// 中英标点切换：翻转 `input.punctuation` 并写回配置（对齐搜狗/微软 `Ctrl+.`）。
+    /// 中英标点切换：翻转 `input.punctuation` 并写回配置（默认 `Ctrl+.`）。
     @discardableResult
     func togglePunctuation() -> Bool {
         let next =
@@ -215,7 +215,7 @@ final class ImeSession {
         return true
     }
 
-    /// 简/繁切换：翻转 `input.chinese_variant` 并写回配置（对齐搜狗/微软 `Ctrl+Shift+F`）。
+    /// 简/繁切换：翻转 `input.chinese_variant` 并写回配置（默认 `Ctrl+Shift+T`，避开编辑器 `Ctrl+Shift+F`）。
     @discardableResult
     func toggleVariant() -> Bool {
         let next =
@@ -269,7 +269,7 @@ final class ImeSession {
     }
 
     /// 判断一个组合键设置是否匹配当前按键（`space` 用物理键码 49 判定）。
-    private func matches(_ key: String, _ event: NSEvent) -> Bool {
+    func matches(_ key: String, _ event: NSEvent) -> Bool {
         ImeConfig.hotkey(key).matches(event)
     }
 

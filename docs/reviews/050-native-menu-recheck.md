@@ -55,3 +55,9 @@ MENU_DIAGNOSTIC local parent-enabled=false child-enabled=false responds-wubi=tru
 ADR-201最小修复只放开模式父项、其自定义视图及三种子项；其余四个会话状态项保持原启用条件。真实私有IMK回归先失败于`mode parent enabled before activation`，修复后验证冷控制器子项持久化、父项真实视图accessibilityPerformPress循环、首次激活状态一致和原停用重激活路径通过。菜单组件测试及make verify零诊断通过、176产物无网络符号；临时工具编译时两处语法错误已更正，未冒记首次编译成功。
 
 本轮最终已恢复原正式包abdb83f（PID20605，执行文件SHA仍c4a070…93151），刷新同一输入源注册，codesign深度严格通过；原模式mixed、原输入源ABC及完整启用集合、config/词库摘要均保持，自有文档已关闭，原未命名窗口保留。最后恢复后的新宿主产品菜单尚未再激活复核；此前原签名包一次激活核验为可见，不能替代最后一次菜单/实际输入验收。恢复摘要见build/menu-proxy-diagnostics-20261017/restoration-result.json。修复尚未安装，临时日志与标准父项实验均不进入产品代码。原正式包条目已启用但切换无效及右对齐问题仍待，正式1PASS/22BLOCKED不提升。
+
+后续补验：新增冷IMK回归在-O/-whole-module-optimization下实际运行1项并通过（首个临时加载器运行0项不算通过，已修正并保留工具输出）。PR #52的f96e677精确提交check/dco/fuzz/macos四项全绿，CI39005351788同工具链源码逐字节复现通过，合入a5d456b；签名公证39005948646进行中。加入修复后的临时current候选再次尝试两次有界激活，仍未取得产品菜单，未进入模式鼠标点击，不能记系统验证通过。最终已恢复原签名abdb83f/PID21633并刷新同一注册，ABC/mixed/config/词库/启用集合保持，自有窗口关闭；摘要final-restoration-result.json。临时探针连接不稳定的原因尚未证实，不据此作平台或签名归因。
+
+签名公证工作流39005948646最终成功，新a5d456b正式包下载到build/rc-ui-a5d456b-signed，validate-release（含摘要、源码提交与双架构）、codesign深度严格、stapler、Gatekeeper（Notarized Developer ID）均通过。没有运行或安装该新包；已请求用户确认正式升级B及当时空闲，因本轮此前确认限定临时诊断后恢复原包。正式实机结果仍不提升。
+
+用户随后已确认正式升级B。安装前CUA读取返回设备锁屏，本轮未停止旧宿主或安装，已请求用户手动解锁；授权继续有效。专用准备目录build/formal-menu-a5d456b-b，实际数据/源基线应解锁后重新读取，不能复用旧摘要。

@@ -11,7 +11,7 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 17,
+guard panel.sectionCount == 4, panel.rowCount == options.count, options.count == 19,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
@@ -19,7 +19,7 @@ panel.selectSectionForTesting(0)
 guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
 panel.selectSectionForTesting(1)
 guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "appearance.theme", "candidate.show_wubi_learning"] else { fail("candidate design group order") }
-LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有17项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
+LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有19项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
 guard let countOption = options.first(where: { $0.key == "candidate.count" }) else { fail("count schema") }
 let numberRow = SettingRow(option: countOption)
 numberRow.reload()
@@ -36,12 +36,13 @@ panel.reportSaved()
 LocalAcceptanceEvidence.record("settings.count", expected: "接受3/9/7，拒绝空/0/10/小数/字母并保持7", actual: ["configured": ImeConfig.int("candidate.count") ?? -1, "control": numberRow.numberValueForTesting ?? "missing"])
 panel.selectSectionForTesting(2)
 guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
-for (key, title) in [("hotkey.toggle_width", "⌃⇧空格"), ("hotkey.toggle_wubi_learning", "⌃⇧L"), ("hotkey.toggle_english", "⇧")] {
+for (key, title) in [("hotkey.toggle_width", "⌃⇧空格"), ("hotkey.toggle_wubi_learning", "⌃⇧L"), ("hotkey.toggle_english", "⇧"),
+                     ("hotkey.open_settings", "⌃,"), ("hotkey.open_about", "⌃⇧A")] {
     panel.rowForTesting(key)?.reload() // The visible show path reloads rows after prepare.
     guard let row = panel.rowForTesting(key), row.shortcutTitleForTesting == title else { fail("shortcut title " + key + " actual=" + (panel.rowForTesting(key)?.shortcutTitleForTesting ?? "missing") + " configured=" + (ImeConfig.string(key) ?? "missing")) }
 }
 guard let learningRow = panel.rowForTesting("hotkey.toggle_wubi_learning") else { fail("learning row") }
-LocalAcceptanceEvidence.record("settings.shortcuts", expected: "宽度/学习/中英按钮显示新默认且无省略号", actual: ["hotkey.toggle_width", "hotkey.toggle_wubi_learning", "hotkey.toggle_english"].map { panel.rowForTesting($0)?.shortcutTitleForTesting ?? "missing" })
+LocalAcceptanceEvidence.record("settings.shortcuts", expected: "宽度/学习/中英/设置/关于按钮显示新默认且无省略号", actual: ["hotkey.toggle_width", "hotkey.toggle_wubi_learning", "hotkey.toggle_english", "hotkey.open_settings", "hotkey.open_about"].map { panel.rowForTesting($0)?.shortcutTitleForTesting ?? "missing" })
 for (value, title) in [("", "未设置"), ("ctrl+shift+l", "⌃⇧L")] {
     guard learningRow.commitTextForTesting(value) else { fail("shortcut write") }
     let deadline = Date().addingTimeInterval(1)
@@ -114,7 +115,7 @@ LocalAcceptanceEvidence.record("settings.dictionary-session", expected: "绑定�
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 17, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 19, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
-LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，17项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
+LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，19项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

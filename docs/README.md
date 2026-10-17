@@ -91,3 +91,5 @@ MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；
 正式包账号数据隔离前置及边界见 [报告043](reviews/043-formal-account-isolation-gate.md)。
 
 候选/学习区单动作保护及候选收口见 [报告044](reviews/044-guarded-candidate-learning-actions.md)。
+
+[标准模式菜单061](reviews/061-standard-native-mode-menu.md)：停止旧父项混合交互诊断，改用标准系统展开和显式选择，三级证据及实机发布边界。

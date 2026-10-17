@@ -41,6 +41,13 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     }
 
     func refresh() {
+        if menu.items.count >= 8 {
+            for (item, key) in [(menu.items[6], "hotkey.open_settings"), (menu.items[7], "hotkey.open_about")] {
+                item.keyEquivalent = ""
+                item.keyEquivalentModifierMask = []
+                _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
+            }
+        }
         for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
@@ -84,10 +91,16 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
         changed()
     }
 
-    @objc func cycleInputMode(_ sender: Any?) { selectMode(InputStateMenu.nextMode(session.mode)) }
-    @objc func chooseMixedMode(_ sender: Any?) { selectMode("mixed") }
-    @objc func chooseWubiMode(_ sender: Any?) { selectMode("wubi") }
-    @objc func choosePinyinMode(_ sender: Any?) { selectMode("pinyin") }
+    @objc func performInputMenuCommand(_ sender: Any?) {
+        guard let command = InputStateMenu.command(from: sender) else { return }
+        switch command {
+        case .cycleMode: selectMode(InputStateMenu.nextMode(session.mode))
+        case .toggleEnglish: toggleEnglish(sender)
+        case .toggleWidth: toggleWidth(sender)
+        case .toggleVariant: toggleVariant(sender)
+        case .togglePunctuation: togglePunctuation(sender)
+        }
+    }
     @objc func toggleEnglish(_ sender: Any?) { session.toggleEnglish(); changed() }
     @objc func toggleWidth(_ sender: Any?) { session.toggleWidth(); changed() }
     @objc func toggleVariant(_ sender: Any?) { changed(session.toggleVariant()) }

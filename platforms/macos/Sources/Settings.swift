@@ -639,7 +639,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
                 ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
         } else if scopes.contains(3) {
             groups = [("快捷键", ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
-                "hotkey.toggle_punctuation", "hotkey.toggle_variant", "hotkey.toggle_wubi_learning"])]
+                "hotkey.toggle_punctuation", "hotkey.toggle_variant",
+                "hotkey.open_settings", "hotkey.open_about", "hotkey.toggle_wubi_learning"])]
         } else {
             groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
                 ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning"])]

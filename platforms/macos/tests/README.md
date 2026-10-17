@@ -154,4 +154,4 @@ python3 platforms/macos/tests/formal-profile-guard.py check --candidate /path/fi
 
 ## 正式控制器命令与模式同步回归（ADR-199）
 
-`python3 platforms/macos/tests/test-controller-menu.py`在未注册的私有app内创建真实IMKServer/控制器，使用临时配置与资源验证doCommand父/子项分发及停用期间配置改变后的重激活同步。不会注册/选择输入源、发键或读取现用词库；它不能证明系统状态栏代理传递view、原生菜单保持打开或右对齐。
+`python3 platforms/macos/tests/test-controller-menu.py`在未注册的私有app内创建真实IMKServer/控制器，使用临时配置与资源验证服务接收阶段的模式行循环/四状态分派，以及冷启动、激活与重激活同步。`IMKMenuServiceProbe`仅在测试中模拟服务输入元数据，私有调用不得进入产品。不会注册/选择输入源、发键或读取现用词库；它不能证明完整系统菜单UI及客户端回传身份。ADR-206取消模式子菜单（报告067证明IMK不投递子菜单子项命令），恢复单行循环、状态右对齐、无箭头；组件报告以structure/cycle/layout替代标准子菜单断言，历史截图不删除。

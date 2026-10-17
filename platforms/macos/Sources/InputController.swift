@@ -211,6 +211,13 @@ final class LampyrisInputController: IMKInputController {
                 item.keyEquivalentModifierMask = []
             }
         }
+        if menu.items.count >= 8 {
+            for (item, key) in [(menu.items[6], "hotkey.open_settings"), (menu.items[7], "hotkey.open_about")] {
+                item.keyEquivalent = ""
+                item.keyEquivalentModifierMask = []
+                _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
+            }
+        }
         InputStateMenu.refresh(menu, state: inputMenuState())
     }
 
@@ -270,15 +277,17 @@ final class LampyrisInputController: IMKInputController {
         AboutUI.show()
     }
 
-    @objc private func cycleInputMode(_ sender: Any?) {
-        applyInputMode(InputStateMenu.nextMode(session?.mode ?? ImeConfig.string("mode") ?? "mixed"))
+    @objc private func performInputMenuCommand(_ sender: Any?) {
+        guard let command = InputStateMenu.command(from: sender) else { return }
+        switch command {
+        case .cycleMode:
+            applyInputMode(InputStateMenu.nextMode(session?.mode ?? ImeConfig.string("mode") ?? "mixed"))
+        case .toggleEnglish: toggleEnglish(sender)
+        case .toggleWidth: toggleWidth(sender)
+        case .toggleVariant: toggleVariant(sender)
+        case .togglePunctuation: togglePunctuation(sender)
+        }
     }
-
-    // IMK supplies a command dictionary, while local AppKit supplies the item.
-    // Explicit selectors need neither a sender cast nor serialized representedObject.
-    @objc private func chooseMixedMode(_ sender: Any?) { applyInputMode("mixed") }
-    @objc private func chooseWubiMode(_ sender: Any?) { applyInputMode("wubi") }
-    @objc private func choosePinyinMode(_ sender: Any?) { applyInputMode("pinyin") }
 
     private func applyInputMode(_ next: String) {
         defer { refreshStateMenu() }
@@ -329,6 +338,14 @@ final class LampyrisInputController: IMKInputController {
             session.setMode(mode)
             clearMarked(client)
             candidateWindow?.hide()
+        }
+        if session.matches("hotkey.open_settings", event) {
+            showSettings()
+            return true
+        }
+        if session.matches("hotkey.open_about", event) {
+            showAbout()
+            return true
         }
         let shortcut = session.shortcut(event, persistMode: true)
         if shortcut.consumed {
