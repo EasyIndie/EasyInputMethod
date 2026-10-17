@@ -204,7 +204,7 @@ final class ImeSession {
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
     func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
 
-    /// 中英标点切换：翻转 `input.punctuation` 并写回配置（对齐搜狗/微软 `Ctrl+.`）。
+    /// 中英标点切换：翻转 `input.punctuation` 并写回配置（默认 `Ctrl+Shift+P`）。
     @discardableResult
     func togglePunctuation() -> Bool {
         let next =
