@@ -40,8 +40,10 @@ def main():
     original = termios.tcgetattr(descriptor)
     received = bytearray()
     outcome = 'timeout'
-    def interrupted(signum, _frame):
-        raise InterruptedError(signum)
+    was_interrupted = False
+    def interrupted(_signum, _frame):
+        nonlocal was_interrupted
+        was_interrupted = True
     signal.signal(signal.SIGINT, interrupted)
     signal.signal(signal.SIGTERM, interrupted)
     try:
@@ -52,6 +54,9 @@ def main():
         write_private(root / 'ready.json', {'pid': os.getpid(), 'tty': os.ttyname(descriptor)})
         deadline = time.monotonic() + 30
         while time.monotonic() < deadline:
+            if was_interrupted:
+                outcome = 'interrupted'
+                break
             if (root / 'stop').exists():
                 outcome = 'stopped'
                 break

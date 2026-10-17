@@ -38,12 +38,15 @@ for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
     guard let icon = NSImage(contentsOfFile: "assets/icons/yinghuo-official-app.icns") else { fail("official icon") }
     save(AboutPanel.shared.renderForTesting(appearance: appearance, icon: icon), "about-\(theme)")
     guard !AboutPanel.shared.isVisibleForTesting else { fail("about offscreen") }
-    guard let aboutWindow = NSApp.windows.first(where: { $0.title == "关于萤火虫" }), let content = aboutWindow.contentView else { fail("about content") }
+    guard let aboutWindow = NSApp.windows.first(where: { $0.title == "关于" }), let content = aboutWindow.contentView else { fail("about content") }
     let actions = content.subviews.compactMap { $0 as? NSButton }
     guard actions.map(\.title) == ["复制诊断", "反馈问题"],
           actions.allSatisfy({ $0.bezelStyle == .rounded && $0.controlSize == .regular }),
           let feedback = actions.last as? NSPopUpButton,
           feedback.itemTitles == ["反馈问题", "报告问题", "报告安全漏洞"] else { fail("native about action labels/styles") }
+    guard feedback.alignment == .center,
+          actions.allSatisfy({ $0.frame.width < 120 }),
+          abs((actions.first!.frame.minX + feedback.frame.maxX) / 2 - content.bounds.midX) < 1 else { fail("about action sizing and centering") }
     LocalAcceptanceEvidence.record("tools.about." + theme, expected: "复制/反馈按钮无省略号，原生rounded/regular，反馈渠道完整", actual: ["buttons": actions.map(\.title), "channels": feedback.itemTitles, "widths": actions.map { $0.frame.width }, "visible": aboutWindow.isVisible])
     InfoWindow.simulateOpenForTesting(FeedbackUI.issuesURL, succeeded: false)
     guard InfoWindow.statusForTesting.contains("打开失败") else { fail("failed link state") }
@@ -72,6 +75,6 @@ let board = NSPasteboard.withUniqueName()
 defer { board.releaseGlobally() }
 guard InfoWindow.copy("独有诊断文本", to: board), board.string(forType: .string) == "独有诊断文本" else { fail("private copy") }
 guard AboutPanel.shared.copyDiagnostics(to: board), board.string(forType: .string) == AboutUI.text(),
-      AboutPanel.shared.statusForTesting.contains("尚未发送"), AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("零遥测") else { fail("about contract") }
-LocalAcceptanceEvidence.record("tools.clipboard", expected: "诊断复制到命名私有剪贴板且提示尚未发送", actual: ["private_board_matches": board.string(forType: .string) == AboutUI.text(), "status": AboutPanel.shared.statusForTesting])
+      AboutPanel.shared.statusForTesting == "诊断信息已复制", AboutUI.text().contains("GPL-3.0"), AboutUI.text().contains("零遥测") else { fail("about contract") }
+LocalAcceptanceEvidence.record("tools.clipboard", expected: "诊断复制到命名私有剪贴板且提示诊断信息已复制", actual: ["private_board_matches": board.string(forType: .string) == AboutUI.text(), "status": AboutPanel.shared.statusForTesting])
 print("PASS tools-presentation: real labelled form, destructive cancel, retained errors, about/lookup long content, native link fallback/success, private clipboard, hidden light/dark")

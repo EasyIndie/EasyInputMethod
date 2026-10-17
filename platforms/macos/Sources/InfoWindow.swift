@@ -227,7 +227,7 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         guard panel == nil else { return }
         let panel = NSPanel(contentRect: NSRect(x: 0, y: 0, width: 450, height: 324),
             styleMask: [.titled, .closable], backing: .buffered, defer: false)
-        panel.title = "关于萤火虫"
+        panel.title = "关于"
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
         panel.isReleasedWhenClosed = false
@@ -256,13 +256,21 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         let copy = NSButton(title: "复制诊断", target: self, action: #selector(copyDiagnostics(_:)))
         copy.bezelStyle = .rounded
         copy.controlSize = .regular
-        copy.frame = NSRect(x: 99, y: 229, width: 120, height: 30)
+        copy.sizeToFit()
         copy.setAccessibilityHelp("仅复制本地版本与环境信息，不发送任何诊断。")
         content.addSubview(copy)
         let feedback = NSPopUpButton(frame: NSRect(x: 231, y: 229, width: 120, height: 30), pullsDown: true)
         feedback.bezelStyle = .rounded
+        feedback.alignment = .center
         feedback.controlSize = .regular
-        feedback.addItems(withTitles: ["反馈问题", "报告问题", "报告安全漏洞"])
+        feedback.addItem(withTitle: "反馈问题")
+        feedback.sizeToFit()
+        feedback.addItems(withTitles: ["报告问题", "报告安全漏洞"])
+        let gap: CGFloat = 12
+        let groupWidth = copy.frame.width + gap + feedback.frame.width
+        let start = (content.bounds.width - groupWidth) / 2
+        copy.setFrameOrigin(NSPoint(x: start, y: 229))
+        feedback.setFrameOrigin(NSPoint(x: start + copy.frame.width + gap, y: 229))
         feedback.target = self
         feedback.action = #selector(openFeedback(_:))
         feedback.setAccessibilityLabel("选择问题或安全漏洞反馈渠道")
@@ -296,7 +304,7 @@ final class AboutPanel: NSObject, NSWindowDelegate {
     @discardableResult
     func copyDiagnostics(to pasteboard: NSPasteboard) -> Bool {
         let copied = InfoWindow.copy(AboutUI.text(), to: pasteboard)
-        status.stringValue = copied ? "已复制诊断；尚未发送。" : "复制失败，请重试。"
+        status.stringValue = copied ? "诊断信息已复制" : "复制失败，请重试。"
         if let panel, panel.isVisible { NSAccessibility.post(element: status, notification: .valueChanged) }
         return copied
     }

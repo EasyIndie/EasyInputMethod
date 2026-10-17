@@ -151,3 +151,7 @@ python3 platforms/macos/tests/formal-profile-guard.py check --candidate /path/fi
 计划结构对应GuardedPressPlan：operatorUID/testUID/home/sourceID；runDirectory必须为700私有的lampyris-formal-UUID目录，fixture为其直接子文件（600、无符号/硬链接），fixtureTitle匹配文件名；client/host包含pid、executable规范绝对路径、sha256、launchedAt（实际launchDate.timeIntervalSince1970）。target包含windowIndex、childPath索引数组、windowTitle、windowFrame（NSStringFromRect格式）、label（AXDescription优先，非空时精确匹配）。绑定必须来自当次已验证自有测试对象，不能猜测PID/子路径或使用旧运行值。
 
 当前仅支持com.apple.TextEdit和正式cn.jokerhub.inputmethod.Lampyris宿主内AXButton；输入源固定正式.default。核对账号/GUI/权限、私有文件、客户端/宿主实际执行文件摘要和启动时间、前台/焦点文档/文本域、输入源，再解析明确窗口/控件路径；解析后再次核对上下文与目标。失败无后续Press、无抢焦点、无模糊匹配/坐标点击。跨进程检查与动作非系统原子事务，必须保持空闲；源与文档恢复由外层驱动负责，不能将单动作返回成功等同于业务或正式MVP通过。系统菜单代理、滚动、按键和VoiceOver不在此入口范围。
+
+## 正式控制器命令与模式同步回归（ADR-199）
+
+`python3 platforms/macos/tests/test-controller-menu.py`在未注册的私有app内创建真实IMKServer/控制器，使用临时配置与资源验证doCommand父/子项分发及停用期间配置改变后的重激活同步。不会注册/选择输入源、发键或读取现用词库；它不能证明系统状态栏代理传递view、原生菜单保持打开或右对齐。
