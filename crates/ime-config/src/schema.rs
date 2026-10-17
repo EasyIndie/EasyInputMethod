@@ -163,9 +163,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         key: "hotkey.toggle_punctuation",
         value_type: ValueType::String,
         enum_labels_zh: &[],
-        default: "\"ctrl+.\"",
+        default: "\"ctrl+shift+p\"",
         title_zh: "中英标点切换",
-        doc_zh: "组合键如 ctrl+.（默认，对齐搜狗/微软） | none = 关闭",
+        doc_zh: "组合键如 ctrl+shift+p（默认） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {
@@ -181,9 +181,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         key: "hotkey.open_settings",
         value_type: ValueType::String,
         enum_labels_zh: &[],
-        default: "\"ctrl+,\"",
+        default: "\"ctrl+shift+s\"",
         title_zh: "打开设置",
-        doc_zh: "组合键如 ctrl+,（默认） | none = 关闭；与菜单项的快捷键提示同源",
+        doc_zh: "组合键如 ctrl+shift+s（默认） | none = 关闭；与菜单项的快捷键提示同源",
         scope: Scope::Hotkey,
     },
     OptionSpec {
