@@ -269,7 +269,7 @@ final class ImeSession {
     }
 
     /// 判断一个组合键设置是否匹配当前按键（`space` 用物理键码 49 判定）。
-    private func matches(_ key: String, _ event: NSEvent) -> Bool {
+    func matches(_ key: String, _ event: NSEvent) -> Bool {
         ImeConfig.hotkey(key).matches(event)
     }
 

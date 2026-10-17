@@ -178,6 +178,24 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Hotkey,
     },
     OptionSpec {
+        key: "hotkey.open_settings",
+        value_type: ValueType::String,
+        enum_labels_zh: &[],
+        default: "\"ctrl+,\"",
+        title_zh: "打开设置",
+        doc_zh: "组合键如 ctrl+,（默认） | none = 关闭；与菜单项的快捷键提示同源",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
+        key: "hotkey.open_about",
+        value_type: ValueType::String,
+        enum_labels_zh: &[],
+        default: "\"ctrl+shift+a\"",
+        title_zh: "关于",
+        doc_zh: "组合键如 ctrl+shift+a（默认） | none = 关闭；与菜单项的快捷键提示同源",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
         key: "input.punctuation",
         value_type: ValueType::Enum {
             values: &["chinese", "english"],

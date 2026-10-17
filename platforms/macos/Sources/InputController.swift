@@ -211,6 +211,13 @@ final class LampyrisInputController: IMKInputController {
                 item.keyEquivalentModifierMask = []
             }
         }
+        if menu.items.count >= 8 {
+            for (item, key) in [(menu.items[6], "hotkey.open_settings"), (menu.items[7], "hotkey.open_about")] {
+                item.keyEquivalent = ""
+                item.keyEquivalentModifierMask = []
+                _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
+            }
+        }
         InputStateMenu.refresh(menu, state: inputMenuState())
     }
 
@@ -331,6 +338,14 @@ final class LampyrisInputController: IMKInputController {
             session.setMode(mode)
             clearMarked(client)
             candidateWindow?.hide()
+        }
+        if session.matches("hotkey.open_settings", event) {
+            showSettings()
+            return true
+        }
+        if session.matches("hotkey.open_about", event) {
+            showAbout()
+            return true
         }
         let shortcut = session.shortcut(event, persistMode: true)
         if shortcut.consumed {

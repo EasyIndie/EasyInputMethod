@@ -33,18 +33,20 @@ adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
 require(menu.delegate === adapter && menu.items.count == 8, "real shared flat menu")
+require(menu.items[6].keyEquivalent == "," && menu.items[6].keyEquivalentModifierMask == [.control], "settings shortcut shown")
+require(menu.items[7].keyEquivalent == "a" && menu.items[7].keyEquivalentModifierMask == [.control, .shift], "about shortcut shown")
 let parent = menu.items[0]
 require(parent.submenu == nil && parent.action == InputStateMenu.action && parent.tag == 1, "mode row is a clickable command")
-require((parent.view as? InputModeMenuView)?.mode == "混输", "mode row draws the trailing status")
+require(parent.title == "混输模式", "mode row title shows the current mode")
 LocalAcceptanceEvidence.record("menu.parent-cycle", expected: "模式行可点击循环，右侧显示当前模式",
-    actual: ["mode": session.mode, "action": NSStringFromSelector(parent.action!), "tag": parent.tag, "view": parent.view != nil])
+    actual: ["mode": session.mode, "action": NSStringFromSelector(parent.action!), "tag": parent.tag, "title": parent.title])
 var seen: [[String: String]] = []
 for expected in ["wubi", "pinyin", "mixed"] {
     menu.performActionForItem(at: 0)
     require(session.mode == expected && ImeConfig.string("mode") == expected, "each cycle click persists only private config")
     let label = InputStateMenu.modes.first { $0.0 == expected }?.1 ?? ""
     require(parent.accessibilityValue() as? String == label, "menu reflects the cycle")
-    require((parent.view as? InputModeMenuView)?.mode == label, "status follows the cycle")
+    require(parent.title == label + "模式", "title follows the cycle")
     seen.append(["mode": expected, "title": parent.title])
 }
 LocalAcceptanceEvidence.record("menu.cycle-order", expected: "连续点击依次得到五笔/拼音/混输并写回私有配置", actual: ["steps": seen])

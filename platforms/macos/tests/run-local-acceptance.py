@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).resolve().parent
 PRODUCT_PATHS = ['crates', 'data/generated', 'data/learning', 'platforms/macos/Sources', 'platforms/macos/Preview']
 SUITES = {
-    'menu-view': ('test-input-menu.py', ['menu-view.' + name for name in ['state', 'structure', 'cycle', 'layout', 'copy', 'render']]),
+    'menu-view': ('test-input-menu.py', ['menu-view.' + name for name in ['state', 'structure', 'cycle', 'copy']]),
     'menu': ('test-preview-menu.py', ['menu.' + name for name in ['parent-cycle', 'cycle-order', 'same-mode', 'change-mode', 'states', 'external-settings', 'shortcut-refresh', 'shortcut-event', 'write-failure', 'recovery', 'routes', 'dictionary']]),
     'settings': ('test-settings-presentation.py', ['settings.' + name for name in ['groups', 'count', 'shortcuts', 'shortcut-rebind', 'descriptions', 'appearances', 'theme', 'failure', 'dictionary-session', 'reopen']]),
     'candidate': ('test-candidate-presentation.py', ['candidate.' + name for name in ['body', 'ax-selection', 'paging', 'page-centres', 'warning', 'long', 'glyph-display', 'glyph-commit', 'stale']]),

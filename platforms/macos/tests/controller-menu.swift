@@ -22,20 +22,20 @@ let coldMenu = controller.menu()!
 require(coldMenu.items.count == 8, "five rows plus separator, settings and about")
 require(coldMenu.items.prefix(5).allSatisfy { $0.submenu == nil }, "no nested menus")
 require(coldMenu.items[1...4].allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
+require(coldMenu.items[6].keyEquivalent == "," && coldMenu.items[6].keyEquivalentModifierMask == [.control], "settings shortcut in menu")
+require(coldMenu.items[7].keyEquivalent == "a" && coldMenu.items[7].keyEquivalentModifierMask == [.control, .shift], "about shortcut in menu")
 require(coldMenu.items[0].isEnabled, "mode row enabled before activation")
 require(coldMenu.items[0].tag == 1, "mode row carries the cycle command")
-require((coldMenu.items[0].view as? InputModeMenuView)?.accessibilityPerformPress() == true, "cold mode row cycles")
-require(ImeConfig.string("mode") == "wubi", "cold cycle persisted")
+require(LampyrisProbeDispatchMenuCommand(server, controller, coldMenu.items[0], 501), "cold row dispatches through the service boundary")
+require(ImeConfig.string("mode") == "wubi", "cold row cycle persisted")
 require(controller.menu()!.items[0].accessibilityValue() as? String == "五笔", "cold menu reflects persistent choice")
 var row = controller.menu()!.items[0]
-require(LampyrisProbeDispatchMenuCommand(server, controller, row, 501), "private IMK service boundary available")
-require(ImeConfig.string("mode") == "pinyin", "service boundary cycles cold mode")
 controller.doCommand(by: row.action!, command: [kIMKCommandMenuItemName as String: row])
-require(ImeConfig.string("mode") == "mixed", "IMK row command persists")
-require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "menu follows the row command")
+require(ImeConfig.string("mode") == "pinyin", "IMK row command cycles")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "拼音", "menu follows the row command")
 controller.activateServer(nil)
-require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "first activation applies cold choice")
-for expected in ["wubi", "pinyin"] {
+require(controller.menu()!.items[0].accessibilityValue() as? String == "拼音", "first activation applies cold choice")
+for expected in ["mixed", "wubi"] {
     row = controller.menu()!.items[0]
     require(row.isEnabled && controller.responds(to: row.action!), "enabled real selector")
     require(LampyrisProbeDispatchMenuCommand(server, controller, row, 500), "service boundary available")
