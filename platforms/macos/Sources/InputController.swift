@@ -35,13 +35,13 @@ final class LampyrisInputController: IMKInputController {
         if session == nil {
             session = makeSession()
         }
-        session?.prepare()
         if candidateWindow == nil { candidateWindow = CandidateWindow() }
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in
             self?.configChanged(key)
         }
-        presentConfigError()
-        presentDataError()
+        // The observer is removed while inactive. Reapply mode as well as options
+        // when a previously created client session becomes active again.
+        configChanged("mode")
     }
 
     override func deactivateServer(_ sender: Any!) {
