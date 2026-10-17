@@ -27,7 +27,6 @@ final class MenuOwner: NSObject {
     @objc func performInputMenuCommand(_ sender: Any?) {
         guard let command = InputStateMenu.command(from: sender) else { return }
         switch command {
-        case .cycleMode: change(InputStateMenu.nextMode(mode))
         case .mixed: change("mixed")
         case .wubi: change("wubi")
         case .pinyin: change("pinyin")
@@ -41,7 +40,7 @@ final class MenuOwner: NSObject {
 }
 let owner = MenuOwner()
 let menu = owner.menu
-let commands = menu.items + menu.items[0].submenu!.items
+let commands = Array(menu.items.dropFirst()) + menu.items[0].submenu!.items
 require(menu.items.count == 5 && menu.items[0].submenu!.items.count == 3, "visible hierarchy unchanged")
 require(commands.allSatisfy { $0.action == InputStateMenu.action && !$0.isHidden }, "shared action without hidden relays")
 require(Set(commands.map(\.tag)).count == commands.count, "commands have distinct stable identities")
@@ -59,50 +58,32 @@ disabled.isEnabled = true
 require(menu.items.dropFirst().map(\.title) == ["中文输入", "半角输入", "简体输入", "中文标点"], "initial current-state titles")
 require(menu.items[0].accessibilityValue() as? String == "混输", "accessible current mode")
 require(menu.items.allSatisfy { $0.state == .off }, "state rows must not use checkmarks")
-require(menu.items[0].action != nil && menu.items[0].submenu?.items.count == 3, "parent action and native submenu coexist")
-LocalAcceptanceEvidence.record("menu-view.state", expected: "四状态显示当前值且无勾选，模式父子入口同时存在", actual: ["titles": menu.items.dropFirst().map(\.title), "checks": menu.items.map { $0.state.rawValue }, "mode": menu.items[0].accessibilityValue() as? String ?? ""])
-for expected in ["五笔", "拼音", "混输"] {
-    menu.performActionForItem(at: 0)
-    require(menu.items[0].accessibilityValue() as? String == expected, "parent cycle refreshes same menu")
-    require((menu.items[0].view as? InputModeMenuView)?.mode == expected, "plain trailing status")
-    require(menu.items[0].title == "输入模式：" + expected, "native proxy fallback retains mode")
-    require(menu.items[0].toolTip == nil, "no mode hover hint")
-    if #available(macOS 14.0, *) {
-        require(menu.items[0].badge == nil, "no tag styling")
-    }
-    require(menu.items[0].submenu!.items.filter { $0.state == .on }.map(\.title) == [expected], "unique submenu check")
-}
-let wideItem = NSMenuItem(title: String(repeating: "较长的菜单条目", count: 6), action: nil, keyEquivalent: "")
-menu.addItem(wideItem)
-InputStateMenu.refresh(menu, state: owner.snapshot)
-require(menu.items[0].accessibilityValue() as? String == "混输", "wide menu retains current mode")
-if #available(macOS 14.0, *) {
-    require(menu.items[0].badge == nil, "wide menu has no badge")
-}
-let row = menu.items[0].view as! InputModeMenuView
-var layoutFrames: [[String: Any]] = []
-for width: CGFloat in [160, 240, 360] {
-    row.setFrameSize(NSSize(width: width, height: 24))
-    require(row.arrowFrame.minX - row.statusFrame.maxX == 11, "status stays next to arrow across menu widths")
-    require(row.statusFrame.maxY <= row.bounds.maxY && row.statusFrame.minX > 90, "status avoids title and row bounds")
-    layoutFrames.append(["width": width, "status": NSStringFromRect(row.statusFrame), "arrow": NSStringFromRect(row.arrowFrame)])
-}
-LocalAcceptanceEvidence.record("menu-view.layout", expected: "160/240/360pt宽度下状态靠右并紧邻箭头，不与标题重叠", actual: layoutFrames)
-row.mode = "五笔"
-let copy = menu.items[0].copy() as! NSMenuItem
-require((copy.view as? InputModeMenuView)?.mode == "五笔", "native menu copy retains status")
-LocalAcceptanceEvidence.record("menu-view.copy", expected: "菜单复制保留当前模式", actual: (copy.view as? InputModeMenuView)?.mode ?? "missing")
-InputStateMenu.refresh(menu, state: owner.snapshot)
-menu.removeItem(wideItem)
+let parent = menu.items[0]
+require(parent.action == NSSelectorFromString("submenuAction:") && parent.target === parent.submenu, "standard AppKit submenu parent")
+require(parent.view == nil && parent.keyEquivalent.isEmpty && parent.toolTip == nil, "no custom drawing, parent shortcut or hover hint")
+LocalAcceptanceEvidence.record("menu-view.state", expected: "四状态显示当前值且无勾选，一级标题含模式", actual: ["titles": menu.items.map(\.title), "checks": menu.items.map { $0.state.rawValue }])
+LocalAcceptanceEvidence.record("menu-view.structure", expected: "一个标准父项、三个二级选项，系统绘制箭头，无自定义view", actual: ["parent_action": NSStringFromSelector(parent.action!), "custom_view": parent.view != nil, "choices": parent.submenu!.items.map(\.title)])
+require(InputStateMenu.command(from: parent) == nil, "parent is never a business command")
+owner.performInputMenuCommand([kIMKCommandMenuItemName as String: parent])
+require(owner.mode == "mixed", "opening parent cannot change mode")
+let obsoleteCycle = NSMenuItem(title: "输入模式", action: InputStateMenu.action, keyEquivalent: "")
+obsoleteCycle.tag = 1
+require(InputStateMenu.command(from: obsoleteCycle) == nil, "old parent command rejected")
+LocalAcceptanceEvidence.record("menu-view.parent-inert", expected: "父项及旧循环tag不执行模式命令", actual: ["mode": owner.mode, "old_tag_rejected": InputStateMenu.command(from: obsoleteCycle) == nil])
+let copy = parent.copy() as! NSMenuItem
+require(copy.view == nil && copy.title == parent.title && copy.submenu?.items.map(\.title) == ["混输", "五笔", "拼音"], "copy keeps native hierarchy and mode title")
+LocalAcceptanceEvidence.record("menu-view.copy", expected: "复制保留标准层级和当前标题，不携带自绘视图", actual: ["title": copy.title, "choices": copy.submenu!.items.map(\.title), "custom_view": copy.view != nil])
 let submenu = menu.items[0].submenu!
 for (index, raw) in [(1,"wubi"),(2,"pinyin"),(0,"mixed")] {
     let item = submenu.items[index]
     // IMK's doCommand forwards its dictionary rather than the NSMenuItem sender.
     _ = owner.perform(item.action!, with: [kIMKCommandMenuItemName as String: item] as NSDictionary)
     require(owner.mode == raw && submenu.items[index].state == .on, "dictionary callback explicit mode choice")
+    require(parent.title == "输入模式：" + submenu.items[index].title, "native parent title updates")
+    require(submenu.items.filter { $0.state == .on }.count == 1, "one selected mode")
 }
 owner.permitsChange = false
-menu.performActionForItem(at: 0)
+submenu.performActionForItem(at: 1)
 require(owner.mode == "mixed" && menu.items[0].accessibilityValue() as? String == "混输", "failed change must retain displayed state")
 for (index, switched, restored) in [(1,"英文输入","中文输入"),(2,"全角输入","半角输入"),(3,"繁体输入","简体输入"),(4,"英文标点","中文标点")] {
     menu.performActionForItem(at: index)
@@ -110,37 +91,4 @@ for (index, switched, restored) in [(1,"英文输入","中文输入"),(2,"全角
     menu.performActionForItem(at: index)
     require(menu.items[index].title == restored && menu.items[index].state == .off, "toggle restores current title")
 }
-print("PASS input-menu: current-state titles, parent cycle, explicit IMK dictionary callbacks, unique mode check, failed change and bidirectional toggles")
-
-if let output = ProcessInfo.processInfo.environment["LAMPYRIS_ACCEPTANCE_OUTPUT"] {
-    guard NSImage(systemSymbolName: "chevron.forward", accessibilityDescription: nil) != nil else { exit(1) }
-    var snapshots: [String] = []
-    for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
-        let view = InputModeMenuView(frame: NSRect(x: 0, y: 0, width: 240, height: 24))
-        guard let appearance = NSAppearance(named: name) else { exit(1) }
-        view.appearance = appearance
-        for state in ["normal", "highlight", "disabled"] {
-            view.isEnabled = state != "disabled"
-            if state == "highlight", let event = NSEvent.otherEvent(with: .applicationDefined, location: .zero,
-                modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil, subtype: 0, data1: 0, data2: 0) {
-                view.mouseEntered(with: event)
-            }
-            var data: Data?
-            appearance.performAsCurrentDrawingAppearance {
-                let image = NSImage(size: view.bounds.size, flipped: true) { rect in
-                    NSColor.windowBackgroundColor.setFill(); rect.fill()
-                    view.draw(rect)
-                    return true
-                }
-                if let tiff = image.tiffRepresentation, let rep = NSBitmapImageRep(data: tiff) {
-                    data = rep.representation(using: .png, properties: [:])
-                }
-            }
-            guard let data else { exit(1) }
-            let filename = "mode-\(theme)-\(state).png"
-            try data.write(to: URL(fileURLWithPath: output).appendingPathComponent(filename))
-            snapshots.append(filename)
-        }
-    }
-    LocalAcceptanceEvidence.record("menu-view.render", expected: "系统SF箭头与原生菜单字体亮暗/模拟高亮/禁用可绘制；非系统菜单跟踪", actual: snapshots)
-}
+print("PASS input-menu: native submenu parent, explicit IMK dictionary callbacks, unique mode check, failed change and bidirectional toggles")

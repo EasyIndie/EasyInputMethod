@@ -202,7 +202,7 @@ final class LampyrisInputController: IMKInputController {
 
     private func refreshStateMenu() {
         guard let menu = stateMenu else { return }
-        for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
+        for (item, key) in zip(menu.items.dropFirst().prefix(4), InputStateMenu.shortcuts.dropFirst()) {
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
             let binding = ImeConfig.hotkey(key)
@@ -273,8 +273,6 @@ final class LampyrisInputController: IMKInputController {
     @objc private func performInputMenuCommand(_ sender: Any?) {
         guard let command = InputStateMenu.command(from: sender) else { return }
         switch command {
-        case .cycleMode:
-            applyInputMode(InputStateMenu.nextMode(session?.mode ?? ImeConfig.string("mode") ?? "mixed"))
         case .mixed: applyInputMode("mixed")
         case .wubi: applyInputMode("wubi")
         case .pinyin: applyInputMode("pinyin")

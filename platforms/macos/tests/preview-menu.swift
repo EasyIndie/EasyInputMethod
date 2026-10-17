@@ -33,13 +33,18 @@ adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
 require(menu.delegate === adapter && menu.items[0].submenu?.items.count == 3, "real shared native menu")
-for expected in ["wubi", "pinyin", "mixed"] {
-    menu.performActionForItem(at: 0)
-    require(session.mode == expected && ImeConfig.string("mode") == expected, "parent cycle persists only private config")
-    require(menu.items[0].submenu!.items.filter { $0.state == .on }.count == 1, "single selected mode")
+let parent = menu.items[0]
+require(parent.view == nil && parent.action == NSSelectorFromString("submenuAction:") && parent.keyEquivalent.isEmpty, "native expansion-only parent")
+adapter.performInputMenuCommand([kIMKCommandMenuItemName as String: parent])
+require(session.mode == "mixed" && ImeConfig.string("mode") == "mixed", "parent does not cycle")
+LocalAcceptanceEvidence.record("menu.parent-open", expected: "一级仅展开，不修改模式，不显示循环快捷键", actual: ["mode": session.mode, "action": NSStringFromSelector(parent.action!), "key": parent.keyEquivalent])
+let submenu = parent.submenu!
+for (index, expected) in [(1, "wubi"), (2, "pinyin"), (0, "mixed")] {
+    submenu.performActionForItem(at: index)
+    require(session.mode == expected && ImeConfig.string("mode") == expected, "each explicit mode persists only private config")
+    require(submenu.items.filter { $0.state == .on }.count == 1 && submenu.items[index].state == .on, "single selected mode")
+    require(parent.title == "输入模式：" + submenu.items[index].title, "current mode in native title")
 }
-let submenu = menu.items[0].submenu!
-LocalAcceptanceEvidence.record("menu.mode-cycle", expected: "父项依次切换五笔/拼音/混输，并唯一选中", actual: ["mode": session.mode, "selected": menu.items[0].submenu!.items.filter { $0.state == .on }.map(\.title)])
 _ = adapter.perform(submenu.items[1].action!, with: [kIMKCommandMenuItemName as String: submenu.items[1]] as NSDictionary)
 require(session.mode == "wubi" && ImeConfig.string("mode") == "wubi", "explicit dictionary callback")
 LocalAcceptanceEvidence.record("menu.explicit-mode", expected: "二级菜单选择五笔，配置和会话一致", actual: ["session": session.mode, "configured": ImeConfig.string("mode") ?? ""])
