@@ -17,3 +17,9 @@
 先make verify零诊断，再PR四项CI通过后合入；确认独有文件逐字节可在新main或历史记录找到，才同步主目录。只删除已合入且无开放PR的开发分支，归档无独有工作的额外托管工作树；保留主目录忽略的构建/验收证据，不执行git clean -fdx。执行结果见HANDOFF与PR记录。
 
 本地验证：make verify全部通过，零诊断；117产物无网络依赖/符号。无产品代码、依赖或配置写入变更。待合入PR的四项CI及同步清理。
+
+## 实际完成结果
+
+PR #46四项check/dco/fuzz/macos通过后合入6a1cb37。主目录已同步，git status干净；8个旧本地开发分支、9个远端开发分支已删除，额外托管工作树已归档，保留主目录。328独有文件及26份原始文档在同步前再次逐字节核对通过。
+
+工作树忽略的build/packaging-out原始证据迁入主目录platforms/macos/build/retired-menu-worktree；独有生成码表保留至data/sources/wubi-lex-86.txt（仍忽略），target与Python缓存属于可重建产物。没有安装、发键或修改真实配置/词库。收尾文档分支合入后同样删除。
