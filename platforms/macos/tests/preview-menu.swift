@@ -32,32 +32,32 @@ adapter.onChange = { changes += 1 }
 adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
-require(menu.delegate === adapter && menu.items[0].submenu?.items.count == 3, "real shared native menu")
+require(menu.delegate === adapter && menu.items.count == 8, "real shared flat menu")
 let parent = menu.items[0]
-require(parent.view == nil && parent.action == NSSelectorFromString("submenuAction:") && parent.keyEquivalent.isEmpty, "native expansion-only parent")
-adapter.performInputMenuCommand([kIMKCommandMenuItemName as String: parent])
-require(session.mode == "mixed" && ImeConfig.string("mode") == "mixed", "parent does not cycle")
-LocalAcceptanceEvidence.record("menu.parent-open", expected: "一级仅展开，不修改模式，不显示循环快捷键", actual: ["mode": session.mode, "action": NSStringFromSelector(parent.action!), "key": parent.keyEquivalent])
-let submenu = parent.submenu!
-for (index, expected) in [(1, "wubi"), (2, "pinyin"), (0, "mixed")] {
-    submenu.performActionForItem(at: index)
-    require(session.mode == expected && ImeConfig.string("mode") == expected, "each explicit mode persists only private config")
-    require(submenu.items.filter { $0.state == .on }.count == 1 && submenu.items[index].state == .on, "single selected mode")
-    require(parent.title == "输入模式：" + submenu.items[index].title, "current mode in native title")
+require(parent.submenu == nil && parent.action == InputStateMenu.action && parent.tag == 1, "mode row is a clickable command")
+require((parent.view as? InputModeMenuView)?.mode == "混输", "mode row draws the trailing status")
+LocalAcceptanceEvidence.record("menu.parent-cycle", expected: "模式行可点击循环，右侧显示当前模式",
+    actual: ["mode": session.mode, "action": NSStringFromSelector(parent.action!), "tag": parent.tag, "view": parent.view != nil])
+var seen: [[String: String]] = []
+for expected in ["wubi", "pinyin", "mixed"] {
+    menu.performActionForItem(at: 0)
+    require(session.mode == expected && ImeConfig.string("mode") == expected, "each cycle click persists only private config")
+    let label = InputStateMenu.modes.first { $0.0 == expected }?.1 ?? ""
+    require(parent.accessibilityValue() as? String == label, "menu reflects the cycle")
+    require((parent.view as? InputModeMenuView)?.mode == label, "status follows the cycle")
+    seen.append(["mode": expected, "title": parent.title])
 }
-_ = adapter.perform(submenu.items[1].action!, with: [kIMKCommandMenuItemName as String: submenu.items[1]] as NSDictionary)
-require(session.mode == "wubi" && ImeConfig.string("mode") == "wubi", "explicit dictionary callback")
-LocalAcceptanceEvidence.record("menu.explicit-mode", expected: "二级菜单选择五笔，配置和会话一致", actual: ["session": session.mode, "configured": ImeConfig.string("mode") ?? ""])
+LocalAcceptanceEvidence.record("menu.cycle-order", expected: "连续点击依次得到五笔/拼音/混输并写回私有配置", actual: ["steps": seen])
 _ = session.feed(119); _ = session.feed(113)
 let prefix = session.buffer
 let beforeCancel = cancellations
-adapter.selectMode("wubi")
+adapter.selectMode("mixed")
 require(session.buffer == prefix && cancellations == beforeCancel, "same mode preserves composition")
 LocalAcceptanceEvidence.record("menu.same-mode", expected: "重复选择同模式保留组合", actual: ["buffer": session.buffer, "cancellations": cancellations - beforeCancel])
-adapter.selectMode("mixed")
+adapter.selectMode("wubi")
 require(!session.isComposing && cancellations == beforeCancel + 1, "different mode cancels without commit")
 LocalAcceptanceEvidence.record("menu.change-mode", expected: "切换不同模式取消组合，不提交", actual: ["composing": session.isComposing, "cancellations": cancellations - beforeCancel])
-for (index, title) in [(1,"英文输入"),(2,"全角输入"),(3,"繁体输入"),(4,"英文标点")] {
+for (index, title) in [(1, "英文输入"), (2, "全角输入"), (3, "繁体输入"), (4, "英文标点")] {
     menu.performActionForItem(at: index)
     require(menu.items[index].title == title && menu.items[index].state == .off, "session state label " + title)
     menu.performActionForItem(at: index)
@@ -72,7 +72,7 @@ LocalAcceptanceEvidence.record("menu.external-settings", expected: "配置通知
 require(ImeConfig.setString("hotkey.toggle_width", "ctrl+alt+w"), "external shortcut change")
 require(pump { menu.items[2].keyEquivalent == "w" && menu.items[2].keyEquivalentModifierMask == [.control, .option] }, "shortcut labels refresh through real config subscription")
 LocalAcceptanceEvidence.record("menu.shortcut-refresh", expected: "外部快捷键改为control+option+w后刷新", actual: ["key": menu.items[2].keyEquivalent, "modifiers": menu.items[2].keyEquivalentModifierMask.rawValue])
-let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control,.shift], timestamp: 0,
+let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control, .shift], timestamp: 0,
     windowNumber: 0, context: nil, characters: "M", charactersIgnoringModifiers: "m", isARepeat: false, keyCode: 46)!
 require(session.shortcut(event, persistMode: true) == .handled, "preview keyboard persists owned mode")
 require(pump { session.mode == "mixed" && menu.items[0].accessibilityValue() as? String == "混输" }, "keyboard mode updates same menu")
@@ -100,4 +100,4 @@ require(menu.items[6].title == "设置" && menu.items[7].title == "关于", "use
 LocalAcceptanceEvidence.record("menu.routes", expected: "设置/关于各触发一次回调，文案无省略号", actual: ["titles": [menu.items[6].title, menu.items[7].title], "settings_calls": settings, "about_calls": about])
 require((try? Data(contentsOf: dictionary)) == dictionaryBefore, "no learned or committed text")
 LocalAcceptanceEvidence.record("menu.dictionary", expected: "模式/状态操作不增加私有词库学习", actual: ["unchanged": (try? Data(contentsOf: dictionary)) == dictionaryBefore])
-print("PASS preview-menu: real session/shared menu/private configuration, parent/submenu, state toggles, external preferences, keyboard, failure recovery and no learning")
+print("PASS preview-menu: real session/shared flat menu/private configuration, click cycle, state toggles, external preferences, keyboard, failure recovery and no learning")

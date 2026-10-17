@@ -8,6 +8,9 @@ let root = CommandLine.arguments[1]
 func require(_ condition: Bool, _ message: String) {
     if !condition { fputs("FAIL \(message)\n", stderr); exit(1) }
 }
+func label(_ mode: String) -> String {
+    InputStateMenu.modes.first { $0.0 == mode }?.1 ?? ""
+}
 require(ime_config_init(root + "/config.toml") == IME_OK, "private config")
 guard let server = IMKServer(name: "cn.jokerhub.lampyris.probe." + UUID().uuidString,
                             bundleIdentifier: Bundle.main.bundleIdentifier),
@@ -16,30 +19,30 @@ guard let server = IMKServer(name: "cn.jokerhub.lampyris.probe." + UUID().uuidSt
 }
 // IMK may request its menu before this controller has a text session.
 let coldMenu = controller.menu()!
-require(coldMenu.items.dropFirst().prefix(4).allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
-require(coldMenu.items[0].isEnabled, "mode parent enabled before activation")
-require(coldMenu.items[0].submenu!.items.allSatisfy { $0.isEnabled }, "mode choices enabled before activation")
-let coldChoice = coldMenu.items[0].submenu!.items[1]
-require(LampyrisProbeDispatchMenuCommand(server, controller, coldChoice, 501), "private IMK service boundary available")
-require(ImeConfig.string("mode") == "wubi", "service boundary delivers cold submenu choice")
-controller.doCommand(by: coldChoice.action!, command: [kIMKCommandMenuItemName as String: coldChoice])
-require(ImeConfig.string("mode") == "wubi", "cold mode command persisted")
-require(controller.menu()!.items[0].submenu!.items[1].state == .on, "cold menu reflects persistent choice")
-let coldParent = controller.menu()!.items[0]
-require(coldParent.view == nil && coldParent.action == NSSelectorFromString("submenuAction:") && coldParent.keyEquivalent.isEmpty, "cold standard parent only expands")
-require(InputStateMenu.command(from: coldParent) == nil, "parent is not a mode command")
+require(coldMenu.items.count == 8, "five rows plus separator, settings and about")
+require(coldMenu.items.prefix(5).allSatisfy { $0.submenu == nil }, "no nested menus")
+require(coldMenu.items[1...4].allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
+require(coldMenu.items[0].isEnabled, "mode row enabled before activation")
+require(coldMenu.items[0].tag == 1, "mode row carries the cycle command")
+require((coldMenu.items[0].view as? InputModeMenuView)?.accessibilityPerformPress() == true, "cold mode row cycles")
+require(ImeConfig.string("mode") == "wubi", "cold cycle persisted")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "五笔", "cold menu reflects persistent choice")
+var row = controller.menu()!.items[0]
+require(LampyrisProbeDispatchMenuCommand(server, controller, row, 501), "private IMK service boundary available")
+require(ImeConfig.string("mode") == "pinyin", "service boundary cycles cold mode")
+controller.doCommand(by: row.action!, command: [kIMKCommandMenuItemName as String: row])
+require(ImeConfig.string("mode") == "mixed", "IMK row command persists")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "menu follows the row command")
 controller.activateServer(nil)
-require(controller.menu()!.items[0].submenu!.items[1].state == .on, "first activation applies cold choice")
-for (index, raw) in [(1, "wubi"), (2, "pinyin"), (0, "mixed")] {
-    let menu = controller.menu()!
-    let item = menu.items[0].submenu!.items[index]
-    require(item.isEnabled && controller.responds(to: item.action!), "enabled real selector")
-    require(LampyrisProbeDispatchMenuCommand(server, controller, item, 500 + index), "service boundary available")
-    require(ImeConfig.string("mode") == raw, "service boundary delivers every submenu choice")
-    controller.doCommand(by: item.action!, command: [kIMKCommandMenuItemName as String: item])
-    require(ImeConfig.string("mode") == raw, "IMK child command persisted")
-    require(controller.menu()!.items[0].submenu!.items[index].state == .on, "real session matches choice")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "first activation applies cold choice")
+for expected in ["wubi", "pinyin"] {
+    row = controller.menu()!.items[0]
+    require(row.isEnabled && controller.responds(to: row.action!), "enabled real selector")
+    require(LampyrisProbeDispatchMenuCommand(server, controller, row, 500), "service boundary available")
+    require(ImeConfig.string("mode") == expected, "service boundary cycles to " + expected)
+    require(controller.menu()!.items[0].accessibilityValue() as? String == label(expected), "real session matches cycle")
 }
+let modeBeforeToggles = ImeConfig.string("mode")
 for (index, switched, restored) in [(1, "英文输入", "中文输入"), (2, "全角输入", "半角输入"),
                                     (3, "繁体输入", "简体输入"), (4, "英文标点", "中文标点")] {
     let item = controller.menu()!.items[index]
@@ -48,15 +51,14 @@ for (index, switched, restored) in [(1, "英文输入", "中文输入"), (2, "�
     let reverse = controller.menu()!.items[index]
     require(LampyrisProbeDispatchMenuCommand(server, controller, reverse, index), "reverse state service boundary available")
     require(controller.menu()!.items[index].title == restored, "service restores correct state")
-    require(ImeConfig.string("mode") == "mixed", "state command does not change input mode")
 }
+require(ImeConfig.string("mode") == modeBeforeToggles, "state commands do not change the input mode")
 controller.deactivateServer(nil)
 require(ImeConfig.setString("mode", "pinyin"), "other client changed persistent mode")
 controller.activateServer(nil)
-require(controller.menu()!.items[0].submenu!.items[2].state == .on, "reactivation applies persisted pinyin")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "拼音", "reactivation applies persisted pinyin")
 controller.deactivateServer(nil)
 require(ImeConfig.setString("mode", "mixed"), "other client changed mixed")
 controller.activateServer(nil)
-require(controller.menu()!.items[0].submenu!.items[0].state == .on, "reactivation applies persisted mixed")
-controller.deactivateServer(nil)
-print("PASS controller-menu: IMK service submenu/state dispatch, cold controller and inactive session resynchronization; system menu UI untested")
+require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "reactivation applies persisted mixed")
+print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service boundary, states and reactivation")

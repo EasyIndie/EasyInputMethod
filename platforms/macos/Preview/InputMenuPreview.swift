@@ -41,7 +41,7 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     }
 
     func refresh() {
-        for (item, key) in zip(menu.items.dropFirst().prefix(4), InputStateMenu.shortcuts.dropFirst()) {
+        for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
             item.keyEquivalent = ""
             item.keyEquivalentModifierMask = []
             let binding = ImeConfig.hotkey(key)
@@ -87,9 +87,7 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     @objc func performInputMenuCommand(_ sender: Any?) {
         guard let command = InputStateMenu.command(from: sender) else { return }
         switch command {
-        case .mixed: selectMode("mixed")
-        case .wubi: selectMode("wubi")
-        case .pinyin: selectMode("pinyin")
+        case .cycleMode: selectMode(InputStateMenu.nextMode(session.mode))
         case .toggleEnglish: toggleEnglish(sender)
         case .toggleWidth: toggleWidth(sender)
         case .toggleVariant: toggleVariant(sender)
