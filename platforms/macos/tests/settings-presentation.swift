@@ -37,7 +37,7 @@ LocalAcceptanceEvidence.record("settings.count", expected: "接受3/9/7，拒绝
 panel.selectSectionForTesting(2)
 guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
 for (key, title) in [("hotkey.toggle_width", "⌃⇧空格"), ("hotkey.toggle_wubi_learning", "⌃⇧L"), ("hotkey.toggle_english", "⇧"),
-                     ("hotkey.open_settings", "⌃⇧S"), ("hotkey.open_about", "⌃⇧A")] {
+                     ("hotkey.open_settings", "⌃,"), ("hotkey.open_about", "⌃⇧A")] {
     panel.rowForTesting(key)?.reload() // The visible show path reloads rows after prepare.
     guard let row = panel.rowForTesting(key), row.shortcutTitleForTesting == title else { fail("shortcut title " + key + " actual=" + (panel.rowForTesting(key)?.shortcutTitleForTesting ?? "missing") + " configured=" + (ImeConfig.string(key) ?? "missing")) }
 }

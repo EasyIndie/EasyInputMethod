@@ -33,7 +33,7 @@ adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
 require(menu.delegate === adapter && menu.items.count == 8, "real shared flat menu")
-require(menu.items[6].keyEquivalent == "s" && menu.items[6].keyEquivalentModifierMask == [.control, .shift], "settings shortcut shown")
+require(menu.items[6].keyEquivalent == "," && menu.items[6].keyEquivalentModifierMask == [.control], "settings shortcut shown")
 require(menu.items[7].keyEquivalent == "a" && menu.items[7].keyEquivalentModifierMask == [.control, .shift], "about shortcut shown")
 let parent = menu.items[0]
 require(parent.submenu == nil && parent.action == InputStateMenu.action && parent.tag == 1, "mode row is a clickable command")

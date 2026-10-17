@@ -40,18 +40,18 @@ IMK 输入菜单只保留 **纯标题 + 真实快捷键**：自定义 `NSView`�
 
 ## 默认快捷键统一（ADR-208）
 
-用户要求默认快捷键统一 `ctrl+shift+<键位>` 前缀并补上学习区快捷键：
+用户先要求统一 `ctrl+shift+<键位>` 前缀，随后指出 `ctrl+shift+f/p` 与常用快捷键冲突，改为“平台惯例优先”。最终默认值：
 
-| 动作 | 默认值 |
-|---|---|
-| 切换输入模式 | `ctrl+shift+m` |
-| 中英切换 | `shift`（唯一例外：对齐搜狗/微信，修饰键单独触发） |
-| 全/半角 | `ctrl+shift+space` |
-| 中英标点 | `ctrl+shift+p` |
-| 简/繁 | `ctrl+shift+f` |
-| 显示/隐藏学习区 | `ctrl+shift+l` |
-| 打开设置 | `ctrl+shift+s` |
-| 关于 | `ctrl+shift+a` |
+| 动作 | 默认值 | 说明 |
+|---|---|---|
+| 切换输入模式 | `ctrl+shift+m` | 统一前缀 |
+| 中英切换 | `shift` | 搜狗/微信惯例，修饰键单独触发 |
+| 全/半角 | `ctrl+shift+space` | 统一前缀 |
+| 中英标点 | `ctrl+.` | 搜狗/微软惯例 |
+| 简/繁 | `ctrl+shift+t` | 避开编辑器的 `ctrl+shift+f` |
+| 显示/隐藏学习区 | `ctrl+shift+l` | 补上 |
+| 打开设置 | `ctrl+,` | 对齐系统设置惯例 |
+| 关于 | `ctrl+shift+a` | 统一前缀 |
 
 默认值仍只在 Schema 定义；已有显式配置不静默覆盖，本轮按用户明确要求用 `ime-cli --config`（`ime-config`）把 B 的 `config.toml` 写回上述值，其中学习区此前为 `none`。设置页可改绑或关闭，冲突检测沿用 ADR-093。`ctrl+shift+m/s/p/f/l/a` 与部分编辑器快捷键同名，输入上下文中输入法优先，用户可按需修改。
 
