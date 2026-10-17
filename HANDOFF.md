@@ -3,20 +3,21 @@
 ## 0. 元信息
 
 - 更新：2026-10-18 / pi（deepseek-flash）
-- 分支：`main` @ `9a485c5`（已推送；无其它本地/远程分支、无额外工作树）
-- 阶段：0.1.0 已签名公证并装 A/B；**MVP 发布门禁未全部关闭**
-- 最近验证：`make verify` 全绿（180 产物）、离线 31 套件、本地 60 项；`macos-acceptance` 签名/公证成功；B 机同包实机验收通过核心输入/撤销/四状态/模式/设置/关于（报告 070）
+- 分支：`main` @ `7f7f699` + 本轮 A 机验收提交（报告 071）；无其它本地/远程分支、无额外工作树
+- 阶段：0.1.0 已签名公证并装 A/B，**A/B 同包实机验收均已完成**；**MVP 发布门禁未全部关闭**
+- 最近验证：`make verify` 全绿；B 机报告 070、A 机报告 071 覆盖核心输入/撤销/四状态/模式/设置/关于/菜单快捷键
 
 ## 1. 安装与数据
 
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
 | B（本机 `joker`） | arm64 / macOS 27.0.1 | `a234ef31…`（0.1.0，Developer ID + 公证） | 已验收（报告 070）；`mode=mixed`、config `6314f3f4…`（默认值）、词库 496 行 |
-| A（`bot@pro` / 192.168.0.35） | Intel / macOS 13.7.8 | 同一 `a234ef31…` | 已装、已注册（TIS 选中成功、系统已请求菜单）；**验收未做** |
+| A（`bot@pro` / 192.168.0.35） | Intel / macOS 13.7.8 | 同一 `a234ef31…` | 已验收（报告 071）；`mode=mixed`、config `48259b19…`（测前测后一致）、输入源还原 ABC、词库 960 行 |
 
 - 安装路径均为 `~/Library/Input Methods/Lampyris.app`；两机 `codesign --verify --deep --strict`、`stapler validate`、`spctl` 均通过。
 - A 的 `config.toml` 只显式写了 `toggle_mode`，其余走 Schema 默认值（`⌃⇧.`/`⌃⇧T`/`⌃⇧L`/`⌃,`/`⌃⇧A` 自动生效）。
-- A 的仓库在 `~/Documents/EasyInputMethod`，当前是旧提交 `d429cec`、工作树干净；**A 无 cargo**（只有 `swiftc` 5.8.1 / `make`），因此 A 上只做"拉代码 + 用预编译包验收 + 编探针"，不构建 Rust。
+- A 的仓库在 `~/Documents/EasyInputMethod`，已拉至 `7f7f699`。**A 现有 `cargo`/`rustc` 1.98.1**（旧记录「无 cargo」已作废），但本轮仍未用其构建产品，只编探针；`make verify` 现可在 A 直接跑。
+- A 的 `screencapture` **无屏幕录制授权**：截图恒为同一张静态图，实机取证只能用 AX/CG/TIS/config 实读（报告 071 D6）。
 
 ## 2. 本轮完成（2026-10-18）
 
@@ -27,7 +28,7 @@
 
 ## 3. 当前未决
 
-- **A 机验收**：菜单外观、核心输入、撤销、四状态、模式循环、设置/关于、快捷键（报告 070 清单）。
+- **A 机验收遗留差异（报告 071，待查）**：D2 = macOS 13 上设置面板首次打开落在「候选」分区（B 为「输入」）；D3 = 紧随 AX 点击工具栏后点「关于」有一次未出窗口（未稳定复现）。D1/D4/D5 只需订正文档与探针口径（菜单 7 行；菜单索引整体比 B 小 2；空格/⇧ 的 `cmdChar` 读空）。
 - **正式报告**：`platforms/macos/build/final-menu-abdb83f/formal-report.json` 仍是旧包 `abdb83f` 的 1 PASS / 22 BLOCKED，需对 `a234ef31` 重跑。
 - **发布门禁（均未关闭）**：
   - I0 安全验收（IT-01…03，需独立测试账号）
@@ -40,31 +41,17 @@
 
 ## 4. 下一步
 
-1. **A 机按报告 070 验收**（详见下节"在 A 上继续"）。
-2. 之后优先落地 **P1/P2**（`make macos-live-check` + 默认关闭的菜单/命令 trace），把剩余实机项做成可重复脚本。
-3. 按迭代计划 I0→I1→I2→I3→I4 收敛门禁；最后再跑 `validate-release.py` dry_run 与 `v0.1.0` tag/Release。
+1. **查 D2/D3**（报告 071）：macOS 13 上设置面板默认分区为何落在「候选」、以及 AX 点击工具栏后「关于」瞬时不出窗；两处都用现成的 `tools/macos-probe` 加 AX 树复现，先定性再改。
+2. 对 `a234ef31` 重跑 `platforms/macos/build/final-menu-abdb83f/formal-report.json`（现仍是旧包 `abdb83f` 的 1 PASS/22 BLOCKED）。
+3. 落地 **P1/P2** 提速项（`make macos-live-check` + 默认关闭的菜单/命令 trace），把剩余实机项做成可重复脚本。
+4. 按迭代计划 I0→I1→I2→I3→I4 收敛门禁；最后再跑 `validate-release.py` dry_run 与 `v0.1.0` tag/Release。
 
-### 在 A 上继续（给下一位 agent）
+### 实机验收现状（A/B 均已执行）
 
-```sh
-cd ~/Documents/EasyInputMethod
-git fetch origin && git checkout main && git pull --ff-only     # d429cec → 9a485c5
-make -C tools/macos-probe                                        # 编 Intel 版探针
-# 应用已装好（a234ef31…），无需重装、无需重启
-```
+- 步骤与命令见报告 070（B）/ 071（A）；A 上探针索引是 `[4]`模式、`[5]`中英、`[6]`全半角、`[7]`简繁、`[8]`标点、`[10]`设置、`[11]`关于（比 B 整体小 2），**必须先用 `bin/axmenu dump` 核对再点**。
+- 断言用 `shasum -a 256` 核 `config.toml`（A 基线 `48259b19…`）、`pgrep` 核宿主 PID、`selsrc`/TIS 回读核输入源。
 
-验收步骤（每步记录结果，失败即停）：
-
-1. 激活：打开 TextEdit 任意文档，按一次普通字符键（否则菜单只显示系统项）。
-2. 菜单：`bin/axmenu open && bin/axmenu dump`，确认 8 行与右侧快捷键。
-3. 输入：`bin/axtext clear <TextEdit pid>` 后用 `bin/typekeys` 逐键输入 `wq` + 空格 → 应得「你」；`nihao` + 空格 → 「你好」。
-4. 撤销：`bin/keymod 6 cmd` 后确认回到上一条。
-5. 状态：`bin/axmenu press '[7]'`（中英）、`'[8]'`（全半角）、`'[9]'`（简繁）、`'[10]'`（标点），每次往返并回读 `config.toml`。
-6. 模式：`bin/axmenu press '[6]'` 三次，`mode` 应为 mixed→wubi→pinyin→mixed。
-7. 窗口：`'[12]'` 设置、`'[13]'` 关于；`bin/windows` 核对。
-8. 还原：`mode=mixed`、标点=中文、字形=简体、输入源回原值。
-
-> A 是 Intel + macOS 13.7.8：若菜单/快捷键与 B 不一致，先查系统版本差异，不要直接套 B 的结论；SSH 进程没有辅助功能授权，远程读不到 AX，必须在 A 的图形会话里跑探针。
+> A 是 Intel + macOS 13.7.8：菜单项数与 AX 属性会与 B（macOS 27）不同，先查平台差异，不要套 B 的结论；SSH 进程没有辅助功能授权，必须在 A 的图形会话里跑探针。
 
 ## 5. 授权与边界
 
@@ -76,6 +63,7 @@ make -C tools/macos-probe                                        # 编 Intel 版
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：A 机同包实机验收（报告 071）。7 行菜单 + 快捷键 AX 实读、五笔/拼音/混输 auto_commit、⌘Z 撤销、四状态往返、模式三循环、设置/关于窗口、还原（config `48259b19…` 不变、输入源回 ABC、宿主 PID 67948 未变）全部通过；登记 6 项平台差异（含 macOS 13 设置面板默认落在「候选」、菜单索引偏移 2、截图无授权），A 机验收遗留 D2/D3 待查。
 - 2026-10-18 / pi：0.1.0 发布 + B 验收 + 仓库清理。PR #53 → `ba6d796`，签名包 `a234ef31…` 装 A/B；B 实测核心输入/撤销/四状态/模式/设置/关于通过（报告 070）；删除已合并分支与 stale worktree，探针入库 `tools/macos-probe/`；交接给 A 继续验收。
 - 2026-10-18 / pi：报告 069 复盘（迭代代价、根因、P1–P8 提速项），实机验证守则写入 `docs/开发工作流.md`。
 - 2026-10-18 / pi：报告 067/068。带日志诊断证明子菜单子项命令不下发；ADR-206 改为单行循环，ADR-207/208 增加设置/关于快捷键并统一下拉默认值；本地 60 项、离线 31 套件、四项 CI 全绿。
