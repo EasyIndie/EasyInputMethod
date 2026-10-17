@@ -14,7 +14,20 @@ guard let server = IMKServer(name: "cn.jokerhub.lampyris.probe." + UUID().uuidSt
       let controller = LampyrisInputController(server: server, delegate: nil, client: nil) else {
     fputs("FAIL private IMK server/controller\n", stderr); exit(1)
 }
+// IMK may request its menu before this controller has a text session.
+let coldMenu = controller.menu()!
+require(coldMenu.items.dropFirst().prefix(4).allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
+require(coldMenu.items[0].isEnabled, "mode parent enabled before activation")
+require(coldMenu.items[0].submenu!.items.allSatisfy { $0.isEnabled }, "mode choices enabled before activation")
+let coldChoice = coldMenu.items[0].submenu!.items[1]
+controller.doCommand(by: coldChoice.action!, command: [kIMKCommandMenuItemName as String: coldChoice])
+require(ImeConfig.string("mode") == "wubi", "cold mode command persisted")
+require(controller.menu()!.items[0].submenu!.items[1].state == .on, "cold menu reflects persistent choice")
+let coldParent = controller.menu()!.items[0]
+require((coldParent.view as? InputModeMenuView)?.accessibilityPerformPress() == true, "cold parent view cycles")
+require(ImeConfig.string("mode") == "pinyin", "cold parent cycles persistent mode")
 controller.activateServer(nil)
+require(controller.menu()!.items[0].submenu!.items[2].state == .on, "first activation applies cold choice")
 for (index, raw) in [(1, "wubi"), (2, "pinyin"), (0, "mixed")] {
     let menu = controller.menu()!
     let item = menu.items[0].submenu!.items[index]

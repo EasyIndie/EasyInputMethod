@@ -54,20 +54,22 @@ enum InputStateMenu {
             item.isEnabled = state.enabled
         }
         let modeItem = menu.items[0]
+        // Mode commands persist through ime-config even before IMK activates a session.
+        modeItem.isEnabled = true
         modeItem.attributedTitle = nil
         modeItem.title = "输入模式"
         modeItem.setAccessibilityValue(mode)
         if #available(macOS 14.0, *) { modeItem.badge = nil }
         let row = (modeItem.view as? InputModeMenuView) ?? InputModeMenuView(frame: NSRect(x: 0, y: 0, width: 160, height: 24))
         row.mode = mode
-        row.isEnabled = state.enabled
+        row.isEnabled = true
         modeItem.view = row
         // Preserve a useful native fallback if an IMK menu proxy drops the view.
         modeItem.title = "输入模式：" + mode
         modeItem.toolTip = nil
         for (item, mode) in zip(menu.items[0].submenu?.items ?? [], modes) {
             item.state = mode.0 == state.mode ? .on : .off
-            item.isEnabled = state.enabled
+            item.isEnabled = true
         }
     }
 }
