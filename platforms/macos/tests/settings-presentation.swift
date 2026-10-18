@@ -36,14 +36,14 @@ panel.reportSaved()
 LocalAcceptanceEvidence.record("settings.count", expected: "接受3/9/7，拒绝空/0/10/小数/字母并保持7", actual: ["configured": ImeConfig.int("candidate.count") ?? -1, "control": numberRow.numberValueForTesting ?? "missing"])
 panel.selectSectionForTesting(2)
 guard panel.visibleOptionKeysForTesting.last == "hotkey.toggle_wubi_learning" else { fail("design learning shortcut placement") }
-for (key, title) in [("hotkey.toggle_width", "⌃⇧空格"), ("hotkey.toggle_wubi_learning", "⌃⇧L"), ("hotkey.toggle_english", "⇧"),
-                     ("hotkey.open_settings", "⌃,"), ("hotkey.open_about", "⌃⇧A")] {
+for (key, title) in [("hotkey.toggle_width", "⌥空格"), ("hotkey.toggle_wubi_learning", "⌥L"), ("hotkey.toggle_english", "⇧"),
+                     ("hotkey.open_settings", "⌥,"), ("hotkey.open_about", "⌥A")] {
     panel.rowForTesting(key)?.reload() // The visible show path reloads rows after prepare.
     guard let row = panel.rowForTesting(key), row.shortcutTitleForTesting == title else { fail("shortcut title " + key + " actual=" + (panel.rowForTesting(key)?.shortcutTitleForTesting ?? "missing") + " configured=" + (ImeConfig.string(key) ?? "missing")) }
 }
 guard let learningRow = panel.rowForTesting("hotkey.toggle_wubi_learning") else { fail("learning row") }
 LocalAcceptanceEvidence.record("settings.shortcuts", expected: "宽度/学习/中英/设置/关于按钮显示新默认且无省略号", actual: ["hotkey.toggle_width", "hotkey.toggle_wubi_learning", "hotkey.toggle_english", "hotkey.open_settings", "hotkey.open_about"].map { panel.rowForTesting($0)?.shortcutTitleForTesting ?? "missing" })
-for (value, title) in [("", "未设置"), ("ctrl+shift+l", "⌃⇧L")] {
+for (value, title) in [("", "未设置"), ("alt+l", "⌥L")] {
     guard learningRow.commitTextForTesting(value) else { fail("shortcut write") }
     let deadline = Date().addingTimeInterval(1)
     while learningRow.shortcutTitleForTesting != title && Date() < deadline {

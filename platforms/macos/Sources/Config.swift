@@ -203,7 +203,7 @@ final class ProcessErrorPresenter {
 }
 
 extension NSMenuItem {
-    /// 按 `config.toml` 的快捷键写法（如 `ctrl+shift+m` / `shift+space`）显示并绑定菜单快捷键。
+    /// 按 `config.toml` 的快捷键写法（如 `alt+m` / `shift+space`）显示并绑定菜单快捷键。
     ///
     /// 成功返回 `true`；`none`/空/无法表示为菜单快捷键（如单 `shift`）返回 `false`。
     @discardableResult

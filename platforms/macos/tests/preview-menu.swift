@@ -33,8 +33,8 @@ adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
 require(menu.delegate === adapter && menu.items.count == 8, "real shared flat menu")
-require(menu.items[6].keyEquivalent == "," && menu.items[6].keyEquivalentModifierMask == [.control], "settings shortcut shown")
-require(menu.items[7].keyEquivalent == "a" && menu.items[7].keyEquivalentModifierMask == [.control, .shift], "about shortcut shown")
+require(menu.items[6].keyEquivalent == "," && menu.items[6].keyEquivalentModifierMask == [.option], "settings shortcut shown")
+require(menu.items[7].keyEquivalent == "a" && menu.items[7].keyEquivalentModifierMask == [.option], "about shortcut shown")
 let parent = menu.items[0]
 require(parent.submenu == nil && parent.action == InputStateMenu.action && parent.tag == 1, "mode row is a clickable command")
 require(parent.title == "混输模式", "mode row title shows the current mode")
@@ -74,7 +74,7 @@ LocalAcceptanceEvidence.record("menu.external-settings", expected: "配置通知
 require(ImeConfig.setString("hotkey.toggle_width", "ctrl+alt+w"), "external shortcut change")
 require(pump { menu.items[2].keyEquivalent == "w" && menu.items[2].keyEquivalentModifierMask == [.control, .option] }, "shortcut labels refresh through real config subscription")
 LocalAcceptanceEvidence.record("menu.shortcut-refresh", expected: "外部快捷键改为control+option+w后刷新", actual: ["key": menu.items[2].keyEquivalent, "modifiers": menu.items[2].keyEquivalentModifierMask.rawValue])
-let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control, .shift], timestamp: 0,
+let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option], timestamp: 0,
     windowNumber: 0, context: nil, characters: "M", charactersIgnoringModifiers: "m", isARepeat: false, keyCode: 46)!
 require(session.shortcut(event, persistMode: true) == .handled, "preview keyboard persists owned mode")
 require(pump { session.mode == "mixed" && menu.items[0].accessibilityValue() as? String == "混输" }, "keyboard mode updates same menu")

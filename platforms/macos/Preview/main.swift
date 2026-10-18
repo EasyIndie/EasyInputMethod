@@ -561,22 +561,22 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.isEnglish == englishBeforeCombo else {
         fputs("修饰键组合不应触发中英切换。\n", stderr); exit(1)
     }
-    // 全/半角：默认 Ctrl+Shift+Space（此刻中英为“英”，故 A1 → Ａ１）。
-    keys(" ", flags: [.control, .shift]); view.clear(); keys("A1"); check("Ａ１")
-    keys(" ", flags: [.control, .shift])
+    // 全/半角：默认 Option+Space（此刻中英为“英”，故 A1 → Ａ１）。
+    keys(" ", flags: [.option]); view.clear(); keys("A1"); check("Ａ１")
+    keys(" ", flags: [.option])
     // 中英切回中文。
     _ = session.shiftTransition(isDown: true); _ = session.shiftTransition(isDown: false)
     guard !session.isEnglish else { exit(1) }
-    // 模式：默认 ctrl+shift+m。
-    keys("m", flags: [.control, .shift])
+    // 模式：默认 alt+m。
+    keys("m", flags: [.option])
     guard session.mode == "mixed" else { exit(1) }
-    // 中英标点：默认 ctrl+shift+.（写回配置）。
+    // 中英标点：默认 alt+p（写回配置）。
     let punctuationBefore = ImeConfig.string("input.punctuation")
-    keys(".", flags: [.control, .shift])
+    keys("p", flags: [.option])
     guard ImeConfig.string("input.punctuation") != punctuationBefore else {
-        fputs("Ctrl+Shift+. 未切换中英标点。\n", stderr); exit(1)
+        fputs("Option+P 未切换中英标点。\n", stderr); exit(1)
     }
-    keys(".", flags: [.control, .shift])
+    keys("p", flags: [.option])
     guard ImeConfig.string("input.punctuation") == punctuationBefore else { exit(1) }
     // 组合态 , / . 翻页（对齐搜狗/微信）。
     session.setMode("mixed"); view.clear(); keys("a")
@@ -586,16 +586,16 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.pageIndex == 1, session.candidates(limit: 9).map(\.text) != aPage else { exit(1) }
     keys(",")
     guard session.pageIndex == 0 else { exit(1) }
-    // 简/繁：默认 Ctrl+Shift+T 切换后上屏输出繁体（T-P2-01/ADR-208）。
+    // 简/繁：默认 Option+T 切换后上屏输出繁体（T-P2-01/ADR-208/209）。
     session.setMode("wubi"); view.clear()
     _ = ImeConfig.setToml("wubi.auto_commit", "false"); session.prepare()
     let variantBefore = ImeConfig.string("input.chinese_variant")
-    keys("t", flags: [.control, .shift])
+    keys("t", flags: [.option])
     guard ImeConfig.string("input.chinese_variant") != variantBefore else {
-        fputs("Ctrl+Shift+T 未切换简繁。\n", stderr); exit(1)
+        fputs("Option+T 未切换简繁。\n", stderr); exit(1)
     }
     keys("kwwl"); keys(" "); check("中華人民共和國")
-    keys("t", flags: [.control, .shift])
+    keys("t", flags: [.option])
     guard ImeConfig.string("input.chinese_variant") == variantBefore else { exit(1) }
     _ = ImeConfig.setToml("wubi.auto_commit", "true"); session.prepare()
     session.setMode("mixed")
@@ -807,14 +807,13 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard ImeConfig.setString("input.chinese_variant", "simplified") else { exit(1) }
     session.prepare()
     // A locked test config rejects persistence but consumes recognized shortcuts.
-    guard ImeConfig.setString("hotkey.toggle_mode", "ctrl+shift+m") else { exit(1) }
     let previousMode = session.mode
     let previousPunctuation = ImeConfig.string("input.punctuation")
     let previousVariant = ImeConfig.string("input.chinese_variant")
     let lockedBytes = try Data(contentsOf: external)
     let configLock = URL(fileURLWithPath: external.path + ".lock")
     try Data("test lock".utf8).write(to: configLock, options: .withoutOverwriting)
-    for (text, flags) in [("m", NSEvent.ModifierFlags([.control, .shift])), (".", [.control, .shift]), ("t", [.control, .shift])] {
+    for (text, flags) in [("m", NSEvent.ModifierFlags([.option])), ("p", [.option]), ("t", [.option])] {
         guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: flags,
             timestamp: 0, windowNumber: 0, context: nil, characters: text,
             charactersIgnoringModifiers: text, isARepeat: false, keyCode: 0),
@@ -860,7 +859,7 @@ if CommandLine.arguments.contains("--smoke-test") {
         normalizedHotkey.modifiers == [.control, .option],
         ImeConfig.string("hotkey.toggle_mode") == "ctrl+alt+m",
         !ImeConfig.setString("hotkey.toggle_mode", "banana"),
-        !ImeConfig.setString("hotkey.toggle_mode", "ctrl+shift+space"),
+        !ImeConfig.setString("hotkey.toggle_mode", "alt+space"),
         ImeConfig.setString("hotkey.toggle_mode", "none"),
         ImeConfig.hotkey("hotkey.toggle_mode").kind == 0
     else { fputs("快捷键规范/非法值/冲突校验失败。\n", stderr); exit(1) }

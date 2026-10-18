@@ -181,7 +181,7 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
             return menu
         case .text:
             let field = NSTextField()
-            field.placeholderString = "组合键，如 ctrl+shift+m；留空 = 关闭"
+            field.placeholderString = "组合键，如 alt+m；留空 = 关闭"
             field.font = .systemFont(ofSize: 12)
             field.delegate = self
             field.target = self
@@ -267,7 +267,7 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         alert.addButton(withTitle: "取消")
         let input = NSTextField(string: value)
         input.frame = NSRect(x: 0, y: 0, width: 360, height: 26)
-        input.placeholderString = "如 ctrl+shift+k；留空关闭"
+        input.placeholderString = "如 alt+m；留空关闭"
         input.setAccessibilityLabel(option.title)
         alert.accessoryView = input
         alert.window.initialFirstResponder = input
