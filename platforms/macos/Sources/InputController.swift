@@ -516,11 +516,20 @@ final class LampyrisInputController: IMKInputController {
         window.show(at: caretRect(client))
     }
 
+    /// 光标常在文本末尾（location == length），查询 length 会得到空矩形；
+    /// 退一格取最后一个字符的位置，HUD/候选窗才会贴着真实光标。
+    static func caretLookupIndex(selectionLocation: Int, length: Int) -> Int {
+        guard length > 0 else { return 0 }
+        let location = selectionLocation == NSNotFound ? 0 : selectionLocation
+        return min(max(0, location), length - 1)
+    }
+
     /// 光标矩形（候选窗/HUD 定位）；优先当前插入点，取不到时退回鼠标位置。
     private func caretRect(_ client: IMKTextInput) -> NSRect {
         var rect = NSRect.zero
         let selection = client.selectedRange()
-        let index = selection.location == NSNotFound ? 0 : selection.location
+        let index = Self.caretLookupIndex(selectionLocation: selection.location,
+            length: client.length())
         _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
         if rect == .zero {
             let mouse = NSEvent.mouseLocation

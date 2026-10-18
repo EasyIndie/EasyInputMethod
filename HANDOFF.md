@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **B 机实机验收芯片/HUD（报告 081）+ 修复组合态无反馈与光标定位**
+- 更新：2026-10-18 / pi（deepseek-flash）· **B 机真机复验 `9f64719`（报告 082）；光标末尾取矩形修复待下一包**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
 - 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
@@ -38,7 +38,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **D1/D2 已在本地隔离窗口复验通过**（`make macos-dev`，报告 081）：组合态 ⌥P 只更新芯片；组合态 ⌥F 关候选并弹 HUD，位置在输入区附近；真实 config 未变。**`9f64719` 仍待在真机 IMK 上复验**（B 暂不重启）。
+- **B 已装 `9f64719` 并真机复验（报告 082）**：芯片、组合态 ⌥P、D1（组合态 ⌥F 关候选 + HUD）均 PASS；发现 D2 剩余：光标在末尾（location==length）取不到矩形，HUD 可能落在窗口边缘/鼠标处。`caretLookupIndex` 已修并有单测，**待下一包复验**。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
 - **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
@@ -106,6 +106,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**真机复验 `9f64719`（报告 082）**。两字芯片、组合态 ⌥P 就地更新、D1 组合态 ⌥F 关候选并弹 HUD、还原全部 PASS；发现光标在末尾时 `attributes` 返回空矩形，HUD 定位退化，已用 `caretLookupIndex` 修正并加单测，待下一包复验。
 - 2026-10-18 / pi：**本地隔离窗口复验 D1/D2（报告 081）**。`make macos-dev` 独立 App：芯片右对齐、组合态 ⌥P 就地更新无 HUD、组合态 ⌥F 关候选并在输入区附近弹 HUD、非组合态 HUD 正常；退出清理 PASS 且真实配置未改。Preview 同步芯片/HUD 以便后续本地验收；`9f64719` 仍待真机安装复验。
 - 2026-10-18 / pi：**D1/D2 修复并出最终包 `9f64719`**。只有 `isComposing` 时才用候选内联芯片，否则走 HUD；`caretRect` 改用 `selectedRange().location` 定位插入点。`make verify`、64 场景本地验收、offline 全绿；macOS Acceptance Package 成功（zip `c310ea15…`、执行 `3bc41a86…`、Notarized Developer ID），待 B 注销安装复验。
 - 2026-10-18 / pi：**B 机安装 `5726556` 并验收（报告 081）**。两字芯片、组合态切标点就地更新且无 HUD、非组合态 HUD、菜单/设置 ⌥F 均 PASS；发现组合态切宽度时候选关闭后无反馈、HUD 定位用文档开头两个缺陷，已在源码修复（仅 `isComposing` 才内联；`caretRect` 用 `selectedRange`）。还原 ABC 与默认状态，待新版包复验。
