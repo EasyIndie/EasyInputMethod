@@ -113,6 +113,15 @@ enum ImeAppearance {
     }
 }
 
+/// 候选文字四周留白：悬停高亮覆盖 label 全框，文字通过 cell 的 drawingRect 内缩。
+final class PaddedCandidateCell: NSTextFieldCell {
+    static let horizontal: CGFloat = 6
+    static let vertical: CGFloat = 2
+    override func drawingRect(forBounds rect: NSRect) -> NSRect {
+        rect.insetBy(dx: Self.horizontal, dy: Self.vertical)
+    }
+}
+
 /// 可点击的候选标签：单击即选中该候选；鼠标悬停时高亮（体验打磨）。
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
@@ -473,12 +482,12 @@ final class CandidateStateStrip: NSView {
     override init(frame frameRect: NSRect) {
         super.init(frame: frameRect)
         for label in labels {
-            label.font = .systemFont(ofSize: 10.5, weight: .semibold)
+            label.font = .systemFont(ofSize: 12, weight: .medium)
             label.alignment = .center
             label.usesSingleLineMode = true
             label.lineBreakMode = .byClipping
             label.wantsLayer = true
-            label.layer?.cornerRadius = 4
+            label.layer?.cornerRadius = 5
             label.layer?.actions = ["backgroundColor": NSNull()]
             label.isHidden = true
             addSubview(label)
@@ -512,7 +521,7 @@ final class CandidateStateStrip: NSView {
 
     private func chipWidth(_ text: String) -> CGFloat {
         ceil((text as NSString).size(withAttributes: [
-            .font: NSFont.systemFont(ofSize: 10.5, weight: .semibold)]).width) + 9
+            .font: NSFont.systemFont(ofSize: 12, weight: .medium)]).width) + 12
     }
 
     private func layoutChips() {
@@ -740,6 +749,11 @@ final class CandidateWindow: NSObject {
         for (index, candidate) in candidates.enumerated() {
             if index == labels.count {
                 let label = CandidateLabel(labelWithString: "")
+                label.cell = PaddedCandidateCell(textCell: "")
+                label.isEditable = false
+                label.isBordered = false
+                label.drawsBackground = false
+                label.alignment = .left
                 labels.append(label)
                 document.addSubview(label)
             }
@@ -774,7 +788,7 @@ final class CandidateWindow: NSObject {
         let maxWidth = max(1, min(640, available.width))
         let innerLimit = max(1, maxWidth - margin * 2)
         let visible = Array(labels.prefix(renderedCount))
-        let widths = visible.map { ceil($0.attributedStringValue.size().width) + 4 }
+        let widths = visible.map { ceil($0.attributedStringValue.size().width) + 2 * PaddedCandidateCell.horizontal + 2 }
         let horizontalWidth = widths.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 14
         let vertical = horizontalWidth > innerLimit
         let pagesVisible = renderedCount > 0 && pageCount > 1
@@ -800,9 +814,11 @@ final class CandidateWindow: NSObject {
         let baseExtra = CGFloat(headerVisible ? bottomReserve : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 6 : 0)
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
-                if !vertical { return ceil(label.attributedStringValue.size().height) + 4 }
-                return ceil(label.attributedStringValue.boundingRect(with: NSSize(width: max(1, bodyWidth - 4), height: .greatestFiniteMagnitude),
-                    options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 4
+                if !vertical {
+                    return ceil(label.attributedStringValue.size().height) + 2 * PaddedCandidateCell.vertical + 2
+                }
+                return ceil(label.attributedStringValue.boundingRect(with: NSSize(width: max(1, bodyWidth - 2 * PaddedCandidateCell.horizontal), height: .greatestFiniteMagnitude),
+                    options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 2 * PaddedCandidateCell.vertical + 2
             }
         }
         var bodyWidth = inner

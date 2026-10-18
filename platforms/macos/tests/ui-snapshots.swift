@@ -124,7 +124,9 @@ for (theme, appearance) in themes {
         traditional: false, chinesePunctuation: false))
     window.update(candidates: short, pageIndex: 0, pageCount: 55, input: "wq")
     window.layout(at: caret, within: area)
+    window.simulateHover(at: 1, true)
     save(window.renderSnapshotForTesting(), "candidate-pager-\(theme)")
+    window.simulateHover(at: 1, false)
     reportCandidate(window, theme, "pager")
     window.updateStatus(CandidateStatus(mode: "wubi", english: false, fullWidth: false,
         traditional: true, chinesePunctuation: true))
