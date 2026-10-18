@@ -5,7 +5,8 @@
 - 更新：2026-10-18 / pi（deepseek-flash）· **交接给 B 设备做重启后的实机验收**
 - 分支：`main` @ `8f14754`（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
 - 阶段：**新包已出（源码 `6494eab`，执行 SHA `8984c223…`）**，A 已核验但**未安装**；B 待升级（现在还是 `a234ef31…`）；MVP 发布门禁未全部关闭
-- 最近验证：`make verify` 全绿（212 产物隐私断言）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
+- 最近验证：`make verify` 全绿（212 产物隐私断言）
+- 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
 
 ## 1. 安装与数据
 
@@ -95,6 +96,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：交接标准化。新增 `scripts/handoff-status.sh`（只读采集分支/包 SHA/config/词源/CI/工具会话，`--for=compact|session|agent|device`，`--prompt` 出骨架）与 `make handoff`；`update-handoff` skill 改为四场景矩阵 + 五步流程 + HANDOFF 契约 + 反例；新增 `docs/交接提示词模板.md`（四份模板）并接入 AGENTS §6.1 与 docs 索引。
 - 2026-10-18 / pi：交接 B 机重启后验收。本轮完成 ⌥ 默认值（ADR-209）、候选窗底部留白、关于页按钮、组合键防误判、离屏截图工具、`--purge-data` 与 `scripts/clean-install.sh`；新包 `6494eab` 已出（exec `8984c223…`）并在 A 核验，A 未安装。B 重启后按 §4 执行 `make macos-clean-install` 并写报告 078。
 - 2026-10-18 / pi：无注销验收三档 + 一条命令全新安装（报告 077）。`make macos-ui-snapshots` 增设设置四分区截图并打印默认 ⌥ 绑定文本；新增 `scripts/clean-install.sh` / `make macos-clean-install`（卸载→安装→校验，缺 `--input-source-removed` 只打印清单）；明确只有「签名包+真实 IMK」需要一次注销。
 - 2026-10-18 / pi：出包 + 交接全新安装。`7e2edc7`/`4a48443` 的 CI 因学习区快捷键用例仍按 `⌃⇧L` 而红，修好并重跑（`6494eab` 全绿）；新包下载核验（zip `0325ef9d…`、执行 `8984c223…`、Notarized Developer ID）。

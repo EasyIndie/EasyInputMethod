@@ -135,6 +135,18 @@ make verify     # = fmt-check + lint + test + deny + verify-no-network
 - `HANDOFF.md` 是**"当前状态"的唯一来源**。
 - 不要把设计细节写进 `HANDOFF.md`（那些属于 `docs/`）；也不要把它当日记写成流水帐。
 
+**标准交接流程（四种场景：上下文压缩 / 新会话 / 跨 agent / 跨设备）**：
+
+```sh
+./scripts/handoff-status.sh --for=compact|session|agent|device [--prompt]   # 只读采集当前状态
+```
+
+1. 用脚本表格填写 `HANDOFF.md`：§0 元信息、§1 设备与数据（含**执行 SHA** 与 config/输入源）、§3 未决、§4 下一步/§4.1 换设备、§9 日志（置顶 ≤5 行）。
+2. 用 `docs/交接提示词模板.md` 的骨架生成下一位执行者的提示词（`--for=device` 时**必须**同时给 zip SHA 与执行 SHA）。
+3. `make verify` 全绿后提交 `docs: handoff …` 并推送；详细契约与反例见 `.agents/skills/update-handoff/SKILL.md`。
+
+> 上下文压缩前也要先落盘（HANDOFF + 一条日志），压缩后先读 HANDOFF 再动手，不要凭记忆继续。
+
 ---
 
 ## 7. 约定
