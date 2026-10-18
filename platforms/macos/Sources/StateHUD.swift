@@ -90,19 +90,22 @@ final class StateHUDView: NSView {
     }
 }
 
-/// 固定位置：当前鼠标所在屏的可见区域顶部居中（菜单栏下 16pt）。
+/// 光标跟随：插入点上方 8pt，水平居中并夹在屏幕可见区内。
 enum StateHUDLayout {
-    static let topInset: CGFloat = 16
+    static let gap: CGFloat = 8
 
-    static func frame(size: NSSize, visibleFrame: NSRect) -> NSRect {
-        NSRect(x: visibleFrame.midX - size.width / 2,
-            y: visibleFrame.maxY - size.height - topInset,
-            width: size.width, height: size.height)
+    static func isValid(caret: NSRect?) -> Bool {
+        guard let caret else { return false }
+        // 插入点矩形经常宽度为 0（只有行高），宽度不参与有效性判断。
+        return caret.width >= 0 && caret.height > 0
+            && caret.origin.x.isFinite && caret.origin.y.isFinite
     }
 
-    /// 鼠标所在屏；找不到时退回主屏（索引 0 由调用方保证）。
-    static func screenIndex(mouse: NSPoint, among frames: [NSRect]) -> Int? {
-        frames.firstIndex { $0.contains(mouse) }
+    static func frame(size: NSSize, caret: NSRect, visibleFrame: NSRect) -> NSRect {
+        var origin = NSPoint(x: caret.midX - size.width / 2, y: caret.maxY + gap)
+        origin.x = min(max(origin.x, visibleFrame.minX + gap), visibleFrame.maxX - size.width - gap)
+        origin.y = min(max(origin.y, visibleFrame.minY + gap), visibleFrame.maxY - size.height - gap)
+        return NSRect(origin: origin, size: size)
     }
 }
 
@@ -137,9 +140,10 @@ final class StateHUDController {
         return panel
     }
 
-    /// 固定位置显示；不读取光标，位置可预测。
-    func show(_ message: String) {
-        guard !disabled, !message.isEmpty else { return }
+    /// 仅在有聚焦输入框且取到有效光标矩形时显示；取不到就不显示（对齐系统输入源提示）。
+    func show(_ message: String, caret: NSRect?) {
+        guard !disabled, !message.isEmpty, StateHUDLayout.isValid(caret: caret) else { return }
+        guard let caret else { return }
         let panel = self.panel ?? makePanel()
         self.panel = panel
         ImeAppearance.applyTheme(to: panel)
@@ -157,11 +161,11 @@ final class StateHUDController {
         view.updateColors(for: panel.effectiveAppearance)
 
         let screens = NSScreen.screens
-        let index = StateHUDLayout.screenIndex(mouse: NSEvent.mouseLocation,
-            among: screens.map(\.frame)) ?? 0
-        let screen = index < screens.count ? screens[index] : NSScreen.main
+        let center = NSPoint(x: caret.midX, y: caret.midY)
+        let screen = screens.first { $0.frame.contains(center) } ?? NSScreen.main
         let visible = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
-        panel.setFrame(StateHUDLayout.frame(size: size, visibleFrame: visible), display: false)
+        panel.setFrame(StateHUDLayout.frame(size: size, caret: caret, visibleFrame: visible),
+            display: false)
         panel.invalidateShadow()
 
         hideWorkItem?.cancel()

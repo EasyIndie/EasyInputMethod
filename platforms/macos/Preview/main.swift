@@ -125,7 +125,7 @@ final class PreviewInput: NSTextView {
                 } else {
                     message = StateFeedback.punctuation(status.chinesePunctuation)
                 }
-                StateHUDController.shared.show(message)
+                StateHUDController.shared.show(message, caret: caret)
             }
         }
         lastFeedback = feedback
