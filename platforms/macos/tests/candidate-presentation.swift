@@ -78,6 +78,11 @@ for pages in [3, 30, 120] {
 }
 window.update(candidates: values, pageIndex: 0, pageCount: 30, input: "tr")
 window.layout(at: caret, within: area)
+// 没有 hint/警告时底部留白不得明显大于顶部（否则整块内容看着上移，报告 073）。
+let topPadding = window.frame.height - window.pageFramesForTesting[2].maxY
+let bottomPadding = window.candidateViewportFrameForTesting.minY
+guard bottomPadding <= topPadding + 2 else { fail("balanced candidate padding") }
+LocalAcceptanceEvidence.record("candidate.padding", expected: "无 hint 时底部留白不大于顶部+2pt", actual: ["top": topPadding, "bottom": bottomPadding])
 snapshot("page-aligned-dark")
 LocalAcceptanceEvidence.record("candidate.page-centres", expected: "3/30/120页首尾箭头和页码中心差<0.5pt", actual: window.pageFramesForTesting.map { ["mid_y": $0.midY, "height": $0.height] })
 window.update(candidates: values, input: "wq", warning: "虚构繁体资源失败：用于验证错误仍可见，不读取真实文件")

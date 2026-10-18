@@ -663,7 +663,10 @@ final class CandidateWindow: NSObject {
         let headerHeight: CGFloat = headerVisible ? 24 : 0
         let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
-        let baseExtra = CGFloat(headerVisible ? 22 : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
+        // 只有真的要显示附行/警告时才保留底部 22pt 区（hint 下留 8pt 边距）；
+        // 否则底部只留 10pt，避免窗口比内容“多出”一大截、整体显得上移（报告 073）。
+        let bottomReserve: CGFloat = (hintHeight + warningHeight) > 0 ? 22 : 12
+        let baseExtra = CGFloat(headerVisible ? bottomReserve : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
                 if !vertical { return ceil(label.attributedStringValue.size().height) + 4 }
@@ -734,6 +737,7 @@ final class CandidateWindow: NSObject {
     var learningVisibleForTesting: Bool { !learningView.isHidden }
     var learningActionForTesting: NSButton? { learningView.actionForTesting }
     var candidateViewportForTesting: NSSize { scrollView.frame.size }
+    var candidateViewportFrameForTesting: NSRect { scrollView.frame }
     var learningScrollOriginForTesting: NSPoint { learningView.detailOriginForTesting }
     func scrollLearningForTesting(_ y: CGFloat) { learningView.scrollDetailsForTesting(y) }
     var learningTextContrastForTesting: CGFloat {
