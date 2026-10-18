@@ -50,10 +50,22 @@ for (theme, appearance) in themes {
 print("设置面板")
 SettingsPanel.shared.prepare()
 SettingsPanel.shared.bindSessionForTesting(nil)
+let sections = ["input", "candidates", "shortcuts", "dictionary"]
 for (theme, appearance) in themes {
     guard ImeConfig.setString("appearance.theme", theme) else { exit(1) }
-    let rep = SettingsPanel.shared.renderSnapshotForTesting(appearance: NSAppearance(named: appearance)!)
-    save(rep, "settings-\(theme)")
+    for (index, name) in sections.enumerated() {
+        SettingsPanel.shared.selectSectionForTesting(index)
+        let rep = SettingsPanel.shared.renderSnapshotForTesting(appearance: NSAppearance(named: appearance)!)
+        save(rep, "settings-\(theme)-\(name)")
+    }
+    print("  ↳ settings/\(theme) 分区：" + sections.joined(separator: "/") + "（快捷键页可直接看默认 ⌥ 绑定）")
+    let hotkeys = ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
+                   "hotkey.toggle_punctuation", "hotkey.toggle_variant", "hotkey.open_settings",
+                   "hotkey.open_about", "hotkey.toggle_wubi_learning"]
+    print("  ↳ 快捷键显示：" + hotkeys.map { key in
+        (key.replacingOccurrences(of: "hotkey.", with: "") + "="
+            + (SettingsPanel.shared.rowForTesting(key)?.shortcutTitleForTesting ?? "missing"))
+    }.joined(separator: " "))
 }
 
 print("诊断面板")

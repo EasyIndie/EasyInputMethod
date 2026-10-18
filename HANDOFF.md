@@ -63,6 +63,17 @@
 
 ## 4.1 待执行：A 机全新安装（用户注销重登后第一件事）
 
+> 不想现在注销也行：UI/候选/设置/默认绑定可用 `make macos-ui-snapshots`（含设置四分区与快捷键文本）和
+> `make macos-dev`（隔离实窗、私有配置）先看；只有「签名包 + 真实 IMK」才需要那一次注销（报告 077）。
+
+登录后一条命令：
+```sh
+make macos-clean-install APP=packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app
+```
+（= `scripts/clean-install.sh --app <路径> --input-source-removed`；默认 `--purge-data`，`ARGS=--keep-data` 可保留旧数据；
+不带 `--input-source-removed` 只会打印清单并退出，不会动手。）
+
+
 新包已就位（`packaging/out/` 被 gitignore，仅本机）：`packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app`
 
 | 项 | 值 |
@@ -99,6 +110,7 @@ make -C tools/macos-probe                               # 探针（若尚未构�
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：无注销验收三档 + 一条命令全新安装（报告 077）。`make macos-ui-snapshots` 增设设置四分区截图并打印默认 ⌥ 绑定文本；新增 `scripts/clean-install.sh` / `make macos-clean-install`（卸载→安装→校验，缺 `--input-source-removed` 只打印清单）；明确只有「签名包+真实 IMK」需要一次注销。
 - 2026-10-18 / pi：出包 + 交接全新安装。`7e2edc7`/`4a48443` 的 CI 因学习区快捷键用例仍按 `⌃⇧L` 而红，修好并重跑（`6494eab`，CI + macOS Acceptance 全绿）；新包已下载核验（zip `0325ef9d…`、执行 `8984c223…`、Notarized Developer ID）。用户注销重登后按 §4.1 执行 `--purge-data` 全新安装并验收默认 ⌥ 行为。
 - 2026-10-18 / pi：全新安装入口（报告 076）。`uninstall.sh --purge-data` 把旧包与旧 config/词库移入 `uninstalled/`（移动不删除），预检无需退出宿主；补 3 项临时 HOME 回归（默认保留/预检/purge 生效），文档写清六步流程；A/B 未执行。
 - 2026-10-18 / pi：默认快捷键改 Option 语义前缀（ADR-209 / 报告 075）。实测系统符号快捷键无「仅 ⌥+字母」、⌥E/N/U/I 为死键；默认改为 ⌥M/⌥Space/⌥P/⌥T/⌥L/⌥,/⌥A（中英仍单 ⇧），Schema 与单测、菜单/设置/预览回归同步；已装包未变，B/A 的显式旧值不动。
