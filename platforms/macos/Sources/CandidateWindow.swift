@@ -623,7 +623,7 @@ final class CandidateWindow: NSObject {
         inputLabel.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         inputLabel.textColor = .labelColor
         inputLabel.setAccessibilityLabel("输入编码")
-        pageLabel.font = .monospacedDigitSystemFont(ofSize: 11, weight: .regular)
+        pageLabel.font = .monospacedDigitSystemFont(ofSize: 12, weight: .regular)
         pageLabel.alignment = .center
         pageLabel.textColor = ImeAppearance.secondaryText
         hintLabel.font = .systemFont(ofSize: 11)
@@ -634,7 +634,8 @@ final class CandidateWindow: NSObject {
             (previousButton, "chevron.left", "上一页", #selector(previousPage)),
             (nextButton, "chevron.right", "下一页", #selector(nextPage)),
         ] {
-            button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)
+            button.image = NSImage(systemSymbolName: symbol, accessibilityDescription: title)?
+                .withSymbolConfiguration(.init(pointSize: 12.5, weight: .medium))
             button.title = button.image == nil ? title : ""
             button.isBordered = false
             button.refusesFirstResponder = true
@@ -835,10 +836,15 @@ final class CandidateWindow: NSObject {
         inputLabel.frame = NSRect(x: margin, y: navigationCenterY - 10,
             width: max(1, inner - reservedHeader - (pagesVisible ? 8 : 0)), height: 20)
         let pageHeight = ceil(pageSize.height)
-        nextButton.frame = NSRect(x: width - margin - 24, y: navigationCenterY - 12, width: 24, height: 24)
+        // 光学对齐：数字/雪佛龙的墨迹比汉字矮，基线相同仍显低；整体上提 1.5pt。
+        let pagerOpticalLift: CGFloat = 1.5
+        nextButton.frame = NSRect(x: width - margin - 24,
+            y: navigationCenterY - 12 + pagerOpticalLift, width: 24, height: 24)
         pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4,
-            y: navigationCenterY - pageHeight / 2, width: pageWidth, height: pageHeight)
-        previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: navigationCenterY - 12, width: 24, height: 24)
+            y: navigationCenterY - pageHeight / 2 + pagerOpticalLift,
+            width: pageWidth, height: pageHeight)
+        previousButton.frame = NSRect(x: pageLabel.frame.minX - 28,
+            y: navigationCenterY - 12 + pagerOpticalLift, width: 24, height: 24)
         stateStrip.isHidden = !statusVisible
         if statusVisible {
             let right = (pagesVisible ? previousButton.frame.minX : width - margin) - 8

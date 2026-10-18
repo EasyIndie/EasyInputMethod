@@ -146,9 +146,11 @@ let stripFrame = window.stateStripFrameForTesting
 let pagerFrame = window.pageFramesForTesting[0]
 guard chipTexts == ["混输", "英文", "全角", "简体", "."] else { fail("state chips " + chipTexts.joined()) }
 let inputFrame = window.inputFrameForTesting
+// 翻页区为光学对齐整体上提 1.5pt：允许比芯片中心高 0–2pt，而不是要求严格相等。
+let pagerLift = pagerFrame.midY - stripFrame.midY
 guard stripFrame.maxX <= pagerFrame.minX, stripFrame.minX >= 16,
-      abs(stripFrame.midY - pagerFrame.midY) < 0.5,
-      abs(inputFrame.midY - pagerFrame.midY) < 0.5 else { fail("header items not aligned") }
+      pagerLift >= 0.5, pagerLift <= 2.5,
+      abs(inputFrame.midY - stripFrame.midY) < 0.5 else { fail("header items not aligned") }
 window.updateStatus(CandidateStatus(mode: "pinyin", english: false, fullWidth: false,
     traditional: true, chinesePunctuation: true))
 guard window.stateChipsForTesting == ["拼音", "中文", "半角", "繁体", "。"] else { fail("state chips value") }
