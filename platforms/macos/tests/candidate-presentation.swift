@@ -145,8 +145,10 @@ let chipTexts = window.stateChipsForTesting
 let stripFrame = window.stateStripFrameForTesting
 let pagerFrame = window.pageFramesForTesting[0]
 guard chipTexts == ["混输", "英文", "全角", "简体", "."] else { fail("state chips " + chipTexts.joined()) }
+let inputFrame = window.inputFrameForTesting
 guard stripFrame.maxX <= pagerFrame.minX, stripFrame.minX >= 16,
-      abs(stripFrame.midY - pagerFrame.midY) < 0.5 else { fail("state chips overlap pager") }
+      abs(stripFrame.midY - pagerFrame.midY) < 0.5,
+      abs(inputFrame.midY - pagerFrame.midY) < 0.5 else { fail("header items not aligned") }
 window.updateStatus(CandidateStatus(mode: "pinyin", english: false, fullWidth: false,
     traditional: true, chinesePunctuation: true))
 guard window.stateChipsForTesting == ["拼音", "中文", "半角", "繁体", "。"] else { fail("state chips value") }

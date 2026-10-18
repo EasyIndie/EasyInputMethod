@@ -580,6 +580,7 @@ final class CandidateWindow: NSObject {
     }
     var stateChipsForTesting: [String] { stateStrip.chipTextsForTesting }
     var stateStripFrameForTesting: NSRect { stateStrip.frame }
+    var inputFrameForTesting: NSRect { inputLabel.frame }
     var displayedInput: String { inputLabel.stringValue }
     var displayedWarning: String? { warningLabel.isHidden ? nil : warningLabel.stringValue }
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
@@ -789,13 +790,13 @@ final class CandidateWindow: NSObject {
         let naturalWidth = max(horizontalWidth, inputWidth + reservedHeader + 8, hintWidth, warningWidth, max(0, min(400, maxWidth) - margin * 2))
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
-        let headerHeight: CGFloat = headerVisible ? 24 : 0
+        let headerHeight: CGFloat = headerVisible ? 26 : 0
         let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
         // 只有真的要显示附行/警告时才保留底部 22pt 区（hint 下留 8pt 边距）；
         // 否则底部只留 10pt，避免窗口比内容“多出”一大截、整体显得上移（报告 073）。
         let bottomReserve: CGFloat = (hintHeight + warningHeight) > 0 ? 22 : 12
-        let baseExtra = CGFloat(headerVisible ? bottomReserve : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 4 : 0)
+        let baseExtra = CGFloat(headerVisible ? bottomReserve : 16) + headerHeight + hintHeight + warningHeight + (headerVisible ? 6 : 0)
         func heights(for bodyWidth: CGFloat) -> [CGFloat] {
             visible.map { label in
                 if !vertical { return ceil(label.attributedStringValue.size().height) + 4 }
@@ -830,8 +831,9 @@ final class CandidateWindow: NSObject {
         nextButton.isHidden = !pagesVisible
         previousButton.isEnabled = pagesVisible && pageIndex > 0
         nextButton.isEnabled = pagesVisible && pageIndex + 1 < pageCount
-        inputLabel.frame = NSRect(x: margin, y: top - 20, width: max(1, inner - reservedHeader - (pagesVisible ? 8 : 0)), height: 20)
         let navigationCenterY = top - headerHeight / 2
+        inputLabel.frame = NSRect(x: margin, y: navigationCenterY - 10,
+            width: max(1, inner - reservedHeader - (pagesVisible ? 8 : 0)), height: 20)
         let pageHeight = ceil(pageSize.height)
         nextButton.frame = NSRect(x: width - margin - 24, y: navigationCenterY - 12, width: 24, height: 24)
         pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4,
@@ -844,7 +846,7 @@ final class CandidateWindow: NSObject {
                 y: navigationCenterY - CandidateStateStrip.chipHeight / 2,
                 width: statusWidth, height: CandidateStateStrip.chipHeight)
         }
-        let bodyTop = top - headerHeight
+        let bodyTop = top - headerHeight - 2
         scrollView.frame = NSRect(x: margin, y: bodyTop - bodyHeight, width: inner, height: bodyHeight)
         scrollView.tile()
         document.frame = NSRect(x: 0, y: 0, width: max(bodyWidth, scrollView.contentSize.width), height: naturalHeight)
