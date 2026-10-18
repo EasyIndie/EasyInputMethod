@@ -232,16 +232,31 @@ final class LampyrisInputController: IMKInputController {
     }
 
     @objc private func toggleEnglish(_ sender: Any?) {
-        session?.toggleEnglish(); refreshAfterStateChange()
+        session?.toggleEnglish()
+        showStateFeedback(StateFeedback.language(session?.isEnglish ?? false))
+        refreshAfterStateChange()
     }
     @objc private func toggleWidth(_ sender: Any?) {
-        session?.toggleWidth(); refreshAfterStateChange()
+        session?.toggleWidth()
+        showStateFeedback(StateFeedback.width(session?.isFullWidth ?? false))
+        refreshAfterStateChange()
     }
     @objc private func togglePunctuation(_ sender: Any?) {
-        session?.togglePunctuation(); refreshAfterStateChange()
+        session?.togglePunctuation()
+        showStateFeedback(StateFeedback.punctuation(
+            (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese"))
+        refreshAfterStateChange()
     }
     @objc private func toggleVariant(_ sender: Any?) {
-        session?.toggleVariant(); refreshAfterStateChange()
+        session?.toggleVariant()
+        showStateFeedback(StateFeedback.variant(session?.isTraditional ?? false))
+        refreshAfterStateChange()
+    }
+
+    /// 统一状态反馈（ADR-211）：定位到当前光标，取不到时退回鼠标位置。
+    private func showStateFeedback(_ message: String) {
+        let target = activeClient ?? client()
+        StateHUDController.shared.show(message, caret: target.map { caretRect($0) })
     }
 
     /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
@@ -295,6 +310,7 @@ final class LampyrisInputController: IMKInputController {
         guard session?.mode != next else { return }
         cancelClientComposition()
         session?.setMode(next)
+        showStateFeedback(StateFeedback.mode(next))
     }
 
     // MARK: - 按键处理
@@ -348,8 +364,16 @@ final class LampyrisInputController: IMKInputController {
             showAbout()
             return true
         }
+        let modeBeforeShortcut = session.mode
+        let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
         let shortcut = session.shortcut(event, persistMode: true)
         if shortcut.consumed {
+            if session.mode != modeBeforeShortcut {
+                showStateFeedback(StateFeedback.mode(session.mode))
+            } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
+                showStateFeedback(StateFeedback.learning(
+                    ImeConfig.bool("candidate.show_wubi_learning")))
+            }
             if shortcut == .failed { presentConfigError() }
             if session.isComposing {
                 updateMarked(client, session.buffer)

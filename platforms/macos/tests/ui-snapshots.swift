@@ -78,7 +78,16 @@ for (theme, appearance) in themes {
          "diagnostics-\(theme)")
 }
 
-print("PASS ui-snapshots(panels): 关于/设置/诊断离屏渲染完成，未显示窗口、未改动真实配置")
+print("状态反馈 HUD")
+for (theme, appearance) in themes {
+    for message in ["英文", "全角", "混输模式"] {
+        save(StateHUDView.renderForTesting(message: message,
+            appearance: NSAppearance(named: appearance)!), "state-hud-\(message)-\(theme)")
+    }
+}
+print("  ↳ 文案：中英/全半角/简繁/标点/模式/学习区统一走 StateFeedback")
+
+print("PASS ui-snapshots(panels): 关于/设置/诊断/状态反馈离屏渲染完成，未显示窗口、未改动真实配置")
 
 #else
 

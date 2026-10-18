@@ -32,6 +32,7 @@ PANEL_SOURCES=(
     platforms/macos/Sources/InfoWindow.swift
     platforms/macos/Sources/UserDictionary.swift
     platforms/macos/Sources/Lookup.swift
+    platforms/macos/Sources/StateHUD.swift
 )
 
 cargo build --release -p ime-ffi >/dev/null

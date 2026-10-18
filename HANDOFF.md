@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **宽度快捷键改 ⌥F（报告 079）；下一步统一状态反馈**
+- 更新：2026-10-18 / pi（deepseek-flash）· **统一状态反馈 HUD（报告 080）+ 宽度默认 ⌥F（报告 079）**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
-- 阶段：**B 已装新包 `6494eab`**；A 仍装旧包 `a234ef31…`（待同样全新安装）；宽度默认已改 `alt+f`（ADR-210，报告 079），待出下一版包；MVP 发布门禁未全部关闭
+- 阶段：**B 已装 `6494eab`；源码已含 `⌥F` 默认（ADR-210）与状态 HUD（ADR-211），需重新出包/安装才能在真机看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
 - 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
 
@@ -13,7 +13,7 @@
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
-| B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `3154254f…`（全量默认模板：`mode=mixed`、`alt+*`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
+| B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `b4e7f50b…`（`mode=mixed`、`toggle_width=alt+f`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
 
 - 新包（`packaging/out/` 被 gitignore，不入库）：
   `packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app`
@@ -36,6 +36,8 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
+- **新包待出**：源码已含 `toggle_width=alt+f`（ADR-210）与状态 HUD（ADR-211），但 B 上仍是 `6494eab`，真机看不到 HUD；出包后需在 B 复验 HUD（菜单/快捷键触发）与 `⌥F`。
+- **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
 - **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
 - **发布门禁（均未关闭）**：I0 安全（IT-01…03）／I1 可靠性／I2 体验／I3 性能与兼容（IT-12/14/23）／I4 分发（IT-13 dry_run、IT-15 第三方复现、tag/Release）。
 - **A 机遗留差异**（报告 071/073）：D2 = macOS 13 上设置面板首次打开落在「候选」分区（B 的 macOS 27 为「输入」，已复核）；D3 = 紧随 AX 点击工具栏后点「关于」有一次未出窗（B 上 3/3 未复现）。
@@ -101,6 +103,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**统一状态反馈 HUD（ADR-211 / 报告 080）**。新增 `StateHUD.swift`（`StateFeedback` 文案映射、胶囊视图、非激活面板），菜单命令与快捷键（含模式/学习区）统一在光标旁提示 1.15s；遵循减弱动态效果、VoiceOver 播报、`.prohibited`/离屏环境不弹窗。`macos-ui-snapshots` 新增 6 张亮暗快照，`controller-menu` 增加文案断言并通过，`make verify` 全绿；需重新出包才能在真机看到。
 - 2026-10-18 / pi：**全/半角默认快捷键改 `⌥F`（ADR-210 / 报告 079）**。用户报告 `⌥Space` 与 ChatGPT 虚拟宠物冲突；只改 `hotkey.toggle_width` 默认值，其余保持 ADR-209；已有显式配置不覆盖，B 机经设置面板改为 `alt+f`。同步 ime-config 单测、settings/learning/预览用例、配置架构与发布说明；补登记 `candidate.padding`/`learning.stale-chord` 后 `macos-local-acceptance` 62 场景全 PASS；`make verify` 全绿。
 - 2026-10-18 / pi：**B 机重启后全新安装 + 实机验收（报告 078，包 `6494eab`）**。zip `0325ef9d…`/执行 `8984c223…` 核验通过；`--purge-data` 把旧包、旧 `config`（`6314f3f4…`）与 510 行词库移入 `uninstalled/`；a–j 全 PASS：菜单 `⌥M/⇧/⌥空格/⌥T/⌥P/⌥,/⌥A`、`wq/nihao/kwwl`、`⌘Z`、四状态+模式、设置快捷键 8 项、候选 64pt（hint 92）、`⌃Space` 不误切、D2/D3 未复现、还原 ABC；新差异：首份配置是全量模板、macOS 27 撤销分组与 13 不同。下一步 A 机同样全新安装（§4）。
 - 2026-10-18 / pi：交接标准化。新增 `scripts/handoff-status.sh`（只读采集分支/包 SHA/config/词源/CI/工具会话，`--for=compact|session|agent|device`，`--prompt` 出骨架）与 `make handoff`；`update-handoff` skill 改为四场景矩阵 + 五步流程 + HANDOFF 契约 + 反例；新增 `docs/交接提示词模板.md`（四份模板）并接入 AGENTS §6.1 与 docs 索引。

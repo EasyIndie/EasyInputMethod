@@ -62,3 +62,11 @@ require(ImeConfig.setString("mode", "mixed"), "other client changed mixed")
 controller.activateServer(nil)
 require(controller.menu()!.items[0].accessibilityValue() as? String == "混输", "reactivation applies persisted mixed")
 print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service boundary, states and reactivation")
+
+require(StateFeedback.language(true) == "英文" && StateFeedback.language(false) == "中文", "language feedback")
+require(StateFeedback.width(true) == "全角" && StateFeedback.width(false) == "半角", "width feedback")
+require(StateFeedback.punctuation(true) == "中文标点" && StateFeedback.punctuation(false) == "英文标点", "punctuation feedback")
+require(StateFeedback.variant(true) == "繁体" && StateFeedback.variant(false) == "简体", "variant feedback")
+require(StateFeedback.mode("mixed") == "混输模式" && StateFeedback.mode("wubi") == "五笔模式"
+    && StateFeedback.mode("pinyin") == "拼音模式", "mode feedback")
+require(StateFeedback.learning(true) == "学习区：开" && StateFeedback.learning(false) == "学习区：关", "learning feedback")
