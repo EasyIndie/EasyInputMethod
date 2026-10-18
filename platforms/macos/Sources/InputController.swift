@@ -262,8 +262,7 @@ final class LampyrisInputController: IMKInputController {
             window.refreshLayout()
             return
         }
-        let target = activeClient ?? client()
-        StateHUDController.shared.show(message, caret: target.map { caretRect($0) })
+        StateHUDController.shared.show(message)
     }
 
     private func candidateStatus() -> CandidateStatus {

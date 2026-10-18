@@ -24,9 +24,9 @@ enum StateFeedback {
 
 /// 供离屏快照与正式浮层共用的胶囊视图。
 final class StateHUDView: NSView {
-    static let height: CGFloat = 34
-    static let horizontalPadding: CGFloat = 14
-    static let minimumWidth: CGFloat = 64
+    static let height: CGFloat = 36
+    static let horizontalPadding: CGFloat = 16
+    static let minimumWidth: CGFloat = 72
 
     private let label = NSTextField(labelWithString: "")
     let message: String
@@ -39,7 +39,7 @@ final class StateHUDView: NSView {
         layer?.borderWidth = 1
         layer?.actions = ["backgroundColor": NSNull(), "borderColor": NSNull()]
         label.stringValue = message
-        label.font = .systemFont(ofSize: 15, weight: .medium)
+        label.font = .systemFont(ofSize: 15.5, weight: .medium)
         label.alignment = .center
         label.usesSingleLineMode = true
         label.lineBreakMode = .byTruncatingTail
@@ -90,7 +90,23 @@ final class StateHUDView: NSView {
     }
 }
 
-/// 生命周期与定位；同一时刻只有一个浮层复用。
+/// 固定位置：当前鼠标所在屏的可见区域顶部居中（菜单栏下 16pt）。
+enum StateHUDLayout {
+    static let topInset: CGFloat = 16
+
+    static func frame(size: NSSize, visibleFrame: NSRect) -> NSRect {
+        NSRect(x: visibleFrame.midX - size.width / 2,
+            y: visibleFrame.maxY - size.height - topInset,
+            width: size.width, height: size.height)
+    }
+
+    /// 鼠标所在屏；找不到时退回主屏（索引 0 由调用方保证）。
+    static func screenIndex(mouse: NSPoint, among frames: [NSRect]) -> Int? {
+        frames.firstIndex { $0.contains(mouse) }
+    }
+}
+
+/// 生命周期；同一时刻只有一个浮层复用。
 final class StateHUDController {
     static let shared = StateHUDController()
 
@@ -112,7 +128,7 @@ final class StateHUDController {
         panel.isFloatingPanel = true
         panel.level = .popUpMenu
         panel.hidesOnDeactivate = false
-        panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
+        panel.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle, .fullScreenAuxiliary]
         panel.isOpaque = false
         panel.backgroundColor = .clear
         panel.hasShadow = true
@@ -121,8 +137,8 @@ final class StateHUDController {
         return panel
     }
 
-    /// `caret` 为屏幕坐标；取不到时退回鼠标位置。
-    func show(_ message: String, caret: NSRect?) {
+    /// 固定位置显示；不读取光标，位置可预测。
+    func show(_ message: String) {
         guard !disabled, !message.isEmpty else { return }
         let panel = self.panel ?? makePanel()
         self.panel = panel
@@ -140,19 +156,12 @@ final class StateHUDController {
         view.frame = NSRect(origin: .zero, size: size)
         view.updateColors(for: panel.effectiveAppearance)
 
-        var anchor = caret ?? NSRect(x: NSEvent.mouseLocation.x, y: NSEvent.mouseLocation.y, width: 1, height: 1)
-        if anchor.width <= 1, anchor.height <= 1 {
-            anchor = NSRect(x: anchor.midX, y: anchor.midY, width: 1, height: 1)
-        }
-        var origin = NSPoint(x: anchor.midX - size.width / 2, y: anchor.maxY + 8)
-        let screen = NSScreen.screens.first {
-            $0.frame.contains(NSPoint(x: anchor.midX, y: anchor.midY))
-        } ?? NSScreen.main
-        if let visible = screen?.visibleFrame {
-            origin.x = min(max(origin.x, visible.minX + 8), visible.maxX - size.width - 8)
-            origin.y = min(max(origin.y, visible.minY + 8), visible.maxY - size.height - 8)
-        }
-        panel.setFrame(NSRect(origin: origin, size: size), display: false)
+        let screens = NSScreen.screens
+        let index = StateHUDLayout.screenIndex(mouse: NSEvent.mouseLocation,
+            among: screens.map(\.frame)) ?? 0
+        let screen = index < screens.count ? screens[index] : NSScreen.main
+        let visible = screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080)
+        panel.setFrame(StateHUDLayout.frame(size: size, visibleFrame: visible), display: false)
         panel.invalidateShadow()
 
         hideWorkItem?.cancel()

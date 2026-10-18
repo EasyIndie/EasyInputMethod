@@ -167,5 +167,20 @@ guard let lightL = backgroundLuminance(lightHUD), let darkL = backgroundLuminanc
 LocalAcceptanceEvidence.record("candidate.hud",
     expected: "同一状态 HUD 在亮/暗外观下背景亮度差 > 0.3",
     actual: ["light_luminance": lightL, "dark_luminance": darkL])
+// 固定位置：可见区域顶部居中，16pt 内边距；屏幕由鼠标位置选择。
+let visible = NSRect(x: 0, y: 84, width: 1440, height: 786)
+let hudFrame = StateHUDLayout.frame(size: NSSize(width: 100, height: 36), visibleFrame: visible)
+let screens = [NSRect(x: 0, y: 0, width: 1440, height: 900),
+               NSRect(x: 1440, y: 0, width: 1920, height: 1080)]
+let firstScreen = StateHUDLayout.screenIndex(mouse: NSPoint(x: 100, y: 100), among: screens)
+let secondScreen = StateHUDLayout.screenIndex(mouse: NSPoint(x: 2000, y: 500), among: screens)
+guard abs(hudFrame.midX - visible.midX) < 0.5,
+      abs(hudFrame.maxY - (visible.maxY - StateHUDLayout.topInset)) < 0.5,
+      hudFrame.width == 100, hudFrame.height == 36,
+      firstScreen == 0, secondScreen == 1 else { fail("fixed hud layout") }
+LocalAcceptanceEvidence.record("candidate.hud-position",
+    expected: "HUD 固定在鼠标所在屏可见区域顶部居中，距顶 16pt",
+    actual: ["frame": NSStringFromRect(hudFrame), "screen0": firstScreen ?? -1,
+             "screen1": secondScreen ?? -1])
 
 print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD")
