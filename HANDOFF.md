@@ -15,11 +15,11 @@
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
 | B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `b4e7f50b…`（`mode=mixed`、`toggle_width=alt+f`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
 
-- **待安装最终包 `be89926`（在 `9f64719` 上加光标末尾取矩形修复）**：
-  `packaging/out/caret-package/candidate-XI9C8J/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-  zip SHA `a488c267…`、执行 SHA `709eda86…`、`spctl` = Notarized Developer ID。
-  可从 CI 重新取：`gh run download 39112629000 -n Lampyris-macos-acceptance-be899262ea9003e2c233047e7b9131e09ed81407`。
-  （已装 `9f64719` 已验证芯片/D1，只差 D2 末尾光标这一项。）
+- **待安装 `af7733d`（固定位置 HUD + 两字芯片 + ⌥F）**：
+  `packaging/out/fixed-hud/candidate-5mX98q/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+  zip SHA `2817fb20…`、执行 SHA `39b337e7…`、`spctl` = Notarized Developer ID。
+  可从 CI 重新取：`gh run download 39114808849 -n Lampyris-macos-acceptance-af7733ddaf9f29c2f23119a2ecc118ad1848036f`。
+  （已装 `be89926` 仍是光标跟随 HUD；`af7733d` 用 ADR-212 的屏幕顶部居中。）
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -38,7 +38,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **D2 已用固定位置解决（ADR-212 / 报告 084）**：HUD 改为鼠标所在屏可见区域**顶部居中**（距顶 16pt），不再依赖光标；候选内联芯片保留。隔离窗口实测 `72×36 @ (684,46)`，与鼠标/光标无关。**已装 `be89926` 仍是旧的光标跟随版，需下一包复验。**
+- **D2 已用固定位置解决（ADR-212 / 报告 084）**：HUD 改为鼠标所在屏可见区域**顶部居中**（距顶 16pt），不再依赖光标；隔离窗口实测 `72×36 @ (684,46)`。**已装 `be89926` 仍是旧版；`af7733d` 待安装后做最后一次真机确认。**
 - **本轮前置偏差**：重启后源仍在、宿主未退；按「切 ABC → 系统设置移除源 → 终止孤儿宿主 → 安装」完成，未热替换、未注销。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
@@ -107,6 +107,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**固定位置 HUD 出包 `af7733d`**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中，隔离窗口 72×36@(684,46) 验证；macOS Acceptance Package 成功（zip `2817fb20…`、执行 `39b337e7…`、Notarized Developer ID）。B 已装 `be89926`，待装此包做最终确认。
 - 2026-10-18 / pi：**状态提示改固定位置（ADR-212 / 报告 084）**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中（16pt 内边距），非激活/跨全屏/减弱动态效果/VoiceOver 保持；候选内联芯片不变。`candidate.hud-position` 单测 + 隔离窗口 `72×36 @ (684,46)` 验证；65 场景本地验收、verify、offline 全绿。需出新包替换已装 `be89926`。
 - 2026-10-18 / pi：**安装 `be89926` 复验（报告 083）**。芯片、组合态 ⌥P、D1 均 PASS；D2 部分改善但空行/末尾仍取不到稳定光标矩形（实测 130,54 / 369,257 / 161,774 三种落点），判定未完全解决，提出「最近有效矩形/AX 插入点」两个后续方案。安装前因重启后源与宿主仍在，改为移除源+终止孤儿宿主后再替换，未热替换。
 - 2026-10-18 / pi：**光标末尾修复出包 `be89926`**。`caretLookupIndex`（location==length 时退一格并处理空文档）加单测；`make verify`、64 场景本地验收、offline 全绿；macOS Acceptance Package 成功（zip `a488c267…`、执行 `709eda86…`、Notarized Developer ID）。B 已装 `9f64719` 并 PASS 芯片/D1，仅差此包复验 D2。
