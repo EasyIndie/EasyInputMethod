@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **状态反馈：候选框内联芯片 + HUD 亮暗修复（报告 080）+ 宽度默认 ⌥F（报告 079）**
+- 更新：2026-10-18 / pi（deepseek-flash）· **B 机实机验收芯片/HUD（报告 081）+ 修复组合态无反馈与光标定位**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
 - 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
@@ -38,7 +38,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **待安装 `5726556`**：已出包核验（zip `8aa59579…`、执行 `0085f2c6…`），含 ⌥F、HUD 亮暗修复与两字状态芯片（学习区不占芯片）；B 仍装 `6494eab`，需按 §4 注销安装后复验。
+- **B 已装 `5726556`**（zip `8aa59579…`、执行 `0085f2c6…`）：芯片/HUD 通过（报告 081），但发现 **D1 组合态切宽度/模式/中英无反馈**、**D2 HUD 定位用文档开头**；源码已修，**待再出包复验**。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
 - **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
@@ -106,6 +106,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**B 机安装 `5726556` 并验收（报告 081）**。两字芯片、组合态切标点就地更新且无 HUD、非组合态 HUD、菜单/设置 ⌥F 均 PASS；发现组合态切宽度时候选关闭后无反馈、HUD 定位用文档开头两个缺陷，已在源码修复（仅 `isComposing` 才内联；`caretRect` 用 `selectedRange`）。还原 ABC 与默认状态，待新版包复验。
 - 2026-10-18 / pi：**两字状态芯片定稿并出包 `5726556`**。芯片改为混输/五笔/拼音、中文/英文、全角/半角、简体/繁体 + `。`/`.`，移除学习区芯片（下方学习区即状态）；`candidate.status` 断言与 64 场景本地验收、offline、verify 全绿；macOS Acceptance Package 成功，zip `8aa59579…`、执行 `0085f2c6…`、Notarized Developer ID，待 B 注销安装。
 - 2026-10-18 / pi：**出 `21abc39` 包（状态芯片 + HUD 暗色修复）**。macOS Acceptance Package 成功，产物核验：zip `f298d769…`、执行 `c8baf0ba…`、Notarized Developer ID；B 待注销安装。`CI` 仍仅因上游 pinyin-data SHA 漂移失败。
 - 2026-10-18 / pi：**状态反馈收尾（ADR-211 / 报告 080）**。修好 HUD 暗色背景（离屏渲染未套用 appearance）；候选框可见时不再弹 HUD，改为头部右侧、翻页区左侧的两字状态芯片（混输/五笔/拼音、中文/英文、全角/半角、简体/繁体）+ `。`/`.` 标点；学习区不占芯片（下方学习区即状态），激活态 accent 底色、右对齐并与翻页同中心线；候选窗宽高随芯片自适应并重新定位。新增 `candidate.status`/`candidate.hud` 断言（含亮暗亮度差），`macos-local-acceptance` **64 场景全 PASS**，`macos-offline-tests` 与 `make verify` 全绿；`c5fdaef` 不含芯片，需再出包。

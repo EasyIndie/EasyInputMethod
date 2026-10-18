@@ -255,7 +255,9 @@ final class LampyrisInputController: IMKInputController {
 
     /// 候选窗可见时状态直接画在头部芯片里，不再弹 HUD（ADR-211）。
     private func showStateFeedback(_ message: String) {
-        if let window = candidateWindow, window.isVisible {
+        // 只有会话仍在组合、候选窗会保留时才内联；宽度/模式/中英会 cancel 组合，
+        // 这类切换必须走 HUD，否则候选窗随即关闭、用户什么都看不到。
+        if let window = candidateWindow, window.isVisible, session?.isComposing == true {
             window.updateStatus(candidateStatus())
             window.refreshLayout()
             return
@@ -514,10 +516,12 @@ final class LampyrisInputController: IMKInputController {
         window.show(at: caretRect(client))
     }
 
-    /// 光标矩形（用于定位候选窗）；取不到时退回鼠标位置。
+    /// 光标矩形（候选窗/HUD 定位）；优先当前插入点，取不到时退回鼠标位置。
     private func caretRect(_ client: IMKTextInput) -> NSRect {
         var rect = NSRect.zero
-        _ = client.attributes(forCharacterIndex: 0, lineHeightRectangle: &rect)
+        let selection = client.selectedRange()
+        let index = selection.location == NSNotFound ? 0 : selection.location
+        _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
         if rect == .zero {
             let mouse = NSEvent.mouseLocation
             rect = NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1)
