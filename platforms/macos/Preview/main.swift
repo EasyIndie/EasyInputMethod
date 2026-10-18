@@ -561,9 +561,9 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard session.isEnglish == englishBeforeCombo else {
         fputs("修饰键组合不应触发中英切换。\n", stderr); exit(1)
     }
-    // 全/半角：默认 Option+Space（此刻中英为“英”，故 A1 → Ａ１）。
-    keys(" ", flags: [.option]); view.clear(); keys("A1"); check("Ａ１")
-    keys(" ", flags: [.option])
+    // 全/半角：默认 Option+F（ADR-210；此刻中英为“英”，故 A1 → Ａ１）。
+    keys("f", flags: [.option]); view.clear(); keys("A1"); check("Ａ１")
+    keys("f", flags: [.option])
     // 中英切回中文。
     _ = session.shiftTransition(isDown: true); _ = session.shiftTransition(isDown: false)
     guard !session.isEnglish else { exit(1) }
