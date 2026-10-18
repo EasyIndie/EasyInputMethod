@@ -15,11 +15,11 @@
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
 | B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `b4e7f50b…`（`mode=mixed`、`toggle_width=alt+f`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
 
-- **待安装新包 `5726556`（⌥F + HUD + 两字状态芯片）**：
-  `packaging/out/chips2-package/candidate-UnlsuI/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-  zip SHA `8aa59579…`、执行 SHA `0085f2c6…`、`spctl` = Notarized Developer ID。
-  可从 CI 重新取：`gh run download 39106648473 -n Lampyris-macos-acceptance-57265564b683cbe7172082d8879257830ecb81e1`。
-  （`21abc39` 已被取代：单字芯片且带学习区芯片。）
+- **待安装最终包 `9f64719`（⌥F + HUD + 两字芯片 + D1/D2 修复）**：
+  `packaging/out/final-chips/candidate-diXbED/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+  zip SHA `c310ea15…`、执行 SHA `3bc41a86…`、`spctl` = Notarized Developer ID。
+  可从 CI 重新取：`gh run download 39109804681 -n Lampyris-macos-acceptance-9f64719f7ab9b9e8539f8f5f5c30ca199e468fc5`。
+  （已装 `5726556` 含 D1/D2；`21abc39` 更旧。）
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -38,7 +38,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **B 已装 `5726556`**（zip `8aa59579…`、执行 `0085f2c6…`）：芯片/HUD 通过（报告 081），但发现 **D1 组合态切宽度/模式/中英无反馈**、**D2 HUD 定位用文档开头**；源码已修，**待再出包复验**。
+- **B 已装 `5726556`**，其中 D1（组合态切宽度/模式/中英无反馈）与 D2（HUD 定位用文档开头）已修并出了 `9f64719`；**待注销安装后复验这两项**。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
 - **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
@@ -106,6 +106,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**D1/D2 修复并出最终包 `9f64719`**。只有 `isComposing` 时才用候选内联芯片，否则走 HUD；`caretRect` 改用 `selectedRange().location` 定位插入点。`make verify`、64 场景本地验收、offline 全绿；macOS Acceptance Package 成功（zip `c310ea15…`、执行 `3bc41a86…`、Notarized Developer ID），待 B 注销安装复验。
 - 2026-10-18 / pi：**B 机安装 `5726556` 并验收（报告 081）**。两字芯片、组合态切标点就地更新且无 HUD、非组合态 HUD、菜单/设置 ⌥F 均 PASS；发现组合态切宽度时候选关闭后无反馈、HUD 定位用文档开头两个缺陷，已在源码修复（仅 `isComposing` 才内联；`caretRect` 用 `selectedRange`）。还原 ABC 与默认状态，待新版包复验。
 - 2026-10-18 / pi：**两字状态芯片定稿并出包 `5726556`**。芯片改为混输/五笔/拼音、中文/英文、全角/半角、简体/繁体 + `。`/`.`，移除学习区芯片（下方学习区即状态）；`candidate.status` 断言与 64 场景本地验收、offline、verify 全绿；macOS Acceptance Package 成功，zip `8aa59579…`、执行 `0085f2c6…`、Notarized Developer ID，待 B 注销安装。
 - 2026-10-18 / pi：**出 `21abc39` 包（状态芯片 + HUD 暗色修复）**。macOS Acceptance Package 成功，产物核验：zip `f298d769…`、执行 `c8baf0ba…`、Notarized Developer ID；B 待注销安装。`CI` 仍仅因上游 pinyin-data SHA 漂移失败。
