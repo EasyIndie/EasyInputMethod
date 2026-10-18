@@ -26,3 +26,7 @@
 
 `candidate.status`/`padding` 等 65 场景本地验收、`make verify`、`make macos-offline-tests` 全绿；
 `CI` 与 macOS 出包对 `17053e1` 均 **success**。
+
+## 用户验收
+
+2026-10-18 晚，用户确认「目前 UI 验收通过」：头部字号统一、状态芯片留白、候选悬停高亮留白均符合预期。
