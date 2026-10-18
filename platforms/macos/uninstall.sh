@@ -1,16 +1,21 @@
 #!/usr/bin/env bash
-# Keep user config and dictionary; never kill unrelated processes.
+# Keep user config and dictionary by default; never kill unrelated processes.
+# --purge-data moves config.toml / user-dictionary.tsv aside too, so the next
+# install starts from Schema defaults (fresh behaviour), without deleting them.
 set -euo pipefail
 DOMAIN="${HOME}/Library/Input Methods"
 BACKUP="${HOME}/Library/Application Support/Lampyris/uninstalled"
+APP_SUPPORT="${HOME}/Library/Application Support/Lampyris"
 DRY=false
 REMOVED=false
+PURGE=false
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --system) DOMAIN='/Library/Input Methods'; BACKUP='/Library/Application Support/Lampyris/uninstalled'; shift ;;
+    --system) DOMAIN='/Library/Input Methods'; BACKUP='/Library/Application Support/Lampyris/uninstalled'; APP_SUPPORT='/Library/Application Support/Lampyris'; shift ;;
     --dry-run) DRY=true; shift ;;
     --input-source-removed) REMOVED=true; shift ;;
-    *) echo "用法：$0 [--system] [--dry-run] [--input-source-removed]" >&2; exit 2 ;;
+    --purge-data) PURGE=true; shift ;;
+    *) echo "用法：$0 [--system] [--dry-run] [--input-source-removed] [--purge-data]" >&2; exit 2 ;;
   esac
 done
 APP="${DOMAIN}/Lampyris.app"
@@ -18,11 +23,52 @@ APP="${DOMAIN}/Lampyris.app"
 [ ! -L "${DOMAIN}" ] && [ ! -L "${APP}" ] || { echo "拒绝移动符号链接" >&2; exit 1; }
 IDENTIFIER="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "${APP}/Contents/Info.plist")"
 [ "${IDENTIFIER}" = cn.jokerhub.inputmethod.Lampyris ] || { echo "输入法标识不符" >&2; exit 1; }
+if [ -L "${APP_SUPPORT}" ]; then echo "拒绝通过符号链接访问用户数据目录" >&2; exit 1; fi
+
+DATA_FILES=()
+if ${PURGE}; then
+  for name in config.toml user-dictionary.tsv; do
+    [ -e "${APP_SUPPORT}/${name}" ] || continue
+    [ -L "${APP_SUPPORT}/${name}" ] && { echo "拒绝移动符号链接 ${name}" >&2; exit 1; }
+    DATA_FILES+=("${name}")
+  done
+fi
+
+# 预检只打印计划，不要求先退出宿主（切换前先看清会动什么）。
+if ${DRY}; then
+  echo "将把 ${APP} 移到 ${BACKUP}/bundle.XXXXXX/"
+  if ${PURGE}; then
+    if [ "${#DATA_FILES[@]}" -eq 0 ]; then
+      echo "用户数据目录里没有 config.toml / user-dictionary.tsv，无需清理"
+    else
+      echo "将把用户数据移到 ${BACKUP}/data.XXXXXX/：${DATA_FILES[*]}"
+      echo "之后首次启动按 Schema 默认值全新开始（不删除，只是移出活动目录）"
+    fi
+  else
+    echo "保留配置与词库；若要全新安装（以默认行为为起点），再加 --purge-data"
+  fi
+  echo "执行前：切换到 ABC，在「系统设置 → 键盘 → 文字输入」移除萤火虫，注销使宿主退出。"
+  exit 0
+fi
+
 if pgrep -x Lampyris >/dev/null; then echo "请切换为 ABC，在系统设置移除萤火虫，然后注销使宿主退出" >&2; exit 1; fi
-if ${DRY}; then echo "将备份至 ${BACKUP}；保留配置与词库。先在系统设置移除输入源。"; exit 0; fi
 ${REMOVED} || { echo "先移除输入源，确认后传入 --input-source-removed" >&2; exit 1; }
 if [ "${DOMAIN}" = '/Library/Input Methods' ] && [ "$(id -u)" != 0 ]; then echo "系统域卸载需要管理员运行" >&2; exit 1; fi
 mkdir -p "${BACKUP}"
 TARGET="$(mktemp -d "${BACKUP}/bundle.XXXXXX")"
 mv "${APP}" "${TARGET}/Lampyris.app"
-echo "已移出输入法目录，备份在 ${TARGET}；请注销/重新登录。配置与词库保留。"
+echo "已移出输入法目录，备份在 ${TARGET}"
+if ${PURGE}; then
+  if [ "${#DATA_FILES[@]}" -eq 0 ]; then
+    echo "用户数据目录里没有 config.toml / user-dictionary.tsv，无需清理"
+  else
+    DATA_DIR="$(mktemp -d "${BACKUP}/data.XXXXXX")"
+    for name in "${DATA_FILES[@]}"; do
+      mv "${APP_SUPPORT}/${name}" "${DATA_DIR}/${name}"
+    done
+    echo "用户数据已移到 ${DATA_DIR}；首次启动将按 Schema 默认值全新开始"
+  fi
+else
+  echo "配置与词库保留"
+fi
+echo "请注销/重新登录，再安装新包并重新添加输入源。"
