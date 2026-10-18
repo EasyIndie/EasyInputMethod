@@ -266,11 +266,21 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         feedback.addItem(withTitle: "反馈问题")
         feedback.sizeToFit()
         feedback.addItems(withTitles: ["报告问题", "报告安全漏洞"])
+        // 旧版 AppKit 的 NSPopUpButton.sizeToFit 会在固有宽度上多加约 71pt（macOS 13 实测），
+        // 下拉按钮因此比文字宽一倍、箭头离标题很远。按“标题 + 系统箭头”的固有尺寸收窄（ADR-198）。
+        let natural = feedback.intrinsicContentSize
+        if natural.width > 0, feedback.frame.width > natural.width + 0.5 {
+            feedback.setFrameSize(NSSize(width: natural.width, height: feedback.frame.height))
+        }
         let gap: CGFloat = 12
+        let rowTop: CGFloat = 229
+        let rowHeight = max(copy.frame.height, feedback.frame.height)
         let groupWidth = copy.frame.width + gap + feedback.frame.width
         let start = (content.bounds.width - groupWidth) / 2
-        copy.setFrameOrigin(NSPoint(x: start, y: 229))
-        feedback.setFrameOrigin(NSPoint(x: start + copy.frame.width + gap, y: 229))
+        // 按钮高 32pt、下拉高 25pt，按行中心对齐，否则两个控件的文字基线相差 3.5pt。
+        copy.setFrameOrigin(NSPoint(x: start, y: rowTop + (rowHeight - copy.frame.height) / 2))
+        feedback.setFrameOrigin(
+            NSPoint(x: start + copy.frame.width + gap, y: rowTop + (rowHeight - feedback.frame.height) / 2))
         feedback.target = self
         feedback.action = #selector(openFeedback(_:))
         feedback.setAccessibilityLabel("选择问题或安全漏洞反馈渠道")

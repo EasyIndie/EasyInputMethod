@@ -47,7 +47,11 @@ for (theme, name) in [("light", NSAppearance.Name.aqua), ("dark", .darkAqua)] {
     guard feedback.alignment == .center,
           actions.allSatisfy({ $0.frame.width < 120 }),
           abs((actions.first!.frame.minX + feedback.frame.maxX) / 2 - content.bounds.midX) < 1 else { fail("about action sizing and centering") }
-    LocalAcceptanceEvidence.record("tools.about." + theme, expected: "复制/反馈按钮无省略号，原生rounded/regular，反馈渠道完整", actual: ["buttons": actions.map(\.title), "channels": feedback.itemTitles, "widths": actions.map { $0.frame.width }, "visible": aboutWindow.isVisible])
+    // 旧版 AppKit 的下拉按钮 sizeToFit 会多留一大段宽度（macOS 13 实测 +71pt），
+    // 且两个控件高度不同——要求宽度贴固有尺寸、两控件行中心一致。
+    guard feedback.frame.width <= feedback.intrinsicContentSize.width + 1,
+          abs(actions.first!.frame.midY - feedback.frame.midY) < 0.5 else { fail("about action width hugs title and row centers align") }
+    LocalAcceptanceEvidence.record("tools.about." + theme, expected: "复制/反馈按钮无省略号，原生rounded/regular，反馈渠道完整，宽度贴固有尺寸且行中心对齐", actual: ["buttons": actions.map(\.title), "channels": feedback.itemTitles, "widths": actions.map { $0.frame.width }, "row_centers": actions.map { $0.frame.midY }, "visible": aboutWindow.isVisible])
     InfoWindow.simulateOpenForTesting(FeedbackUI.issuesURL, succeeded: false)
     guard InfoWindow.statusForTesting.contains("打开失败") else { fail("failed link state") }
     LocalAcceptanceEvidence.record("tools.link-fallback." + theme, expected: "模拟打开失败保留地址和可见失败反馈；未访问外链", actual: InfoWindow.statusForTesting)
