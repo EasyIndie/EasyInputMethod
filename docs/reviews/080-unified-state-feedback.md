@@ -8,8 +8,10 @@
 | 项 | 决策 |
 |---|---|
 | 触发 | 中英、全/半角、简/繁、标点、模式、学习区——菜单命令与快捷键共用同一入口 |
+| 候选态 | 候选框可见时不弹 HUD，改为顶部右侧（翻页区左侧）的单字状态芯片：混/五/拼、中/英、全/半、简/繁、`。`/`.`，学习区开启追加「学」；激活态 accent 底色、默认态次要色 |
 | 文案 | `StateFeedback` 单点映射：英文/中文、全角/半角、简体/繁体、中文标点/英文标点、混输/五笔/拼音模式、学习区：开/关 |
 | 形态 | 光标上方 8pt 的胶囊：34pt 高、圆角 10、14pt 横向内边距、最小宽 64pt；亮暗自适应、带边框与阴影 |
+| 图标 | 采用系统矢量字形（单字芯片）而非打包 SVG：随字号缩放、自动适配亮暗与高对比，不引入第三方图标资产/许可；学习区用「学」字芯片 |
 | 时长 | 1.15s 后 0.18s 淡出；系统「减弱动态效果」时无动画 |
 | 定位 | IMK 光标矩形优先；取不到退回鼠标位置；夹在屏幕可见区内 |
 | 不打扰 | `NSPanel` + `.nonactivatingPanel`、`ignoresMouseEvents`、不成为 key/main、不写配置、不改会话 |
@@ -24,9 +26,10 @@
 
 ## 验证
 
-- `make macos-ui-snapshots UI=panels`：新增 `state-hud-{英文,全角,混输模式}-{light,dark}.png` 共 6 张，尺寸 128×68 / 176×68（2x，即 64/88×34pt）。
+- `make macos-ui-snapshots`：HUD 6 张（`state-hud-*`，修好暗色背景）；候选窗四形态截图带状态芯片（`candidate-*-*.png`），终端打印 `状态 混 英 全 简 .` 等。
+- 暗色回归：`candidate.hud` 断言同一 HUD 在亮/暗下背景亮度差 > 0.3（修复前暗色套用亮色背景）。
 - `platforms/macos/tests/controller-menu.swift`：新增 6 组文案断言；整套在 `.prohibited` 下编译运行通过（14s），证明无窗口环境不会弹 HUD。
-- `make macos-local-acceptance`：62 场景全 PASS（含菜单/设置/候选/学习）。
+- `make macos-local-acceptance`：**64 场景全 PASS**（新增 `candidate.status` 芯片布局与 `candidate.hud` 亮暗断言）。
 - `make verify`：全绿。
 
 ## 限制与下一步

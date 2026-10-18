@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **统一状态反馈 HUD（报告 080）+ 宽度默认 ⌥F（报告 079）**
+- 更新：2026-10-18 / pi（deepseek-flash）· **状态反馈：候选框内联芯片 + HUD 亮暗修复（报告 080）+ 宽度默认 ⌥F（报告 079）**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
-- 阶段：**B 已装 `6494eab`；源码已含 `⌥F` 默认（ADR-210）与状态 HUD（ADR-211），需重新出包/安装才能在真机看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
+- 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
 - 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
 
@@ -37,7 +37,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **待安装 `c5fdaef`**：已出包并核验（zip `8ee4d3ee…`、执行 `4bcd4a0d…`），含 `⌥F` 与状态 HUD；B 仍装 `6494eab`，需按 §4 的注销流程安装后才能真机看到 HUD。
+- **状态反馈最终版待出包**：`c5fdaef` 只含首版 HUD（无候选芯片、暗色背景有 bug），本轮已修并加芯片；需再出包后按 §4 注销安装，复验 HUD 亮暗与候选头部芯片。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
 - **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
@@ -105,6 +105,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**状态反馈收尾（ADR-211 / 报告 080）**。修好 HUD 暗色背景（离屏渲染未套用 appearance）；候选框可见时不再弹 HUD，改为头部右侧、翻页区左侧的单字状态芯片（混/五/拼、中/英、全/半、简/繁、`。`/`.`，学习区追加「学」），激活态 accent 底色、右对齐并与翻页同中心线；候选窗宽高随芯片自适应并重新定位。新增 `candidate.status`/`candidate.hud` 断言（含亮暗亮度差），`macos-local-acceptance` **64 场景全 PASS**，`macos-offline-tests` 与 `make verify` 全绿；`c5fdaef` 不含芯片，需再出包。
 - 2026-10-18 / pi：**出含状态 HUD 与 ⌥F 的新包**（`c5fdaef`）。CI 的 macOS Acceptance Package 成功，产物已下载核验：zip `8ee4d3ee…`、执行 `4bcd4a0d…`、Notarized Developer ID + stapler 通过；B 尚未安装（需注销）。同轮修好 preview smoke 的 ⌥F 用例与 local-acceptance 62 场计数；`CI` 仍因上游 pinyin-data SHA 漂移而红。
 - 2026-10-18 / pi：**统一状态反馈 HUD（ADR-211 / 报告 080）**。新增 `StateHUD.swift`（`StateFeedback` 文案映射、胶囊视图、非激活面板），菜单命令与快捷键（含模式/学习区）统一在光标旁提示 1.15s；遵循减弱动态效果、VoiceOver 播报、`.prohibited`/离屏环境不弹窗。`macos-ui-snapshots` 新增 6 张亮暗快照，`controller-menu` 增加文案断言并通过，`make verify` 全绿；需重新出包才能在真机看到。
 - 2026-10-18 / pi：**全/半角默认快捷键改 `⌥F`（ADR-210 / 报告 079）**。用户报告 `⌥Space` 与 ChatGPT 虚拟宠物冲突；只改 `hotkey.toggle_width` 默认值，其余保持 ADR-209；已有显式配置不覆盖，B 机经设置面板改为 `alt+f`。同步 ime-config 单测、settings/learning/预览用例、配置架构与发布说明；补登记 `candidate.padding`/`learning.stale-chord` 后 `macos-local-acceptance` 62 场景全 PASS；`make verify` 全绿。

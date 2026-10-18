@@ -136,4 +136,36 @@ guard !window.accessiblePressForTesting(at: 0), !window.pagePressForTesting(1),
       selected == -1, window.displayedInput.isEmpty, !window.pageStateForTesting.visible
 else { fail("hidden stale actions") }
 LocalAcceptanceEvidence.record("candidate.stale", expected: "隐藏后旧选词和翻页动作失效", actual: ["selected": selected, "input": window.displayedInput, "page_visible": window.pageStateForTesting.visible])
-print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions")
+// 头部状态芯片：右对齐到翻页区左侧、与翻页按钮同中心线；学习区开启时追加“学”。
+window.updateStatus(CandidateStatus(mode: "mixed", english: true, fullWidth: true,
+    traditional: false, chinesePunctuation: false, learning: false))
+window.update(candidates: values, pageIndex: 0, pageCount: 30, input: "tr")
+window.layout(at: caret, within: NSRect(x: 0, y: 0, width: 1000, height: 400))
+let chipTexts = window.stateChipsForTesting
+let stripFrame = window.stateStripFrameForTesting
+let pagerFrame = window.pageFramesForTesting[0]
+guard chipTexts == ["混", "英", "全", "简", "."] else { fail("state chips " + chipTexts.joined()) }
+guard stripFrame.maxX <= pagerFrame.minX, stripFrame.minX >= 16,
+      abs(stripFrame.midY - pagerFrame.midY) < 0.5 else { fail("state chips overlap pager") }
+window.updateStatus(CandidateStatus(mode: "pinyin", english: false, fullWidth: false,
+    traditional: true, chinesePunctuation: true, learning: true))
+guard window.stateChipsForTesting == ["拼", "中", "半", "繁", "。", "学"] else { fail("learning chip") }
+LocalAcceptanceEvidence.record("candidate.status",
+    expected: "状态芯片 5 枚右对齐到翻页左侧且同中心线；学习区开启追加第 6 枚",
+    actual: ["chips": chipTexts, "gap": pagerFrame.minX - stripFrame.maxX,
+             "center_delta": abs(stripFrame.midY - pagerFrame.midY)])
+// HUD 主题：同一文案在亮/暗下背景亮度必须不同（报告 080 的暗色不生效回归）。
+func backgroundLuminance(_ rep: NSBitmapImageRep?) -> CGFloat? {
+    guard let rep, let color = rep.colorAt(x: 4, y: rep.pixelsHigh / 2)?.usingColorSpace(.sRGB) else { return nil }
+    func linear(_ value: CGFloat) -> CGFloat { value <= 0.04045 ? value / 12.92 : pow((value + 0.055) / 1.055, 2.4) }
+    return 0.2126 * linear(color.redComponent) + 0.7152 * linear(color.greenComponent) + 0.0722 * linear(color.blueComponent)
+}
+let lightHUD = StateHUDView.renderForTesting(message: "英文", appearance: NSAppearance(named: .aqua)!)
+let darkHUD = StateHUDView.renderForTesting(message: "英文", appearance: NSAppearance(named: .darkAqua)!)
+guard let lightL = backgroundLuminance(lightHUD), let darkL = backgroundLuminance(darkHUD),
+      lightL - darkL > 0.3 else { fail("state hud ignores appearance") }
+LocalAcceptanceEvidence.record("candidate.hud",
+    expected: "同一状态 HUD 在亮/暗外观下背景亮度差 > 0.3",
+    actual: ["light_luminance": lightL, "dark_luminance": darkL])
+
+print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD")

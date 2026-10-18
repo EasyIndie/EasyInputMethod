@@ -75,13 +75,18 @@ final class StateHUDView: NSView {
 
     /// 离屏渲染，供 `make macos-ui-snapshots` 与回归比较。
     static func renderForTesting(message: String, appearance: NSAppearance) -> NSBitmapImageRep? {
-        let view = StateHUDView(message: message)
-        view.frame = NSRect(origin: .zero, size: view.preferredSize)
-        view.updateColors(for: appearance)
-        view.layoutSubtreeIfNeeded()
-        guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
-        view.cacheDisplay(in: view.bounds, to: bitmap)
-        return ImeAppearance.opaqueSnapshot(bitmap, background: .windowBackgroundColor)
+        var image: NSBitmapImageRep?
+        appearance.performAsCurrentDrawingAppearance {
+            let view = StateHUDView(message: message)
+            view.appearance = appearance
+            view.frame = NSRect(origin: .zero, size: view.preferredSize)
+            view.updateColors(for: appearance)
+            view.layoutSubtreeIfNeeded()
+            guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+            view.cacheDisplay(in: view.bounds, to: bitmap)
+            image = ImeAppearance.opaqueSnapshot(bitmap, background: .windowBackgroundColor)
+        }
+        return image
     }
 }
 

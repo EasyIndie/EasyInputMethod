@@ -102,10 +102,11 @@ func reportCandidate(_ window: CandidateWindow, _ theme: String, _ variant: Stri
     let pages = window.pageFramesForTesting
     let top = pages.count == 3 ? window.frame.height - pages[2].maxY : -1
     let bottom = window.candidateViewportFrameForTesting.minY
-    print(String(format: "  ↳ %@/%@ 面板 %.0f×%.0f 顶/底留白 %.0f/%.0f 行高 %.0f 页码 %@",
+    print(String(format: "  ↳ %@/%@ 面板 %.0f×%.0f 顶/底留白 %.0f/%.0f 行高 %.0f 页码 %@ 状态 %@",
                  variant, theme, window.frame.width, window.frame.height, top, bottom,
                  window.candidateViewportFrameForTesting.height,
-                 window.pageStateForTesting.visible ? window.pageStateForTesting.text : "（单页）"))
+                 window.pageStateForTesting.visible ? window.pageStateForTesting.text : "（单页）",
+                 window.stateChipsForTesting.joined(separator: " ")))
 }
 
 print("候选窗")
@@ -113,18 +114,26 @@ for (theme, appearance) in themes {
     guard ImeConfig.setString("appearance.theme", theme) else { exit(1) }
     let window = CandidateWindow()
     window.setAppearanceForTesting(NSAppearance(named: appearance)!)
+    window.updateStatus(CandidateStatus(mode: "mixed", english: false, fullWidth: false,
+        traditional: false, chinesePunctuation: true, learning: false))
     window.update(candidates: short, input: "wq")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-single-\(theme)")
     reportCandidate(window, theme, "single")
+    window.updateStatus(CandidateStatus(mode: "mixed", english: true, fullWidth: true,
+        traditional: false, chinesePunctuation: false, learning: false))
     window.update(candidates: short, pageIndex: 0, pageCount: 55, input: "wq")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-pager-\(theme)")
     reportCandidate(window, theme, "pager")
+    window.updateStatus(CandidateStatus(mode: "wubi", english: false, fullWidth: false,
+        traditional: true, chinesePunctuation: true, learning: false))
     window.update(candidates: longWords, pageIndex: 0, pageCount: 2, input: "kwwl")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-long-\(theme)")
     reportCandidate(window, theme, "long")
+    window.updateStatus(CandidateStatus(mode: "pinyin", english: true, fullWidth: false,
+        traditional: false, chinesePunctuation: false, learning: true))
     window.update(candidates: short, pageIndex: 0, pageCount: 55, input: "wq", hint: "键位提示：W 人 · Q 金")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-hint-\(theme)")

@@ -431,12 +431,130 @@ private final class LearningDetailsView: NSView {
     override var isFlipped: Bool { true }
 }
 
+/// 候选窗顶部右侧的状态摘要；单字芯片，压缩到不抢候选与翻页的注意力。
+struct CandidateStatus {
+    var mode: String
+    var english: Bool
+    var fullWidth: Bool
+    var traditional: Bool
+    var chinesePunctuation: Bool
+    var learning: Bool
+
+    var chips: [(text: String, active: Bool)] {
+        var items: [(String, Bool)] = [
+            (mode == "wubi" ? "五" : mode == "pinyin" ? "拼" : "混", mode != "mixed"),
+            (english ? "英" : "中", english),
+            (fullWidth ? "全" : "半", fullWidth),
+            (traditional ? "繁" : "简", traditional),
+            (chinesePunctuation ? "。" : ".", !chinesePunctuation),
+        ]
+        if learning { items.append(("学", true)) }
+        return items
+    }
+
+    func accessibilityLabel(for text: String) -> String {
+        switch text {
+        case "混": return "输入模式：混输"
+        case "五": return "输入模式：五笔"
+        case "拼": return "输入模式：拼音"
+        case "中": return "语言：中文"
+        case "英": return "语言：英文"
+        case "全": return "宽度：全角"
+        case "半": return "宽度：半角"
+        case "简": return "字形：简体"
+        case "繁": return "字形：繁体"
+        case "。": return "标点：中文标点"
+        case ".": return "标点：英文标点"
+        default: return "学习区：开"
+        }
+    }
+}
+
+/// 芯片行：只读、不接收鼠标；宽度由内容决定，右对齐到翻页区左侧。
+final class CandidateStateStrip: NSView {
+    static let chipHeight: CGFloat = 16
+    static let spacing: CGFloat = 3
+    private var chips: [(text: String, active: Bool)] = []
+    private let labels = (0..<6).map { _ in NSTextField(labelWithString: "") }
+
+    override init(frame frameRect: NSRect) {
+        super.init(frame: frameRect)
+        for label in labels {
+            label.font = .systemFont(ofSize: 10.5, weight: .semibold)
+            label.alignment = .center
+            label.usesSingleLineMode = true
+            label.lineBreakMode = .byClipping
+            label.wantsLayer = true
+            label.layer?.cornerRadius = 4
+            label.layer?.actions = ["backgroundColor": NSNull()]
+            label.isHidden = true
+            addSubview(label)
+        }
+    }
+
+    @available(*, unavailable)
+    required init?(coder: NSCoder) { nil }
+
+    func update(_ status: CandidateStatus) {
+        chips = status.chips
+        for (index, label) in labels.enumerated() {
+            guard index < chips.count else {
+                label.isHidden = true
+                continue
+            }
+            let chip = chips[index]
+            label.stringValue = chip.text
+            label.isHidden = false
+            label.setAccessibilityElement(true)
+            label.setAccessibilityRole(.staticText)
+            label.setAccessibilityLabel(status.accessibilityLabel(for: chip.text))
+            label.toolTip = label.accessibilityLabel()
+        }
+        layoutChips()
+    }
+
+    var preferredWidth: CGFloat {
+        chips.reduce(0) { $0 + chipWidth($1.text) } + CGFloat(max(0, chips.count - 1)) * Self.spacing
+    }
+
+    private func chipWidth(_ text: String) -> CGFloat {
+        ceil((text as NSString).size(withAttributes: [
+            .font: NSFont.systemFont(ofSize: 10.5, weight: .semibold)]).width) + 9
+    }
+
+    private func layoutChips() {
+        var x: CGFloat = 0
+        for (index, chip) in chips.enumerated() {
+            let width = chipWidth(chip.text)
+            labels[index].frame = NSRect(x: x, y: 0, width: width, height: Self.chipHeight)
+            x += width + Self.spacing
+        }
+    }
+
+    func paint(for appearance: NSAppearance) {
+        appearance.performAsCurrentDrawingAppearance {
+            for (index, label) in labels.enumerated() where index < chips.count {
+                let active = chips[index].active
+                label.textColor = active ? .labelColor : ImeAppearance.secondaryText
+                label.layer?.backgroundColor = active
+                    ? NSColor.controlAccentColor.withAlphaComponent(0.16).cgColor
+                    : NSColor.clear.cgColor
+            }
+        }
+    }
+
+    var chipTextsForTesting: [String] { chips.map(\.text) }
+    var chipFramesForTesting: [NSRect] { labels.prefix(chips.count).map(\.frame) }
+}
+
 final class CandidateWindow: NSObject {
     private let panel: CandidatePanel
     private let inputLabel = NSTextField(labelWithString: "")
     private let learningView = WubiLearningView()
     private var learningAnchor: (NSRect, NSRect)?
     private let pageLabel = NSTextField(labelWithString: "")
+    private let stateStrip = CandidateStateStrip()
+    private var status: CandidateStatus?
     private let hintLabel = NSTextField(labelWithString: "")
     private let warningLabel = NSTextField(labelWithString: "")
     private let previousButton = CandidatePageButton()
@@ -456,6 +574,19 @@ final class CandidateWindow: NSObject {
     var onSelect: ((Int) -> Void)?
     var onPage: ((Int) -> Void)?
     var frame: NSRect { panel.frame }
+    var isVisible: Bool { panel.isVisible }
+    func updateStatus(_ status: CandidateStatus) {
+        self.status = status
+        stateStrip.update(status)
+        arrange()
+    }
+    /// 芯片数量/宽度变化后按最近一次光标与屏幕重新定位。
+    func refreshLayout() {
+        guard let (caret, area) = learningAnchor else { return }
+        layout(at: caret, within: area)
+    }
+    var stateChipsForTesting: [String] { stateStrip.chipTextsForTesting }
+    var stateStripFrameForTesting: NSRect { stateStrip.frame }
     var displayedInput: String { inputLabel.stringValue }
     var displayedWarning: String? { warningLabel.isHidden ? nil : warningLabel.stringValue }
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
@@ -494,6 +625,7 @@ final class CandidateWindow: NSObject {
             field.lineBreakMode = .byTruncatingMiddle
             container.addSubview(field)
         }
+        container.addSubview(stateStrip)
         inputLabel.font = .monospacedSystemFont(ofSize: 12, weight: .regular)
         inputLabel.textColor = .labelColor
         inputLabel.setAccessibilityLabel("输入编码")
@@ -564,6 +696,7 @@ final class CandidateWindow: NSObject {
             for label in labels.prefix(renderedCount) where label.isHovered {
                 label.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
             }
+            stateStrip.paint(for: panel.effectiveAppearance)
         }
     }
 
@@ -654,10 +787,13 @@ final class CandidateWindow: NSObject {
         let pageWidth = ceil(pageSize.width)
         let navigationWidth: CGFloat = pagesVisible ? pageWidth + 56 : 0
         let headerVisible = !input.isEmpty || pagesVisible
+        let statusVisible = headerVisible && status != nil
+        let statusWidth = statusVisible ? stateStrip.preferredWidth : 0
+        let reservedHeader = navigationWidth + (statusVisible ? statusWidth + 8 : 0)
         let inputWidth = ceil((input as NSString).size(withAttributes: [.font: inputLabel.font ?? .monospacedSystemFont(ofSize: 12, weight: .regular)]).width) + 4
         let hintWidth = ceil((hintLabel.stringValue as NSString).size(withAttributes: [.font: hintLabel.font ?? .systemFont(ofSize: 11)]).width) + 4
         let warningWidth = warning == nil ? 0 : ceil(warningLabel.intrinsicContentSize.width)
-        let naturalWidth = max(horizontalWidth, inputWidth + navigationWidth + 8, hintWidth, warningWidth, max(0, min(400, maxWidth) - margin * 2))
+        let naturalWidth = max(horizontalWidth, inputWidth + reservedHeader + 8, hintWidth, warningWidth, max(0, min(400, maxWidth) - margin * 2))
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
         let headerHeight: CGFloat = headerVisible ? 24 : 0
@@ -701,13 +837,20 @@ final class CandidateWindow: NSObject {
         nextButton.isHidden = !pagesVisible
         previousButton.isEnabled = pagesVisible && pageIndex > 0
         nextButton.isEnabled = pagesVisible && pageIndex + 1 < pageCount
-        inputLabel.frame = NSRect(x: margin, y: top - 20, width: max(1, inner - navigationWidth - (pagesVisible ? 8 : 0)), height: 20)
+        inputLabel.frame = NSRect(x: margin, y: top - 20, width: max(1, inner - reservedHeader - (pagesVisible ? 8 : 0)), height: 20)
         let navigationCenterY = top - headerHeight / 2
         let pageHeight = ceil(pageSize.height)
         nextButton.frame = NSRect(x: width - margin - 24, y: navigationCenterY - 12, width: 24, height: 24)
         pageLabel.frame = NSRect(x: nextButton.frame.minX - pageWidth - 4,
             y: navigationCenterY - pageHeight / 2, width: pageWidth, height: pageHeight)
         previousButton.frame = NSRect(x: pageLabel.frame.minX - 28, y: navigationCenterY - 12, width: 24, height: 24)
+        stateStrip.isHidden = !statusVisible
+        if statusVisible {
+            let right = (pagesVisible ? previousButton.frame.minX : width - margin) - 8
+            stateStrip.frame = NSRect(x: max(margin, right - statusWidth),
+                y: navigationCenterY - CandidateStateStrip.chipHeight / 2,
+                width: statusWidth, height: CandidateStateStrip.chipHeight)
+        }
         let bodyTop = top - headerHeight
         scrollView.frame = NSRect(x: margin, y: bodyTop - bodyHeight, width: inner, height: bodyHeight)
         scrollView.tile()

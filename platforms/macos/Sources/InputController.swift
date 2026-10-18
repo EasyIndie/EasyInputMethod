@@ -253,10 +253,25 @@ final class LampyrisInputController: IMKInputController {
         refreshAfterStateChange()
     }
 
-    /// 统一状态反馈（ADR-211）：定位到当前光标，取不到时退回鼠标位置。
+    /// 候选窗可见时状态直接画在头部芯片里，不再弹 HUD（ADR-211）。
     private func showStateFeedback(_ message: String) {
+        if let window = candidateWindow, window.isVisible {
+            window.updateStatus(candidateStatus())
+            window.refreshLayout()
+            return
+        }
         let target = activeClient ?? client()
         StateHUDController.shared.show(message, caret: target.map { caretRect($0) })
+    }
+
+    private func candidateStatus() -> CandidateStatus {
+        CandidateStatus(
+            mode: session?.mode ?? ImeConfig.string("mode") ?? "mixed",
+            english: session?.isEnglish ?? false,
+            fullWidth: session?.isFullWidth ?? false,
+            traditional: session?.isTraditional ?? false,
+            chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese",
+            learning: ImeConfig.bool("candidate.show_wubi_learning"))
     }
 
     /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
@@ -493,6 +508,7 @@ final class LampyrisInputController: IMKInputController {
             session.page(delta)
             self.showCandidates(client, session: session)
         }
+        window.updateStatus(candidateStatus())
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
             input: session.buffer, warning: session.variantErrorMessage)
