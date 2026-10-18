@@ -2,124 +2,102 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）
-- 分支：`main` @ `6494eab`（CI 全绿，验收包已出）；无其它本地/远程分支、无额外工作树
-- 阶段：**新包（`6494eab`，执行 SHA `8984c223…`）已由 CI `macos-acceptance` 签名+公证并下载就位**；A 机待做**全新安装**（报告 076 的 `--purge-data` 流程，以 Schema 默认值起步）；B 机待升级；**MVP 发布门禁未全部关闭**
-- 最近验证：`make verify` 全绿；B 机报告 070、A 机报告 071 覆盖核心输入/撤销/四状态/模式/设置/关于/菜单快捷键
+- 更新：2026-10-18 / pi（deepseek-flash）· **交接给 B 设备做重启后的实机验收**
+- 分支：`main` @ `8f14754`（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
+- 阶段：**新包已出（源码 `6494eab`，执行 SHA `8984c223…`）**，A 已核验但**未安装**；B 待升级（现在还是 `a234ef31…`）；MVP 发布门禁未全部关闭
+- 最近验证：`make verify` 全绿（212 产物隐私断言）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
 
 ## 1. 安装与数据
 
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
-| B（本机 `joker`） | arm64 / macOS 27.0.1 | `a234ef31…`（0.1.0，Developer ID + 公证） | 已验收（报告 070）；`mode=mixed`、config `6314f3f4…`（默认值）、词库 496 行 |
-| A（`bot@pro` / 192.168.0.35） | Intel / macOS 13.7.8 | 同一 `a234ef31…` | 已验收（报告 071）；`mode=mixed`、config `48259b19…`（测前测后一致）、输入源还原 ABC、词库 960 行 |
+| A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
+| B（`joker`，arm64 / macOS 27） | arm64 | `a234ef31…`（**旧**） | 报告 070 验收通过；`config` 里是报告 068 时代写死的 8 项显式 `ctrl+shift*`、词库 496 行；**待升级到 `6494eab`** |
 
-- 安装路径均为 `~/Library/Input Methods/Lampyris.app`；两机 `codesign --verify --deep --strict`、`stapler validate`、`spctl` 均通过。
-- A 的 `config.toml` 只显式写了 `toggle_mode`，其余走 Schema 默认值（`⌃⇧.`/`⌃⇧T`/`⌃⇧L`/`⌃,`/`⌃⇧A` 自动生效）。
-- A 的仓库在 `~/Documents/EasyInputMethod`，已拉至 `7f7f699`。**A 现有 `cargo`/`rustc` 1.98.1**（旧记录「无 cargo」已作废），但本轮仍未用其构建产品，只编探针；`make verify` 现可在 A 直接跑。
-- A 的 `screencapture` **无屏幕录制授权**：截图恒为同一张静态图，实机取证只能用 AX/CG/TIS/config 实读（报告 071 D6）。
+- 新包（A 上已下载核验，`packaging/out/` 被 gitignore，不入库）：
+  `packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+  zip `0325ef9d…`、执行 SHA `8984c223…`、`spctl` = Notarized Developer ID、`stapler validate` 通过。
+  B 上可从 CI 重新取：`gh run download 39088753850 -n Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`。
+- B 的旧 `config.toml` 是**显式** `ctrl+shift*`：不清理就永远看不到新默认值，所以 B 必须先 `--purge-data` 全新安装（报告 076）。
 
-## 2. 本轮完成（2026-10-18）
+## 2. 本轮完成（`a234ef31` 之后合入的改动）
 
-- **菜单交互定稿（ADR-206/207/208）**：取消子菜单，恢复单行 `混输模式/五笔模式/拼音模式` 点击循环；标题实时反映模式；右侧为快捷键列；设置/关于新增可配置快捷键；默认快捷键 `⌃⇧M` / `⇧` / `⌃⇧Space` / `⌃⇧.` / `⌃⇧T` / `⌃⇧L` / `⌃,` / `⌃⇧A`。
-- **正式包**：PR #53 合入 `main`（`ba6d796`）→ `macos-acceptance` 签名+公证+staple → 执行 SHA `a234ef31…`，zip 摘要/信任核验通过；A/B 均已安装。
-- **B 机验收（报告 070）**：五笔 `wq`→你、拼音 `nihao`→你好、`kwwl`→中华人民共和国、`⌘Z` 撤销、四状态往返、模式三循环、设置/关于窗口、快捷键全部通过；测后状态已还原。
-- **仓库清理**：合并后的分支已删除（本地+远程），stale worktree 已移除，仅剩 `main`；探针源码入库 `tools/macos-probe/`（报告 069 的 P6）。
+| 提交 | 内容 | 报告 |
+|---|---|---|
+| `2a863e1` | 关于页「反馈问题」下拉按固有尺寸收窄、两按钮按行中心对齐（macOS 13 上原来宽 157pt、错位 4pt） | 072 |
+| `7b3a49d` | 候选窗去掉多余的 22pt 底部预留（无 hint 时 74→64pt，上下留白 8/8） | 073 |
+| `c337a89` | `make macos-ui-snapshots`（离屏 UI 截图，缓存后 5s）+ 组合键「事件必须晚于最近修饰键变化」的防误判 | 074 |
+| `7e2edc7` | **默认快捷键改 Option 语义前缀**（ADR-209）：`⌥M` 模式 / `⇧` 中英 / `⌥Space` 全半角 / `⌥P` 标点 / `⌥T` 简繁 / `⌥L` 学习区 / `⌥,` 设置 / `⌥A` 关于 | 075 |
+| `4a48443` | `uninstall.sh --purge-data`：旧包与旧 config/词库移入 `uninstalled/`（移动不删除） | 076 |
+| `8f14754` | 不注销验收三档（快照 / 隔离实窗 / 已装包）+ `scripts/clean-install.sh` / `make macos-clean-install` | 077 |
 
 ## 3. 当前未决
 
-- **A 机验收遗留差异（报告 071，待查）**：D2 = macOS 13 上设置面板首次打开落在「候选」分区（B 为「输入」）；D3 = 紧随 AX 点击工具栏后点「关于」有一次未出窗口（未稳定复现）。D1/D4/D5 只需订正文档与探针口径（菜单 7 行；菜单索引整体比 B 小 2；空格/⇧ 的 `cmdChar` 读空）。
-- **关于页 macOS 13 布局已修待复验（报告 072）**：`NSPopUpButton.sizeToFit()` 在 macOS 13 上恒定多出 71pt（下拉按钮 157pt、箭头远离标题），且 32pt 按钮与 25pt 下拉按顶边对齐导致 4pt 错位；已改为按 `intrinsicContentSize` 收窄 + 按行中心对齐，并给 `tools-presentation.swift` 加宽度/行中心断言。**已装 0.1.0 仍是旧布局**，需新签名包才能实机复验。
-- **A 的 Swift 5.8.1 编译不了 `tools-presentation.swift`**（异构字典字面量类型推断）：macOS 13 分支上的 UI 离线断言实际从未执行，建议开卡修兼容性。
-- **候选窗底部留白已收（报告 073）**：宿主从不传 `hint`，但 `arrange()` 恒留 22pt 底部区 → 窗口顶部 9pt / 底部 20pt（翻页行贴顶、下方一大块空）；已改为仅在真有 hint/警告时保留（无附行 74→64pt，上下留白 12/13pt），新增 `candidate.padding` 不变式断言。**未装包**。
-- **翻页组间距待决策**：上一页/页码/下一页 4pt frame 间距 + 24pt 点击区，雪佛龙只有 6pt 宽 → 视觉空隙约 17pt，偏松；收紧需改 ADR-183 的 24pt 点击区契约，待用户确认。
-- **全新安装入口（报告 076）**：`platforms/macos/uninstall.sh --purge-data` 把旧包移入 `uninstalled/bundle.*`、`config.toml`/`user-dictionary.tsv` 移入 `uninstalled/data.*`（移动不删除），`--dry-run --purge-data` 可在宿主运行时预检；下次装包即从 Schema 默认值起步。**A/B 尚未执行**（需要用户在场 + 注销）。
-- **默认快捷键改为 Option 前缀（ADR-209 / 报告 075）**：`⌥M` 模式、`⌥Space` 全半角、`⌥P` 标点、`⌥T` 简繁、`⌥L` 学习区、`⌥,` 设置、`⌥A` 关于，中英仍为单独 `⇧`；实测系统无「仅 ⌥+字母」快捷键、`⌥E/N/U/I` 是死键已排除。默认值只改 Schema，**B 机全部显式旧值、A 机 `toggle_mode` 显式旧值保持不动**，要尝新需按 ime-config 改回；实机菜单待新包复验。
-- **快捷键与系统 ⌃Space 冲突已修（报告 074）**：`⌃Space` 切换输入法后快按 Shift 会被重投递的旧空格事件误判为 `⌃⇧Space` → 误切全/半角；已加「按键时间戳必须晚于最近修饰键变化」的保护（20ms 容差）+ 回归断言。**残余风险**：若某系统重建时间戳仍可能误判；根治需把 `hotkey.toggle_width` 默认从 `ctrl+shift+space` 换掉（需 ADR）。
-- **新增 `make macos-ui-snapshots`（报告 074）**：离屏渲染候选/关于/设置/诊断（亮暗 + 4 类候选形态），带帧/留白报告；缓存二进制，未改源码 5s、只改候选 37s，不装包也不碰真实配置。
-- **正式报告**：`platforms/macos/build/final-menu-abdb83f/formal-report.json` 仍是旧包 `abdb83f` 的 1 PASS / 22 BLOCKED，需对 `a234ef31` 重跑。
-- **发布门禁（均未关闭）**：
-  - I0 安全验收（IT-01…03，需独立测试账号）
-  - I1 输入可靠性（IT-04…09）
-  - I2 产品体验（IT-10/11、16…22）
-  - I3 日常与兼容（IT-12 性能、IT-14 兼容矩阵、IT-23 五工作日）
-  - I4 分发（IT-13 附件 dry_run、IT-15 第三方独立复现、tag/Release 未创建）
-- **未覆盖的实机项**：睡眠唤醒、多屏/缩放、物理键盘导航、VoiceOver、安全输入框/非 US 布局、客户端矩阵（Safari/Chrome/VSCode/微信/Terminal）、同包性能基线。
-- **提速项（报告 069）**：P1 实机检查脚本、P2 宿主内建 trace、P3 VM 快照、P4 测试从 schema 派生、P5 CI paths 过滤、P7 证据等级门槛、P8 文档（守则已写）。
+- **B 机全新安装与重启后验收**（本次交接的主任务，见 §4）。
+- **A 机同样待全新安装**（本轮没做）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值。
+- **发布门禁（均未关闭）**：I0 安全（IT-01…03）／I1 可靠性／I2 体验／I3 性能与兼容（IT-12/14/23）／I4 分发（IT-13 dry_run、IT-15 第三方复现、tag/Release）。
+- **A 机遗留差异**（报告 071/073）：D2 = macOS 13 上设置面板首次打开落在「候选」分区（B 上是「输入」，需在 macOS 27 复核是否仅旧系统）；D3 = 紧随 AX 点击工具栏后点「关于」有一次未出窗（未稳定复现）。
+- **翻页组视觉空隙**（报告 073）：上一页/页码/下一页之间 4pt frame + 24pt 点击区 → 视觉约 17pt，偏松；收紧需改 ADR-183 的点击区契约，待用户决定。
+- **A 的 Swift 5.8.1 编译不了 `tools-presentation.swift`/`candidate-presentation.swift`**（`LocalAcceptanceEvidence` 异构字典字面量）：macOS 13 上的这部分离线断言只在 CI 跑；建议单开一张卡修兼容性。
+- **正式报告**：`platforms/macos/build/final-menu-abdb83f/formal-report.json` 仍是旧包 `abdb83f` 的 1 PASS/22 BLOCKED。
 
-## 4. 下一步
+## 4. 下一步：B 机重启后的全新安装 + 验收
 
-1. **查 D2/D3**（报告 071）：macOS 13 上设置面板默认分区为何落在「候选」、以及 AX 点击工具栏后「关于」瞬时不出窗；两处都用现成的 `tools/macos-probe` 加 AX 树复现，先定性再改。
-2. 对 `a234ef31` 重跑 `platforms/macos/build/final-menu-abdb83f/formal-report.json`（现仍是旧包 `abdb83f` 的 1 PASS/22 BLOCKED）。
-3. 落地 **P1/P2** 提速项（`make macos-live-check` + 默认关闭的菜单/命令 trace），把剩余实机项做成可重复脚本。
-4. 按迭代计划 I0→I1→I2→I3→I4 收敛门禁；最后再跑 `validate-release.py` dry_run 与 `v0.1.0` tag/Release。
+> 顺序不能颠倒：**先移除输入源、再重启**，重启回来后再卸载/安装（守则 2：不要在同一登录里热替换 bundle）。
 
-### 实机验收现状（A/B 均已执行）
+### 4.1 重启前（用户手动）
 
-- 步骤与命令见报告 070（B）/ 071（A）；A 上探针索引是 `[4]`模式、`[5]`中英、`[6]`全半角、`[7]`简繁、`[8]`标点、`[10]`设置、`[11]`关于（比 B 整体小 2），**必须先用 `bin/axmenu dump` 核对再点**。
-- 断言用 `shasum -a 256` 核 `config.toml`（A 基线 `48259b19…`）、`pgrep` 核宿主 PID、`selsrc`/TIS 回读核输入源。
+1. 切到 **ABC**；
+2. 系统设置 → 键盘 → 文字输入 → 移除「萤火虫」。
 
-> A 是 Intel + macOS 13.7.8：菜单项数与 AX 属性会与 B（macOS 27）不同，先查平台差异，不要套 B 的结论；SSH 进程没有辅助功能授权，必须在 A 的图形会话里跑探针。
-
-## 4.1 待执行：A 机全新安装（用户注销重登后第一件事）
-
-> 不想现在注销也行：UI/候选/设置/默认绑定可用 `make macos-ui-snapshots`（含设置四分区与快捷键文本）和
-> `make macos-dev`（隔离实窗、私有配置）先看；只有「签名包 + 真实 IMK」才需要那一次注销（报告 077）。
-
-登录后一条命令：
-```sh
-make macos-clean-install APP=packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app
-```
-（= `scripts/clean-install.sh --app <路径> --input-source-removed`；默认 `--purge-data`，`ARGS=--keep-data` 可保留旧数据；
-不带 `--input-source-removed` 只会打印清单并退出，不会动手。）
-
-
-新包已就位（`packaging/out/` 被 gitignore，仅本机）：`packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-
-| 项 | 值 |
-|---|---|
-| 源码提交 | `6494eab` |
-| zip | `Lampyris-0.1.0-universal.zip` SHA-256 `0325ef9d…`（与本包 `.sha256` 一致） |
-| 执行 SHA | `8984c223…` |
-| 信任 | `codesign --verify --deep --strict`、`stapler validate`、`spctl` = Notarized Developer ID 全通过 |
-| 旧包 | 现装 `a234ef31…`，配置 SHA `907998e6…`（含 `mode=wubi`） |
-
-用户已被告知需先：切到 ABC → 系统设置移除萤火虫 → 注销重登。重登后按此顺序执行（每步看输出，失败即停）：
+### 4.2 重启后（agent 执行，逐条记录，失败即停）
 
 ```sh
 cd ~/Documents/EasyInputMethod
-platforms/macos/uninstall.sh --dry-run --purge-data     # 先看计划
-platforms/macos/uninstall.sh --input-source-removed --purge-data   # 移入 uninstalled/bundle.* + data.*
-platforms/macos/install.sh --app packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app
-make -C tools/macos-probe                               # 探针（若尚未构建）
+git fetch origin && git checkout main && git pull --ff-only      # 到 8f14754
+make -C tools/macos-probe                                        # arm64 探针
+# 取包（若本地没有）：gh run download 39088753850 -n Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae -D packaging/out/clean-install
+shasum -a 256 packaging/out/clean-install/*/Lampyris-0.1.0-universal.zip   # 期望 0325ef9d…
+make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/Lampyris-0.1.0-universal/Lampyris.app
 ```
 
-然后：`bin/selsrc cn.jokerhub.inputmethod.Lampyris.default` 启用并选中源 → 打开自建 TextEdit 文档按键一次 → 核对默认行为：
-菜单右侧应为 `⌥M` / `⇧` / `⌥空格` / `⌥T` / `⌥P` / `⌥,` / `⌥A`（报告 071 的索引偏移同样适用于新包，先 `bin/axmenu dump` 再点），
-并验证 `wq`+空格→你、`nihao`+空格→你好、四状态与模式循环、设置/关于窗口，最后还原输入源为 ABC。
+`macos-clean-install` 会：卸载旧包（`--purge-data`，旧 config/词库进 `uninstalled/`）→ 装新包 → 校验签名/公证/执行 SHA（期望 `8984c223…`）→ 尝试选中输入源。
 
-验收记入 `docs/reviews/077-*.md`；配置应为全新生成的默认值（`mode=mixed`、快捷键为 `alt+*`，不再有显式 `ctrl+shift*`）。
+若脚本拒绝自动选中输入源：在系统设置里添加「萤火虫」后 `bin/selsrc cn.jokerhub.inputmethod.Lampyris.default`。
+
+### 4.3 验收清单（同报告 071 + 本轮新增项）
+
+先打开**自建** TextEdit 文档（`/tmp/lampyris-b/…`，不要动用户文档），按键一次激活控制器，然后：
+
+1. **菜单**：`bin/axmenu open && bin/axmenu dump`。产品行 7 行；**右侧快捷键应为 `⌥M` / `⇧` / `⌥空格` / `⌥T` / `⌥P` / `⌥,` / `⌥A`**（AX 上 option 位 = mods 10）。先 dump 再按索引点击，不要照抄 A（A 上整体小 2）。
+2. **全新配置**：`config.toml` 应只有使用中写入的键，`mode=mixed`、无显式 `hotkey.*`；`~/Library/Application Support/Lampyris/uninstalled/data.*/` 里能找到被移走的旧 config 与 496 行词库。
+3. **输入**：`wq`+空格 → 你；`nihao`+空格 → 你好；`kwwl` → 中华人民共和国（四码唯一 auto_commit）。
+4. **撤销**：⌘Z。**注意**：TextEdit 会把「程序化清空 + 随后提交」并进同一撤销组，要先打字→方向键断开组→再 ⌘Z（见报告 071 的坑）。
+5. **四状态**往返（中英/全半角/简繁/标点），每步回读 `config.toml`；**模式**连点三次 mixed→wubi→pinyin→mixed。
+6. **设置/关于**窗口：设置页「快捷键」分区应显示 `⌥M/⇧/⌥空格/⌥P/⌥T/⌥,/⌥A/⌥L`；关于页两个按钮宽度应接近（描边约 75/80pt）、文字行中心对齐（报告 072 的修正）。
+7. **候选窗底部留白**（报告 073）：5 候选 + `1/N` 翻页时面板内容高 **64pt**，上下留白 8/8；带附行时才变 92pt。可直接和 `make macos-ui-snapshots` 的离屏图对照。
+8. **⌃Space 误切回归**（报告 074）：保持英文模式，按 `⌃Space` 切到萤火虫后**立刻**按一下 Shift —— 应切中英，**不得**变成全角。
+9. **A 的 D2/D3 复核**：设置面板首次打开落在哪个分区；「关于」是否稳定出现。
+10. 结束时还原：`mode=mixed`、标点=中文、字形=简体、输入源回原值；核对 `config.toml` 字节、宿主 PID、包未被替换。
+
+### 4.4 收尾
+
+- 报告 `docs/reviews/078-device-b-clean-install-6494eab.md`（PASS/FAIL/BLOCKED + 证据文件名，证据放 `platforms/macos/build/acceptance-b-078/`，该目录被 gitignore）。
+- 同步本文件（§1/§3/§4/§9）与 `ROADMAP.md`；`make verify` 后提交推送。
 
 ## 5. 授权与边界
 
-- 不自动注销/重启/解锁；需要重登时由用户执行。
-- 配置只经 `ime-config`（`ime-cli --config <真实路径>`）读写；不手工改 `config.toml`，不在 `UserDefaults`/注册表/环境变量另存。
-- 不覆盖未知并发改动；不创建全量备份；不操作用户真实文档；客户端矩阵中微信等涉及用户数据，须按 IT 卡单独授权。
-- 实机动作前核对自有文档、输入源、宿主与焦点；失配立即停止。用户截图/口头确认不能补记为正式 PASS。
-- 探针遵守 `tools/macos-probe/README.md` 的守则（先按键激活、逐键输入、不热替换、测后还原）。
+- 不自动注销/重启/解锁；重启与登录由用户执行，agent 只做重启后的卸载/安装/验收。
+- 配置只经 `ime-config`；不手改 `config.toml`、不写 `UserDefaults`。全新安装靠 `uninstall.sh --purge-data` 把文件**移出**活动目录，不删除。
+- 不覆盖未知并发改动；不创建全量备份；不操作用户真实文档；微信等真实会话须按 IT 卡单独授权。
+- 实机动作前核对自有文档、输入源、宿主与焦点；失配立即停止。用户截图/口头确认不能记为正式 PASS。
+- 一轮只测一个包，不热替换；探针遵守 `tools/macos-probe/README.md`。
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：交接 B 机重启后验收。本轮完成 ⌥ 默认值（ADR-209）、候选窗底部留白、关于页按钮、组合键防误判、离屏截图工具、`--purge-data` 与 `scripts/clean-install.sh`；新包 `6494eab` 已出（exec `8984c223…`）并在 A 核验，A 未安装。B 重启后按 §4 执行 `make macos-clean-install` 并写报告 078。
 - 2026-10-18 / pi：无注销验收三档 + 一条命令全新安装（报告 077）。`make macos-ui-snapshots` 增设设置四分区截图并打印默认 ⌥ 绑定文本；新增 `scripts/clean-install.sh` / `make macos-clean-install`（卸载→安装→校验，缺 `--input-source-removed` 只打印清单）；明确只有「签名包+真实 IMK」需要一次注销。
-- 2026-10-18 / pi：出包 + 交接全新安装。`7e2edc7`/`4a48443` 的 CI 因学习区快捷键用例仍按 `⌃⇧L` 而红，修好并重跑（`6494eab`，CI + macOS Acceptance 全绿）；新包已下载核验（zip `0325ef9d…`、执行 `8984c223…`、Notarized Developer ID）。用户注销重登后按 §4.1 执行 `--purge-data` 全新安装并验收默认 ⌥ 行为。
-- 2026-10-18 / pi：全新安装入口（报告 076）。`uninstall.sh --purge-data` 把旧包与旧 config/词库移入 `uninstalled/`（移动不删除），预检无需退出宿主；补 3 项临时 HOME 回归（默认保留/预检/purge 生效），文档写清六步流程；A/B 未执行。
-- 2026-10-18 / pi：默认快捷键改 Option 语义前缀（ADR-209 / 报告 075）。实测系统符号快捷键无「仅 ⌥+字母」、⌥E/N/U/I 为死键；默认改为 ⌥M/⌥Space/⌥P/⌥T/⌥L/⌥,/⌥A（中英仍单 ⇧），Schema 与单测、菜单/设置/预览回归同步；已装包未变，B/A 的显式旧值不动。
-- 2026-10-18 / pi：`make macos-ui-snapshots` + 快捷键误判修正（报告 074）。截图入口离屏渲染候选（4 形态）/关于/设置/诊断 × 亮暗，带帧与留白报告，缓存命中 5s；修 `⌃Space` 切换输入法后重投递的旧空格事件被当成 `⌃⇧Space` 而误切全/半角（组合键匹配要求事件时间戳晚于最近修饰键变化，20ms 容差），并加回归断言。默认值是否从 `ctrl+shift+space` 换掉待定（需 ADR）。
-- 2026-10-18 / pi：候选窗底部留白修正（报告 073）。用户截图反馈翻页区间距；实测顶部 9pt / 底部 20pt，根因是 `arrange()` 恒为 `hint` 预留 22pt 而宿主从不传 hint；改为按需保留（无附行 74→64pt，上下 12/13pt），hint/警告/学习布局不变；新增 `candidate.padding` 不变式断言（修正前会失败）。**未装包**；翻页组 17pt 视觉空隙需改 ADR-183 才能收紧，待定。
-- 2026-10-18 / pi：关于页 macOS 13 布局修正（报告 072）。用户截图反馈后实测：`NSPopUpButton.sizeToFit()` 在 macOS 13 上恒定 +71pt（157×25 vs 固有 86），且与 32pt 按钮顶边对齐 → 箭头远离标题、两控件错位 4pt；改为按固有尺寸收窄 + 行中心对齐，新增宽度/行中心断言；离屏暗/亮复测（描边 302→160px、行中心差 0）。**未装包**，实机仍是旧布局；另记：A 的 Swift 5.8.1 无法编译 `tools-presentation.swift`。
-- 2026-10-18 / pi：A 机同包实机验收（报告 071）。7 行菜单 + 快捷键 AX 实读、五笔/拼音/混输 auto_commit、⌘Z 撤销、四状态往返、模式三循环、设置/关于窗口、还原（config `48259b19…` 不变、输入源回 ABC、宿主 PID 67948 未变）全部通过；登记 6 项平台差异（含 macOS 13 设置面板默认落在「候选」、菜单索引偏移 2、截图无授权），A 机验收遗留 D2/D3 待查。
-- 2026-10-18 / pi：0.1.0 发布 + B 验收 + 仓库清理。PR #53 → `ba6d796`，签名包 `a234ef31…` 装 A/B；B 实测核心输入/撤销/四状态/模式/设置/关于通过（报告 070）；删除已合并分支与 stale worktree，探针入库 `tools/macos-probe/`；交接给 A 继续验收。
-- 2026-10-18 / pi：报告 069 复盘（迭代代价、根因、P1–P8 提速项），实机验证守则写入 `docs/开发工作流.md`。
-- 2026-10-18 / pi：报告 067/068。带日志诊断证明子菜单子项命令不下发；ADR-206 改为单行循环，ADR-207/208 增加设置/关于快捷键并统一下拉默认值；本地 60 项、离线 31 套件、四项 CI 全绿。
-- 2026-10-18 / pi：报告 065/066。查明"菜单消失"是读菜单前未按键激活控制器；候选菜单其实完整；顶层命令可用、子菜单子项不可用。
-- 2026-10-17 / pi：报告 063/064。热替换与未激活污染结论，候选判定撤回；建立"A/B/A 对照 + 按键激活"的采集方法。
+- 2026-10-18 / pi：出包 + 交接全新安装。`7e2edc7`/`4a48443` 的 CI 因学习区快捷键用例仍按 `⌃⇧L` 而红，修好并重跑（`6494eab` 全绿）；新包下载核验（zip `0325ef9d…`、执行 `8984c223…`、Notarized Developer ID）。
+- 2026-10-18 / pi：默认快捷键改 Option 语义前缀（ADR-209 / 报告 075）。实测系统无「仅 ⌥+字母」快捷键、⌥E/N/U/I 为死键；默认改为 ⌥M/⌥Space/⌥P/⌥T/⌥L/⌥,/⌥A（中英仍单 ⇧）。
+- 2026-10-18 / pi：`make macos-ui-snapshots` + 快捷键误判修正（报告 074）。组合键匹配要求事件时间戳晚于最近修饰键变化（20ms 容差），修 `⌃Space` 切换后重投递旧空格被当成 `⌃⇧Space` 而误切全/半角。
+- 2026-10-18 / pi：候选窗底部留白修正（报告 073）、关于页 macOS 13 布局修正（报告 072）。
