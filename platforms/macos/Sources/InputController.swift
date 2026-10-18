@@ -266,14 +266,20 @@ final class LampyrisInputController: IMKInputController {
     }
 
     /// HUD 用光标矩形：无客户端/空文档/取不到时返回 nil（不显示，不退鼠标）。
+    /// 光标在空行/末尾换行时，向前回退到最近一个能取到矩形的字符（最多 64 个）。
     private func hudCaretRect() -> NSRect? {
         guard let client = client() ?? activeClient else { return nil }
-        var rect = NSRect.zero
         let selection = client.selectedRange()
-        let index = Self.caretLookupIndex(selectionLocation: selection.location,
+        var index = Self.caretLookupIndex(selectionLocation: selection.location,
             length: client.length())
-        _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
-        return StateHUDLayout.isValid(caret: rect) ? rect : nil
+        for _ in 0..<64 {
+            var rect = NSRect.zero
+            _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
+            if StateHUDLayout.isValid(caret: rect) { return rect }
+            guard index > 0 else { break }
+            index -= 1
+        }
+        return nil
     }
 
     private func candidateStatus() -> CandidateStatus {
