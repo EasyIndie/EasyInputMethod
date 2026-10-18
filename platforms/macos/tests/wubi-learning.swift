@@ -85,11 +85,15 @@ let oldWidth = session.isFullWidth
 let oldWidthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.shift],
     timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
 require(session.shortcut(oldWidthEvent, persistMode: true) == .unmatched && session.isFullWidth == oldWidth, "shift-space no longer toggles by default")
-let widthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option],
+let spaceEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option],
     timestamp: 0, windowNumber: 0, context: nil, characters: " ", charactersIgnoringModifiers: " ", isARepeat: false, keyCode: 49)!
+require(session.shortcut(spaceEvent, persistMode: true) == .unmatched && session.isFullWidth == oldWidth,
+    "option-space no longer toggles by default (ADR-210)")
+let widthEvent = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option],
+    timestamp: 0, windowNumber: 0, context: nil, characters: "F", charactersIgnoringModifiers: "f", isARepeat: false, keyCode: 3)!
 require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth != oldWidth, "new width shortcut toggles")
 require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth == oldWidth, "new width shortcut restores")
-LocalAcceptanceEvidence.record("learning.width-shortcut", expected: "shift-space与control-shift-space都不切换；option-space双向切换恢复", actual: ["restored": session.isFullWidth == oldWidth, "buffer": session.buffer])
+LocalAcceptanceEvidence.record("learning.width-shortcut", expected: "shift-space与option-space都不切换；option-f双向切换恢复", actual: ["restored": session.isFullWidth == oldWidth, "buffer": session.buffer])
 
 // 系统 ⌃Space 切换输入法时，仍按住的空格会被重投向新输入法，而修饰键已是“切完再按 Shift”的状态。
 // 这类时间戳早于最近修饰键变化的旧事件不能当成 ⌃⇧Space，否则单按 Shift 会误切全/半角（报告 074）。
@@ -100,15 +104,15 @@ func syntheticKey(_ type: NSEvent.EventType, _ flags: NSEvent.ModifierFlags, _ s
 }
 let widthBeforeReplay = session.isFullWidth
 session.noteModifierChange(syntheticKey(.flagsChanged, [.option], 1000.0, 58, ""))
-let replayedSpace = syntheticKey(.keyDown, [.option], 999.94, 49, " ")
-require(session.shortcut(replayedSpace, persistMode: true) == .unmatched && session.isFullWidth == widthBeforeReplay,
-    "space replayed from before the modifier change is not a chord")
-let settledSpace = syntheticKey(.keyDown, [.option], 1000.05, 49, " ")
-require(session.shortcut(settledSpace, persistMode: true) == .handled && session.isFullWidth != widthBeforeReplay,
-    "space pressed after the modifiers still fires the chord")
-require(session.shortcut(settledSpace, persistMode: true) == .handled && session.isFullWidth == widthBeforeReplay,
+let replayedF = syntheticKey(.keyDown, [.option], 999.94, 3, "f")
+require(session.shortcut(replayedF, persistMode: true) == .unmatched && session.isFullWidth == widthBeforeReplay,
+    "f replayed from before the modifier change is not a chord")
+let settledF = syntheticKey(.keyDown, [.option], 1000.05, 3, "f")
+require(session.shortcut(settledF, persistMode: true) == .handled && session.isFullWidth != widthBeforeReplay,
+    "f pressed after the modifiers still fires the chord")
+require(session.shortcut(settledF, persistMode: true) == .handled && session.isFullWidth == widthBeforeReplay,
     "width restored after the settled chord")
-LocalAcceptanceEvidence.record("learning.stale-chord", expected: "系统切换后重投递的旧空格事件不触发⌥Space；修饰键先到位时仍生效", actual: ["ignored_replay": session.isFullWidth == widthBeforeReplay])
+LocalAcceptanceEvidence.record("learning.stale-chord", expected: "系统切换后重投递的旧事件不触发⌥F；修饰键先到位时仍生效", actual: ["ignored_replay": session.isFullWidth == widthBeforeReplay])
 
 require(!ImeConfig.setString("hotkey.toggle_wubi_learning", "alt+m"), "shortcut collision rejected")
 LocalAcceptanceEvidence.record("learning.conflict", expected: "拒绝与模式快捷键冲突的学习绑定", actual: ImeConfig.string("hotkey.toggle_wubi_learning") ?? "missing")

@@ -859,7 +859,7 @@ if CommandLine.arguments.contains("--smoke-test") {
         normalizedHotkey.modifiers == [.control, .option],
         ImeConfig.string("hotkey.toggle_mode") == "ctrl+alt+m",
         !ImeConfig.setString("hotkey.toggle_mode", "banana"),
-        !ImeConfig.setString("hotkey.toggle_mode", "alt+space"),
+        !ImeConfig.setString("hotkey.toggle_mode", "alt+f"),
         ImeConfig.setString("hotkey.toggle_mode", "none"),
         ImeConfig.hotkey("hotkey.toggle_mode").kind == 0
     else { fputs("快捷键规范/非法值/冲突校验失败。\n", stderr); exit(1) }

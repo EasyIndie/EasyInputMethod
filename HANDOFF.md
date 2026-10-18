@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **B 机已完成重启后全新安装与实机验收（报告 078）**
+- 更新：2026-10-18 / pi（deepseek-flash）· **宽度快捷键改 ⌥F（报告 079）；下一步统一状态反馈**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
-- 阶段：**B 已装新包 `6494eab`（执行 `8984c223…`）**；A 仍装旧包 `a234ef31…`（待同样全新安装）；MVP 发布门禁未全部关闭
+- 阶段：**B 已装新包 `6494eab`**；A 仍装旧包 `a234ef31…`（待同样全新安装）；宽度默认已改 `alt+f`（ADR-210，报告 079），待出下一版包；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
 - 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
 
@@ -73,7 +73,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 先打开**自建** TextEdit 文档（`/tmp/lampyris-a/…`），按键一次激活控制器。逐项与 B 对齐：
 
-1. 菜单 7 行，快捷键 `⌥M / ⇧ / ⌥空格 / ⌥T / ⌥P / ⌥, / ⌥A`（`mods=10`、`vkey 49/56`）。
+1. 菜单 7 行，快捷键 `⌥M / ⇧ / ⌥F / ⌥T / ⌥P / ⌥, / ⌥A`（`mods=10`、`vkey 56`；全/半角已改 ⌥F，ADR-210）。
 2. 全新配置：`mode=mixed`、`alt+*`、`ctrl+shift` 零残留；旧 config/词库在 `uninstalled/data.*/`。
    （注意：首份配置是**全量模板**，不要再用「无显式 hotkey.*」当判据。）
 3. `wq`→你、`nihao`→你好、`kwwl`→中华人民共和国。
@@ -101,6 +101,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**全/半角默认快捷键改 `⌥F`（ADR-210 / 报告 079）**。用户报告 `⌥Space` 与 ChatGPT 虚拟宠物冲突；只改 `hotkey.toggle_width` 默认值，其余保持 ADR-209；已有显式配置不覆盖，B 机经设置面板改为 `alt+f`。同步 ime-config 单测、settings/learning/预览用例、配置架构与发布说明；补登记 `candidate.padding`/`learning.stale-chord` 后 `macos-local-acceptance` 62 场景全 PASS；`make verify` 全绿。
 - 2026-10-18 / pi：**B 机重启后全新安装 + 实机验收（报告 078，包 `6494eab`）**。zip `0325ef9d…`/执行 `8984c223…` 核验通过；`--purge-data` 把旧包、旧 `config`（`6314f3f4…`）与 510 行词库移入 `uninstalled/`；a–j 全 PASS：菜单 `⌥M/⇧/⌥空格/⌥T/⌥P/⌥,/⌥A`、`wq/nihao/kwwl`、`⌘Z`、四状态+模式、设置快捷键 8 项、候选 64pt（hint 92）、`⌃Space` 不误切、D2/D3 未复现、还原 ABC；新差异：首份配置是全量模板、macOS 27 撤销分组与 13 不同。下一步 A 机同样全新安装（§4）。
 - 2026-10-18 / pi：交接标准化。新增 `scripts/handoff-status.sh`（只读采集分支/包 SHA/config/词源/CI/工具会话，`--for=compact|session|agent|device`，`--prompt` 出骨架）与 `make handoff`；`update-handoff` skill 改为四场景矩阵 + 五步流程 + HANDOFF 契约 + 反例；新增 `docs/交接提示词模板.md`（四份模板）并接入 AGENTS §6.1 与 docs 索引。
 - 2026-10-18 / pi：交接 B 机重启后验收。本轮完成 ⌥ 默认值（ADR-209）、候选窗底部留白、关于页按钮、组合键防误判、离屏截图工具、`--purge-data` 与 `scripts/clean-install.sh`；新包 `6494eab` 已出（exec `8984c223…`）并在 A 核验，A 未安装。B 重启后按 §4 执行 `make macos-clean-install` 并写报告 078。

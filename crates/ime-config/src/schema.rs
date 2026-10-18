@@ -154,9 +154,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         key: "hotkey.toggle_width",
         value_type: ValueType::String,
         enum_labels_zh: &[],
-        default: "\"alt+space\"",
+        default: "\"alt+f\"",
         title_zh: "全/半角切换",
-        doc_zh: "组合键如 alt+space（默认；⌃Space 是系统切换输入法，不要占用） | none = 关闭",
+        doc_zh: "组合键如 alt+f（默认，F = Full-width；⌥Space 与 ChatGPT 等应用冲突） | none = 关闭",
         scope: Scope::Hotkey,
     },
     OptionSpec {

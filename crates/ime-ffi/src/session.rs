@@ -525,7 +525,7 @@ pub extern "C" fn ime_session_is_english(session: *mut ImeSession) -> i32 {
     )
 }
 
-/// 当前是否全角（含 Shift+Space 临时切换）；非法/空会话返回 -1。
+/// 当前是否全角（含全/半角快捷键的会话级临时切换）；非法/空会话返回 -1。
 #[no_mangle]
 pub extern "C" fn ime_session_is_full_width(session: *mut ImeSession) -> i32 {
     catch_value(
