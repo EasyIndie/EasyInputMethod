@@ -15,7 +15,10 @@
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
 | B（`joker`，arm64 / macOS 27） | arm64 | `ae84601`（`f7c00804…`） | 报告 078/087：全新安装 + 芯片/HUD 真机通过；`config` SHA `15f49acf…`（`mode=mixed`、`alt+f`）、输入源 ABC，宿主 8503 常驻 |
 
-- **B 已装 `ae84601`**（含 HUD 可见性/客户端/空行回退修复）：`packaging/out/hud-walkback/candidate-kNQcbI/…`，zip `568d5302…`、执行 `f7c00804…`。
+- **B 已装 `ae84601`**（HUD 最终版）；**待装 `60a3751`（候选头部对齐/间距）**：
+  `packaging/out/header-align/candidate-epl7AW/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+  zip `c11289d9…`、执行 `7f6526ac…`、Notarized Developer ID。
+  可从 CI 取：`gh run download 39131254526 -n Lampyris-macos-acceptance-60a3751dc2af1fb01d5fdb3234bd1102a350cf5f`。
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -104,6 +107,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**候选头部对齐/间距出包 `60a3751`**。输入码/芯片/翻页统一中心线，候选区上方 3pt；面板 64→68、hint 92→96；新增中心线断言。macOS Acceptance Package 成功（zip `c11289d9…`、执行 `7f6526ac…`、Notarized Developer ID），B 已装 `ae84601`，待装此包做视觉复验。
 - 2026-10-18 / pi：**候选头部对齐与间距（报告 088）**。头部高度 24→26，输入码/状态芯片/翻页统一中心线，候选区顶部留 3pt；面板 64→68、hint 92→96。`candidate.status` 增加三者中心线一致性断言；65 场景本地验收、verify、offline 全绿，待出包复验。
 - 2026-10-18 / pi：**HUD 光标跟随真机通过（报告 087，`ae84601`）**。无动画直接显示修好后台宿主透明问题；优先 `client()` 修好旧客户端坐标；空行回退最近可见字符。真机：第1行 (155,81)、第3行 (155,107)、空行 (144,120)，无焦点不显示；鼠标固定 1300,800。还原 ABC/默认配置。终端无录屏权限，用 CGWindowList+AX 取证；排查时执行过 `tccutil reset ScreenCapture`。
 - 2026-10-18 / pi：**修 HUD 可见性并出包 `4cae27f`**。去掉淡入淡出（agent 宿主里 NSAnimationContext 不推进，alpha 停在 0），直接显示/隐藏；HUD 取光标优先 `client()`，避免菜单快捷键路径用旧客户端坐标。macOS Acceptance Package 成功（zip `936bc1e8…`、执行 `3beb91a1…`、Notarized Developer ID）。准备安装时屏幕已锁定（截图失败、AX 超时），未做替换，已还原 ABC。
