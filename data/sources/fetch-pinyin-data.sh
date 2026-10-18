@@ -2,7 +2,7 @@
 # 萤火虫输入法 — 下载单字拼音表（pinyin-data）并校验 SHA-256。
 #
 # 数据源（MIT，见 docs/数据来源与许可.md §1）：
-#   D5  mozillazg/pinyin-data   pinyin.txt（版本 0.15.0；Copyright (c) 2016 mozillazg）
+#   D5  mozillazg/pinyin-data   pinyin.txt（Unicode 17.0.0 / commit 923b108dc5d45dee061324c011b478fb649f8b73；Copyright (c) 2016 mozillazg）
 #
 # 用途：字→拼音（带声调），供 T-M2-02 生成拼音兜底单字表（拼音反查也共用此数据）。
 # 格式：`U+XXXX: pinyin1,pinyin2  # 字`。文件下载获取，不入库（见 .gitignore）。
@@ -15,7 +15,7 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEST="$ROOT/data/sources"
 
 # D5: mozillazg/pinyin-data（MIT, Copyright (c) 2016 mozillazg）
-D5_URL="https://raw.githubusercontent.com/mozillazg/pinyin-data/master/pinyin.txt"
+D5_URL="https://raw.githubusercontent.com/mozillazg/pinyin-data/923b108dc5d45dee061324c011b478fb649f8b73/pinyin.txt"
 D5_SHA="621f8ca9eff8519f47e2b17b564fd318161e13bca07eea8c8e04993cd5d3b52e"
 D5_OUT="pinyin-data.txt"
 
