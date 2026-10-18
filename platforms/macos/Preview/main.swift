@@ -7,6 +7,7 @@ final class PreviewInput: NSTextView {
     let candidates = CandidateWindow()
     private var committed = ""
     private let previewStorage = NSTextStorage()
+    private var lastFeedback: (String, Bool, Bool, Bool, Bool)?
     var status: ((String) -> Void)?
     var stateChanged: (() -> Void)?
     var persistModeChanges = false
@@ -101,12 +102,39 @@ final class PreviewInput: NSTextView {
         let values = session.candidates(limit: ImeConfig.int("candidate.count") ?? 9)
         let summary = values.map { "\(CandidateTextPresentation.display($0.text))[\($0.source.label)]" }.joined(separator: " · ")
         status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
+        let status = CandidateStatus(
+            mode: session.mode, english: session.isEnglish, fullWidth: session.isFullWidth,
+            traditional: session.isTraditional,
+            chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")
+        let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
+        let feedback = (status.mode, status.english, status.fullWidth, status.traditional,
+                        status.chinesePunctuation)
+        if let last = lastFeedback, last != feedback {
+            if session.isComposing {
+                candidates.updateStatus(status)
+            } else {
+                let message: String
+                if last.0 != feedback.0 {
+                    message = StateFeedback.mode(status.mode)
+                } else if last.1 != feedback.1 {
+                    message = StateFeedback.language(status.english)
+                } else if last.2 != feedback.2 {
+                    message = StateFeedback.width(status.fullWidth)
+                } else if last.3 != feedback.3 {
+                    message = StateFeedback.variant(status.traditional)
+                } else {
+                    message = StateFeedback.punctuation(status.chinesePunctuation)
+                }
+                StateHUDController.shared.show(message, caret: caret)
+            }
+        }
+        lastFeedback = feedback
         if session.isComposing, !values.isEmpty, window != nil {
+            candidates.updateStatus(status)
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
                 input: session.buffer, warning: session.variantErrorMessage)
             candidates.onPage = { [weak self] delta in self?.session.page(delta); self?.refresh() }
-            let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
             candidates.show(at: caret)
         } else { candidates.hide() }
     }

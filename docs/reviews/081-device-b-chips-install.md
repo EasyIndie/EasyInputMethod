@@ -42,3 +42,19 @@
 重新出包（含 D1/D2）后按 §4 注销安装，复验：
 组合态切宽度应看到 HUD（候选窗关闭）、HUD 出现在真实光标附近；
 组合态切标点仍应只更新芯片。
+
+## 本地隔离窗口验收（不装包，2026-10-18 晚）
+
+B 机不空闲、暂不重启，改用 `make macos-dev` 的独立 App（自有 bundle、私有配置、真实 NSPanel）复验 D1/D2：
+
+| 操作 | 结果 |
+|---|---|
+| 隔离输入区键入 `wq` | 候选窗 468×64，头部实读 `混输 中文 全角 繁体 .`；翻页「上一页」x=765，芯片末端 757，间距 8pt |
+| 组合态按 `⌥P` | 候选窗保持 468×64，仅 `标点：英文标点` 就地变化，无 HUD |
+| 组合态按 `⌥F` | 组合被取消、候选窗关闭；HUD「全角」64×34 出现在输入区附近 (340,260)，**不再出现在文档左上** |
+| 非组合态按 `⌥T` | HUD「繁体」64×34 出现并 1.15s 消失 |
+| 退出隔离 App | `PASS interactive cleanup: owned process exited; real files unchanged`（真实 config/词库未被修改） |
+
+证据：`09-isolated-candidate-chips.png`、`09-isolated-hud-variant.png`、`09-isolated-hud-width.png`、`09-isolated-chips.txt`。
+
+为了让这条路径以后也能看到本轮 UI，`Preview` 已同步候选芯片与 HUD（状态变化且未组合时弹 HUD，组合中只更新芯片），仅用于本地隔离验收，不影响安装包。
