@@ -2,141 +2,77 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **UI 验收通过（报告 093）；B 装 `17053e1`，CI 双绿**
-- 分支：`main` @ `17053e1`（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
-- 阶段：**B 已装 `17053e1` 且用户 UI 验收通过（⌥F / 状态 HUD / 两字芯片 / 头部字号与留白）；A 仍装旧包 `a234ef31…`（待同样全新安装并验收新 UI）**；MVP 发布门禁未全部关闭
-- 最近验证：`make verify` 全绿（182 产物隐私断言）；`CI` 与 macOS 出包对 `17053e1` 均 **success**（runs `39135852921` / `39135852935`）；**用户 UI 验收通过（2026-10-18）**
-- 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` 与出包对 `17053e1` 均通过（runs `39135852921` / `39135852935`）
+- 更新：2026-10-18 22:50 / pi（deepseek-flash）· **B 机新 UI 已验收通过（`17053e1`）；A 机待装**
+- 分支：`main` @ `f842262`（已推送；工作树 clean；仅 main）
+- 阶段：B 已装 `17053e1`（⌥F / 状态 HUD / 两字芯片 / 头部字号与留白），用户 UI 验收通过；A 仍装旧包 `a234ef31…`
+- 最近验证：`make verify` 全绿（182 产物）；`CI` + macOS 出包对 `17053e1` 均 success；IT-13 dry-run 通过
 
 ## 1. 安装与数据
 
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
-| A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
-| B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 087/089/091/093：HUD、翻页光学对齐、头部字号统一、芯片/悬停留白真机通过；config 尚未生成、输入源 ABC，宿主 17339 常驻 |
+| A（`bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（旧） | 报告 071；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）；输入源 ABC；**未做全新安装** |
+| B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 093：UI 验收通过；`config` SHA `3bc1117c…`（`mode=mixed`、`alt+f`、显式 hotkey 8 项）、词库 17 行、输入源 ABC、宿主 17339 |
 
-- **B 已装 `60a3751`**：`packaging/out/header-align/candidate-epl7AW/…`，zip `c11289d9…`、执行 `7f6526ac…`。
-- 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
-- B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
-- 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
+- B 最终包：`packaging/out/header-type/candidate-bZTrDz/`（zip `02b70dfd…`、执行 `535d546f…`、Notarized Developer ID）。
+- A 取包：`gh run download 39135852935 -n Lampyris-macos-acceptance-17053e1e914b258d814e085f59a8460c0853179e`。
+- 输入源经验：安装后必须在「系统设置 → 键盘 → 文字输入」添加（`TISEnableInputSource` 返回 0 不生效）；`selsrc` 只选中已启用源。
 
-## 2. 本轮完成（`a234ef31` 之后合入的改动）
+## 2. 本轮完成（新 UI 收尾）
 
 | 提交 | 内容 | 报告 |
 |---|---|---|
-| `2a863e1` | 关于页「反馈问题」下拉按固有尺寸收窄、两按钮按行中心对齐（macOS 13 上原来宽 157pt、错位 4pt） | 072 |
-| `7b3a49d` | 候选窗去掉多余的 22pt 底部预留（无 hint 时 74→64pt，上下留白 8/8） | 073 |
-| `c337a89` | `make macos-ui-snapshots`（离屏 UI 截图，缓存后 5s）+ 组合键「事件必须晚于最近修饰键变化」的防误判 | 074 |
-| `7e2edc7` | **默认快捷键改 Option 语义前缀**（ADR-209）：`⌥M` 模式 / `⇧` 中英 / `⌥Space` 全半角 / `⌥P` 标点 / `⌥T` 简繁 / `⌥L` 学习区 / `⌥,` 设置 / `⌥A` 关于 | 075 |
-| `4a48443` | `uninstall.sh --purge-data`：旧包与旧 config/词库移入 `uninstalled/`（移动不删除） | 076 |
-| `8f14754` | 不注销验收三档（快照 / 隔离实窗 / 已装包）+ `scripts/clean-install.sh` / `make macos-clean-install` | 077 |
+| `fba09ba` | 全/半角默认 `⌥Space` → `⌥F`（ADR-210） | 079 |
+| `99c9841`…`ae84601` | 状态 HUD + 候选内联两字芯片 + 光标跟随/可见性修复（ADR-211/213） | 080–087 |
+| `1932c69` | pinyin-data 固定到 commit `923b108d`（Unicode 17.0.0），修 CI SHA 漂移 | 090 |
+| `60a3751`…`ba767ac` | 候选头部中心线对齐、翻页光学上提 1.5pt | 088/089/091 |
+| `17053e1` | 头部字号统一 12pt、芯片高 20/留白 12、候选悬停 6/2pt | 092/093 |
+| `f842262` | 记录用户 UI 验收通过 | — |
 
 ## 3. 当前未决
 
-- **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **D2 已关闭（ADR-213 / 报告 087）**：HUD 无动画直接显示、优先 `client()`、空行回退最近可见字符；真机验证通过。
-- **UI 验收已通过（报告 092/093）**：输入码/芯片/页码 12pt；芯片高 20、横向留白 12；候选悬停 6/2pt；真机面板 538×70、行高 26；用户 2026-10-18 确认通过。
-- **本轮前置偏差**：重启后源仍在、宿主未退；按「切 ABC → 系统设置移除源 → 终止孤儿宿主 → 安装」完成，未热替换、未注销。
-- **CI 数据源已固定（报告 090）**：`D5` 下载 URL 从 `master` 改为 commit `923b108d`（Unicode 17.0.0），SHA 保持 `621f8ca9…`；按 CI 步骤重跑生成物无 diff，`make verify` 全绿。
-- **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
-- **报告 078 的新差异**：D1 首份配置是全量模板（`alt+*` 全写，非只写改动键）；D2 macOS 27 设置面板首次落在「输入」（A 的「候选」未复现）；D3 关于按钮 78/101.5pt（按固有尺寸 + 同行居中判 PASS，报告 072 的「75/80」口径需订正）；D4 macOS 27 方向键不能断开 IME 提交的撤销组（单次撤销正常）；D5 源切换后第一下 Shift 在合成事件下未切中英（点一下文本区即正常，非全角误切）。
-- **发布门禁（均未关闭）**：I0 安全（IT-01…03）／I1 可靠性／I2 体验／I3 性能与兼容（IT-12/14/23）／I4 分发（IT-13 dry_run、IT-15 第三方复现、tag/Release）。
-- **A 机遗留差异**（报告 071/073）：D2 = macOS 13 上设置面板首次打开落在「候选」分区（B 的 macOS 27 为「输入」，已复核）；D3 = 紧随 AX 点击工具栏后点「关于」有一次未出窗（B 上 3/3 未复现）。
-- **翻页组视觉空隙**（报告 073）：上一页/页码/下一页之间 4pt frame + 24pt 点击区 → 视觉约 17pt，偏松；收紧需改 ADR-183 的点击区契约，待用户决定。
-- **A 的 Swift 5.8.1 编译不了 `tools-presentation.swift`/`candidate-presentation.swift`**（`LocalAcceptanceEvidence` 异构字典字面量）：macOS 13 上的这部分离线断言只在 CI 跑；建议单开一张卡修兼容性。
-- **正式报告**：`platforms/macos/build/final-menu-abdb83f/formal-report.json` 仍是旧包 `abdb83f` 的 1 PASS/22 BLOCKED。
+- **A 机新 UI 安装/验收**：SSH `bot` 端口可达，但 `joker@bot` 公钥被拒（`Permission denied`）；需把 B 公钥 `SHA256:7dVIimVAnFHid3LQamExzNpGPtE/Io4eEuU752zAxWI` 加入 A 的 `authorized_keys`，或直接在 A 上开 pi 执行。
+- **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
+- **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
+- **A 平台差异**：macOS 13 的设置默认分区（D2）与关于窗口瞬时不出（D3）需在 A 复验。
+- **IT-12 真实性能/IT-23 五日试用**：需先完成 IT-01 隔离验收再采真实 IMK 证据。
+- **TCC 副作用**：排查截图时执行过 `tccutil reset ScreenCapture`，各应用录屏授权可能需重新勾选。
 
-## 4. 下一步：A 机同样的全新安装 + 验收
+## 4. 下一步
 
-> A 机仍是 `a234ef31…`、显式 `mode=wubi`/`full_width=true`。要看到 ADR-209 的新默认值，必须
-> `--purge-data` 全新安装。流程与 B 相同（报告 078 已验证），顺序**不能颠倒**。
+### 4.1 A 机全新安装 + 验收（跨设备）
 
-### 4.1 准备（用户手动）
+1. 用户：切 ABC → 系统设置移除「萤火虫」→ 重启/注销。
+2. A 上执行：
+   ```sh
+   cd ~/Documents/EasyInputMethod && git pull --ff-only
+   make -C tools/macos-probe
+   gh run download 39135852935 -n Lampyris-macos-acceptance-17053e1e914b258d814e085f59a8460c0853179e -D packaging/out/a-17053e1
+   make macos-clean-install APP=packaging/out/a-17053e1/candidate-*/extracted/Lampyris-0.1.0-universal/Lampyris.app
+   ```
+   核对 zip `02b70dfd…`、执行 `535d546f…`；添加输入源后 `selsrc cn.jokerhub.inputmethod.Lampyris.default`。
+3. 验收：菜单 `⌥M/⇧/⌥F/⌥T/⌥P/⌥,/⌥A`；`wq/nihao/kwwl`；四状态+模式；设置 8 项；候选头部（12pt、芯片留白、翻页光学对齐、悬停留白）；HUD 跟随光标且无焦点不显示；复核 D2/D3。
+4. 写 `docs/reviews/094-device-a-17053e1.md`，证据放 `platforms/macos/build/acceptance-a-094/`；还原 ABC；`make verify` 后提交。
 
-1. 切到 **ABC**；
-2. 系统设置 → 键盘 → 文字输入 → 移除「萤火虫」；
-3. 注销/重启使宿主退出（B 的经验：只做前两步不重登，宿主会继续跑旧包）。
+### 4.2 发布门禁
 
-### 4.2 登录后（agent 执行，逐条记录，失败即停）
-
-```sh
-cd ~/Documents/EasyInputMethod
-git fetch origin && git checkout main && git pull --ff-only
-make -C tools/macos-probe
-# 包：packaging/out/clean-install/candidate-80z8RZ/extracted/Lampyris-0.1.0-universal/Lampyris.app
-shasum -a 256 packaging/out/clean-install/*/Lampyris-0.1.0-universal.zip  # 0325ef9d…
-make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/Lampyris-0.1.0-universal/Lampyris.app
-```
-
-安装后若 `selsrc` 报 `missing`：到「系统设置 → 键盘 → 文字输入」添加「萤火虫」，再
-`bin/selsrc cn.jokerhub.inputmethod.Lampyris.default`。`TISEnableInputSource` 返回 0 **不会生效**，
-不要改系统 plist。
-
-### 4.3 验收（a–j 同报告 078）
-
-先打开**自建** TextEdit 文档（`/tmp/lampyris-a/…`），按键一次激活控制器。逐项与 B 对齐：
-
-1. 菜单 7 行，快捷键 `⌥M / ⇧ / ⌥F / ⌥T / ⌥P / ⌥, / ⌥A`（`mods=10`、`vkey 56`；全/半角已改 ⌥F，ADR-210）。
-2. 全新配置：`mode=mixed`、`alt+*`、`ctrl+shift` 零残留；旧 config/词库在 `uninstalled/data.*/`。
-   （注意：首份配置是**全量模板**，不要再用「无显式 hotkey.*」当判据。）
-3. `wq`→你、`nihao`→你好、`kwwl`→中华人民共和国。
-4. `⌘Z`：新建文档单次提交后撤销应回空；macOS 13 的「方向键断开撤销组」按报告 071 操作。
-5. 四状态往返 + 模式三循环，每步回读 `config.toml`。
-6. 设置页快捷键 8 项；关于页按钮同行、文字行居中（宽度按固有尺寸判，不套 75/80）。
-7. 候选窗：`1/N` 时 64pt；`make macos-ui-snapshots` 对照 8/8 与 hint 92pt。
-8. `⌃Space` 后立刻 Shift：不得变全角；若 Shift 未切中英，先点一下文本区再复测（探针焦点）。
-9. 复核 A 的 D2（macOS 13 设置默认分区可能是「候选」）与 D3（关于瞬时不出窗）。
-10. 还原 `mode=mixed`、标点中文、字形简体、输入源 ABC；核对 config 字节、宿主 PID、执行 SHA。
-
-### 4.4 收尾
-
-- 报告 `docs/reviews/079-device-a-clean-install-6494eab.md`（PASS/FAIL/BLOCKED + 证据文件名，
-  证据放 `platforms/macos/build/acceptance-a-079/`，该目录被 gitignore）。
-- 同步本文件与 `ROADMAP.md`；`make verify` 后提交推送。
+顺序：**IT-01 隔离验收 → IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release**。
+下一步可先做 IT-01 的原生多应用所有权/AX/剪贴板/输入源恢复隔离验证（只用隔离测试应用，不碰真实文档）。
 
 ## 5. 授权与边界
 
-- 不自动注销/重启/解锁；重启与登录由用户执行，agent 只做重启后的卸载/安装/验收。
-- 配置只经 `ime-config`；不手改 `config.toml`、不写 `UserDefaults`。全新安装靠 `uninstall.sh --purge-data` 把文件**移出**活动目录，不删除。
-- 不覆盖未知并发改动；不创建全量备份；不操作用户真实文档；微信等真实会话须按 IT 卡单独授权。
-- 实机动作前核对自有文档、输入源、宿主与焦点；失配立即停止。用户截图/口头确认不能记为正式 PASS。
-- 一轮只测一个包，不热替换；探针遵守 `tools/macos-probe/README.md`。
+- 不自动注销/重启/解锁；重启由用户执行。安装替换前必须切 ABC、移除输入源、宿主退出；禁止热替换。
+- 配置只经 `ime-config`；不手改 `config.toml`、不写 `UserDefaults`；`--purge-data` 只移出、不删除。
+- 不操作用户真实文档/聊天；失败即停并保留证据；截图/口头确认不记为正式 PASS。
+- 一轮只测一个包；探针遵守 `tools/macos-probe/README.md`。
+- 本轮经验：源未移除但宿主已停时可「移除源 → 终止孤儿宿主 → 安装 → 重新添加」，不等同热替换；TCC 改动需告知用户。
 
 ## 9. 会话日志
 
-- 2026-10-18 / pi：**用户 UI 验收通过**。B 机 `17053e1`：候选头部字号统一（12pt）、状态芯片留白、候选悬停留白均确认符合预期；CI/出包双绿。余下为 A 机新 UI 安装验收与发布门禁。
-- 2026-10-18 / pi：**头部字号/留白真机通过（报告 093，`17053e1`）**。输入码/芯片/页码统一 12pt；芯片高 20、横向留白 12；候选悬停 6/2pt；真机 538×70、行高 26。CI 与出包双绿。
-- 2026-10-18 / pi：**头部字号统一与留白（报告 092）**。输入码/芯片/页码均 12pt；芯片 10.5→12、高 16→20、横向留白 12；候选悬停新增 6/2pt 内缩，行高 26、面板 70/98；快照含悬停态。65 场景验收、verify 全绿，待出包。
-- 2026-10-18 / pi：**翻页区光学对齐真机通过（报告 091，`ba767ac`）**。像素分析确认数字/箭头基线相同但中心低 1.25pt；翻页组上提 1.5pt、页码 12、雪佛龙 12.5。真机 AX：芯片 134、页码 132.5、按钮 132，按钮到候选 5pt。CI 与出包对该提交均 success。
-- 2026-10-18 / pi：**候选翻页光学对齐**。像素分析发现汉字与数字/箭头基线相同但光学中心低 2px；翻页组整体上提 1.5pt，页码 12pt、雪佛龙 12.5pt medium。离屏像素中心与芯片差 ≤0.5pt；65 场景验收、verify 全绿，待出包。
-- 2026-10-18 / pi：**修复 CI 的 pinyin-data SHA 漂移（报告 090）**。确认现有数据对应 Unicode 17.0.0（commit `923b108d`），将下载 URL 从 `master` 固定到该 commit，SHA 不变；按 CI 全流程重跑无生成物 diff，`make verify` 全绿（182 产物）。许可证未变（MIT）。
-- 2026-10-18 / pi：**候选头部对齐真机通过（报告 089，`60a3751`）**。`a` 组合 39 页：输入码/芯片/页码/翻页中心均为 134，翻页到候选 3pt，面板 468×68。还原 ABC；本次未改状态，config 尚未生成。终端无录屏权限，用 AX frame 取证。
-- 2026-10-18 / pi：**候选头部对齐/间距出包 `60a3751`**。输入码/芯片/翻页统一中心线，候选区上方 3pt；面板 64→68、hint 92→96；新增中心线断言。macOS Acceptance Package 成功（zip `c11289d9…`、执行 `7f6526ac…`、Notarized Developer ID），B 已装 `ae84601`，待装此包做视觉复验。
-- 2026-10-18 / pi：**候选头部对齐与间距（报告 088）**。头部高度 24→26，输入码/状态芯片/翻页统一中心线，候选区顶部留 3pt；面板 64→68、hint 92→96。`candidate.status` 增加三者中心线一致性断言；65 场景本地验收、verify、offline 全绿，待出包复验。
-- 2026-10-18 / pi：**HUD 光标跟随真机通过（报告 087，`ae84601`）**。无动画直接显示修好后台宿主透明问题；优先 `client()` 修好旧客户端坐标；空行回退最近可见字符。真机：第1行 (155,81)、第3行 (155,107)、空行 (144,120)，无焦点不显示；鼠标固定 1300,800。还原 ABC/默认配置。终端无录屏权限，用 CGWindowList+AX 取证；排查时执行过 `tccutil reset ScreenCapture`。
-- 2026-10-18 / pi：**修 HUD 可见性并出包 `4cae27f`**。去掉淡入淡出（agent 宿主里 NSAnimationContext 不推进，alpha 停在 0），直接显示/隐藏；HUD 取光标优先 `client()`，避免菜单快捷键路径用旧客户端坐标。macOS Acceptance Package 成功（zip `936bc1e8…`、执行 `3beb91a1…`、Notarized Developer ID）。准备安装时屏幕已锁定（截图失败、AX 超时），未做替换，已还原 ABC。
-- 2026-10-18 / pi：**修 HUD 真机不可见（报告 086）**：去掉淡入淡出（agent 宿主里 NSAnimationContext 不推进，alpha 停在 0），直接显示/隐藏；HUD 取光标矩形优先 `client()`，避免菜单快捷键路径使用旧客户端的坐标。65 场景本地验收、verify、offline 全绿；需再出包复验。
-- 2026-10-18 / pi：**光标跟随 HUD 出包 `94fc271`（ADR-213）**。插入点上方 8pt、仅聚焦且有效光标时显示、无鼠标兜底；隔离窗口对齐验证通过。macOS Acceptance Package 成功（zip `2f7fe9b5…`、执行 `87136734…`、Notarized Developer ID）；待 B 安装后做最终真机确认。
-- 2026-10-18 / pi：**状态提示回到光标跟随（ADR-213 / 报告 085，取代 ADR-212）**。用户认为固定位置观感不佳；改为插入点上方 8pt，仅聚焦输入框且光标矩形有效时显示，无鼠标兜底；有效性允许宽度 0 的插入点矩形。隔离窗口 HUD 72×36@(336,258) 对齐光标 (372,570,0,28)，鼠标在 (1300,800) 不影响。65 场景本地验收、verify、offline 全绿；需重出包。
-- 2026-10-18 / pi：**固定位置 HUD 出包 `af7733d`**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中，隔离窗口 72×36@(684,46) 验证；macOS Acceptance Package 成功（zip `2817fb20…`、执行 `39b337e7…`、Notarized Developer ID）。B 已装 `be89926`，待装此包做最终确认。
-- 2026-10-18 / pi：**状态提示改固定位置（ADR-212 / 报告 084）**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中（16pt 内边距），非激活/跨全屏/减弱动态效果/VoiceOver 保持；候选内联芯片不变。`candidate.hud-position` 单测 + 隔离窗口 `72×36 @ (684,46)` 验证；65 场景本地验收、verify、offline 全绿。需出新包替换已装 `be89926`。
-- 2026-10-18 / pi：**安装 `be89926` 复验（报告 083）**。芯片、组合态 ⌥P、D1 均 PASS；D2 部分改善但空行/末尾仍取不到稳定光标矩形（实测 130,54 / 369,257 / 161,774 三种落点），判定未完全解决，提出「最近有效矩形/AX 插入点」两个后续方案。安装前因重启后源与宿主仍在，改为移除源+终止孤儿宿主后再替换，未热替换。
-- 2026-10-18 / pi：**光标末尾修复出包 `be89926`**。`caretLookupIndex`（location==length 时退一格并处理空文档）加单测；`make verify`、64 场景本地验收、offline 全绿；macOS Acceptance Package 成功（zip `a488c267…`、执行 `709eda86…`、Notarized Developer ID）。B 已装 `9f64719` 并 PASS 芯片/D1，仅差此包复验 D2。
-- 2026-10-18 / pi：**真机复验 `9f64719`（报告 082）**。两字芯片、组合态 ⌥P 就地更新、D1 组合态 ⌥F 关候选并弹 HUD、还原全部 PASS；发现光标在末尾时 `attributes` 返回空矩形，HUD 定位退化，已用 `caretLookupIndex` 修正并加单测，待下一包复验。
-- 2026-10-18 / pi：**本地隔离窗口复验 D1/D2（报告 081）**。`make macos-dev` 独立 App：芯片右对齐、组合态 ⌥P 就地更新无 HUD、组合态 ⌥F 关候选并在输入区附近弹 HUD、非组合态 HUD 正常；退出清理 PASS 且真实配置未改。Preview 同步芯片/HUD 以便后续本地验收；`9f64719` 仍待真机安装复验。
-- 2026-10-18 / pi：**D1/D2 修复并出最终包 `9f64719`**。只有 `isComposing` 时才用候选内联芯片，否则走 HUD；`caretRect` 改用 `selectedRange().location` 定位插入点。`make verify`、64 场景本地验收、offline 全绿；macOS Acceptance Package 成功（zip `c310ea15…`、执行 `3bc41a86…`、Notarized Developer ID），待 B 注销安装复验。
-- 2026-10-18 / pi：**B 机安装 `5726556` 并验收（报告 081）**。两字芯片、组合态切标点就地更新且无 HUD、非组合态 HUD、菜单/设置 ⌥F 均 PASS；发现组合态切宽度时候选关闭后无反馈、HUD 定位用文档开头两个缺陷，已在源码修复（仅 `isComposing` 才内联；`caretRect` 用 `selectedRange`）。还原 ABC 与默认状态，待新版包复验。
-- 2026-10-18 / pi：**两字状态芯片定稿并出包 `5726556`**。芯片改为混输/五笔/拼音、中文/英文、全角/半角、简体/繁体 + `。`/`.`，移除学习区芯片（下方学习区即状态）；`candidate.status` 断言与 64 场景本地验收、offline、verify 全绿；macOS Acceptance Package 成功，zip `8aa59579…`、执行 `0085f2c6…`、Notarized Developer ID，待 B 注销安装。
-- 2026-10-18 / pi：**出 `21abc39` 包（状态芯片 + HUD 暗色修复）**。macOS Acceptance Package 成功，产物核验：zip `f298d769…`、执行 `c8baf0ba…`、Notarized Developer ID；B 待注销安装。`CI` 仍仅因上游 pinyin-data SHA 漂移失败。
-- 2026-10-18 / pi：**状态反馈收尾（ADR-211 / 报告 080）**。修好 HUD 暗色背景（离屏渲染未套用 appearance）；候选框可见时不再弹 HUD，改为头部右侧、翻页区左侧的两字状态芯片（混输/五笔/拼音、中文/英文、全角/半角、简体/繁体）+ `。`/`.` 标点；学习区不占芯片（下方学习区即状态），激活态 accent 底色、右对齐并与翻页同中心线；候选窗宽高随芯片自适应并重新定位。新增 `candidate.status`/`candidate.hud` 断言（含亮暗亮度差），`macos-local-acceptance` **64 场景全 PASS**，`macos-offline-tests` 与 `make verify` 全绿；`c5fdaef` 不含芯片，需再出包。
-- 2026-10-18 / pi：**出含状态 HUD 与 ⌥F 的新包**（`c5fdaef`）。CI 的 macOS Acceptance Package 成功，产物已下载核验：zip `8ee4d3ee…`、执行 `4bcd4a0d…`、Notarized Developer ID + stapler 通过；B 尚未安装（需注销）。同轮修好 preview smoke 的 ⌥F 用例与 local-acceptance 62 场计数；`CI` 仍因上游 pinyin-data SHA 漂移而红。
-- 2026-10-18 / pi：**统一状态反馈 HUD（ADR-211 / 报告 080）**。新增 `StateHUD.swift`（`StateFeedback` 文案映射、胶囊视图、非激活面板），菜单命令与快捷键（含模式/学习区）统一在光标旁提示 1.15s；遵循减弱动态效果、VoiceOver 播报、`.prohibited`/离屏环境不弹窗。`macos-ui-snapshots` 新增 6 张亮暗快照，`controller-menu` 增加文案断言并通过，`make verify` 全绿；需重新出包才能在真机看到。
-- 2026-10-18 / pi：**全/半角默认快捷键改 `⌥F`（ADR-210 / 报告 079）**。用户报告 `⌥Space` 与 ChatGPT 虚拟宠物冲突；只改 `hotkey.toggle_width` 默认值，其余保持 ADR-209；已有显式配置不覆盖，B 机经设置面板改为 `alt+f`。同步 ime-config 单测、settings/learning/预览用例、配置架构与发布说明；补登记 `candidate.padding`/`learning.stale-chord` 后 `macos-local-acceptance` 62 场景全 PASS；`make verify` 全绿。
-- 2026-10-18 / pi：**B 机重启后全新安装 + 实机验收（报告 078，包 `6494eab`）**。zip `0325ef9d…`/执行 `8984c223…` 核验通过；`--purge-data` 把旧包、旧 `config`（`6314f3f4…`）与 510 行词库移入 `uninstalled/`；a–j 全 PASS：菜单 `⌥M/⇧/⌥空格/⌥T/⌥P/⌥,/⌥A`、`wq/nihao/kwwl`、`⌘Z`、四状态+模式、设置快捷键 8 项、候选 64pt（hint 92）、`⌃Space` 不误切、D2/D3 未复现、还原 ABC；新差异：首份配置是全量模板、macOS 27 撤销分组与 13 不同。下一步 A 机同样全新安装（§4）。
-- 2026-10-18 / pi：交接标准化。新增 `scripts/handoff-status.sh`（只读采集分支/包 SHA/config/词源/CI/工具会话，`--for=compact|session|agent|device`，`--prompt` 出骨架）与 `make handoff`；`update-handoff` skill 改为四场景矩阵 + 五步流程 + HANDOFF 契约 + 反例；新增 `docs/交接提示词模板.md`（四份模板）并接入 AGENTS §6.1 与 docs 索引。
-- 2026-10-18 / pi：交接 B 机重启后验收。本轮完成 ⌥ 默认值（ADR-209）、候选窗底部留白、关于页按钮、组合键防误判、离屏截图工具、`--purge-data` 与 `scripts/clean-install.sh`；新包 `6494eab` 已出（exec `8984c223…`）并在 A 核验，A 未安装。B 重启后按 §4 执行 `make macos-clean-install` 并写报告 078。
-- 2026-10-18 / pi：无注销验收三档 + 一条命令全新安装（报告 077）。`make macos-ui-snapshots` 增设设置四分区截图并打印默认 ⌥ 绑定文本；新增 `scripts/clean-install.sh` / `make macos-clean-install`（卸载→安装→校验，缺 `--input-source-removed` 只打印清单）；明确只有「签名包+真实 IMK」需要一次注销。
-- 2026-10-18 / pi：出包 + 交接全新安装。`7e2edc7`/`4a48443` 的 CI 因学习区快捷键用例仍按 `⌃⇧L` 而红，修好并重跑（`6494eab` 全绿）；新包下载核验（zip `0325ef9d…`、执行 `8984c223…`、Notarized Developer ID）。
-- 2026-10-18 / pi：默认快捷键改 Option 语义前缀（ADR-209 / 报告 075）。实测系统无「仅 ⌥+字母」快捷键、⌥E/N/U/I 为死键；默认改为 ⌥M/⌥Space/⌥P/⌥T/⌥L/⌥,/⌥A（中英仍单 ⇧）。
-- 2026-10-18 / pi：`make macos-ui-snapshots` + 快捷键误判修正（报告 074）。组合键匹配要求事件时间戳晚于最近修饰键变化（20ms 容差），修 `⌃Space` 切换后重投递旧空格被当成 `⌃⇧Space` 而误切全/半角。
-- 2026-10-18 / pi：候选窗底部留白修正（报告 073）、关于页 macOS 13 布局修正（报告 072）。
+- 2026-10-18 / pi：**交接：B 新 UI 验收通过、A 待装**。B=`17053e1`（执行 `535d546f…`），config `3bc1117c…`，ABC；CI/出包双绿；A 的 SSH 公钥被拒，待授权或本机执行；发布门禁 I0/I2/I3/I4 未关闭。
+- 2026-10-18 / pi：**用户 UI 验收通过**。候选头部字号统一 12pt、芯片/悬停留白、翻页光学对齐均确认；CI/出包双绿。
+- 2026-10-18 / pi：**头部字号/留白真机通过（报告 093，`17053e1`）**：输入码/芯片/页码 12pt，芯片高 20、留白 12，悬停 6/2pt；面板 538×70。
+- 2026-10-18 / pi：**翻页光学对齐真机通过（报告 091，`ba767ac`）**：翻页组上提 1.5pt，AX 中心 132/132.5 vs 芯片 134。
+- 2026-10-18 / pi：**修复 CI pinyin-data 漂移（报告 090）**：URL 固定到 commit `923b108d`，SHA 不变；生成物无 diff，CI 转绿。
+- 2026-10-18 / pi：**状态 HUD 光标跟随真机通过（报告 087，`ae84601`）**：去掉动画（后台宿主 alpha 卡 0）、优先 `client()`、空行回退最近字符；无焦点不显示。
+- 2026-10-18 / pi：**全/半角默认改 `⌥F`（ADR-210 / 报告 079）**：避开 ChatGPT `⌥Space` 冲突；已有显式配置不覆盖。
