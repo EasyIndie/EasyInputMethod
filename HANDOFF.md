@@ -15,11 +15,11 @@
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
 | B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `b4e7f50b…`（`mode=mixed`、`toggle_width=alt+f`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
 
-- **待安装 `af7733d`（固定位置 HUD + 两字芯片 + ⌥F）**：
-  `packaging/out/fixed-hud/candidate-5mX98q/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-  zip SHA `2817fb20…`、执行 SHA `39b337e7…`、`spctl` = Notarized Developer ID。
-  可从 CI 重新取：`gh run download 39114808849 -n Lampyris-macos-acceptance-af7733ddaf9f29c2f23119a2ecc118ad1848036f`。
-  （已装 `be89926` 仍是光标跟随 HUD；`af7733d` 用 ADR-212 的屏幕顶部居中。）
+- **待安装 `94fc271`（光标跟随 HUD + 两字芯片 + ⌥F）**：
+  `packaging/out/caret-hud/candidate-e6XomH/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+  zip SHA `2f7fe9b5…`、执行 SHA `87136734…`、`spctl` = Notarized Developer ID。
+  可从 CI 重新取：`gh run download 39116392195 -n Lampyris-macos-acceptance-94fc27156ba050bf959d67357663820b68cb127f`。
+  （`af7733d` 的固定位置版作废；已装 `be89926` 是更早的光标版。）
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -107,6 +107,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**光标跟随 HUD 出包 `94fc271`（ADR-213）**。插入点上方 8pt、仅聚焦且有效光标时显示、无鼠标兜底；隔离窗口对齐验证通过。macOS Acceptance Package 成功（zip `2f7fe9b5…`、执行 `87136734…`、Notarized Developer ID）；待 B 安装后做最终真机确认。
 - 2026-10-18 / pi：**状态提示回到光标跟随（ADR-213 / 报告 085，取代 ADR-212）**。用户认为固定位置观感不佳；改为插入点上方 8pt，仅聚焦输入框且光标矩形有效时显示，无鼠标兜底；有效性允许宽度 0 的插入点矩形。隔离窗口 HUD 72×36@(336,258) 对齐光标 (372,570,0,28)，鼠标在 (1300,800) 不影响。65 场景本地验收、verify、offline 全绿；需重出包。
 - 2026-10-18 / pi：**固定位置 HUD 出包 `af7733d`**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中，隔离窗口 72×36@(684,46) 验证；macOS Acceptance Package 成功（zip `2817fb20…`、执行 `39b337e7…`、Notarized Developer ID）。B 已装 `be89926`，待装此包做最终确认。
 - 2026-10-18 / pi：**状态提示改固定位置（ADR-212 / 报告 084）**。调研 macOS/LnHud/LangBanner/Fcitx5 后放弃光标跟随与系统通知；HUD 固定为鼠标所在屏顶部居中（16pt 内边距），非激活/跨全屏/减弱动态效果/VoiceOver 保持；候选内联芯片不变。`candidate.hud-position` 单测 + 隔离窗口 `72×36 @ (684,46)` 验证；65 场景本地验收、verify、offline 全绿。需出新包替换已装 `be89926`。
