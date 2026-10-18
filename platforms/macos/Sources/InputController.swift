@@ -267,7 +267,7 @@ final class LampyrisInputController: IMKInputController {
 
     /// HUD 用光标矩形：无客户端/空文档/取不到时返回 nil（不显示，不退鼠标）。
     private func hudCaretRect() -> NSRect? {
-        guard let client = activeClient ?? client() else { return nil }
+        guard let client = client() ?? activeClient else { return nil }
         var rect = NSRect.zero
         let selection = client.selectedRange()
         let index = Self.caretLookupIndex(selectionLocation: selection.location,

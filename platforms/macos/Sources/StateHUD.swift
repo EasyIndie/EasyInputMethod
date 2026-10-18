@@ -173,20 +173,10 @@ final class StateHUDController {
         hideWorkItem = item
         DispatchQueue.main.asyncAfter(deadline: .now() + holdSeconds, execute: item)
 
-        let reduceMotion = NSWorkspace.shared.accessibilityDisplayShouldReduceMotion
-        if panel.isVisible {
-            panel.alphaValue = 1
-            panel.orderFrontRegardless()
-        } else {
-            panel.alphaValue = reduceMotion ? 1 : 0
-            panel.orderFrontRegardless()
-            if !reduceMotion {
-                NSAnimationContext.runAnimationGroup { context in
-                    context.duration = 0.08
-                    panel.animator().alphaValue = 1
-                }
-            }
-        }
+        // 后台 IME 宿主里 NSAnimationContext 可能不推进，导致 alpha 停在 0（窗口存在但不可见）。
+        // 状态提示优先可靠可见：直接显示/隐藏，不做淡入淡出。
+        panel.alphaValue = 1
+        panel.orderFrontRegardless()
         NSAccessibility.post(element: panel, notification: .announcementRequested,
             userInfo: [.announcement: message,
                        .priority: NSAccessibilityPriorityLevel.high.rawValue])
@@ -196,16 +186,7 @@ final class StateHUDController {
         hideWorkItem?.cancel()
         hideWorkItem = nil
         guard let panel, panel.isVisible else { return }
-        if NSWorkspace.shared.accessibilityDisplayShouldReduceMotion {
-            panel.orderOut(nil)
-        } else {
-            NSAnimationContext.runAnimationGroup { context in
-                context.duration = 0.18
-                panel.animator().alphaValue = 0
-            } completionHandler: {
-                panel.orderOut(nil)
-            }
-        }
+        panel.orderOut(nil)
     }
 
     /// 供测试断言当前文案。
