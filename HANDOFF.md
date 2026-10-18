@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **状态提示回到光标跟随（ADR-213 / 报告 085）；新包待装**
+- 更新：2026-10-18 / pi（deepseek-flash）· **状态提示光标跟随已真机通过（报告 087）；B 装 `ae84601`**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
 - 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
@@ -13,13 +13,9 @@
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
-| B（`joker`，arm64 / macOS 27） | arm64 | `6494eab`（`8984c223…`，**新**） | 报告 078：重启后 `--purge-data` 全新安装 + a–j 全 PASS；`config` SHA `b4e7f50b…`（`mode=mixed`、`toggle_width=alt+f`、无 `ctrl+shift*`）、旧 config/510 行词库在 `uninstalled/data.fNwzqh/`；输入源已还原 ABC，宿主 PID 2193 常驻、窗口 0 |
+| B（`joker`，arm64 / macOS 27） | arm64 | `ae84601`（`f7c00804…`） | 报告 078/087：全新安装 + 芯片/HUD 真机通过；`config` SHA `15f49acf…`（`mode=mixed`、`alt+f`）、输入源 ABC，宿主 8503 常驻 |
 
-- **待安装 `4cae27f`（光标跟随 + HUD 可见性/客户端修复）**：
-  `packaging/out/hud-visible/candidate-UlkBcL/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-  zip SHA `936bc1e8…`、执行 SHA `3beb91a1…`、`spctl` = Notarized Developer ID。
-  可从 CI 重新取：`gh run download 39126309756 -n Lampyris-macos-acceptance-4cae27f9b7f7cfacd70e238a0b6d21b92a50deea`。
-  （已装 `94fc271`；`af7733d` 固定位置版作废。）
+- **B 已装 `ae84601`**（含 HUD 可见性/客户端/空行回退修复）：`packaging/out/hud-walkback/candidate-kNQcbI/…`，zip `568d5302…`、执行 `f7c00804…`。
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -38,7 +34,7 @@
 ## 3. 当前未决
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
-- **D2 最终方案（ADR-213 / 报告 085/086）**：光标跟随、仅聚焦且有效光标时显示；真机发现 HUD 全透明（后台宿主动画不推进）与菜单路径旧客户端，已修并出 `4cae27f`（无动画直接显示、优先 `client()`）。**安装时屏幕已锁定（screencapture 失败、AX 超时），本轮未安装；待用户解锁后继续。**
+- **D2 已关闭（ADR-213 / 报告 087）**：HUD 无动画直接显示（后台宿主 alpha 不再卡 0）、优先 `client()`、空行回退最近可见字符；真机验证第 1/3/空行位置随行下移、无焦点不显示。`tccutil reset ScreenCapture` 被用于排查，可能需重新授权录屏。
 - **本轮前置偏差**：重启后源仍在、宿主未退；按「切 ABC → 系统设置移除源 → 终止孤儿宿主 → 安装」完成，未热替换、未注销。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
@@ -107,6 +103,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**HUD 光标跟随真机通过（报告 087，`ae84601`）**。无动画直接显示修好后台宿主透明问题；优先 `client()` 修好旧客户端坐标；空行回退最近可见字符。真机：第1行 (155,81)、第3行 (155,107)、空行 (144,120)，无焦点不显示；鼠标固定 1300,800。还原 ABC/默认配置。终端无录屏权限，用 CGWindowList+AX 取证；排查时执行过 `tccutil reset ScreenCapture`。
 - 2026-10-18 / pi：**修 HUD 可见性并出包 `4cae27f`**。去掉淡入淡出（agent 宿主里 NSAnimationContext 不推进，alpha 停在 0），直接显示/隐藏；HUD 取光标优先 `client()`，避免菜单快捷键路径用旧客户端坐标。macOS Acceptance Package 成功（zip `936bc1e8…`、执行 `3beb91a1…`、Notarized Developer ID）。准备安装时屏幕已锁定（截图失败、AX 超时），未做替换，已还原 ABC。
 - 2026-10-18 / pi：**修 HUD 真机不可见（报告 086）**：去掉淡入淡出（agent 宿主里 NSAnimationContext 不推进，alpha 停在 0），直接显示/隐藏；HUD 取光标矩形优先 `client()`，避免菜单快捷键路径使用旧客户端的坐标。65 场景本地验收、verify、offline 全绿；需再出包复验。
 - 2026-10-18 / pi：**光标跟随 HUD 出包 `94fc271`（ADR-213）**。插入点上方 8pt、仅聚焦且有效光标时显示、无鼠标兜底；隔离窗口对齐验证通过。macOS Acceptance Package 成功（zip `2f7fe9b5…`、执行 `87136734…`、Notarized Developer ID）；待 B 安装后做最终真机确认。
