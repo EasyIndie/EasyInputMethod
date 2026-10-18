@@ -76,7 +76,7 @@ session.setMode("wubi")
 _ = session.feed(119); _ = session.feed(113)
 let originalBuffer = session.buffer
 let originalPage = session.pageIndex
-let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.control, .shift],
+let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option],
     timestamp: 0, windowNumber: 0, context: nil, characters: "L", charactersIgnoringModifiers: "l", isARepeat: false, keyCode: 37)!
 require(session.shortcut(event, persistMode: true) == .handled && ImeConfig.bool("candidate.show_wubi_learning"), "shortcut toggles same persisted preference")
 require(session.buffer == originalBuffer && session.pageIndex == originalPage, "shortcut preserves composition and page")
