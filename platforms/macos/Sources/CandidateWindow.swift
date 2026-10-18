@@ -438,34 +438,27 @@ struct CandidateStatus {
     var fullWidth: Bool
     var traditional: Bool
     var chinesePunctuation: Bool
-    var learning: Bool
 
+    /// 两字状态 + 标点符号；学习区不在这里显示（下方学习区本身就是状态）。
     var chips: [(text: String, active: Bool)] {
-        var items: [(String, Bool)] = [
-            (mode == "wubi" ? "五" : mode == "pinyin" ? "拼" : "混", mode != "mixed"),
-            (english ? "英" : "中", english),
-            (fullWidth ? "全" : "半", fullWidth),
-            (traditional ? "繁" : "简", traditional),
+        [
+            (mode == "wubi" ? "五笔" : mode == "pinyin" ? "拼音" : "混输", mode != "mixed"),
+            (english ? "英文" : "中文", english),
+            (fullWidth ? "全角" : "半角", fullWidth),
+            (traditional ? "繁体" : "简体", traditional),
             (chinesePunctuation ? "。" : ".", !chinesePunctuation),
         ]
-        if learning { items.append(("学", true)) }
-        return items
     }
 
     func accessibilityLabel(for text: String) -> String {
         switch text {
-        case "混": return "输入模式：混输"
-        case "五": return "输入模式：五笔"
-        case "拼": return "输入模式：拼音"
-        case "中": return "语言：中文"
-        case "英": return "语言：英文"
-        case "全": return "宽度：全角"
-        case "半": return "宽度：半角"
-        case "简": return "字形：简体"
-        case "繁": return "字形：繁体"
+        case "混输", "五笔", "拼音": return "输入模式：" + text
+        case "中文", "英文": return "语言：" + text
+        case "全角", "半角": return "宽度：" + text
+        case "简体", "繁体": return "字形：" + text
         case "。": return "标点：中文标点"
         case ".": return "标点：英文标点"
-        default: return "学习区：开"
+        default: return text
         }
     }
 }

@@ -270,8 +270,7 @@ final class LampyrisInputController: IMKInputController {
             english: session?.isEnglish ?? false,
             fullWidth: session?.isFullWidth ?? false,
             traditional: session?.isTraditional ?? false,
-            chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese",
-            learning: ImeConfig.bool("candidate.show_wubi_learning"))
+            chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")
     }
 
     /// 状态切换后刷新预编辑/候选（与快捷键路径一致）。
