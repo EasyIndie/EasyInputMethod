@@ -236,6 +236,8 @@ final class ImeSession {
     // 单独 Shift 切换中英（对齐搜狗/微信）：需要 flagsChanged 的按下/抬起。
     private var shiftDown = false
     private var shiftUsedByKey = false
+    private var lastModifierChangeAt: TimeInterval = 0
+    private static let chordSettleWindow: TimeInterval = 0.02
 
     /// flagsChanged：记录 Shift 状态；仅当本次「按住并抬起 Shift」期间既没有其它键、
     /// 也没有 Ctrl/Option/Command 参与时，才触发中英切换（仅当 `hotkey.toggle_english == "shift"`）。
@@ -269,9 +271,18 @@ final class ImeSession {
     }
 
     /// 判断一个组合键设置是否匹配当前按键（`space` 用物理键码 49 判定）。
+    ///
+    /// 只接受“按键时间戳晚于最近一次修饰键变化”的事件：系统用 ⌃Space 切换输入法时，
+    /// 仍按住的空间键会被重投递给新输入法，而修饰键已是“切完再按 Shift”的当前状态；
+    /// 若直接把这种旧事件当组合键，就会出现「按一下 Shift 却切了全/半角」（报告 074）。
+    /// 20ms 容差用于容忍 keyDown 与 flagsChanged 在同一物理瞬间的乱序。
     func matches(_ key: String, _ event: NSEvent) -> Bool {
-        ImeConfig.hotkey(key).matches(event)
+        guard event.timestamp + Self.chordSettleWindow >= lastModifierChangeAt else { return false }
+        return ImeConfig.hotkey(key).matches(event)
     }
+
+    /// 记录修饰键状态变化（`flagsChanged`）的时间戳，供组合键新旧判定使用。
+    func noteModifierChange(_ event: NSEvent) { lastModifierChangeAt = event.timestamp }
 
     /// 组合键（均可配）：中英 / 全半角 / 切换模式；`"shift"` 与 `"none"` 不作为组合键。
     func shortcut(_ event: NSEvent, persistMode: Bool) -> ShortcutResult {

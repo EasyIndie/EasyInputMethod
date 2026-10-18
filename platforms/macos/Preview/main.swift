@@ -83,6 +83,7 @@ final class PreviewInput: NSTextView {
     override func flagsChanged(with event: NSEvent) {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         let other = flags.contains(.control) || flags.contains(.option) || flags.contains(.command)
+        session.noteModifierChange(event)
         if session.shiftTransition(isDown: flags.contains(.shift), otherModifier: other) {
             refresh()
         }

@@ -91,6 +91,25 @@ require(session.shortcut(widthEvent, persistMode: true) == .handled && session.i
 require(session.shortcut(widthEvent, persistMode: true) == .handled && session.isFullWidth == oldWidth, "new width shortcut restores")
 LocalAcceptanceEvidence.record("learning.width-shortcut", expected: "shift-space不切换；control-shift-space双向切换恢复", actual: ["restored": session.isFullWidth == oldWidth, "buffer": session.buffer])
 
+// 系统 ⌃Space 切换输入法时，仍按住的空格会被重投向新输入法，而修饰键已是“切完再按 Shift”的状态。
+// 这类时间戳早于最近修饰键变化的旧事件不能当成 ⌃⇧Space，否则单按 Shift 会误切全/半角（报告 074）。
+func syntheticKey(_ type: NSEvent.EventType, _ flags: NSEvent.ModifierFlags, _ stamp: TimeInterval,
+                  _ code: UInt16, _ chars: String) -> NSEvent {
+    NSEvent.keyEvent(with: type, location: .zero, modifierFlags: flags, timestamp: stamp, windowNumber: 0,
+        context: nil, characters: chars, charactersIgnoringModifiers: chars, isARepeat: false, keyCode: code)!
+}
+let widthBeforeReplay = session.isFullWidth
+session.noteModifierChange(syntheticKey(.flagsChanged, [.control, .shift], 1000.0, 56, ""))
+let replayedSpace = syntheticKey(.keyDown, [.control, .shift], 999.94, 49, " ")
+require(session.shortcut(replayedSpace, persistMode: true) == .unmatched && session.isFullWidth == widthBeforeReplay,
+    "space replayed from before the modifier change is not a chord")
+let settledSpace = syntheticKey(.keyDown, [.control, .shift], 1000.05, 49, " ")
+require(session.shortcut(settledSpace, persistMode: true) == .handled && session.isFullWidth != widthBeforeReplay,
+    "space pressed after the modifiers still fires the chord")
+require(session.shortcut(settledSpace, persistMode: true) == .handled && session.isFullWidth == widthBeforeReplay,
+    "width restored after the settled chord")
+LocalAcceptanceEvidence.record("learning.stale-chord", expected: "系统切换后重投递的旧空格事件不触发⌃⇧Space；修饰键先到位时仍生效", actual: ["ignored_replay": session.isFullWidth == widthBeforeReplay])
+
 require(!ImeConfig.setString("hotkey.toggle_wubi_learning", "ctrl+shift+m"), "shortcut collision rejected")
 LocalAcceptanceEvidence.record("learning.conflict", expected: "拒绝与模式快捷键冲突的学习绑定", actual: ImeConfig.string("hotkey.toggle_wubi_learning") ?? "missing")
 print("PASS learning shortcut: same preference, composition preserved, conflict rejected")

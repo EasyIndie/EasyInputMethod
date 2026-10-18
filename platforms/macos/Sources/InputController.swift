@@ -312,6 +312,7 @@ final class LampyrisInputController: IMKInputController {
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
         if event.type == .flagsChanged {
             let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+            session?.noteModifierChange(event)
             let other =
                 flags.contains(.control) || flags.contains(.option) || flags.contains(.command)
             if let session,
