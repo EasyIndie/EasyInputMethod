@@ -3,10 +3,10 @@
 ## 0. 元信息
 
 - 更新：2026-10-18 / pi（deepseek-flash）· **CI 数据源固定到 commit（报告 090）；B 装 `60a3751`**
-- 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
-- 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
-- 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
-- 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` + `macOS Acceptance Package` 对 `6494eab` 均通过（run `39088753850`，出包 artifact `Lampyris-macos-acceptance-6494eab746949fc89282d13f38b194bbd0c9eeae`）
+- 分支：`main` @ `1932c69`（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
+- 阶段：**B 已装 `60a3751`（⌥F / 状态 HUD / 两字芯片 / 候选头部对齐）；A 仍装旧包 `a234ef31…`（待同样全新安装并验收新 UI）**；MVP 发布门禁未全部关闭
+- 最近验证：`make verify` 全绿（182 产物隐私断言）；`CI` 对 `1932c69` **success**（run `39132160922`）；macOS 出包对同提交运行中/见 run `39132160933`
+- 交接：`make handoff SCENARIO=compact|session|agent|device PROMPT=1` 采集状态并出提示词骨架（流程见 `.agents/skills/update-handoff/SKILL.md`、模板见 `docs/交接提示词模板.md`）；CI `check` 对 `1932c69` 通过（run `39132160922`），出包任务见 run `39132160933`
 
 ## 1. 安装与数据
 
