@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 / pi（deepseek-flash）· **候选头部对齐/间距修正（报告 088）；新包待装**
+- 更新：2026-10-18 / pi（deepseek-flash）· **候选头部对齐已真机通过（报告 089）；B 装 `60a3751`**
 - 分支：`main` @ `5fc233a` + 报告 078/交接提交（已推送，工作树干净；无其它本地/远程分支、无额外工作树）
 - 阶段：**B 已装 `6494eab`；源码已含 `⌥F`（ADR-210）、状态 HUD + 候选框内联芯片（ADR-211），需重新出包/安装才能看到**；A 仍装旧包 `a234ef31…`；MVP 发布门禁未全部关闭
 - 最近验证：`make verify` 全绿（180 产物隐私断言）；B 的 a–j 实机验收全 PASS（报告 078）
@@ -13,12 +13,9 @@
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
 | A（本机 `bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（**旧**） | 报告 071 验收通过；`config` SHA `907998e6…`（显式 `mode=wubi`、`full_width=true`）、输入源已还原 ABC；**未做全新安装** |
-| B（`joker`，arm64 / macOS 27） | arm64 | `ae84601`（`f7c00804…`） | 报告 078/087：全新安装 + 芯片/HUD 真机通过；`config` SHA `15f49acf…`（`mode=mixed`、`alt+f`）、输入源 ABC，宿主 8503 常驻 |
+| B（`joker`，arm64 / macOS 27） | arm64 | `60a3751`（`7f6526ac…`） | 报告 087/089：HUD 光标跟随 + 候选头部对齐真机通过；`config` 尚未生成（按默认行为）、输入源 ABC，宿主 13358 常驻 |
 
-- **B 已装 `ae84601`**（HUD 最终版）；**待装 `60a3751`（候选头部对齐/间距）**：
-  `packaging/out/header-align/candidate-epl7AW/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-  zip `c11289d9…`、执行 `7f6526ac…`、Notarized Developer ID。
-  可从 CI 取：`gh run download 39131254526 -n Lampyris-macos-acceptance-60a3751dc2af1fb01d5fdb3234bd1102a350cf5f`。
+- **B 已装 `60a3751`**：`packaging/out/header-align/candidate-epl7AW/…`，zip `c11289d9…`、执行 `7f6526ac…`。
 - 已装旧包（`6494eab`）：`packaging/out/clean-install/candidate-80z8RZ/…`，zip `0325ef9d…`、执行 `8984c223…`。
 - B 旧 `config.toml` 的显式 `ctrl+shift*` 已随 `--purge-data` 移出活动目录，新配置为 Schema 默认值。
 - 新增操作经验：安装后输入源必须在「系统设置 → 键盘 → 文字输入」里添加（`TISEnableInputSource` 返回 0 但不生效）；`selsrc` 只负责选中已启用的源。
@@ -38,7 +35,7 @@
 
 - **A 机同样待全新安装**（见 §4）：A 的 `config.toml` 仍是显式 `mode=wubi`、`full_width=true`，看不到新默认值；A 是 Intel / macOS 13.7.8，需按 078 的流程重跑并留意平台差异。
 - **D2 已关闭（ADR-213 / 报告 087）**：HUD 无动画直接显示、优先 `client()`、空行回退最近可见字符；真机验证通过。
-- **候选头部布局待新包**（报告 088）：输入码/芯片/翻页统一中心线，候选区上方留 3pt；面板 64→68、带附行 92→96。已装 `ae84601` 仍是旧布局。
+- **候选头部对齐已关闭（报告 089）**：真机 `a` 组合 39 页，输入码/芯片/页码/翻页中心同为 134，翻页到候选间距 3pt，面板 468×68。
 - **本轮前置偏差**：重启后源仍在、宿主未退；按「切 ABC → 系统设置移除源 → 终止孤儿宿主 → 安装」完成，未热替换、未注销。
 - **CI 数据源漂移**：`CI` 的「Reproduce licensed pinyin data」因上游 `pinyin-data/pinyin.txt` 变更而 SHA 不匹配（期望 `621f8ca9…`，实际 `7365b877…`），与本轮代码无关；需按 `add-data-source` 流程复核后更新。
 - **终端 Meta 冲突（未决）**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-t/M-l/M-p` 重叠；用户反馈英文模式下透传异常，实测「确认英文」时 `Shift+Enter`/`Ctrl+C` 可透传，疑为状态误判；状态 HUD 可降低误判，但前缀是否改 `⌃⌥` 仍待决定。
@@ -107,6 +104,7 @@ make macos-clean-install APP=packaging/out/clean-install/candidate-*/extracted/L
 
 ## 9. 会话日志
 
+- 2026-10-18 / pi：**候选头部对齐真机通过（报告 089，`60a3751`）**。`a` 组合 39 页：输入码/芯片/页码/翻页中心均为 134，翻页到候选 3pt，面板 468×68。还原 ABC；本次未改状态，config 尚未生成。终端无录屏权限，用 AX frame 取证。
 - 2026-10-18 / pi：**候选头部对齐/间距出包 `60a3751`**。输入码/芯片/翻页统一中心线，候选区上方 3pt；面板 64→68、hint 92→96；新增中心线断言。macOS Acceptance Package 成功（zip `c11289d9…`、执行 `7f6526ac…`、Notarized Developer ID），B 已装 `ae84601`，待装此包做视觉复验。
 - 2026-10-18 / pi：**候选头部对齐与间距（报告 088）**。头部高度 24→26，输入码/状态芯片/翻页统一中心线，候选区顶部留 3pt；面板 64→68、hint 92→96。`candidate.status` 增加三者中心线一致性断言；65 场景本地验收、verify、offline 全绿，待出包复验。
 - 2026-10-18 / pi：**HUD 光标跟随真机通过（报告 087，`ae84601`）**。无动画直接显示修好后台宿主透明问题；优先 `client()` 修好旧客户端坐标；空行回退最近可见字符。真机：第1行 (155,81)、第3行 (155,107)、空行 (144,120)，无焦点不显示；鼠标固定 1300,800。还原 ABC/默认配置。终端无录屏权限，用 CGWindowList+AX 取证；排查时执行过 `tccutil reset ScreenCapture`。
