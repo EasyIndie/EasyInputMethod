@@ -51,44 +51,50 @@ else
   row "与远端" "无 upstream"
 fi
 
-if [ -x "${APP}/Contents/MacOS/Lampyris" ]; then
-  authority="$(codesign -dv --verbose=2 "${APP}" 2>&1 | awk -F'=' '/^Authority=/{print $2; exit}')"
-  verdict="$(spctl -a -vvv -t install "${APP}" 2>&1 | head -1 || true)"
-  row "已装包" "执行 SHA \`$(short "${APP}/Contents/MacOS/Lampyris")\`… · ${authority:-未签名} · ${verdict:-spctl 未通过}"
-else
-  row "已装包" "**未安装**（${APP} 不存在）"
-fi
+PLATFORM="$(uname -s)"
+if [ "${PLATFORM}" = "Darwin" ]; then
+  if [ -x "${APP}/Contents/MacOS/Lampyris" ]; then
+    authority="$(codesign -dv --verbose=2 "${APP}" 2>&1 | awk -F'=' '/^Authority=/{print $2; exit}')"
+    verdict="$(spctl -a -vvv -t install "${APP}" 2>&1 | head -1 || true)"
+    row "已装包" "执行 SHA \`$(short "${APP}/Contents/MacOS/Lampyris")\`… · ${authority:-未签名} · ${verdict:-spctl 未通过}"
+  else
+    row "已装包" "**未安装**（${APP} 不存在）"
+  fi
 
-hostpid="$(pgrep -x Lampyris 2>/dev/null | head -1 || true)"
-row "宿主 PID" "${hostpid:-未运行}"
+  hostpid="$(pgrep -x Lampyris 2>/dev/null | head -1 || true)"
+  row "宿主 PID" "${hostpid:-未运行}"
 
-if [ -f "${CONFIG}" ]; then
-  state="$(grep -E '^(mode|punctuation|chinese_variant|full_width) *=' "${CONFIG}" \
-    | sed -E 's/ *= */=/' | sed -E 's/ *#.*//' | tr -d '"' | tr '\n' ' ')"
-  explicit="$(grep -cE '^(toggle_|open_)' "${CONFIG}" 2>/dev/null || true)"
-  row "config" "SHA \`$(short "${CONFIG}")\` · ${state}· 显式 hotkey 项 ${explicit}"
-else
-  row "config" "**未生成**（首次启动按 Schema 默认值创建）"
-fi
+  if [ -f "${CONFIG}" ]; then
+    state="$(grep -E '^(mode|punctuation|chinese_variant|full_width) *=' "${CONFIG}" \
+      | sed -E 's/ *= */=/' | sed -E 's/ *#.*//' | tr -d '"' | tr '\n' ' ')"
+    explicit="$(grep -cE '^(toggle_|open_)' "${CONFIG}" 2>/dev/null || true)"
+    row "config" "SHA \`$(short "${CONFIG}")\` · ${state}· 显式 hotkey 项 ${explicit}"
+  else
+    row "config" "**未生成**（首次启动按 Schema 默认值创建）"
+  fi
 
-if [ -f "${DICT}" ]; then
-  row "词库" "$(wc -l < "${DICT}" | tr -d ' ') 行 · SHA \`$(short "${DICT}")\`"
-else
-  row "词库" "未生成"
-fi
+  if [ -f "${DICT}" ]; then
+    row "词库" "$(wc -l < "${DICT}" | tr -d ' ') 行 · SHA \`$(short "${DICT}")\`"
+  else
+    row "词库" "未生成"
+  fi
 
-if [ -x "${PROBE}/selsrc" ]; then
-  row "输入源" "\`$("${PROBE}/selsrc" 2>/dev/null | awk '{print $2}')\`"
-else
-  selected="$(defaults read com.apple.HIToolbox AppleSelectedInputSources 2>/dev/null \
-    | awk '/KeyboardLayout Name/{print $3}' | tr -d '"' | head -1)"
-  row "输入源" "${selected:-未知}（探针未构建，读 HIToolbox）"
-fi
+  if [ -x "${PROBE}/selsrc" ]; then
+    row "输入源" "\`$("${PROBE}/selsrc" 2>/dev/null | awk '{print $2}')\`"
+  else
+    selected="$(defaults read com.apple.HIToolbox AppleSelectedInputSources 2>/dev/null \
+      | awk '/KeyboardLayout Name/{print $3}' | tr -d '"' | head -1)"
+    row "输入源" "${selected:-未知}（探针未构建，读 HIToolbox）"
+  fi
 
-if [ -d "${PROBE}" ]; then
-  row "探针" "`ls "${PROBE}" | wc -l | tr -d ' '` 个二进制"
+  if [ -d "${PROBE}" ]; then
+    row "探针" "`ls "${PROBE}" | wc -l | tr -d ' '` 个二进制"
+  else
+    row "探针" "未构建（\`make -C tools/macos-probe\`）"
+  fi
+
 else
-  row "探针" "未构建（\`make -C tools/macos-probe\`）"
+  row "本机状态" "非 macOS（${PLATFORM}）：安装包/输入源/配置采集尚未实现，本次只提供 git 与 CI 状态"
 fi
 
 if command -v gh >/dev/null 2>&1; then
@@ -147,9 +153,9 @@ if ${PROMPT}; then
 
 当前状态（$(date '+%Y-%m-%d')）：
 - 分支：main @ ${head}（${subject}）。
-- 已装包：执行 SHA $( [ -x "${APP}/Contents/MacOS/Lampyris" ] && echo "\`$(short "${APP}/Contents/MacOS/Lampyris")…\`" || echo "未安装" )；
+- 已装包：执行 SHA $( if [ "$(uname -s)" = "Darwin" ]; then [ -x "${APP}/Contents/MacOS/Lampyris" ] && echo "\`$(short "${APP}/Contents/MacOS/Lampyris")…\`" || echo "未安装"; else echo "非 macOS，按平台补"; fi )；
   待装包：$( zip="$(ls -t "${ROOT}"/packaging/out/*/*/*.zip 2>/dev/null | head -1)"; if [ -n "${zip}" ]; then echo "\`${zip#"${ROOT}/"}\`（SHA $(short "${zip}")…）"; else echo "需从 CI artifact 取（见 HANDOFF §1）"; fi )。
-- 本机：$(hostname -s) / $(uname -m) / macOS $(sw_vers -productVersion)；
+- 本机：$(hostname -s) / $(uname -m) / $( [ "$(uname -s)" = "Darwin" ] && echo "macOS $(sw_vers -productVersion)" || uname -s )；
   config ${CONFIG}（$(short "${CONFIG}")…）；词库 $( [ -f "${DICT}" ] && wc -l < "${DICT}" | tr -d ' ' || echo 未生成 ) 行。
 - 上一轮遗留：见 HANDOFF §3。
 
