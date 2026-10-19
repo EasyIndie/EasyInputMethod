@@ -50,3 +50,19 @@
 2. 在 A 导入 Developer ID 证书（.p12）后本地签名重试；
 3. 接受报告 099（**已装正式包 + 私有数据根**）作为真实 IMK 输入证据，把本子项记为 SKIP/BLOCKED（缺签名），
    在发布前用 IT-14 的签名包补验。
+
+## 结论：Safari / Terminal 原生协议探针同源 BLOCKED
+
+`run-installed-safari-probe.py` 与 `run-installed-terminal-probe.py` 的前置与 TextEdit 探针完全一致：
+都需要**已安装、已启用、Developer ID 签名的独有隔离包** + `selection-state.json`。A 上没有签名证书，
+该前置无法满足，因此三项「已安装独有包的真实 IMK 输入」统一记 **BLOCKED（缺签名能力）**，
+按用户决定**转 IT-14（最终签名包）一并补验**，不伪造 PASS、也不改脚本绕过。
+
+已取得的 IT-01 证据链（A）：
+- 原生 TextEdit 所有权协议 normal/failure ✔（097）
+- 数据根隔离 ADR-215 ✔（098）
+- 已装正式包 + 私有数据根的真实 IMK 输入 ✔（099）
+- 独有身份实体包注册与枚举 ✔（100）
+- 已装独有包/ Safari / Terminal 真实输入 → BLOCKED（缺 Developer ID，转 IT-14）
+
+清理：临时隔离包与私有根已删除；用户输入源集合与真实数据未受影响。

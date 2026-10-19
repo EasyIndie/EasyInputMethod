@@ -174,3 +174,13 @@ PR #38合入a292534；隔离公证运行38258905282成功，附件SHA/commit/目
 - **独有身份包注册**：软链方式 `lsregister` 失败 `-10811`（BLOCKED，副作用已清理）；**实体包方式 PASS**（2 个自有身份，清理后用户源集合不变）→ 后续走实体包。
 - 工具修复：`isolated-imk/source-state.swift` 显式字典类型（Swift 5.8 可编）、`isolated-imk.py` 支持 `LAMPYRIS_IMK_TEST_OPT`。
 - 仍未关闭：实体独有包安装/启用后的 `run-installed-textedit-probe.py`、Safari/Terminal 协议、完整剪贴板恢复、微信草稿（BLOCKED）。
+
+## 2026-10-19 阶段结论（报告 099/100）
+
+- 已完成：原生 TextEdit 所有权（normal/failure）、ADR-215 数据根隔离、已装正式包的真实 IMK 输入
+  （`wq→你`/`nihao→你好`/Esc/来源标注/状态芯片/配置热更新）、独有身份实体包注册与枚举（2 个身份）。
+- **BLOCKED（缺签名能力，转 IT-14）**：已装独有包 → `run-installed-textedit-probe.py`、
+  Safari / Terminal 原生协议 —— 三者前置都是「已安装且 Developer ID 签名的独有隔离包」，
+  A 机 `security find-identity` = 0 个身份、ad-hoc 包 `spctl` rejected 且不出现在系统设置「＋」列表。
+- 未关闭原因：微信聊天隔离草稿仍 BLOCKED；完整剪贴板多类型恢复只有命名剪贴板与 mock 证据。
+- 决策（用户 2026-10-19 同意）：这些原生协议项**不绕过、不作 PASS**，留到 IT-14 用最终签名包与签名能力补验。

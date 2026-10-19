@@ -76,8 +76,9 @@
    - 实测：该包 **ad-hoc 签名**、`spctl` rejected、本机 `security find-identity` = 0 个身份 →
      System Settings「＋」列表看不到它；`TISEnableInputSource` 仍返回 0 不生效。**不是重启问题**；
    - 已清理该 app 与私有根；用户源集合/真实数据未受影响（真实 config 内容仍为默认值，SHA 因重写变为 `809e2cae…`）；
-   - 备用：由 CI 出「隔离身份 + Developer ID」包，或在本机导入签名证书后重试；否则把该子项记为
-     SKIP/BLOCKED（缺签名），以报告 099（已装正式包 + 私有数据根）作为 IMK 输入证据，发布前用 IT-14 签名包补验；
+   - **已决定（用户同意）**：Safari / Terminal 探针与 TextEdit 探针同源依赖「已装且 Developer ID 签名的独有包」，
+     一并记 **BLOCKED（缺签名能力）**，转 **IT-14** 用最终签名包补验；不绕过、不伪造 PASS。
+     IT-01 现有证据链：097 所有权 / 098 数据根 / 099 真实 IMK（正式包+私有根）/ 100 独有身份注册枚举。
    - 收尾：移除该输入源 → 删除该 app → `rm -rf <root>` → 复核用户源集合与真实数据 SHA。
 7. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
