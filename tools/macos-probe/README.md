@@ -22,6 +22,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `typekeys <字符>` | 逐键输入（一次一个字符，键间留间隔） |
 | `keymod <keycode> [cmd,ctrl,opt,shift]` | 带修饰键的按键（如 `keymod 6 cmd` = ⌘Z） |
 | `selsrc <source id>` | 用 TIS 切换输入源并回读当前源 |
+| `tissrc list\|select\|enable\|disable` | 输入源查看/选中/启停（`enable` 在 macOS 13 起对第三方输入法**不生效**，首次添加仍需系统设置） |
 | `windows` | 列出 Lampyris 的窗口标题 |
 
 ## 使用守则

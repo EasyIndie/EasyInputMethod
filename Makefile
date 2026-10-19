@@ -5,7 +5,7 @@ CARGO ?= cargo
 CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流.md §4
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-offline-tests macos-local-acceptance macos-ui-snapshots macos-clean-install handoff hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-offline-tests macos-local-acceptance macos-ui-snapshots macos-clean-install macos-fast-reinstall handoff hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py
@@ -18,6 +18,9 @@ macos-ui-snapshots: ## 离屏渲染候选/关于/设置/诊断面板（亮/暗�
 
 macos-clean-install: ## 登录后一条命令全新安装（先切 ABC、移除输入源、注销；APP=<bundle 路径>）
 	./scripts/clean-install.sh --app "$(APP)" $(ARGS)
+
+macos-fast-reinstall: ## 本地迭代换包（不注销；输入源已移除 + 宿主空闲；APP=<bundle 路径> [ARGS=--stop-host]）
+	./scripts/macos-fast-reinstall.sh --app "$(APP)" $(ARGS)
 
 handoff: ## 采集交接状态（只读；SCENARIO=compact|session|agent|device，PROMPT=1 出提示词骨架）
 	./scripts/handoff-status.sh $(if $(SCENARIO),--for=$(SCENARIO)) $(if $(PROMPT),--prompt)

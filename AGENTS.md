@@ -180,6 +180,7 @@ make verify     # = fmt-check + lint + test + deny + verify-no-network
 | Skill | 何时用 |
 |---|---|
 | `update-handoff` | **每次会话结束前**（跨会话/跨工具交接） |
+| `iterate-macos-ime` | **换包/验收/复验已装包**（不注销快速迭代、探针坑、HUD 专项） |
 | `add-config-option` | 新增/修改一个配置项 |
 | `add-data-source` | 引入任何词典/语料/数据 |
 | `add-engine` | 新增一个输入引擎（如拼音、仓颉） |
