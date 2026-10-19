@@ -34,6 +34,9 @@ tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
 
 - 脚本对宿主只做 `pkill -x Lampyris`，且必须显式 `--stop-host`；`--keep-data` 保留旧配置/词库。
 - 装完 `config.toml` **还没生成**：首次状态写入时才按 Schema 默认值创建（这是「默认行为」验收的干净起点）。
+- **不想动用户数据**时加 `--keep-data`（不把真实 config/词库移进 `uninstalled/`）。
+- **真实 IMK 验收要隔离学习写入**：`launchctl setenv LAMPYRIS_SUPPORT_DIR /tmp/lampyris-imk-…`（绝对路径）→ 重启宿主 →
+  配置/词库全部写到该私有根（ADR-215，报告 098）；验完 `launchctl unsetenv LAMPYRIS_SUPPORT_DIR`。
 - 用完还原：输入源 `tissrc select com.apple.keylayout.ABC`，`config` SHA 与宿主/执行 SHA 回读写进报告。
 
 ## 2. 输入源自动化：能做到哪一步（实测，报告 095）

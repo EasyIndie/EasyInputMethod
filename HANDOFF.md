@@ -57,11 +57,13 @@
 2. **IT-01（进行中）**：报告 097 已在 A 拿到原生 TextEdit 所有权协议真实通过（normal/failure）与四路径 PASS，
    并修好 macOS 13「关闭文档后窗口对象被销毁」导致的误判；**未关闭**的子项：
    IMK 学习数据隔离、独有身份包注册/TIS 枚举、Safari/Terminal 协议、完整剪贴板与输入源恢复实机证据、微信草稿（BLOCKED）。
-3. **ADR-215 已落地（待真机验证）**：`LAMPYRIS_SUPPORT_DIR`（绝对路径）可把宿主数据根重定向到私有目录，
+3. ✅ **ADR-215 已真机验证（报告 098）**：`LAMPYRIS_SUPPORT_DIR`（绝对路径）可把宿主数据根重定向到私有目录，
    配置与词库都随之一并隔离 → 之后即可安全地跑真实 IMK 验收（IT-01 的核心前提）。
-   验证方式：`launchctl setenv LAMPYRIS_SUPPORT_DIR /tmp/lampyris-imk-…` → 重启宿主 → 触发一次状态写入，
-   核对私有根出现 `config.toml`/`user-dictionary.tsv` 且**真实** `~/Library/Application Support/Lampyris/` 摘要不变 → `unsetenv`。
-4. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
+   实测：宿主 `ps eww` 带该变量，私有根写入 config+词库，真实目录无新增；还原后真实 config/词库 SHA 与装前一致
+   （`3bc1117c…` / `d6054fc7…`）。**验收结束必须 `unsetenv`**；本地换包不想动用户数据时用 `--keep-data`。
+4. 下一步（IT-01 剩余）：在私有根 + 自有文档下跑真实 IMK 验收（打字/选字/Esc/来源标注/状态芯片/配置热更新），
+   然后再过「独有身份包注册 / TIS 枚举」与 Safari/Terminal 协议。
+5. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 

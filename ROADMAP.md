@@ -2,6 +2,7 @@
 
 > 2026-10-19 当前状态以 HANDOFF.md 为准：**A/B 均已装 `17053e1`**；A 报告 094 验收 a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 **ADR-214** 修复，待新签名包复验（报告 095）；D2/D3 未复现。
 
+- [x] 2026-10-19 ADR-215 验收专用数据根真机通过（报告 098）：宿主带 `LAMPYRIS_SUPPORT_DIR` 时配置/词库全写入私有根，真实目录零新增；还原后真实 config/词库 SHA 与装前一致
 - [x] 2026-10-19 ADR-215 验收专用数据根（`LAMPYRIS_SUPPORT_DIR`）：把已装宿主的数据根重定向到私有目录，配置与词库一并隔离，为真实 IMK 验收（IT-01）解耦用户数据；待真机验证
 - [x] 2026-10-19 IT-01 原生所有权协议 A 机通过（报告 097）：`probe-owned-textedit.applescript` 修 macOS 13「关文档后窗口对象销毁」误判（先判 `exists window id` 再判 `visible`），normal/failure 与四路径全 PASS；IMK 学习数据隔离/独有源注册/Safari·Terminal 协议仍 BLOCKED
 - [x] 2026-10-19 Finder 搜索框获焦无 HUD 修复（报告 096，`a278d70`）：判据改为「光标中心须落在前台应用普通窗口（层号≥0）内」+ 主屏取原点屏 + fail-open；真机确认 Finder 桌面不显示、搜索框显示、TextEdit 8pt、Terminal 显示
