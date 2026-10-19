@@ -62,7 +62,7 @@ tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
 | `CGWindowList` 的 `on=false` 不可靠 | HUD 明显可见却报 offscreen | 用「截图差分 + OCR」确认可见性，窗口坐标只作参考 |
 | HUD 不在 AX 树里（macOS 13） | `AXWindows` 为空，读不到文案 | `CGWindowList` 取 frame + `screencapture -R` + Vision OCR 读文案 |
 | 窗口被恢复到屏外 | 显示器布局变化后，窗口 y 为负、坐标离谱 | 先 `AXPosition` 设回屏幕内再测；判读坐标时先 `NSScreen.screens` 看布局 |
-| 前台应用会被抢 | `osascript`/`open -a` 之后前台可能不是目标应用 | 每次发键前打印 `frontmost`，必要时先 `AXPress`/点击焦点 |
+| 前台应用会被抢 | `osascript`/`open -a` 之后前台可能不是目标应用；**中途也可能被别的应用抢走**（报告 099：验收中 QQ 抢前台，按键进了用户输入框） | **每一批发键前**都跑 `tools/macos-probe/guard-focus.sh TextEdit`，不通过就停；不在“只检查一次”的假设下连续发键 |
 | 合成事件会粘修饰键 | 连续测试后 ⌥/⇧ 状态错乱 | 用 `keyUp` 清一遍修饰键（探针 `clear`） |
 | 截图/OCR | 部分机器无录屏权限时截图是旧图 | 两张不同画面比对文件 hash；不行就退回 AX/CG 取证 |
 | A 机 Swift 5.8 编不了部分测试 | `make macos-offline-tests` 里 `heterogeneous collection literal` + 高负载 `swiftc` 超时 | Swift 侧以 CI（Swift 6）为门禁；A 只跑 `make verify`、Python 离线回归、原生探针 |
@@ -82,6 +82,9 @@ swift tools/macos-probe/bin/../tissrc list > "$E/99-restore.txt"   # 还原后�
 ```
 
 判定与报告要求见 `docs/reviews/` 里最新一份报告；**失败就写 FAIL/BLOCKED，不伪造 PASS**。
+
+发键铁律：**每次 `typekeys`/`keymod` 之前都先 `guard-focus.sh <目标应用>`**（只检查开头一次不够，见报告 099 的事故）；
+中途失焦立即终止、记录 BLOCKED，不要重试、不要“抢回焦点”后继续。
 
 ## 5. HUD 专项（踩过最多坑的地方）
 
