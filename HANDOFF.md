@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-19 09:35 / pi（deepseek-flash）· **A 机已全新安装 `17053e1` 并验收（报告 094）；HUD 两处待查**
+- 更新：2026-10-19 10:05 / pi（deepseek-flash）· **A 机验收完成；HUD 两缺陷已按 ADR-214 修复，待新包复验**
 - 分支：`main` @ `bc0347e`（本轮末尾另提交报告 094）
-- 阶段：A/B 均为 `17053e1`（执行 `535d546f…`）；A 报告 094：a–j 除 HUD「无焦点/空文档」外均 PASS（D7/D8）
+- 阶段：A/B 均为 `17053e1`；A 报告 094：a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 ADR-214 改代码，等新包（报告 095）复验
 - 最近验证：`make verify` 全绿（212 产物）；A 的 D2/D3 （设置首开分区、关于瞬时不出窗）本轮均未复现
 
 ## 1. 安装与数据
@@ -31,7 +31,7 @@
 
 ## 3. 当前未决
 
-- **A 机 HUD 两处待查（报告 094 D7/D8）**：①前台无文本焦点（Finder）时切换仍弹 HUD（(64,658)，截图可见）；②空文档（chars=0）仍弹 HUD（插入点上方 8pt）。与 ADR-213「仅聚焦输入框且有有效光标时显示」/源码注释「空文档不显示」不符；需先定 ADR（空文档是否算有效光标、是否限定文本客户端）再改代码，并到 B 复验。
+- **HUD 两缺陷（报告 094 D7/D12，已修待验）**：①Finder 前台（无文本焦点）仍弹 HUD（终端客户端 length==0 却有 attributes 伪矩形）；②Terminal.app 有焦点光标却不弹 HUD（日志：attributes 连续 64 次无矩形）。**ADR-214 已采纳**：`StateHUDCaretResolver` 改为 `firstRect` 优先、`attributes` 仅对 `length()>0` 兜底；A 机 Swift 5.8.1 下同源编译的小程序 5/5 PASS，`candidate.hud-source` 断言已加。**待新签名包在 A/B 复验**（Terminal / Finder / TextEdit 空文档）。
 - **A 机平台差异已清**：D2（设置首开分区）与 D3（关于瞬时不出窗）本轮均未复现；新记 D9（面板 531×70 vs B 538×70 字体度量）、D10（⇧ 合成事件成对）、D11（HUD 不在 AX 树内）。
 - **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
 - **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
@@ -49,9 +49,9 @@
 
 ### 4.2 下一步（按优先级）
 
-1. **D7/D8 定夺**：先写 ADR（空文档是否算有效光标；HUD 是否只在文本客户端显示），再改
-   `InputController.hudCaretRect()`（macOS 13 上 Finder 前台会经 `client()` 拿到桌面文本客户端）。
-   改完在 A/B 各复验一次，并把 `candidate.hud` 断言补上「空文档/无文本客户端不显示」。
+1. **HUD 修复复验（报告 095）**：等 CI 对 ADR-214 的提交出包 → A 机安装（一次注销）→ 验三种场景：
+   Terminal 有光标应显示、Finder 前台不显示、TextEdit 空文档应显示；B 机同验一次。
+   空文档=应显示（用户 2026-10-19 确认）；Finder 无文本焦点=不应显示。
 2. 发布门禁：**IT-01 隔离验收 → IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release**。
 3. IT-01 只使用隔离测试应用，不碰真实文档。
 
@@ -70,6 +70,7 @@
 
 ## 9. 会话日志
 
+- 2026-10-19 / pi：**HUD 预期澄清 + ADR-214 修复**。用户确认：空文档有光标应显示（撤销 D8）、终端有光标应显示（D12 缺陷）、Finder 无文本焦点不应显示（D7 成立）。改 `StateHUDCaretResolver`（firstRect 优先、attributes 仅 length>0 兜底）+ `candidate.hud-source` 断言；A 的 Swift 5.8.1 同源编译小程序 5/5 PASS；待新包复验。
 - 2026-10-19 / pi：**A 机全新安装 `17053e1` 并验收（报告 094）**。重启后 `--purge-data` 安装（执行 `535d546f…`、旧数据进 `uninstalled/`），首次配置 `3bc1117c…`（全模板、`alt+f`、零 `ctrl+shift`）；a–g/i/j 全 PASS，D2/D3 未复现；**h 的两项 FAIL**：Finder 前台时 HUD 仍显示（(64,658)）、空文档仍显示（(98,46)）→ 记 D7/D8 待 ADR 定夺；macOS 13 上 HUD 不在 AX 树内，改用 CGWindowList + 像素 OCR 取证。
 
 - 2026-10-18 / pi：**A 机换包前置就绪，停在注销前**。包已下载解压并核对 zip `02b70dfd…`/执行 `535d546f…`（codesign+staple OK），dry-run 通过；A 实际 config `48259b19…`（`mode=mixed`，显式 hotkey 仅 `ctrl+shift+m` 残留、词库 996 行），与旧 HANDOFF 写的 `907998e6…`/`mode=wubi` 不符，已按实测订正；萤火虫源已移除但宿主 67948 未退出，按边界不杀进程、不热替换。

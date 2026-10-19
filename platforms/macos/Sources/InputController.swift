@@ -265,21 +265,28 @@ final class LampyrisInputController: IMKInputController {
         StateHUDController.shared.show(message, caret: hudCaretRect())
     }
 
-    /// HUD 用光标矩形：无客户端/空文档/取不到时返回 nil（不显示，不退鼠标）。
-    /// 光标在空行/末尾换行时，向前回退到最近一个能取到矩形的字符（最多 64 个）。
+    /// HUD 用光标矩形：无客户端/取不到时返回 nil（不显示，不退鼠标）。
+    /// `firstRect` 优先（终端类客户端只实现它）；`attributes` 仅在客户端有文本时兜底，
+    /// 所以空文档保留提示（插入点在文档开头），而没有文本输入框的 Finder 图标视图不再弹 HUD。
     private func hudCaretRect() -> NSRect? {
         guard let client = client() ?? activeClient else { return nil }
+        let length = max(0, client.length())
         let selection = client.selectedRange()
-        var index = Self.caretLookupIndex(selectionLocation: selection.location,
-            length: client.length())
-        for _ in 0..<64 {
-            var rect = NSRect.zero
-            _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
-            if StateHUDLayout.isValid(caret: rect) { return rect }
-            guard index > 0 else { break }
-            index -= 1
-        }
-        return nil
+        return StateHUDCaretResolver.resolve(
+            startIndex: Self.caretLookupIndex(
+                selectionLocation: selection.location, length: length),
+            hasText: length > 0,
+            firstRect: { index in
+                var actual = NSRange()
+                return client.firstRect(
+                    forCharacterRange: NSRange(location: index, length: 0),
+                    actualRange: &actual)
+            },
+            lineRect: { index in
+                var rect = NSRect.zero
+                _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
+                return rect
+            })
     }
 
     private func candidateStatus() -> CandidateStatus {
