@@ -3,9 +3,18 @@ on:
   workflow_dispatch:
     inputs:
       target_root:
-        description: Existing owned private temporary root on device B
+        description: Existing owned private temp root on the receiving device (under its system temp dir)
         required: true
         type: string
+      arch:
+        description: Payload architecture (arm64, x86_64 or universal); cross-built on the arm64 runner
+        required: true
+        default: arm64
+        type: choice
+        options:
+          - arm64
+          - x86_64
+          - universal
 permissions:
   contents: read
 concurrency:
@@ -28,6 +37,7 @@ jobs:
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
       - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850
         with:
@@ -35,12 +45,30 @@ jobs:
       - name: Verify and build owned test host
         env:
           TARGET_TEST_ROOT: ${{ inputs.target_root }}
+          TARGET_ARCH: ${{ inputs.arch }}
         run: |
           make verify
           PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/test-isolated-imk.py
           PYTHONDONTWRITEBYTECODE=1 python3 packaging/macos/tests/test-isolated-ci.py
           python3 packaging/macos/prepare-isolated-ci.py
           make verify-no-network
+      - name: Verify built architecture and binding metadata
+        env:
+          TARGET_ARCH: ${{ inputs.arch }}
+        run: |
+          app=platforms/macos/build/Lampyris.app
+          cat packaging/out/isolated-imk/TARGET-ROOT.txt packaging/out/isolated-imk/TARGET-ARCH.txt packaging/out/isolated-imk/SOURCE-COMMIT.txt
+          case "${TARGET_ARCH}" in
+            arm64) expected=arm64 ;;
+            x86_64) expected=x86_64 ;;
+            universal) expected="arm64 x86_64" ;;
+            *) echo "未知架构：${TARGET_ARCH}" >&2; exit 1 ;;
+          esac
+          actual="$(lipo -archs "${app}/Contents/MacOS/LampyrisIMKTest")"
+          [ "$(printf '%s\n' ${expected} | sort | tr '\n' ' ')" = "$(printf '%s\n' ${actual} | sort | tr '\n' ' ')" ] || { echo "架构不符：期望 ${expected}，实际 ${actual}" >&2; exit 1; }
+          grep -Fx "requested=${TARGET_ARCH}" packaging/out/isolated-imk/TARGET-ARCH.txt
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${app}/Contents/Info.plist"
+          test "$(cat "${app}/Contents/Resources/IMKTestRoot")" = "$(cat packaging/out/isolated-imk/TARGET-ROOT.txt)"
       - name: Sign and notarize test host
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
@@ -57,7 +85,7 @@ jobs:
           shasum -a 256 LampyrisIMKTest.zip > LampyrisIMKTest.zip.sha256
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: Lampyris-isolated-imk-${{ github.sha }}
+          name: Lampyris-isolated-imk-${{ inputs.arch }}-${{ github.sha }}
           path: packaging/out/isolated-imk/*
           if-no-files-found: error
           retention-days: 7

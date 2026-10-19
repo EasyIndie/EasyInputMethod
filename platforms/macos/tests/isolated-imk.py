@@ -11,6 +11,30 @@ import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
 IDENTITY = "cn.jokerhub.inputmethod.LampyrisIMKTest."
+TRIPLES = {"arm64": "aarch64-apple-darwin", "x86_64": "x86_64-apple-darwin"}
+DEPLOYMENT_TARGET = "13.0"
+
+
+def host_arch():
+    machine = subprocess.check_output(["uname", "-m"], text=True).strip()
+    if machine not in TRIPLES:
+        raise ValueError("不支持的宿主架构：" + machine)
+    return machine
+
+
+def build_arches(value):
+    """把架构要求解析为要构建的切片；native 表示只构建宿主架构。"""
+    if value in ("", "native"):
+        return [host_arch()]
+    if value == "universal":
+        return ["arm64", "x86_64"]
+    if value in TRIPLES:
+        return [value]
+    raise ValueError("不支持的架构要求：" + value)
+
+
+def macho_arches(binary):
+    return subprocess.check_output(["lipo", "-archs", str(binary)], text=True).split()
 
 
 def validate_identity(info, expected):
@@ -89,23 +113,47 @@ def require_owned(root):
         raise ValueError("验收资源权限过宽")
 
 
-def build(root):
+def build(root, arch="native"):
     app = bundle(root)
-    subprocess.run(["cargo", "build", "--locked", "--release", "-p", "ime-ffi"], cwd=ROOT, check=True)
+    slices = build_arches(arch)
+    # 只构建宿主自身架构时沿用默认 target 目录，保持既有本地探针行为不变。
+    native_only = len(slices) == 1 and slices[0] == host_arch()
     sources = sorted(path for path in (ROOT / "platforms/macos/Sources").glob("*.swift") if path.name != "main.swift")
+    include = str(ROOT / "crates/ime-ffi/include")
     cache = root / "module-cache"
     cache.mkdir()
     # 慢机器（如 A/Intel + 老工具链）可设 LAMPYRIS_IMK_TEST_OPT=-Onone 缩短编译时间；
     # 该产物只用于协议/注册验证，不用于性能结论，默认仍为 -O。
     opt = os.environ.get("LAMPYRIS_IMK_TEST_OPT", "-O").split()
-    subprocess.run([
-        "swiftc", *opt, "-warnings-as-errors", "-module-name", "LampyrisIMKTest",
-        "-module-cache-path", str(cache), "-I", str(ROOT / "crates/ime-ffi/include"),
-        str(ROOT / "platforms/macos/tests/isolated-imk/main.swift"),
-        *map(str, sources), str(ROOT / "target/release/libime_ffi.a"),
-        "-framework", "AppKit", "-framework", "InputMethodKit", "-framework", "CoreFoundation",
-        "-o", str(app / "Contents/MacOS/LampyrisIMKTest"),
-    ], check=True, cwd=ROOT)
+    executables = []
+    for slice_arch in slices:
+        triple = TRIPLES[slice_arch]
+        target_args = [] if native_only else ["--target", triple]
+        library = ROOT / ("target/release" if native_only else "target/" + triple + "/release") / "libime_ffi.a"
+        subprocess.run(["cargo", "build", "--locked", "--release", *target_args, "-p", "ime-ffi"], cwd=ROOT, check=True)
+        if not library.is_file():
+            raise ValueError("缺少 staticlib " + str(library) + "；跨架构构建需先 rustup target add " + triple)
+        slice_cache = cache / slice_arch
+        slice_cache.mkdir()
+        executable = app / ("Contents/MacOS/LampyrisIMKTest-" + slice_arch)
+        subprocess.run([
+            "swiftc", *opt, "-warnings-as-errors", "-target", slice_arch + "-apple-macosx" + DEPLOYMENT_TARGET,
+            "-module-name", "LampyrisIMKTest", "-module-cache-path", str(slice_cache), "-I", include,
+            str(ROOT / "platforms/macos/tests/isolated-imk/main.swift"),
+            *map(str, sources), str(library),
+            "-framework", "AppKit", "-framework", "InputMethodKit", "-framework", "CoreFoundation",
+            "-o", str(executable),
+        ], check=True, cwd=ROOT)
+        executables.append(executable)
+    binary = app / "Contents/MacOS/LampyrisIMKTest"
+    if len(executables) == 1:
+        executables[0].rename(binary)
+    else:
+        subprocess.run(["lipo", "-create", *map(str, executables), "-output", str(binary)], check=True)
+        for executable in executables:
+            executable.unlink()
+    if sorted(macho_arches(binary)) != sorted(slices):
+        raise ValueError("产物架构与要求不符：" + " ".join(macho_arches(binary)))
     subprocess.run(["codesign", "--force", "--sign", "-", str(app)], check=True)
     return app
 

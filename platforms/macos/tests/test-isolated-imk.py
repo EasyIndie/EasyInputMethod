@@ -100,6 +100,16 @@ class IsolatedIMKTests(unittest.TestCase):
             self.assertEqual(binding.read_text(), str(self.root.resolve()))
             self.assertEqual(binding.stat().st_mode & 0o777, 0o600)
 
+    def test_build_arches_requests(self):
+        self.assertEqual(isolated.build_arches("universal"), ["arm64", "x86_64"])
+        for arch in ("arm64", "x86_64"):
+            self.assertEqual(isolated.build_arches(arch), [arch])
+        for value in ("native", ""):
+            self.assertEqual(isolated.build_arches(value), [isolated.host_arch()])
+        for value in ("armv7", "i386", "Universal", "universal ", "../x86_64"):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                isolated.build_arches(value)
+
 
 if __name__ == "__main__":
     unittest.main()
