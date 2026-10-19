@@ -43,9 +43,9 @@ tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
 | 查看已启用源 / 当前源 | ✅ | `tools/macos-probe/bin/tissrc list` |
 | 选中某个已启用源 | ✅ | `tissrc select <id>`（未启用时返回 `missing`） |
 | **首次添加**第三方输入法 | ❌ | `TISEnableInputSource` 返回 0 但源不出现在启用列表、宿主不启动；必须在「系统设置 → 键盘 → 文字输入」里加 |
-| 停用/移除 | ⚠️ 未验证 | 同一 API 家族，预期同样被系统拦截；仍以系统设置为准 |
+| 停用/移除 | ❌ | 实测 `TISDisableInputSource` 同样返回 0 但源仍在启用列表、宿主不退出（报告 095c）；只能在系统设置里移除 |
 
-所以「加一次输入源」是这条快速路径唯一保留的手工步骤（约 10 秒）。**不要**为了省这一步去写 `com.apple.HIToolbox` 的 plist——
+所以快速路径每轮保留**两个**手工步骤：移一次、加一次（各约 10 秒）。**不要**为了省这一步去写 `com.apple.HIToolbox` 的 plist——
 那是系统输入源注册表，出问题会污染用户输入法列表。
 
 ## 3. 探针（`tools/macos-probe/`）已知坑

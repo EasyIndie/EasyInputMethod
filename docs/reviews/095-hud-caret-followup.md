@@ -62,3 +62,25 @@ Terminal 的垂直偏移（26pt）是客户端矩形语义差异，先如实记�
 
 1. **前台应用校验覆盖两个来源**：`client()` 与 `activeClient` 都要求 `bundleIdentifier()` 等于前台应用（取不到 bundle 时才放行），彻底挡掉跨应用陈旧客户端。
 2. **诊断开关**（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后宿主把每次解析的 `line<i>`、`first<i>`、`pick` 写入 `$TMPDIR/lampyris-hud-diag.log`，用于下一轮定位 22pt 偏移到底来自哪条 API 与哪个矩形。
+
+## 095c — 不注销换包后的复测（包 `08bcdf2`，执行 `a3a5a905…`，宿主开诊断）
+
+安装走 `scripts/macos-fast-reinstall.sh`（不注销）：切换 ABC → 用户移除输入源 → 终止空闲孤儿宿主 → 装包 → 用户重新添加输入源。
+旧包/旧数据 → `uninstalled/bundle.C9sYMm`、`uninstalled/data.Dl6Ddh`。
+
+| 场景 | 结果 |
+|---|---|
+| Finder 前台（桌面，无文本焦点） | **不再显示 HUD** ✔（诊断无输出 → 前台校验把陈旧客户端挡在解析之前） |
+| Terminal 有焦点光标 | **显示 HUD** ✔（`firstRect824={{123,175},{0,18}}`；截图像素差分在 (75,557)-(170,620) 命中面板+阴影；`CGWindowList.on` 仍误报 false） |
+| TextEdit 文末光标 | 显示，但偏移仍在：诊断显示 `line11={{0,0},{0,0}}`（**末字符 attributes 返回零矩形**）、`first11={{246,652},{0,16}}`，于是选中了精度较差的 firstRect |
+
+### 偏移的根因（诊断实证）
+
+1. `attributes(forCharacterIndex:)` 在**文末/最后一个字符**返回零矩形（老代码靠“向前回退 64 字符”绕开；我上一版把回退与 firstRect 交替，导致在最后一个索引就直接退回 firstRect）。
+2. firstRect 在**多显示器**下会按主屏高度翻转 y（本例窗口在 1080 高的副屏，返回的 y 却是 `800 - 148`），提示因此被夹到另一块屏上 → 视觉上“高了 20 多 pt”。
+
+### 修正（第三次，待复验）
+
+`StateHUDCaretResolver` 改成**两趟**：先把 `attributes` 沿回退走完（最多 64 个），一次都拿不到才用 `firstRect` 沿回退走。
+这样文末/空行仍用 attributes（单屏 8pt、多屏也在同一坐标系），只有真正不实现 attributes 的终端才走 firstRect。
+本地同源验证 **9/9 PASS**（新增“末字符 attributes 失效时先回退 attributes、不退回 firstRect”用例）。

@@ -90,9 +90,12 @@ final class StateHUDView: NSView {
     }
 }
 
-/// 光标矩形解析：`attributes`（AppKit 文本视图，线高矩形，位置准确）优先，
-/// `firstRect` 兜底（终端类客户端只实现这一条）。没有文本的“伪光标”（Finder 桌面/图标视图）
-/// 不允许仅凭空光标弹提示。光标在空行/末尾换行时向前回退，最多 64 个字符。
+/// 光标矩形解析：先沿着“向前回退”把 `attributes`（AppKit 文本视图的线高矩形，位置准）走一遍，
+/// 都取不到时才用 `firstRect`（终端类客户端只实现这一条）。没有文本的“伪光标”（Finder 桌面/图标视图）
+/// 不允许仅凭空光标弹提示。回退上限 64 个字符。
+///
+/// 两趟而不是一趟交替：`attributes` 在文末/空行常常返回零矩形（报告 094/095 实测），
+/// 一趟交替会在“最后一个字符”就退回精度较差的 `firstRect`（多屏下还会差一屏）。
 enum StateHUDCaretResolver {
     static let lookbackLimit = 64
 
@@ -104,6 +107,11 @@ enum StateHUDCaretResolver {
         for _ in 0..<lookbackLimit {
             let line = lineRect(index)
             if StateHUDLayout.isValid(caret: line) { return line }
+            guard index > 0 else { break }
+            index -= 1
+        }
+        index = max(0, startIndex)
+        for _ in 0..<lookbackLimit {
             let first = firstRect(index)
             if StateHUDLayout.isValid(caret: first) { return first }
             guard index > 0 else { break }
