@@ -49,9 +49,19 @@
 
 ### 4.2 下一步（按优先级）
 
-1. **HUD 修复复验（报告 095）**：等 CI 对 ADR-214 的提交出包 → A 机安装（一次注销）→ 验三种场景：
-   Terminal 有光标应显示、Finder 前台不显示、TextEdit 空文档应显示；B 机同验一次。
-   空文档=应显示（用户 2026-10-19 确认）；Finder 无文本焦点=不应显示。
+1. **HUD 修复复验（报告 095）— 包已就绪，等一次注销**
+   - 新包：`packaging/out/a-7f51687/candidate-ocC9YU/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+     （commit `7f51687`、zip `f6f834c8…`、执行 `c38b1310…`、codesign+staple ✔；CI 与 macOS 出包均 success）
+   - 用户动作：切 ABC → 系统设置移除「萤火虫」→ 注销/重启（**会终止 agent 会话**）→ 开 pi 说「继续 095」
+   - 登录后：
+     ```sh
+     make macos-clean-install APP=packaging/out/a-7f51687/candidate-ocC9YU/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--input-source-removed
+     ```
+     然后在系统设置添加「萤火虫」+ `selsrc`
+   - 必验 5 条：①Terminal 有光标 → **应显示**；②Finder 前台 → **不应显示**；③TextEdit 空文档 → **应显示**；
+     ④TextEdit 有文本/空行回退 → 应显示且上方 8pt；⑤候选窗可见时仍走内联芯片（不弹 HUD）
+   - 判定失败时抓宿主日志（`log show --predicate 'process == "Lampyris"'`），看 `Get attributes for character` 次数与
+     `order window … op: 1` 是否出现
 2. 发布门禁：**IT-01 隔离验收 → IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release**。
 3. IT-01 只使用隔离测试应用，不碰真实文档。
 
