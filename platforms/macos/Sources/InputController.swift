@@ -284,17 +284,14 @@ final class LampyrisInputController: IMKInputController {
         let length = max(0, client.length())
         let selection = client.selectedRange()
         let bundle = client.bundleIdentifier() ?? ""
-        // 桌面/图标视图是“桌面层”窗口里的伪文本客户端（Finder 搜索框在普通窗口层）：
-        // 用它区分「Finder 桌面（无输入框）」与「Finder 搜索框（真输入框）」，见报告 096。
         let windowLevel = client.windowLevel()
-        let allowsEmptyCaret = windowLevel >= 0
         let diag = Self.hudDiagEnabled
         let startIndex = Self.caretLookupIndex(
             selectionLocation: selection.location, length: length)
         guard let rect = StateHUDCaretResolver.resolve(
             startIndex: startIndex,
             hasText: length > 0,
-            allowsEmptyCaret: allowsEmptyCaret,
+            allowsEmptyCaret: true,
             lineRect: { index in
                 var rect = NSRect.zero
                 _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
@@ -317,7 +314,33 @@ final class LampyrisInputController: IMKInputController {
         guard StateHUDLayout.isOnScreen(caret: rect, screens: NSScreen.screens.map(\.frame)) else {
             return nil
         }
+        // 桌面/图标视图会给出一个“伪光标”，它只落在桌面层窗口里（层号极大且为负），
+        // 真输入框（含 Finder 搜索框、空文档）都在应用的普通窗口里（层号 >= 0）。报告 096。
+        guard Self.caretInsideAppWindow(rect, bundle: bundle) else {
+            if diag { Self.hudDiag("drop: caret not inside app window") }
+            return nil
+        }
         return rect
+    }
+
+    /// 光标中心是否落在前台应用的普通窗口（层号 >= 0）里；取不到信息时放行，避免误杀。
+    private static func caretInsideAppWindow(_ caret: NSRect, bundle: String) -> Bool {
+        guard !bundle.isEmpty,
+              let app = NSRunningApplication.runningApplications(withBundleIdentifier: bundle).first,
+              let primaryTop = NSScreen.screens.first?.frame.maxY else { return true }
+        let point = StateHUDLayout.cgPoint(NSPoint(x: caret.midX, y: caret.midY), primaryTop: primaryTop)
+        guard let windows = CGWindowListCopyWindowInfo(
+            [.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]]
+        else { return true }
+        for window in windows {
+            guard (window[kCGWindowOwnerPID as String] as? pid_t) == app.processIdentifier,
+                  let layer = window[kCGWindowLayer as String] as? Int, layer >= 0,
+                  let bounds = window[kCGWindowBounds as String] as? [String: Any],
+                  let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary)
+            else { continue }
+            if rect.contains(point) { return true }
+        }
+        return false
     }
 
     /// 诊断开关（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后重启宿主，

@@ -125,6 +125,11 @@ enum StateHUDCaretResolver {
 enum StateHUDLayout {
     static let gap: CGFloat = 8
 
+    /// Cocoa（左下原点）→ CoreGraphics（主屏左上原点）的点转换，供窗口归属判断使用。
+    static func cgPoint(_ point: NSPoint, primaryTop: CGFloat) -> CGPoint {
+        CGPoint(x: point.x, y: primaryTop - point.y)
+    }
+
     /// 光标中心必须落在某块屏幕内：终端等客户端会返回翻转/像素坐标的矩形，
     /// 直接使用会把提示放到屏幕外（报告 095 实测 y=-753）。
     static func isOnScreen(caret: NSRect, screens: [NSRect]) -> Bool {

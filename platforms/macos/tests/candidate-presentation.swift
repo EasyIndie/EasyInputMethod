@@ -214,6 +214,8 @@ let attributesPreferred = StateHUDCaretResolver.resolve(
     startIndex: 0, hasText: true, allowsEmptyCaret: true,
     lineRect: { _ in caretLine }, firstRect: { _ in caretLine.offsetBy(dx: 0, dy: 40) })
 let onScreen = StateHUDLayout.isOnScreen(caret: caretLine, screens: [visible])
+let cgPoint = StateHUDLayout.cgPoint(NSPoint(x: 100, y: 200), primaryTop: 800)
+guard cgPoint == CGPoint(x: 100, y: 600) else { fail("hud cocoa to cg point") }
 let offScreen = StateHUDLayout.isOnScreen(
     caret: NSRect(x: 100, y: 1609, width: 2, height: 20), screens: [visible])
 guard textViewEmptyDoc == caretLine,
