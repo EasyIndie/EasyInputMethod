@@ -1,0 +1,5 @@
+== 长组合分级（单参数）2026-10-19T14:01:25Z
+  8 字母 zhongguo → 输入码[v=zhongguo d=输入编码]  候选数=1
+  14 字母 zhongguorenmin → 输入码[]  候选数=0
+  20 字母 zhongguorenmingonghe → 输入码[]  候选数=0
+  22 字母 → 无组合、空格原样上屏（已在上一条记录）

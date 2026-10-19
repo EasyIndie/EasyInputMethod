@@ -1,0 +1,6 @@
+== 补测还原 2026-10-19T14:03:49Z
+real_config=809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5
+real_dict=3a6871a5e441a7be881c3fe532917bf8f74e4f55a09f778cf80c8b321e81ee6c
+sources: enabled com.apple.keylayout.ABC enabled com.apple.CharacterPaletteIM enabled com.sogou.inputmethod.sogouWB.wubi enabled com.sogou.inputmethod.sogouWB enabled cn.jokerhub.inputmethod.Lampyris.default enabled cn.jokerhub.inputmethod.Lampyris current com.apple.keylayout.ABC 
+host=91040 /Users/bot/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+env=

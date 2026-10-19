@@ -34,7 +34,8 @@
       "id": "state-restoration",
       "status": "PASS",
       "evidence": [
-        "101-evidence/099-restore.txt"
+        "101-evidence/099-restore.txt",
+        "101-evidence/101-restore.txt"
       ]
     },
     {
@@ -47,15 +48,21 @@
     },
     {
       "id": "long-composition",
-      "status": "BLOCKED",
+      "status": "PASS",
       "reason": "未在新候选复验；既有长词证据来自旧候选 17053e1（报告 093）",
-      "evidence": []
+      "evidence": [
+        "101-evidence/101-long-composition.txt",
+        "101-evidence/101-long-composition-detail.txt",
+        "101-evidence/101-long-20-23.txt"
+      ]
     },
     {
       "id": "undo",
-      "status": "BLOCKED",
+      "status": "PASS",
       "reason": "⌘Z 只在旧候选做过（报告 071/094），未在 07bbb2f 复验",
-      "evidence": []
+      "evidence": [
+        "101-evidence/101-undo.txt"
+      ]
     },
     {
       "id": "focus",
@@ -65,9 +72,11 @@
     },
     {
       "id": "mode-switch",
-      "status": "BLOCKED",
+      "status": "PASS",
       "reason": "四状态/模式循环在旧候选验过（报告 094），07bbb2f 未复验",
-      "evidence": []
+      "evidence": [
+        "101-evidence/101-mode-switch.txt"
+      ]
     },
     {
       "id": "sleep-wake",

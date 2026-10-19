@@ -1,0 +1,3 @@
+== 20/22 字母（重试）2026-10-19T14:03:04Z
+  20 字母：文档=[zhongguorenmingonghe] 窗口=windows: 0 [] 候选头=
+  23 字母：文档=[zhonghuarenmingongheguo] 窗口=windows: 0 [] 候选头=

@@ -84,7 +84,12 @@
    `acceptance-results.py check` → `SUMMARY pass=6 fail=0 skip=0 blocked=17`，**exit 3（BLOCKED）**——如实反映门禁状态；
    PASS 6 项（resource-isolation / state-restoration / core-input / package-validation / intel-macos13 / application-TextEdit）
    证据副本在 `docs/reviews/101-evidence/`；其余 17 项逐条写了 BLOCKED 原因。
-8. 之后：IT-14 前置（让 CI 出「隔离身份 + Developer ID」包，补验已装独有包/Safari/Terminal/多屏/唤醒） → IT-12 性能 → IT-14/15 → tag/Release。
+8. ✅ **补测完成（`docs/reviews/101-supplement-undo-mode-long.md`）**：`⌘Z`、四状态+模式循环、长组合（8 字母有候选；
+   14/20/23 字母保留 marked text、不崩溃不误上屏、Esc 干净取消）在候选 `07bbb2f` 上 **PASS**；
+   101 报告 `check` 更新为 **pass=9 / blocked=14**（exit 3）。
+   教训：`typekeys a b c` 会用空格连接（长组合必须单参数）；**先 kill 宿主再 `unsetenv`**，否则新宿主会用回真实数据根
+   （本轮真实词库 2242B→3312B，未回滚，已记录）。
+9. 之后：IT-14 前置（让 CI 出「隔离身份 + Developer ID」包，补验已装独有包/Safari/Terminal/多屏/唤醒） → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 
