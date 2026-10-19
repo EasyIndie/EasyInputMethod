@@ -2,16 +2,16 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-18 23:00 / pi（deepseek-flash）· **A 机换包前置已就绪，等用户注销后执行第 ① 条命令**
-- 分支：`main` @ `9581b39`（已推送；工作树 clean；仅 main）
-- 阶段：A 已下载并核验 `17053e1` 包（zip `02b70dfd…` / 执行 `535d546f…`），预检 dry-run 通过；**未安装**，宿主 67948 仍活（未注销）
-- 最近验证：`make verify` 全绿（182 产物）；`CI` + macOS 出包对 `17053e1` 均 success；IT-13 dry-run 通过
+- 更新：2026-10-19 09:35 / pi（deepseek-flash）· **A 机已全新安装 `17053e1` 并验收（报告 094）；HUD 两处待查**
+- 分支：`main` @ `bc0347e`（本轮末尾另提交报告 094）
+- 阶段：A/B 均为 `17053e1`（执行 `535d546f…`）；A 报告 094：a–j 除 HUD「无焦点/空文档」外均 PASS（D7/D8）
+- 最近验证：`make verify` 全绿（212 产物）；A 的 D2/D3 （设置首开分区、关于瞬时不出窗）本轮均未复现
 
 ## 1. 安装与数据
 
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
-| A（`bot`，Intel / macOS 13.7.8） | x86_64 | `a234ef31…`（旧） | 报告 071；`config` SHA `48259b19…`（`mode=mixed`、标点中文、`full_width=true`、显式 hotkey 仅 `toggle_mode=ctrl+shift+m` 残留）；词库 996 行；输入源 ABC；宿主 67948；**未做全新安装** |
+| A（`bot`，Intel / macOS 13.7.8） | x86_64 | `17053e1`（`535d546f…`） | 报告 094；`--purge-data` 全新安装，旧包/旧数据在 `uninstalled/bundle.PuMacz`、`uninstalled/data.xLySk8`；`config` SHA `3bc1117c…`（全模板、`mode=mixed`、`alt+f`、零 `ctrl+shift`）、词库 5 行、输入源 ABC、宿主 6164 |
 | B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 093：UI 验收通过；`config` SHA `3bc1117c…`（`mode=mixed`、`alt+f`、显式 hotkey 8 项）、词库 17 行、输入源 ABC、宿主 17339 |
 
 - B 最终包：`packaging/out/header-type/candidate-bZTrDz/`（zip `02b70dfd…`、执行 `535d546f…`、Notarized Developer ID）。
@@ -31,7 +31,8 @@
 
 ## 3. 当前未决
 
-- **A 机新 UI 安装/验收（当前阻塞点：需要一次注销）**：A 上「萤火虫」输入源已从系统列表移除（TIS enabled 只剩 ABC / Sogou / 字符面板），但宿主 67948 自 10-18 03:42 起未退出（`uptime` 1d3h，本轮未注销）——按边界**停止在安装前**。用户注销/重启后即可续跑 §4.1。
+- **A 机 HUD 两处待查（报告 094 D7/D8）**：①前台无文本焦点（Finder）时切换仍弹 HUD（(64,658)，截图可见）；②空文档（chars=0）仍弹 HUD（插入点上方 8pt）。与 ADR-213「仅聚焦输入框且有有效光标时显示」/源码注释「空文档不显示」不符；需先定 ADR（空文档是否算有效光标、是否限定文本客户端）再改代码，并到 B 复验。
+- **A 机平台差异已清**：D2（设置首开分区）与 D3（关于瞬时不出窗）本轮均未复现；新记 D9（面板 531×70 vs B 538×70 字体度量）、D10（⇧ 合成事件成对）、D11（HUD 不在 AX 树内）。
 - **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
 - **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
 - **A 平台差异**：macOS 13 的设置默认分区（D2）与关于窗口瞬时不出（D3）需在 A 复验。
@@ -40,36 +41,19 @@
 
 ## 4. 下一步
 
-### 4.1 A 机全新安装 + 验收（跨设备）— **已完成 0–1，剩 2–6**
+### 4.1 A 机全新安装 + 验收 — ✅ 已完成（报告 094）
 
-0. ✅ 已做（本轮）：`git pull`（HEAD `9581b39`）、`make -C tools/macos-probe`、
-   `gh run download 39135852935 …` 到 `packaging/out/a-17053e1/candidate-bZTrDz/`、
-   解压到 `…/extracted/Lampyris-0.1.0-universal/`。
-   核验：zip SHA `02b70dfd…` ✔、执行 SHA `535d546f…` ✔、`codesign --deep --strict` ✔、`stapler validate` ✔。
-   证据：`platforms/macos/build/acceptance-a-094/00-pre-install-state.txt`、`01-clean-install-dry-run.txt`。
-   注：`scripts/clean-install.sh` 正式执行**必须**带 `--input-source-removed`（Makefile 用 `ARGS=` 传）。
-1. ✅ 已做：输入源已是 ABC；「萤火虫」已从系统输入源移除（TIS enabled 无 Lampyris）。
-2. ⛔ **用户动作**：注销/重启（**这一步会终止 agent 会话**），重新登录后开 pi 说「继续 094」。
-3. 登录后一条命令（在 `~/Documents/EasyInputMethod`）：
-   ```sh
-   git pull --ff-only
-   rm -rf "packaging/out/a-17053e1"/candidate-bZTrDz/extracted   # 可选：重新解压更保险
-   ditto -x -k packaging/out/a-17053e1/candidate-bZTrDz/Lampyris-0.1.0-universal.zip packaging/out/a-17053e1/candidate-bZTrDz/extracted/
-   make macos-clean-install APP=packaging/out/a-17053e1/candidate-bZTrDz/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--input-source-removed
-   ```
-   判定：脚本打印执行 SHA = `535d546f…`；旧包/旧 config/词库进 `~/Library/Application Support/Lampyris/uninstalled/`。
-   若脚本报「请先切换为 ABC…宿主退出」→ 宿主仍在跑，停下等用户注销（**不杀进程、不热替换**）。
-4. 系统设置 → 键盘 → 文字输入 添加「萤火虫」，再 `tools/macos-probe/bin/selsrc cn.jokerhub.inputmethod.Lampyris.default`。
-5. 验收（自建文档 `/tmp/lampyris-a/`，先按键激活；照报告 071 的探针流程，A 的菜单索引比 B 小 2，先 dump 再点）：
-   a 菜单 7 行 + `⌥M/⇧/⌥F/⌥T/⌥P/⌥,/⌥A`；b 全新 config = `mode=mixed`、`⌥F`、**无** `ctrl+shift` 残留；
-   c `wq`→你、`nihao`→你好、`kwwl`→中华人民共和国；d `⌘Z`（需先 `⌘A`+Delete 清空→方向键断组→两次提交，见 071）；
-   e 四状态往返 + 模式三循环，每步回读 config；f 设置页快捷键 8 项、关于页按钮同行/文字居中；
-   g 候选头部 12pt、芯片高 20/留白、翻页光学上提 1.5pt、悬停留白、面板 ≈538×70、行高 26；
-   h HUD：聚焦文本框才显示、光标上方 8pt、空行回退最近字符、无焦点不显示；i 复核 D2/D3；
-   j `⌃Space` 后立刻 Shift 不得变全角。
-6. 还原：`mode=mixed`、标点中文、字形简体、输入源 ABC；核对 config 字节、宿主 PID、执行 SHA。
-7. 写 `docs/reviews/094-device-a-17053e1.md`（PASS/FAIL/BLOCKED + 证据文件名），证据放
-   `platforms/macos/build/acceptance-a-094/`；更新 HANDOFF/ROADMAP；`make verify` 全绿后提交推送。
+安装：重启后用 `clean-install --input-source-removed --purge-data`，旧包/旧数据进 `uninstalled/`；
+执行 SHA `535d546f…`；用户在系统设置添加「萤火虫」后 `selsrc` 选中；验收后输入源还原 ABC。
+结果：a–g、i、j 全 PASS；h 只有「无焦点」「空文档」两项仍弹 HUD（D7/D8）。
+
+### 4.2 下一步（按优先级）
+
+1. **D7/D8 定夺**：先写 ADR（空文档是否算有效光标；HUD 是否只在文本客户端显示），再改
+   `InputController.hudCaretRect()`（macOS 13 上 Finder 前台会经 `client()` 拿到桌面文本客户端）。
+   改完在 A/B 各复验一次，并把 `candidate.hud` 断言补上「空文档/无文本客户端不显示」。
+2. 发布门禁：**IT-01 隔离验收 → IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release**。
+3. IT-01 只使用隔离测试应用，不碰真实文档。
 
 ### 4.2 发布门禁
 
@@ -85,6 +69,8 @@
 - 本轮经验：源未移除但宿主已停时可「移除源 → 终止孤儿宿主 → 安装 → 重新添加」，不等同热替换；TCC 改动需告知用户。
 
 ## 9. 会话日志
+
+- 2026-10-19 / pi：**A 机全新安装 `17053e1` 并验收（报告 094）**。重启后 `--purge-data` 安装（执行 `535d546f…`、旧数据进 `uninstalled/`），首次配置 `3bc1117c…`（全模板、`alt+f`、零 `ctrl+shift`）；a–g/i/j 全 PASS，D2/D3 未复现；**h 的两项 FAIL**：Finder 前台时 HUD 仍显示（(64,658)）、空文档仍显示（(98,46)）→ 记 D7/D8 待 ADR 定夺；macOS 13 上 HUD 不在 AX 树内，改用 CGWindowList + 像素 OCR 取证。
 
 - 2026-10-18 / pi：**A 机换包前置就绪，停在注销前**。包已下载解压并核对 zip `02b70dfd…`/执行 `535d546f…`（codesign+staple OK），dry-run 通过；A 实际 config `48259b19…`（`mode=mixed`，显式 hotkey 仅 `ctrl+shift+m` 残留、词库 996 行），与旧 HANDOFF 写的 `907998e6…`/`mode=wubi` 不符，已按实测订正；萤火虫源已移除但宿主 67948 未退出，按边界不杀进程、不热替换。
 
