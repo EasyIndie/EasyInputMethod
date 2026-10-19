@@ -101,10 +101,11 @@ if args[0] == "disable-owned" {
 }
 let enabled = sources().filter { property($0, kTISPropertyInputSourceIsEnabled) as? Bool == true }.map(identifier).sorted()
 let result: [String: Any] = ["current": current(), "enabled": enabled,
-    "owned": owned().map { ["id": identifier($0), "label": property($0, kTISPropertyLocalizedName) as? String ?? "", "enabled": property($0, kTISPropertyInputSourceIsEnabled) as? Bool ?? false,
-        "enableCapable": property($0, kTISPropertyInputSourceIsEnableCapable) as? Bool ?? false,
-        "selectCapable": property($0, kTISPropertyInputSourceIsSelectCapable) as? Bool ?? false,
-        "type": property($0, kTISPropertyInputSourceType) as? String ?? ""] }]
+    "owned": owned().map { (source: TISInputSource) -> [String: Any] in
+        ["id": identifier(source), "label": property(source, kTISPropertyLocalizedName) as? String ?? "", "enabled": property(source, kTISPropertyInputSourceIsEnabled) as? Bool ?? false,
+        "enableCapable": property(source, kTISPropertyInputSourceIsEnableCapable) as? Bool ?? false,
+        "selectCapable": property(source, kTISPropertyInputSourceIsSelectCapable) as? Bool ?? false,
+        "type": property(source, kTISPropertyInputSourceType) as? String ?? ""] }]
 guard let data = try? JSONSerialization.data(withJSONObject: result, options: [.sortedKeys]),
       let text = String(data: data, encoding: .utf8) else { fail("无法记录输入源状态") }
 print(text)

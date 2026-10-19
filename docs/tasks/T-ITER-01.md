@@ -165,3 +165,12 @@ PR #38合入a292534；隔离公证运行38258905282成功，附件SHA/commit/目
   先 `exists window id testID` 再判 `visible`（等待循环与最终断言都加），避免把成功关闭误判为清理失败。
 - `make macos-offline-tests` 在 A 13/31 失败：Swift 5.8.1 不支持部分测试的异质字面量 + 高负载编译超时；Swift 侧门禁以 CI 为准。
 - 仍未关闭：IMK 学习数据隔离、独有身份包注册/TIS 枚举、Safari/Terminal 协议、完整剪贴板与输入源实机证据、微信草稿（BLOCKED）。
+
+## 2026-10-19 独有身份包注册与真实 IMK 验收（报告 099/100）
+
+- **数据隔离（ADR-215）**：`LAMPYRIS_SUPPORT_DIR` 把已装宿主的数据根（config+词库）重定向到私有目录，真机验证通过（报告 098）；
+  真实 IMK 验收因此可安全执行（报告 099：`wq→你`、`nihao→你好`、Esc、来源标注、状态芯片、配置热更新全 PASS，用户数据 SHA 未变）。
+- **发键铁律**：每批 `typekeys`/`keymod` 前必须 `guard-focus.sh <目标>`；本轮曾因 QQ 抢前台出过事故（未发送），已整改并写进技能。
+- **独有身份包注册**：软链方式 `lsregister` 失败 `-10811`（BLOCKED，副作用已清理）；**实体包方式 PASS**（2 个自有身份，清理后用户源集合不变）→ 后续走实体包。
+- 工具修复：`isolated-imk/source-state.swift` 显式字典类型（Swift 5.8 可编）、`isolated-imk.py` 支持 `LAMPYRIS_IMK_TEST_OPT`。
+- 仍未关闭：实体独有包安装/启用后的 `run-installed-textedit-probe.py`、Safari/Terminal 协议、完整剪贴板恢复、微信草稿（BLOCKED）。

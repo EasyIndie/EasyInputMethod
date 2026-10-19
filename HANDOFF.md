@@ -66,8 +66,11 @@
 4. ✅ **真实 IMK 验收已在隔离根跑通（报告 099）**：`wq→你`、`nihao→你好`、Esc 取消、候选头（输入码/页码/五笔·拼来源/状态芯片）、
    配置热更新（外部改 count 7→5 页数 39→54→39）全部 PASS；真实 config/词库 SHA 与装前一致。
    **发键铁律**：每批 `typekeys`/`keymod` 前先 `guard-focus.sh TextEdit`（本轮曾因 QQ 抢前台出过事故，已修）。
-5. 下一步（IT-01 剩余）：独有身份包注册 / TIS 枚举 → Safari/Terminal 原生协议 → 完整剪贴板与输入源恢复实机证据。
-6. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
+5. ✅ **独有身份包注册已摸清（报告 100）**：软链方式 `lsregister` 失败 `-10811`（BLOCKED），**实体包方式 PASS**
+   （枚举到 2 个自有身份，清理后用户源集合不变）→ 后续 IMK 隔离验收走实体包。
+   工具修复：`source-state.swift` 显式字典类型（Swift 5.8 可编）、`isolated-imk.py` 支持 `LAMPYRIS_IMK_TEST_OPT`（A 上 `-Onone` 仍需 14 分钟）。
+6. 下一步（IT-01 剩余）：实体独有包安装/启用 → `run-installed-textedit-probe.py`；再做 Safari/Terminal 协议、完整剪贴板恢复。
+7. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 

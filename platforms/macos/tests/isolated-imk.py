@@ -95,8 +95,11 @@ def build(root):
     sources = sorted(path for path in (ROOT / "platforms/macos/Sources").glob("*.swift") if path.name != "main.swift")
     cache = root / "module-cache"
     cache.mkdir()
+    # 慢机器（如 A/Intel + 老工具链）可设 LAMPYRIS_IMK_TEST_OPT=-Onone 缩短编译时间；
+    # 该产物只用于协议/注册验证，不用于性能结论，默认仍为 -O。
+    opt = os.environ.get("LAMPYRIS_IMK_TEST_OPT", "-O").split()
     subprocess.run([
-        "swiftc", "-O", "-warnings-as-errors", "-module-name", "LampyrisIMKTest",
+        "swiftc", *opt, "-warnings-as-errors", "-module-name", "LampyrisIMKTest",
         "-module-cache-path", str(cache), "-I", str(ROOT / "crates/ime-ffi/include"),
         str(ROOT / "platforms/macos/tests/isolated-imk/main.swift"),
         *map(str, sources), str(ROOT / "target/release/libime_ffi.a"),
