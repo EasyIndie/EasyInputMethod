@@ -4,10 +4,10 @@
 
 - 更新：2026-10-20 08:00 / pi（deepseek-flash）· **重新登录后隔离源可用；TextEdit/Terminal 四路径 12/12 PASS，
   Safari 组因 Safari 18.6 沙箱扩展被拒而 BLOCKED（非输入法缺陷）**
-- 分支：`main` @ `f3ee95c`（本轮改为文档提交；工作树见 §2）
+- 分支：`main` @ `91813dd`（本轮为文档提交）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
   报告 101 机器报告由 pass 9 / blocked 14 → **pass 10 / blocked 13**
-- 最近验证：`make verify`（本轮结束前跑）；隔离公证 CI run `39269308347` success
+- 最近验证：`make verify` 全绿（`91813dd`）；隔离公证 CI run `39269308347` success
 
 ## 1. 安装与数据
 
