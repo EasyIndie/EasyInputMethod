@@ -327,20 +327,29 @@ final class LampyrisInputController: IMKInputController {
     private static func caretInsideAppWindow(_ caret: NSRect, bundle: String) -> Bool {
         guard !bundle.isEmpty,
               let app = NSRunningApplication.runningApplications(withBundleIdentifier: bundle).first,
-              let primaryTop = NSScreen.screens.first?.frame.maxY else { return true }
+              let primaryTop = Self.primaryScreenTop else { return true }
         let point = StateHUDLayout.cgPoint(NSPoint(x: caret.midX, y: caret.midY), primaryTop: primaryTop)
         guard let windows = CGWindowListCopyWindowInfo(
             [.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]]
         else { return true }
+        var sawWindow = false
         for window in windows {
             guard (window[kCGWindowOwnerPID as String] as? pid_t) == app.processIdentifier,
                   let layer = window[kCGWindowLayer as String] as? Int, layer >= 0,
                   let bounds = window[kCGWindowBounds as String] as? [String: Any],
                   let rect = CGRect(dictionaryRepresentation: bounds as CFDictionary)
             else { continue }
+            sawWindow = true
             if rect.contains(point) { return true }
         }
-        return false
+        // 看不到该应用的常规窗口时放行（避免误杀），只有“看得到窗口但光标不在其中”才判定为桌面伪光标。
+        return !sawWindow
+    }
+
+    /// Cocoa→CG 的主屏高度：取原点在 (0,0) 的那块屏（菜单栏所在屏），退化为 `NSScreen.main`。
+    private static var primaryScreenTop: CGFloat? {
+        let primary = NSScreen.screens.first { $0.frame.origin == .zero } ?? NSScreen.main
+        return primary?.frame.maxY
     }
 
     /// 诊断开关（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后重启宿主，
