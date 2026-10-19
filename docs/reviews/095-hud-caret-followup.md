@@ -48,3 +48,17 @@ Finder 重命名、空行回退、attributes 优先、都取不到、屏内接�
 第一版（只 `firstRect`）**不能**解决 D7（Finder 的 `firstRect` 也有效），还把 TextEdit 的位置精度从 8pt 降到 13pt；
 二次修正（attributes 优先 + Finder 门禁 + 屏内校验 + 前台应用校验）已提交，等新签名包在 A 上复验。
 Terminal 的垂直偏移（26pt）是客户端矩形语义差异，先如实记录，再决定是否做客户端特化。
+
+## 095b — 二次修正真机复测（包 `888b8d1`，执行 `9c211948…`）
+
+| 场景 | 结果 |
+|---|---|
+| TextEdit 空文档（窗口被恢复成屏外时） | HUD 跟着光标出现在屏外 (−1021) → 说明定位用的是真实光标；把窗口移回屏内后 HUD 正常出现 |
+| TextEdit 有文本、光标在文末 | HUD 出现，但**底边距文字行顶 22pt**（094 的 attributes-only 构建是 8pt）→ 偏移回归，待诊断 |
+| Finder 前台（桌面） | **仍出现** HUD（日志 `order window … op: 1`，截图差分命中）→ 说明 `client()` 取到的仍是上一个应用的客户端（我只给缓存加了前台校验） |
+| Terminal | 本轮未复测（留给下一轮） |
+
+### 已追加的修正
+
+1. **前台应用校验覆盖两个来源**：`client()` 与 `activeClient` 都要求 `bundleIdentifier()` 等于前台应用（取不到 bundle 时才放行），彻底挡掉跨应用陈旧客户端。
+2. **诊断开关**（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后宿主把每次解析的 `line<i>`、`first<i>`、`pick` 写入 `$TMPDIR/lampyris-hud-diag.log`，用于下一轮定位 22pt 偏移到底来自哪条 API 与哪个矩形。

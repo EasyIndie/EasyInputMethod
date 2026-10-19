@@ -269,38 +269,69 @@ final class LampyrisInputController: IMKInputController {
     /// `attributes` 优先（文本视图线高矩形，位置准），`firstRect` 兜底（终端类客户端只实现它）。
     /// 空文档保留提示（插入点在文档开头）；Finder 桌面/图标视图没有文本时不算有效光标（ADR-214）。
     private func hudCaretRect() -> NSRect? {
-        // 只在客户端属于前台应用时才用缓存：切换应用后 IMK 可能还没激活新客户端，
-        // 用旧的 activeClient 会把提示放到上一个应用的插入点（报告 095 实测）。
+        // 只接受“属于前台应用”的客户端：切换应用后 IMK 可能仍持有上一个应用的 client，
+        // 用它会把提示放到上一个应用的插入点（报告 095 实测 Finder 桌面因此误显示）。
         let frontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
-        let current = client()
-        let fallback = activeClient.flatMap { active in
-            active.bundleIdentifier() == frontmost ? active : nil
+        func belongsToFrontmost(_ candidate: (any IMKTextInput)?) -> (any IMKTextInput)? {
+            guard let candidate else { return nil }
+            let bundle = candidate.bundleIdentifier() ?? ""
+            guard !bundle.isEmpty, let frontmost, !frontmost.isEmpty else { return candidate }
+            return bundle == frontmost ? candidate : nil
         }
-        guard let client = current ?? fallback else { return nil }
+        guard let client = belongsToFrontmost(client()) ?? belongsToFrontmost(activeClient) else {
+            return nil
+        }
         let length = max(0, client.length())
         let selection = client.selectedRange()
         let bundle = client.bundleIdentifier() ?? ""
+        let diag = Self.hudDiagEnabled
+        let startIndex = Self.caretLookupIndex(
+            selectionLocation: selection.location, length: length)
         guard let rect = StateHUDCaretResolver.resolve(
-            startIndex: Self.caretLookupIndex(
-                selectionLocation: selection.location, length: length),
+            startIndex: startIndex,
             hasText: length > 0,
             allowsEmptyCaret: bundle != "com.apple.finder",
             lineRect: { index in
                 var rect = NSRect.zero
                 _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
+                if diag { Self.hudDiag("line\(index)=\(NSStringFromRect(rect))") }
                 return rect
             },
             firstRect: { index in
                 var actual = NSRange()
-                return client.firstRect(
+                let rect = client.firstRect(
                     forCharacterRange: NSRange(location: index, length: 0),
                     actualRange: &actual)
+                if diag { Self.hudDiag("first\(index)=\(NSStringFromRect(rect))") }
+                return rect
             })
         else { return nil }
+        if diag {
+            Self.hudDiag("pick bundle=\(bundle) len=\(length) sel=\(selection.location) "
+                + "rect=\(NSStringFromRect(rect))")
+        }
         guard StateHUDLayout.isOnScreen(caret: rect, screens: NSScreen.screens.map(\.frame)) else {
             return nil
         }
         return rect
+    }
+
+    /// 诊断开关（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后重启宿主，
+    /// 光标矩形解析过程写入 `$TMPDIR/lampyris-hud-diag.log`，用于真机定位 HUD 偏移。
+    static var hudDiagEnabled: Bool {
+        ProcessInfo.processInfo.environment["LAMPYRIS_HUD_DIAG"] != nil
+    }
+
+    static func hudDiag(_ message: String) {
+        let path = NSTemporaryDirectory() + "lampyris-hud-diag.log"
+        let line = "[hud] " + message + "\n"
+        if let handle = FileHandle(forWritingAtPath: path) {
+            handle.seekToEndOfFile()
+            handle.write(Data(line.utf8))
+            try? handle.close()
+        } else {
+            try? line.write(toFile: path, atomically: true, encoding: .utf8)
+        }
     }
 
     private func candidateStatus() -> CandidateStatus {
