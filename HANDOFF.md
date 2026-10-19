@@ -57,7 +57,11 @@
 2. **IT-01（进行中）**：报告 097 已在 A 拿到原生 TextEdit 所有权协议真实通过（normal/failure）与四路径 PASS，
    并修好 macOS 13「关闭文档后窗口对象被销毁」导致的误判；**未关闭**的子项：
    IMK 学习数据隔离、独有身份包注册/TIS 枚举、Safari/Terminal 协议、完整剪贴板与输入源恢复实机证据、微信草稿（BLOCKED）。
-3. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
+3. **ADR-215 已落地（待真机验证）**：`LAMPYRIS_SUPPORT_DIR`（绝对路径）可把宿主数据根重定向到私有目录，
+   配置与词库都随之一并隔离 → 之后即可安全地跑真实 IMK 验收（IT-01 的核心前提）。
+   验证方式：`launchctl setenv LAMPYRIS_SUPPORT_DIR /tmp/lampyris-imk-…` → 重启宿主 → 触发一次状态写入，
+   核对私有根出现 `config.toml`/`user-dictionary.tsv` 且**真实** `~/Library/Application Support/Lampyris/` 摘要不变 → `unsetenv`。
+4. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 

@@ -7,14 +7,25 @@ import Cocoa
 import ime
 
 enum ImePaths {
+    /// 验收/开发专用的数据根覆盖变量（ADR-215）。**只影响本进程**，不写入任何持久配置。
+    static let supportDirectoryEnvironmentKey = "LAMPYRIS_SUPPORT_DIR"
+
     /// 应用数据目录：`~/Library/Application Support/Lampyris/`（ADR-056）。
-    static func supportDirectory() -> URL? {
-        guard
-            let base = FileManager.default.urls(
-                for: .applicationSupportDirectory, in: .userDomainMask
-            ).first
-        else { return nil }
-        return base.appendingPathComponent("Lampyris", isDirectory: true)
+    ///
+    /// 设置了 `LAMPYRIS_SUPPORT_DIR`（必须是绝对路径）时改用该目录：真实 IMK 验收
+    /// 因此在私有根里读写 config/词库，不会碰用户数据（IT-01）。
+    static func supportDirectory(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        applicationSupport: URL? = FileManager.default.urls(
+            for: .applicationSupportDirectory, in: .userDomainMask
+        ).first
+    ) -> URL? {
+        if let override = environment[supportDirectoryEnvironmentKey], !override.isEmpty,
+           override.hasPrefix("/") {
+            return URL(fileURLWithPath: override, isDirectory: true)
+        }
+        guard let applicationSupport else { return nil }
+        return applicationSupport.appendingPathComponent("Lampyris", isDirectory: true)
     }
 
     /// 唯一配置文件路径（必要时创建父目录）。

@@ -236,4 +236,21 @@ LocalAcceptanceEvidence.record("candidate.hud-source",
              "off_screen_rejected": !offScreen,
              "no_rect": emptyLineLookback == nil])
 
+// ADR-215：验收专用数据根覆盖（绝对路径生效、相对路径忽略、未设置走 Application Support）。
+let baseSupport = URL(fileURLWithPath: "/Users/example/Library/Application Support")
+let defaultSupport = ImePaths.supportDirectory(environment: [:], applicationSupport: baseSupport)
+let overrideSupport = ImePaths.supportDirectory(
+    environment: ["LAMPYRIS_SUPPORT_DIR": "/tmp/lampyris-acceptance"], applicationSupport: baseSupport)
+let relativeIgnored = ImePaths.supportDirectory(
+    environment: ["LAMPYRIS_SUPPORT_DIR": "relative/dir"], applicationSupport: baseSupport)
+guard defaultSupport?.path == "/Users/example/Library/Application Support/Lampyris",
+      overrideSupport?.path == "/tmp/lampyris-acceptance",
+      relativeIgnored?.path == "/Users/example/Library/Application Support/Lampyris" else {
+    fail("support directory override")
+}
+LocalAcceptanceEvidence.record("paths.support-dir-override",
+    expected: "LAMPYRIS_SUPPORT_DIR 绝对路径生效，相对路径忽略，未设置走 Application Support",
+    actual: ["default": defaultSupport?.path ?? "nil", "override": overrideSupport?.path ?? "nil",
+             "relative": relativeIgnored?.path ?? "nil"])
+
 print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD")
