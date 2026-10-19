@@ -28,3 +28,25 @@
   因此后续「独有身份包 + 真实 IMK 输入」应走实体包路径（与 ADR-119 的物理对照一致）。
 - IT-01 仍不关闭：下一步是把实体独有包**安装/启用**后跑 `run-installed-textedit-probe.py`（真实 IMK 输入 + 恢复），
   以及 Safari/Terminal 原生协议、完整剪贴板恢复、微信草稿（BLOCKED）。
+
+## 追加：安装独有包后让它在系统设置里可添加 —— BLOCKED（本机缺 Developer ID）
+
+尝试把实体独有包装进 `~/Library/Input Methods/`（`LampyrisIMKTest-86bde0d0….app`，已 `lsregister -f`），
+结果 System Settings 的「＋」列表里**看不到**它，用户无法添加。查明的直接原因：
+
+| 检查 | 结果 |
+|---|---|
+| 签名 | `Signature=adhoc`、`TeamIdentifier=not set` |
+| Gatekeeper | `spctl -a -vv` → **rejected** |
+| 本机签名身份 | `security find-identity -v -p codesigning` → **0 valid identities**（无 Developer ID 证书） |
+| TIS | 父身份与 `.default` 模式**已枚举**（`enableCapable=true`），但 `TISEnableInputSource` 仍返回 0 不生效；启用列表中没有它 |
+
+结论：**不是缓存/重启问题**；ad-hoc 签名 + 本机无 Developer ID 的输入法不会出现在「＋」列表里。
+因此「实体独有包 → 真实 IMK 输入」这一子项在 A 上 **BLOCKED（缺签名能力）**，已清理临时 app 与私有根，
+用户输入源集合与真实数据未受影响（`tools/macos-probe/bin/tissrc list` 复核）。
+
+可选后续（择一）：
+1. 由 CI 产出「隔离身份 + Developer ID 签名」的包，再在 A 上安装验证（需一次注销）；
+2. 在 A 导入 Developer ID 证书（.p12）后本地签名重试；
+3. 接受报告 099（**已装正式包 + 私有数据根**）作为真实 IMK 输入证据，把本子项记为 SKIP/BLOCKED（缺签名），
+   在发布前用 IT-14 的签名包补验。
