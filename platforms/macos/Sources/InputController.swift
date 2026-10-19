@@ -284,13 +284,17 @@ final class LampyrisInputController: IMKInputController {
         let length = max(0, client.length())
         let selection = client.selectedRange()
         let bundle = client.bundleIdentifier() ?? ""
+        // 桌面/图标视图是“桌面层”窗口里的伪文本客户端（Finder 搜索框在普通窗口层）：
+        // 用它区分「Finder 桌面（无输入框）」与「Finder 搜索框（真输入框）」，见报告 096。
+        let windowLevel = client.windowLevel()
+        let allowsEmptyCaret = windowLevel >= 0
         let diag = Self.hudDiagEnabled
         let startIndex = Self.caretLookupIndex(
             selectionLocation: selection.location, length: length)
         guard let rect = StateHUDCaretResolver.resolve(
             startIndex: startIndex,
             hasText: length > 0,
-            allowsEmptyCaret: bundle != "com.apple.finder",
+            allowsEmptyCaret: allowsEmptyCaret,
             lineRect: { index in
                 var rect = NSRect.zero
                 _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
@@ -308,7 +312,7 @@ final class LampyrisInputController: IMKInputController {
         else { return nil }
         if diag {
             Self.hudDiag("pick bundle=\(bundle) len=\(length) sel=\(selection.location) "
-                + "rect=\(NSStringFromRect(rect))")
+                + "level=\(windowLevel) rect=\(NSStringFromRect(rect))")
         }
         guard StateHUDLayout.isOnScreen(caret: rect, screens: NSScreen.screens.map(\.frame)) else {
             return nil
