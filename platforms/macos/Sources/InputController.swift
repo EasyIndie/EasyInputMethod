@@ -266,27 +266,41 @@ final class LampyrisInputController: IMKInputController {
     }
 
     /// HUD 用光标矩形：无客户端/取不到时返回 nil（不显示，不退鼠标）。
-    /// `firstRect` 优先（终端类客户端只实现它）；`attributes` 仅在客户端有文本时兜底，
-    /// 所以空文档保留提示（插入点在文档开头），而没有文本输入框的 Finder 图标视图不再弹 HUD。
+    /// `attributes` 优先（文本视图线高矩形，位置准），`firstRect` 兜底（终端类客户端只实现它）。
+    /// 空文档保留提示（插入点在文档开头）；Finder 桌面/图标视图没有文本时不算有效光标（ADR-214）。
     private func hudCaretRect() -> NSRect? {
-        guard let client = client() ?? activeClient else { return nil }
+        // 只在客户端属于前台应用时才用缓存：切换应用后 IMK 可能还没激活新客户端，
+        // 用旧的 activeClient 会把提示放到上一个应用的插入点（报告 095 实测）。
+        let frontmost = NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+        let current = client()
+        let fallback = activeClient.flatMap { active in
+            active.bundleIdentifier() == frontmost ? active : nil
+        }
+        guard let client = current ?? fallback else { return nil }
         let length = max(0, client.length())
         let selection = client.selectedRange()
-        return StateHUDCaretResolver.resolve(
+        let bundle = client.bundleIdentifier() ?? ""
+        guard let rect = StateHUDCaretResolver.resolve(
             startIndex: Self.caretLookupIndex(
                 selectionLocation: selection.location, length: length),
             hasText: length > 0,
+            allowsEmptyCaret: bundle != "com.apple.finder",
+            lineRect: { index in
+                var rect = NSRect.zero
+                _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
+                return rect
+            },
             firstRect: { index in
                 var actual = NSRange()
                 return client.firstRect(
                     forCharacterRange: NSRange(location: index, length: 0),
                     actualRange: &actual)
-            },
-            lineRect: { index in
-                var rect = NSRect.zero
-                _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
-                return rect
             })
+        else { return nil }
+        guard StateHUDLayout.isOnScreen(caret: rect, screens: NSScreen.screens.map(\.frame)) else {
+            return nil
+        }
+        return rect
     }
 
     private func candidateStatus() -> CandidateStatus {

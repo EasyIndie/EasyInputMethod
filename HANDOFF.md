@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-19 10:05 / pi（deepseek-flash）· **A 机验收完成；HUD 两缺陷已按 ADR-214 修复，待新包复验**
+- 更新：2026-10-19 11:20 / pi（deepseek-flash）· **HUD 二次修正完成（报告 095），等新包 + 一次注销复验**
 - 分支：`main` @ `bc0347e`（本轮末尾另提交报告 094）
-- 阶段：A/B 均为 `17053e1`；A 报告 094：a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 ADR-214 改代码，等新包（报告 095）复验
+- 阶段：A 现装 `7f51687`（执行 `c38b1310…`，首版 HUD 修复）；报告 095 实测后已二次修正（attributes 优先 + Finder 门禁 + 屏内校验 + 前台应用校验），等 CI 出包复验
 - 最近验证：`make verify` 全绿（212 产物）；A 的 D2/D3 （设置首开分区、关于瞬时不出窗）本轮均未复现
 
 ## 1. 安装与数据
@@ -31,7 +31,10 @@
 
 ## 3. 当前未决
 
-- **HUD 两缺陷（报告 094 D7/D12，已修待验）**：①Finder 前台（无文本焦点）仍弹 HUD（终端客户端 length==0 却有 attributes 伪矩形）；②Terminal.app 有焦点光标却不弹 HUD（日志：attributes 连续 64 次无矩形）。**ADR-214 已采纳**：`StateHUDCaretResolver` 改为 `firstRect` 优先、`attributes` 仅对 `length()>0` 兜底；A 机 Swift 5.8.1 下同源编译的小程序 5/5 PASS，`candidate.hud-source` 断言已加。**待新签名包在 A/B 复验**（Terminal / Finder / TextEdit 空文档）。
+- **HUD（报告 094 D7/D12 → 095 二次修正，待复验）**：
+  - 已实测：`firstRect` 在 Finder 桌面**也有效**（换 API 治不了 D7）；TextEdit 用 `firstRect` 底边距行顶 13pt（attributes 为 8pt）；Terminal 的 `firstRect` 可用但垂直高 26pt（行高 18 + 8）；跨应用时缓存客户端会把 HUD 放到上一个应用。
+  - 已改（ADR-214 v2）：`attributes` 优先、`firstRect` 兜底；Finder 且 `length()==0` 不显示；光标中心必须在屏内；缓存客户端只在 `bundleIdentifier()` 等于前台应用时使用。本地同源 9/9 PASS。
+  - 待验：Terminal 应显示（实际偏移待测）、Finder 不应显示、TextEdit 空文档应显示且 8pt。
 - **A 机平台差异已清**：D2（设置首开分区）与 D3（关于瞬时不出窗）本轮均未复现；新记 D9（面板 531×70 vs B 538×70 字体度量）、D10（⇧ 合成事件成对）、D11（HUD 不在 AX 树内）。
 - **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
 - **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
@@ -49,9 +52,10 @@
 
 ### 4.2 下一步（按优先级）
 
-1. **HUD 修复复验（报告 095）— 包已就绪，等一次注销**
-   - 新包：`packaging/out/a-7f51687/candidate-ocC9YU/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-     （commit `7f51687`、zip `f6f834c8…`、执行 `c38b1310…`、codesign+staple ✔；CI 与 macOS 出包均 success）
+1. **HUD 复验（报告 095）— 等 CI 对二次修正出包 + 一次注销**
+   - 已装的是第一版 `7f51687`（执行 `c38b1310…`），其 HUD 规则已被证明不够（报告 095）；
+   - 新包：等 CI 对 `attributes 优先 + Finder 门禁` 的提交出 `Lampyris-macos-acceptance-*` 产物后，
+     用 `gh run download <run> -n <artifact> -D packaging/out/a-095b` 取包并核对 zip/执行 SHA；
    - 用户动作：切 ABC → 系统设置移除「萤火虫」→ 注销/重启（**会终止 agent 会话**）→ 开 pi 说「继续 095」
    - 登录后：
      ```sh

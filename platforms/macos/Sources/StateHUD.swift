@@ -90,23 +90,22 @@ final class StateHUDView: NSView {
     }
 }
 
-/// 光标矩形解析：优先 `firstRect`（终端等只实现这一条的客户端），
-/// `attributes` 仅在客户端确有文本时兜底，避免把 Finder 图标视图的“伪光标”当成输入框。
-/// 光标在空行/末尾换行时，向前回退到最近一个能取到矩形的字符（最多 64 个）。
+/// 光标矩形解析：`attributes`（AppKit 文本视图，线高矩形，位置准确）优先，
+/// `firstRect` 兜底（终端类客户端只实现这一条）。没有文本的“伪光标”（Finder 桌面/图标视图）
+/// 不允许仅凭空光标弹提示。光标在空行/末尾换行时向前回退，最多 64 个字符。
 enum StateHUDCaretResolver {
     static let lookbackLimit = 64
 
-    static func resolve(startIndex: Int, hasText: Bool,
-                        firstRect: (Int) -> NSRect,
-                        lineRect: (Int) -> NSRect) -> NSRect? {
+    static func resolve(startIndex: Int, hasText: Bool, allowsEmptyCaret: Bool,
+                        lineRect: (Int) -> NSRect,
+                        firstRect: (Int) -> NSRect) -> NSRect? {
+        guard hasText || allowsEmptyCaret else { return nil }
         var index = max(0, startIndex)
         for _ in 0..<lookbackLimit {
-            let primary = firstRect(index)
-            if StateHUDLayout.isValid(caret: primary) { return primary }
-            if hasText {
-                let fallback = lineRect(index)
-                if StateHUDLayout.isValid(caret: fallback) { return fallback }
-            }
+            let line = lineRect(index)
+            if StateHUDLayout.isValid(caret: line) { return line }
+            let first = firstRect(index)
+            if StateHUDLayout.isValid(caret: first) { return first }
             guard index > 0 else { break }
             index -= 1
         }
@@ -117,6 +116,13 @@ enum StateHUDCaretResolver {
 /// 光标跟随：插入点上方 8pt，水平居中并夹在屏幕可见区内。
 enum StateHUDLayout {
     static let gap: CGFloat = 8
+
+    /// 光标中心必须落在某块屏幕内：终端等客户端会返回翻转/像素坐标的矩形，
+    /// 直接使用会把提示放到屏幕外（报告 095 实测 y=-753）。
+    static func isOnScreen(caret: NSRect, screens: [NSRect]) -> Bool {
+        let center = NSPoint(x: caret.midX, y: caret.midY)
+        return screens.contains { $0.contains(center) }
+    }
 
     static func isValid(caret: NSRect?) -> Bool {
         guard let caret else { return false }

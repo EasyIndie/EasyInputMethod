@@ -193,40 +193,45 @@ LocalAcceptanceEvidence.record("candidate.hud-position",
     expected: "HUD 在插入点上方 8pt 居中并夹在屏内；零/空矩形不显示",
     actual: ["frame": NSStringFromRect(hudFrame), "edge": NSStringFromRect(edgeFrame),
              "zero_valid": StateHUDLayout.isValid(caret: .zero)])
-// 光标矩形来源：firstRect 优先，attributes 仅在客户端有文本时兜底（报告 094 的 D7/D12）。
+// 光标矩形来源：attributes 优先（文本视图位置准），firstRect 兜底（终端）；Finder 无文本不算光标（报告 094 D7/D12）。
 let caretLine = NSRect(x: 120, y: 300, width: 2, height: 20)
 let textViewEmptyDoc = StateHUDCaretResolver.resolve(
-    startIndex: 0, hasText: false,
-    firstRect: { _ in caretLine },
-    lineRect: { _ in .zero })
+    startIndex: 0, hasText: false, allowsEmptyCaret: true,
+    lineRect: { _ in caretLine }, firstRect: { _ in .zero })
 let terminalLike = StateHUDCaretResolver.resolve(
-    startIndex: 5, hasText: true,
-    firstRect: { index in index == 5 ? caretLine : .zero },
-    lineRect: { _ in .zero })
+    startIndex: 5, hasText: true, allowsEmptyCaret: true,
+    lineRect: { _ in .zero }, firstRect: { index in index == 5 ? caretLine : .zero })
 let finderLike = StateHUDCaretResolver.resolve(
-    startIndex: 0, hasText: false,
-    firstRect: { _ in .zero },
-    lineRect: { _ in caretLine })
-let textOnlyFallback = StateHUDCaretResolver.resolve(
-    startIndex: 3, hasText: true,
-    firstRect: { _ in .zero },
-    lineRect: { index in index == 1 ? caretLine : .zero })
+    startIndex: 0, hasText: false, allowsEmptyCaret: false,
+    lineRect: { _ in caretLine }, firstRect: { _ in caretLine })
+let textFallback = StateHUDCaretResolver.resolve(
+    startIndex: 3, hasText: true, allowsEmptyCaret: true,
+    lineRect: { index in index == 1 ? caretLine : .zero }, firstRect: { _ in .zero })
 let emptyLineLookback = StateHUDCaretResolver.resolve(
-    startIndex: 0, hasText: false,
-    firstRect: { _ in .zero },
-    lineRect: { _ in .zero })
+    startIndex: 0, hasText: false, allowsEmptyCaret: true,
+    lineRect: { _ in .zero }, firstRect: { _ in .zero })
+let attributesPreferred = StateHUDCaretResolver.resolve(
+    startIndex: 0, hasText: true, allowsEmptyCaret: true,
+    lineRect: { _ in caretLine }, firstRect: { _ in caretLine.offsetBy(dx: 0, dy: 40) })
+let onScreen = StateHUDLayout.isOnScreen(caret: caretLine, screens: [visible])
+let offScreen = StateHUDLayout.isOnScreen(
+    caret: NSRect(x: 100, y: 1609, width: 2, height: 20), screens: [visible])
 guard textViewEmptyDoc == caretLine,
+      onScreen, !offScreen,
       terminalLike == caretLine,
       finderLike == nil,
-      textOnlyFallback == caretLine,
+      textFallback == caretLine,
+      attributesPreferred == caretLine,
       emptyLineLookback == nil else {
     fail("state hud caret resolver")
 }
 LocalAcceptanceEvidence.record("candidate.hud-source",
-    expected: "firstRect 优先；attributes 仅在有文本时兜底；无文本伪光标（Finder）不显示",
+    expected: "attributes 优先（位置准）、firstRect 兜底（终端）；Finder 无文本不显示；空文档显示",
     actual: ["empty_doc": textViewEmptyDoc != nil, "terminal_first_rect": terminalLike != nil,
              "finder_pseudo_caret_hidden": finderLike == nil,
-             "text_only_fallback": textOnlyFallback != nil,
+             "line_fallback": textFallback != nil,
+             "attributes_preferred": attributesPreferred == caretLine,
+             "off_screen_rejected": !offScreen,
              "no_rect": emptyLineLookback == nil])
 
 print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD")
