@@ -2,6 +2,7 @@
 
 > 2026-10-19 当前状态以 HANDOFF.md 为准：**A/B 均已装 `17053e1`**；A 报告 094 验收 a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 **ADR-214** 修复，待新签名包复验（报告 095）；D2/D3 未复现。
 
+- [x] 2026-10-19 Finder 搜索框获焦无 HUD 修复（报告 096，`a278d70`）：判据改为「光标中心须落在前台应用普通窗口（层号≥0）内」+ 主屏取原点屏 + fail-open；真机确认 Finder 桌面不显示、搜索框显示、TextEdit 8pt、Terminal 显示
 - [x] 2026-10-19 HUD 光标解析两趟（attributes→firstRect）+ 前台应用校验 + Finder 门禁（ADR-214 / 报告 095）：A 真机确认 Finder 无 HUD、Terminal 有 HUD、TextEdit 文末与空文档 8pt、候选内联芯片正常；输入源增删仍手动（TIS API 返回 0 但不生效）
 - [x] 2026-10-19 HUD 光标来源改 firstRect 优先（ADR-214，报告 094 后修正）：用户澄清「空文档有光标应显示、终端应显示、Finder 无文本焦点不应显示」；`StateHUDCaretResolver` + `candidate.hud-source` 断言；待新包真机复验。
 - [x] 2026-10-19 A 机全新安装 `17053e1` + 新 UI 验收（报告094）：重启后 `--purge-data` 安装、旧包/旧数据进 `uninstalled/`；菜单 7 行 `⌥M/⇧/⌥F/⌥T/⌥P/⌥,/⌥A`、首次配置 `3bc1117c…`（全模板 `alt+f`、零 `ctrl+shift`）、`wq/nihao/kwwl`、⌘Z、四状态+模式循环、设置 8 项、关于页按钮同行/文字居中、候选头部 531×70/行高 26/翻页上提 2pt/悬停留白、D2/D3 未复现、`⌃Space`+Shift 不变全角均通过；**HUD 两项 FAIL**：Finder 前台（D7）与空文档（D8）仍显示，待 ADR。

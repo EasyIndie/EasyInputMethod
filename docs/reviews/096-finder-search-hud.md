@@ -46,3 +46,29 @@ Finder 的**搜索框也是 Finder 的文本客户端**，且空搜索框 `lengt
 | Finder 搜索框有文字 | 显示 HUD |
 | TextEdit 空文档 / 文末 | 显示，上方 8pt |
 | Terminal 有焦点光标 | 显示 |
+
+## 096c 真机复验（包 `a278d70`，执行 `0198bda1…`，不注销换包）
+
+安装：`make macos-fast-reinstall … ARGS=--stop-host` → 旧数据 `uninstalled/data.pyhmfo` → 用户加回输入源。诊断 `LAMPYRIS_HUD_DIAG=1`，验完 `unsetenv`。
+
+| 场景 | 结果 | 证据 |
+|---|---|---|
+| **Finder 桌面获焦** | **不显示** ✔ 诊断 `pick … rect={{61,84},{1,14}}` → `drop: caret not inside app window`，5 秒内 HUD 上屏 0 次 | `03-finder-desktop.txt` |
+| **Finder 搜索框获焦（空）** | **显示** ✔ `pick … rect={{860,1742},{1,16}}`（未 drop），HUD 上屏 1 次 | `04-finder-search.txt` |
+| **TextEdit 文末** | **显示且 8pt** ✔ 诊断回退到 `line0={{191,639},{1,13}}`（attributes，未退 firstRect）；`hudcg` HUD (143,104) 96×36，面板底 140 / 行顶 148 | `05-textedit.txt`、`te-on2/off2.png` |
+| TextEdit 空文档 | 显示 ✔ `line0={{125,639},{1,13}}`，HUD (77,104) | `06-textedit-empty.txt` |
+| **Terminal** | 显示 ✔ `pick … first256={{123,409},{0,18}}`，HUD (75,329)，截图差分命中 | `07-terminal.txt`、`term-on/off.png` |
+| 还原 | 输入源 ABC、config `15f49acf…`（mixed/中文标点/简体/半角）、宿主 76119、执行 `0198bda1…`、诊断 env 已清、宿主窗口 0 | `08-restore.txt` |
+
+### 中途修正记录（同一提交链）
+
+1. `85358b2` 试图用 `windowLevel()` 区分 Finder 桌面/搜索框 → **实测两者都是 19**，无效。
+2. `5d762d4` 改为「光标中心须落在前台应用普通窗口（层号 ≥0）内」→ Finder 两条都对了，但 **TextEdit 被误 drop**：
+   主屏高度取了 `NSScreen.screens.first`，本机它不是零点屏（1280×800 + 1920×1080 双屏）。
+3. `a278d70` 修：主屏高度取**原点 (0,0) 的屏**；并**fail-open**（看不到该应用常规窗口时放行）。→ 四条全部通过（上表）。
+
+### 结论
+
+- Finder 桌面（伪光标）与 Finder 搜索框（真输入框）**都能正确区分**，且不依赖任何应用名/bundle id。
+- TextEdit 文末恢复到 8pt；空文档、Terminal 均正常。
+- 已知残余：Terminal 的垂直间距约 16pt（`firstRect` 语义差异），不影响可读，暂不特化。
