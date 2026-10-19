@@ -34,7 +34,11 @@
 - **HUD（报告 094 D7/D12 → 095 二次修正，待复验）**：
   - 已实测：`firstRect` 在 Finder 桌面**也有效**（换 API 治不了 D7）；TextEdit 用 `firstRect` 底边距行顶 13pt（attributes 为 8pt）；Terminal 的 `firstRect` 可用但垂直高 26pt（行高 18 + 8）；跨应用时缓存客户端会把 HUD 放到上一个应用。
   - 已改（ADR-214 v2）：`attributes` 优先、`firstRect` 兜底；Finder 且 `length()==0` 不显示；光标中心必须在屏内；缓存客户端只在 `bundleIdentifier()` 等于前台应用时使用。本地同源 9/9 PASS。
-  - 待验：Terminal 应显示（实际偏移待测）、Finder 不应显示、TextEdit 空文档应显示且 8pt。
+  - 095c 实测：Finder 前台**已不显示** ✔；Terminal **已显示** ✔（CGWindowList.on 仍误报 false，用像素差分确认）；
+    TextEdit 文末仍偏移——诊断显示末字符 `attributes` 返回零矩形、上一版交替回退直接退回 firstRect；
+    已改**两趟**（先 attributes 全长回退，再 firstRect 全长回退），待 `c5c8b4a` 新包复验 8pt。
+  - 输入源自动化结论（实测）：`TISEnableInputSource` / `TISDisableInputSource` 都返回 0 但不生效 →
+    添加/移除各需用户手动一次；其余步骤（换包、选中、证据、还原）已脚本化。
 - **A 机平台差异已清**：D2（设置首开分区）与 D3（关于瞬时不出窗）本轮均未复现；新记 D9（面板 531×70 vs B 538×70 字体度量）、D10（⇧ 合成事件成对）、D11（HUD 不在 AX 树内）。
 - **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
 - **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
@@ -54,13 +58,14 @@
 
 1. **HUD 复验（报告 095）— 等 CI 对二次修正出包 + 一次注销**
    - 已装的是第一版 `7f51687`（执行 `c38b1310…`），其 HUD 规则已被证明不够（报告 095）；
-   - 新包已就绪：`packaging/out/a-095c/candidate-SimAjh/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-     （commit `08bcdf2`、zip `8093da27…`、执行 `a3a5a905…`、CI/出包 success）；装前先
+   - 新包已就绪：`packaging/out/a-095d/candidate-n0jIaG/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+     （commit `c5c8b4a`、zip `24deddff…`、执行 `2e072ddb…`、CI/出包 success）；不注销安装：
+     `make macos-fast-reinstall APP=… ARGS=--stop-host`（需先在系统设置移除输入源，脚本会校验）；
      `launchctl setenv LAMPYRIS_HUD_DIAG 1`，装后 HUD 每次解析会写 `$TMPDIR/lampyris-hud-diag.log`；
    - 用户动作：切 ABC → 系统设置移除「萤火虫」→ 注销/重启（**会终止 agent 会话**）→ 开 pi 说「继续 095」
    - 登录后：
      ```sh
-     make macos-clean-install APP=packaging/out/a-095c/candidate-SimAjh/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--input-source-removed
+     make macos-fast-reinstall APP=packaging/out/a-095d/candidate-n0jIaG/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--stop-host
      ```
      然后在系统设置添加「萤火虫」+ `selsrc`
    - 必验 5 条：①Terminal 有光标 → **应显示**；②Finder 前台 → **不应显示**；③TextEdit 空文档 → **应显示**；
