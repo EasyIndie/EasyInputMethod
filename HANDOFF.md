@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-19 12:55 / pi（deepseek-flash）· **HUD 三次修正（前台校验 + 诊断开关）待出包复验**
+- 更新：2026-10-19 14:40 / pi（deepseek-flash）· **HUD D7/D12 已修并真机复验通过（报告 095）**
 - 分支：`main` @ `bc0347e`（本轮末尾另提交报告 094）
-- 阶段：A 现装 `888b8d1`（执行 `9c211948…`）；095b 实测：空文档✔、TextEdit 偏移 22pt（回归，待诊断）、Finder 仍误显示（client() 陈旧）→ 已再加前台校验 + `LAMPYRIS_HUD_DIAG` 诊断，等新包
+- 阶段：A 装 `c5c8b4a`（执行 `2e072ddb…`）；报告 095：Finder 无 HUD ✔、Terminal 有 HUD ✔、TextEdit 文末/空文档 8pt ✔、内联芯片 ✔
 - 最近验证：`make verify` 全绿（212 产物）；A 的 D2/D3 （设置首开分区、关于瞬时不出窗）本轮均未复现
 
 ## 1. 安装与数据
@@ -31,14 +31,9 @@
 
 ## 3. 当前未决
 
-- **HUD（报告 094 D7/D12 → 095 二次修正，待复验）**：
-  - 已实测：`firstRect` 在 Finder 桌面**也有效**（换 API 治不了 D7）；TextEdit 用 `firstRect` 底边距行顶 13pt（attributes 为 8pt）；Terminal 的 `firstRect` 可用但垂直高 26pt（行高 18 + 8）；跨应用时缓存客户端会把 HUD 放到上一个应用。
-  - 已改（ADR-214 v2）：`attributes` 优先、`firstRect` 兜底；Finder 且 `length()==0` 不显示；光标中心必须在屏内；缓存客户端只在 `bundleIdentifier()` 等于前台应用时使用。本地同源 9/9 PASS。
-  - 095c 实测：Finder 前台**已不显示** ✔；Terminal **已显示** ✔（CGWindowList.on 仍误报 false，用像素差分确认）；
-    TextEdit 文末仍偏移——诊断显示末字符 `attributes` 返回零矩形、上一版交替回退直接退回 firstRect；
-    已改**两趟**（先 attributes 全长回退，再 firstRect 全长回退），待 `c5c8b4a` 新包复验 8pt。
-  - 输入源自动化结论（实测）：`TISEnableInputSource` / `TISDisableInputSource` 都返回 0 但不生效 →
-    添加/移除各需用户手动一次；其余步骤（换包、选中、证据、还原）已脚本化。
+- **HUD 已收口（报告 095）**：D7（Finder 误显示）与 D12（终端不显示）均已修复并在 A 真机确认；
+  TextEdit 文末偏移回到 8pt。差分只剩「Terminal 垂直约 16pt」（客户端矩形语义，不影响可读），
+  如需压到 8pt 要按客户端特化，另行评估。
 - **A 机平台差异已清**：D2（设置首开分区）与 D3（关于瞬时不出窗）本轮均未复现；新记 D9（面板 531×70 vs B 538×70 字体度量）、D10（⇧ 合成事件成对）、D11（HUD 不在 AX 树内）。
 - **终端 Meta 冲突**：裸 `⌥+字母` 与 zsh/readline 的 `M-f/M-b/M-d/M-t/M-l/M-p/M-m/M-a/M-,` 重叠；改 `⌃⌥`（VO 冲突）或英文模式让位，待用户决定。
 - **发布门禁**：I1 已完成；I0（IT-01/03）、I2（IT-10/11、16…22）、I3（IT-12/23）、I4（IT-13…15）未关闭。IT-13 对 `17053e1` 的 dry-run 已通过。
@@ -56,7 +51,7 @@
 
 ### 4.2 下一步（按优先级）
 
-1. **HUD 复验（报告 095）— 等 CI 对二次修正出包 + 一次注销**
+1. ✅ **HUD 已完成（报告 095）**；下一轮可直接进发布门禁
    - 已装的是第一版 `7f51687`（执行 `c38b1310…`），其 HUD 规则已被证明不够（报告 095）；
    - 新包已就绪：`packaging/out/a-095d/candidate-n0jIaG/extracted/Lampyris-0.1.0-universal/Lampyris.app`
      （commit `c5c8b4a`、zip `24deddff…`、执行 `2e072ddb…`、CI/出包 success）；不注销安装：

@@ -84,3 +84,30 @@ Terminal 的垂直偏移（26pt）是客户端矩形语义差异，先如实记�
 `StateHUDCaretResolver` 改成**两趟**：先把 `attributes` 沿回退走完（最多 64 个），一次都拿不到才用 `firstRect` 沿回退走。
 这样文末/空行仍用 attributes（单屏 8pt、多屏也在同一坐标系），只有真正不实现 attributes 的终端才走 firstRect。
 本地同源验证 **9/9 PASS**（新增“末字符 attributes 失效时先回退 attributes、不退回 firstRect”用例）。
+
+## 095d — 两趟解析真机复验（包 `c5c8b4a`，执行 `2e072ddb…`，不注销换包）
+
+安装：用户移除输入源 → `make macos-fast-reinstall … ARGS=--stop-host` → 用户添加输入源（全程未注销、未重启）。
+旧数据 → `uninstalled/data.RyS0Lt`。宿主开 `LAMPYRIS_HUD_DIAG=1`，验收后 `unsetenv`。
+
+| 场景 | 结果 | 证据 |
+|---|---|---|
+| **Finder 前台（无文本焦点）** | **不显示 HUD** ✔（最近 6 秒 `order window … op: 1` 计 0；诊断无输出=前台校验在解析前挡掉） | `05-finder.txt` |
+| **Terminal 有焦点光标** | **显示 HUD** ✔：诊断 `pick … first256={{123,409},{0,18}}`，截图像素差分命中面板 (75,321) 96×36，底边距光标行约 16pt | `06-terminal.txt`、`term-on/off.png` |
+| **TextEdit 文末光标** | **显示且回到 8pt** ✔：诊断 `line5..1={{0,0},{0,0}}`（attributes 在文末仍返回零矩形）→ 回退到 `line0={{191,639},{1,13}}` 命中 attributes，**没有**退回 firstRect；截图面板底边 140、文字行顶 148 → **8pt** | `03-hud-textedit.txt`、`on/off.png` |
+| TextEdit 空文档 | 显示 ✔ `line0={{125,639},{1,13}}`，同样 8pt | `04-hud-empty.txt`、`empty-on/off.png` |
+| 候选窗可见时切状态 | 走内联芯片 ✔（最近 5 秒 HUD 上屏 0 次，候选窗仍在） | `07-inline-chip.txt` |
+| 还原 | 输入源 ABC、`config` SHA `15f49acf…`（mixed/中文标点/简体/半角）、宿主 23275、执行 SHA `2e072ddb…`、诊断 env 已清 | `08-restore.txt` |
+
+### 结论
+
+- D7（Finder 无文本焦点误显示）：**已修复并真机确认**（前台应用校验 + Finder 无文本门禁）。
+- D12（终端有焦点不显示）：**已修复并真机确认**（`attributes` 两趟走完再退 `firstRect`）。
+- TextEdit 的 22pt 偏移：**已修复并真机确认 8pt**（根因是“末字符 attributes 返回零矩形”时提前退回 firstRect；两趟解析消除了它）。
+- 输入源自动化：`TISEnableInputSource` / `TISDisableInputSource` 都返回 0 但**不生效**，添加/移除仍需用户在系统设置各点一次；
+  其余步骤已由 `make macos-fast-reinstall` + `tissrc` + `.agents/skills/iterate-macos-ime` 固化。
+
+### 仍保留的客户端差异
+
+- Terminal 的 HUD 垂直偏移约 16pt（`firstRect` 给的行高矩形语义与 AppKit 的线高矩形不同），不影响“在光标上方”的可读性；
+  要压到 8pt 需要按客户端特化，暂不做（记录为已知差异）。
