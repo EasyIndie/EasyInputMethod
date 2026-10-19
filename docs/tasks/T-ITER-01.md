@@ -184,3 +184,11 @@ PR #38合入a292534；隔离公证运行38258905282成功，附件SHA/commit/目
   A 机 `security find-identity` = 0 个身份、ad-hoc 包 `spctl` rejected 且不出现在系统设置「＋」列表。
 - 未关闭原因：微信聊天隔离草稿仍 BLOCKED；完整剪贴板多类型恢复只有命名剪贴板与 mock 证据。
 - 决策（用户 2026-10-19 同意）：这些原生协议项**不绕过、不作 PASS**，留到 IT-14 用最终签名包与签名能力补验。
+
+## 2026-10-19 IT-14 前置：CI 签名隔离包（报告 102，进行中）
+
+- `c60bd88` / ADR-216：隔离公证 CI 支持 `arch=arm64|x86_64|universal`、目标根放宽到设备系统临时目录；run `39269308347` 出
+  **x86_64 + Notarized Developer ID** 的独有身份包（zip `d14a395b…`，Team `2N62934Y28`，`spctl` accepted），已装 A 并核对绑定/架构。
+- **新发现的阻塞**：macOS 13 上新装第三方输入法需**一次重新登录**才被系统发现——系统设置「＋」与菜单都看不到，
+  `TISSelectInputSource` 返回 `-50`、父源 `enabled` 仍 0（与 ADR-130/131 在 B 的现象一致）；停在登录前，不绕过。
+- 重新登录后按 HANDOFF §4.1 添加源并跑 textedit/safari/terminal 四路径，再把本节 BLOCKED 改判；生产包与用户数据未受影响。

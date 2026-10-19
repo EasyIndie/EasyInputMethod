@@ -1,0 +1,1 @@
+BLOCKED：选择独有模式失败：状态-50，当前com.sogou.inputmethod.sogouWB.wubi，预期cn.jokerhub.inputmethod.LampyrisIMKTest.fd15c596-2402-4fcb-94e4-5bfe5e47f8dc.default，父启用Optional(0)，可选Optional(1)，启用Optional(1)

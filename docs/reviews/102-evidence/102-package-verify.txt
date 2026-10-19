@@ -1,0 +1,18 @@
+run=39269308347
+workflow_commit=c60bd88
+/private/var/folders/x7/hhbm75rn6vz_37yjj5rsq9yc0000gn/T/lampyris-imk-fd15c596-2402-4fcb-94e4-5bfe5e47f8dc
+requested=x86_64
+built=x86_64
+c60bd889911f35a0c29eb7eaab04cd654a83088f
+d14a395bdb25bdd763ecdc9a3865d1ae73c953cb386cb89a6b0daa6ebae39c8d  LampyrisIMKTest.zip
+x86_64
+Executable=/Users/bot/Documents/EasyInputMethod/packaging/out/a-102/extracted/Lampyris.app/Contents/MacOS/LampyrisIMKTest
+Identifier=cn.jokerhub.inputmethod.LampyrisIMKTest.fd15c596-2402-4fcb-94e4-5bfe5e47f8dc
+Format=app bundle with Mach-O thin (x86_64)
+CodeDirectory v=20500 size=32280 flags=0x10000(runtime) hashes=1000+3 location=embedded
+Signature size=9044
+Timestamp=Oct 19, 2026 at 22:30:52
+Processing: /Users/bot/Documents/EasyInputMethod/packaging/out/a-102/extracted/Lampyris.app
+The validate action worked!
+packaging/out/a-102/extracted/Lampyris.app: accepted
+source=Notarized Developer ID
