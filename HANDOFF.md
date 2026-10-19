@@ -11,7 +11,7 @@
 
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
-| A（`bot`，Intel / macOS 13.7.8） | x86_64 | `07bbb2f`（执行 `681fb1c8…`，Notarized Developer ID） | `config` SHA `809e2cae…`（mixed/中文标点/简体/半角、显式 hotkey 8 项）；词库 210 行 `22c57d53…`；输入源 ABC；宿主 91040 |
+| A（`bot`，Intel / macOS 13.7.8） | x86_64 | `07bbb2f`（执行 `681fb1c8…`，Notarized Developer ID） | `config` SHA `809e2cae…`（mixed/中文标点/简体/半角、显式 hotkey 8 项）；词库 215 行；输入源**当前为 `Lampyris.default`**（用户可能正在使用，勿擅自切走）；宿主 91040 |
 | B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 093：UI 验收通过；未参与本轮 |
 
 - 取包（A）：CI `macOS Acceptance Package` → `packaging/out/a-098/candidate-jEPEDX`（commit `07bbb2f`）。
