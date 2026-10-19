@@ -69,7 +69,14 @@
 5. ✅ **独有身份包注册已摸清（报告 100）**：软链方式 `lsregister` 失败 `-10811`（BLOCKED），**实体包方式 PASS**
    （枚举到 2 个自有身份，清理后用户源集合不变）→ 后续 IMK 隔离验收走实体包。
    工具修复：`source-state.swift` 显式字典类型（Swift 5.8 可编）、`isolated-imk.py` 支持 `LAMPYRIS_IMK_TEST_OPT`（A 上 `-Onone` 仍需 14 分钟）。
-6. 下一步（IT-01 剩余）：实体独有包安装/启用 → `run-installed-textedit-probe.py`；再做 Safari/Terminal 协议、完整剪贴板恢复。
+6. **进行中：实体独有包安装/启用**（IT-01 最后一项 IMK 原生输入）
+   - 已构建并安装：`~/Library/Input Methods/LampyrisIMKTest-86bde0d0-217d-4a44-a6d4-38d0f60eda9e.app`
+     （ad-hoc 签名、独有身份 `cn.jokerhub.inputmethod.LampyrisIMKTest.<UUID>`、已 `lsregister -f` 注册）；
+   - 私根：`/private/var/folders/…/T/lampyris-imk-86bde0d0-…/`（含 `source-state` helper 与私有数据）；
+   - **待用户动作**：系统设置 → 键盘 → 文字输入 → ＋ → 添加「萤火虫隔离验收 …」；
+   - 之后：`python3 platforms/macos/tests/run-installed-textedit-probe.py <root> <root>/source-state`
+     （要求父源/模式均启用、`selection-state.json` 存在；该 journal 由 isolated-source 流程生成，需先补）；
+   - 收尾：移除该输入源 → 删除该 app → `rm -rf <root>` → 复核用户源集合与真实数据 SHA。
 7. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
