@@ -1,0 +1,17 @@
+== ADR-215 真机验证 2026-10-19T11:30:10Z
+host_env: LAMPYRIS_SUPPORT_DIR=/tmp/lampyris-imk-1792409305
+-- 私有根文件:
+total 16
+drwxr-xr-x   4 bot   wheel   128 Oct 19 19:30 .
+drwxrwxrwt  40 root  wheel  1280 Oct 19 19:28 ..
+-rw-------   1 bot   wheel  2067 Oct 19 19:30 config.toml
+-rw-------   1 bot   wheel    60 Oct 19 19:29 user-dictionary.tsv
+-- 私有根 config:
+mode = "mixed"  # 五笔优先，想不起编码时用拼音兜底。
+punctuation = "english"  # 选择中文或英文标点；快捷键切换会保存此偏好
+chinese_variant = "traditional"  # 选择简体或繁体输出；快捷键切换会保存此偏好
+-- 真实目录:
+total 0
+drwxr-xr-x   3 bot  staff    96 Oct 19 19:28 .
+drwx------+ 68 bot  staff  2176 Oct 13 02:33 ..
+drwxr-xr-x  20 bot  staff   640 Oct 19 19:28 uninstalled

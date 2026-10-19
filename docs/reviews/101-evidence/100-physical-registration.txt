@@ -1,0 +1,5 @@
+== 实体包注册对照 2026-10-19T12:38:11Z
+PASS physical registration: 2 owned sources
+Owned physical app removed; original source/enabled set unchanged
+RETAINED=/private/var/folders/x7/hhbm75rn6vz_37yjj5rsq9yc0000gn/T/lampyris-imk-07bd7c4c-891a-4eec-afb4-418963d5a8cb
+exit=0

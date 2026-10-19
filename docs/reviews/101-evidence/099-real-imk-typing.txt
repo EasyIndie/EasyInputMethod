@@ -1,0 +1,10 @@
+== 真实 IMK 验收（隔离根，每批发键前 guard）2026-10-19T12:00:03Z
+root=/tmp/lampyris-imk-accept-1792411185
+host_env=LAMPYRIS_SUPPORT_DIR=/tmp/lampyris-imk-accept-1792411185
+-- A. wq + 空格 → 你
+  候选头：  AXStaticText v=wq d=输入编码 h=wq   AXStaticText v=1/12 d=第1页，共12页 h=   AXStaticText v=混输 d=输入模式：混输 h=输入模式：混输   AXStaticText v=中文 d=语言：中文 h=语言：中文   AXStaticText v=半角 d=宽度：半角 h=宽度：半角   AXStaticText v=。 d=标点：中文标点 h=标点：中文标点 
+  提交后：[你]
+-- B. nihao + 空格 → 你好
+  提交后：[你你好]
+-- C. Esc 取消组合
+  Esc 后文本：[你你好]；候选窗：windows: 0 []

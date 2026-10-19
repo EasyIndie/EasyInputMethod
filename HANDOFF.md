@@ -80,7 +80,11 @@
      一并记 **BLOCKED（缺签名能力）**，转 **IT-14** 用最终签名包补验；不绕过、不伪造 PASS。
      IT-01 现有证据链：097 所有权 / 098 数据根 / 099 真实 IMK（正式包+私有根）/ 100 独有身份注册枚举。
    - 收尾：移除该输入源 → 删除该 app → `rm -rf <root>` → 复核用户源集合与真实数据 SHA。
-7. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
+7. ✅ **IT-03 机器可校验报告已建（`docs/reviews/101-acceptance-a-07bbb2f.json`）**：
+   `acceptance-results.py check` → `SUMMARY pass=6 fail=0 skip=0 blocked=17`，**exit 3（BLOCKED）**——如实反映门禁状态；
+   PASS 6 项（resource-isolation / state-restoration / core-input / package-validation / intel-macos13 / application-TextEdit）
+   证据副本在 `docs/reviews/101-evidence/`；其余 17 项逐条写了 BLOCKED 原因。
+8. 之后：IT-14 前置（让 CI 出「隔离身份 + Developer ID」包，补验已装独有包/Safari/Terminal/多屏/唤醒） → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 

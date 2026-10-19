@@ -1,0 +1,13 @@
+== 还原 2026-10-19T12:01:34Z
+private_root:
+total 16
+drwxr-xr-x   4 bot   wheel   128 Oct 19 20:01 .
+drwxrwxrwt  42 root  wheel  1344 Oct 19 19:59 ..
+-rw-------   1 bot   wheel  2066 Oct 19 20:01 config.toml
+-rw-------   1 bot   wheel    68 Oct 19 20:00 user-dictionary.tsv
+real_config=3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550
+real_dict=d6054fc7cfb082f5abe756f44fc06eb3ebf0bc417a0491c60cd15aaf49e07224
+sources: enabled com.apple.keylayout.ABC enabled com.apple.CharacterPaletteIM enabled com.sogou.inputmethod.sogouWB.wubi enabled com.sogou.inputmethod.sogouWB enabled cn.jokerhub.inputmethod.Lampyris.default enabled cn.jokerhub.inputmethod.Lampyris current com.apple.keylayout.ABC 
+host=none
+env=
+exec=681fb1c8fb0f016804732d20bb2b61d5e5f100c79f9b6b98a0427d0a3e47cc19

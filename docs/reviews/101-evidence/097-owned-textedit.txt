@@ -1,0 +1,5 @@
+== 修复后复跑 2026-10-19T10:30:29Z
+owned-probe normal: exit=0
+owned-probe failure: exit=0
+owned-library: exit=0
+TextEdit 窗口数: 0

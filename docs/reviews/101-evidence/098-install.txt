@@ -1,0 +1,31 @@
+./scripts/macos-fast-reinstall.sh --app "packaging/out/a-098/candidate-jEPEDX/extracted/Lampyris-0.1.0-universal/Lampyris.app" --stop-host
+▶ 1/4 确认输入源已移除（cn.jokerhub.inputmethod.Lampyris.default 不在启用列表）
+  已移除 ✔（当前输入源：com.apple.keylayout.ABC）
+▶ 2/4 确认没有在用旧包的宿主
+  宿主仍在运行：76119 /Users/bot/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris 
+  已终止空闲孤儿宿主 ✔
+▶ 3/4 全新安装（先移走旧包/旧数据）
+▶ 1/3 卸载旧包（含清理旧配置与词库）
+已移出输入法目录，备份在 /Users/bot/Library/Application Support/Lampyris/uninstalled/bundle.2bdVlz
+用户数据已移到 /Users/bot/Library/Application Support/Lampyris/uninstalled/data.7RXrb4；首次启动将按 Schema 默认值全新开始
+请注销/重新登录，再安装新包并重新添加输入源。
+▶ 2/3 安装新包
+Processing: /Users/bot/Documents/EasyInputMethod/packaging/out/a-098/candidate-jEPEDX/extracted/Lampyris-0.1.0-universal/Lampyris.app
+The validate action worked!
+/Users/bot/Documents/EasyInputMethod/packaging/out/a-098/candidate-jEPEDX/extracted/Lampyris-0.1.0-universal/Lampyris.app: accepted
+source=Notarized Developer ID
+安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。
+▶ 3/3 校验已安装产物
+/Users/bot/Library/Input Methods/Lampyris.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+执行 SHA：681fb1c8fb0f016804732d20bb2b61d5e5f100c79f9b6b98a0427d0a3e47cc19
+▶ 输入源
+missing cn.jokerhub.inputmethod.Lampyris.default
+未能自动选中输入源：请在系统设置 → 键盘 → 文字输入 里添加「萤火虫」。
+配置：尚未生成——首次按键/改设置时按 Schema 默认值创建（⌥M / ⌥Space / ⌥P / ⌥T / ⌥, / ⌥A，中英为单独 ⇧）
+✅ 全新安装完成。下一步：打开自建 TextEdit 文档按键一次，核对菜单右侧快捷键与 wq/nihao 输入。
+▶ 4/4 下一步（脚本不代劳）
+  1. 系统设置 → 键盘 → 文字输入 → ＋ → 中文（简体）→「萤火虫」；
+  2. tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
+  3. 首次按键前配置未生成；验收完记得把输入源还原成 ABC。

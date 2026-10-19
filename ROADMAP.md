@@ -2,6 +2,7 @@
 
 > 2026-10-19 当前状态以 HANDOFF.md 为准：**A/B 均已装 `17053e1`**；A 报告 094 验收 a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 **ADR-214** 修复，待新签名包复验（报告 095）；D2/D3 未复现。
 
+- [x] 2026-10-19 IT-03 机器可校验报告（`docs/reviews/101-acceptance-a-07bbb2f.json`）：schema 2、候选身份绑定执行 SHA/commit/双架构/Developer ID；`check` = pass 6 / blocked 17（exit 3），每项 PASS 附证据、BLOCKED 附原因
 - [x] 2026-10-19 独有包安装后添加 — **BLOCKED（本机缺 Developer ID）**：ad-hoc 签名 + `spctl rejected` + 本机 0 个签名身份 → 系统设置「＋」列表看不到；非重启问题；已清理临时包与私有根（报告 100 追加）
 - [x] 2026-10-19 独有身份包注册（报告 100）：软链 `lsregister -10811` BLOCKED（副作用已清理），**实体包 PASS**（2 个自有身份，清理后用户源集合不变）；顺带修 `source-state.swift` Swift 5.8 兼容与 `LAMPYRIS_IMK_TEST_OPT`
 - [x] 2026-10-19 真实 IMK 验收（隔离数据根，报告 099）：`wq→你`/`nihao→你好`/Esc 取消/候选头（输入码·页码·五笔·拼来源·状态芯片）/配置热更新（count 7→5 页数 39→54）全 PASS；真实 config/词库 SHA 未变；新增 `guard-focus.sh` 与“发键前必过闸门”铁律（处理 QQ 抢焦点事故）

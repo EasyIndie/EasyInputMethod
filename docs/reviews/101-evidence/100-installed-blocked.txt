@@ -1,0 +1,5 @@
+== 安装独有包尝试结果 2026-10-19T13:35:12Z
+签名: adhoc（无 Developer ID 证书，security find-identity = 0）
+spctl: rejected
+TIS: 已枚举父/模式身份但未进入启用列表；System Settings 的 + 列表看不到
+结论: BLOCKED（本机缺 Developer ID 签名），已清理 app 与私有根
