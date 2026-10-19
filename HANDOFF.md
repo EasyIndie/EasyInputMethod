@@ -54,12 +54,12 @@
 
 1. **HUD 复验（报告 095）— 等 CI 对二次修正出包 + 一次注销**
    - 已装的是第一版 `7f51687`（执行 `c38b1310…`），其 HUD 规则已被证明不够（报告 095）；
-   - 新包：等 CI 对 `attributes 优先 + Finder 门禁` 的提交出 `Lampyris-macos-acceptance-*` 产物后，
-     用 `gh run download <run> -n <artifact> -D packaging/out/a-095b` 取包并核对 zip/执行 SHA；
+   - 新包已就绪：`packaging/out/a-095b/candidate-mOIy9f/extracted/Lampyris-0.1.0-universal/Lampyris.app`
+     （commit `888b8d1`、zip `9d9838ba…`、执行 `9c211948…`、CI/出包 success）；
    - 用户动作：切 ABC → 系统设置移除「萤火虫」→ 注销/重启（**会终止 agent 会话**）→ 开 pi 说「继续 095」
    - 登录后：
      ```sh
-     make macos-clean-install APP=packaging/out/a-7f51687/candidate-ocC9YU/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--input-source-removed
+     make macos-clean-install APP=packaging/out/a-095b/candidate-mOIy9f/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--input-source-removed
      ```
      然后在系统设置添加「萤火虫」+ `selsrc`
    - 必验 5 条：①Terminal 有光标 → **应显示**；②Finder 前台 → **不应显示**；③TextEdit 空文档 → **应显示**；
