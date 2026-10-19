@@ -157,3 +157,11 @@ PR #38合入a292534；隔离公证运行38258905282成功，附件SHA/commit/目
 2026-10-16（ADR-194/报告043）：新增正式包独立账号数据边界检查，不修改宿主入口；当前日常账号被正确拒绝，未发键。仅账号路径前置，不等于正式IMK隔离、菜单动作保护或整卡通过。
 
 - ADR-195/报告044：TextEdit+正式宿主候选/学习区按钮逐动作AX保护已实现，本地注入回归与原生拒绝路径验证；实际AX及完整四路径恢复仍待。系统菜单代理不在范围。用户已恢复推送、全绿后合入/公证，安装另行确认。
+
+## 2026-10-19 A 机原生所有权复验（报告 097）
+
+- `run-owned-probe.py normal|failure` 在 A（macOS 13.7.8）**首次真实 PASS**；`run-owned-library.py` 四路径 PASS；探针后 TextEdit 窗口 0。
+- 修 `probe-owned-textedit.applescript`：macOS 13 关闭文档会销毁窗口对象，`visible of window id` 抛 `-1700`，
+  先 `exists window id testID` 再判 `visible`（等待循环与最终断言都加），避免把成功关闭误判为清理失败。
+- `make macos-offline-tests` 在 A 13/31 失败：Swift 5.8.1 不支持部分测试的异质字面量 + 高负载编译超时；Swift 侧门禁以 CI 为准。
+- 仍未关闭：IMK 学习数据隔离、独有身份包注册/TIS 枚举、Safari/Terminal 协议、完整剪贴板与输入源实机证据、微信草稿（BLOCKED）。

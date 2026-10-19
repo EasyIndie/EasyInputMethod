@@ -2,6 +2,7 @@
 
 > 2026-10-19 当前状态以 HANDOFF.md 为准：**A/B 均已装 `17053e1`**；A 报告 094 验收 a–g/i/j PASS；HUD 两缺陷（D7 Finder 误显示、D12 终端不显示）已按 **ADR-214** 修复，待新签名包复验（报告 095）；D2/D3 未复现。
 
+- [x] 2026-10-19 IT-01 原生所有权协议 A 机通过（报告 097）：`probe-owned-textedit.applescript` 修 macOS 13「关文档后窗口对象销毁」误判（先判 `exists window id` 再判 `visible`），normal/failure 与四路径全 PASS；IMK 学习数据隔离/独有源注册/Safari·Terminal 协议仍 BLOCKED
 - [x] 2026-10-19 Finder 搜索框获焦无 HUD 修复（报告 096，`a278d70`）：判据改为「光标中心须落在前台应用普通窗口（层号≥0）内」+ 主屏取原点屏 + fail-open；真机确认 Finder 桌面不显示、搜索框显示、TextEdit 8pt、Terminal 显示
 - [x] 2026-10-19 HUD 光标解析两趟（attributes→firstRect）+ 前台应用校验 + Finder 门禁（ADR-214 / 报告 095）：A 真机确认 Finder 无 HUD、Terminal 有 HUD、TextEdit 文末与空文档 8pt、候选内联芯片正常；输入源增删仍手动（TIS API 返回 0 但不生效）
 - [x] 2026-10-19 HUD 光标来源改 firstRect 优先（ADR-214，报告 094 后修正）：用户澄清「空文档有光标应显示、终端应显示、Finder 无文本焦点不应显示」；`StateHUDCaretResolver` + `candidate.hud-source` 断言；待新包真机复验。

@@ -31,6 +31,8 @@
 
 ## 3. 当前未决
 
+- **A 工具链差异（影响验收方式）**：`make macos-offline-tests` 在 A 必红——Swift 5.8.1 编译不了若干测试（异质字面量）
+  + 高负载下 `swiftc` 超时；Swift 侧以 CI（Swift 6.3.3）为准，A 只跑 Rust `make verify`、Python 离线回归与原生探针。
 - **HUD 已收口（报告 095/096）**：D7（Finder 桌面误显示）、D12（终端不显示）、Finder 搜索框不显示、TextEdit 文末偏移
   全部修复并在 A 真机确认。判据均为通用属性：客户端属于前台应用 / 光标在屏内 / **光标落在前台应用普通窗口（层号≥0）内** /
   `attributes` 两趟回退后才退 `firstRect`。剩余差异仅「Terminal 垂直约 16pt」（客户端矩形语义）。
@@ -49,26 +51,13 @@
 执行 SHA `535d546f…`；用户在系统设置添加「萤火虫」后 `selsrc` 选中；验收后输入源还原 ABC。
 结果：a–g、i、j 全 PASS；h 只有「无焦点」「空文档」两项仍弹 HUD（D7/D8）。
 
-### 4.2 下一步（按优先级）
+### 4.2 下一步
 
-1. ✅ **HUD 已完成（报告 095）**；下一轮可直接进发布门禁
-   - 已装的是第一版 `7f51687`（执行 `c38b1310…`），其 HUD 规则已被证明不够（报告 095）；
-   - 新包已就绪：`packaging/out/a-095d/candidate-n0jIaG/extracted/Lampyris-0.1.0-universal/Lampyris.app`
-     （commit `c5c8b4a`、zip `24deddff…`、执行 `2e072ddb…`、CI/出包 success）；不注销安装：
-     `make macos-fast-reinstall APP=… ARGS=--stop-host`（需先在系统设置移除输入源，脚本会校验）；
-     `launchctl setenv LAMPYRIS_HUD_DIAG 1`，装后 HUD 每次解析会写 `$TMPDIR/lampyris-hud-diag.log`；
-   - 用户动作：切 ABC → 系统设置移除「萤火虫」→ 注销/重启（**会终止 agent 会话**）→ 开 pi 说「继续 095」
-   - 登录后：
-     ```sh
-     make macos-fast-reinstall APP=packaging/out/a-095d/candidate-n0jIaG/extracted/Lampyris-0.1.0-universal/Lampyris.app ARGS=--stop-host
-     ```
-     然后在系统设置添加「萤火虫」+ `selsrc`
-   - 必验 5 条：①Terminal 有光标 → **应显示**；②Finder 前台 → **不应显示**；③TextEdit 空文档 → **应显示**；
-     ④TextEdit 有文本/空行回退 → 应显示且上方 8pt；⑤候选窗可见时仍走内联芯片（不弹 HUD）
-   - 判定失败时抓宿主日志（`log show --predicate 'process == "Lampyris"'`），看 `Get attributes for character` 次数与
-     `order window … op: 1` 是否出现
-2. 发布门禁：**IT-01 隔离验收 → IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release**。
-3. IT-01 只使用隔离测试应用，不碰真实文档。
+1. ✅ HUD（D7/D12/Finder 搜索框/TextEdit 8pt）已完成，见报告 095/096。
+2. **IT-01（进行中）**：报告 097 已在 A 拿到原生 TextEdit 所有权协议真实通过（normal/failure）与四路径 PASS，
+   并修好 macOS 13「关闭文档后窗口对象被销毁」导致的误判；**未关闭**的子项：
+   IMK 学习数据隔离、独有身份包注册/TIS 枚举、Safari/Terminal 协议、完整剪贴板与输入源恢复实机证据、微信草稿（BLOCKED）。
+3. 之后：IT-03 正式逐项报告 → IT-12 性能 → IT-14/15 → tag/Release。
 
 ### 4.2 发布门禁
 

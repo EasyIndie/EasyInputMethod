@@ -28,11 +28,13 @@ on run argv
                 if errorCode is not -2701 then error messageText number errorCode
             end try
             repeat 20 times
+                -- 关闭文档后 macOS 13 会直接销毁窗口对象：先判存在，再判可见（ADR-091 同款处理）。
+                if not (exists document fixtureName) and not (exists window id testID) then exit repeat
                 if not (exists document fixtureName) and not (visible of window id testID) then exit repeat
                 delay 0.1
             end repeat
             if exists document fixtureName then error "测试文档未关闭"
-            if visible of window id testID then error "测试窗口仍可见"
+            if (exists window id testID) and (visible of window id testID) then error "测试窗口仍可见"
             set remainingIDs to id of (windows whose visible is true)
             if (count of remainingIDs) is not (count of originalIDs) then error ("窗口清理数量不符：原=" & (count of originalIDs) & "，余=" & (count of remainingIDs) & "，目标存在=" & (exists window id testID))
             repeat with originalID in originalIDs

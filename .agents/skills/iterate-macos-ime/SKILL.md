@@ -62,6 +62,8 @@ tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
 | 前台应用会被抢 | `osascript`/`open -a` 之后前台可能不是目标应用 | 每次发键前打印 `frontmost`，必要时先 `AXPress`/点击焦点 |
 | 合成事件会粘修饰键 | 连续测试后 ⌥/⇧ 状态错乱 | 用 `keyUp` 清一遍修饰键（探针 `clear`） |
 | 截图/OCR | 部分机器无录屏权限时截图是旧图 | 两张不同画面比对文件 hash；不行就退回 AX/CG 取证 |
+| A 机 Swift 5.8 编不了部分测试 | `make macos-offline-tests` 里 `heterogeneous collection literal` + 高负载 `swiftc` 超时 | Swift 侧以 CI（Swift 6）为门禁；A 只跑 `make verify`、Python 离线回归、原生探针 |
+| 关闭文档后窗口对象被销毁（macOS 13） | AppleScript `visible of window id` 报 `-1700` | 先 `exists window id` 再判 `visible`（见报告 097） |
 
 ## 4. 验收脚本骨架（照抄改场景）
 
