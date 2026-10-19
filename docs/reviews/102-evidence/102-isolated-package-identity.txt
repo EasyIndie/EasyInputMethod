@@ -1,0 +1,11 @@
+# 报告 102：隔离包身份（A 机已装，2026-10-20 复核）
+
+- zip：packaging/out/a-102/LampyrisIMKTest.zip sha256 `d14a395bdb25bdd763ecdc9a3865d1ae73c953cb386cb89a6b0daa6ebae39c8d`
+- zip 记录：`TARGET-ARCH.txt` requested=built=`x86_64`；`SOURCE-COMMIT.txt` = `c60bd889911f35a0c29eb7eaab04cd654a83088f`
+- 已装可执行文件：`Contents/MacOS/LampyrisIMKTest` sha256 `8214147ad4d1a561e7a24ebdd64f97457cdc5c13703181caa57a1eb9f7c99ed2`，`lipo -archs` = `x86_64`
+- 身份：`cn.jokerhub.inputmethod.LampyrisIMKTest.fd15c596-2402-4fcb-94e4-5bfe5e47f8dc`，Team `2N62934Y28`
+- `codesign --verify --strict` 通过；`IMKTestRoot` 与私有根一致
+- 生产候选对照：`07bbb2f`（执行 SHA `681fb1c8…`）与本包的 IME 源码无差异——
+  `git diff 07bbb2f c60bd88 -- crates platforms/macos` 只涉及 `tests/isolated-imk.py`、
+  `tests/isolated-imk/source-state.swift`、`tests/test-isolated-imk.py`（测试工具），
+  `crates/` 与 `platforms/macos/Sources/` 为空。

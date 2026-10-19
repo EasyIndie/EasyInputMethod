@@ -151,7 +151,7 @@
     {
       "id": "application-Safari",
       "status": "BLOCKED",
-      "reason": "已装独有包/Safari 原生协议依赖 Developer ID 签名，A 无证书（报告 100）",
+      "reason": "隔离包已装，但 Safari 18.6 拒绝给 AppleScript 投递的 file:// 授予沙箱扩展（failed to obtain sandbox extension），探针按设计 BLOCK；与输入法无关，见报告 102 §5.3",
       "evidence": []
     },
     {
@@ -174,9 +174,12 @@
     },
     {
       "id": "application-Terminal",
-      "status": "BLOCKED",
-      "reason": "已装独有包/Terminal 原生协议依赖 Developer ID 签名；仅做过 HUD 手工观察",
-      "evidence": []
+      "status": "PASS",
+      "reason": "隔离身份 Developer ID 包（commit c60bd88，crates/ 与 platforms/macos/Sources/ 相对 07bbb2f 无差异）四路径全过；报告 102",
+      "evidence": [
+        "102-evidence/102-terminal-probes.txt",
+        "102-evidence/102-isolated-package-identity.txt"
+      ]
     }
   ]
 }

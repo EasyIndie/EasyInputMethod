@@ -1,0 +1,65 @@
+# 报告 102：隔离包 textedit 四路径（2026-10-20 07:47-07:57，A 机 bot）
+
+## installed-textedit-1ux3he3y
+```json
+{
+  "error": null,
+  "markedRangeCleared": true,
+  "markedRangeVerified": true,
+  "passed": true,
+  "prefixVerified": false,
+  "realDataUnchanged": true,
+  "scenario": "normal",
+  "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 0
+}
+```
+
+## installed-textedit-sne_spvz
+```json
+{
+  "error": null,
+  "markedRangeCleared": false,
+  "markedRangeVerified": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "failure",
+  "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 7
+}
+```
+
+## installed-textedit-kvsciyk6
+```json
+{
+  "error": null,
+  "markedRangeCleared": false,
+  "markedRangeVerified": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "INT",
+  "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 130
+}
+```
+
+## installed-textedit-x5gne70w
+```json
+{
+  "error": null,
+  "markedRangeCleared": false,
+  "markedRangeVerified": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "TERM",
+  "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 143
+}
+```

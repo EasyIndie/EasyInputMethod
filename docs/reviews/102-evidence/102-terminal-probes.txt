@@ -1,0 +1,91 @@
+# 报告 102：隔离包 terminal 四路径（2026-10-20 07:47-07:57，A 机 bot）
+
+## installed-terminal-par62sz1
+```json
+{
+  "bindingVerified": true,
+  "closed": true,
+  "focusVerified": true,
+  "passed": true,
+  "realDataUnchanged": true,
+  "receiver": {
+    "classification": "committed",
+    "outcome": "stopped",
+    "ttyRestored": true
+  },
+  "scenario": "normal",
+  "scope": "isolated Terminal fixed commit/prefix recovery; not final candidate",
+  "sourceAndEnabledRestored": true,
+  "tty": "/dev/ttys000",
+  "windowID": "399"
+}
+```
+
+## installed-terminal-lqfq6cwu
+```json
+{
+  "bindingVerified": true,
+  "closed": true,
+  "focusVerified": true,
+  "injected": 0,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "receiver": {
+    "classification": "empty",
+    "outcome": "stopped",
+    "ttyRestored": true
+  },
+  "scenario": "failure",
+  "scope": "isolated Terminal fixed commit/prefix recovery; not final candidate",
+  "sourceAndEnabledRestored": true,
+  "tty": "/dev/ttys000",
+  "windowID": "402"
+}
+```
+
+## installed-terminal-qr5wahdd
+```json
+{
+  "bindingVerified": true,
+  "closed": true,
+  "focusVerified": true,
+  "injected": 2,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "receiver": {
+    "classification": "empty",
+    "outcome": "stopped",
+    "ttyRestored": true
+  },
+  "scenario": "INT",
+  "scope": "isolated Terminal fixed commit/prefix recovery; not final candidate",
+  "sourceAndEnabledRestored": true,
+  "tty": "/dev/ttys000",
+  "windowID": "404"
+}
+```
+
+## installed-terminal-b6ohs8xp
+```json
+{
+  "bindingVerified": true,
+  "closed": true,
+  "focusVerified": true,
+  "injected": 15,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "receiver": {
+    "classification": "empty",
+    "outcome": "stopped",
+    "ttyRestored": true
+  },
+  "scenario": "TERM",
+  "scope": "isolated Terminal fixed commit/prefix recovery; not final candidate",
+  "sourceAndEnabledRestored": true,
+  "tty": "/dev/ttys000",
+  "windowID": "406"
+}
+```

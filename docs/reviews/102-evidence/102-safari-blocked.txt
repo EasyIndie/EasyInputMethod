@@ -1,0 +1,50 @@
+# 报告 102：Safari 组 BLOCKED（Safari 沙箱扩展，非输入法缺陷）
+
+三次尝试均停在 `owned-safari.applescript` 的「未取得独有窗口」守卫；
+`make new document with properties {URL:file://…}` 只得到空白窗口（`URL = missing value`）。
+
+## 结果文件（platforms/macos/build/，本地）
+
+### installed-safari-teoky8ig
+```json
+{
+  "error": "单文档探针退出码98",
+  "focusedTextareaVerified": false,
+  "ownedWindowClosed": false,
+  "passed": false,
+  "prefixVerified": false,
+  "realDataUnchanged": true,
+  "scenario": "normal",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 98
+}
+```
+
+### installed-safari-zh13zt6n
+```json
+{
+  "error": "单文档探针退出码98",
+  "focusedTextareaVerified": false,
+  "ownedWindowClosed": false,
+  "passed": false,
+  "prefixVerified": false,
+  "realDataUnchanged": true,
+  "scenario": "normal",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 98
+}
+```
+
+## Safari 日志根因（`log show --last 12m`）
+```
+Safari[2336] [com.apple.Safari:Sandbox] SandboxExtensionPresentationController: Error fetching token from extension controller without UI.
+Safari[2336] [com.apple.Safari:Sandbox] Loading URL request: failed to obtain sandbox extension: (null)
+Safari[2336] [com.apple.WebKit:Process] didFailProvisionalLoadForFrame: domain=<private>, code=-1202
+```
+
+## 对照实验（不改仓库文件）
+- 应用内 AppleScript `make new document` → 窗口 `URL = missing value`（空白「未命名」）。
+- `open -a Safari <同一个 file:// URL>` → 窗口 URL 正常加载为 fixture 页面，说明是 AppleScript 投递路径拿不到沙箱扩展。
+- 结论：探针守卫按设计 BLOCK；若要继续，需要把 create 改成 LaunchServices 投递（`open`）并同步改测试，属工具语义变更，未擅自实施。

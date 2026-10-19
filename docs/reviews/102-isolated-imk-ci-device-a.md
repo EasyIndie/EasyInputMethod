@@ -1,10 +1,10 @@
-# 102 — IT-14 前置：CI 出「隔离身份 + Developer ID」包（A 机进行中）
+# 102 — IT-14 前置：CI 出「隔离身份 + Developer ID」包（A 机实测完成，Safari 一组 BLOCKED）
 
-2026-10-19，A（Intel / macOS 13.7.8）。目标：让 CI 产出**隔离身份 + Developer ID 签名/公证**的测试包，
+2026-10-19/20，A（Intel / macOS 13.7.8）。目标：让 CI 产出**隔离身份 + Developer ID 签名/公证**的测试包，
 用来补验报告 101 里 `application-Safari` / `application-Terminal` / 「已装独有包输入」的 BLOCKED 项。
 
-**当前状态：出包与安装完成；系统发现卡在「需一次重新登录」，探针尚未执行。**
-本报告先固定已完成部分与阻塞证据，重新登录后由后续会话续写结果（见 §5）。
+**当前状态（2026-10-20 08:00）：重新登录后系统已发现隔离源，TextEdit 4/4、Terminal 4/4 PASS；
+Safari 组因 Safari 自身拒绝给 AppleScript 投递的 `file://` 授予沙箱扩展而 BLOCKED（非输入法缺陷）。**
 
 ## 1. 工具扩展（提交 `c60bd88`）
 
@@ -49,19 +49,75 @@
 与 ADR-130/131 在设备 B 的实测一致：**公证包本身通过校验，但新装第三方输入法的系统发现发生在登录时**；
 不重新登录时源不可见、`TISSelectInputSource = -50`。本轮不绕过（不写 `com.apple.HIToolbox` 偏好、不伪造启用）。
 
-## 5. 重新登录后的续做步骤（交接用）
+## 5. 重新登录后的实测结果（2026-10-20 07:39–08:00）
+
+### 5.1 重新登录解决了「需一次登录才被发现」
+
+| 检查 | 重新登录前（§4） | 重新登录后 |
+|---|---|---|
+| 自有父源 `enabled` | `false` | `true`（用户已在系统设置添加） |
+| 自有模式 `.default` `enabled` / `selectCapable` | `true` / `true` | `true` / `true` |
+| `TISSelectInputSource` | **`-50`** | 成功切换到 `.default`（见 §5.2 各运行目录的 `selected.json`） |
+| 系统设置「＋」与菜单栏菜单 | 看不到 | 可见并可添加（用户确认「现在有了」） |
+
+- 重新登录把 `$TMPDIR` 内的私有根清掉了；路径未变，按 ADR-131 在**同一 UUID 路径**重建空根（`0700` + `0600 owner`），
+  重新编译 `source-state`（1m12s，`-warnings-as-errors`），包的 `IMKTestRoot` 绑定仍然有效，无需重跑 CI。
+- 证据：`102-evidence/102-state-after-relogin.json`（自动可见、父源仍 0）、`102-state-after-add.json`（用户添加后两者皆 1）。
+
+### 5.2 探针结果
+
+| 组 | 场景 | 结果 | 证据 |
+|---|---|---|---|
+| TextEdit | normal / failure / INT / TERM | **4/4 PASS** | `102-evidence/102-textedit-probes.txt` |
+| Terminal | normal / failure / INT / TERM | **4/4 PASS** | `102-evidence/102-terminal-probes.txt` |
+| Safari | normal 等 4 场景 | **0/4 BLOCKED**（见 §5.3） | `102-evidence/102-safari-blocked.txt` |
+
+- 每组每次运行前都先 `source-state restore-original`，防止用户切源造成的源漂移（两次 miss 都按 BLOCK 处理，未伪造通过）。
+- 全部 12 次运行的 `result.json` 均为 `sourceAndEnabledRestored=true`、`realDataUnchanged=true`；
+  真实 `config.toml` / `user-dictionary.tsv` 摘要前后一致（探针内建校验，指向 `~/Library/Application Support/Lampyris`）。
+- 包身份与来源：`102-evidence/102-isolated-package-identity.txt`（zip sha256 `d14a395b…`、`x86_64`、commit `c60bd88`；
+  与生产候选 `07bbb2f` 相比 `crates/` 与 `platforms/macos/Sources/` 无差异）。
+
+### 5.3 Safari 组 BLOCKED 的根因（非输入法缺陷）
+
+- `owned-safari.applescript` 的 create 走 `make new document with properties {URL: file://…}`；
+  三次尝试都只得到空白窗口（`URL = missing value`），于是「独有窗口」守卫按设计 BLOCK。
+- Safari 日志：`com.apple.Safari:Sandbox … Error fetching token from extension controller without UI`、
+  `Loading URL request: failed to obtain sandbox extension: (null)`；WebKit 侧 `didFailProvisionalLoadForFrame code=-1202`。
+- 对照：`open -a Safari <同一 file:// URL>` 能正常加载（LaunchServices 会带沙箱扩展）。
+  **修法需要把 create 改为 LaunchServices 投递并同步改测试**（工具语义变更），本轮未擅自实施。
+- 过程中另遇到两个**环境**问题，均已按用户授权解决，不是缺陷：
+  1. 重新登录后 `osascript` 缺「辅助功能」授权（`-1728`）→ 用户为 Ghostty 勾选；
+  2. `ghostty → TextEdit` 的「自动化」授权被拒（`auth_value=0`，导致 AppleEvent `-1712` 超时）→ 用户在「自动化」里放开。
+
+## 6. 本轮执行记录（上一轮交接给本轮的步骤，已执行 1–4）
 
 1. 校验私有根仍存在且为 0700+`owner`；若登录后临时根被清掉，按 ADR-131 在**同一 UUID 路径**独占重建
-   （不恢复测试配置内容），并重新编译 `source-state`。
-2. 复核已装包：`codesign --verify --strict`、`stapler`、`IMKTestRoot`、UUID 与私有根一致。
-3. 系统设置添加「萤火虫隔离验收 fd15c596」（或确认 TIS 两个自有身份已 enabled）。
+   （不恢复测试配置内容），并重新编译 `source-state`。**→ 已做**（临时根被清，已重建空根）。
+2. 复核已装包：`codesign --verify --strict`、`stapler`、`IMKTestRoot`、UUID 与私有根一致。**→ 已做**。
+3. 系统设置添加「萤火虫隔离验收 fd15c596」（或确认 TIS 两个自有身份已 enabled）。**→ 用户已添加**。
 4. 以当时实际原源刷新 `selection-state.json`，再跑
    `run-installed-textedit-probe.py` / `run-installed-safari-probe.py` / `run-installed-terminal-probe.py`
    的 normal/failure/INT/TERM；每批发键前 `guard-focus.sh`，中途失焦立即记 BLOCKED。
-5. 收尾：`source-state restore-original` → `disable-owned` → 移除输入源与实体包 → 删除私有根 →
-   回读生产包执行 SHA/宿主/真实数据摘要，写入本报告并把报告 101 对应项从 BLOCKED 改判。
+   **→ TextEdit/Terminal 完成；Safari 阻塞（§5.3）。**
+5. 收尾（**未执行**）：`source-state restore-original` → `disable-owned` → 移除输入源与实体包 → 删除私有根 →
+   回读生产包执行 SHA/宿主/真实数据摘要。
+   本轮暂不卸载：留在机器上以便补跑 Safari 组，避免再经历一次「添加输入源需重新登录」。
+6. 遗留现场（本轮产生、待清理）：Safari 两个测试窗口（其一载入 diag fixture、其一空白）与 TextEdit 一个未命名文档；
+   临时目录 `platforms/macos/build/installed-*` 与私有根内 `safari-diag.*`（诊断脚本与 fixture）。
+
+## 7. 对报告 101 的影响
+
+- `application-Terminal`：**BLOCKED → PASS**。理由：在隔离身份 Developer ID 包（commit `c60bd88`，
+  其 `crates/` 与 `platforms/macos/Sources/` 相对候选 `07bbb2f` **无差异**）上四路径全过，
+  且每次运行都核对「输入源与启用集合还原」「真实数据未变」。证据：`102-evidence/102-terminal-probes.txt`、
+  `102-evidence/102-isolated-package-identity.txt`。
+- `application-TextEdit`：保持 PASS，新增本候选四路径独立证据（`102-evidence/102-textedit-probes.txt`）。
+- `application-Safari`：保持 **BLOCKED**，原因更新为「Safari 18.6 拒绝给 AppleScript 投递的 `file://` 授予沙箱扩展」，
+  与输入法无关；解阻方法见 §5.3（工具侧改成 LaunchServices 投递，需连带改测试）。
 
 ## 证据
 
-- `platforms/macos/build/acceptance-it14-a/`（本地，不入库）
-- 入库小证据：`docs/reviews/102-evidence/`（包核对、TIS 状态、`-50` 阻塞、恢复后状态）
+- `platforms/macos/build/installed-{textedit,terminal,safari}-*/`（本地，不入库）
+- 入库小证据：`docs/reviews/102-evidence/`：包核对与身份、重新登录前后 TIS 状态、`-50` 阻塞、
+  TextEdit/Terminal 各四路径 `result.json`、Safari 阻塞与日志根因
