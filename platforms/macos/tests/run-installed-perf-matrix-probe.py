@@ -25,6 +25,7 @@ source "$1"
 WORK="$2"; helper="$3"; root="$4"; waiter="$5"; scenario="$6"
 cleanup() {
     status=$?
+    rm -f "$root/perf-trace.enabled" 2>/dev/null || true
     if [ -n "${SYNTHETIC:-}" ] && [ -f "$root/user-dictionary.tsv.synthetic" ]; then
         mv -f "$root/user-dictionary.tsv.synthetic" "$root/user-dictionary.tsv" 2>/dev/null || true
     fi
@@ -70,7 +71,7 @@ ensure_host() {
     fi
     [ -n "$(host_pid)" ]
 }
-client_pid() { pgrep -f "TextEdit.app/Contents/MacOS/TextEdit" | head -1; }
+client_pid() { pgrep -x TextEdit | head -1; }
 host_pid() { pgrep -x LampyrisIMKTest | head -1; }
 rss_mib() {
     local pid=""
@@ -198,6 +199,30 @@ done
 printf '%s' "$(rss_mib)" > "$WORK/rss-after-wake.txt"
 (umask 077; printf true > "$WORK/passed.txt")
 ''',
+    'trace': r'''
+# 计时开关写在私有根内：宿主启动时读它（测试入口专有，产品路径不读）。
+printf '%s' "$WORK/trace.jsonl" > "$root/perf-trace.enabled"
+chmod 600 "$root/perf-trace.enabled"
+stop_host
+ensure_host || { echo "BLOCKED 带计时的宿主未起来" >&2; exit 98; }
+i=0
+while [ "$i" -le 14 ]; do
+    one_commit "$i" || exit 98
+    i=$((i + 1))
+done
+# 面板：默认 alt+, 打开设置；alt+a 打开关于。
+refocus || exit 98
+osascript -e 'tell application "System Events" to keystroke "," using {option down}' || exit 98
+sleep 1.5
+refocus >/dev/null 2>&1 || true
+osascript -e 'tell application "System Events" to keystroke "a" using {option down}' || exit 98
+sleep 1.5
+# 只有真的拿到内嵌计时样本才算通过（插桩接线未生效时必须 BLOCK）。
+[ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 宿主未产生内嵌计时样本（插桩接线待验证）" >&2; exit 98; }
+lines=$(wc -l < "$WORK/trace.jsonl" | tr -d ' ')
+[ "$lines" -ge 10 ] || { echo "BLOCKED 内嵌计时样本过少: $lines" >&2; exit 98; }
+(umask 077; printf true > "$WORK/passed.txt")
+''',
     'panels': r'''
 # 面板：从输入法菜单打开设置窗口，测「菜单项按下 → 宿主新窗口出现」。
 refocus || exit 98
@@ -280,7 +305,7 @@ def main():
         journal = json.loads((root / 'selection-state.json').read_text())
         if before['current'] != journal['current'] or len(before['owned']) != 2 or not all(item['enabled'] for item in before['owned']):
             raise ValueError('原源不匹配或独有父源/模式未启用')
-        environment = {**os.environ,
+        environment = {**os.environ, 'LC_ALL': 'en_US.UTF-8', 'LANG': 'en_US.UTF-8',
                        'FIXTURE_PATH': str(FIXTURE),
                        'AXMENU_PATH': str(LIBRARY.parents[3] / 'tools' / 'macos-probe' / 'bin' / 'axmenu')}
         process = subprocess.Popen(['bash', '-c', body, f'it12-{args.scenario}', str(LIBRARY), str(work),
@@ -335,6 +360,23 @@ def main():
                     'environment': {'system': platform.platform(), 'python': platform.python_version()},
                     'scope': 'IT-12 matrix sample on device A via AX polling (client update included, '
                              'IMK dispatch internals excluded); no product threshold is claimed'}
+        trace = work / 'trace.jsonl'
+        if trace.exists():
+            engine, total, panels = [], [], []
+            for line in trace.read_text().splitlines():
+                try:
+                    entry = json.loads(line)
+                except ValueError:
+                    continue
+                if entry.get('panel'):
+                    panels.append(entry.get('totalUs', 0) / 1000)
+                else:
+                    total.append(entry.get('totalUs', 0) / 1000)
+                    if entry.get('engineUs', -1) >= 0:
+                        engine.append(entry['engineUs'] / 1000)
+            if total:
+                evidence['inProcessMs'] = {'total': percentiles(total), 'engine': percentiles(engine),
+                                           'panels': percentiles(panels)}
         for name in ('synthetic', 'axmenu', 'sleep', 'host-after-kill'):
             path = work / f'{name}.txt'
             if path.exists():

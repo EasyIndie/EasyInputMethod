@@ -24,6 +24,11 @@ let root = URL(fileURLWithPath: rootPath).standardizedFileURL
 let prefix = "lampyris-imk-"
 let suffix = String(root.lastPathComponent.dropFirst(prefix.count))
 let canonicalApp = canonicalResources.deletingLastPathComponent().deletingLastPathComponent()
+// 仅测试入口：私有根内存在 perf-trace.enabled 时，文件内容即计时输出路径（ADR-218）。
+let traceMarker = root.appendingPathComponent("perf-trace.enabled")
+if let tracePath = try? String(contentsOf: traceMarker, encoding: .utf8) {
+    PerfTrace.configureForTest(tracePath: tracePath.trimmingCharacters(in: .whitespacesAndNewlines))
+}
 let installed = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Input Methods/LampyrisIMKTest-\(suffix).app")
 guard root.path == root.resolvingSymlinksInPath().path,
       root.deletingLastPathComponent().path == URL(fileURLWithPath: NSTemporaryDirectory()).resolvingSymlinksInPath().path,

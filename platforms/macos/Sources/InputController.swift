@@ -404,12 +404,16 @@ final class LampyrisInputController: IMKInputController {
 
     /// 打开非模态设置面板（ADR-070/075）：面板承载设置/词库/帮助/反馈/关于。
     @objc private func showSettings() {
+        let marks = PerfTrace.shared.begin()
         cancelClientComposition()
         SettingsPanel.shared.show(session: session)
+        PerfTrace.shared.finishPanel(marks, panel: "settings")
     }
 
     @objc private func showAbout() {
+        let marks = PerfTrace.shared.begin()
         AboutUI.show()
+        PerfTrace.shared.finishPanel(marks, panel: "about")
     }
 
     @objc private func performInputMenuCommand(_ sender: Any?) {
@@ -539,14 +543,19 @@ final class LampyrisInputController: IMKInputController {
         let codepoint = feedCodepoint(scalar, shift: flags.contains(.shift), session: session)
         guard let codepoint else { return false }
 
-        switch session.feed(codepoint) {
+        let trace = PerfTrace.shared.begin()
+        let outcome = session.feed(codepoint)
+        let engineStamp = PerfTrace.shared.stamp()
+        switch outcome {
         case .consumed:
             updateMarked(client, session.buffer)
-            showCandidates(client, session: session)
+            let shown = showCandidates(client, session: session)
+            PerfTrace.shared.finish(trace, engine: engineStamp, candidates: shown, committed: false)
             return true
         case .committed(let text):
             commit(text, to: client)
             candidateWindow?.hide()
+            PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
             return true
         case .passThrough:
             return false
@@ -593,11 +602,12 @@ final class LampyrisInputController: IMKInputController {
         client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
     }
 
-    private func showCandidates(_ client: IMKTextInput, session: ImeSession) {
+    @discardableResult
+    private func showCandidates(_ client: IMKTextInput, session: ImeSession) -> Int {
         let candidates = session.candidates(limit: candidateCount)
         guard !candidates.isEmpty else {
             candidateWindow?.hide()
-            return
+            return 0
         }
         let window = candidateWindow ?? CandidateWindow()
         candidateWindow = window
@@ -618,6 +628,7 @@ final class LampyrisInputController: IMKInputController {
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
             input: session.buffer, warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
+        return candidates.count
     }
 
     /// 光标常在文本末尾（location == length），查询 length 会得到空矩形；
