@@ -1,0 +1,12 @@
+{
+  "command": [
+    "osascript",
+    "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript",
+    "create",
+    "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.zfD9OE/textedit.zfD9OE.txt",
+    "textedit.zfD9OE.txt"
+  ],
+  "exit": 1,
+  "stdout": "",
+  "stderr": "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:1570:1588: execution error: BLOCKED 测试窗口ID重复 (-2700)\n"
+}

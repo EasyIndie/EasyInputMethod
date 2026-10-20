@@ -1,0 +1,32 @@
+[
+  {
+    "check": "textedit_sheets",
+    "exit": 0,
+    "stdout": ",\n",
+    "stderr": ""
+  },
+  {
+    "check": "textedit_controls",
+    "exit": 0,
+    "stdout": "missing value, missing value, missing value, missing value, missing value, missing value, 未命名, AXScrollArea, AXGroup, AXButton, AXButton, AXButton, AXMenuButton, AXStaticText\n",
+    "stderr": ""
+  },
+  {
+    "check": "settings_title",
+    "exit": 0,
+    "stdout": "文件与文件夹\n",
+    "stderr": ""
+  },
+  {
+    "check": "security_dialogs",
+    "exit": 0,
+    "stdout": "\n",
+    "stderr": ""
+  },
+  {
+    "check": "textedit_event",
+    "exit": 0,
+    "stdout": "1.21\n",
+    "stderr": ""
+  }
+]

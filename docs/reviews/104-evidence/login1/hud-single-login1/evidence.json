@@ -1,0 +1,1 @@
+{"passed": false, "status": 98, "error": "HUD 探针退出码98", "sourceAndEnabledRestored": true, "secondDisplay": false, "focusStayedInClient": true, "clientScreen": null, "candidate": null, "hud": null, "hudSecondDisplay": null, "hudDark": null, "captures": {}, "scope": "real IMK candidate/HUD window identity, placement and appearance; not full product acceptance"}

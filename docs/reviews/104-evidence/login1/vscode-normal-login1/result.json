@@ -1,0 +1,1 @@
+{"passed": false, "status": 98, "scenario": "normal", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true, "compositionVerified": false, "committedTextVerified": false, "error": "单文件探针退出码98", "scope": "isolated VS Code commit through an owned file; not full product acceptance"}

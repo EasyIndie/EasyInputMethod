@@ -1,0 +1,3 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:2660:2669: execution error: 变量“blankPath”没有定义。 (-2753)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-wygq9qsj/textedit.3qmHcJ
+BLOCKED TextEdit资源清理失败；保留临时文件

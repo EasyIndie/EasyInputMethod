@@ -1,0 +1,3 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:1453:1472: execution error: BLOCKED 测试文档身份不唯一 (-2700)
+BLOCKED TextEdit文档动作失败
+157:175: execution error: BLOCKED 测试对象焦点不符 (-2700)

@@ -1,0 +1,20 @@
+[
+  {
+    "check": "safari_windows",
+    "exit": 0,
+    "stdout": "\n",
+    "stderr": ""
+  },
+  {
+    "check": "safari_controls",
+    "exit": 0,
+    "stdout": ",\n",
+    "stderr": ""
+  },
+  {
+    "check": "screen_capture_permission",
+    "exit": 0,
+    "stdout": "true\n",
+    "stderr": ""
+  }
+]

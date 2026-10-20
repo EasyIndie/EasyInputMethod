@@ -1,0 +1,3 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:1870:1883: execution error: 这个表达式的某部分没有结果返回。 (-2763)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-5tkcfsju/textedit.amPQYr
+BLOCKED TextEdit资源清理失败；保留临时文件

@@ -1,0 +1,20 @@
+[
+  {
+    "query": "tell application \"TextEdit\" to get id of every window",
+    "exit": 0,
+    "stdout": "113\n",
+    "stderr": ""
+  },
+  {
+    "query": "tell application \"TextEdit\" to get name of every document",
+    "exit": 0,
+    "stdout": "未命名\n",
+    "stderr": ""
+  },
+  {
+    "query": "tell application \"TextEdit\" to get name of every window",
+    "exit": 0,
+    "stdout": "未命名\n",
+    "stderr": ""
+  }
+]

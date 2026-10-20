@@ -46,3 +46,16 @@
 - 源码包 SHA：`81c5eaa0d5858ed92216dd161ca447a0c6dc7e70f812f593b87b1c4fee0ec0a9`；SOURCE-COMMIT 与两种 CI head 均为 `8eb872ff9b585d8b769f6fb3784285dcc3d81606`。
 - 架构、摘要 sidecar、codesign strict、Notarized Developer ID、stapler 均通过。CI 已完成完整离线回归与离线重建；本机只验证归档，未安装正式包。
 - 当前机器报告：**pass 1 / fail 0 / skip 0 / blocked 22**，仅 package-validation PASS，check 预期返回 3。B 平台项仍未改判，任务未完成。
+
+## 重启后 B 实测（2026-10-20，进行中）
+
+- 用户重启并添加源后，私有根被系统清理；按 ADR-131 严格核验已装公证包后重建，三个 helper 重新以 warnings-as-errors 编译，实际原源 ABC，selection journal 为0600。父源与模式均已启用，UI scripting true。
+- **PASS**：TextEdit与Terminal各normal/failure/INT/TERM四路径；长组合、撤销；候选/HUD均onScreen且前台保持；arm64/macOS27实际运行覆盖。
+- TextEdit首次冷启动AppleEvent -1712；就绪后又发现既有空白窗口复用、空白对象销毁及未保存路径的no-result差异。按ADR-221仅修测试驱动，保留新窗口/唯一文档/精确路径守卫，随后四路径通过。早期诊断失败均保留，不合并为PASS。
+- **性能基线**：44按键样本+2面板；total p50/p95/max=13.4/21.2/37.7ms，engine=0.6/1.8/2.2ms，设置/关于57.7/274.7ms。仍是端到端p95超16ms，不能宣称达标。矩阵variant在首个暖机提交即未观察到AX变化；cold/dictionary共用此前置，未盲目重复，待等待器接线排查。
+- **BLOCKED**：Safari创建/后续只读窗口枚举均-1712（AX可读到空窗口集合）；VSCode本机未安装（发键前停止）；模式循环遇文档/焦点守卫停止；HUD截图`could not create image from rect`，暗色未执行；双屏仅1块且用户明确本次无第二屏。
+- VSCode尚未执行输入，按ADR-222先补齐每批输入/保存/关闭的前台、fixture与输入源守卫；9项离线回归通过。
+- 用户愿在普通探针结束后开启VoiceOver并配合睡眠；当前等待VoiceOver开启，之后再安排睡眠。二者未执行前均不改判。
+- 上述每批均记录原源/启用集合恢复与真实数据不变。某些创建失败未取得窗口ID，保留现场；收尾只清理能够用fixture路径和窗口ID严格证明归属的文档，不关闭未知“未命名”窗口。
+
+`arm64-macos27` 的PASS仅表示该架构/系统的实际运行覆盖已有证据；独立功能与应用项目仍按各自结果保留BLOCKED。原始证据位于`104-evidence/login1/`，产品候选始终8eb872f，测试工具版本另见ADR-221/222及后续提交。

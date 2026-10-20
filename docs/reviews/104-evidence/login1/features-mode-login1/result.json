@@ -1,0 +1,1 @@
+{"passed": false, "status": 98, "scenario": "mode", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "verified": false, "error": "mode 探针退出码98", "scope": "isolated IME behaviour through owned TextEdit; not full product acceptance", "mode-initial": "mixed"}

@@ -1,0 +1,25 @@
+["codesign", "--verify", "--strict", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+
+["spctl", "-a", "-vv", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+
+["xcrun", "stapler", "validate", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+Processing: /Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app
+The validate action worked!
+
+["ditto", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/LampyrisIMKTest.app"]
+
+["swiftc", "-O", "-warnings-as-errors", "-module-cache-path", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/module-cache", "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/isolated-imk/source-state.swift", "-o", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/source-state"]
+
+["swiftc", "-O", "-warnings-as-errors", "-module-cache-path", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/module-cache", "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/isolated-imk/hud-probe.swift", "-o", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/hud-probe"]
+
+["swiftc", "-O", "-warnings-as-errors", "-module-cache-path", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/module-cache", "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/isolated-imk/ax-text-wait.swift", "-o", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/ax-text-wait"]
+
+["/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/source-state", "state", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7"]
+{"current":"com.apple.keylayout.ABC","enabled":["cn.jokerhub.inputmethod.Lampyris","cn.jokerhub.inputmethod.Lampyris.default","cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7","cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default","com.apple.CharacterPaletteIM","com.apple.PressAndHold","com.apple.inputmethod.AinuIM.Ainu","com.apple.inputmethod.Kotoeri.KanaTyping.Japanese","com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese","com.apple.inputmethod.SCIM.ITABC","com.apple.keylayout.ABC","com.sogou.inputmethod.sogou","com.sogou.inputmethod.sogou.pinyin","com.sogou.inputmethod.sogouWB","com.sogou.inputmethod.sogouWB.wubi"],"owned":[{"enableCapable":true,"enabled":true,"id":"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default","label":"萤火虫隔离验收 3b030dda","selectCapable":true,"type":"TISTypeKeyboardInputMode"},{"enableCapable":true,"enabled":true,"id":"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7","label":"萤火虫隔离验收 3b030dda","selectCapable":false,"type":"TISTypeKeyboardInputMethodModeEnabled"}]}
+
+["/usr/bin/osascript", "-e", "with timeout of 5 seconds", "-e", "tell application \"System Events\" to get UI elements enabled", "-e", "end timeout"]
+true
+

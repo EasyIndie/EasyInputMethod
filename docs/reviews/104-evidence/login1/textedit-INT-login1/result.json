@@ -1,0 +1,1 @@
+{"passed": true, "status": 130, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "error": null, "markedRangeVerified": true, "markedRangeCleared": false, "scenario": "INT", "prefixVerified": true, "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance"}

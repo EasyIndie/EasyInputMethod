@@ -35,33 +35,46 @@
     },
     {
       "id": "core-input",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B自有TextEdit和Terminal的wq+空格均实际提交你，TextEdit预编辑范围与提交后清除均验证；两应用的故障/INT/TERM前缀恢复也通过。Safari兼容单列BLOCKED，不以本项替代",
+      "evidence": [
+        "104-evidence/login1/textedit-normal-login1-v5/result.json",
+        "104-evidence/login1/terminal-normal-login1/result.json"
+      ]
     },
     {
       "id": "long-composition",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27 自有TextEdit验证8字母提交中国、20字母组合有界且Esc取消恢复；源和真实数据恢复通过",
+      "evidence": [
+        "104-evidence/login1/features-long-login1/result.json"
+      ]
     },
     {
       "id": "undo",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27 自有TextEdit验证提交你后Command-Z回退为空；源和真实数据恢复通过",
+      "evidence": [
+        "104-evidence/login1/features-undo-login1/result.json"
+      ]
     },
     {
       "id": "focus",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B原生窗口证据：候选538x70与HUD94x36均onScreen=true、均在屏0，出现时前台均为文本编辑；本项只验证窗口可见性/前台保持，截图步骤失败另见视觉项",
+      "evidence": [
+        "104-evidence/login1/hud-single-login1/candidate-0.json",
+        "104-evidence/login1/hud-single-login1/hud-0.json"
+      ]
     },
     {
       "id": "mode-switch",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "中断前模式探针触发TextEdit文档身份/焦点守卫停止，原源和真实数据恢复；不得计通过",
+      "evidence": [
+        "104-evidence/login1/features-mode-login1/result.json",
+        "104-evidence/login1/features-mode-login1/driver-stderr.txt"
+      ]
     },
     {
       "id": "sleep-wake",
@@ -78,20 +91,28 @@
     {
       "id": "light-dark-layout",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "B单屏HUD在取亮色截图时screencapture报could not create image from rect；未切至暗色，不以CG窗口坐标代替亮暗视觉证据",
+      "evidence": [
+        "104-evidence/login1/hud-single-login1/evidence.json",
+        "104-evidence/login1/hud-single-login1/driver-stderr.txt"
+      ]
     },
     {
       "id": "multi-display",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "reason": "B系统仅识别1块显示器；用户明确本次无第二块屏幕，不执行换屏跟随验收",
       "evidence": []
     },
     {
       "id": "imk-performance",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "仅基线采样PASS，不宣称16ms达标：B内嵌trace44按键+2面板，total p50/p95/max=13.4/21.2/37.7ms，engine=0.6/1.8/2.2ms；设置/关于57.7/274.7ms。端到端p95超过16ms。AX矩阵variant首个暖机样本等待不到变化而BLOCKED，未执行cold/dictionary以免重复同一共享前置失败；不含IMK dispatch内部与合成器完成",
+      "evidence": [
+        "104-evidence/login1/perf-trace.jsonl",
+        "104-evidence/login1/perf-trace-summary.txt",
+        "104-evidence/login1/matrix-variant-login1/result.json",
+        "104-evidence/login1/matrix-variant-login1/driver-stderr.txt"
+      ]
     },
     {
       "id": "package-validation",
@@ -112,9 +133,17 @@
     },
     {
       "id": "arm64-macos27",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27.0.1/arm64实际运行同候选8eb872f的arm64公证隔离包：TextEdit/Terminal各四路径、长组合/撤销与44样本内嵌trace通过；原生候选/HUD在屏且客户端保有前台。此平台运行覆盖不替代独立列出的Safari/VSCode/亮暗/双屏/VO/睡眠及mode阻断",
+      "evidence": [
+        "104-evidence/isolated-identity.json",
+        "104-evidence/login1/login-source.json",
+        "104-evidence/login1/textedit-normal-login1-v5/result.json",
+        "104-evidence/login1/terminal-normal-login1/result.json",
+        "104-evidence/login1/features-long-login1/result.json",
+        "104-evidence/login1/features-undo-login1/result.json",
+        "104-evidence/login1/perf-trace-summary.txt"
+      ]
     },
     {
       "id": "independent-reproduction",
@@ -130,15 +159,23 @@
     },
     {
       "id": "application-TextEdit",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27：正常提交与failure/INT/TERM前缀中断恢复四路径通过；正常路径验证预编辑范围/提交后清除，每次原源/启用集合恢复且真实数据未变。创建驱动兼容修复见ADR-221，早期失败证据保留",
+      "evidence": [
+        "104-evidence/login1/textedit-normal-login1-v5/result.json",
+        "104-evidence/login1/textedit-failure-login1/result.json",
+        "104-evidence/login1/textedit-INT-login1/result.json",
+        "104-evidence/login1/textedit-TERM-login1/result.json"
+      ]
     },
     {
       "id": "application-Safari",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "首次冷启动创建独有页面时AppleEvent -1712，未发键，原源/启用集合恢复且真实数据未变；后续待应用就绪后单独复验",
+      "evidence": [
+        "104-evidence/login1/safari-normal-login1/result.json",
+        "104-evidence/login1/safari-normal-login1/driver-stderr.txt"
+      ]
     },
     {
       "id": "application-Chrome",
@@ -149,8 +186,11 @@
     {
       "id": "application-VSCode",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "本机未安装Visual Studio Code，open明确报无法找到应用；已在发键前停止并恢复。未安装新软件",
+      "evidence": [
+        "104-evidence/login1/vscode-normal-login1/result.json",
+        "104-evidence/login1/vscode-normal-login1/driver-stderr.txt"
+      ]
     },
     {
       "id": "application-WeChat",
@@ -160,9 +200,14 @@
     },
     {
       "id": "application-Terminal",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27 同一候选隔离包四路径提交/前缀中断恢复通过，窗口/TTY/PID与焦点绑定、TTY恢复、原源及启用集合恢复、真实数据不变均验证",
+      "evidence": [
+        "104-evidence/login1/terminal-normal-login1/result.json",
+        "104-evidence/login1/terminal-failure-login1/result.json",
+        "104-evidence/login1/terminal-INT-login1/result.json",
+        "104-evidence/login1/terminal-TERM-login1/result.json"
+      ]
     }
   ]
 }

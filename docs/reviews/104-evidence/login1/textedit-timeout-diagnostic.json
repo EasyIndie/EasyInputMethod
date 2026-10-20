@@ -1,0 +1,60 @@
+[
+  {
+    "command": [
+      "pgrep",
+      "-x",
+      "LampyrisIMKTest"
+    ],
+    "exit": 0,
+    "stdout": "2285\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "ps",
+      "-axo",
+      "pid=,stat=,comm="
+    ],
+    "exit": 0,
+    "stdout": "  447 Ss   /System/Library/PrivateFrameworks/TCC.framework/Support/tccd\n  667 S    /System/Library/CoreServices/CoreServicesUIAgent.app/Contents/MacOS/CoreServicesUIAgent\n  675 S    /System/Library/PrivateFrameworks/TCC.framework/Support/tccd\n 2207 S    /System/Applications/TextEdit.app/Contents/MacOS/TextEdit\n 2285 S    /Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app/Contents/MacOS/LampyrisIMKTest",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/source-state",
+      "state",
+      "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7"
+    ],
+    "exit": 0,
+    "stdout": "{\"current\":\"com.apple.keylayout.ABC\",\"enabled\":[\"cn.jokerhub.inputmethod.Lampyris\",\"cn.jokerhub.inputmethod.Lampyris.default\",\"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7\",\"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default\",\"com.apple.CharacterPaletteIM\",\"com.apple.PressAndHold\",\"com.apple.inputmethod.AinuIM.Ainu\",\"com.apple.inputmethod.Kotoeri.KanaTyping.Japanese\",\"com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese\",\"com.apple.inputmethod.SCIM.ITABC\",\"com.apple.keylayout.ABC\",\"com.sogou.inputmethod.sogou\",\"com.sogou.inputmethod.sogou.pinyin\",\"com.sogou.inputmethod.sogouWB\",\"com.sogou.inputmethod.sogouWB.wubi\"],\"owned\":[{\"enableCapable\":true,\"enabled\":true,\"id\":\"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default\",\"label\":\"萤火虫隔离验收 3b030dda\",\"selectCapable\":true,\"type\":\"TISTypeKeyboardInputMode\"},{\"enableCapable\":true,\"enabled\":true,\"id\":\"cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7\",\"label\":\"萤火虫隔离验收 3b030dda\",\"selectCapable\":false,\"type\":\"TISTypeKeyboardInputMethodModeEnabled\"}]}\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "osascript",
+      "-e",
+      "with timeout of 3 seconds",
+      "-e",
+      "tell application \"System Events\" to get name of first process whose frontmost is true",
+      "-e",
+      "end timeout"
+    ],
+    "exit": 0,
+    "stdout": "System Settings\n",
+    "stderr": ""
+  },
+  {
+    "command": [
+      "osascript",
+      "-e",
+      "with timeout of 3 seconds",
+      "-e",
+      "tell application \"System Events\" to tell process \"TextEdit\" to get name of every window",
+      "-e",
+      "end timeout"
+    ],
+    "exit": 0,
+    "stdout": "未命名\n",
+    "stderr": ""
+  }
+]

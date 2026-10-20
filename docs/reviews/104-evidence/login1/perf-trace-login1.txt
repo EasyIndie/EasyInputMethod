@@ -1,0 +1,10 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:389:391: execution error: “TextEdit”遇到一个错误：AppleEvent已超时。 (-1712)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.zfD9OE
+第 1 轮宿主未接客，重试
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:389:391: execution error: “TextEdit”遇到一个错误：AppleEvent已超时。 (-1712)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.YIQiEk
+第 2 轮宿主未接客，重试
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:389:391: execution error: “TextEdit”遇到一个错误：AppleEvent已超时。 (-1712)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.gEKc8K
+第 3 轮宿主未接客，重试
+BLOCKED 宿主未接客：3 轮都没有候选窗

@@ -1,0 +1,19 @@
+{
+  "passed": true,
+  "scenario": "TERM",
+  "scope": "isolated Terminal fixed commit/prefix recovery; not final candidate",
+  "windowID": "248",
+  "tty": "/dev/ttys002",
+  "bindingVerified": true,
+  "focusVerified": true,
+  "prefixVerified": true,
+  "injected": 15,
+  "sourceAndEnabledRestored": true,
+  "realDataUnchanged": true,
+  "receiver": {
+    "classification": "empty",
+    "outcome": "stopped",
+    "ttyRestored": true
+  },
+  "closed": true
+}

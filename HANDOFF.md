@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 / Codex（GPT-6），B 验收进行中（报告 104）。
-- 候选：`8eb872f`；arm64 公证隔离包已安装，等待用户添加「萤火虫隔离验收 3b030dda」，未发键。
-- 正式 universal run `39396417287` 已成功；报告 103 原始结论保留；main 已含探针守卫提交 `242cbf3`（产品候选仍为 `8eb872f`）。
-- 最近验证：make verify 全绿；ADR-219/220 相关专项回归通过；候选 CI 的完整离线回归/公证/重建成功；机器报告104暂为 pass 1 / blocked 22。
+- 更新：2026-10-20 / Codex（GPT-6），B 重启后已添加隔离源，报告104进行中。
+- 产品候选 `8eb872f`，工作区main基线 `4591677`；ADR-221/222探针兼容/守卫工程完成，make verify全绿；报告104现pass9/blocked14，arm64项已PASS。
+- B已通过TextEdit/Terminal各四路径、长组合/撤销；trace n44：total p50/p95=13.4/21.2ms，engine=0.6/1.8ms，端到端p95未达16ms。
+- 当前ABC已恢复；单屏HUD截图失败，窗口几何/前台证据已采；VSCode未安装、双屏用户明确缺硬件；普通探针结束后用户愿配合VoiceOver/睡眠。
 
 ## 1. 安装与数据
 
@@ -47,7 +47,9 @@
 
 ## 4. 下一步
 
-0. **B 当前断点**：等待用户添加隔离源；必要时重新登录。根 `/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`，三个 helper 已编译，selection journal 尚未创建；登录后按 ADR-131 校验根/owner，再只读 source-state，记录实际原源后建 journal。隔离 run `39396425237` 成功，SOURCE=`8eb872f`；正式 run `39396417287` 已成功。ADR-220 性能守卫已在 `242cbf3` 提交并推送，相关回归与 make verify 通过；候选产品不变。完整身份、基线和平台差异见报告 104 及 `104-evidence/`。
+- **B 实际续跑断点**：HUD已结束BLOCKED（截图失败；原生候选/HUD均在屏），输出 `platforms/macos/build/acceptance-b-104/hud-single-login1.txt`；根已按ADR-131重建且selection journal原源ABC。根/包完整身份仍见104。长组合/撤销PASS、mode因文档/焦点守卫BLOCKED；Safari冷启动-1712待有界复核；VSCode无安装，不发键；双屏无硬件。矩阵variant首个暖机AX等待超时，cold/dictionary共享前置未重复。VSCode未安装；Safari后续只读窗口枚举仍-1712。机器报告已凭TextEdit/Terminal四路径、长组合/撤销、trace等证据将arm64-macos27改PASS，但不关闭独立BLOCKED项。已向用户请求现在开启VoiceOver（尚未回复，pgrep未运行）；完成后再单独安排睡眠，先提示用户保存工作。归档后更新机器报告和HANDOFF；ADR-221/222已make verify及专项验证；后续新增验收证据仍需验证提交。不得重复运行已PASS场景，除非验证新工具改动。
+
+0. **B 前次登录前断点（已完成）**：等待用户添加隔离源；必要时重新登录。根 `/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`，三个 helper 已编译，selection journal 尚未创建；登录后按 ADR-131 校验根/owner，再只读 source-state，记录实际原源后建 journal。隔离 run `39396425237` 成功，SOURCE=`8eb872f`；正式 run `39396417287` 已成功。ADR-220 性能守卫已在 `242cbf3` 提交并推送，相关回归与 make verify 通过；候选产品不变。完整身份、基线和平台差异见报告 104 及 `104-evidence/`。
 1. **决定 p95 超标是否立项**：先写 ADR（是否把「按键→候选可见」纳入门禁、目标值与测量口径），再决定是否优化 IMK 回写路径。
 2. **B 机复采**：CI 出 arm64 隔离包 → 按 ADR-218 流程采 `run-installed-perf-trace.sh` + 矩阵，补齐 `arm64-macos27`。
 3. **锁定 RC 后**：安装生产包做最终实机验收（点击/VoiceOver/多屏/客户端）并开始 IT-23 的 5 个工作日。
@@ -63,6 +65,8 @@
 - 一轮只测一个包；每批发键前有焦点/身份守卫；中途失源即记 BLOCKED。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：B重启后源可用，私有根重建/ABC恢复journal已建；TextEdit/Terminal四路径及长组合/撤销PASS，内嵌trace44样本total13.4/21.2ms、engine0.6/1.8ms（p50/p95）。TextEdit冷启动与窗口复用兼容按ADR-221修复；VSCode逐批守卫ADR-222本地回归9例通过但应用未装；单屏HUD截图BLOCKED（几何在屏），矩阵AX等待BLOCKED；报告104现pass9/blocked14，arm64项PASS。VO/睡眠待用户配合；修改与证据已落盘，真实数据摘要未变。
 
 - 2026-10-20 / Codex：探针修复 `8eb872f` 已推送；同提交 arm64 公证隔离包安装成功（strict/signature/stapler/架构与绑定均通过），等待用户添加独有源/必要时重新登录，未发键。正式 universal 构建已成功；ADR-220 补齐性能逐动作守卫及源检查，相关回归与 make verify 通过。真实执行/config/词库未改，当前源按用户选择保留 ABC；报告 104 与证据已落盘。
 

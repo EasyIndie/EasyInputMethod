@@ -1,0 +1,1 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-safari.applescript:450:452: execution error: “Safari”遇到一个错误：AppleEvent已超时。 (-1712)
