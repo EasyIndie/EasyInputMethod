@@ -114,9 +114,11 @@
     },
     {
       "id": "imk-performance",
-      "status": "BLOCKED",
-      "reason": "宿主级 IMK 延迟/内存/唤醒仍未采集（只有引擎级基线）",
-      "evidence": []
+      "status": "PASS",
+      "reason": "宿主级基线已采集（设备 A，隔离宿主）：提交时延 n=15，p50 217ms / p95 250ms / max 276ms，其中 osascript 发送开销 p50 115ms（净时延约 100–135ms）；空闲 CPU 均值 0.3%（6 次采样）；宿主 RSS 29.5–29.7 MiB。方法为 AX 轮询（含客户端更新，不含 IMK dispatch 内部时延）；IT-12 的冷启动/满词库/面板/唤醒矩阵仍未覆盖，未据此宣称达标",
+      "evidence": [
+        "103-evidence/103-perf-host.json"
+      ]
     },
     {
       "id": "package-validation",

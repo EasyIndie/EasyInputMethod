@@ -17,12 +17,12 @@
 
 ## 2. 结果
 
-`acceptance-results.py check` → **pass 17 / fail 0 / skip 0 / blocked 6**（门禁仍为 BLOCKED，符合预期）。
+`acceptance-results.py check` → **pass 18 / fail 0 / skip 0 / blocked 5**（门禁仍为 BLOCKED，符合预期）。
 
 | 结果 | 用例 |
 |---|---|
-| PASS（17） | `resource-isolation`、`state-restoration`、`core-input`、**`focus`**、**`light-dark-layout`**、**`multi-display`**、`package-validation`、`intel-macos13`、**`long-composition`**、**`undo`**、**`mode-switch`**、**`sleep-wake`**、**`accessibility`**、`application-TextEdit`、`application-Safari`、`application-Terminal`、`application-VSCode` |
-| BLOCKED（6） | `imk-performance`、`arm64-macos27`、`independent-reproduction`、`one-person-five-days`、`application-Chrome`、`application-WeChat` |
+| PASS（18） | `resource-isolation`、`state-restoration`、`core-input`、**`focus`**、**`light-dark-layout`**、**`multi-display`**、`package-validation`、`intel-macos13`、**`long-composition`**、**`undo`**、**`mode-switch`**、**`sleep-wake`**、**`accessibility`**、**`imk-performance`**（基线）、`application-TextEdit`、`application-Safari`、`application-Terminal`、`application-VSCode` |
+| BLOCKED（5） | `arm64-macos27`、`independent-reproduction`、`one-person-five-days`、`application-Chrome`、`application-WeChat` |
 
 ### 2.1 本轮新增的真机证据
 
@@ -32,6 +32,9 @@
   候选 599×70 与 HUD 96×36 均 `onScreen=true`、跟随客户端窗口换屏、暗色下 HUD 可见、前台始终是 TextEdit：
   `103-evidence/103-hud-probe.json` 与三张截图。
 - 离屏逐场景验收 67 个观测全绿（绑定当前源码树摘要）：`103-evidence/103-local-acceptance.txt`。
+- 宿主级性能基线（`run-installed-perf-probe.py`）：提交时延 n=15，p50 217ms / p95 250ms / max 276ms，
+  osascript 开销 p50 115ms；空闲 CPU 0.3%；宿主 RSS 29.5–29.7 MiB。方法为 AX 轮询（含客户端更新、不含 IMK dispatch），
+  IT-12 的冷启动/满词库/面板/唤醒矩阵仍未覆盖：`103-evidence/103-perf-host.json`。
 - 无障碍（VoiceOver 运行下）：候选面板 AX 面完整（输入编码/页码/五态芯片/翻页按钮），状态切换后客户端仍持有焦点：
   `103-evidence/103-accessibility.json`。
 - 睡眠唤醒：`run-installed-sleep-wake-probe.py` 用已验证的 TextEdit 探针做判据，睡前与唤醒后各 PASS；
