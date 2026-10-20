@@ -2,11 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 15:55 / pi（deepseek-v4-flash）
-- 分支：`main` @ `2f6a6ad`（本轮最后一笔文档提交；工作树 clean、与远端同步）
-- 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主 21703 运行中，输入源已由用户加回生产「萤火虫」）；
-  报告 **103（候选 `f74aae7`）= pass 18 / fail 0 / blocked 5**；隔离测试包与私有根已移除
-- 最近验证：`make verify` 全绿（本轮多次）；`make macos-offline-tests` 32 文件/122 例全绿；`macos-local-acceptance` 67 观测全绿
+- 更新：2026-10-20 / Codex（GPT-6）；B 机验收进行中，报告 104。
+- 分支：main 基线 `6ed5da1`；TextEdit 探针修复（ADR-219）待提交，候选将重新锁定。
+- 阶段：A 报告 103 保留；B 尚未安装隔离包或发键，私有根与 helper 已建。
+- 最近验证：B `make verify` 全绿（182 产物隐私检查），TextEdit 专项 9 例通过；沙箱外离线 40 文件/174 例仅矩阵旧文案断言失败，修后该文件 7 例通过，远端全量待跑。
 
 ## 1. 安装与数据
 
@@ -14,7 +13,7 @@
 |---|---|---|---|
 | A（`bot`，Intel / macOS 13.7.8） | x86_64 | 生产 `07bbb2f`（执行 `681fb1c8…`，Notarized Developer ID） | 宿主 21703 运行中；真实 `config.toml` `809e2cae…`、词库 `2ee1a469…`（217 行）全程未变；输入源已由用户加回 **生产「萤火虫」**（`cn.jokerhub.inputmethod.Lampyris.default`） |
 | A（同上） | x86_64 | ~~隔离测试包~~ | **已彻底移除（2026-10-20 15:40）**：`disable-owned` → 用户系统设置移除 → `lsregister -u` + 删实体包 + 删私有根；`~/Library/Input Methods` 只剩生产 `Lampyris.app`（公证，`spctl accepted`）。⚠️ 用户移除时**把生产「萤火虫」输入源也一起移除了**（TIS 现只剩 ABC/搜狗）；需要时在系统设置重新添加即可，包未动 |
-| B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 093；本轮未参与 |
+| B（`joker`，arm64 / macOS 27.0.1） | arm64 | 生产 `17053e1`（执行 `535d546f9de1…`，Developer ID / accepted） | 原源 `com.sogou.inputmethod.sogou.pinyin`；宿主基线 17339；config `3bc1117cc337…`（8 显式快捷键），词库 `74f76e92a6ca…`（29 行）；报告 104 待验，真实数据未改 |
 
 - 隔离包本机前置（一次性，已由用户授权）：**Ghostty 需「辅助功能」**（否则 `osascript` `-1728`）+
   **「自动化」允许控制 System Events / TextEdit / Safari / Terminal**（否则 AppleEvent `-1712`）。
@@ -32,6 +31,8 @@
 
 ## 3. 当前未决
 
+- B 出包前置：`6ed5da1` 正式 CI 39384028937 被 TextEdit 离线 mock/中断锚点失效阻断；ADR-219 修复专项通过、待提交与远端完整复核。报告 104 不继承 103 的 PASS。
+
 - 报告 103 剩余 5 项 BLOCKED，全部外部/结构性：`application-Chrome`（Chrome 155 页面不接受任何输入法，
   搜狗/生产/隔离三向对照已证）、`arm64-macos27`（B 机）、`independent-reproduction`（第三方）、
   `one-person-five-days`（待 RC 锁定后开始 5 工作日）、`application-WeChat`（策略）。
@@ -42,6 +43,8 @@
 - 隔离验收已完全收尾；`~/Library/Input Methods` 只剩生产 `Lampyris.app`（公证）。
 
 ## 4. 下一步
+
+0. **B 当前断点**：完成 ADR-219 完整离线回归与提交；重新锁定 main，分别运行 `macos-acceptance.yml` 与 `isolated-imk-notary.yml`（arch=arm64）。私有根为 `/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`；初次隔离 run 39395207876 仅作旧提交构建记录，未安装。三个 helper 已在根内编译，旧提交隔离 run 已成功但不安装；性能脚本存在绕过自有窗口守卫的直接发键路径，修复前不运行（104）；需在安装后采登录时实际原源并写 0600 selection journal。详细基线与边界见报告 104。
 
 1. **决定 p95 超标是否立项**：先写 ADR（是否把「按键→候选可见」纳入门禁、目标值与测量口径），再决定是否优化 IMK 回写路径。
 2. **B 机复采**：CI 出 arm64 隔离包 → 按 ADR-218 流程采 `run-installed-perf-trace.sh` + 矩阵，补齐 `arm64-macos27`。
@@ -58,6 +61,8 @@
 - 一轮只测一个包；每批发键前有焦点/身份守卫；中途失源即记 BLOCKED。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：B 基线已采（macOS 27.0.1 / arm64，生产执行 `535d546f9de1…`、config 8 显式快捷键、词库 29 行、原源搜狗拼音）；未换包/发键。定位正式 CI 的 TextEdit mock 超时及中断锚点失效，ADR-219 最小修复专项 9 例通过；make verify 全绿。报告 104 进行中，矩阵旧文案断言同步修复；远端完整复核后重新锁候选。
 
 - 2026-10-20 / pi：**会话收尾**。修 HUD 缺陷（ADR-217）并出新候选 `f74aae7`，报告 103 = pass 18 / blocked 5
   （`focus`/`multi-display`/`light-dark-layout`/`long-composition`/`undo`/`mode-switch`/`sleep-wake`/`accessibility`/VSCode 转 PASS）；

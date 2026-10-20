@@ -67,7 +67,7 @@ def scenario_body(scenario):
         return BODY
     actions = {'failure': 'exit 7', 'INT': 'kill -INT $$', 'TERM': 'kill -TERM $$'}
     checkpoint = '[ "$(owned_do read)" = wq ] || exit 96\n(umask 077; printf true > "$WORK/prefix-verified.txt")\n' + actions[scenario]
-    return BODY.replace('check_source\nowned_do key 49', checkpoint + '\ncheck_source\nowned_do key 49')
+    return BODY.replace('owned_do key 49', checkpoint + '\nowned_do key 49')
 
 
 def run(arguments):

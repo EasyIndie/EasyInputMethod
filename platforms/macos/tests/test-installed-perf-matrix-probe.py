@@ -37,7 +37,9 @@ class Contract(unittest.TestCase):
     def test_trace_scenario_refuses_partial_samples(self):
         body = probe.SCENARIOS['trace']
         self.assertIn('perf-trace.enabled', body)
-        self.assertIn('BLOCKED 宿主未产生内嵌计时样本', body)
+        self.assertIn('[ -s "$WORK/trace.jsonl" ] ||', body)
+        self.assertIn('[ "$lines" -ge 30 ] ||', body)
+        self.assertIn('BLOCKED 采样中断：最终没有 trace 文件', body)
         self.assertIn('BLOCKED 内嵌计时样本过少', body)
 
     def test_scope_states_what_is_not_measured(self):

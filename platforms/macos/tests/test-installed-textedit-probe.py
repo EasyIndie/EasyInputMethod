@@ -3,6 +3,7 @@ import importlib.util
 from pathlib import Path
 import subprocess
 import os
+import re
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -71,10 +72,16 @@ owned_do() {
 }
 ''')
             (root / 'state').write_text('original')
-            (root / 'osascript').write_text('#!/bin/sh\nexit 0\n')
+            (root / 'osascript').write_text('''#!/bin/sh
+case "$*" in
+ *AXFocusedUIElement*)
+  if [ "$FAIL" = refocus ]; then printf AXWindow; else printf AXTextArea; fi ;;
+esac
+exit 0
+''')
             (root / 'osascript').chmod(0o700)
             environment = dict(os.environ, FAIL=fail, PATH=str(root) + ':' + os.environ['PATH'])
-            body = probe.scenario_body(scenario).replace('sleep 0.5', 'sleep 0').replace('sleep 0.2', 'sleep 0')
+            body = re.sub(r'(?m)^([ \t]*)sleep 0\.[0-9]+$', r'\1sleep 0', probe.scenario_body(scenario))
             result = subprocess.run(['bash', '-c', body, 'mock', str(library), str(root), str(helper), str(root)], env=environment, capture_output=True, timeout=10)
             self.assertEqual((root / 'state').read_text(), 'original')
             return result.returncode, (root / 'events').read_text().splitlines()
@@ -114,6 +121,12 @@ owned_do() {
         self.assertEqual(status, 98)
         self.assertNotIn('create', events)
         self.assertFalse(any(event.isdigit() for event in events))
+
+    def test_refocus_failure_prevents_all_keys_and_restores(self):
+        status, events = self.exercise('refocus')
+        self.assertEqual(status, 98)
+        self.assertFalse(any(event.isdigit() for event in events))
+        self.assertEqual(events[-2:], ['restore-original', 'close'])
 
 
 if __name__ == '__main__':
