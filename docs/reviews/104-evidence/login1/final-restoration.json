@@ -1,0 +1,301 @@
+{
+  "preSource": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.inputmethod.AinuIM.Ainu",
+      "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese",
+      "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
+      "com.apple.inputmethod.SCIM.ITABC",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ],
+    "owned": [
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": true,
+        "type": "TISTypeKeyboardInputMode"
+      },
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": false,
+        "type": "TISTypeKeyboardInputMethodModeEnabled"
+      }
+    ]
+  },
+  "restoredSource": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.inputmethod.AinuIM.Ainu",
+      "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese",
+      "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
+      "com.apple.inputmethod.SCIM.ITABC",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ],
+    "owned": [
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": true,
+        "type": "TISTypeKeyboardInputMode"
+      },
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": false,
+        "type": "TISTypeKeyboardInputMethodModeEnabled"
+      }
+    ]
+  },
+  "disabledSource": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.inputmethod.AinuIM.Ainu",
+      "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese",
+      "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
+      "com.apple.inputmethod.SCIM.ITABC",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ],
+    "owned": [
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": true,
+        "type": "TISTypeKeyboardInputMode"
+      },
+      {
+        "enableCapable": true,
+        "enabled": false,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": false,
+        "type": "TISTypeKeyboardInputMethodModeEnabled"
+      }
+    ]
+  },
+  "finalSource": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.inputmethod.AinuIM.Ainu",
+      "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese",
+      "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
+      "com.apple.inputmethod.SCIM.ITABC",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ],
+    "owned": [
+      {
+        "enableCapable": true,
+        "enabled": false,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": false,
+        "type": "TISTypeKeyboardInputMethodModeEnabled"
+      },
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": true,
+        "type": "TISTypeKeyboardInputMode"
+      }
+    ]
+  },
+  "ownedFixtureCleanup": [
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.YIQiEk/textedit.YIQiEk.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.gEKc8K/textedit.gEKc8K.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1/textedit.zfD9OE/textedit.zfD9OE.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-b-104/perf-trace-login1-v2/textedit.5YYCzq/textedit.5YYCzq.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/imk12-variant-9_vk1708/textedit.KM7hAY/textedit.KM7hAY.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-accessibility-hlm_8ymp/textedit.lI9NIB/textedit.lI9NIB.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-hud-egtvbo1n/textedit.oDLZQs/textedit.oDLZQs.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-long-heijpmtv/textedit.CBwuAU/textedit.CBwuAU.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-mode-yo2d0zq2/textedit.S6WuhZ/textedit.S6WuhZ.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-0ecf1d9c/textedit.tDragW/textedit.tDragW.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-16ujywfu/textedit.vC3EfZ/textedit.vC3EfZ.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-5cm0r8u1/textedit.FcgEiw/textedit.FcgEiw.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-5tkcfsju/textedit.amPQYr/textedit.amPQYr.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-76_lrrko/textedit.LxRSnv/textedit.LxRSnv.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-bh4ztoib/textedit.mp6IXz/textedit.mp6IXz.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-hwmbn405/textedit.9Y0CZn/textedit.9Y0CZn.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-ltdfxlra/textedit.dTFVmT/textedit.dTFVmT.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-vdnhh6dm/textedit.frV4s2/textedit.frV4s2.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-wq0pw71j/textedit.Bgk5B5/textedit.Bgk5B5.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-wygq9qsj/textedit.3qmHcJ/textedit.3qmHcJ.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-ygdwz9wf/textedit.qxMext/textedit.qxMext.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    },
+    {
+      "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-undo-orete9yz/textedit.AeJvUY/textedit.AeJvUY.txt",
+      "queryExit": 0,
+      "windowID": "absent",
+      "diagnostic": ""
+    }
+  ],
+  "hostTermination": [
+    {
+      "pid": 3204,
+      "path": "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app/Contents/MacOS/LampyrisIMKTest",
+      "networkExit": 1,
+      "networkOutput": ""
+    }
+  ],
+  "realDataUnchanged": true,
+  "sha256": {
+    "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+    "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "ownedSourcesDisabled": false
+}

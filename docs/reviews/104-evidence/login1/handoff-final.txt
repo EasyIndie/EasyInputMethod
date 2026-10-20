@@ -1,0 +1,21 @@
+## 交接状态（自动采集 2026-10-20 21:25 · MacBook-Air · arm64 · macOS 27.0.1）
+
+| 项 | 值 |
+|---|---|
+| 分支 / HEAD | `main` @ `9ac7e9d` docs: preserve blocked device B sleep acceptance evidence |
+| 工作树 | **5 个改动未提交** |
+| 与远端 | 0 ahead / 0 behind（`origin/main`） |
+| 已装包 | 执行 SHA `535d546f9de1`… · Developer ID Application: Zhizhou Wang (2N62934Y28) · /Users/joker/Library/Input Methods/Lampyris.app: accepted |
+| 宿主 PID | 未运行 |
+| config | SHA `3bc1117cc337` · mode=mixed punctuation=chinese full_width=false chinese_variant=simplified · 显式 hotkey 项 8 |
+| 词库 | 29 行 · SHA `74f76e92a6ca` |
+| 输入源 | `` |
+| 探针 | 9 个二进制 |
+| 最近 CI | macOS Acceptance Package completed/success @ 9ac7e9d |
+| 最近报告 | 104-acceptance-b.json 104-acceptance-b.md 104-evidence  |
+| HANDOFF | 87 行 · 日志 8 条 |
+| 工具 / 会话 | 未知 |
+
+> **跨设备**：包必须同时给 **zip SHA 与执行 SHA**；记下目标机已装的旧包、config 是否有显式 `hotkey.*`、
+> 输入源与词库行数；平台差异（如菜单索引/设置默认分区）要在报告里单列。
+> 流程与反例见 `.agents/skills/update-handoff/SKILL.md`；提示词模板见 `docs/交接提示词模板.md`。

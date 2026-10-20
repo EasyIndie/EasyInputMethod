@@ -1,9 +1,9 @@
 # T-ITER-12：IMK宿主性能与功耗基线
 
-- 状态：进行中（宿主级基线 + IT-12 矩阵 + 内嵌计时已采；面板/合成器完成与 B 机仍缺）
+- 状态：进行中（A 矩阵与 A/B 内嵌基线已采；B 完整矩阵、合成器完成与长时稳定性未覆盖）
 - 前置：IT-01/02；不能对真实学习词库合成打字。
 - 目标：测冷启动、长组合、满词库、首次简繁/回切、面板、空闲的宿主延迟/内存/CPU/唤醒；实测违规才优化。
-- 本轮环境：设备B macOS27/arm64，Xcode27；源码c294b67加未提交工作树，仅开发验证，不是锁定正式候选。
+- 早期开发验证环境（历史）：设备B macOS27/arm64，Xcode27；源码c294b67加未提交工作树，仅开发验证，不是锁定正式候选。
 - 命令：`bash platforms/macos/tests/run-render-perf.sh`，临时配置/词库，Swift warnings-as-errors，运行退出0、临时资源自动清理。
 - 结果：window_activation_ms=194.988；2200keys，cold_ms=15.827、warm_p95_ms=4.413、warm_max_ms=7.419、keys_at_or_above_16ms=0、footprint_mib=21.49。
 - 边界：同步FFI/候选layout/show，不包括IMK dispatch或合成器完成；不覆盖完整首次进程启动、目标客户端、满容量、全部简繁路径、空闲CPU/唤醒。不能由此关闭IT-12或宣称真实输入延迟达标。
@@ -23,3 +23,13 @@
   采样需在新登录会话进行（脚本已固化顺序与重试）。
 - 下一步：①在 B（arm64/macOS 27）复采；②按 §12 决定是否把「端到端 p95 超标」列为需优化项（先写 ADR）。
 
+
+## 2026-10-20 设备 B（arm64 / macOS 27.0.1）补充
+
+- 候选：`8eb872ff9b585d8b769f6fb3784285dcc3d81606`，CI arm64 公证隔离包；完整两份SHA/绑定见报告104。同提交正式universal只验证未安装，报告103的f74aae7仅作历史对照。
+- 新登录会话，修正TextEdit自有窗口驱动（ADR-221）后第一轮接管成功；内嵌trace **44按键 + 2面板**：total p50/p95/max **13.4/21.2/37.7 ms**，engine **0.6/1.8/2.2 ms**，设置/关于 **57.7/274.7 ms**。
+- 结论：引擎低于16ms，端到端p95仍超标；采样不含IMK dispatch内部与合成器完成，不以基线采样PASS宣称16ms达标。
+- B矩阵variant的首个暖机AX等待超时；cold/dictionary共享此前置，停止重复试探，留待等待器接线排查。未取得完整B冷启动/满词库/唤醒延迟、RSS/CPU及长时稳定性证据。
+- VoiceOver AX面/焦点和用户报告唤醒后的TextEdit输入已PASS，但电源日志仅息屏/亮屏、当前boot Sleep/Wakes=0；完整系统睡眠/唤醒仍BLOCKED，不能将该次输入当作已证实睡眠后的性能数据。
+- 证据：`docs/reviews/104-evidence/login1/perf-trace.jsonl`、`perf-trace-summary.txt`、`matrix-variant-login1/`及电源/输入记录。真实配置/词库全程不变。
+- 下一步：分别解决AX等待器前置、真实系统睡眠取证与剩余性能维度；是否优化端到端p95先另立ADR。IT-12保持进行中。

@@ -1,0 +1,46 @@
+{
+  "events": [],
+  "powerLogExit": 0,
+  "source": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.inputmethod.AinuIM.Ainu",
+      "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese",
+      "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese",
+      "com.apple.inputmethod.SCIM.ITABC",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ],
+    "owned": [
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": true,
+        "type": "TISTypeKeyboardInputMode"
+      },
+      {
+        "enableCapable": true,
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+        "label": "萤火虫隔离验收 3b030dda",
+        "selectCapable": false,
+        "type": "TISTypeKeyboardInputMethodModeEnabled"
+      }
+    ]
+  },
+  "hostPIDs": [
+    "3204"
+  ],
+  "observedUTC": "2026-10-20T13:19:03.917137+00:00"
+}

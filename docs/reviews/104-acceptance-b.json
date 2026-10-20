@@ -23,15 +23,22 @@
   "cases": [
     {
       "id": "resource-isolation",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B已核对独有bundle/根绑定、0700根与0600 owner；全部发键使用隔离源和自有fixture，真实生产执行/config/29行词库摘要从基线至收尾不变。仅通过ime-config归一化隔离mode，未改真实数据；停止前宿主lsof无网络socket（单次快照）",
+      "evidence": [
+        "104-evidence/isolated-identity.json",
+        "104-evidence/login1/login-preflight.txt",
+        "104-evidence/login1/final-restoration.json"
+      ]
     },
     {
       "id": "state-restoration",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "各已完成场景原源/启用集合恢复且真实数据不变，最终ABC及非自有启用集合保持；TIS disable-owned返回后自有源仍启用。隔离宿主已精确停止，等待用户系统设置仅移除隔离源后回读确认",
+      "evidence": [
+        "104-evidence/login1/final-restoration.json",
+        "104-evidence/login1/final-runtime-state.json"
+      ]
     },
     {
       "id": "core-input",
@@ -79,13 +86,12 @@
     {
       "id": "sleep-wake",
       "status": "BLOCKED",
-      "reason": "用户授权后执行：首轮睡前因隔离配置遗留pinyin停止；经ime-config恢复mixed后睡前输入PASS，但sleepnow请求未形成可核验Sleep/Wake（当前boot计数0），后续输入守卫停止。原源/真实数据恢复；现等待用户手动睡眠并唤醒，不以固定等待代替睡眠证据",
+      "reason": "用户手动操作后新的TextEdit输入PASS且源/数据恢复，宿主PID保持3204；pmset只记录21:12息屏/21:18亮屏，当前boot系统睡眠次数仍0，因此不能记完整系统睡眠/唤醒PASS；不再要求用户重复",
       "evidence": [
-        "104-evidence/login1/sleep-wake-login1/result.json",
-        "104-evidence/login1/sleep-wake-login1-v2/result.json",
-        "104-evidence/login1/sleep-fixture-normalization.json",
-        "104-evidence/login1/sleep-power-events.json",
-        "104-evidence/login1/manual-sleep-events.json"
+        "104-evidence/login1/manual-wake-textedit/result.json",
+        "104-evidence/login1/manual-wake-check.json",
+        "104-evidence/login1/power-observations.txt",
+        "104-evidence/login1/sleep-wake-login1-v2/result.json"
       ]
     },
     {
@@ -180,7 +186,7 @@
     {
       "id": "application-Safari",
       "status": "BLOCKED",
-      "reason": "首次冷启动创建独有页面时AppleEvent -1712，未发键，原源/启用集合恢复且真实数据未变；后续待应用就绪后单独复验",
+      "reason": "创建独有页面及应用就绪后的有界只读窗口枚举均AppleEvent -1712；未发键，原源/启用集合恢复且真实数据未变。AX窗口集合为空，未继续重试",
       "evidence": [
         "104-evidence/login1/safari-normal-login1/result.json",
         "104-evidence/login1/safari-normal-login1/driver-stderr.txt"

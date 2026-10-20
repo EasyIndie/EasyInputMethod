@@ -2,69 +2,53 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 / Codex（GPT-6），B 重启后已添加隔离源，报告104进行中。
-- 产品候选 `8eb872f`，本轮起点main `f0a14d6`；ADR-221/222探针兼容/守卫工程完成，make verify全绿；报告104现pass10/blocked13，arm64项已PASS。
-- B已通过TextEdit/Terminal各四路径、长组合/撤销；trace n44：total p50/p95=13.4/21.2ms，engine=0.6/1.8ms，端到端p95未达16ms。
-- 当前ABC已恢复；单屏HUD截图失败，窗口几何/前台证据已采；VSCode未安装、双屏用户明确缺硬件；VoiceOver补验已PASS，用户已关闭VO并授权睡眠；自动请求无Sleep/Wake事件，等待用户手动睡眠/唤醒。
+- 更新：2026-10-20 / Codex（GPT-6）；B本轮验收已归档，收尾等待用户移除隔离输入源。
+- main基线 `9ac7e9d`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
+- 报告104：**pass11 / fail0 / blocked12**，arm64-macos27已PASS；检查器预期退出3，完整发布门禁仍BLOCKED。
+- 最近验证：make verify零诊断通过、182产物隐私检查通过；9ac7e9d的CI/正式包工作流成功。
 
-## 1. 安装与数据
+## 1. 设备与数据
 
-| 设备 | 系统 | 已装包 | 状态 |
+| 设备 | 包与系统 | 配置/词库 | 当前来源与恢复 |
 |---|---|---|---|
-| A（`bot`，Intel / macOS 13.7.8） | x86_64 | 生产 `07bbb2f`（执行 `681fb1c8…`，Notarized Developer ID） | 宿主 21703 运行中；真实 `config.toml` `809e2cae…`、词库 `2ee1a469…`（217 行）全程未变；输入源已由用户加回 **生产「萤火虫」**（`cn.jokerhub.inputmethod.Lampyris.default`） |
-| A（同上） | x86_64 | ~~隔离测试包~~ | **已彻底移除（2026-10-20 15:40）**：`disable-owned` → 用户系统设置移除 → `lsregister -u` + 删实体包 + 删私有根；`~/Library/Input Methods` 只剩生产 `Lampyris.app`（公证，`spctl accepted`）。⚠️ 用户移除时**把生产「萤火虫」输入源也一起移除了**（TIS 现只剩 ABC/搜狗）；需要时在系统设置重新添加即可，包未动 |
-| B（`joker`，arm64 / macOS 27.0.1） | arm64 | 生产 `17053e1`（执行 `535d546f9de1…`，Developer ID / accepted） | 初始原源搜狗拼音，安装后用户当前源 ABC；宿主基线 17339；config `3bc1117cc337…`（8 显式快捷键），词库 `74f76e92a6ca…`（29 行）；报告104：arm64项PASS，当前pass10/blocked13；真实数据未改 |
+| A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
+| B（21:25回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，公证accepted，宿主未运行 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 实际本轮原源ABC，已恢复；初始搜狗拼音由用户在登录前改为ABC，不强制改回旧选择 |
+| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 宿主PID3204已精确停止，lsof无网络socket；父源已禁用但模式仍启用，等待用户设置移除 |
 
-- 隔离包本机前置（一次性，已由用户授权）：**Ghostty 需「辅助功能」**（否则 `osascript` `-1728`）+
-  **「自动化」允许控制 System Events / TextEdit / Safari / Terminal**（否则 AppleEvent `-1712`）。
-- 未设置 `LAMPYRIS_SUPPORT_DIR`；隔离包把 config/词库写在私有根内；真实数据 12 次探针均 `realDataUnchanged=true`。
+- 完整两包zip/执行SHA、CI run、签名与绑定证据见报告104；正式universal包只验证未安装。
+- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（0700+0600 owner，ABC selection journal已建）；已装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
 
-## 2. 本轮完成（2026-10-20）
+## 2. 本轮结论
 
-| 内容 | 结果 | 报告/ADR |
-|---|---|---|
-| B 新候选出包与前置 | `8eb872f` 正式 universal 与 arm64 隔离公证成功；重启后源可用；TextEdit/Terminal四路径、长组合/撤销、trace及VoiceOver已采，arm64项PASS；报告104 pass10/blocked13 | 104、ADR-219/220 |
-| **HUD 缺陷修复** | 根因：`disabled` 把宿主恒有的 `.prohibited` 当测试判据 → HUD 从不创建 | ADR-217、102 §9 |
-| 新候选 `f74aae7` 验收 | **pass 18 / fail 0 / blocked 5**；`focus`/`multi-display`/`light-dark-layout`/`long-composition`/`undo`/`mode-switch`/`sleep-wake`/`accessibility`/`application-VSCode` 转 PASS | 103 |
-| 新探针 + 契约测试 | HUD/面板、Chrome（标题通道）、VS Code、睡眠唤醒、VoiceOver AX 面、IT-12 矩阵、内嵌计时 | 103 证据、ADR-218 |
-| A 离线门禁解阻 | Swift 5.8 兼容 + 编码声明 + 过期用例表 → `macos-offline-tests` 122 例、`local-acceptance` 67 观测全绿 | 102 §8 |
-| 宿主内性能 | 按键→候选 p50 14.1–14.9 ms／p95 20.6–23.5 ms；引擎 p50 1.0 ms；面板 42/165 ms | 103、IT-12 卡 |
+- B TextEdit/Terminal各四路径、长组合/撤销、VoiceOver AX面/焦点、候选/HUD在屏及核心输入PASS；arm64平台运行覆盖PASS。
+- 内嵌trace44按键+2面板：total p50/p95/max=13.4/21.2/37.7ms，engine=0.6/1.8/2.2ms，设置/关于57.7/274.7ms；仅基线PASS，端到端p95仍超16ms。
+- 用户报告手动唤醒后的TextEdit输入PASS；系统仅记录21:12息屏/21:18亮屏、当前boot Sleep/Wakes=0，故完整系统睡眠项仍BLOCKED，不再重复要求用户睡眠。
+- 归属可由本轮fixture路径证明的文档均已不存在；未关闭未知“未命名”窗口。真实执行/config/词库摘要一致，详细原始证据见104-evidence/login1。
 
-## 3. 当前未决
+## 3. 未决
 
-- B 隔离包已公证安装（执行 `8e8df20b…dd362a`、zip `e719875d…9b71a1`），用户重启后已添加源；私有根按ADR-131重建，0600 selection journal记录实际原源ABC。
+- **唯一即时人工收尾**：TIS disable-owned返回后模式仍enabled；已请求用户仅移除「萤火虫隔离验收 3b030dda」，保留生产「萤火虫」。等待回复，不能提前移走包/根或宣称清理完成。
+- B阻断：Safari AppleEvent-1712；VSCode未安装；mode触发文档/焦点守卫；HUD截图失败、暗色未验；无第二屏（用户明确）；AX性能矩阵首个暖机等待超时，cold/dictionary未重复同一失败前置；系统睡眠无正式事件。
+- 跨设备/发布阻断：8eb872f的A机复验、独立第三方、五工作日、Chrome已知外部问题、WeChat按策略不发键。
+- 产品端到端p95是否优化仍需另立ADR；不以基线采集PASS等同16ms达标。未关闭IT-12、UI04或MVP。
 
-- B 出包前置：`6ed5da1` 正式 CI 39384028937 被 TextEdit 离线 mock/中断锚点失效阻断；ADR-219 已在 `8eb872f` 提交，正式包 CI 的完整离线回归已通过。报告 104 不继承 103 的 PASS。
+## 4. 下一步（断点）
 
-- 报告 103 剩余 5 项 BLOCKED，全部外部/结构性：`application-Chrome`（Chrome 155 页面不接受任何输入法，
-  搜狗/生产/隔离三向对照已证）、`arm64-macos27`（B 机）、`independent-reproduction`（第三方）、
-  `one-person-five-days`（待 RC 锁定后开始 5 工作日）、`application-WeChat`（策略）。
-- **端到端 p95 超标**：引擎 1.0 ms 达标，但「按键→候选可见」p95 20–24 ms > §12 的 16 ms；是否立项优化待定（先写 ADR）。
-- **采样会话敏感**：同一会话反复 `pkill` 宿主后系统会停止按需拉起/接管；采样需在新登录会话按
-  `run-installed-perf-trace.sh` 的顺序做（ADR-218）。
-- IT-12 未覆盖：B 机复采、合成器完成/VoiceOver 路径、满词库下的长时稳定性。
-- A 隔离验收已收尾；B 现保留本轮独有隔离包，待添加输入源后继续。
+1. 用户确认移除后，仍用根内source-state只读state，确认ABC、非自有启用集合不变、自有父/模式均disabled；不要反复调用TISDisable或写HIToolbox。
+2. 签名/执行SHA/UUID/根绑定复核后，注销并归档本轮已装隔离包和私有根（仅本任务资源，不动生产包）；回读生产执行/config/词库摘要和宿主PID。
+3. 更新104 state-restoration与收尾证据；检查器应无格式/证据错误、无FAIL/SKIP、仍因明确剩余项返回3。make verify后提交推送main。
+4. 后续修复/补验按104阻断表逐项立任务；无须重跑已PASS批次，不自动改候选或安装缺失应用。
 
-## 4. 下一步
+## 5. 边界
 
-- **B 实际续跑断点**：HUD已结束BLOCKED（截图失败；原生候选/HUD均在屏），输出 `platforms/macos/build/acceptance-b-104/hud-single-login1.txt`；根已按ADR-131重建且selection journal原源ABC。根/包完整身份仍见104。长组合/撤销PASS、mode因文档/焦点守卫BLOCKED；Safari冷启动-1712待有界复核；VSCode无安装，不发键；双屏无硬件。矩阵variant首个暖机AX等待超时，cold/dictionary共享前置未重复。VSCode未安装；Safari后续只读窗口枚举仍-1712。机器报告已凭TextEdit/Terminal四路径、长组合/撤销、trace等证据将arm64-macos27改PASS，但不关闭独立BLOCKED项。VoiceOver已开启且探针PASS（证据accessibility-login1）；用户已关闭VO并授权睡眠；两轮记录见104：首轮隔离pinyin→通过ime-config归一化mixed，第二轮睡前TextEdit PASS但pmset无新睡眠事件、后续保护停止。已请求用户手动睡眠并唤醒，必须等答复，再以pmset事件与新醒后TextEdit结果验证；不要自动再触发睡眠。归档后更新机器报告和HANDOFF；ADR-221/222已make verify及专项验证；后续新增验收证据仍需验证提交。不得重复运行已PASS场景，除非验证新工具改动。
-
-
-1. **决定 p95 超标是否立项**：先写 ADR（是否把「按键→候选可见」纳入门禁、目标值与测量口径），再决定是否优化 IMK 回写路径。
-2. **B 机复采**：CI 出 arm64 隔离包 → 按 ADR-218 流程采 `run-installed-perf-trace.sh` + 矩阵，补齐 `arm64-macos27`。
-3. **锁定 RC 后**：安装生产包做最终实机验收（点击/VoiceOver/多屏/客户端）并开始 IT-23 的 5 个工作日。
-4. **Chrome**：等 Chrome 侧修复/换版本后用 `run-installed-chrome-probe.py` 复测，再改判。
-
-## 5. 授权与边界
-
-- 不自动注销/重启/解锁；TCC（辅助功能/自动化）由用户在系统设置点选，不绕过。
-- 不热替换生产包；隔离包是独立身份，未动真实 config/词库，未启动生产宿主。
-- 配置只经 `ime-config`；不写 `UserDefaults`/`com.apple.HIToolbox`。
-- 验证语义（守卫、超时、判定）不得为了「跑通」而放宽；改守卫必须连带改测试并写报告。
-- 失败即停、保留证据；不伪造 PASS；截图/口头确认不记为正式 PASS。
-- 一轮只测一个包；每批发键前有焦点/身份守卫；中途失源即记 BLOCKED。
+- 核心离线/零遥测；配置只经ime-config；不改真实数据、UserDefaults或HIToolbox。
+- 仅自有窗口/文档，每批身份/焦点/源守卫；失败停止保留证据，不为PASS放宽判定。
+- 不自动注销/重启/解锁；TCC由用户点选；睡眠未证实就保留BLOCKED。VoiceOver用户已关闭。
+- 生产包未替换；隔离包尚保留待用户移除源后归档。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：用户报告手动唤醒后的输入PASS，但系统只有息屏/亮屏事件、当前boot睡眠计数0，完整睡眠保持BLOCKED。ABC/真实数据已恢复，隔离宿主停止、无socket；TIS停用仅父源生效，等待用户系统设置移除隔离模式后归档。104现pass11/blocked12，arm64项PASS。
 
 - 2026-10-20 / Codex：用户授权睡眠验收；首轮被隔离pinyin前置阻断，经ime-config仅恢复私有mode=mixed后睡前PASS。自动睡眠请求后系统当前boot仍0次睡眠，复验守卫停止，均恢复ABC/真实数据不变；已请求用户手动睡眠并唤醒后核验，当前sleep-wake仍BLOCKED（104）。
 
@@ -75,13 +59,3 @@
 - 2026-10-20 / Codex：探针修复 `8eb872f` 已推送；同提交 arm64 公证隔离包安装成功（strict/signature/stapler/架构与绑定均通过），等待用户添加独有源/必要时重新登录，未发键。正式 universal 构建已成功；ADR-220 补齐性能逐动作守卫及源检查，相关回归与 make verify 通过。真实执行/config/词库未改，当前源按用户选择保留 ABC；报告 104 与证据已落盘。
 
 - 2026-10-20 / Codex：B 基线已采（macOS 27.0.1 / arm64，生产执行 `535d546f9de1…`、config 8 显式快捷键、词库 29 行、原源搜狗拼音）；未换包/发键。定位正式 CI 的 TextEdit mock 超时及中断锚点失效，ADR-219 最小修复专项 9 例通过；make verify 全绿。报告 104 进行中，矩阵旧文案断言同步修复；远端完整复核后重新锁候选。
-
-- 2026-10-20 / pi：**会话收尾**。修 HUD 缺陷（ADR-217）并出新候选 `f74aae7`，报告 103 = pass 18 / blocked 5
-  （`focus`/`multi-display`/`light-dark-layout`/`long-composition`/`undo`/`mode-switch`/`sleep-wake`/`accessibility`/VSCode 转 PASS）；
-  新增 7 个探针+契约测试并打通内嵌计时（ADR-218：按键→候选 p50 14.1–14.9 ms、p95 20.6–23.5 ms，引擎 1.0 ms）；
-  A 离线门禁首次全绿（122 例/67 观测）；隔离包/私有根/本地产物已清理，生产数据与宿主全程未变。
-- 2026-10-20 / pi：内嵌计时打通并采到 n=45（total p50 14.1–14.9 ms / p95 20.6–23.5 ms；engine 1.0 ms；面板 42/165 ms），
-  写入报告 103 与 ADR-218；同时确认 ad-hoc 构建被 Gatekeeper 拦截、必须用 CI 公证包采样。
-- 2026-10-20 / pi：重新登录后复测计时采样：系统不再按需拉起宿主、`launchctl setenv` 到不了 LaunchServices 进程、
-  `open` 启动的宿主接客不稳定 → 卡点定位为「宿主启动/接管时序」，非钩子本身；已在 ADR-218 记录可选方案。
-  环境已重建并还原（源 sogou、无标记/trace 残留、真实词库未变）。

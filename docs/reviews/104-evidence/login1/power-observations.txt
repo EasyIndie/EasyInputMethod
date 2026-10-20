@@ -1,0 +1,6 @@
+2026-10-20 21:01:56 +0800 Notification        	Display is turned on                                                       	          
+2026-10-20 21:12:16 +0800 Notification        	Display is turned off                                                      	          
+2026-10-20 21:12:16 +0800 Assertions          	PID 715(ChatGPT) Summary NoIdleSleepAssertion "Electron" 01:43:09  id:0x0x1000083d5 [System: PrevIdle]          
+2026-10-20 21:18:25 +0800 Notification        	Display is turned on                                                       	          
+Total Sleep/Wakes since boot at 2026-10-20 19:28:15 +0800 :0
+   pid 715(ChatGPT): [0x0000004a000183d5] 01:50:35 NoIdleSleepAssertion named: "Electron"  
