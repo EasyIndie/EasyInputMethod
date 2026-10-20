@@ -35,3 +35,11 @@
 3. 用户在系统设置移除「萤火虫隔离验收 fd15c596」
 4. lsregister -u + 删除 ~/Library/Input Methods/LampyrisIMKTest-fd15c596-….app
 5. 删除私有根（含隔离包 config/词库、source-state、safari-diag.*、screen.png、module-cache）
+# 收尾后（08:45，只读 `tools/macos-probe/bin/tissrc list`）
+    enabled cn.jokerhub.inputmethod.Lampyris.default
+    enabled cn.jokerhub.inputmethod.Lampyris
+
+# 补充核对
+- 隔离宿主进程（pid 1310，路径已删）在收尾时仍在运行，已结束。
+- LaunchServices 数据库里还留一条指向已删路径的陈旧记录（`lsregister -u` 返回 -10814）；
+  不影响 TIS 列表与系统设置显示，会在下次数据库重建/重启时消失，未为此重建整库。

@@ -125,7 +125,9 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
 6. **回读（收尾后）**：生产包执行 SHA `681fb1c8…` 未变、宿主未运行、真实 `config.toml` `809e2cae…`、
    词库 `2ee1a469…`（用户自己打字学词，非本轮写入）；`~/Library/Input Methods/` 只剩 `Lampyris.app`，
    私有根已不存在。
-7. 遗留（本地、不入库、可随时删）：`platforms/macos/build/installed-*` 19 个探针证据目录。
+7. **收尾后核对**：隔离宿主进程已结束；`tissrc list` 只剩 ABC / sogou / 生产 `Lampyris`（无 `LampyrisIMKTest`）；
+   LaunchServices 仍留一条指向已删路径的陈旧记录（`-10814`），不影响 TIS 与系统设置，未重建整库。
+8. 遗留（本地、不入库、可随时删）：`platforms/macos/build/installed-*` 19 个探针证据目录。
 
 ## 7. 对报告 101 的影响
 
