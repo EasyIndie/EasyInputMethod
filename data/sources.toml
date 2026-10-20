@@ -91,13 +91,13 @@ added_at = "2026-10-08"
 notes = "MIT（Copyright (c) 2013 Sun Junyi）；格式 `词 频次 词性`（空格分隔，共 349,046 行）；仅用词表 + 词频，不发布原文件；词频为 jieba 语料统计（provenance 为开放语料，非商业输入法码表）；文件下载获取，不入库"
 
 [[derived]]
-id = "pinyin-core-v1"
+id = "pinyin-core-v2"
 path = "data/generated/pinyin-core.tsv"
-source_ids = ["D4", "D5", "D10"]
+source_ids = ["D4", "D5", "D10", "D15"]
 license = "CC-BY-SA-4.0"
-sha256 = "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f"
+sha256 = "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3"
 generator = "tools/prepare-pinyin-core.py"
-notes = "ADR-031；按词频降序/词及拼音升序裁剪，包含注释不超过 256KiB；输入全量词表来自既有登记来源"
+notes = "ADR-227；前20000条基础词加D15训练词，保留集不参与生成，原始词频不变，TSV预算800000字节"
 
 [[source]]
 id = "D11"
@@ -202,3 +202,25 @@ source_ids = ["D14"]
 license = "CC-BY-SA-4.0"
 sha256 = "425fb2769a0f8ff6754babb036a5db500c2454d0a1363588e47083702220f504"
 notes = "项目独立公开五笔86键位事实，不从oracle编码列推导"
+
+[[source]]
+id = "D15"
+name = "项目自编输入体验验收集"
+path = "data/input-quality.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/input-quality.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d"
+used_for = ["input-quality-evaluation", "core-vocabulary-selection-train-only"]
+added_at = "2026-10-20"
+notes = "项目独立编写433项；292训练项参与已有来源选词，69探索验证项及72冻结后保留项不参与生成；词频/读音/编码仍来自登记来源"
+
+[[derived]]
+id = "wubi-core-v2"
+path = "data/generated/wubi86-core.tsv"
+source_ids = ["D3", "D10", "D15"]
+license = "CC-BY-SA-4.0"
+sha256 = "511edd6237d47a83ed79237b0e9916cd65d8f926aadb747331c3f8d3f7a43561"
+generator = "crates/wubi-encoder/examples/generate_core.rs"
+notes = "ADR-227；全量单字+前20000条基础词组+D15训练词；保留集不参与生成，TSV预算800000字节"

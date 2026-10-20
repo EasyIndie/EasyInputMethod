@@ -1159,6 +1159,64 @@ mod tests {
     }
 
     #[test]
+    fn personal_dictionary_correction_export_import_and_reload_use_the_same_store() {
+        let root = std::env::temp_dir().join(format!(
+            "lampyris-dictionary-workflow-{}",
+            std::process::id()
+        ));
+        std::fs::create_dir_all(&root).unwrap();
+        let path = root.join("user.tsv");
+        let export = CString::new(root.join("export.tsv").to_str().unwrap()).unwrap();
+        let scheme = CString::new("wubi").unwrap();
+        let code = CString::new("ab").unwrap();
+        let typo = CString::new("词枯").unwrap();
+        let corrected = CString::new("词库").unwrap();
+        let mut s = ImeSession::new();
+        s.dictionary = Some(ime_dict::Store::load(&path).unwrap());
+        assert_eq!(
+            ime_session_dictionary_add(&mut *s, scheme.as_ptr(), code.as_ptr(), typo.as_ptr()),
+            IME_OK
+        );
+        assert_eq!(
+            ime_session_dictionary_remove(&mut *s, scheme.as_ptr(), code.as_ptr(), typo.as_ptr()),
+            IME_OK
+        );
+        assert_eq!(
+            ime_session_dictionary_add(&mut *s, scheme.as_ptr(), code.as_ptr(), corrected.as_ptr()),
+            IME_OK
+        );
+        assert_eq!(
+            ime_session_dictionary_export(&mut *s, export.as_ptr()),
+            IME_OK
+        );
+        assert_eq!(
+            ime_session_dictionary_remove(
+                &mut *s,
+                scheme.as_ptr(),
+                code.as_ptr(),
+                corrected.as_ptr()
+            ),
+            IME_OK
+        );
+        assert_eq!(
+            ime_session_dictionary_import(&mut *s, export.as_ptr()),
+            IME_OK
+        );
+        s.session.set_mode(InputMode::WubiOnly);
+        for ch in ['a', 'b'] {
+            ime_session_key(&mut *s, ch as u32);
+        }
+        assert_eq!(s.session.candidates()[0].text, "词库");
+        assert_eq!(ime_session_key(&mut *s, '1' as u32), IME_KEY_COMMITTED);
+        assert_eq!(s.session.committed(), "词库");
+        drop(s);
+        let loaded = ime_dict::Store::load(&path).unwrap();
+        assert!(!loaded.entries().keys().any(|(_, _, text)| text == "词枯"));
+        assert!(loaded.entries()[&("wubi".into(), "ab".into(), "词库".into())] > 0);
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
     fn rare_single_choice_keeps_rank_after_backspace_paging_and_store_reload() {
         let root =
             std::env::temp_dir().join(format!("lampyris-fixed-single-{}", std::process::id()));

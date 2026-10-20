@@ -60,7 +60,7 @@ platforms/macos/
 |---|---|---|
 | `data/generated/wubi86-core.tsv` | ✅ 已入库 | 宿主回退内置样本引擎 |
 | `data/generated/pinyin-chars.tsv` | ✅ 已入库 | 不启用拼音 |
-| `data/generated/pinyin-core.tsv` | ✅ 已入库（256KiB） | 拼音降级为单音节 |
+| `data/generated/pinyin-core.tsv` | ✅ 已入库（20k基础词及场景训练词，ADR-227） | 拼音降级为单音节 |
 
 复现大文件：
 

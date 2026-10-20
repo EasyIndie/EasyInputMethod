@@ -48,6 +48,8 @@ pub struct TablePinyinBackend {
     chars: HashMap<String, Vec<(char, i32)>>,
     /// 归一化拼音（空格分隔）→ [(词, weight)]。
     words: HashMap<String, Vec<(Arc<str>, i32)>>,
+    /// Compact full spelling to canonical word key; sorted for binary lookup.
+    full_spellings: Vec<(String, String)>,
     /// 首字母串（简拼键）→ [(词, weight)]。
     initials: HashMap<String, Vec<(Arc<str>, i32)>>,
     /// 合法音节集合（字与词音节并集）。
@@ -192,6 +194,12 @@ impl TablePinyinBackend {
     }
 
     fn finalize(&mut self) {
+        self.full_spellings = self
+            .words
+            .keys()
+            .map(|key| (key.replace(' ', ""), key.clone()))
+            .collect();
+        self.full_spellings.sort();
         for list in self.chars.values_mut() {
             list.shrink_to_fit();
             list.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
@@ -254,6 +262,26 @@ impl PinyinBackend for TablePinyinBackend {
                         *weight,
                         false,
                     ));
+                }
+            }
+            if !input.contains('\'') && syllables.len() > 1 && !self.words.contains_key(&key) {
+                let start = self
+                    .full_spellings
+                    .partition_point(|(spelling, _)| spelling.as_str() < input);
+                for (_, canonical) in self.full_spellings[start..]
+                    .iter()
+                    .take_while(|(spelling, _)| spelling == input)
+                {
+                    if let Some(words) = self.words.get(canonical) {
+                        for (word, weight) in words {
+                            out.push(PinyinCandidate::new(
+                                word.to_string(),
+                                canonical.clone(),
+                                *weight,
+                                false,
+                            ));
+                        }
+                    }
                 }
             }
             if syllables.len() == 1 {
@@ -367,6 +395,24 @@ mod tests {
         for invalid in ["'xian", "xi'", "xi''an", "xi'aq", "xi’an", "xi an", "XI'an"] {
             assert!(b.convert(invalid, 9).is_empty(), "{invalid}");
         }
+    }
+
+    #[test]
+    fn full_word_lookup_recovers_from_a_different_greedy_segmentation() {
+        let b = TablePinyinBackend::from_tsv(
+            "reng\t扔\t1\nong\t翁\t1\nren\t人\t2\ngong\t工\t2\nzhi\t智\t2\nneng\t能\t2\n",
+            "ren gong zhi neng\t人工智能\t10\n",
+            "whole-word",
+        )
+        .unwrap();
+        assert_eq!(b.segment("rengongzhineng"), ["reng", "ong", "zhi", "neng"]);
+        for input in ["rengongzhineng", "ren'gong'zhi'neng"] {
+            let candidates = b.convert(input, 9);
+            assert_eq!(candidates[0].text, "人工智能");
+            assert_eq!(candidates[0].pinyin, "ren gong zhi neng");
+        }
+        assert!(b.convert("reng'ong'zhi'neng", 9).is_empty());
+        assert!(b.convert("rengongzhinen", 9).is_empty());
     }
 
     #[test]
