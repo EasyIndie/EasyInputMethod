@@ -63,3 +63,9 @@
 ## VoiceOver 补验
 
 用户开启VoiceOver，进程精确查询已确认（PID14397）；自有TextEdit候选AX面、状态切换后焦点、原源/启用集合与真实数据恢复均PASS。9项必需AX词项全部存在；范围限AX朗读面，不宣称完整朗读措辞评审。证据：`104-evidence/login1/accessibility-login1/`。当前机器报告pass10/blocked13；等待用户关闭VoiceOver、保存工作并确认开始睡眠验收。
+
+## 睡眠验收前置与自动请求阻断
+
+用户关闭VoiceOver并授权开始睡眠验收。首轮在睡前即停止：隔离配置被前一项状态切换留在pinyin，wq提交判据不符；真实配置未变。用既有ime-config FFI仅将私有根mode从pinyin归一化为mixed并保存证据后重跑，睡前TextEdit已PASS。自动sleepnow请求后，pmset日志仍显示本次boot Sleep/Wakes=0，不能证明实际睡眠；随后输入复验被守卫停止。两轮均ABC恢复、真实数据未变，未伪造睡眠PASS。
+
+已请求用户改用「 → 睡眠」后唤醒。不得自动再触发睡眠；需取得此次睡眠/唤醒实际事件，再运行新的醒后TextEdit验证，与已保存的睡前PASS绑定。现有睡眠脚本固定等待且忽略pmset返回，不能单靠它的经过时间证明睡眠。

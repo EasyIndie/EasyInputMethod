@@ -5,7 +5,7 @@
 - 更新：2026-10-20 / Codex（GPT-6），B 重启后已添加隔离源，报告104进行中。
 - 产品候选 `8eb872f`，本轮起点main `f0a14d6`；ADR-221/222探针兼容/守卫工程完成，make verify全绿；报告104现pass10/blocked13，arm64项已PASS。
 - B已通过TextEdit/Terminal各四路径、长组合/撤销；trace n44：total p50/p95=13.4/21.2ms，engine=0.6/1.8ms，端到端p95未达16ms。
-- 当前ABC已恢复；单屏HUD截图失败，窗口几何/前台证据已采；VSCode未安装、双屏用户明确缺硬件；VoiceOver补验已PASS，等待用户关闭VO/保存工作并确认开始睡眠。
+- 当前ABC已恢复；单屏HUD截图失败，窗口几何/前台证据已采；VSCode未安装、双屏用户明确缺硬件；VoiceOver补验已PASS，用户已关闭VO并授权睡眠；自动请求无Sleep/Wake事件，等待用户手动睡眠/唤醒。
 
 ## 1. 安装与数据
 
@@ -47,7 +47,7 @@
 
 ## 4. 下一步
 
-- **B 实际续跑断点**：HUD已结束BLOCKED（截图失败；原生候选/HUD均在屏），输出 `platforms/macos/build/acceptance-b-104/hud-single-login1.txt`；根已按ADR-131重建且selection journal原源ABC。根/包完整身份仍见104。长组合/撤销PASS、mode因文档/焦点守卫BLOCKED；Safari冷启动-1712待有界复核；VSCode无安装，不发键；双屏无硬件。矩阵variant首个暖机AX等待超时，cold/dictionary共享前置未重复。VSCode未安装；Safari后续只读窗口枚举仍-1712。机器报告已凭TextEdit/Terminal四路径、长组合/撤销、trace等证据将arm64-macos27改PASS，但不关闭独立BLOCKED项。VoiceOver已开启且探针PASS（证据accessibility-login1）；已请求用户关闭VO并保存工作后确认由探针触发睡眠，必须等用户答复再运行run-installed-sleep-wake-probe.py。归档后更新机器报告和HANDOFF；ADR-221/222已make verify及专项验证；后续新增验收证据仍需验证提交。不得重复运行已PASS场景，除非验证新工具改动。
+- **B 实际续跑断点**：HUD已结束BLOCKED（截图失败；原生候选/HUD均在屏），输出 `platforms/macos/build/acceptance-b-104/hud-single-login1.txt`；根已按ADR-131重建且selection journal原源ABC。根/包完整身份仍见104。长组合/撤销PASS、mode因文档/焦点守卫BLOCKED；Safari冷启动-1712待有界复核；VSCode无安装，不发键；双屏无硬件。矩阵variant首个暖机AX等待超时，cold/dictionary共享前置未重复。VSCode未安装；Safari后续只读窗口枚举仍-1712。机器报告已凭TextEdit/Terminal四路径、长组合/撤销、trace等证据将arm64-macos27改PASS，但不关闭独立BLOCKED项。VoiceOver已开启且探针PASS（证据accessibility-login1）；用户已关闭VO并授权睡眠；两轮记录见104：首轮隔离pinyin→通过ime-config归一化mixed，第二轮睡前TextEdit PASS但pmset无新睡眠事件、后续保护停止。已请求用户手动睡眠并唤醒，必须等答复，再以pmset事件与新醒后TextEdit结果验证；不要自动再触发睡眠。归档后更新机器报告和HANDOFF；ADR-221/222已make verify及专项验证；后续新增验收证据仍需验证提交。不得重复运行已PASS场景，除非验证新工具改动。
 
 
 1. **决定 p95 超标是否立项**：先写 ADR（是否把「按键→候选可见」纳入门禁、目标值与测量口径），再决定是否优化 IMK 回写路径。
@@ -66,6 +66,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / Codex：用户授权睡眠验收；首轮被隔离pinyin前置阻断，经ime-config仅恢复私有mode=mixed后睡前PASS。自动睡眠请求后系统当前boot仍0次睡眠，复验守卫停止，均恢复ABC/真实数据不变；已请求用户手动睡眠并唤醒后核验，当前sleep-wake仍BLOCKED（104）。
+
 - 2026-10-20 / Codex：用户开启VoiceOver后无障碍探针PASS（完整AX面/焦点/原源与真实数据恢复）；报告104现pass10/blocked13。已提示关闭VO、保存工作，等待用户确认开始一次睡眠唤醒；尚未执行睡眠。
 
 - 2026-10-20 / Codex：B重启后源可用，私有根重建/ABC恢复journal已建；TextEdit/Terminal四路径及长组合/撤销PASS，内嵌trace44样本total13.4/21.2ms、engine0.6/1.8ms（p50/p95）。TextEdit冷启动与窗口复用兼容按ADR-221修复；VSCode逐批守卫ADR-222本地回归9例通过但应用未装；单屏HUD截图BLOCKED（几何在屏），矩阵AX等待BLOCKED；报告104现pass10/blocked13，arm64项PASS。VO/睡眠待用户配合；修改与证据已落盘，真实数据摘要未变。
@@ -83,4 +85,3 @@
 - 2026-10-20 / pi：重新登录后复测计时采样：系统不再按需拉起宿主、`launchctl setenv` 到不了 LaunchServices 进程、
   `open` 启动的宿主接客不稳定 → 卡点定位为「宿主启动/接管时序」，非钩子本身；已在 ADR-218 记录可选方案。
   环境已重建并还原（源 sogou、无标记/trace 残留、真实词库未变）。
-- 2026-10-20 / pi：宿主级性能基线 PASS（新探针 `run-installed-perf-probe.py` + `ax-text-wait`）；报告 103 → pass 18 / blocked 5。

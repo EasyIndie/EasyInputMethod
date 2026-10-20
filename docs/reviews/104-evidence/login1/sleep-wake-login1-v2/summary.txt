@@ -1,0 +1,2 @@
+即将进入睡眠；请在方便时唤醒机器，探针会自动继续。
+BLOCKED; EVIDENCE=/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-sleep-efw86x1q

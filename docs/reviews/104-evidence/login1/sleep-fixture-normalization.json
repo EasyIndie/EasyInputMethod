@@ -1,0 +1,8 @@
+{
+  "beforeMode": "pinyin",
+  "afterMode": "mixed",
+  "method": "ime_config_init(owned root/config.toml) + ime_config_set(mode, mixed)",
+  "reason": "VoiceOver state-toggle probe left isolated fixture in pinyin; wq commit precondition requires mixed/wubi",
+  "realConfigUnchanged": true,
+  "root": "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7"
+}

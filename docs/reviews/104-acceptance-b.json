@@ -79,8 +79,14 @@
     {
       "id": "sleep-wake",
       "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "reason": "用户授权后执行：首轮睡前因隔离配置遗留pinyin停止；经ime-config恢复mixed后睡前输入PASS，但sleepnow请求未形成可核验Sleep/Wake（当前boot计数0），后续输入守卫停止。原源/真实数据恢复；现等待用户手动睡眠并唤醒，不以固定等待代替睡眠证据",
+      "evidence": [
+        "104-evidence/login1/sleep-wake-login1/result.json",
+        "104-evidence/login1/sleep-wake-login1-v2/result.json",
+        "104-evidence/login1/sleep-fixture-normalization.json",
+        "104-evidence/login1/sleep-power-events.json",
+        "104-evidence/login1/manual-sleep-events.json"
+      ]
     },
     {
       "id": "accessibility",
