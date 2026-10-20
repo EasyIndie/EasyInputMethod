@@ -9,7 +9,14 @@ on run argv
             if operation is "create" then
                 set originalIDs to id of every window
                 if exists document fixtureName then error "BLOCKED 测试文档名称冲突"
+                make new document
+                set blankID to id of front window
+                if blankID is in originalIDs then error "BLOCKED 未取得自有空白窗口"
                 open fixtureFile
+                repeat 40 times
+                    if (count of (documents whose name is fixtureName)) is 1 and (count of (windows whose name is fixtureName and visible is true)) is 1 then exit repeat
+                    delay 0.1
+                end repeat
             else
                 set testID to (item 4 of argv) as integer
                 if operation is "close" and not (exists document fixtureName) then
@@ -29,6 +36,19 @@ on run argv
                 if (count of matches) is not 1 then error "BLOCKED 测试窗口身份不唯一"
                 set testID to id of item 1 of matches
                 if testID is in originalIDs then error "BLOCKED 测试窗口ID重复"
+                if testID is not blankID and (exists window id blankID) then
+                    set blankName to name of window id blankID
+                    set blankMatches to documents whose name is blankName
+                    if (count of blankMatches) is not 1 then error "BLOCKED 自有空白文档身份已变"
+                    set blankDocument to item 1 of blankMatches
+                    try
+                        if (path of blankDocument) is not missing value then error "BLOCKED 自有空白文档路径已变"
+                    on error messageText number errorCode
+                        if errorCode is not -2763 then error messageText number errorCode
+                    end try
+                    if (text of blankDocument) is not "" then error "BLOCKED 自有空白文档内容已变"
+                    close blankDocument saving no
+                end if
                 return testID
             end if
             if not (exists window id testID) then error "BLOCKED 测试窗口不存在"
