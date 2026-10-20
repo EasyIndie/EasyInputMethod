@@ -66,9 +66,13 @@
     },
     {
       "id": "focus",
-      "status": "BLOCKED",
-      "reason": "离屏 HUD/焦点规则已绑定本候选并通过（candidate.hud/hud-position/hud-source）；真机复验发现状态 HUD 窗口存在且定位正确、但屏幕上没有任何像素变化（隔离包与生产包一致，报告 102 §9），疑似缺陷，需用旧候选对照定性，暂不放行",
-      "evidence": []
+      "status": "FAIL",
+      "reason": "真机复验：候选窗正常（位置/跟屏/不夺焦点），但状态 HUD 窗口虽创建在光标处、缓冲有内容，屏幕上 0 像素变化（隔离包与生产包一致）；同配置最小 NSPanel 对照可见（44 184/51 200 像素差异），环境已排除 → 判定为产品缺陷。证据：报告 102 §9、102-evidence/102-hud-real-device.txt、102-evidence/hud/",
+      "evidence": [
+        "102-evidence/102-hud-real-device.txt",
+        "102-evidence/hud/iso-display2-hud-region.png",
+        "102-evidence/hud/control-panel-during-region.png"
+      ]
     },
     {
       "id": "mode-switch",

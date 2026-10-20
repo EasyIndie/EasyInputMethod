@@ -177,9 +177,22 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
 用户看不到状态提示。真实学习词库未变（`2ee1a469…` 前后一致），输入源已还原。
 
 - 证据：`102-evidence/102-hud-real-device.txt`、`102-evidence/hud/*-region.png`（裁切后的 HUD 区域，成对哈希相同）。
-- 未决：尚未区分「候选回归」与「本机环境变化」（本机 Safari 期间被更新到 18.6）。
-  下一步用旧候选（`a278d70` / `17053e1`）同机同法对照，再决定是否开 ADR 修 `StateHUDController`。
-  因此 `focus` 仍记 BLOCKED，不按 PASS 处理。
+### 9.1 环境对照（排除「本机无法合成此类窗口」）
+
+用与 `StateHUDController.makePanel()` **完全相同**的窗口配置（`.borderless + .nonactivatingPanel`、
+`isFloatingPanel`、`level = .popUpMenu`、`.canJoinAllSpaces/.stationary/.ignoresCycle/.fullScreenAuxiliary`、
+`isOpaque = false`、`backgroundColor = .clear`、`ignoresMouseEvents`、`animationBehavior = .none`）写了一个
+20 行最小程序（`102-evidence/hud/control-panel.swift`），内建屏同一位置显示红块：
+
+| 证据 | 结果 |
+|---|---|
+| 该面板区域像素（during vs before/after） | **44 184 / 51 200 差异**（可见） |
+| 裁剪图 | `control-panel-during-region.png`（743 B）vs `control-panel-before-region.png`（229 B） |
+
+结论：本机完全能合成这一级别的窗口 → **HUD 不可见是宿主侧问题，不是环境限制**。
+报告 101 的 `focus` 因此改判 **FAIL**（缺陷：状态提示不显示），需开 ADR 定位
+（候选窗能正常显示，说明窗口创建/显示代码路径本身可用；差异集中在 `StateHUDController` 的
+懒创建 + `show()` 时序，或 `StateHUDView` 的首帧绘制）。
 
 ## 证据
 
