@@ -79,7 +79,8 @@ for area in [primary, secondary, NSRect(x: 80, y: -400, width: 320, height: 200)
         guard area.contains(candidate.frame), candidate.candidateAccessibilityLabelsForTesting.count == 2 else { fail("edge/AX geometry") }
     }
 }
-let data = try JSONSerialization.data(withJSONObject: ["passed": true, "pairs": contrasts, "appearanceRequests": requests,
-  "scope": "native light/dark colors and explicit production high-contrast color policy; not actual global high-contrast/VoiceOver"], options: [.prettyPrinted, .sortedKeys])
+let payload: [String: Any] = ["passed": true, "pairs": contrasts, "appearanceRequests": requests,
+  "scope": "native light/dark colors and explicit production high-contrast color policy; not actual global high-contrast/VoiceOver"]
+let data = try JSONSerialization.data(withJSONObject: payload, options: [.prettyPrinted, .sortedKeys])
 try data.write(to: output.appendingPathComponent("contrast.json"))
 print("PASS appearance-contract: native light/dark plus high-contrast color policy, contrast pairs, bounded screen geometry, hidden views and candidate focus guard")
