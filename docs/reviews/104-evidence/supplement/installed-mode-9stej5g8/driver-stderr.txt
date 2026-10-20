@@ -1,0 +1,3 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-textedit.applescript:625:644: execution error: BLOCKED 未取得自有空白窗口 (-2700)
+BLOCKED TextEdit创建未验证；保留：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/installed-mode-9stej5g8/textedit.nzZ1aX
+BLOCKED TextEdit资源清理失败；保留临时文件

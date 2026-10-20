@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 / Codex（GPT-6）；B本轮验收已归档，隔离输入源移除及包归档均已完成。
-- main基线 `8392549`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
-- 报告104：**pass12 / fail0 / blocked11**，arm64-macos27已PASS；检查器预期退出3，完整发布门禁仍BLOCKED。
-- 最近验证：make verify零诊断通过、182产物隐私检查通过；9ac7e9d的CI/正式包工作流成功。
+- 更新：2026-10-20 / Codex（GPT-6）；用户要求继续可验项，同候选补验中，等待录屏权限。
+- main基线5d45c94；产品候选固定8eb872f，ADR-223/224仅修复验收窗口及Safari AX就绪等待。
+- 报告104：pass14 / fail0 / blocked9；新增模式循环及Safari四路径PASS，三项性能矩阵已完成。
+- 最近门禁以提交前make verify结果为准；本轮TextEdit/Safari离线9/8例通过。
 
 ## 1. 设备与数据
 
@@ -13,10 +13,10 @@
 |---|---|---|---|
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（21:25回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，公证accepted，宿主未运行 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 实际本轮原源ABC，已恢复；初始搜狗拼音由用户在登录前改为ABC，不强制改回旧选择 |
-| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 宿主PID3204已精确停止，lsof无网络socket；实际启用源及菜单均无隔离身份，隔离包已归档 |
+| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 上轮已归档，本轮重新安装并由用户添加；当前宿主PID17067，按批恢复ABC |
 
 - 完整两包zip/执行SHA、CI run、签名与绑定证据见报告104；正式universal包只验证未安装。
-- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（本轮曾为0700+0600 owner，重启后已不存在）；原安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
+- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（本轮已重新建立0700+0600 owner及ABC journal）；当前安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
 
 ## 2. 本轮结论
 
@@ -27,24 +27,27 @@
 
 ## 3. 未决
 
-- 人工收尾已完成：用户设置确认、TIS实际启用枚举与输入菜单三方一致；全部已注册列表旧模式标记不代表实际启用，勿再要求重复移除。
-- B阻断：Safari AppleEvent-1712；VSCode未安装；mode触发文档/焦点守卫；HUD截图失败、暗色未验；无第二屏（用户明确）；AX性能矩阵首个暖机等待超时，cold/dictionary未重复同一失败前置；系统睡眠无正式事件。
+- 上一轮收尾完成；本轮用户要求继续，已恢复同包与私有根，用户重新添加源。当前按批恢复ABC，最终移除/归档待补验完成后进行。
+- B阻断：VSCode未安装；录屏预检false、亮暗截图待用户授权；无第二屏；系统睡眠无正式事件。宿主15提交基线在新窗口创建守卫停止，未盲目重试；三项AX矩阵已通过。
 - 跨设备/发布阻断：8eb872f的A机复验、独立第三方、五工作日、Chrome已知外部问题、WeChat按策略不发键。
 - 产品端到端p95是否优化仍需另立ADR；不以基线采集PASS等同16ms达标。未关闭IT-12、UI04或MVP。
 
 ## 4. 下一步（断点）
 
-1. 本轮收尾完成，报告104 state-restoration已PASS；检查器因剩余11项BLOCKED预期返回3。
-2. 后续按104阻断表逐项补验；无需重跑已PASS批次，不自动改候选或安装缺失应用。
+1. 已询问录屏授权，用户尚未确认；只读复查capture-preflight，授权true后跑单屏run-installed-hud-probe.py；不重复已PASS批次。
+2. 本轮私有根与已装隔离包恢复为报告104原路径，selection journal0600原源ABC；所有按键仍需精确身份/焦点/源守卫。
+3. 补验结束后按TIS includeAllInstalled=false及激活菜单确认移除；不要把全部已注册列表旧模式enabled误作有效启用。还原并归档，再更新报告、make verify、提交推送。
 
 ## 5. 边界
 
 - 核心离线/零遥测；配置只经ime-config；不改真实数据、UserDefaults或HIToolbox。
 - 仅自有窗口/文档，每批身份/焦点/源守卫；失败停止保留证据，不为PASS放宽判定。
 - 不自动注销/重启/解锁；TCC由用户点选；睡眠未证实就保留BLOCKED。VoiceOver用户已关闭。
-- 生产包未替换；隔离包已可逆归档至packaging/out/b-8eb872f-retired，临时根已由重启清理。完整身份与平台差异只放报告104。
+- 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，本轮另恢复安装副本及私有根以补验。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：继续可验项，恢复同公证包及隔离根，用户重新添加源；ADR-223/224修复激活/窗口与AX文本框就绪，模式循环及Safari四路径PASS。简繁/冷启动/1万条词库AX矩阵PASS，宿主基线创建守卫停止；录屏预检false待授权，报告14/9，真实数据未变。
 
 - 2026-10-20 / Codex：用户确认设置已无隔离项，TIS实际启用列表及激活菜单均无隔离身份；此前全部已注册列表的旧enabled标记导致误判。核验签名/执行身份后注销并归档隔离包，临时根重启已清理，生产三摘要不变；恢复项PASS，104现pass12/blocked11。
 
@@ -59,5 +62,3 @@
 - 2026-10-20 / Codex：B重启后源可用，私有根重建/ABC恢复journal已建；TextEdit/Terminal四路径及长组合/撤销PASS，内嵌trace44样本total13.4/21.2ms、engine0.6/1.8ms（p50/p95）。TextEdit冷启动与窗口复用兼容按ADR-221修复；VSCode逐批守卫ADR-222本地回归9例通过但应用未装；单屏HUD截图BLOCKED（几何在屏），矩阵AX等待BLOCKED；报告104现pass10/blocked13，arm64项PASS。VO/睡眠待用户配合；修改与证据已落盘，真实数据摘要未变。
 
 - 2026-10-20 / Codex：探针修复 `8eb872f` 已推送；同提交 arm64 公证隔离包安装成功（strict/signature/stapler/架构与绑定均通过），等待用户添加独有源/必要时重新登录，未发键。正式 universal 构建已成功；ADR-220 补齐性能逐动作守卫及源检查，相关回归与 make verify 通过。真实执行/config/词库未改，当前源按用户选择保留 ABC；报告 104 与证据已落盘。
-
-- 2026-10-20 / Codex：B 基线已采（macOS 27.0.1 / arm64，生产执行 `535d546f9de1…`、config 8 显式快捷键、词库 29 行、原源搜狗拼音）；未换包/发键。定位正式 CI 的 TextEdit mock 超时及中断锚点失效，ADR-219 最小修复专项 9 例通过；make verify 全绿。报告 104 进行中，矩阵旧文案断言同步修复；远端完整复核后重新锁候选。

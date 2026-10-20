@@ -1,0 +1,14 @@
+{
+  "pid": 17067,
+  "executablePath": "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app/Contents/MacOS/LampyrisIMKTest",
+  "samplesCpuPercentRssKiB": [
+    "0.0  71520",
+    "0.0  71520",
+    "0.0  71520",
+    "0.0  71520",
+    "0.0  71520",
+    "0.0  71520"
+  ],
+  "durationSeconds": 6,
+  "scope": "no injected keys; ps lifetime CPU percentage snapshot, not interval power or wakeup measurement"
+}

@@ -33,3 +33,5 @@
 - VoiceOver AX面/焦点和用户报告唤醒后的TextEdit输入已PASS，但电源日志仅息屏/亮屏、当前boot Sleep/Wakes=0；完整系统睡眠/唤醒仍BLOCKED，不能将该次输入当作已证实睡眠后的性能数据。
 - 证据：`docs/reviews/104-evidence/login1/perf-trace.jsonl`、`perf-trace-summary.txt`、`matrix-variant-login1/`及电源/输入记录。真实配置/词库全程不变。
 - 下一步：分别解决AX等待器前置、真实系统睡眠取证与剩余性能维度；是否优化端到端p95先另立ADR。IT-12保持进行中。
+
+- B同候选补验：ADR-223/224修复自有客户端就绪等待，外部AX矩阵现已PASS。简繁9样本p50/p95=290.8/301.6ms、RSS67.7MiB；冷启动前后2样本274.5/454.6ms、RSS33.0MiB；1万条/1978920字节词库10样本p50/p95=281.8/339.1ms、RSS31.4MiB。均含AX/AppleScript开销，不替代内嵌计时。此前等待超时为历史阻断，未补系统睡眠、功耗/唤醒频率及长时稳定性，IT-12保持进行中。

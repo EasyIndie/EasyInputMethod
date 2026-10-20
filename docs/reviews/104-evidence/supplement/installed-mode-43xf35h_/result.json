@@ -1,0 +1,1 @@
+{"passed": true, "status": 0, "scenario": "mode", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "verified": true, "error": null, "scope": "isolated IME behaviour through owned TextEdit; not full product acceptance", "mode-initial": "mixed", "mode-after-one": "wubi", "mode-final": "mixed"}

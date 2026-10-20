@@ -8,10 +8,22 @@ on run argv
                 -- Safari 18.6 不再给 AppleScript 投递的 file:// 授予沙箱扩展（报告 102 §5.3），
                 -- 所以页面改由 LaunchServices 打开；接受的目标窗口必须是新建的那个或另一个新窗口。
                 set previousIDs to id of every window
+                activate
                 make new document
-                set targetWindow to front window
-                set targetID to id of targetWindow
+                set targetID to 0
+                repeat 30 times
+                    if exists front window then
+                        set candidateID to id of front window
+                        if previousIDs does not contain candidateID then
+                            set targetID to candidateID
+                            exit repeat
+                        end if
+                    end if
+                    delay 0.1
+                end repeat
+                if targetID is 0 then error "BLOCKED 未取得独有窗口"
                 if previousIDs contains targetID then error "BLOCKED 未取得独有窗口"
+                set targetWindow to window id targetID
                 do shell script "/usr/bin/open -a Safari " & quoted form of fixtureURL
                 set landedID to 0
                 repeat 60 times
@@ -84,14 +96,26 @@ on run argv
         set fixtureTitle to item 4 of argv
         tell application "System Events" to tell process "Safari"
             if operation is "focus" then
-                set matches to {}
-                set windowElements to entire contents of front window
-                repeat with candidate in windowElements
-                    if role of candidate is "AXTextArea" then
-                        if description of candidate is fixtureTitle then set end of matches to contents of candidate
-                    end if
+                repeat 20 times
+                    set matches to {}
+                    set windowElements to entire contents of front window
+                    repeat with candidate in windowElements
+                        try
+                            if role of candidate is "AXTextArea" then
+                                if description of candidate is fixtureTitle then set end of matches to contents of candidate
+                            end if
+                        end try
+                    end repeat
+                    if (count of matches) is 1 then exit repeat
+                    if (count of matches) > 1 then error "BLOCKED 正文文本框身份不唯一"
+                    delay 0.1
                 end repeat
                 if (count of matches) is not 1 then error "BLOCKED 正文文本框身份不唯一"
+                tell application "Safari"
+                    if not frontmost then error "BLOCKED Safari非前台"
+                    if id of front window is not targetID then error "BLOCKED Safari窗口焦点改变"
+                    if URL of current tab of front window is not fixtureURL then error "BLOCKED 测试页面身份改变"
+                end tell
                 set value of attribute "AXFocused" of item 1 of matches to true
             end if
             set targetArea to value of attribute "AXFocusedUIElement"

@@ -78,11 +78,12 @@
     },
     {
       "id": "mode-switch",
-      "status": "BLOCKED",
-      "reason": "中断前模式探针触发TextEdit文档身份/焦点守卫停止，原源和真实数据恢复；不得计通过",
+      "status": "PASS",
+      "reason": "ADR-223先激活TextEdit并有界等待自有新窗口后，模式mixed→wubi→mixed循环通过，原源/启用集合及真实数据恢复；产品候选不变",
       "evidence": [
         "104-evidence/login1/features-mode-login1/result.json",
-        "104-evidence/login1/features-mode-login1/driver-stderr.txt"
+        "104-evidence/login1/features-mode-login1/driver-stderr.txt",
+        "104-evidence/supplement/installed-mode-43xf35h_/result.json"
       ]
     },
     {
@@ -108,7 +109,7 @@
     {
       "id": "light-dark-layout",
       "status": "BLOCKED",
-      "reason": "B单屏HUD在取亮色截图时screencapture报could not create image from rect；未切至暗色，不以CG窗口坐标代替亮暗视觉证据",
+      "reason": "首次截图失败后，本轮CGPreflightScreenCaptureAccess明确false；已请求用户开启录屏权限，尚未确认。亮暗图像证据未齐，不以窗口坐标替代",
       "evidence": [
         "104-evidence/login1/hud-single-login1/evidence.json",
         "104-evidence/login1/hud-single-login1/driver-stderr.txt"
@@ -128,7 +129,11 @@
         "104-evidence/login1/perf-trace.jsonl",
         "104-evidence/login1/perf-trace-summary.txt",
         "104-evidence/login1/matrix-variant-login1/result.json",
-        "104-evidence/login1/matrix-variant-login1/driver-stderr.txt"
+        "104-evidence/login1/matrix-variant-login1/driver-stderr.txt",
+        "104-evidence/supplement/imk12-cold-4cogklse/result.json",
+        "104-evidence/supplement/imk12-dictionary-gj3cu90e/result.json",
+        "104-evidence/supplement/imk12-variant-29l6epb3/result.json",
+        "104-evidence/supplement/idle-host.json"
       ]
     },
     {
@@ -187,11 +192,15 @@
     },
     {
       "id": "application-Safari",
-      "status": "BLOCKED",
-      "reason": "创建独有页面及应用就绪后的有界只读窗口枚举均AppleEvent -1712；未发键，原源/启用集合恢复且真实数据未变。AX窗口集合为空，未继续重试",
+      "status": "PASS",
+      "reason": "ADR-223/224修复新窗口及自有AXTextArea就绪等待；normal/failure/INT/TERM四路径通过，精确fixture URL/窗口/文本框守卫，提交你及前缀中断恢复，自有窗口关闭、原源/启用集合恢复、真实数据不变",
       "evidence": [
         "104-evidence/login1/safari-normal-login1/result.json",
-        "104-evidence/login1/safari-normal-login1/driver-stderr.txt"
+        "104-evidence/login1/safari-normal-login1/driver-stderr.txt",
+        "104-evidence/supplement/installed-safari-1le0_xv0/result.json",
+        "104-evidence/supplement/installed-safari-aaz4_92_/result.json",
+        "104-evidence/supplement/installed-safari-_y163zl7/result.json",
+        "104-evidence/supplement/installed-safari-solpgs98/result.json"
       ]
     },
     {

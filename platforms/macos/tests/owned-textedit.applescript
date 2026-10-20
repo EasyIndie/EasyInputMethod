@@ -9,9 +9,20 @@ on run argv
             if operation is "create" then
                 set originalIDs to id of every window
                 if exists document fixtureName then error "BLOCKED 测试文档名称冲突"
+                activate
                 make new document
-                set blankID to id of front window
-                if blankID is in originalIDs then error "BLOCKED 未取得自有空白窗口"
+                set blankID to 0
+                repeat 30 times
+                    if exists front window then
+                        set candidateID to id of front window
+                        if candidateID is not in originalIDs then
+                            set blankID to candidateID
+                            exit repeat
+                        end if
+                    end if
+                    delay 0.1
+                end repeat
+                if blankID is 0 then error "BLOCKED 未取得自有空白窗口"
                 open fixtureFile
                 repeat 40 times
                     if (count of (documents whose name is fixtureName)) is 1 and (count of (windows whose name is fixtureName and visible is true)) is 1 then exit repeat

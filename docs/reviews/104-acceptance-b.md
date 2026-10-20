@@ -1,6 +1,6 @@
 # 104 — B（arm64 / macOS 27）隔离候选复验
 
-2026-10-20，MacBook-Air / macOS 27.0.1。**arm64-macos27 已转 PASS；当前 pass 12 / fail 0 / skip 0 / blocked 11**。`acceptance-results.py check` 返回预期 BLOCKED（3），格式与证据引用有效；不代表完整发布验收通过。
+2026-10-20，MacBook-Air / macOS 27.0.1。**arm64-macos27 已转 PASS；当前 pass 14 / fail 0 / skip 0 / blocked 9**。`acceptance-results.py check` 返回预期 BLOCKED（3），格式与证据引用有效；不代表完整发布验收通过。
 
 ## 1. 候选与边界
 
@@ -36,14 +36,12 @@
 
 | 项 | 原因与边界 |
 |---|---|
-| `mode-switch` | 中断前模式探针触发TextEdit文档身份/焦点守卫停止，原源和真实数据恢复；不得计通过 |
 | `sleep-wake` | 用户手动操作后新的TextEdit输入PASS且源/数据恢复，宿主PID保持3204；pmset只记录21:12息屏/21:18亮屏，当前boot系统睡眠次数仍0，因此不能记完整系统睡眠/唤醒PASS；不再要求用户重复 |
 | `light-dark-layout` | B单屏HUD在取亮色截图时screencapture报could not create image from rect；未切至暗色，不以CG窗口坐标代替亮暗视觉证据 |
 | `multi-display` | B系统仅识别1块显示器；用户明确本次无第二块屏幕，不执行换屏跟随验收 |
 | `intel-macos13` | 新候选 8eb872f 未在 A 机复验；103 的 f74aae7 仅作历史对照 |
 | `independent-reproduction` | 需独立第三方复现；CI 自复现不替代独立证据 |
 | `one-person-five-days` | 待锁定 RC 后完成五工作日试用 |
-| `application-Safari` | 创建独有页面及应用就绪后的有界只读窗口枚举均AppleEvent -1712；未发键，原源/启用集合恢复且真实数据未变。AX窗口集合为空，未继续重试 |
 | `application-Chrome` | 按本轮边界不复测；103 记录 Chrome 侧问题，未对新候选宣称通过 |
 | `application-VSCode` | 本机未安装Visual Studio Code，open明确报无法找到应用；已在发键前停止并恢复。未安装新软件 |
 | `application-WeChat` | 无隔离草稿，按策略不投递按键 |
@@ -60,3 +58,13 @@ ABC已恢复，非自有启用集合保持。严格按本轮fixture路径查询�
 
 make verify零诊断通过（含182产物隐私符号检查）；相关离线回归与真实客户端证据见各项记录。正式候选CI已完成完整离线回归、公证与离线重建。当前全部PASS引用文件可由机器报告逐项定位；证据位于 `104-evidence/login1/`，工作目录为 `platforms/macos/build/acceptance-b-104/`（不入库）。
 
+
+## 6. 同候选补验（2026-10-20）
+
+ADR-223先激活应用并有界等待自有新窗口；ADR-224有界等待Safari精确aria-label的AXTextArea并再次核对窗口/URL，保持输入守卫。模式mixed→wubi→mixed及Safari normal/failure/INT/TERM四路径均PASS，原源/启用集合与真实数据恢复；此前阻断保留为历史证据。
+
+B外部AX矩阵现已完成：简繁9样本p50/p95=290.8/301.6ms、RSS67.7MiB；冷启动前后2样本274.5/454.6ms、RSS33.0MiB；1万条合成词库（1978920字节）10样本p50/p95=281.8/339.1ms、RSS31.4MiB。数值包含AppleScript及AX轮询开销，不替代内嵌端到端21.2ms的p95。原始矩阵scope文案仍写device A，但environment明确macOS27/arm64，本次由B执行。证据见104-evidence/supplement。
+
+录屏预检CGPreflightScreenCaptureAccess=false，已请求用户授权；亮暗项待授权后补验。继续使用已恢复的同一公证隔离包及私有根，未改产品载荷。
+
+本轮宿主级15提交基线因新窗口守卫停止，未声称完成；单独只读6秒ps快照CPU均0.0%、RSS71520KiB（约69.8MiB），不是区间功耗或唤醒频率。补验环境仍保留且每批恢复ABC，等待录屏授权后继续；上一轮完整恢复PASS证据仍保留，本轮最终移除/归档尚未执行。

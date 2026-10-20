@@ -1,0 +1,1 @@
+/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/owned-safari.applescript:663:680: execution error: BLOCKED 未取得独有窗口 (-2700)
