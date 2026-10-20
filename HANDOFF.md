@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 09:20 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 10:10 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -39,13 +39,17 @@
   67 观测全绿。A 上单文件 `swiftc` 仍要 1–3 分钟，命令超时别给 300s 以下。
 - **IT-01 剩余**：微信聊天隔离草稿（BLOCKED）、完整剪贴板多类型恢复（仅命名剪贴板 + mock 证据）。
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
+- **HUD 不可见（新发现，需定位/ADR）**：隔离包与生产包都只在离屏缓冲里画了 HUD，屏幕上 0 像素变化；
+  候选窗正常。未区分候选回归 vs 环境变化（本机 Safari 期间升到 18.6）。下一步用旧候选（`a278d70`/`17053e1`）对照。
+  证据：报告 102 §9、`docs/reviews/102-evidence/102-hud-real-device.txt`。
+- **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
 - **报告 101 剩余 6 项 A 侧 BLOCKED**（`focus`/`light-dark-layout`/`multi-display`/`imk-performance`/`sleep-wake`/`accessibility`）
   与 Chrome/VSCode 客户端矩阵：都需要**隔离身份包**（生产包会写真实学习词库，规则禁止合成打字），
   且 Chrome/VSCode 探针尚未编写。另 4 项结构性阻断（B 机 arm64、第三方复现、五日试用、微信草稿）。
 
 ## 4. 下一步
 
-1. **补 101 的 `focus` / `multi-display`**（不需要签名），把 BLOCKED 再减 2 项。
+1. **HUD 定位**：装旧候选 `a278d70`/`17053e1`（隔离身份）同机同法复测 HUD；若旧候选可见 → 是回归，开 ADR 修 `StateHUDController`。
 2. **IT-12 引擎/渲染基线**：`run-perf.sh`、`render_perf.swift`。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
@@ -60,6 +64,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：真机面板探针（新增 `run-installed-hud-probe.py` + `hud-probe.swift`）：候选窗全部正常（位置/不夺焦点/内容）；
+  **状态 HUD 窗口存在但屏幕 0 像素变化**（隔离包与生产包一致），记为待定位发现；101 的 `focus` 仍 BLOCKED。
 - 2026-10-20 / pi：**隔离验收彻底收尾**：输入源回到 ABC、`disable-owned`、用户系统设置移除、`lsregister -u`+删包、删私有根；
   回读生产执行 SHA `681fb1c8…`/config `809e2cae…`/词库 `2ee1a469…` 与收尾前一致（报告 102 §6）。
 - 2026-10-20 / pi：**隔离包三组 16/16 PASS**。Safari 根因是 Safari 18.6 不为 AppleScript 投递的 `file://` 授予沙箱扩展；

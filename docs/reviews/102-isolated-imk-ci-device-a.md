@@ -162,6 +162,25 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
 仍未解（都要**隔离身份包**，因为生产包会写真实学习词库，规则禁止合成打字污染）：真机 HUD/焦点、真机亮暗截图、
 双屏 HUD、宿主级性能、睡眠唤醒、VoiceOver，以及 Chrome/VSCode 客户端矩阵（探针尚未编写）。
 
+## 9. 真机 HUD 实测：HUD 未合成到屏幕（2026-10-20）
+
+为补验报告 101 的 `focus`/`light-dark-layout`/`multi-display`，新增真机面板探针
+（`platforms/macos/tests/run-installed-hud-probe.py` + `isolated-imk/hud-probe.swift`）。
+
+| 检查 | 隔离身份包 | 生产包 `07bbb2f`（对照） |
+|---|---|---|
+| 候选窗 | ✅ 531×70、`layer 101`、`onScreen=true`、在 TextEdit 窗口所在屏、前台仍是 TextEdit、窗口截图有内容（27 014 B） | 未重复验证（隔离包已代表同一份 IME 源码） |
+| 状态 HUD 窗口 | 400×32、`layer 101`、位置在光标上方 8pt、`alpha=1`、**`onScreen=false`**、窗口截图有内容（30 色） | 400×32、**`onScreen=false`** |
+| HUD 所在屏整屏 2× 截屏，按 HUD 矩形逐像素比对 | `hud vs after = 0/51200`；`hud vs before = 0/51200` | `0/51200`；`0/51200` |
+
+结论：**HUD 窗口被创建、定位正确、离屏缓冲里有内容，但屏幕上没有任何像素变化**（两个宿主一致），
+用户看不到状态提示。真实学习词库未变（`2ee1a469…` 前后一致），输入源已还原。
+
+- 证据：`102-evidence/102-hud-real-device.txt`、`102-evidence/hud/*-region.png`（裁切后的 HUD 区域，成对哈希相同）。
+- 未决：尚未区分「候选回归」与「本机环境变化」（本机 Safari 期间被更新到 18.6）。
+  下一步用旧候选（`a278d70` / `17053e1`）同机同法对照，再决定是否开 ADR 修 `StateHUDController`。
+  因此 `focus` 仍记 BLOCKED，不按 PASS 处理。
+
 ## 证据
 
 - `platforms/macos/build/installed-{textedit,terminal,safari}-*/`（本地，不入库）
