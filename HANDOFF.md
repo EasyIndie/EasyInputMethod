@@ -2,8 +2,8 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 / Codex（GPT-6）；用户要求继续可验项，同候选补验中，等待录屏权限。
-- main基线cbb2b45；产品候选固定8eb872f，ADR-223/224仅修复验收窗口及Safari AX就绪等待。
+- 更新：2026-10-20 / Codex（GPT-6）；用户要求继续可验项，同候选补验中，补验与最终隔离归档完成，亮暗执行链仍受阻。
+- main基线005a970；产品候选固定8eb872f，ADR-223/224仅修复验收窗口及Safari AX就绪等待。
 - 报告104：pass14 / fail0 / blocked9；新增模式循环及Safari四路径PASS，三项性能矩阵已完成。
 - 最近门禁以提交前make verify结果为准；本轮TextEdit/Safari离线9/8例通过。
 
@@ -13,10 +13,10 @@
 |---|---|---|---|
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（21:25回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，公证accepted，宿主未运行 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 实际本轮原源ABC，已恢复；初始搜狗拼音由用户在登录前改为ABC，不强制改回旧选择 |
-| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 上轮已归档，本轮重新安装并由用户添加；当前宿主PID17067，按批恢复ABC |
+| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 上轮已归档，本轮重新安装并由用户添加；宿主已按精确路径停止；ABC及真实三SHA已恢复 |
 
 - 完整两包zip/执行SHA、CI run、签名与绑定证据见报告104；正式universal包只验证未安装。
-- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（本轮已重新建立0700+0600 owner及ABC journal）；当前安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
+- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（补验后已整体归档）；原安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
 
 ## 2. 本轮结论
 
@@ -27,25 +27,29 @@
 
 ## 3. 未决
 
-- 上一轮收尾完成；本轮用户要求继续，已恢复同包与私有根，用户重新添加源。当前按批恢复ABC，最终移除/归档待补验完成后进行。
-- B阻断：VSCode未安装；录屏预检false、亮暗截图待用户授权；无第二屏；系统睡眠无正式事件。宿主15提交基线在新窗口创建守卫停止，未盲目重试；三项AX矩阵已通过。
+- 补验收尾完成：用户移除源，实际启用列表/激活菜单均无隔离身份，宿主已停，安装副本及私有根已归档，ABC和真实三SHA保持。
+- B阻断：VSCode未安装；用户已授权且设置页codex/Computer Use均on，但预检false/截图失败/绑定宿主超时，亮暗证据受执行链阻断；无第二屏；系统睡眠无正式事件。宿主15提交基线在新窗口创建守卫停止，未盲目重试；三项AX矩阵已通过。
 - 跨设备/发布阻断：8eb872f的A机复验、独立第三方、五工作日、Chrome已知外部问题、WeChat按策略不发键。
 - 产品端到端p95是否优化仍需另立ADR；不以基线采集PASS等同16ms达标。未关闭IT-12、UI04或MVP。
 
 ## 4. 下一步（断点）
 
-1. 用户要求继续后，录屏预检与官方请求API均false；已请求用户开启TCC，尚未确认。原外观暗色，ADR-225已修复探针显式亮色起点/退出恢复；授权true后跑单屏run-installed-hud-probe.py，不重复已PASS批次。
-2. 本轮私有根与已装隔离包恢复为报告104原路径，selection journal0600原源ABC；所有按键仍需精确身份/焦点/源守卫。
-3. 补验结束后按TIS includeAllInstalled=false及激活菜单确认移除；不要把全部已注册列表旧模式enabled误作有效启用。还原并归档，再更新报告、make verify、提交推送。
+1. 当前能验的已完成，报告104 pass14/blocked9。无需再让用户重复添加录屏权限、重启后台或重跑已PASS项。
+2. 后续亮暗项需先解决截图执行链：设置codex/Computer Use开关on，但命令行预检false且自有截图失败，Computer Use隔离宿主绑定超时；不要绕过TCC或放宽证据要求。
+3. 其余项按报告104条件安排：A机、第二屏、独立第三方、五日试用、VSCode缺失及微信/Chrome边界。隔离本轮资源在packaging/out/b-8eb872f-supplement-retired，原安装与临时根均已移走，生产未变。
 
 ## 5. 边界
 
 - 核心离线/零遥测；配置只经ime-config；不改真实数据、UserDefaults或HIToolbox。
 - 仅自有窗口/文档，每批身份/焦点/源守卫；失败停止保留证据，不为PASS放宽判定。
 - 不自动注销/重启/解锁；TCC由用户点选；睡眠未证实就保留BLOCKED。VoiceOver用户已关闭。
-- 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，本轮另恢复安装副本及私有根以补验。完整身份与平台差异只放报告104。
+- 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，补验安装副本和私有根现已归档至packaging/out/b-8eb872f-supplement-retired。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：用户移除补验源后实际列表及激活菜单均无隔离项；核验两包签名/执行SHA/根0700+owner0600后归档本轮安装副本和私有根，生产三SHA全同、ABC恢复、宿主停止。根副本lsregister -u返回-10814已原样记录；报告14/9，亮暗保持执行链BLOCKED。
+
+- 2026-10-20 / Codex：用户授权并重启后台后，权限页codex及Computer Use均on，但命令行录屏预检false、自有窗截图失败，Computer Use绑定隔离宿主超时。停止重复申请，亮暗保持BLOCKED；ABC/真实三SHA已恢复，隔离宿主精确停止且无socket，等待用户移除源后归档。
 
 - 2026-10-20 / Codex：继续后录屏预检和官方请求均false，未截图或发键，等待用户TCC授权。发现原外观暗色会让探针两张图均暗色，ADR-225显式亮色起点并沿用trap恢复；HUD专项7例通过，报告14/9不变。
 
@@ -58,7 +62,3 @@
 - 2026-10-20 / Codex：用户报告手动唤醒后的输入PASS，但系统只有息屏/亮屏事件、当前boot睡眠计数0，完整睡眠保持BLOCKED。ABC/真实数据已恢复，隔离宿主停止、无socket；TIS停用仅父源生效，等待用户系统设置移除隔离模式后归档。104现pass11/blocked12，arm64项PASS。
 
 - 2026-10-20 / Codex：用户授权睡眠验收；首轮被隔离pinyin前置阻断，经ime-config仅恢复私有mode=mixed后睡前PASS。自动睡眠请求后系统当前boot仍0次睡眠，复验守卫停止，均恢复ABC/真实数据不变；已请求用户手动睡眠并唤醒后核验，当前sleep-wake仍BLOCKED（104）。
-
-- 2026-10-20 / Codex：用户开启VoiceOver后无障碍探针PASS（完整AX面/焦点/原源与真实数据恢复）；报告104现pass10/blocked13。已提示关闭VO、保存工作，等待用户确认开始一次睡眠唤醒；尚未执行睡眠。
-
-- 2026-10-20 / Codex：B重启后源可用，私有根重建/ABC恢复journal已建；TextEdit/Terminal四路径及长组合/撤销PASS，内嵌trace44样本total13.4/21.2ms、engine0.6/1.8ms（p50/p95）。TextEdit冷启动与窗口复用兼容按ADR-221修复；VSCode逐批守卫ADR-222本地回归9例通过但应用未装；单屏HUD截图BLOCKED（几何在屏），矩阵AX等待BLOCKED；报告104现pass10/blocked13，arm64项PASS。VO/睡眠待用户配合；修改与证据已落盘，真实数据摘要未变。

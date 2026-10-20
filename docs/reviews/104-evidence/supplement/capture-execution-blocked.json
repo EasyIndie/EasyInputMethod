@@ -1,0 +1,23 @@
+{
+  "source": "com.apple.keylayout.ABC",
+  "realDataUnchanged": true,
+  "sha256": {
+    "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+    "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "terminatedOwnedHosts": [
+    {
+      "pid": 17067,
+      "path": "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app/Contents/MacOS/LampyrisIMKTest",
+      "networkSockets": [],
+      "termination": "SIGTERM"
+    }
+  ],
+  "settingsScreenRecordingCodexOn": true,
+  "settingsScreenRecordingComputerUseOn": true,
+  "capturePreflight": false,
+  "ownedCaptureExit": 1,
+  "computerUseOwnedHostBinding": "timeoutReached -10005",
+  "pending": "manual isolated source removal then archive"
+}

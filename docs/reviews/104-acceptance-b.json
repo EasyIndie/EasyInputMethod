@@ -39,7 +39,8 @@
         "104-evidence/login1/final-restoration.json",
         "104-evidence/login1/final-runtime-state.json",
         "104-evidence/login1/post-reboot-restoration.json",
-        "104-evidence/login1/archive-final.json"
+        "104-evidence/login1/archive-final.json",
+        "104-evidence/supplement/final-archive.json"
       ]
     },
     {
@@ -109,10 +110,11 @@
     {
       "id": "light-dark-layout",
       "status": "BLOCKED",
-      "reason": "首次截图失败后，本轮CGPreflightScreenCaptureAccess明确false；已请求用户开启录屏权限，尚未确认。亮暗图像证据未齐，不以窗口坐标替代",
+      "reason": "已通过Computer Use读取系统权限页，codex与Codex Computer Use开关均on；后台PID已刷新，但CGPreflightScreenCaptureAccess仍false，自有测试窗口screencapture退出1；Computer Use绑定隔离宿主超时-10005。权限已添加，截图执行链仍不可用，未取得亮暗图像证据",
       "evidence": [
         "104-evidence/login1/hud-single-login1/evidence.json",
-        "104-evidence/login1/hud-single-login1/driver-stderr.txt"
+        "104-evidence/login1/hud-single-login1/driver-stderr.txt",
+        "104-evidence/supplement/capture-execution-blocked.json"
       ]
     },
     {

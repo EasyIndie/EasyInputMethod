@@ -70,3 +70,7 @@ B外部AX矩阵现已完成：简繁9样本p50/p95=290.8/301.6ms、RSS67.7MiB；
 本轮宿主级15提交基线因新窗口守卫停止，未声称完成；单独只读6秒ps快照CPU均0.0%、RSS71520KiB（约69.8MiB），不是区间功耗或唤醒频率。补验环境仍保留且每批恢复ABC，等待录屏授权后继续；上一轮完整恢复PASS证据仍保留，本轮最终移除/归档尚未执行。
 
 继续复查：录屏预检与官方请求API仍false，原外观为暗色；ADR-225修复首张图显式切亮并退出恢复，未在无授权时截图或发键，HUD专项7例通过。证据`supplement/capture-preflight.json`。
+
+最终截图复查：用户添加权限并重启后台后，通过Computer Use读取设置页确认codex和Codex Computer Use均on；命令行预检仍false、自有测试窗截图退出1，Computer Use绑定已装隔离宿主超时-10005。亮暗项属于截图执行链阻断，不再要求用户重复授权。ABC恢复、生产三SHA不变、精确隔离宿主已停止且无socket，等待用户移除源后归档。证据`supplement/capture-execution-blocked.json`。
+
+补验最终收尾完成：用户移除隔离源，实际启用列表与激活菜单均无隔离项；签名/执行SHA/根所有权复核后安装副本与私有根归档至`packaging/out/b-8eb872f-supplement-retired`。安装副本注销成功，根内副本注销报-10814，诊断保留；未重试注册操作，副本完整保存在归档。ABC、真实三SHA一致，隔离宿主停止。见`supplement/final-archive.json`。
