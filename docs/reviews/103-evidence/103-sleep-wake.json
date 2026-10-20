@@ -1,0 +1,28 @@
+{
+  "passed": true,
+  "preSource": "com.sogou.inputmethod.sogouWB.wubi",
+  "postSource": "com.sogou.inputmethod.sogouWB.wubi",
+  "preTime": "2026-10-20T02:42:45Z",
+  "postTime": "2026-10-20T02:43:11Z",
+  "sourceResetOnWake": false,
+  "realDataUnchanged": true,
+  "preHost": [
+    "44166"
+  ],
+  "postHost": [
+    "44166"
+  ],
+  "finalSource": "com.sogou.inputmethod.sogouWB.wubi",
+  "postEvidence": "/Users/bot/Documents/EasyInputMethod/platforms/macos/build/installed-textedit-vzf42zkx",
+  "error": null,
+  "preProbe": {
+    "passed": true,
+    "sourceAndEnabledRestored": true,
+    "realDataUnchanged": true
+  },
+  "postProbe": {
+    "passed": true,
+    "sourceAndEnabledRestored": true,
+    "realDataUnchanged": true
+  }
+}

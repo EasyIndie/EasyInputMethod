@@ -29,10 +29,22 @@ osascript -e 'with timeout of 5 seconds' -e 'tell application "TextEdit" to acti
 sleep 0.5
 [ -z "$(owned_do read)" ] || exit 98
 sleep 0.5
+# 唤醒/切换应用后 TextEdit 常在窗口层先拿到焦点、文本区还没拿到：轮询到文本区聚焦再发键。
+refocus() {
+    local role=""
+    for _ in 1 2 3 4 5 6 7 8; do
+        osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1 || true
+        sleep 0.25
+        role=$(osascript -e 'tell application "System Events" to tell process "TextEdit" to get role of (value of attribute "AXFocusedUIElement")' 2>/dev/null || true)
+        [ "$role" = "AXTextArea" ] && return 0
+    done
+    return 1
+}
 check_source() {
     "$helper" state "$root" | python3 -c 'import json,sys; expected=json.load(open(sys.argv[1]))["current"]; actual=json.load(sys.stdin)["current"]; sys.exit(0 if actual == expected else 3)' "$WORK/selected.json" || exit 98
 }
 check_source
+refocus || { echo "BLOCKED 文本区未取得焦点" >&2; exit 98; }
 owned_do key 13
 sleep 0.2
 check_source
@@ -41,6 +53,7 @@ sleep 0.2
 [ "$(owned_do marked-range)" = "1, 2" ] || exit 95
 (umask 077; printf true > "$WORK/marked-verified.txt")
 check_source
+refocus || { echo "BLOCKED 提交前失去焦点" >&2; exit 98; }
 owned_do key 49
 sleep 0.5
 [ "$(owned_do read)" = '你' ] || exit 97

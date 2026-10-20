@@ -17,12 +17,12 @@
 
 ## 2. 结果
 
-`acceptance-results.py check` → **pass 15 / fail 0 / skip 0 / blocked 8**（门禁仍为 BLOCKED，符合预期）。
+`acceptance-results.py check` → **pass 16 / fail 0 / skip 0 / blocked 7**（门禁仍为 BLOCKED，符合预期）。
 
 | 结果 | 用例 |
 |---|---|
-| PASS（15） | `resource-isolation`、`state-restoration`、`core-input`、**`focus`**、**`light-dark-layout`**、**`multi-display`**、`package-validation`、`intel-macos13`、**`long-composition`**、**`undo`**、**`mode-switch`**、`application-TextEdit`、`application-Safari`、`application-Terminal`、`application-VSCode` |
-| BLOCKED（8） | `sleep-wake`、`accessibility`、`imk-performance`、`arm64-macos27`、`independent-reproduction`、`one-person-five-days`、`application-Chrome`、`application-WeChat` |
+| PASS（16） | `resource-isolation`、`state-restoration`、`core-input`、**`focus`**、**`light-dark-layout`**、**`multi-display`**、`package-validation`、`intel-macos13`、**`long-composition`**、**`undo`**、**`mode-switch`**、**`sleep-wake`**、`application-TextEdit`、`application-Safari`、`application-Terminal`、`application-VSCode` |
+| BLOCKED（7） | `accessibility`、`imk-performance`、`arm64-macos27`、`independent-reproduction`、`one-person-five-days`、`application-Chrome`、`application-WeChat` |
 
 ### 2.1 本轮新增的真机证据
 
@@ -32,6 +32,8 @@
   候选 599×70 与 HUD 96×36 均 `onScreen=true`、跟随客户端窗口换屏、暗色下 HUD 可见、前台始终是 TextEdit：
   `103-evidence/103-hud-probe.json` 与三张截图。
 - 离屏逐场景验收 67 个观测全绿（绑定当前源码树摘要）：`103-evidence/103-local-acceptance.txt`。
+- 睡眠唤醒：`run-installed-sleep-wake-probe.py` 用已验证的 TextEdit 探针做判据，睡前与唤醒后各 PASS；
+  唤醒时系统偶尔把输入源重置为 ABC（已记录），探针会把「原源」重新锚定后再验证：`103-evidence/103-sleep-wake.json`。
 - 新探针 `run-installed-ime-features-probe.py` 复验长组合 / 撤销 / 模式循环三项：
   8 字母提交「中国」、20 字母以标记文本有界存在且 Esc 回到「中国」；提交「你」后 ⌘Z 回退为空；
   ⌥M 循环 mixed→wubi→mixed 并能从宿主配置读回。

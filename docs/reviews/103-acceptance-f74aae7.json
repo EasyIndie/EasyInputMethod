@@ -80,9 +80,11 @@
     },
     {
       "id": "sleep-wake",
-      "status": "BLOCKED",
-      "reason": "睡眠/唤醒覆盖未执行",
-      "evidence": []
+      "status": "PASS",
+      "reason": "真机一次 `pmset sleepnow` → 唤醒：睡前与唤醒后各有一次 TextEdit 探针 PASS（提交内容、源与启用集合还原、真实数据不变），输入源与宿主进程在唤醒后保持；实测唤醒时系统偶尔会把输入源重置为 ABC 并已如实记录",
+      "evidence": [
+        "103-evidence/103-sleep-wake.json"
+      ]
     },
     {
       "id": "accessibility",
