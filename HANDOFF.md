@@ -41,9 +41,10 @@
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
 - **HUD 缺陷已修（ADR-217）并在新候选 `f74aae7` 上复验通过**：报告 103 的 `focus`/`multi-display`/`light-dark-layout` 已 PASS；
   报告 101（07bbb2f）保留 FAIL 作为历史记录。
-- **`application-Chrome` 新发现**：Chrome 不把页面按键路由给隔离输入法（同一 fixture 下字母原样进 textarea，
-  页面用标题通道自报状态可证）；宿主在运行、源已选中。疑似 Chrome 输入上下文陈旧，需**重启 Chrome** 复测；
-  探针 `run-installed-chrome-probe.py` + `chrome-fixture.py` 已就绪，可直接复跑。
+- **`application-Chrome`（已复测，仍 BLOCKED）**：Chrome 155.0.8059.85 的**页面文本框不消费输入法组合**——选中萤火虫
+  （ad-hoc 与公证隔离包都复现）后打字，候选窗弹出但页面同时收到原始字母（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
+  地址栏等原生控件正常；**先选源再重启 Chrome 仍然复现**，故不是"输入上下文陈旧"。生产 Lampyris 源下页面不落原始字母。
+  列为需另立调查的 Chrome 侧输入集成问题；探针与 fixture 已就绪（`run-installed-chrome-probe.py`、`chrome-fixture.py`）。
 - **本地已替换为修复版隔离包（ad-hoc 签名）**：`~/Library/Input Methods/LampyrisIMKTest-…app` 现在是本地构建；
   CI 公证包备份在私有根 `LampyrisIMKTest.app.ci-backup`，需要回到公证版时替换回去。
 - **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
@@ -53,8 +54,8 @@
 
 ## 4. 下一步
 
-1. **Chrome**：经用户同意后重启 Chrome，再跑 `run-installed-chrome-probe.py`（normal/failure/INT/TERM），
-   验证「输入上下文陈旧」假设；若仍不路由，则记 BLOCKED 并写明 Chrome 版本与复现步骤。
+1. **Chrome 输入集成调查**：对比生产源（不落原始字母）与隔离包（落原始字母），最小差异点应在包身份/签名或 Info.plist；
+   下一步用生产包的 Info.plist 与隔离包逐项 diff，并在「相同源代码 + 生产签名」的隔离包上复测。
 2. **VSCode**：写 AX 通道探针（无 AppleScript），沿用守卫 + 只关自有窗口的约定。
 3. **睡眠唤醒 / VoiceOver**：需用户在场配合各做一次。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。

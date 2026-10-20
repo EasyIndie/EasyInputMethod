@@ -170,7 +170,7 @@
     {
       "id": "application-Chrome",
       "status": "BLOCKED",
-      "reason": "Chrome 不把页面按键路由给隔离输入法：同一 fixture 下字母原样落进 textarea（标题通道证实），宿主已运行、源已选中；疑似 Chrome 输入上下文陈旧（需重启 Chrome 验证），探针已就绪",
+      "reason": "Chrome 155.0.8059.85 的页面文本框不消费输入法组合：选中萤火虫（隔离包，ad-hoc 与公证版均复现）后打字，候选窗正常弹出，但页面同时收到原始字母（fixture 用标题通道自报，file:// 与 data: 两种页面都复现）；地址栏（原生控件）则正常走输入法；重启 Chrome、先选源再启动亦然。结论：Chrome 渲染进程未把该 IMK 会话作为客户端，属 Chrome 侧输入集成问题，需另立调查；探针已就绪（run-installed-chrome-probe.py + chrome-fixture.py）",
       "evidence": []
     },
     {

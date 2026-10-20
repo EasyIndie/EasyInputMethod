@@ -17,3 +17,13 @@
 - installed-terminal-33q5skrv: {"passed": true, "status": null, "scenario": "failure", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
 - installed-terminal-6i2058l4: {"passed": true, "status": null, "scenario": "INT", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
 - installed-terminal-9ktk4ojv: {"passed": true, "status": null, "scenario": "TERM", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+
+## Chrome 复测（2026-10-20 10:40，版本 155.0.8059.85）
+
+| 场景 | 页面标题通道 | 候选窗 | 结论 |
+|---|---|---|---|
+| 隔离包（ad-hoc，修复版） | `fx|…|fixture-input|wq` | 未检测 | 原始字母落进页面 |
+| 隔离包（CI 公证版） | `fx|…|fixture-input|wq` | 出现（531×70） | 组合窗出现但页面仍收到原始字母 |
+| 生产 Lampyris | 标题保持 `fx|…|fixture-input|`（未落字） | 未检测 | 页面按键被输入法消费 |
+| 重启 Chrome（先选隔离源再启动） | `fx|…|fixture-input|wq` | 出现 | 同上，非「输入上下文陈旧」 |
+| 地址栏（原生控件） | — | 出现 | 输入法在 Chrome 原生控件上工作正常 |
