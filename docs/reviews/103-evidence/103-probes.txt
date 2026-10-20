@@ -1,0 +1,19 @@
+# 报告 103：新候选真机探针（设备 A，隔离身份包 = 修复版源码）
+
+## textedit
+- installed-textedit-osi2a67h: {"passed": true, "status": 0, "scenario": "normal", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-textedit-g9r2bsxx: {"passed": true, "status": 7, "scenario": "failure", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-textedit-b7b17i_y: {"passed": true, "status": 130, "scenario": "INT", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-textedit-t9ga8kqu: {"passed": true, "status": 143, "scenario": "TERM", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+
+## safari
+- installed-safari-5okvi58m: {"passed": true, "status": 0, "scenario": "normal", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-safari-t6zz5yvc: {"passed": true, "status": 7, "scenario": "failure", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-safari-6urzli4l: {"passed": true, "status": 130, "scenario": "INT", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-safari-vp5rbml0: {"passed": true, "status": 143, "scenario": "TERM", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+
+## terminal
+- installed-terminal-2gf5776e: {"passed": true, "status": null, "scenario": "normal", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-terminal-33q5skrv: {"passed": true, "status": null, "scenario": "failure", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-terminal-6i2058l4: {"passed": true, "status": null, "scenario": "INT", "sourceAndEnabledRestored": true, "realDataUnchanged": true}
+- installed-terminal-9ktk4ojv: {"passed": true, "status": null, "scenario": "TERM", "sourceAndEnabledRestored": true, "realDataUnchanged": true}

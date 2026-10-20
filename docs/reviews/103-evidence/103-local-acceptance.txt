@@ -1,0 +1,23 @@
+# 报告 103：本地逐场景验收（离屏，绑定当前源码树）
+
+- local_result=PASS；场景 67；产物 90
+- 产品源码摘要：c428267d5d76f1fb98ee3ded7fba9f5b55c946fabd00d7f62660a240738c4601（结束 c428267d5d76f1fb98ee3ded7fba9f5b55c946fabd00d7f62660a240738c4601）
+- 环境：macOS-13.7.8-x86_64-i386-64bit · Python 3.9.6
+
+## 套件
+
+- menu-view：PASS，4 例
+- menu：PASS，12 例
+- settings：PASS，10 例
+- candidate：PASS，15 例
+- tools：PASS，12 例
+- learning：PASS，14 例
+
+## 场景 ID
+
+- menu-view: menu-view.state, menu-view.structure, menu-view.cycle, menu-view.copy
+- menu: menu.parent-cycle, menu.cycle-order, menu.same-mode, menu.change-mode, menu.states, menu.external-settings, menu.shortcut-refresh, menu.shortcut-event, menu.write-failure, menu.recovery, menu.routes, menu.dictionary
+- settings: settings.groups, settings.count, settings.shortcuts, settings.shortcut-rebind, settings.descriptions, settings.appearances, settings.theme, settings.failure, settings.dictionary-session, settings.reopen
+- candidate: candidate.body, candidate.ax-selection, candidate.paging, candidate.padding, candidate.page-centres, candidate.warning, candidate.long, candidate.glyph-display, candidate.glyph-commit, candidate.stale, candidate.status, candidate.hud, candidate.hud-position, candidate.hud-source, paths.support-dir-override
+- tools: tools.form.light.add, tools.form.light.delete, tools.about.light, tools.link-fallback.light, tools.link-success.light, tools.form.dark.add, tools.form.dark.delete, tools.about.dark, tools.link-fallback.dark, tools.link-success.dark, tools.hidden-parent, tools.clipboard
+- learning: learning.facts, learning.defaults, learning.display, learning.hidden, learning.shortcut, learning.width-shortcut, learning.stale-chord, learning.conflict, learning.body-width, learning.stale, learning.contrast.light, learning.contrast.dark, learning.scroll, learning.viewport

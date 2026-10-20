@@ -1,0 +1,11 @@
+# 报告 103：候选身份（设备 A 下载自 CI run 39355475336）
+
+- commit：`f74aae718c4f3df494854e2c5e974769aab9d2e8`
+- 包：`Lampyris-0.1.0-universal.zip`，sha256 `fff5e539a60d42f2b1f9683841a3b29ae7544e6d393395b340eb97dfe24b1c57`（`.sha256` 校验 OK）
+- 源码包：`Lampyris-0.1.0-source.tar.gz`（同 run 上传）
+- 可执行文件 `Lampyris.app/Contents/MacOS/Lampyris` sha256 `5cfb4c447f0395882cd4ad02c9c87ae8532c3df4dd5bfde1985aa043f43b0743`
+- 架构：`lipo -archs` = `x86_64 arm64`
+- 签名：`codesign --verify --strict` 通过；`spctl -a` = accepted / `source=Notarized Developer ID`；
+  `xcrun stapler validate` = The validate action worked
+- 版本：0.1.0
+- 工作流 `macOS Acceptance Package` 全部步骤成功（含 `make verify`、`make macos-offline-tests`、签名公证、`run-repro.sh` 复现）

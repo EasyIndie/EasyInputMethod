@@ -1,0 +1,189 @@
+{
+  "schema": 2,
+  "candidate": {
+    "sha256": "5cfb4c447f0395882cd4ad02c9c87ae8532c3df4dd5bfde1985aa043f43b0743",
+    "commit": "f74aae718c4f3df494854e2c5e974769aab9d2e8",
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "signature": "developer-id-notarized"
+  },
+  "environment": {
+    "system": "macOS 13.7.8 (22H730) x86_64 Intel（A 机 bot）",
+    "applications": {
+      "TextEdit": "1.18",
+      "Safari": "18.6",
+      "Chrome": "155.0.8059.85",
+      "VSCode": "1.141.0",
+      "WeChat": "4.1.13",
+      "Terminal": "2.13"
+    }
+  },
+  "cases": [
+    {
+      "id": "resource-isolation",
+      "status": "PASS",
+      "reason": "隔离身份包：私有根 0700、独有 bundle id、探针逐次核对真实数据不变",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "state-restoration",
+      "status": "PASS",
+      "reason": "16 次真机运行均 sourceAndEnabledRestored=true、realDataUnchanged=true",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "core-input",
+      "status": "PASS",
+      "reason": "TextEdit/Safari/Terminal 三组四路径提交文本符合预期",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "long-composition",
+      "status": "BLOCKED",
+      "reason": "未在新候选复验（旧证据属 101/093 候选）",
+      "evidence": []
+    },
+    {
+      "id": "undo",
+      "status": "BLOCKED",
+      "reason": "未在新候选复验（旧证据属 101 候选）",
+      "evidence": []
+    },
+    {
+      "id": "focus",
+      "status": "PASS",
+      "reason": "HUD 修复（ADR-217）后真机复验：候选与 HUD 均 onScreen、位置随光标、前台始终是客户端",
+      "evidence": [
+        "103-evidence/103-hud-probe.json",
+        "103-evidence/103-hud-hud-0.png"
+      ]
+    },
+    {
+      "id": "mode-switch",
+      "status": "BLOCKED",
+      "reason": "未在新候选复验（旧证据属 094/101 候选）",
+      "evidence": []
+    },
+    {
+      "id": "sleep-wake",
+      "status": "BLOCKED",
+      "reason": "睡眠/唤醒覆盖未执行",
+      "evidence": []
+    },
+    {
+      "id": "accessibility",
+      "status": "BLOCKED",
+      "reason": "VoiceOver 与物理键盘导航未执行",
+      "evidence": []
+    },
+    {
+      "id": "light-dark-layout",
+      "status": "PASS",
+      "reason": "离屏亮暗 + 对比度绑定本源码树（67 观测），真机暗色下 HUD 可见且有独立截图",
+      "evidence": [
+        "103-evidence/103-local-acceptance.txt",
+        "103-evidence/103-hud-hud-dark.png"
+      ]
+    },
+    {
+      "id": "multi-display",
+      "status": "PASS",
+      "reason": "客户端窗口从内建屏移到 LG 4K 后，候选窗与 HUD 均跟到屏 1，HUD 位于光标上方",
+      "evidence": [
+        "103-evidence/103-hud-probe.json",
+        "103-evidence/103-hud-hud-1.png"
+      ]
+    },
+    {
+      "id": "imk-performance",
+      "status": "BLOCKED",
+      "reason": "宿主级 IMK 延迟/内存/唤醒仍未采集（只有引擎级基线）",
+      "evidence": []
+    },
+    {
+      "id": "package-validation",
+      "status": "PASS",
+      "reason": "CI 全流程成功并公证；本机复核签名/公证/架构与复现",
+      "evidence": [
+        "103-evidence/103-candidate-identity.txt"
+      ]
+    },
+    {
+      "id": "intel-macos13",
+      "status": "PASS",
+      "reason": "A（Intel/macOS 13.7.8）用同一 IME 源码的隔离包完成 16 次真机运行 + HUD 探针",
+      "evidence": [
+        "103-evidence/103-probes.txt",
+        "103-evidence/103-candidate-identity.txt"
+      ]
+    },
+    {
+      "id": "arm64-macos27",
+      "status": "BLOCKED",
+      "reason": "需 B 机（arm64/macOS 27）签名包复验",
+      "evidence": []
+    },
+    {
+      "id": "independent-reproduction",
+      "status": "BLOCKED",
+      "reason": "需独立第三方离线重建（IT-15）",
+      "evidence": []
+    },
+    {
+      "id": "one-person-five-days",
+      "status": "BLOCKED",
+      "reason": "单人五日试用未开始（IT-23）",
+      "evidence": []
+    },
+    {
+      "id": "application-TextEdit",
+      "status": "PASS",
+      "reason": "四路径全过（隔离身份包）",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "application-Safari",
+      "status": "PASS",
+      "reason": "四路径全过（LaunchServices 投递 fixture）",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "application-Terminal",
+      "status": "PASS",
+      "reason": "四路径全过（隔离身份包）",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
+    },
+    {
+      "id": "application-Chrome",
+      "status": "BLOCKED",
+      "reason": "Chrome 不把页面按键路由给隔离输入法：同一 fixture 下字母原样落进 textarea（标题通道证实），宿主已运行、源已选中；疑似 Chrome 输入上下文陈旧（需重启 Chrome 验证），探针已就绪",
+      "evidence": []
+    },
+    {
+      "id": "application-VSCode",
+      "status": "BLOCKED",
+      "reason": "尚未编写 VS Code 探针（无 AppleScript，需 AX 通道）",
+      "evidence": []
+    },
+    {
+      "id": "application-WeChat",
+      "status": "BLOCKED",
+      "reason": "微信无隔离草稿，按策略不投递按键（IT-01 剩余项）",
+      "evidence": []
+    }
+  ]
+}

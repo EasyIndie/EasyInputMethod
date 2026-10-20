@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 09:55 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 10:15 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -39,10 +39,11 @@
   67 观测全绿。A 上单文件 `swiftc` 仍要 1–3 分钟，命令超时别给 300s 以下。
 - **IT-01 剩余**：微信聊天隔离草稿（BLOCKED）、完整剪贴板多类型恢复（仅命名剪贴板 + mock 证据）。
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
-- **HUD 缺陷已修（ADR-217，main）**：`StateHUDController.disabled` 不再用 `activationPolicy == .prohibited`
-  （IME 宿主恒为该值）。真机探针 `run-installed-hud-probe.py` 在修复后的本地构建上 PASS：候选 599×70 与 HUD 96×36
-  均 `onScreen=true`、跟随客户端窗口换屏、暗色仍可见、前台始终是 TextEdit。报告 101 的 `focus` 仍 FAIL（候选 07bbb2f 含缺陷），
-  等新候选出包后用同一探针复验。
+- **HUD 缺陷已修（ADR-217）并在新候选 `f74aae7` 上复验通过**：报告 103 的 `focus`/`multi-display`/`light-dark-layout` 已 PASS；
+  报告 101（07bbb2f）保留 FAIL 作为历史记录。
+- **`application-Chrome` 新发现**：Chrome 不把页面按键路由给隔离输入法（同一 fixture 下字母原样进 textarea，
+  页面用标题通道自报状态可证）；宿主在运行、源已选中。疑似 Chrome 输入上下文陈旧，需**重启 Chrome** 复测；
+  探针 `run-installed-chrome-probe.py` + `chrome-fixture.py` 已就绪，可直接复跑。
 - **本地已替换为修复版隔离包（ad-hoc 签名）**：`~/Library/Input Methods/LampyrisIMKTest-…app` 现在是本地构建；
   CI 公证包备份在私有根 `LampyrisIMKTest.app.ci-backup`，需要回到公证版时替换回去。
 - **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
@@ -52,9 +53,10 @@
 
 ## 4. 下一步
 
-1. **出新候选并复验**：HUD 修复已在 main；出包后用 `run-installed-hud-probe.py --second-display` 复验
-   （判据：候选/HUD 都 `onScreen=true`、所在屏=客户端屏、亮暗截图不同），再把 101 的 `focus`/`multi-display`/`light-dark-layout` 改判。
-2. **IT-12 引擎/渲染基线**：`run-perf.sh`、`render_perf.swift`。
+1. **Chrome**：经用户同意后重启 Chrome，再跑 `run-installed-chrome-probe.py`（normal/failure/INT/TERM），
+   验证「输入上下文陈旧」假设；若仍不路由，则记 BLOCKED 并写明 Chrome 版本与复现步骤。
+2. **VSCode**：写 AX 通道探针（无 AppleScript），沿用守卫 + 只关自有窗口的约定。
+3. **睡眠唤醒 / VoiceOver**：需用户在场配合各做一次。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
@@ -68,6 +70,9 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：**新候选 `f74aae7` 验收**（报告 103）：CI 包已下载复核（universal、公证、可执行 SHA `5cfb4c44…`）；
+  12 次真机探针 + HUD 双屏/暗色探针 + 67 观测离屏全绿 → pass 11 / fail 0 / blocked 12。
+  另新增 Chrome 探针（标题通道）；发现 Chrome 不把页面按键交给隔离输入法，需重启 Chrome 复测。
 - 2026-10-20 / pi：真机面板探针（新增 `run-installed-hud-probe.py` + `hud-probe.swift` + 7 项契约测试）：
   发现 HUD 不显示 → 定位到 `disabled` 的 `.prohibited` 误判（诊断日志 `policy=1`），按 ADR-217 修复；
   修复后探针 PASS（双屏跟屏 + 亮暗 + 不夺焦点），`focus` 仍 FAIL（候选 07bbb2f 含缺陷，待新候选复验）。
