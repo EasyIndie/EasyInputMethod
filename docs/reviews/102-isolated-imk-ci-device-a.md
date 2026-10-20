@@ -3,8 +3,8 @@
 2026-10-19/20，A（Intel / macOS 13.7.8）。目标：让 CI 产出**隔离身份 + Developer ID 签名/公证**的测试包，
 用来补验报告 101 里 `application-Safari` / `application-Terminal` / 「已装独有包输入」的 BLOCKED 项。
 
-**当前状态（2026-10-20 08:00）：重新登录后系统已发现隔离源，TextEdit 4/4、Terminal 4/4 PASS；
-Safari 组因 Safari 自身拒绝给 AppleScript 投递的 `file://` 授予沙箱扩展而 BLOCKED（非输入法缺陷）。**
+**当前状态（2026-10-20 08:20）：重新登录后系统已发现隔离源，TextEdit、Terminal、Safari 三组各 4 场景共 16/16 PASS**
+（Safari 需先把测试工具改成 LaunchServices 投递，见 §5.3）。
 
 ## 1. 工具扩展（提交 `c60bd88`）
 
@@ -70,25 +70,40 @@ Safari 组因 Safari 自身拒绝给 AppleScript 投递的 `file://` 授予沙�
 |---|---|---|---|
 | TextEdit | normal / failure / INT / TERM | **4/4 PASS** | `102-evidence/102-textedit-probes.txt` |
 | Terminal | normal / failure / INT / TERM | **4/4 PASS** | `102-evidence/102-terminal-probes.txt` |
-| Safari | normal 等 4 场景 | **0/4 BLOCKED**（见 §5.3） | `102-evidence/102-safari-blocked.txt` |
+| Safari | normal / failure / INT / TERM | **4/4 PASS**（解阻后，见 §5.3） | `102-evidence/102-safari-probes.txt` |
 
 - 每组每次运行前都先 `source-state restore-original`，防止用户切源造成的源漂移（两次 miss 都按 BLOCK 处理，未伪造通过）。
-- 全部 12 次运行的 `result.json` 均为 `sourceAndEnabledRestored=true`、`realDataUnchanged=true`；
+- 全部 16 次运行的 `result.json` 均为 `sourceAndEnabledRestored=true`、`realDataUnchanged=true`；
   真实 `config.toml` / `user-dictionary.tsv` 摘要前后一致（探针内建校验，指向 `~/Library/Application Support/Lampyris`）。
 - 包身份与来源：`102-evidence/102-isolated-package-identity.txt`（zip sha256 `d14a395b…`、`x86_64`、commit `c60bd88`；
   与生产候选 `07bbb2f` 相比 `crates/` 与 `platforms/macos/Sources/` 无差异）。
 
-### 5.3 Safari 组 BLOCKED 的根因（非输入法缺陷）
+### 5.3 Safari 组：根因与解阻（工具侧改动）
 
-- `owned-safari.applescript` 的 create 走 `make new document with properties {URL: file://…}`；
-  三次尝试都只得到空白窗口（`URL = missing value`），于是「独有窗口」守卫按设计 BLOCK。
+**根因**（非输入法缺陷，证据 `102-evidence/102-safari-blocked.txt`）：
+
+- `owned-safari.applescript` 原先 create 走 `make new document with properties {URL: file://…}`；
+  窗口能建，但页面始终空白（`URL = missing value`），于是被「页面身份/独有窗口」守卫按设计 BLOCK。
 - Safari 日志：`com.apple.Safari:Sandbox … Error fetching token from extension controller without UI`、
   `Loading URL request: failed to obtain sandbox extension: (null)`；WebKit 侧 `didFailProvisionalLoadForFrame code=-1202`。
-- 对照：`open -a Safari <同一 file:// URL>` 能正常加载（LaunchServices 会带沙箱扩展）。
-  **修法需要把 create 改为 LaunchServices 投递并同步改测试**（工具语义变更），本轮未擅自实施。
-- 过程中另遇到两个**环境**问题，均已按用户授权解决，不是缺陷：
-  1. 重新登录后 `osascript` 缺「辅助功能」授权（`-1728`）→ 用户为 Ghostty 勾选；
-  2. `ghostty → TextEdit` 的「自动化」授权被拒（`auth_value=0`，导致 AppleEvent `-1712` 超时）→ 用户在「自动化」里放开。
+  Safari 18.6 **不再给 AppleScript 投递的 `file://` 授予沙箱扩展**。
+- 对照：`open -a Safari <同一 file:// URL>` 能正常加载（LaunchServices 会带上沙箱扩展）。
+
+**解阻**（经用户授权的验证工具改动，`platforms/macos/tests/owned-safari.applescript`）：
+
+1. create 先 `make new document` 拿到**我们新建的窗口 ID**（保留「不得复用旧窗口」守卫），
+   再用 `/usr/bin/open -a Safari <fixture>` 由 LaunchServices 投递页面；
+2. 轮询等新页面落地，目标窗口只允许是「我们刚建的那个」或「本轮新出现的」，
+   否则 `BLOCKED 未取得独有窗口`（不会接管用户已有窗口）；
+3. Safari 会把页面开成标签页，因此只关闭**非 fixture** 的标签，保留「窗口内恰好 1 个 fixture 标签」不变式。
+
+**代价与已知边界**：仍要求 `file://` 离线页面（未改成 localhost 服务）；若用户当时占着 Safari 前台空窗口，
+LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接管（宁停不猜）。新增静态契约测试：
+`platforms/macos/tests/test-installed-safari-probe.py`（8 项）。
+
+**环境侧另有两个坑（非缺陷，已由用户授权解决）**：
+1. 重新登录后 `osascript` 缺「辅助功能」授权（`-1728`）→ 用户为 Ghostty 勾选；
+2. `ghostty → TextEdit` 的「自动化」授权被拒（`auth_value=0`，导致 AppleEvent `-1712` 超时）→ 用户在「自动化」里放开。
 
 ## 6. 本轮执行记录（上一轮交接给本轮的步骤，已执行 1–4）
 
@@ -113,8 +128,8 @@ Safari 组因 Safari 自身拒绝给 AppleScript 投递的 `file://` 授予沙�
   且每次运行都核对「输入源与启用集合还原」「真实数据未变」。证据：`102-evidence/102-terminal-probes.txt`、
   `102-evidence/102-isolated-package-identity.txt`。
 - `application-TextEdit`：保持 PASS，新增本候选四路径独立证据（`102-evidence/102-textedit-probes.txt`）。
-- `application-Safari`：保持 **BLOCKED**，原因更新为「Safari 18.6 拒绝给 AppleScript 投递的 `file://` 授予沙箱扩展」，
-  与输入法无关；解阻方法见 §5.3（工具侧改成 LaunchServices 投递，需连带改测试）。
+- `application-Safari`：**BLOCKED → PASS**。同一隔离包四路径全过（`102-evidence/102-safari-probes.txt`）；
+  解阻详情见 §5.3（Safari 沙箱扩展 + 工具侧 LaunchServices 投递）。
 
 ## 证据
 

@@ -1,0 +1,69 @@
+# 报告 102：隔离包 Safari 四路径（2026-10-20 08:10–08:20，A 机 bot）
+
+前提修复：`owned-safari.applescript` 的 create 改走 LaunchServices（`/usr/bin/open -a Safari`），
+因为 Safari 18.6 拒绝给 AppleScript 投递的 `file://` 授予沙箱扩展（见 `102-safari-blocked.txt`）。
+窗口守卫保留：目标窗口必须是「我们新建的」或「本轮新出现的」，且 URL 必须是 fixture 页面。
+
+## installed-safari-zt_ctuir
+```json
+{
+  "error": null,
+  "focusedTextareaVerified": true,
+  "ownedWindowClosed": true,
+  "passed": true,
+  "prefixVerified": false,
+  "realDataUnchanged": true,
+  "scenario": "normal",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 0
+}
+```
+
+## installed-safari-co1d3ccv
+```json
+{
+  "error": null,
+  "focusedTextareaVerified": true,
+  "ownedWindowClosed": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "failure",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 7
+}
+```
+
+## installed-safari-7etvunlr
+```json
+{
+  "error": null,
+  "focusedTextareaVerified": true,
+  "ownedWindowClosed": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "INT",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 130
+}
+```
+
+## installed-safari-06oa9r03
+```json
+{
+  "error": null,
+  "focusedTextareaVerified": true,
+  "ownedWindowClosed": true,
+  "passed": true,
+  "prefixVerified": true,
+  "realDataUnchanged": true,
+  "scenario": "TERM",
+  "scope": "isolated Safari prefix recovery or basic commit only; not final product acceptance",
+  "sourceAndEnabledRestored": true,
+  "status": 143
+}
+```
