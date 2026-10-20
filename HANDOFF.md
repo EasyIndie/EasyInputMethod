@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 10:25 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 09:55 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -39,10 +39,12 @@
   67 观测全绿。A 上单文件 `swiftc` 仍要 1–3 分钟，命令超时别给 300s 以下。
 - **IT-01 剩余**：微信聊天隔离草稿（BLOCKED）、完整剪贴板多类型恢复（仅命名剪贴板 + mock 证据）。
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
-- **HUD 不可见＝待修缺陷（报告 101 `focus` = FAIL）**：隔离包与生产包都只在离屏缓冲里画 HUD，屏幕上 0 像素变化；
-  候选窗正常；同配置最小 `NSPanel` 对照可见（44 184/51 200 像素差异）→ 环境已排除，是宿主侧问题。
-  下一步：开 ADR 定位 `StateHUDController`（懒创建 + `show()` 时序 / `StateHUDView` 首帧），修完用同一探针复验。
-  证据：报告 102 §9 + §9.1、`docs/reviews/102-evidence/102-hud-real-device.txt`、`.../hud/`。
+- **HUD 缺陷已修（ADR-217，main）**：`StateHUDController.disabled` 不再用 `activationPolicy == .prohibited`
+  （IME 宿主恒为该值）。真机探针 `run-installed-hud-probe.py` 在修复后的本地构建上 PASS：候选 599×70 与 HUD 96×36
+  均 `onScreen=true`、跟随客户端窗口换屏、暗色仍可见、前台始终是 TextEdit。报告 101 的 `focus` 仍 FAIL（候选 07bbb2f 含缺陷），
+  等新候选出包后用同一探针复验。
+- **本地已替换为修复版隔离包（ad-hoc 签名）**：`~/Library/Input Methods/LampyrisIMKTest-…app` 现在是本地构建；
+  CI 公证包备份在私有根 `LampyrisIMKTest.app.ci-backup`，需要回到公证版时替换回去。
 - **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
 - **报告 101 剩余 6 项 A 侧 BLOCKED**（`focus`/`light-dark-layout`/`multi-display`/`imk-performance`/`sleep-wake`/`accessibility`）
   与 Chrome/VSCode 客户端矩阵：都需要**隔离身份包**（生产包会写真实学习词库，规则禁止合成打字），
@@ -50,9 +52,8 @@
 
 ## 4. 下一步
 
-1. **HUD 缺陷修复（最高优先）**：先写 ADR 记录现象与对照方法，再在 `StateHUDController` 上做最小实验
-   （强制主线程创建面板 / `makeKeyAndOrderFront` / 首帧 `displayIfNeeded` 对比），修完用
-   `run-installed-hud-probe.py` 复验（判定标准：HUD 区域像素差异 > 0）。
+1. **出新候选并复验**：HUD 修复已在 main；出包后用 `run-installed-hud-probe.py --second-display` 复验
+   （判据：候选/HUD 都 `onScreen=true`、所在屏=客户端屏、亮暗截图不同），再把 101 的 `focus`/`multi-display`/`light-dark-layout` 改判。
 2. **IT-12 引擎/渲染基线**：`run-perf.sh`、`render_perf.swift`。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
@@ -68,7 +69,8 @@
 ## 9. 会话日志
 
 - 2026-10-20 / pi：真机面板探针（新增 `run-installed-hud-probe.py` + `hud-probe.swift` + 7 项契约测试）：
-  候选窗全部正常；**状态 HUD 不可见**；同配置最小 `NSPanel` 对照可见 → 环境排除，`focus` 改判 **FAIL**（101: pass 11 / fail 1 / blocked 11）。
+  发现 HUD 不显示 → 定位到 `disabled` 的 `.prohibited` 误判（诊断日志 `policy=1`），按 ADR-217 修复；
+  修复后探针 PASS（双屏跟屏 + 亮暗 + 不夺焦点），`focus` 仍 FAIL（候选 07bbb2f 含缺陷，待新候选复验）。
 - 2026-10-20 / pi：**隔离验收彻底收尾**：输入源回到 ABC、`disable-owned`、用户系统设置移除、`lsregister -u`+删包、删私有根；
   回读生产执行 SHA `681fb1c8…`/config `809e2cae…`/词库 `2ee1a469…` 与收尾前一致（报告 102 §6）。
 - 2026-10-20 / pi：**隔离包三组 16/16 PASS**。Safari 根因是 Safari 18.6 不为 AppleScript 投递的 `file://` 授予沙箱扩展；

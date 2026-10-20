@@ -67,7 +67,7 @@
     {
       "id": "focus",
       "status": "FAIL",
-      "reason": "真机复验：候选窗正常（位置/跟屏/不夺焦点），但状态 HUD 窗口虽创建在光标处、缓冲有内容，屏幕上 0 像素变化（隔离包与生产包一致）；同配置最小 NSPanel 对照可见（44 184/51 200 像素差异），环境已排除 → 判定为产品缺陷。证据：报告 102 §9、102-evidence/102-hud-real-device.txt、102-evidence/hud/",
+      "reason": "真机复验：候选窗正常，但状态提示 HUD 从不显示。根因已定位——`StateHUDController.disabled` 把`NSApp.activationPolicy() == .prohibited` 当测试判据，而 IME 宿主带 `LSBackgroundOnly` 恒为该值，HUD 整段被跳过（报告 102 §9.1）。修复见 ADR-217（main 已修），需新候选出包后用 `run-installed-hud-probe.py` 复验方可改判；本候选仍 FAIL。",
       "evidence": [
         "102-evidence/102-hud-real-device.txt",
         "102-evidence/hud/iso-display2-hud-region.png",
@@ -97,13 +97,13 @@
     {
       "id": "light-dark-layout",
       "status": "BLOCKED",
-      "reason": "离屏亮/暗候选与面板、对比度目标已绑定本候选（67 观测/90 产物）；真机亮暗截图受 HUD 不可见问题影响，需与 §9 的定位结论一起复验",
+      "reason": "离屏亮/暗与对比度已绑定本候选（67 观测/90 产物）；真机暗色下 HUD 可见性已在修复后的本地构建验证，候选 07bbb2f 含 HUD 缺陷，需新候选复验",
       "evidence": []
     },
     {
       "id": "multi-display",
       "status": "BLOCKED",
-      "reason": "离屏屏幕几何/边界算法有覆盖，双屏（内建 2560×1600 + LG 4K）实机 HUD 定位仍未验证；需隔离身份包 + 实机两屏交互",
+      "reason": "修复后的本地构建已验证：客户端窗口从内建屏移到 LG 4K 后，候选窗与 HUD 均跟到屏 1 且 HUD 在光标上方（报告 102 §9.2）；候选 07bbb2f 含 HUD 缺陷，需新候选复验",
       "evidence": []
     },
     {

@@ -1,0 +1,62 @@
+{
+  "passed": true,
+  "status": 0,
+  "error": null,
+  "sourceAndEnabledRestored": true,
+  "focusStayedInClient": true,
+  "clientScreen": 0,
+  "candidate": {
+    "alpha": 1,
+    "height": 70,
+    "layer": 101,
+    "name": "",
+    "number": 917,
+    "onScreen": true,
+    "screen": 0,
+    "width": 599,
+    "x": 71,
+    "y": 105
+  },
+  "hud": {
+    "alpha": 1,
+    "height": 36,
+    "layer": 101,
+    "name": "",
+    "number": 809,
+    "onScreen": true,
+    "screen": 0,
+    "width": 96,
+    "x": 64,
+    "y": 44
+  },
+  "hudSecondDisplay": {
+    "alpha": 1,
+    "height": 36,
+    "layer": 101,
+    "name": "",
+    "number": 809,
+    "onScreen": true,
+    "screen": 1,
+    "width": 96,
+    "x": 17,
+    "y": -1036
+  },
+  "hudDark": {
+    "alpha": 1,
+    "height": 36,
+    "layer": 101,
+    "name": "",
+    "number": 809,
+    "onScreen": true,
+    "screen": 1,
+    "width": 96,
+    "x": 17,
+    "y": -1036
+  },
+  "captures": {
+    "hud-0": 10870,
+    "hud-1": 10036,
+    "hud-dark": 10549
+  },
+  "scope": "real IMK candidate/HUD window identity, placement and appearance; not full product acceptance"
+}

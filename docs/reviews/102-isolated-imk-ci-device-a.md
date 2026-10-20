@@ -162,37 +162,57 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
 仍未解（都要**隔离身份包**，因为生产包会写真实学习词库，规则禁止合成打字污染）：真机 HUD/焦点、真机亮暗截图、
 双屏 HUD、宿主级性能、睡眠唤醒、VoiceOver，以及 Chrome/VSCode 客户端矩阵（探针尚未编写）。
 
-## 9. 真机 HUD 实测：HUD 未合成到屏幕（2026-10-20）
+## 9. 真机 HUD 实测：HUD 未显示（已定位、已修，ADR-217）
 
 为补验报告 101 的 `focus`/`light-dark-layout`/`multi-display`，新增真机面板探针
 （`platforms/macos/tests/run-installed-hud-probe.py` + `isolated-imk/hud-probe.swift`）。
 
-| 检查 | 隔离身份包 | 生产包 `07bbb2f`（对照） |
-|---|---|---|
-| 候选窗 | ✅ 531×70、`layer 101`、`onScreen=true`、在 TextEdit 窗口所在屏、前台仍是 TextEdit、窗口截图有内容（27 014 B） | 未重复验证（隔离包已代表同一份 IME 源码） |
-| 状态 HUD 窗口 | 400×32、`layer 101`、位置在光标上方 8pt、`alpha=1`、**`onScreen=false`**、窗口截图有内容（30 色） | 400×32、**`onScreen=false`** |
-| HUD 所在屏整屏 2× 截屏，按 HUD 矩形逐像素比对 | `hud vs after = 0/51200`；`hud vs before = 0/51200` | `0/51200`；`0/51200` |
-
-结论：**HUD 窗口被创建、定位正确、离屏缓冲里有内容，但屏幕上没有任何像素变化**（两个宿主一致），
-用户看不到状态提示。真实学习词库未变（`2ee1a469…` 前后一致），输入源已还原。
-
-- 证据：`102-evidence/102-hud-real-device.txt`、`102-evidence/hud/*-region.png`（裁切后的 HUD 区域，成对哈希相同）。
-### 9.1 环境对照（排除「本机无法合成此类窗口」）
-
-用与 `StateHUDController.makePanel()` **完全相同**的窗口配置（`.borderless + .nonactivatingPanel`、
-`isFloatingPanel`、`level = .popUpMenu`、`.canJoinAllSpaces/.stationary/.ignoresCycle/.fullScreenAuxiliary`、
-`isOpaque = false`、`backgroundColor = .clear`、`ignoresMouseEvents`、`animationBehavior = .none`）写了一个
-20 行最小程序（`102-evidence/hud/control-panel.swift`），内建屏同一位置显示红块：
-
-| 证据 | 结果 |
+| 检查 | 结果（修复前，隔离包与生产包一致） |
 |---|---|
-| 该面板区域像素（during vs before/after） | **44 184 / 51 200 差异**（可见） |
-| 裁剪图 | `control-panel-during-region.png`（743 B）vs `control-panel-before-region.png`（229 B） |
+| 候选窗 | ✅ 531×70、`layer 101`、`onScreen=true`、跟随客户端窗口所在屏、前台仍是 TextEdit、窗口截图有真实内容 |
+| 状态提示 HUD | ❌ 屏幕上**没有任何像素变化**（按 HUD 矩形逐像素比对：`0/51200`） |
+| 同配置最小 `NSPanel` 对照 | ✅ 可见（`44 184/51 200` 像素差异）→ 环境没问题 |
 
-结论：本机完全能合成这一级别的窗口 → **HUD 不可见是宿主侧问题，不是环境限制**。
-报告 101 的 `focus` 因此改判 **FAIL**（缺陷：状态提示不显示），需开 ADR 定位
-（候选窗能正常显示，说明窗口创建/显示代码路径本身可用；差异集中在 `StateHUDController` 的
-懒创建 + `show()` 时序，或 `StateHUDView` 的首帧绘制）。
+### 9.1 根因：HUD 被自己的「测试模式」判据关掉了（已修，ADR-217）
+
+`StateHUDController.disabled` 原本是
+`LAMPYRIS_ACCEPTANCE_OUTPUT != nil || NSApp.activationPolicy() == .prohibited`。
+第二条的意图是「无头回归不要建浮层」，但 IME 宿主的 `Info.plist` 带 `LSBackgroundOnly = 1`，
+AppKit 对这类常驻后台进程返回的 `activationPolicy` **恒为 `.prohibited`** —— 真实宿主因此也命中「测试模式」，
+`show()` 整段提前返回，HUD 从不创建。
+
+对比实验（诊断日志，仅本地构建，未入库）：
+
+```
+LAMPYRIS-HUD entry disabled=0 valid=1 caret=Optional((218.0, 1764.0, 1.0, 13.0))
+LAMPYRIS-HUD ordered frame={{170, 1785}, {96, 36}} visible=1 policy=1 level=101   ← policy=1 即 .prohibited
+```
+
+- 早先「400×32 窗口」其实是**候选窗**被改成状态条尺寸后隐藏，不是 HUD；我的探针又把快捷键按错成 ⌃⇧M
+  （默认是 ⌥M），所以 `show()` 从未被调用，现象被双重掩盖。
+- 修复（代码一处）：`disabled` 只认显式开关 `LAMPYRIS_ACCEPTANCE_OUTPUT`，并写明宿主恒为 `.prohibited`。
+  见 `ADR-217`。
+
+### 9.2 修复后复验（本地构建的隔离包，PAT 探针 PASS）
+
+用修复后的源码本地构建隔离身份包（ad-hoc 签名，替换掉已装包；CI 公证包备份在私有根 `…app.ci-backup`），
+`run-installed-hud-probe.py --second-display` 结果：
+
+| 检查 | 结果 |
+|---|---|
+| 候选窗 | 599×70、`layer 101`、`onScreen=true`、所在屏 = 客户端窗口所在屏（内建屏 0） |
+| 状态 HUD | 96×36、`layer 101`、`onScreen=true`、位置在光标上方、所在屏 0 |
+| 前台 | 全程 TextEdit（面板不夺焦点） |
+| 双屏 | 把客户端窗口移到 LG 4K（屏 1）后，HUD 跟到屏 1 的 (17, −1036)，候选窗同样跟屏 |
+| 亮/暗 | 暗色下 HUD 仍可见，截图与亮色不同（10 870 / 10 472 字节） |
+| 状态还原 | 输入源与启用集合还原、真实词库未变 |
+
+证据：`102-evidence/102-hud-fixed-probe.json`、`102-evidence/hud/fixed-hud-{0,1,dark}.png`。
+
+### 9.3 对报告 101 的影响
+
+`focus` 仍记 **FAIL**：候选 `07bbb2f` 本身含该缺陷；修复在 main（ADR-217），需要**新候选**出包后用同一探针复验才能改判。
+`light-dark-layout` / `multi-display` 的真机证据目前来自修复后的本地构建，同样等新候选复验。
 
 ## 证据
 

@@ -68,15 +68,18 @@ var result: [String: Any] = ["pid": Int(host.processIdentifier), "bundle": ident
                             "frontmost": frontmost, "screens": screens, "windows": windows]
 
 if args[0] == "capture" {
-    guard args.count == 3 else { fail("capture 需要输出目录") }
+    guard args.count >= 3 else { fail("capture 需要输出目录") }
     let directory = URL(fileURLWithPath: args[2]).standardizedFileURL
     func canonical(_ path: String) -> String {
         path.hasPrefix("/private/") ? String(path.dropFirst("/private".count)) : path
     }
     guard canonical(directory.path).hasPrefix(canonical(root.path) + "/") else { fail("截图目录不在独有根内") }
     try? fm.createDirectory(at: directory, withIntermediateDirectories: true)
+    // 可显式点名窗口（HUD 存活仅 1.15s，重枚举常常已经太晚），否则只拍当前在屏窗口。
+    let explicit = args.dropFirst(3).compactMap { Int($0) }
     var shots: [[String: Any]] = []
-    for window in windows where (window["onScreen"] as? Bool) == true {
+    for window in windows where explicit.isEmpty ? (window["onScreen"] as? Bool) == true
+                                  : explicit.contains((window["number"] as? Int) ?? -1) {
         guard let number = window["number"] as? Int,
               let width = window["width"] as? Double, let height = window["height"] as? Double,
               width >= 8, height >= 8 else { continue }

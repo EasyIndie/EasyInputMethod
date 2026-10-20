@@ -25,9 +25,10 @@ class PanelKinds(unittest.TestCase):
         self.assertEqual([w['number'] for w in probe.pick(windows, 'hud')], [2])
 
     def test_hidden_and_foreign_windows_are_ignored(self):
-        windows = [window(1, 70, 531, on_screen=False), window(2, 32, layer=3), window(3, 32, alpha=0)]
-        self.assertEqual(probe.pick(windows, 'candidate'), [])
-        self.assertEqual(probe.pick(windows, 'hud'), [])
+        hidden = [window(1, 70, 531, on_screen=False), window(2, 32, on_screen=False)]
+        self.assertEqual(probe.fresh({'windows': hidden}), [])
+        visible = [window(3, 32, layer=3), window(4, 32, alpha=0)]
+        self.assertEqual(probe.pick(visible, 'hud'), [])
 
     def test_named_reports_flag_missing_or_duplicate_panels(self):
         problems = []

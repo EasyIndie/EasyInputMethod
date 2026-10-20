@@ -162,10 +162,13 @@ final class StateHUDController {
     private var view: StateHUDView?
     private var hideWorkItem: DispatchWorkItem?
 
-    /// 离屏/无窗口测试（`.prohibited`）不创建浮层，避免污染无头回归。
+    /// 离屏/无窗口测试不创建浮层，避免污染无头回归。
+    ///
+    /// 只认显式开关：IME 宿主以 `LSBackgroundOnly` 常驻后台，AppKit 对它的
+    /// `activationPolicy` **恒为 `.prohibited`**，拿它当「测试模式」判据会在真实宿主里
+    /// 静默关掉 HUD（ADR-217、报告 102 §9）。
     private var disabled: Bool {
         ProcessInfo.processInfo.environment["LAMPYRIS_ACCEPTANCE_OUTPUT"] != nil
-            || NSApp.activationPolicy() == .prohibited
     }
 
     private func makePanel() -> NSPanel {
