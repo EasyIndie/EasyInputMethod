@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-20 15:55 / pi（deepseek-v4-flash）
-- 分支：`main` @ `0ab6bcf`（本轮最后一笔文档提交；工作树 clean、与远端同步）
+- 分支：`main` @ `2f6a6ad`（本轮最后一笔文档提交；工作树 clean、与远端同步）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主 21703 运行中，输入源已由用户加回生产「萤火虫」）；
   报告 **103（候选 `f74aae7`）= pass 18 / fail 0 / blocked 5**；隔离测试包与私有根已移除
 - 最近验证：`make verify` 全绿（本轮多次）；`make macos-offline-tests` 32 文件/122 例全绿；`macos-local-acceptance` 67 观测全绿
@@ -63,9 +63,6 @@
   （`focus`/`multi-display`/`light-dark-layout`/`long-composition`/`undo`/`mode-switch`/`sleep-wake`/`accessibility`/VSCode 转 PASS）；
   新增 7 个探针+契约测试并打通内嵌计时（ADR-218：按键→候选 p50 14.1–14.9 ms、p95 20.6–23.5 ms，引擎 1.0 ms）；
   A 离线门禁首次全绿（122 例/67 观测）；隔离包/私有根/本地产物已清理，生产数据与宿主全程未变。
-- 2026-10-20 / pi：**会话收尾**：文档同步（IT-12 卡补 A 机实测章节、IT-23 写明待 RC、ROADMAP 加注）；
-  隔离包/私有根/本地构建产物移除；生产回读 执行 `681fb1c8…`、config `809e2cae…`、词库 `2ee1a469…` 均未变；
-  注意用户移除时连带移除了生产输入源，需要时重新添加。
 - 2026-10-20 / pi：内嵌计时打通并采到 n=45（total p50 14.1–14.9 ms / p95 20.6–23.5 ms；engine 1.0 ms；面板 42/165 ms），
   写入报告 103 与 ADR-218；同时确认 ad-hoc 构建被 Gatekeeper 拦截、必须用 CI 公证包采样。
 - 2026-10-20 / pi：重新登录后复测计时采样：系统不再按需拉起宿主、`launchctl setenv` 到不了 LaunchServices 进程、
