@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 / Codex（GPT-6）；B本轮验收已归档，收尾等待用户移除隔离输入源。
-- main基线 `11c3000`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
-- 报告104：**pass11 / fail0 / blocked12**，arm64-macos27已PASS；检查器预期退出3，完整发布门禁仍BLOCKED。
+- 更新：2026-10-20 / Codex（GPT-6）；B本轮验收已归档，隔离输入源移除及包归档均已完成。
+- main基线 `8392549`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
+- 报告104：**pass12 / fail0 / blocked11**，arm64-macos27已PASS；检查器预期退出3，完整发布门禁仍BLOCKED。
 - 最近验证：make verify零诊断通过、182产物隐私检查通过；9ac7e9d的CI/正式包工作流成功。
 
 ## 1. 设备与数据
@@ -13,10 +13,10 @@
 |---|---|---|---|
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（21:25回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，公证accepted，宿主未运行 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 实际本轮原源ABC，已恢复；初始搜狗拼音由用户在登录前改为ABC，不强制改回旧选择 |
-| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 宿主PID3204已精确停止，lsof无网络socket；父源已禁用但模式仍启用，等待用户设置移除 |
+| B隔离身份 | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 宿主PID3204已精确停止，lsof无网络socket；实际启用源及菜单均无隔离身份，隔离包已归档 |
 
 - 完整两包zip/执行SHA、CI run、签名与绑定证据见报告104；正式universal包只验证未安装。
-- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（0700+0600 owner，ABC selection journal已建）；已装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
+- 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（本轮曾为0700+0600 owner，重启后已不存在）；原安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
 
 ## 2. 本轮结论
 
@@ -27,26 +27,26 @@
 
 ## 3. 未决
 
-- **唯一即时人工收尾**：TIS disable-owned返回后模式仍enabled；已请求用户仅移除「萤火虫隔离验收 3b030dda」，保留生产「萤火虫」。用户已回复“完成了”并重启，但独立只读TIS新进程复查.default仍enabled；当前ABC、两宿主均无进程、真实三份摘要未变。重启已清理私有根，已装隔离包仍在。不能提前移走包/根或宣称清理完成。
+- 人工收尾已完成：用户设置确认、TIS实际启用枚举与输入菜单三方一致；全部已注册列表旧模式标记不代表实际启用，勿再要求重复移除。
 - B阻断：Safari AppleEvent-1712；VSCode未安装；mode触发文档/焦点守卫；HUD截图失败、暗色未验；无第二屏（用户明确）；AX性能矩阵首个暖机等待超时，cold/dictionary未重复同一失败前置；系统睡眠无正式事件。
 - 跨设备/发布阻断：8eb872f的A机复验、独立第三方、五工作日、Chrome已知外部问题、WeChat按策略不发键。
 - 产品端到端p95是否优化仍需另立ADR；不以基线采集PASS等同16ms达标。未关闭IT-12、UI04或MVP。
 
 ## 4. 下一步（断点）
 
-1. 用户在设置确认移除后，用本地build/acceptance-b-104/read-final-sources只读枚举（原临时根已被重启清理），确认ABC、非自有启用集合不变、自有父/模式均disabled；不要反复调用TISDisable或写HIToolbox。
-2. 签名/执行SHA/UUID/根绑定复核后，注销并归档本轮已装隔离包和私有根（仅本任务资源，不动生产包）；回读生产执行/config/词库摘要和宿主PID。
-3. 更新104 state-restoration与收尾证据；检查器应无格式/证据错误、无FAIL/SKIP、仍因明确剩余项返回3。make verify后提交推送main。
-4. 后续修复/补验按104阻断表逐项立任务；无须重跑已PASS批次，不自动改候选或安装缺失应用。
+1. 本轮收尾完成，报告104 state-restoration已PASS；检查器因剩余11项BLOCKED预期返回3。
+2. 后续按104阻断表逐项补验；无需重跑已PASS批次，不自动改候选或安装缺失应用。
 
 ## 5. 边界
 
 - 核心离线/零遥测；配置只经ime-config；不改真实数据、UserDefaults或HIToolbox。
 - 仅自有窗口/文档，每批身份/焦点/源守卫；失败停止保留证据，不为PASS放宽判定。
 - 不自动注销/重启/解锁；TCC由用户点选；睡眠未证实就保留BLOCKED。VoiceOver用户已关闭。
-- 生产包未替换；隔离包尚保留待用户移除源后归档。完整身份与平台差异只放报告104。
+- 生产包未替换；隔离包已可逆归档至packaging/out/b-8eb872f-retired，临时根已由重启清理。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：用户确认设置已无隔离项，TIS实际启用列表及激活菜单均无隔离身份；此前全部已注册列表的旧enabled标记导致误判。核验签名/执行身份后注销并归档隔离包，临时根重启已清理，生产三摘要不变；恢复项PASS，104现pass12/blocked11。
 
 - 2026-10-20 / Codex：用户再次重启后，独立只读TIS仍报隔离.default启用；ABC、两宿主无进程、生产执行/config/词库SHA全同。临时根已被系统清理，已装隔离包保留，state-restoration继续BLOCKED，证据login1/post-reboot-restoration.json。
 

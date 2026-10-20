@@ -1,6 +1,6 @@
 # 104 — B（arm64 / macOS 27）隔离候选复验
 
-2026-10-20，MacBook-Air / macOS 27.0.1。**arm64-macos27 已转 PASS；当前 pass 11 / fail 0 / skip 0 / blocked 12**。`acceptance-results.py check` 返回预期 BLOCKED（3），格式与证据引用有效；不代表完整发布验收通过。
+2026-10-20，MacBook-Air / macOS 27.0.1。**arm64-macos27 已转 PASS；当前 pass 12 / fail 0 / skip 0 / blocked 11**。`acceptance-results.py check` 返回预期 BLOCKED（3），格式与证据引用有效；不代表完整发布验收通过。
 
 ## 1. 候选与边界
 
@@ -36,7 +36,6 @@
 
 | 项 | 原因与边界 |
 |---|---|
-| `state-restoration` | 各已完成场景原源/启用集合恢复且真实数据不变，最终ABC及非自有启用集合保持；TIS disable-owned返回后自有源仍启用。隔离宿主已精确停止，等待用户系统设置仅移除隔离源后回读确认 |
 | `mode-switch` | 中断前模式探针触发TextEdit文档身份/焦点守卫停止，原源和真实数据恢复；不得计通过 |
 | `sleep-wake` | 用户手动操作后新的TextEdit输入PASS且源/数据恢复，宿主PID保持3204；pmset只记录21:12息屏/21:18亮屏，当前boot系统睡眠次数仍0，因此不能记完整系统睡眠/唤醒PASS；不再要求用户重复 |
 | `light-dark-layout` | B单屏HUD在取亮色截图时screencapture报could not create image from rect；未切至暗色，不以CG窗口坐标代替亮暗视觉证据 |
@@ -57,8 +56,7 @@
 
 ABC已恢复，非自有启用集合保持。严格按本轮fixture路径查询的文档均已不存在；未操作未知“未命名”窗口。隔离宿主停止前lsof未发现网络socket（单次快照），随后按执行路径核验并停止PID3204。真实执行/config/词库摘要均与基线一致，见 `login1/final-restoration.json`。
 
-TIS disable-owned回读仍有隔离模式启用（父源已禁用、模式仍启用）；已请求用户在系统设置只移除本轮隔离源，生产源不动。此人工清理完成前不删除安装包/私有根，也不将state-restoration记PASS。
+用户确认设置已无隔离项后，TIS `includeAllInstalled=false`及激活后的输入菜单均确认隔离源已移除；`includeAllInstalled=true`保留的旧模式enabled标记曾导致误判。已核验身份/执行SHA/strict签名，注销并可逆归档本轮隔离包至`packaging/out/b-8eb872f-retired/`；临时根已由重启清理。恢复项PASS，生产三份SHA再次一致，证据`login1/archive-final.json`。
 
 make verify零诊断通过（含182产物隐私符号检查）；相关离线回归与真实客户端证据见各项记录。正式候选CI已完成完整离线回归、公证与离线重建。当前全部PASS引用文件可由机器报告逐项定位；证据位于 `104-evidence/login1/`，工作目录为 `platforms/macos/build/acceptance-b-104/`（不入库）。
 
-用户再次重启后复查：独立TIS进程仍报隔离`.default`模式启用；当前ABC、两宿主无进程、生产执行/config/词库SHA与基线相同。临时根已由系统清理，已装隔离包保留，恢复项继续BLOCKED。证据：`104-evidence/login1/post-reboot-restoration.json`。

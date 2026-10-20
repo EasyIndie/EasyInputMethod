@@ -33,12 +33,13 @@
     },
     {
       "id": "state-restoration",
-      "status": "BLOCKED",
-      "reason": "各已完成场景原源恢复且真实数据不变；用户报告移除并再次重启后，独立TIS进程仍报自有.default启用。当前ABC、生产及隔离宿主无进程、生产执行/config/词库摘要全同。临时私有根已被系统清理，已装隔离包保留，尚不能确认输入源完整移除",
+      "status": "PASS",
+      "reason": "原源ABC、真实执行/config/词库摘要恢复一致，自有文档已清理；用户确认设置已移除，TIS includeAllInstalled=false及激活后的输入菜单均无隔离身份。includeAllInstalled=true保留旧模式enabled标记，不等同实际启用。精确身份/执行SHA/strict签名核验后已注销并可逆归档隔离包，临时根由重启清理，隔离宿主无进程",
       "evidence": [
         "104-evidence/login1/final-restoration.json",
         "104-evidence/login1/final-runtime-state.json",
-        "104-evidence/login1/post-reboot-restoration.json"
+        "104-evidence/login1/post-reboot-restoration.json",
+        "104-evidence/login1/archive-final.json"
       ]
     },
     {
