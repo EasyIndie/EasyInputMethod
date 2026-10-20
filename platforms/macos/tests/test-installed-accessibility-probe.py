@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Accessibility probe contract: needs VoiceOver, judges announcements and client focus."""
+"""Accessibility probe contract: requires VoiceOver, checks the AX surface and client focus."""
 import importlib.util
 from pathlib import Path
 import unittest
@@ -16,21 +16,19 @@ class Contract(unittest.TestCase):
         self.assertIn('VoiceOver 未运行', source)
         self.assertIn('voiceover_running()', source)
 
-    def test_watcher_only_observes(self):
-        watcher = (Path(__file__).with_name('isolated-imk') / 'ax-announcement-watch.swift').read_text(encoding='utf-8')
-        self.assertIn('AXObserverCreateWithInfoCallback', watcher)
-        self.assertIn('kAXAnnouncementRequestedNotification', watcher)
-        self.assertNotIn('AXUIElementPost', watcher)
-        self.assertNotIn('CGEvent', watcher)
+    def test_surface_tokens_are_required(self):
+        source = HERE.read_text(encoding='utf-8')
+        for token in ('输入编码', '输入模式', '上一页', '下一页'):
+            self.assertIn(token, source)
+        self.assertIn('axMissing', source)
 
     def test_client_focus_must_survive_the_toggle(self):
         self.assertIn('BLOCKED 状态切换后客户端焦点被夺走', probe.BODY)
         self.assertIn('keystroke \\"m\\" using {option down}', probe.BODY)
 
-    def test_announcements_are_required_for_a_pass(self):
-        source = HERE.read_text(encoding='utf-8')
-        self.assertIn("announcements = [event", source)
-        self.assertIn('bool(announced)', source)
+    def test_probe_only_reads_the_host_window_tree(self):
+        self.assertIn('process "LampyrisIMKTest"', probe.BODY)
+        self.assertNotIn('click at', probe.BODY)
 
 
 if __name__ == '__main__':

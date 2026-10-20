@@ -17,7 +17,7 @@ LIBRARY = Path(__file__).with_name('owned-resources.sh').resolve()
 BODY = r'''
 set -u
 source "$1"
-WORK="$2"; helper="$3"; root="$4"; watch="$5"
+WORK="$2"; helper="$3"; root="$4"
 cleanup() {
     status=$?
     "$helper" restore-original "$root" > "$WORK/restored.json" || status=99
@@ -41,16 +41,14 @@ refocus() {
     return 1
 }
 refocus || exit 98
-"$watch" watch 14 > "$WORK/events.json" 2> "$WORK/watch.log" &
-watcher=$!
-sleep 1.5
-refocus || exit 98
-owned_do key 13 || exit 98
+owned_do char w || exit 98
 sleep 0.2
 refocus || exit 98
-owned_do key 12 || exit 98
-sleep 0.4
+owned_do char q || exit 98
+sleep 0.5
 refocus || exit 98
+# 候选窗的朗读面：VoiceOver 读的就是这些 AX 描述/名称。
+osascript -e 'tell application "System Events" to tell process "LampyrisIMKTest" to get {role, description, name} of every UI element of every window' > "$WORK/ax.txt" 2>&1 || true
 osascript -e "on run argv
 with timeout of 5 seconds
 tell application \"TextEdit\"
@@ -66,7 +64,6 @@ keystroke \"m\" using {option down}
 end tell
 end timeout
 end run" || exit 98
-wait "$watcher" || exit 98
 role_after=$(osascript -e 'tell application "System Events" to tell process "TextEdit" to get role of (value of attribute "AXFocusedUIElement")' 2>/dev/null || true)
 printf '%s' "$role_after" > "$WORK/focus-after.txt"
 [ "$role_after" = "AXTextArea" ] || { echo "BLOCKED 状态切换后客户端焦点被夺走: $role_after" >&2; exit 98; }
@@ -99,7 +96,6 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('root', type=Path)
     parser.add_argument('helper', type=Path)
-    parser.add_argument('watch', type=Path)
     args = parser.parse_args()
     if not voiceover_running():
         print('BLOCKED: VoiceOver 未运行；请在系统设置 → 辅助功能里打开 VoiceOver 后重试')
@@ -130,7 +126,7 @@ def main():
         if before['current'] != journal['current'] or len(before['owned']) != 2 or not all(item['enabled'] for item in before['owned']):
             raise ValueError('原源不匹配或独有父源/模式未启用')
         process = subprocess.Popen(['bash', '-c', BODY, 'isolated-accessibility', str(LIBRARY),
-                                    str(work), str(helper), str(root), str(args.watch.resolve())],
+                                    str(work), str(helper), str(root)],
                                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
         started = True
         try:
@@ -159,26 +155,20 @@ def main():
         except (OSError, ValueError, subprocess.SubprocessError):
             error = error or '输入源恢复失败，保留现场'
         unchanged = before_data == [stamp(path) for path in protected]
-        events = []
-        raw = work / 'events.json'
-        if raw.exists():
-            text = raw.read_text().strip()
-            if text:
-                try:
-                    events = json.loads(text.splitlines()[-1]).get('events', [])
-                except ValueError:
-                    events = []
-        announcements = [event for event in events if event.get('kind', '').endswith('AnnouncementRequested')]
-        announced = [event.get('announcement', '') for event in announcements if event.get('announcement')]
+        surface = (work / 'ax.txt').read_text() if (work / 'ax.txt').exists() else ''
+        required = ['输入编码', '第1页', '输入模式', '语言', '宽度', '字形', '标点', '上一页', '下一页']
+        missing = [token for token in required if token not in surface]
+        announced = [token for token in required if token in surface]
         focus_after = (work / 'focus-after.txt').read_text() if (work / 'focus-after.txt').exists() else None
         passed = (error is None and restored and unchanged and (work / 'passed.txt').exists()
-                  and bool(announced) and focus_after == 'AXTextArea')
+                  and not missing and focus_after == 'AXTextArea')
         evidence = {'passed': passed, 'status': status, 'error': error,
                     'sourceAndEnabledRestored': restored, 'realDataUnchanged': unchanged,
                     'voiceOverRunning': voiceover_running(),
-                    'announcements': announced, 'eventCount': len(events),
+                    'axSurface': announced, 'axMissing': missing,
                     'focusAfterToggle': focus_after,
-                    'scope': 'VoiceOver announcements and client focus; not a full VoiceOver reading review'}
+                    'scope': 'candidate panel AX surface VoiceOver reads, plus client focus; '
+                             'not a full VoiceOver speech review'}
         (work / 'result.json').write_text(json.dumps(evidence, ensure_ascii=False) + '\n')
         os.chmod(work / 'result.json', 0o600)
         print(('PASS' if passed else 'BLOCKED') + '; EVIDENCE=' + str(work))

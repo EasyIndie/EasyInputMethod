@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 11:55 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 12:15 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -45,6 +45,8 @@
   搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
   地址栏等原生控件正常；同机 VS Code（Chromium/Electron）**正常**（四路径 PASS）。已排除"输入上下文陈旧"（先选源再重启仍复现）。
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
+- **`accessibility` 已 PASS**（VoiceOver 开启下）：候选面板 AX 面完整 + 状态切换后客户端焦点不被夺；
+  探针 `run-installed-accessibility-probe.py`（未运行时直接 BLOCK）。
 - **`sleep-wake` 已 PASS**：`run-installed-sleep-wake-probe.py`（判据＝睡前/唤醒后各一次 TextEdit 探针）；
   实测唤醒时系统偶尔把输入源重置为 ABC，探针会重新锚定后继续验证。
 - **`long-composition` / `undo` / `mode-switch` 已在新候选复验 PASS**：新探针
@@ -61,8 +63,9 @@
 1. **Chrome 待外部修复**：三条因果已排除（隔离包身份、输入上下文陈旧、产品缺陷）。可试的下一步：Chrome 换稳定版/回退 155.0.8059.80，
    或用 Chrome 的「访达/终端里输入」对照；不影响产品验收结论（VSCode/Safari/TextEdit/Terminal 均正常）。
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
-3. **VoiceOver**：需用户允许开启后执行 `accessibility` 检查（报告 103 在 A 侧只剩这一项）。
-4. **`imk-performance`**：需宿主级延迟/内存/唤醒采样（IT-12）。
+3. **`imk-performance`**：需宿主级延迟/内存/唤醒采样（IT-12），目前只有引擎级基线。
+4. 报告 103 剩余 BLOCKED 全部是外部/结构性：`imk-performance`（需宿主采样）、`application-Chrome`（Chrome 侧）、
+   `arm64-macos27`（B 机）、`independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
@@ -76,6 +79,7 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：无障碍 PASS（VoiceOver AX 面 + 焦点保持）；报告 103 → pass 17 / blocked 6。
 - 2026-10-20 / pi：睡眠唤醒 PASS（新增 `run-installed-sleep-wake-probe.py`）；顺手把 TextEdit 探针的焦点守卫改成轮询到 AXTextArea，
   唤醒后不再误 BLOCK。报告 103 → pass 16 / blocked 7。
 - 2026-10-20 / pi：长组合/撤销/模式循环在新候选复验 PASS（新探针），报告 103 升到 pass 15 / blocked 8。

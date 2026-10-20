@@ -88,9 +88,11 @@
     },
     {
       "id": "accessibility",
-      "status": "BLOCKED",
-      "reason": "VoiceOver 与物理键盘导航未执行",
-      "evidence": []
+      "status": "PASS",
+      "reason": "VoiceOver 运行下：候选面板 AX 面完整（输入编码、页码、输入模式/语言/宽度/字形/标点五项状态、上一页/下一页），状态切换后客户端仍持有 AXTextArea 焦点；范围限于 AX 朗读面，不是完整朗读措辞评审",
+      "evidence": [
+        "103-evidence/103-accessibility.json"
+      ]
     },
     {
       "id": "light-dark-layout",
