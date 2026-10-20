@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 10:15 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 11:05 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -41,10 +41,10 @@
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
 - **HUD 缺陷已修（ADR-217）并在新候选 `f74aae7` 上复验通过**：报告 103 的 `focus`/`multi-display`/`light-dark-layout` 已 PASS；
   报告 101（07bbb2f）保留 FAIL 作为历史记录。
-- **`application-Chrome`（已复测，仍 BLOCKED）**：Chrome 155.0.8059.85 的**页面文本框不消费输入法组合**——选中萤火虫
-  （ad-hoc 与公证隔离包都复现）后打字，候选窗弹出但页面同时收到原始字母（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
-  地址栏等原生控件正常；**先选源再重启 Chrome 仍然复现**，故不是"输入上下文陈旧"。生产 Lampyris 源下页面不落原始字母。
-  列为需另立调查的 Chrome 侧输入集成问题；探针与 fixture 已就绪（`run-installed-chrome-probe.py`、`chrome-fixture.py`）。
+- **`application-Chrome`（BLOCKED，Chrome 侧问题）**：Chrome 155.0.8059.85 的页面文本框**不使用任何输入法**——
+  搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
+  地址栏等原生控件正常；同机 VS Code（Chromium/Electron）**正常**（四路径 PASS）。已排除"输入上下文陈旧"（先选源再重启仍复现）。
+- **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
 - **本地已替换为修复版隔离包（ad-hoc 签名）**：`~/Library/Input Methods/LampyrisIMKTest-…app` 现在是本地构建；
   CI 公证包备份在私有根 `LampyrisIMKTest.app.ci-backup`，需要回到公证版时替换回去。
 - **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
@@ -54,9 +54,9 @@
 
 ## 4. 下一步
 
-1. **Chrome 输入集成调查**：对比生产源（不落原始字母）与隔离包（落原始字母），最小差异点应在包身份/签名或 Info.plist；
-   下一步用生产包的 Info.plist 与隔离包逐项 diff，并在「相同源代码 + 生产签名」的隔离包上复测。
-2. **VSCode**：写 AX 通道探针（无 AppleScript），沿用守卫 + 只关自有窗口的约定。
+1. **Chrome 待外部修复**：三条因果已排除（隔离包身份、输入上下文陈旧、产品缺陷）。可试的下一步：Chrome 换稳定版/回退 155.0.8059.80，
+   或用 Chrome 的「访达/终端里输入」对照；不影响产品验收结论（VSCode/Safari/TextEdit/Terminal 均正常）。
+2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. **睡眠唤醒 / VoiceOver**：需用户在场配合各做一次。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
@@ -71,6 +71,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：VSCode 探针完成（四路径 PASS，报告 103 的 `application-VSCode` 改判）；
+  Chrome 结论修正为「页面文本框不使用任何输入法」（搜狗/生产/隔离三种源均复现，VSCode 正常）→ 记 BLOCKED（Chrome 侧）。
 - 2026-10-20 / pi：**新候选 `f74aae7` 验收**（报告 103）：CI 包已下载复核（universal、公证、可执行 SHA `5cfb4c44…`）；
   12 次真机探针 + HUD 双屏/暗色探针 + 67 观测离屏全绿 → pass 11 / fail 0 / blocked 12。
   另新增 Chrome 探针（标题通道）；发现 Chrome 不把页面按键交给隔离输入法，需重启 Chrome 复测。

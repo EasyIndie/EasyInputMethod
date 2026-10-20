@@ -27,3 +27,10 @@
 | 生产 Lampyris | 标题保持 `fx|…|fixture-input|`（未落字） | 未检测 | 页面按键被输入法消费 |
 | 重启 Chrome（先选隔离源再启动） | `fx|…|fixture-input|wq` | 出现 | 同上，非「输入上下文陈旧」 |
 | 地址栏（原生控件） | — | 出现 | 输入法在 Chrome 原生控件上工作正常 |
+
+## VS Code 四路径（2026-10-20 11:00，隔离包）
+
+- installed-vscode-xvzj6m1m: {"passed": true, "scenario": "normal", "status": 0, "compositionVerified": true, "committedTextVerified": true, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
+- installed-vscode-39usmp1n: {"passed": true, "scenario": "failure", "status": 7, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
+- installed-vscode-4mdtfdjf: {"passed": true, "scenario": "INT", "status": 130, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
+- installed-vscode-aq8dw5ek: {"passed": true, "scenario": "TERM", "status": 143, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
