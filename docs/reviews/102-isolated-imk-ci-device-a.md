@@ -115,11 +115,17 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
    `run-installed-textedit-probe.py` / `run-installed-safari-probe.py` / `run-installed-terminal-probe.py`
    的 normal/failure/INT/TERM；每批发键前 `guard-focus.sh`，中途失焦立即记 BLOCKED。
    **→ TextEdit/Terminal 完成；Safari 阻塞（§5.3）。**
-5. 收尾（**未执行**）：`source-state restore-original` → `disable-owned` → 移除输入源与实体包 → 删除私有根 →
-   回读生产包执行 SHA/宿主/真实数据摘要。
-   本轮暂不卸载：留在机器上以便补跑 Safari 组，避免再经历一次「添加输入源需重新登录」。
-6. 遗留现场（本轮产生、待清理）：Safari 两个测试窗口（其一载入 diag fixture、其一空白）与 TextEdit 一个未命名文档；
-   临时目录 `platforms/macos/build/installed-*` 与私有根内 `safari-diag.*`（诊断脚本与 fixture）。
+5. **收尾（2026-10-20 08:35 已执行）**：
+   `restore-original`（当前源 → `com.apple.keylayout.ABC`）→ `disable-owned`
+   （父源与模式 `enabled` 均 `false`，`enabled` 列表已无测试身份；macOS 13 上模式需等实体包移除后才真正退出列表）
+   → 用户在系统设置移除「萤火虫隔离验收 fd15c596」→ `lsregister -u` + 删除
+   `~/Library/Input Methods/LampyrisIMKTest-fd15c596-….app` → 删除私有根
+   （隔离包的 config/词库、`source-state`、`safari-diag.*`、`screen.png`、`module-cache`）。
+   证据：`102-evidence/102-teardown.txt`、`102-teardown-state.json`。
+6. **回读（收尾后）**：生产包执行 SHA `681fb1c8…` 未变、宿主未运行、真实 `config.toml` `809e2cae…`、
+   词库 `2ee1a469…`（用户自己打字学词，非本轮写入）；`~/Library/Input Methods/` 只剩 `Lampyris.app`，
+   私有根已不存在。
+7. 遗留（本地、不入库、可随时删）：`platforms/macos/build/installed-*` 19 个探针证据目录。
 
 ## 7. 对报告 101 的影响
 

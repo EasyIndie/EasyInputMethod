@@ -1,0 +1,37 @@
+# 报告 102：收尾前私有根清单（2026-10-20 08:35）
+
+.
+./module-cache
+./module-cache/2CQL965AEZFJ7
+./module-cache/Combine-39HOA3A96YJZG.swiftmodule
+./module-cache/CoreFoundation-1F6LKO18PUA3D.swiftmodule
+./module-cache/CoreGraphics-3JKVNR5J5QQUA.swiftmodule
+./module-cache/D67MXZ7W1KP6
+./module-cache/Darwin-1KZTZ2VQRQH6C.swiftmodule
+./module-cache/Dispatch-3YRYXRAE5UQK.swiftmodule
+./module-cache/Foundation-3OSEM894XA39G.swiftmodule
+./module-cache/IOKit-2YJ22WENFWQPA.swiftmodule
+./module-cache/ObjectiveC-MM0LWY457UYI.swiftmodule
+./module-cache/Swift-2GYMQG5WZM8E1.swiftmodule
+./module-cache/U61KTM8LK6U0
+./module-cache/XPC-16L1MYO14KMU4.swiftmodule
+./module-cache/_Concurrency-2C8QKH4DVYPGW.swiftmodule
+./module-cache/_StringProcessing-IJ9M0UN9MLV5.swiftmodule
+./module-cache/modules.timestamp
+./owner
+./safari-diag.KNwVIP
+./safari-diag.KNwVIP/diag.applescript
+./safari-diag.KNwVIP/diag2.applescript
+./safari-diag.KNwVIP/fixture.json
+./safari-diag.KNwVIP/safari-fixture-qc3zc5jm
+./screen.png
+./selection-state.json
+./source-state
+./user-dictionary.tsv
+
+# 收尾动作
+1. source-state restore-original（当前源回到 com.apple.keylayout.ABC)
+2. source-state disable-owned（父源与模式 enabled 均 false，enabled 列表已无测试身份）
+3. 用户在系统设置移除「萤火虫隔离验收 fd15c596」
+4. lsregister -u + 删除 ~/Library/Input Methods/LampyrisIMKTest-fd15c596-….app
+5. 删除私有根（含隔离包 config/词库、source-state、safari-diag.*、screen.png、module-cache）
