@@ -1,0 +1,27 @@
+{
+  "device": "A / Intel / macOS 13.7.8",
+  "package": "CI notarized isolated build (commit b127d6f)",
+  "method": "in-process PerfTrace via root marker (ADR-218), 15 x (w q space) + settings/about hotkeys",
+  "totalMs": {
+    "n": 45,
+    "p50": 14.1,
+    "p95": 20.6,
+    "max": 32.7,
+    "min": 6.6
+  },
+  "engineMs": {
+    "n": 45,
+    "p50": 1.0,
+    "p95": 1.5,
+    "max": 3.3,
+    "min": 0.3
+  },
+  "panelsMs": {
+    "n": 2,
+    "p50": 164.8,
+    "p95": 42.0,
+    "max": 164.8,
+    "min": 42.0
+  },
+  "note": "total 含候选窗 update/show 与一次 JSONL 追加；不含 VoiceOver/合成器完成"
+}

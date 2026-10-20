@@ -115,10 +115,12 @@
     {
       "id": "imk-performance",
       "status": "PASS",
-      "reason": "宿主级基线 + IT-12 矩阵采样（设备 A，隔离宿主，AX 轮询上界）：提交时延基线 p50 217ms/p95 250ms（osascript 开销 p50 115ms）；冷启动样本 197ms（暖机对照 216ms，启动后 RSS 11.1MiB）；满词库（1 万条 / 1.97MB 合成词库）p50 173ms/p95 209ms、RSS 11.0MiB；首次简繁切换后 p50 225ms（含一处 480ms 离群，未定因）；睡眠唤醒前 29.4MiB → 唤醒后 29.5MiB，唤醒后首批提交 732/381/298/394ms 后回落到 ~225–315ms；空闲 CPU 0.3%。面板维度 BLOCKED（菜单 AX 树不含本宿主菜单项）。方法为 AX 轮询（含客户端更新、不含 IMK dispatch 内部时延），未据此宣称达标",
+      "reason": "**内嵌计时（ADR-218，公证隔离包）**：按键→候选窗更新完成 total p50 14.1–14.9 ms、p95 20.6–23.5 ms、max 32.7 ms（n=45，两次独立运行）；其中引擎 engine p50 1.0 ms、p95 1.5 ms；面板打开 42 ms（设置）/ 165 ms（关于）。**引擎远低于 16 ms，但端到端 p95 超过 16 ms**，耗时集中在 IMK 客户端回写与候选窗 update/show。另：外部 AX 轮询基线 p50 217 ms（含 osascript 115 ms 开销）；IT-12 矩阵（冷启动 197 ms、满词库 p50 173 ms、首次简繁 p50 225 ms、唤醒后首批 732/381/298/394 ms）见矩阵证据。范围：单机 Intel/macOS 13；total 含一次 JSONL 追加，不含 VoiceOver 与合成器完成",
       "evidence": [
-        "103-evidence/103-perf-host.json",
-        "103-evidence/103-perf-matrix.json"
+        "103-evidence/103-perf-trace-summary.json",
+        "103-evidence/103-perf-trace.jsonl",
+        "103-evidence/103-perf-matrix.json",
+        "103-evidence/103-perf-host.json"
       ]
     },
     {

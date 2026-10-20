@@ -25,7 +25,7 @@ source "$1"
 WORK="$2"; helper="$3"; root="$4"; waiter="$5"; scenario="$6"
 cleanup() {
     status=$?
-    rm -f "$root/perf-trace.enabled" 2>/dev/null || true
+    rm -f "$root/perf-trace.jsonl" "$root/perf-trace.enabled" 2>/dev/null || true
     if [ -n "${SYNTHETIC:-}" ] && [ -f "$root/user-dictionary.tsv.synthetic" ]; then
         mv -f "$root/user-dictionary.tsv.synthetic" "$root/user-dictionary.tsv" 2>/dev/null || true
     fi
@@ -200,27 +200,43 @@ printf '%s' "$(rss_mib)" > "$WORK/rss-after-wake.txt"
 (umask 077; printf true > "$WORK/passed.txt")
 ''',
     'trace': r'''
-# 计时开关写在私有根内：宿主启动时读它（测试入口专有，产品路径不读）。
+# 内嵌计时（ADR-218）：根内 perf-trace.enabled 指向输出文件；宿主启动时读取。
+# 时序很关键：open 拉起公证包 → 切一次源让客户端绑定该宿主 → 再发键（顺序反了宿主不接客）。
+rm -f "$root/perf-trace.jsonl" "$WORK/trace.jsonl"
 printf '%s' "$WORK/trace.jsonl" > "$root/perf-trace.enabled"
 chmod 600 "$root/perf-trace.enabled"
 stop_host
-ensure_host || { echo "BLOCKED 带计时的宿主未起来" >&2; exit 98; }
+uuid="${root##*lampyris-imk-}"
+open "$HOME/Library/Input Methods/LampyrisIMKTest-$uuid.app" 2>/dev/null || true
+sleep 2.5
+"$helper" restore-original "$root" > /dev/null 2>&1 || true
+sleep 0.4
+select_owned
+sleep 1.0
+ensure_host || { echo "BLOCKED 宿主未启动" >&2; exit 98; }
 i=0
 while [ "$i" -le 14 ]; do
-    one_commit "$i" || exit 98
+    refocus || exit 98
+    owned_do char w || exit 98
+    sleep 0.12
+    refocus || exit 98
+    owned_do char q || exit 98
+    sleep 0.25
+    refocus || exit 98
+    owned_do key 49 || exit 98
+    sleep 0.35
     i=$((i + 1))
 done
-# 面板：默认 alt+, 打开设置；alt+a 打开关于。
 refocus || exit 98
 osascript -e 'tell application "System Events" to keystroke "," using {option down}' || exit 98
-sleep 1.5
+sleep 1.2
 refocus >/dev/null 2>&1 || true
 osascript -e 'tell application "System Events" to keystroke "a" using {option down}' || exit 98
-sleep 1.5
-# 只有真的拿到内嵌计时样本才算通过（插桩接线未生效时必须 BLOCK）。
-[ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 宿主未产生内嵌计时样本（插桩接线待验证）" >&2; exit 98; }
+sleep 1.2
+[ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 宿主未产生内嵌计时样本（宿主可能没接客）" >&2; exit 98; }
+chmod 600 "$WORK/trace.jsonl"
 lines=$(wc -l < "$WORK/trace.jsonl" | tr -d ' ')
-[ "$lines" -ge 10 ] || { echo "BLOCKED 内嵌计时样本过少: $lines" >&2; exit 98; }
+[ "$lines" -ge 30 ] || { echo "BLOCKED 内嵌计时样本过少: $lines" >&2; exit 98; }
 (umask 077; printf true > "$WORK/passed.txt")
 ''',
     'panels': r'''

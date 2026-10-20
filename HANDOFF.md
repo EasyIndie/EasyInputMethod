@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 14:15 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 14:45 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -47,9 +47,10 @@
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
 - **重新登录后环境已重建**：私有根同 UUID 重建（0700+owner）、`source-state`/`hud-probe`/`ax-text-wait` 重编译、
   `selection-state.json` 重建（原源 sogou）；隔离宿主按需启动仍不正常（见 §4）。
-- **内嵌计时钩子（ADR-218）**：`PerfTrace` 已实现并编入宿主（默认关闭、不记录输入内容、0600 写入）。
-  唯一一次成功样本：total 18.7/22.8/9.5 ms（engine 0.11/0.31/1.73 ms）；可重复采样受「宿主按需启动失效 / 手工启动不接管连接」阻塞，
-  需重新登录后按 ADR-218 的流程补采。诊断完成后已恢复干净源码并重装（无调试日志）。
+- **内嵌计时已打通（ADR-218）**：公证隔离包 + 根内 `perf-trace.enabled` + 「open → 切源 → 发键」顺序，
+  两次采到 n=45：**total p50 14.1–14.9 ms / p95 20.6–23.5 ms**，engine p50 1.0 ms，面板 42/165 ms。
+  结论：引擎远低于 16 ms，**端到端 p95 超 16 ms**（瓶颈在 IMK 客户端回写与候选窗更新）。
+  注意：ad-hoc 本地构建会被 Gatekeeper 拦（`CoreServicesUIAgent`），**必须用公证包**采样。
 - **`imk-performance` 基线与 IT-12 矩阵已采集（PASS）**：`run-installed-perf-probe.py` + `run-installed-perf-matrix-probe.py`
   （冷启动/满词库/首次简繁/唤醒；面板维度 BLOCKED——菜单 AX 树不含本宿主菜单项）。
   过程修复：`make-user-fixture.py` 写 0600（默认 0644 会被宿主所有权守卫拒绝启动）、宿主按需启动偶发失效时 open 兜底。
@@ -73,9 +74,10 @@
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. 报告 103 剩余 BLOCKED 全部是外部/结构性：`application-Chrome`（Chrome 侧）、`arm64-macos27`（B 机）、
    `independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
-4. IT-12 剩余：**内嵌计时采样**仍受「宿主启动/接管时序」阻塞（重新登录后系统不再按需拉起；`open` 启动的宿主
-   偶尔接客、多数不接；`launchctl setenv` 到不了 LaunchServices 进程）。钩子本身可用（ADR-218，唯一一次样本
-   total 18.7/22.8/9.5 ms）。下一步选项：把宿主做成登录项、改「宿主自报样本到私有根」、或改在 B 机/CI 采集。
+4. IT-12 剩余：矩阵探针的 `trace` 场景仍偶发 BLOCK（宿主有时不接客）。**可用组合已确认**：
+   CI 公证隔离包（当前已装 `b127d6f` 版本）+ 根内 `perf-trace.enabled` + 顺序「`open` → 切一次源 → 发键」，
+   已两次采到 n=45：total p50 14.1/14.9 ms、p95 20.6/23.5 ms、engine p50 1.0 ms、面板 42/165 ms。
+   下一步：给 `trace` 场景补「open 后等待/重试」收敛，或继续用脚本化手工顺序采集。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
@@ -89,6 +91,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：内嵌计时打通并采到 n=45（total p50 14.1–14.9 ms / p95 20.6–23.5 ms；engine 1.0 ms；面板 42/165 ms），
+  写入报告 103 与 ADR-218；同时确认 ad-hoc 构建被 Gatekeeper 拦截、必须用 CI 公证包采样。
 - 2026-10-20 / pi：重新登录后复测计时采样：系统不再按需拉起宿主、`launchctl setenv` 到不了 LaunchServices 进程、
   `open` 启动的宿主接客不稳定 → 卡点定位为「宿主启动/接管时序」，非钩子本身；已在 ADR-218 记录可选方案。
   环境已重建并还原（源 sogou、无标记/trace 残留、真实词库未变）。

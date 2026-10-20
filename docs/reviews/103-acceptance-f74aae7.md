@@ -32,6 +32,9 @@
   候选 599×70 与 HUD 96×36 均 `onScreen=true`、跟随客户端窗口换屏、暗色下 HUD 可见、前台始终是 TextEdit：
   `103-evidence/103-hud-probe.json` 与三张截图。
 - 离屏逐场景验收 67 个观测全绿（绑定当前源码树摘要）：`103-evidence/103-local-acceptance.txt`。
+- **内嵌计时（ADR-218，公证隔离包）**：按键→候选窗更新完成 **p50 14.1–14.9 ms、p95 20.6–23.5 ms、max 32.7 ms**（n=45，两次运行）；
+  引擎 **p50 1.0 ms / p95 1.5 ms**；面板 42 ms（设置）/ 165 ms（关于）。结论：**引擎远低于 16 ms，端到端 p95 超 16 ms**，
+  瓶颈在 IMK 客户端回写与候选窗更新。证据：`103-evidence/103-perf-trace-summary.json`、`103-evidence/103-perf-trace.jsonl`。
 - IT-12 矩阵（`run-installed-perf-matrix-probe.py`，AX 轮询上界）：冷启动 197ms（暖机 216ms，启动后 RSS 11.1MiB）；
   满词库 1 万条/1.97MB → p50 173ms/p95 209ms、RSS 11.0MiB；首次简繁切换后 p50 225ms（一处 480ms 离群未定因）；
   睡眠唤醒 RSS 29.4→29.5MiB、唤醒后首批提交 732/381/298/394ms 再回落 ~225–315ms；面板维度 BLOCKED（菜单 AX 树
