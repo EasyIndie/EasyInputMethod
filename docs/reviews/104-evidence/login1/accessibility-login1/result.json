@@ -1,0 +1,1 @@
+{"passed": true, "status": 0, "error": null, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "voiceOverRunning": true, "axSurface": ["输入编码", "第1页", "输入模式", "语言", "宽度", "字形", "标点", "上一页", "下一页"], "axMissing": [], "focusAfterToggle": "AXTextArea", "scope": "candidate panel AX surface VoiceOver reads, plus client focus; not a full VoiceOver speech review"}

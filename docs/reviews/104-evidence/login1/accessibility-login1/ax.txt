@@ -1,0 +1,1 @@
+AXStaticText, AXStaticText, AXStaticText, AXStaticText, AXStaticText, AXStaticText, AXStaticText, AXButton, AXButton, AXScrollArea, 输入编码, 第1页，共10页, 输入模式：五笔, 语言：中文, 宽度：半角, 字形：简体, 标点：中文标点, 上一页, 下一页, 滚动区, wq, 1/10, 五笔, 中文, 半角, 简体, 。, missing value, missing value, missing value

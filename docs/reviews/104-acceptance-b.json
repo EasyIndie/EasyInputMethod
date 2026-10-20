@@ -84,9 +84,12 @@
     },
     {
       "id": "accessibility",
-      "status": "BLOCKED",
-      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
-      "evidence": []
+      "status": "PASS",
+      "reason": "B/macOS27，用户开启VoiceOver后：输入编码/页码/五项状态及翻页按钮AX面完整；切换后AXTextArea保持，原源/启用集合恢复且真实数据未变。只覆盖AX朗读面与焦点，不是完整朗读措辞评审",
+      "evidence": [
+        "104-evidence/login1/accessibility-login1/result.json",
+        "104-evidence/login1/accessibility-login1/ax.txt"
+      ]
     },
     {
       "id": "light-dark-layout",
