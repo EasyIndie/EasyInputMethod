@@ -34,3 +34,9 @@
 - installed-vscode-39usmp1n: {"passed": true, "scenario": "failure", "status": 7, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
 - installed-vscode-4mdtfdjf: {"passed": true, "scenario": "INT", "status": 130, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
 - installed-vscode-aq8dw5ek: {"passed": true, "scenario": "TERM", "status": 143, "compositionVerified": true, "committedTextVerified": false, "sourceAndEnabledRestored": true, "realDataUnchanged": true, "ownedWindowClosed": true}
+
+## 长组合 / 撤销 / 模式循环（2026-10-20 11:30，隔离包）
+
+- long（installed-long-k2ebbnef）：{"passed": true, "scenario": "long", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "verified": true, "error": null, "short": "中国"}
+- undo（installed-undo-0stu3g8b）：{"passed": true, "scenario": "undo", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "verified": true, "error": null, "commit": "你", "undo": ""}
+- mode（installed-mode-7he6poff）：{"passed": true, "scenario": "mode", "sourceAndEnabledRestored": true, "realDataUnchanged": true, "verified": true, "error": null, "mode-initial": "mixed", "mode-after-one": "wubi", "mode-final": "mixed"}

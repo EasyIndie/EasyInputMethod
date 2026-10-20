@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 11:05 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 11:35 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -45,6 +45,8 @@
   搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
   地址栏等原生控件正常；同机 VS Code（Chromium/Electron）**正常**（四路径 PASS）。已排除"输入上下文陈旧"（先选源再重启仍复现）。
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
+- **`long-composition` / `undo` / `mode-switch` 已在新候选复验 PASS**：新探针
+  `run-installed-ime-features-probe.py`（长组合 + Esc 回退、⌘Z 撤销、⌥M 模式循环读回宿主配置）。
 - **本地已替换为修复版隔离包（ad-hoc 签名）**：`~/Library/Input Methods/LampyrisIMKTest-…app` 现在是本地构建；
   CI 公证包备份在私有根 `LampyrisIMKTest.app.ci-backup`，需要回到公证版时替换回去。
 - **隔离包已重装并添加输入源**（用户操作），用于继续补验；不再需要重新登录即可被系统发现。
@@ -57,7 +59,7 @@
 1. **Chrome 待外部修复**：三条因果已排除（隔离包身份、输入上下文陈旧、产品缺陷）。可试的下一步：Chrome 换稳定版/回退 155.0.8059.80，
    或用 Chrome 的「访达/终端里输入」对照；不影响产品验收结论（VSCode/Safari/TextEdit/Terminal 均正常）。
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
-3. **睡眠唤醒 / VoiceOver**：需用户在场配合各做一次。
+3. **睡眠唤醒 / VoiceOver**：需用户在场配合各做一次（报告 103 只剩这两项 A 侧可做）。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
@@ -71,6 +73,7 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：长组合/撤销/模式循环在新候选复验 PASS（新探针），报告 103 升到 pass 15 / blocked 8。
 - 2026-10-20 / pi：VSCode 探针完成（四路径 PASS，报告 103 的 `application-VSCode` 改判）；
   Chrome 结论修正为「页面文本框不使用任何输入法」（搜狗/生产/隔离三种源均复现，VSCode 正常）→ 记 BLOCKED（Chrome 侧）。
 - 2026-10-20 / pi：**新候选 `f74aae7` 验收**（报告 103）：CI 包已下载复核（universal、公证、可执行 SHA `5cfb4c44…`）；

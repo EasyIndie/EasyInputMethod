@@ -47,15 +47,19 @@
     },
     {
       "id": "long-composition",
-      "status": "BLOCKED",
-      "reason": "未在新候选复验（旧证据属 101/093 候选）",
-      "evidence": []
+      "status": "PASS",
+      "reason": "真机复验：8 字母 zhongguo 提交「中国」；20 字母 zhongguorenmingonghe 以标记文本有界存在，Esc 后回到已提交文本，不崩不吞输入",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
     },
     {
       "id": "undo",
-      "status": "BLOCKED",
-      "reason": "未在新候选复验（旧证据属 101 候选）",
-      "evidence": []
+      "status": "PASS",
+      "reason": "真机复验：提交「你」后 ⌘Z 回退为空",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
     },
     {
       "id": "focus",
@@ -68,9 +72,11 @@
     },
     {
       "id": "mode-switch",
-      "status": "BLOCKED",
-      "reason": "未在新候选复验（旧证据属 094/101 候选）",
-      "evidence": []
+      "status": "PASS",
+      "reason": "真机复验：⌥M 循环 mixed→wubi→…→mixed，宿主配置随之写入并可读回",
+      "evidence": [
+        "103-evidence/103-probes.txt"
+      ]
     },
     {
       "id": "sleep-wake",
