@@ -1,0 +1,34 @@
+["gh", "run", "view", "39396425237", "--json", "headSha,status,conclusion"]
+{"conclusion":"success","headSha":"8eb872ff9b585d8b769f6fb3784285dcc3d81606","status":"completed"}
+
+["gh", "run", "download", "39396425237", "-D", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated"]
+
+["ditto", "-x", "-k", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/Lampyris-isolated-imk-arm64-8eb872ff9b585d8b769f6fb3784285dcc3d81606/LampyrisIMKTest.zip", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted"]
+
+["codesign", "--verify", "--strict", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app"]
+
+["spctl", "-a", "-vv", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app"]
+/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+
+["xcrun", "stapler", "validate", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app"]
+Processing: /Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app
+The validate action worked!
+
+["lipo", "-archs", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app/Contents/MacOS/LampyrisIMKTest"]
+arm64
+
+["ditto", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/LampyrisIMKTest.app"]
+
+["ditto", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-isolated/extracted/Lampyris.app", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+
+["codesign", "--verify", "--strict", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/LampyrisIMKTest.app"]
+
+["codesign", "--verify", "--strict", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+
+["/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister", "-f", "/Users/joker/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app"]
+
+["/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7/source-state", "state", "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7"]
+{"current":"com.apple.keylayout.ABC","enabled":["cn.jokerhub.inputmethod.Lampyris","cn.jokerhub.inputmethod.Lampyris.default","com.apple.CharacterPaletteIM","com.apple.PressAndHold","com.apple.inputmethod.AinuIM.Ainu","com.apple.inputmethod.Kotoeri.KanaTyping.Japanese","com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese","com.apple.inputmethod.SCIM.ITABC","com.apple.keylayout.ABC","com.sogou.inputmethod.sogou","com.sogou.inputmethod.sogou.pinyin","com.sogou.inputmethod.sogouWB","com.sogou.inputmethod.sogouWB.wubi"],"owned":[]}
+

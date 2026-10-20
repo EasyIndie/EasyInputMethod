@@ -99,9 +99,9 @@
       "reason": "同一提交正式 universal 与隔离 arm64 CI 公证成功；本机严格签名、公证、stapler、源码/根/架构绑定及 zip 摘要复核通过；正式包未安装",
       "evidence": [
         "104-evidence/formal-identity.json",
-        "104-evidence/formal-verification.log",
+        "104-evidence/formal-verification.txt",
         "104-evidence/isolated-identity.json",
-        "104-evidence/isolated-install.log"
+        "104-evidence/isolated-install.txt"
       ]
     },
     {

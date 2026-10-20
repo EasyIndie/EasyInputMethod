@@ -4,7 +4,7 @@
 
 - 更新：2026-10-20 / Codex（GPT-6），B 验收进行中（报告 104）。
 - 候选：`8eb872f`；arm64 公证隔离包已安装，等待用户添加「萤火虫隔离验收 3b030dda」，未发键。
-- 正式 universal run `39396417287` 已成功；报告 103 原始结论保留。
+- 正式 universal run `39396417287` 已成功；报告 103 原始结论保留；main 已含探针守卫提交 `242cbf3`（产品候选仍为 `8eb872f`）。
 - 最近验证：make verify 全绿；ADR-219/220 相关专项回归通过；候选 CI 的完整离线回归/公证/重建成功；机器报告104暂为 pass 1 / blocked 22。
 
 ## 1. 安装与数据
@@ -23,6 +23,7 @@
 
 | 内容 | 结果 | 报告/ADR |
 |---|---|---|
+| B 新候选出包与前置 | `8eb872f` 正式 universal 与 arm64 隔离公证成功；隔离包安装后真实数据不变，等待用户添加独有源；报告 104 pass 1 / blocked 22 | 104、ADR-219/220 |
 | **HUD 缺陷修复** | 根因：`disabled` 把宿主恒有的 `.prohibited` 当测试判据 → HUD 从不创建 | ADR-217、102 §9 |
 | 新候选 `f74aae7` 验收 | **pass 18 / fail 0 / blocked 5**；`focus`/`multi-display`/`light-dark-layout`/`long-composition`/`undo`/`mode-switch`/`sleep-wake`/`accessibility`/`application-VSCode` 转 PASS | 103 |
 | 新探针 + 契约测试 | HUD/面板、Chrome（标题通道）、VS Code、睡眠唤醒、VoiceOver AX 面、IT-12 矩阵、内嵌计时 | 103 证据、ADR-218 |
@@ -33,7 +34,7 @@
 
 - B 隔离包已公证安装（执行 `8e8df20b…dd362a`、zip `e719875d…9b71a1`），等待用户添加「萤火虫隔离验收 3b030dda」；不可见或 -50 时需用户重新登录。当前没有 selection journal，登录后读取实际当前源再建。
 
-- B 出包前置：`6ed5da1` 正式 CI 39384028937 被 TextEdit 离线 mock/中断锚点失效阻断；ADR-219 已在 `8eb872f` 提交，远端完整复核中。报告 104 不继承 103 的 PASS。
+- B 出包前置：`6ed5da1` 正式 CI 39384028937 被 TextEdit 离线 mock/中断锚点失效阻断；ADR-219 已在 `8eb872f` 提交，正式包 CI 的完整离线回归已通过。报告 104 不继承 103 的 PASS。
 
 - 报告 103 剩余 5 项 BLOCKED，全部外部/结构性：`application-Chrome`（Chrome 155 页面不接受任何输入法，
   搜狗/生产/隔离三向对照已证）、`arm64-macos27`（B 机）、`independent-reproduction`（第三方）、
@@ -42,11 +43,11 @@
 - **采样会话敏感**：同一会话反复 `pkill` 宿主后系统会停止按需拉起/接管；采样需在新登录会话按
   `run-installed-perf-trace.sh` 的顺序做（ADR-218）。
 - IT-12 未覆盖：B 机复采、合成器完成/VoiceOver 路径、满词库下的长时稳定性。
-- 隔离验收已完全收尾；`~/Library/Input Methods` 只剩生产 `Lampyris.app`（公证）。
+- A 隔离验收已收尾；B 现保留本轮独有隔离包，待添加输入源后继续。
 
 ## 4. 下一步
 
-0. **B 当前断点**：等待用户添加隔离源；必要时重新登录。根 `/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`，三个 helper 已编译，selection journal 尚未创建；登录后按 ADR-131 校验根/owner，再只读 source-state，记录实际原源后建 journal。隔离 run `39396425237` 成功，SOURCE=`8eb872f`；正式 run `39396417287` 已成功。ADR-220 性能守卫本地修复已验证，待提交；候选产品不变。完整身份、基线和平台差异见报告 104 及 `104-evidence/`。
+0. **B 当前断点**：等待用户添加隔离源；必要时重新登录。根 `/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`，三个 helper 已编译，selection journal 尚未创建；登录后按 ADR-131 校验根/owner，再只读 source-state，记录实际原源后建 journal。隔离 run `39396425237` 成功，SOURCE=`8eb872f`；正式 run `39396417287` 已成功。ADR-220 性能守卫已在 `242cbf3` 提交并推送，相关回归与 make verify 通过；候选产品不变。完整身份、基线和平台差异见报告 104 及 `104-evidence/`。
 1. **决定 p95 超标是否立项**：先写 ADR（是否把「按键→候选可见」纳入门禁、目标值与测量口径），再决定是否优化 IMK 回写路径。
 2. **B 机复采**：CI 出 arm64 隔离包 → 按 ADR-218 流程采 `run-installed-perf-trace.sh` + 矩阵，补齐 `arm64-macos27`。
 3. **锁定 RC 后**：安装生产包做最终实机验收（点击/VoiceOver/多屏/客户端）并开始 IT-23 的 5 个工作日。

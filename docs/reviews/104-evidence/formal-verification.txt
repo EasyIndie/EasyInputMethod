@@ -1,0 +1,21 @@
+["gh", "run", "view", "39396417287", "--json", "headSha,status,conclusion"]
+{"conclusion":"success","headSha":"8eb872ff9b585d8b769f6fb3784285dcc3d81606","status":"completed"}
+
+["gh", "run", "download", "39396417287", "-D", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal"]
+
+["ditto", "-x", "-k", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/Lampyris-macos-acceptance-8eb872ff9b585d8b769f6fb3784285dcc3d81606/candidate-0gobpt/Lampyris-0.1.0-universal.zip", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted"]
+
+["codesign", "--verify", "--strict", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app"]
+
+["spctl", "-a", "-vv", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app"]
+/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+
+["xcrun", "stapler", "validate", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app"]
+Processing: /Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app
+The validate action worked!
+
+["lipo", "-archs", "/Users/joker/Documents/EasyInputMethod/packaging/out/b-8eb872f-formal/extracted/Lampyris-0.1.0-universal/Lampyris.app/Contents/MacOS/Lampyris"]
+x86_64 arm64
+
