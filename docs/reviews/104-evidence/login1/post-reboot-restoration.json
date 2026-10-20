@@ -1,0 +1,1377 @@
+{
+  "checkedAt": "2026-10-20T21:42:25.255175+08:00",
+  "source": {
+    "current": "com.apple.keylayout.ABC",
+    "sources": [
+      {
+        "enabled": true,
+        "id": "com.apple.keylayout.ABC"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.PressAndHold"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.CharacterPaletteIM"
+      },
+      {
+        "enabled": true,
+        "id": "com.sogou.inputmethod.sogouWB.wubi"
+      },
+      {
+        "enabled": true,
+        "id": "com.sogou.inputmethod.sogouWB"
+      },
+      {
+        "enabled": true,
+        "id": "com.sogou.inputmethod.sogou.pinyin"
+      },
+      {
+        "enabled": true,
+        "id": "com.sogou.inputmethod.sogou"
+      },
+      {
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.Lampyris.default"
+      },
+      {
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.Lampyris"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Czech-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Czech"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Estonian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hungarian-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hungarian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Latvian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Lithuanian-LST1582"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Lithuanian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.PolishPro"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Polish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Slovak"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Slovak-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Bulgarian-Phonetic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Bulgarian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Byelorussian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Macedonian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Russian-Phonetic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Russian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.RussianWin"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Serbian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Ukrainian-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Ukrainian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Colemak"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dvorak-Left"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dvorak-Right"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dvorak"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.DVORAK-QWERTYCMD"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.KANA"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ABC-AZERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ABC-QWERTZ"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Australian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Austrian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Belgian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Brazilian-ABNT2"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Brazilian-Pro"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Brazilian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.British-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.British"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Canadian-CSA"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Canadian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.CanadianFrench-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Danish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dutch"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Finnish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.French-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.French-numerical"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.French"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.German"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Irish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Italian-Pro"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Italian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Norwegian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Portuguese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Spanish-ISO"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Spanish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Swedish-Pro"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Swedish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.SwissFrench"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.SwissGerman"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tongan"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.US"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.USInternational-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.2SetHangul"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ABC-India"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Adlam-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.AfghanDari"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.AfghanPashto"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.AfghanUzbek"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Akan"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Albanian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Anjal"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Apache"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Arabic-AZERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Arabic-NorthAfrica"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Arabic-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Arabic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ArabicPC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Armenian-HMQWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Armenian-WesternQWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Assamese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Azeri"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Bangla-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Bangla"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Baybayin-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Bodo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.CangjieKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Cherokee-Nation"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Cherokee-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Chickasaw"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Chochenyo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Choctaw"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Chuvash"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Comanche"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Croatian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Croatian-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Devanagari-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Devanagari"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dhivehi-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dogri"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Dzongkha"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Faroese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.FinnishExtended"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.FinnishSami-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Geez-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Georgian-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.German-DIN-2137"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Greek"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.GreekPolytonic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Guadeloupean-Creole"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Guarani"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Gujarati-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Gujarati"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Gurmukhi-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Gurmukhi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Haitian-Creole"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hanifi-Rohingya-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hausa"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hawaiian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hebrew-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hebrew"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Hebrew-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Icelandic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Igbo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Ingush"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Inuktitut-Nattilik"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Inuktitut-Nunavut"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Inuktitut-Nutaaq"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Inuktitut-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.InuttitutNunavik"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.IrishExtended"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Jawi-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kabyle-AZERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kabyle-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kaingang"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kannada-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kannada"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kashmiri-Devanagari"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kazakh"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Khmer"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kiowa"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Konkani"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kurdish-Kurmanji"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kurdish-Sorani"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Kyrgyz-Cyrillic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Lao"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.LatinAmerican"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Lushootseed"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Maithili"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Malayalam-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Malayalam"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Maltese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Mandaic-Arabic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Mandaic-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Manipuri-Bengali"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Manipuri-MeeteiMayek"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Maori"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Marathi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Martinican-Creole"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Mikmaw"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Mongolian-Cyrillic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Mvskoke"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Myanmar-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Myanmar"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NKo-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NKo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Navajo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Nepali-IS16350"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Nepali"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NewZealand"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NezPerce"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Nheengatu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NorwegianExtended"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NorwegianSami-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Oriya-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Oriya"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Osage-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Pahawh-Hmong"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Persian-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Persian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Persian-ISIRI2901"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Rejang-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Romanian-Standard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Romanian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Salish-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sami-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.InariSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.JulevSami-Norway"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.JulevSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.KildinSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.NorthernSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.PiteSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.SkoltSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.SouthernSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.UmeSami"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Samoan"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sanskrit"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Santali-Devanagari"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Santali-OlChiki"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Serbian-Latin"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sindhi-Devanagari"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sindhi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sinhala-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Sinhala"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Slovenian-QWERTZ"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Slovenian"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.SwedishSami-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Syriac-Arabic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Syriac-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tajik-Cyrillic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tamil99"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Telugu-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Telugu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Thai-PattaChote"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Thai-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Thai"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.TibetanOtaniUS"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tibetan-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tibetan-Wylie"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tifinagh-AZERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-ar"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-bn"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-gu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-hi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-kn"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-ml"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-mr"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-pa"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-ta"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-te"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Transliteration-ur"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tsuutina"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Turkish-QWERTY-PC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Turkish-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Turkish-Standard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Turkish"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Turkmen"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Tuvan"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.USExtended"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Ukrainian-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.UnicodeHexInput"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Urdu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Uyghur"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Uzbek-Cyrillic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Vietnamese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Wancho-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Welsh"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Wixarika"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Wolastoqey"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Yakut"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Yiddish-QWERTY"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.Yoruba"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ZhuyinBopomofo"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.GJCRomaja"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.390Hangul"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.HNCRomaja"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.3SetHangul"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.PinyinKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.WubihuaKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.TraditionalWubihuaKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.TraditionalWubihuaKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.ZhuyinEten"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.TraditionalPinyinKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.keylayout.WubihuaKeyboard"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.PluginIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.SyntheticRomanMode"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.VietnameseIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Ainu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.SCIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.ChineseHandwriting"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.EmojiFunctionRowItem"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.50onPaletteIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.AssistiveControl"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.ironwood"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TYIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Tamil"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.VietnameseIM.VietnameseVNI"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.VietnameseIM.VietnameseVIQR"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.VietnameseIM.VietnameseSimpleTelex"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.VietnameseIM.VietnameseTelex"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean.2SetKorean"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean.390Sebulshik"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean.3SetKorean"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean.GongjinCheongRomaja"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Korean.HNCRomaja"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.inputmethod.AinuIM.Ainu"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.inputmethod.SCIM.ITABC"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.SCIM.Shuangpin"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.SCIM.WBX"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.SCIM.WBH"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese.Katakana"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese.HalfWidthKana"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping.Roman"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese.FullWidthRoman"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.inputmethod.Kotoeri.KanaTyping.Japanese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese.Katakana"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese.HalfWidthKana"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping.Roman"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese.FullWidthRoman"
+      },
+      {
+        "enabled": true,
+        "id": "com.apple.inputmethod.Kotoeri.RomajiTyping.Japanese"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TYIM.Stroke"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TYIM.Sucheng"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TYIM.Cangjie"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TYIM.Phonetic"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Tamil.AnjalIM"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.Tamil.Tamil99"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.ml"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.mr"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.hi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.pa"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.te"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.ur"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.ar"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.bn"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.kn"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.gu"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TransliterationIM.ta"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.WBH"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.Zhuyin"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.Cangjie"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.ZhuyinEten"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.Jianyi"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.Pinyin"
+      },
+      {
+        "enabled": false,
+        "id": "com.apple.inputmethod.TCIM.Shuangpin"
+      },
+      {
+        "enabled": false,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7"
+      },
+      {
+        "enabled": true,
+        "id": "cn.jokerhub.inputmethod.LampyrisIMKTest.3b030dda-b3f5-4424-a45c-90c5cfabfbf7.default"
+      }
+    ]
+  },
+  "hostPIDs": {
+    "Lampyris": [],
+    "LampyrisIMKTest": []
+  },
+  "privateRootExists": false,
+  "installedIsolationAppExists": true,
+  "realDataUnchanged": true,
+  "sha256": {
+    "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+    "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "result": "BLOCKED: owned .default mode remains enabled after user reboot; no archive attempted"
+}

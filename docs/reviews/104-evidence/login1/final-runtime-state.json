@@ -40,5 +40,12 @@
     "Lampyris": [],
     "LampyrisIMKTest": [],
     "VoiceOver": []
+  },
+  "manual_removal_recheck": {
+    "user_reported_complete": true,
+    "fresh_helper_result": "owned parent disabled; owned .default remains enabled",
+    "settings_ax_result": "System Settings process absent (-1728)",
+    "archival": "deferred; installed isolated app and private root retained",
+    "checked_at": "2026-10-20T21:36:18.432523+08:00"
   }
 }

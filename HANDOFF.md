@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-20 / Codex（GPT-6）；B本轮验收已归档，收尾等待用户移除隔离输入源。
-- main基线 `9ac7e9d`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
+- main基线 `11c3000`；产品候选固定 `8eb872f`，工程修复ADR-219…222已提交（不改变候选载荷）。
 - 报告104：**pass11 / fail0 / blocked12**，arm64-macos27已PASS；检查器预期退出3，完整发布门禁仍BLOCKED。
 - 最近验证：make verify零诊断通过、182产物隐私检查通过；9ac7e9d的CI/正式包工作流成功。
 
@@ -27,14 +27,14 @@
 
 ## 3. 未决
 
-- **唯一即时人工收尾**：TIS disable-owned返回后模式仍enabled；已请求用户仅移除「萤火虫隔离验收 3b030dda」，保留生产「萤火虫」。等待回复，不能提前移走包/根或宣称清理完成。
+- **唯一即时人工收尾**：TIS disable-owned返回后模式仍enabled；已请求用户仅移除「萤火虫隔离验收 3b030dda」，保留生产「萤火虫」。用户已回复“完成了”并重启，但独立只读TIS新进程复查.default仍enabled；当前ABC、两宿主均无进程、真实三份摘要未变。重启已清理私有根，已装隔离包仍在。不能提前移走包/根或宣称清理完成。
 - B阻断：Safari AppleEvent-1712；VSCode未安装；mode触发文档/焦点守卫；HUD截图失败、暗色未验；无第二屏（用户明确）；AX性能矩阵首个暖机等待超时，cold/dictionary未重复同一失败前置；系统睡眠无正式事件。
 - 跨设备/发布阻断：8eb872f的A机复验、独立第三方、五工作日、Chrome已知外部问题、WeChat按策略不发键。
 - 产品端到端p95是否优化仍需另立ADR；不以基线采集PASS等同16ms达标。未关闭IT-12、UI04或MVP。
 
 ## 4. 下一步（断点）
 
-1. 用户确认移除后，仍用根内source-state只读state，确认ABC、非自有启用集合不变、自有父/模式均disabled；不要反复调用TISDisable或写HIToolbox。
+1. 用户在设置确认移除后，用本地build/acceptance-b-104/read-final-sources只读枚举（原临时根已被重启清理），确认ABC、非自有启用集合不变、自有父/模式均disabled；不要反复调用TISDisable或写HIToolbox。
 2. 签名/执行SHA/UUID/根绑定复核后，注销并归档本轮已装隔离包和私有根（仅本任务资源，不动生产包）；回读生产执行/config/词库摘要和宿主PID。
 3. 更新104 state-restoration与收尾证据；检查器应无格式/证据错误、无FAIL/SKIP、仍因明确剩余项返回3。make verify后提交推送main。
 4. 后续修复/补验按104阻断表逐项立任务；无须重跑已PASS批次，不自动改候选或安装缺失应用。
@@ -47,6 +47,8 @@
 - 生产包未替换；隔离包尚保留待用户移除源后归档。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：用户再次重启后，独立只读TIS仍报隔离.default启用；ABC、两宿主无进程、生产执行/config/词库SHA全同。临时根已被系统清理，已装隔离包保留，state-restoration继续BLOCKED，证据login1/post-reboot-restoration.json。
 
 - 2026-10-20 / Codex：用户报告手动唤醒后的输入PASS，但系统只有息屏/亮屏事件、当前boot睡眠计数0，完整睡眠保持BLOCKED。ABC/真实数据已恢复，隔离宿主停止、无socket；TIS停用仅父源生效，等待用户系统设置移除隔离模式后归档。104现pass11/blocked12，arm64项PASS。
 

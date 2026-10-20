@@ -60,3 +60,5 @@ ABC已恢复，非自有启用集合保持。严格按本轮fixture路径查询�
 TIS disable-owned回读仍有隔离模式启用（父源已禁用、模式仍启用）；已请求用户在系统设置只移除本轮隔离源，生产源不动。此人工清理完成前不删除安装包/私有根，也不将state-restoration记PASS。
 
 make verify零诊断通过（含182产物隐私符号检查）；相关离线回归与真实客户端证据见各项记录。正式候选CI已完成完整离线回归、公证与离线重建。当前全部PASS引用文件可由机器报告逐项定位；证据位于 `104-evidence/login1/`，工作目录为 `platforms/macos/build/acceptance-b-104/`（不入库）。
+
+用户再次重启后复查：独立TIS进程仍报隔离`.default`模式启用；当前ABC、两宿主无进程、生产执行/config/词库SHA与基线相同。临时根已由系统清理，已装隔离包保留，恢复项继续BLOCKED。证据：`104-evidence/login1/post-reboot-restoration.json`。
