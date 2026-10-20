@@ -19,32 +19,48 @@ set -u
 source "$1"
 WORK="$2"; helper="$3"; root="$4"
 fixture=""; fixtureName=""
-close_fixture() {
-    [ -n "$fixture" ] || return 0
-    osascript - "$fixtureName" <<'APPLESCRIPT' > "$WORK/closed.txt" 2>&1
+guarded_action() {
+    "$helper" state "$root" | python3 -c 'import json,sys; expected=json.load(open(sys.argv[1]))["current"]; actual=json.load(sys.stdin)["current"]; sys.exit(0 if actual == expected else 3)' "$WORK/selected.json" || return 1
+    osascript - "$fixtureName" "$1" <<'APPLESCRIPT'
 on run argv
     set wanted to item 1 of argv
+    set operation to item 2 of argv
+    with timeout of 5 seconds
     tell application "System Events"
-        if not (exists process "Code") then return "absent"
+        if not (exists process "Code") then
+            if operation is "close" then return "absent"
+            error "BLOCKED Code 未运行"
+        end if
         tell process "Code"
-            if (count of windows) is 0 then return "absent"
-            -- 只关闭标题里带本次 fixture 文件名的窗口（不碰用户窗口）。
-            set matched to 0
-            repeat with candidate in (every window)
-                if (name of candidate) contains wanted then
-                    set matched to matched + 1
-                    try
-                        perform action "AXRaise" of candidate
-                    end try
-                end if
-            end repeat
-            if matched is 0 then error "BLOCKED 没有本 fixture 的窗口"
-            keystroke "w" using command down
+            if (count of windows) is 0 then
+                if operation is "close" then return "absent"
+                error "BLOCKED Code 无窗口"
+            end if
+            if not frontmost then error "BLOCKED Code 非前台"
+            if (name of front window) does not contain wanted then error "BLOCKED 没有本 fixture 的窗口"
+            if operation is "w" then
+                keystroke "w"
+            else if operation is "q" then
+                keystroke "q"
+            else if operation is "commit" then
+                key code 49
+            else if operation is "save" then
+                keystroke "s" using command down
+            else if operation is "close" then
+                keystroke "w" using command down
+            else
+                error "BLOCKED 非测试动作"
+            end if
         end tell
     end tell
-    return "closed"
+    end timeout
+    return "guarded"
 end run
 APPLESCRIPT
+}
+close_fixture() {
+    [ -n "$fixture" ] || return 0
+    guarded_action close > "$WORK/closed.txt" 2>&1
 }
 cleanup() {
     status=$?
@@ -90,16 +106,16 @@ fi
 sleep 0.8
 
 # 组合期：候选窗出现但文件不应被写入。
-osascript -e 'tell application "System Events" to keystroke "w"' || exit 98
+guarded_action w || exit 98
 sleep 0.3
-osascript -e 'tell application "System Events" to keystroke "q"' || exit 98
+guarded_action q || exit 98
 sleep 0.6
 [ "$(cat "$fixture")" = "seed" ] || { echo "BLOCKED 组合期写入了文件" >&2; exit 98; }
 (umask 077; printf true > "$WORK/composing.txt")
 
-osascript -e 'tell application "System Events" to key code 49' || exit 98
+guarded_action commit || exit 98
 sleep 0.6
-osascript -e 'tell application "System Events" to keystroke "s" using command down' || exit 98
+guarded_action save || exit 98
 saved=""
 for _ in $(seq 1 20); do
     sleep 0.3

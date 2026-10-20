@@ -3,6 +3,9 @@
 import importlib.util
 from pathlib import Path
 import subprocess
+import json
+import os
+import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
@@ -31,6 +34,28 @@ class PermissionPreflight(unittest.TestCase):
 
 
 class OwnedFileContract(unittest.TestCase):
+    def test_changed_source_prevents_native_actions(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / 'selected.json').write_text(json.dumps({'current': 'owned'}))
+            helper = root / 'helper'
+            helper.write_text('#!/bin/sh\nprintf \'{"current":"%s"}\\n\' "$TEST_SOURCE"\n')
+            helper.chmod(0o700)
+            native = root / 'osascript'
+            native.write_text('#!/bin/sh\nprintf "%s\\n" "$*" >> "$TEST_CALLS"\n')
+            native.chmod(0o700)
+            library = root / 'library.sh'
+            library.write_text('')
+            body = probe.BODY.split('cleanup() {', 1)[0] + '\nfixtureName=owned.txt\nguarded_action w || exit 98\n'
+            for source, expected in [('owned', 0), ('foreign', 98)]:
+                with self.subTest(source=source):
+                    calls = root / (source + '.calls')
+                    result = subprocess.run(['bash', '-c', body, 'test', str(library), str(root), str(helper), str(root)],
+                        env={**os.environ, 'PATH': str(root) + ':' + os.environ['PATH'],
+                             'TEST_SOURCE': source, 'TEST_CALLS': str(calls)}, capture_output=True, timeout=5)
+                    self.assertEqual(result.returncode, expected, result.stderr)
+                    self.assertEqual(calls.exists(), source == 'owned')
+
     def test_probe_creates_and_saves_its_own_file(self):
         self.assertIn('vscode-fixture-$$.txt', probe.BODY)
         self.assertIn('keystroke "s" using command down', probe.BODY)
