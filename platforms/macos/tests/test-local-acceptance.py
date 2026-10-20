@@ -59,7 +59,8 @@ class LocalAcceptanceTests(unittest.TestCase):
             local.check(self.root)
 
     def test_valid_format_still_blocks_entire_mvp(self):
-        self.assertEqual(local.check(self.root), 65)
+        # 65 = 旧用例表；candidate 套件补入 hud-source 与 support-dir-override 后为 67
+        self.assertEqual(local.check(self.root), 67)
         self.assertTrue(all(c['status'] == 'BLOCKED' for c in self.report['formal_cases']))
 
     def test_mvp_cannot_be_promoted_or_required_case_omitted(self):
