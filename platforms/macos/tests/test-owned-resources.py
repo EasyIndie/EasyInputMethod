@@ -95,6 +95,28 @@ sys.exit(1 if n == int(os.environ['FAIL_AT']) else 0)
         self.assertIn('owned-textedit.applescript clear /tmp/owned-fixture.txt owned-fixture.txt 101', log)
         self.assertNotIn('set text of front document', log)
 
+    def test_changed_source_stops_before_native_action(self):
+        body = '''OWNED_FILE=/tmp/owned-fixture.txt
+OWNED_NAME=owned-fixture.txt
+owned_record TextEdit window 101
+root=/tmp/lampyris-imk-test-identity
+helper=source_mock
+source_mock() { printf '%s' '{"current":"com.apple.keylayout.ABC"}'; }
+owned_do key 49
+'''
+        result, log = self.run_action(body)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertEqual(log, '')
+
+    def test_performance_shortcuts_share_atomic_window_guard(self):
+        for name, key in [('settings', ','), ('about', 'a'), ('variant', 't')]:
+            with self.subTest(name=name):
+                result, log = self.run_action('OWNED_FILE=/tmp/owned-fixture.txt\nOWNED_NAME=owned-fixture.txt\nowned_record TextEdit window 101\nowned_do option ' + name + '\n')
+                self.assertEqual(result.returncode, 0)
+                self.assertLess(log.index('if not frontmost'), log.index('keystroke "' + key + '"'))
+                self.assertIn('documentFile is not fixtureFile', log)
+                self.assertIn('AXFocusedUIElement', log)
+
 
 if __name__ == '__main__':
     unittest.main()

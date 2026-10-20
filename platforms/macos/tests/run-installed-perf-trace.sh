@@ -10,6 +10,7 @@
 set -euo pipefail
 
 ROOT="$1"; HELPER="$2"; HUD="$3"; OUT="$4"
+root="$ROOT"; helper="$HELPER"
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIBRARY="${HERE}/owned-resources.sh"
 UUID="${ROOT##*lampyris-imk-}"
@@ -99,10 +100,10 @@ while [ "$i" -lt 14 ]; do
 done
 
 refocus || exit 3
-osascript -e 'tell application "System Events" to keystroke "," using {option down}'
+owned_do option settings
 sleep 1.2
-refocus >/dev/null 2>&1 || true
-osascript -e 'tell application "System Events" to keystroke "a" using {option down}'
+refocus || exit 3
+owned_do option about
 sleep 1.2
 
 [ -s "$TRACE" ] || { echo "BLOCKED 没有 trace 样本" >&2; exit 3; }

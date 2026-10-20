@@ -46,6 +46,14 @@ class Contract(unittest.TestCase):
         source = HERE.read_text(encoding='utf-8')
         self.assertIn('IMK dispatch internals excluded', source)
 
+    def test_performance_events_never_bypass_owned_action_guard(self):
+        for name in ['run-installed-perf-probe.py', 'run-installed-perf-matrix-probe.py', 'run-installed-perf-trace.sh']:
+            with self.subTest(name=name):
+                source = HERE.with_name(name).read_text(encoding='utf-8')
+                self.assertNotIn('to keystroke', source)
+                self.assertNotIn('to key code', source)
+        self.assertIn('compose || exit 98', probe.PRELUDE)
+
 
 if __name__ == '__main__':
     unittest.main()

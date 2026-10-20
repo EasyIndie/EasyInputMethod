@@ -1,6 +1,6 @@
 # 104 — B 机新候选隔离验收（进行中）
 
-2026-10-20，B（MacBook-Air / arm64 / macOS 27.0.1）。本报告不继承报告 103 的 PASS；源码锁定、公证包身份与原始证据齐备后再建立 schema 2 JSON。
+2026-10-20，B（MacBook-Air / arm64 / macOS 27.0.1）。本报告不继承报告 103 的 PASS；候选身份见同名 schema 2 JSON；仅凭真实证据逐项改判。
 
 ## 设备基线
 
@@ -26,3 +26,23 @@
 平台差异：交接脚本附带的旧 selsrc 无参数查询返回空；重新编译的 source-state 在图形会话可读精确源。沙箱内 codesign 查询曾报内部错误，沙箱外验证 accepted；菜单索引、设置默认分区、TCC 提示仍待实测。
 
 证据工作目录：`platforms/macos/build/acceptance-b-104/`（不入库）；已记录 `baseline.json`，后续逐项归档可审核原始证据。
+
+## 隔离包已安装，等待用户添加源
+
+- 候选锁定：`8eb872ff9b585d8b769f6fb3784285dcc3d81606`；正式 universal 构建 run `39396417287` 已成功。
+- 隔离 arm64 公证 run `39396425237` success；zip SHA `e719875d5349256f541bb2496e80afaa4005d91207286a71e071c8453a9b71a1`，执行 SHA `8e8df20b901615d9d0e1c61bdcf32a04b81bd50931de190594a1e4e551dd362a`。
+- SOURCE-COMMIT、TARGET-ROOT、requested/built arm64 与实际 lipo 一致；codesign strict、公证 Developer ID、stapler 全过。
+- 两份实体包已安装并精确注册，源名称「萤火虫隔离验收 3b030dda」；尚未发键、选择或启用。注册后 TIS 尚无 owned 源，等待用户系统设置添加；不可见/-50 时按 ADR-130/131 重新登录。
+- 用户当前源已从初始搜狗拼音切为 ABC；不覆盖此选择。新增源/重新登录后，必须读取实际当前源再创建 selection journal。
+- 安装后真实执行文件/config/词库 SHA 与基线逐项一致。
+- ADR-220 的性能发键守卫补齐，相关回归（自有资源 9、矩阵 8、基线 5、TextEdit 9、功能 8、HUD 7、owned-probe 4）及 make verify 通过；本地测试工具改动不改变候选产品源码。
+
+原始证据已归档至 `104-evidence/`：基线、前后输入源、隔离身份、下载/信任核验/注册日志。`arm64-macos27` 当前仍 BLOCKED，等待用户添加输入源及实机矩阵，不创建虚假的 PASS。
+
+## 正式候选身份与当前门禁
+
+- 正式 universal zip SHA：`d5e8f30a4eb8bd6f43b496dee65998c3776fe5634813bf5c47da2fb6b625eccb`。
+- 正式执行 SHA：`4e9986578fc30828daf5810335a22800e357dab407a304064af1c8b853c12781`。
+- 源码包 SHA：`81c5eaa0d5858ed92216dd161ca447a0c6dc7e70f812f593b87b1c4fee0ec0a9`；SOURCE-COMMIT 与两种 CI head 均为 `8eb872ff9b585d8b769f6fb3784285dcc3d81606`。
+- 架构、摘要 sidecar、codesign strict、Notarized Developer ID、stapler 均通过。CI 已完成完整离线回归与离线重建；本机只验证归档，未安装正式包。
+- 当前机器报告：**pass 1 / fail 0 / skip 0 / blocked 22**，仅 package-validation PASS，check 预期返回 3。B 平台项仍未改判，任务未完成。

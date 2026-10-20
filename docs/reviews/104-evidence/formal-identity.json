@@ -1,0 +1,12 @@
+{
+  "commit": "8eb872ff9b585d8b769f6fb3784285dcc3d81606",
+  "runId": "39396417287",
+  "zipSHA256": "d5e8f30a4eb8bd6f43b496dee65998c3776fe5634813bf5c47da2fb6b625eccb",
+  "executionSHA256": "4e9986578fc30828daf5810335a22800e357dab407a304064af1c8b853c12781",
+  "architectures": [
+    "arm64",
+    "x86_64"
+  ],
+  "signature": "developer-id-notarized",
+  "sourceSHA256": "81c5eaa0d5858ed92216dd161ca447a0c6dc7e70f812f593b87b1c4fee0ec0a9"
+}

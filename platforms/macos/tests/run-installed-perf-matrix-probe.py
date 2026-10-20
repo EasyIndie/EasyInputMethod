@@ -55,10 +55,10 @@ ensure_host() {
     for _ in $(seq 1 12); do
         [ -n "$(host_pid)" ] && return 0
         # 宿主由客户端连接拉起：真的敲一下（随后删掉）才会建立连接。
-        refocus >/dev/null 2>&1 || true
-        osascript -e 'tell application "System Events" to keystroke "a"' >/dev/null 2>&1 || true
+        refocus || exit 98
+        owned_do char a || exit 98
         sleep 0.4
-        osascript -e 'tell application "System Events" to key code 51' >/dev/null 2>&1 || true
+        owned_do key 51 || exit 98
         sleep 0.4
     done
     if [ -z "$(host_pid)" ]; then
@@ -95,7 +95,7 @@ commit_latency() {
     "$waiter" wait "$client" 8000 > "$WORK/lat-$1.tmp" &
     timeout_pid=$!
     sleep 0.02
-    osascript -e 'tell application "System Events" to key code 49' >/dev/null 2>&1 || true
+    owned_do key 49 || exit 98
     wait "$timeout_pid" || return 1
     out=$(cat "$WORK/lat-$1.tmp")
     rm -f "$WORK/lat-$1.tmp"
@@ -114,7 +114,7 @@ compose() {
 one_commit() {
     local attempt=1
     while [ "$attempt" -le 2 ]; do
-        compose || { attempt=$((attempt + 1)); continue; }
+        compose || exit 98
         commit_latency "$1" && return 0
         attempt=$((attempt + 1))
     done
@@ -167,7 +167,7 @@ refocus || exit 98
 one_commit 0 || exit 98
 one_commit 1 || exit 98
 refocus || exit 98
-osascript -e 'tell application "System Events" to keystroke "t" using {option down}' || exit 98
+owned_do option variant || exit 98
 sleep 0.2
 one_commit 2 || exit 98
 i=3
@@ -176,7 +176,7 @@ while [ "$i" -le 8 ]; do
     i=$((i + 1))
 done
 refocus || exit 98
-osascript -e 'tell application "System Events" to keystroke "t" using {option down}' || exit 98
+owned_do option variant || exit 98
 printf '%s' "$(rss_mib)" > "$WORK/rss-after-variant.txt"
 (umask 077; printf true > "$WORK/passed.txt")
 ''',
@@ -261,10 +261,10 @@ while [ "$i" -le 12 ]; do
     i=$((i + 1))
 done
 refocus || exit 98
-osascript -e 'tell application "System Events" to keystroke "," using {option down}' || exit 98
+owned_do option settings || exit 98
 sleep 1.2
-refocus >/dev/null 2>&1 || true
-osascript -e 'tell application "System Events" to keystroke "a" using {option down}' || exit 98
+refocus || exit 98
+owned_do option about || exit 98
 sleep 1.2
 [ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 采样中断：最终没有 trace 文件" >&2; exit 98; }
 chmod 600 "$WORK/trace.jsonl"

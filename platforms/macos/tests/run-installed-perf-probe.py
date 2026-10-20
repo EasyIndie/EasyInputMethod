@@ -81,7 +81,7 @@ while [ "$attempt" -lt 15 ]; do
     "$waiter" wait "$client" 4000 > "$WORK/latency-$attempt.txt" &
     pid=$!
     sleep 0.02
-    osascript -e 'tell application "System Events" to key code 49' || exit 98
+    owned_do key 49 || exit 98
     wait "$pid" || { echo "BLOCKED 第 $attempt 次提交未观察到文本变化" >&2; exit 98; }
     sleep 0.3
 done

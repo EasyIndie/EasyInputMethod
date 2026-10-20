@@ -1,0 +1,24 @@
+{
+  "sourceCommit": "6ed5da1a4d7128378fcab174a180983944cab7bd",
+  "root": "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7",
+  "files": {
+    "executable": {
+      "sha256": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+      "bytes": 7646592
+    },
+    "config": {
+      "sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+      "bytes": 1942
+    },
+    "dictionary": {
+      "sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137",
+      "bytes": 492
+    }
+  },
+  "system": "macOS 27.0.1 arm64",
+  "current": "com.sogou.inputmethod.sogou.pinyin",
+  "productionHostPID": 17339,
+  "explicitHotkeys": 8,
+  "dictionaryLines": 29,
+  "isolatedRun": 39395207876
+}

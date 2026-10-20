@@ -1,0 +1,168 @@
+{
+  "schema": 2,
+  "candidate": {
+    "commit": "8eb872ff9b585d8b769f6fb3784285dcc3d81606",
+    "sha256": "4e9986578fc30828daf5810335a22800e357dab407a304064af1c8b853c12781",
+    "architectures": [
+      "arm64",
+      "x86_64"
+    ],
+    "signature": "developer-id-notarized"
+  },
+  "environment": {
+    "system": "B MacBook-Air / arm64 / macOS 27.0.1",
+    "applications": {
+      "TextEdit": "1.21",
+      "Safari": "27.0.1",
+      "Chrome": "155.0.8059.85",
+      "VSCode": "标准安装路径不存在（未启动、待确认）",
+      "WeChat": "4.1.13",
+      "Terminal": "2.15"
+    }
+  },
+  "cases": [
+    {
+      "id": "resource-isolation",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "state-restoration",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "core-input",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "long-composition",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "undo",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "focus",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "mode-switch",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "sleep-wake",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "accessibility",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "light-dark-layout",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "multi-display",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "imk-performance",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "package-validation",
+      "status": "PASS",
+      "reason": "同一提交正式 universal 与隔离 arm64 CI 公证成功；本机严格签名、公证、stapler、源码/根/架构绑定及 zip 摘要复核通过；正式包未安装",
+      "evidence": [
+        "104-evidence/formal-identity.json",
+        "104-evidence/formal-verification.log",
+        "104-evidence/isolated-identity.json",
+        "104-evidence/isolated-install.log"
+      ]
+    },
+    {
+      "id": "intel-macos13",
+      "status": "BLOCKED",
+      "reason": "新候选 8eb872f 未在 A 机复验；103 的 f74aae7 仅作历史对照",
+      "evidence": []
+    },
+    {
+      "id": "arm64-macos27",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "independent-reproduction",
+      "status": "BLOCKED",
+      "reason": "需独立第三方复现；CI 自复现不替代独立证据",
+      "evidence": []
+    },
+    {
+      "id": "one-person-five-days",
+      "status": "BLOCKED",
+      "reason": "待锁定 RC 后完成五工作日试用",
+      "evidence": []
+    },
+    {
+      "id": "application-TextEdit",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "application-Safari",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "application-Chrome",
+      "status": "BLOCKED",
+      "reason": "按本轮边界不复测；103 记录 Chrome 侧问题，未对新候选宣称通过",
+      "evidence": []
+    },
+    {
+      "id": "application-VSCode",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    },
+    {
+      "id": "application-WeChat",
+      "status": "BLOCKED",
+      "reason": "无隔离草稿，按策略不投递按键",
+      "evidence": []
+    },
+    {
+      "id": "application-Terminal",
+      "status": "BLOCKED",
+      "reason": "等待用户添加隔离源；必要时重新登录后执行 B 机实机探针",
+      "evidence": []
+    }
+  ]
+}

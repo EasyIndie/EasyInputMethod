@@ -75,8 +75,18 @@ owned_do() {
             statement="tell application \"System Events\" to keystroke \"$argument\""
             ;;
         key)
-            case "$argument" in 49|18|53|13|12) ;; *) echo 'BLOCKED 非测试键码' >&2; exit 1 ;; esac
+            case "$argument" in 49|18|53|13|12|51) ;; *) echo 'BLOCKED 非测试键码' >&2; exit 1 ;; esac
             statement="tell application \"System Events\" to key code $argument"
+            ;;
+        option)
+            [ "$OWNED_APP" = TextEdit ] || { echo 'BLOCKED 非TextEdit性能动作' >&2; exit 1; }
+            case "$argument" in
+                settings) argument=, ;;
+                about) argument=a ;;
+                variant) argument=t ;;
+                *) echo 'BLOCKED 非测试快捷键' >&2; exit 1 ;;
+            esac
+            statement="tell application \"System Events\" to keystroke \"$argument\" using {option down}"
             ;;
         undo|address|copy|select-all|mode|source)
             case "$operation" in
@@ -105,6 +115,12 @@ end tell'
             ;;
         *) echo 'BLOCKED 未识别测试动作' >&2; exit 1 ;;
     esac
+    if [ -n "${helper:-}" ] && [ -n "${root:-}" ]; then
+        "$helper" state "$root" | python3 -c 'import json,sys; from pathlib import Path; expected="cn.jokerhub.inputmethod.LampyrisIMKTest." + Path(sys.argv[1]).name.removeprefix("lampyris-imk-") + ".default"; sys.exit(0 if json.load(sys.stdin)["current"] == expected else 3)' "$root" || {
+            echo 'BLOCKED 隔离输入源已变；停止验收' >&2
+            exit 1
+        }
+    fi
     case "$operation" in
         address|read|clear) ;;
         *) text_guard="tell application \"System Events\" to tell process \"$OWNED_APP\"
