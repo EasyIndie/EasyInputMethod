@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 14:45 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 15:10 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -47,7 +47,7 @@
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
 - **重新登录后环境已重建**：私有根同 UUID 重建（0700+owner）、`source-state`/`hud-probe`/`ax-text-wait` 重编译、
   `selection-state.json` 重建（原源 sogou）；隔离宿主按需启动仍不正常（见 §4）。
-- **内嵌计时已打通（ADR-218）**：公证隔离包 + 根内 `perf-trace.enabled` + 「open → 切源 → 发键」顺序，
+- **内嵌计时已打通（ADR-218）**：采集入口脚本化为 `run-installed-perf-trace.sh`：公证隔离包 + 根内 `perf-trace.enabled` + 「open → 切源 → 发键」顺序，
   两次采到 n=45：**total p50 14.1–14.9 ms / p95 20.6–23.5 ms**，engine p50 1.0 ms，面板 42/165 ms。
   结论：引擎远低于 16 ms，**端到端 p95 超 16 ms**（瓶颈在 IMK 客户端回写与候选窗更新）。
   注意：ad-hoc 本地构建会被 Gatekeeper 拦（`CoreServicesUIAgent`），**必须用公证包**采样。
@@ -74,10 +74,9 @@
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. 报告 103 剩余 BLOCKED 全部是外部/结构性：`application-Chrome`（Chrome 侧）、`arm64-macos27`（B 机）、
    `independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
-4. IT-12 剩余：矩阵探针的 `trace` 场景仍偶发 BLOCK（宿主有时不接客）。**可用组合已确认**：
-   CI 公证隔离包（当前已装 `b127d6f` 版本）+ 根内 `perf-trace.enabled` + 顺序「`open` → 切一次源 → 发键」，
-   已两次采到 n=45：total p50 14.1/14.9 ms、p95 20.6/23.5 ms、engine p50 1.0 ms、面板 42/165 ms。
-   下一步：给 `trace` 场景补「open 后等待/重试」收敛，或继续用脚本化手工顺序采集。
+4. IT-12 剩余：内嵌计时采样入口已脚本化（`platforms/macos/tests/run-installed-perf-trace.sh`，3 轮重试 + 候选窗探测，
+   失败不写假样本）。**但同一会话反复 pkill 宿主后系统会停止按需拉起/接管**，所以采样要在「新登录 + 少杀进程」的会话里做；
+   矩阵探针的 `trace` 场景同样会 BLOCK（只报 BLOCK，不给数字）。已有两次成功数据见报告 103。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界

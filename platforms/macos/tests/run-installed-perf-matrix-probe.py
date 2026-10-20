@@ -200,22 +200,55 @@ printf '%s' "$(rss_mib)" > "$WORK/rss-after-wake.txt"
 (umask 077; printf true > "$WORK/passed.txt")
 ''',
     'trace': r'''
-# 内嵌计时（ADR-218）：根内 perf-trace.enabled 指向输出文件；宿主启动时读取。
-# 时序很关键：open 拉起公证包 → 切一次源让客户端绑定该宿主 → 再发键（顺序反了宿主不接客）。
+# 内嵌计时（ADR-218）：根内 perf-trace.enabled 指向输出文件，宿主启动时读取。
+# 已知可用顺序：open 拉起公证包 → 等它完成注册 → 切一次输入源让客户端绑定 → 再发键。
+# 宿主偶尔不接客（同一顺序下也会发生），因此先做「一按键探测」，最多重试 3 轮，重试有界且如实记录。
 rm -f "$root/perf-trace.jsonl" "$WORK/trace.jsonl"
 printf '%s' "$WORK/trace.jsonl" > "$root/perf-trace.enabled"
 chmod 600 "$root/perf-trace.enabled"
-stop_host
 uuid="${root##*lampyris-imk-}"
-open "$HOME/Library/Input Methods/LampyrisIMKTest-$uuid.app" 2>/dev/null || true
-sleep 2.5
-"$helper" restore-original "$root" > /dev/null 2>&1 || true
-sleep 0.4
-select_owned
-sleep 1.0
-ensure_host || { echo "BLOCKED 宿主未启动" >&2; exit 98; }
+app="$HOME/Library/Input Methods/LampyrisIMKTest-$uuid.app"
+
+# 「接客」的判据是候选窗真的出现（只看 trace 会被 passThrough 误导）：给新宿主一个全新的文档/输入上下文。
+serving() {
+    "$hud" windows "$root" 2>/dev/null | python3 -c '
+import json,sys
+data=json.load(sys.stdin)
+print("1" if any(w.get("onScreen") and w["height"]>=60 and w["width"]>=200 for w in data["windows"]) else "")' 2>/dev/null | grep -q 1
+}
+bind_and_probe() {
+    stop_host
+    open "$app" 2>/dev/null || return 1
+    sleep 3
+    "$helper" restore-original "$root" > /dev/null 2>&1 || true
+    sleep 0.5
+    select_owned
+    sleep 1.0
+    owned_cleanup > /dev/null 2>&1 || true
+    owned_textedit_create || return 1
+    refocus || return 1
+    owned_do char w || return 1
+    sleep 0.4
+    if serving; then
+        refocus || return 1
+        owned_do key 49 || return 1
+        sleep 0.5
+        return 0
+    fi
+    return 1
+}
+
+attempt=0
+bound=""
+while [ "$attempt" -lt 3 ]; do
+    attempt=$((attempt + 1))
+    if bind_and_probe; then bound=1; break; fi
+done
+printf '%s' "$attempt" > "$WORK/trace-attempts.txt"
+[ -n "$bound" ] || { echo "BLOCKED 宿主未接客：3 轮尝试都没有内嵌计时样本" >&2; exit 98; }
+
 i=0
-while [ "$i" -le 14 ]; do
+while [ "$i" -le 12 ]; do
     refocus || exit 98
     owned_do char w || exit 98
     sleep 0.12
@@ -233,7 +266,7 @@ sleep 1.2
 refocus >/dev/null 2>&1 || true
 osascript -e 'tell application "System Events" to keystroke "a" using {option down}' || exit 98
 sleep 1.2
-[ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 宿主未产生内嵌计时样本（宿主可能没接客）" >&2; exit 98; }
+[ -s "$WORK/trace.jsonl" ] || { echo "BLOCKED 采样中断：最终没有 trace 文件" >&2; exit 98; }
 chmod 600 "$WORK/trace.jsonl"
 lines=$(wc -l < "$WORK/trace.jsonl" | tr -d ' ')
 [ "$lines" -ge 30 ] || { echo "BLOCKED 内嵌计时样本过少: $lines" >&2; exit 98; }
