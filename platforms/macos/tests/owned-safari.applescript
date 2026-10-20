@@ -5,11 +5,53 @@ on run argv
     with timeout of 5 seconds
         tell application "Safari"
             if operation is "create" then
+                -- Safari 18.6 不再给 AppleScript 投递的 file:// 授予沙箱扩展（报告 102 §5.3），
+                -- 所以页面改由 LaunchServices 打开；接受的目标窗口必须是新建的那个或另一个新窗口。
                 set previousIDs to id of every window
-                make new document with properties {URL:fixtureURL}
+                make new document
                 set targetWindow to front window
                 set targetID to id of targetWindow
                 if previousIDs contains targetID then error "BLOCKED 未取得独有窗口"
+                do shell script "/usr/bin/open -a Safari " & quoted form of fixtureURL
+                set landedID to 0
+                repeat 60 times
+                    repeat with candidate in windows
+                        set candidateID to id of candidate
+                        try
+                            if (URL of current tab of window id candidateID) is fixtureURL then
+                                if (candidateID is targetID) or (previousIDs does not contain candidateID) then
+                                    set landedID to candidateID
+                                    exit repeat
+                                end if
+                            end if
+                        end try
+                    end repeat
+                    if landedID is not 0 then exit repeat
+                    delay 0.1
+                end repeat
+                if landedID is 0 then error "BLOCKED 未取得独有窗口"
+                if landedID is not targetID then
+                    -- 页面落到了另一个新窗口：关掉我们自己多建的空窗口，不留无主窗口。
+                    try
+                        close (window id targetID)
+                    end try
+                    set targetID to landedID
+                end if
+                set targetWindow to window id targetID
+                -- LaunchServices 在已有空窗口/空标签时会在其中新开一个标签；只保留 fixture 标签。
+                if (count of tabs of targetWindow) > 1 then
+                    repeat with tabIndex from (count of tabs of targetWindow) to 1 by -1
+                        set tabURL to missing value
+                        try
+                            set tabURL to URL of tab tabIndex of targetWindow
+                        end try
+                        if tabURL is not fixtureURL then close tab tabIndex of targetWindow
+                    end repeat
+                    repeat 20 times
+                        if (count of tabs of targetWindow) is 1 then exit repeat
+                        delay 0.1
+                    end repeat
+                end if
             else
                 set targetID to (item 3 of argv) as integer
                 if not (exists window id targetID) then
