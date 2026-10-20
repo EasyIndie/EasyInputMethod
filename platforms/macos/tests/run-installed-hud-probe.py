@@ -31,10 +31,29 @@ trap 'exit 143' TERM
 "$helper" select-owned "$root" > "$WORK/selected.json" || exit 98
 owned_textedit_create || exit 98
 osascript -e 'with timeout of 5 seconds' -e 'tell application "TextEdit" to activate' -e 'end timeout' || exit 98
-sleep 1.2
+# 窗口刚建好时 TextEdit 可能还没拿到键盘焦点（AXFocusedUIElement 为 missing value）：轮询再断言。
+focused=""
+for _ in 1 2 3 4 5 6 7 8 9 10; do
+    osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1 || true
+    sleep 0.3
+    focused=$(osascript -e 'tell application "System Events" to tell process "TextEdit" to get value of attribute "AXFocusedUIElement"' 2>/dev/null || true)
+    [ "$focused" != "missing value" ] && [ -n "$focused" ] && break
+done
+[ "$focused" != "missing value" ] && [ -n "$focused" ] || { echo "BLOCKED TextEdit 未取得键盘焦点" >&2; exit 98; }
 [ -z "$(owned_do read)" ] || exit 98
 sleep 0.4
+refocus() {
+    osascript -e 'tell application "TextEdit" to activate' >/dev/null 2>&1 || true
+    local value=""
+    for _ in 1 2 3 4 5 6; do
+        sleep 0.2
+        value=$(osascript -e 'tell application "System Events" to tell process "TextEdit" to get value of attribute "AXFocusedUIElement"' 2>/dev/null || true)
+        [ "$value" != "missing value" ] && [ -n "$value" ] && return 0
+    done
+    return 1
+}
 "$hud" windows "$root" > "$WORK/baseline.json" || exit 98
+refocus || { echo "BLOCKED TextEdit 未取得键盘焦点" >&2; exit 98; }
 # 起点固定在内建屏（确定性）：先按 bounds 把测试窗口挪过去。
 move_window() {
     osascript -e "with timeout of 5 seconds" -e "tell application \"TextEdit\"
@@ -54,6 +73,7 @@ sleep 0.5
 osascript -e 'tell application "System Events" to tell process "TextEdit" to get {position, size} of window 1' > "$WORK/client-window.txt" 2>&1 || true
 
 compose() {
+    refocus || { echo "BLOCKED 组合前失去焦点" >&2; exit 98; }
     owned_do key 13 || exit 98
     sleep 0.2
     owned_do key 12 || exit 98
