@@ -111,6 +111,9 @@ print("%d,%d,%d,%d" % (w["x"], w["y"], w["width"], w["height"]))' "$1") || retur
     /usr/sbin/screencapture -x -o -R "$rect" "$2"
 }
 
+# 明确亮色起点；cleanup恢复DARK_BEFORE，包括失败路径。
+osascript -e 'tell application "System Events" to tell appearance preferences to set dark mode to false' || exit 98
+sleep 1.5
 compose
 "$hud" windows "$root" > "$WORK/candidate-0.json" || exit 98
 hud_toggle

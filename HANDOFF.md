@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-20 / Codex（GPT-6）；用户要求继续可验项，同候选补验中，等待录屏权限。
-- main基线5d45c94；产品候选固定8eb872f，ADR-223/224仅修复验收窗口及Safari AX就绪等待。
+- main基线cbb2b45；产品候选固定8eb872f，ADR-223/224仅修复验收窗口及Safari AX就绪等待。
 - 报告104：pass14 / fail0 / blocked9；新增模式循环及Safari四路径PASS，三项性能矩阵已完成。
 - 最近门禁以提交前make verify结果为准；本轮TextEdit/Safari离线9/8例通过。
 
@@ -34,7 +34,7 @@
 
 ## 4. 下一步（断点）
 
-1. 已询问录屏授权，用户尚未确认；只读复查capture-preflight，授权true后跑单屏run-installed-hud-probe.py；不重复已PASS批次。
+1. 用户要求继续后，录屏预检与官方请求API均false；已请求用户开启TCC，尚未确认。原外观暗色，ADR-225已修复探针显式亮色起点/退出恢复；授权true后跑单屏run-installed-hud-probe.py，不重复已PASS批次。
 2. 本轮私有根与已装隔离包恢复为报告104原路径，selection journal0600原源ABC；所有按键仍需精确身份/焦点/源守卫。
 3. 补验结束后按TIS includeAllInstalled=false及激活菜单确认移除；不要把全部已注册列表旧模式enabled误作有效启用。还原并归档，再更新报告、make verify、提交推送。
 
@@ -46,6 +46,8 @@
 - 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，本轮另恢复安装副本及私有根以补验。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-20 / Codex：继续后录屏预检和官方请求均false，未截图或发键，等待用户TCC授权。发现原外观暗色会让探针两张图均暗色，ADR-225显式亮色起点并沿用trap恢复；HUD专项7例通过，报告14/9不变。
 
 - 2026-10-20 / Codex：继续可验项，恢复同公证包及隔离根，用户重新添加源；ADR-223/224修复激活/窗口与AX文本框就绪，模式循环及Safari四路径PASS。简繁/冷启动/1万条词库AX矩阵PASS，宿主基线创建守卫停止；录屏预检false待授权，报告14/9，真实数据未变。
 
@@ -60,5 +62,3 @@
 - 2026-10-20 / Codex：用户开启VoiceOver后无障碍探针PASS（完整AX面/焦点/原源与真实数据恢复）；报告104现pass10/blocked13。已提示关闭VO、保存工作，等待用户确认开始一次睡眠唤醒；尚未执行睡眠。
 
 - 2026-10-20 / Codex：B重启后源可用，私有根重建/ABC恢复journal已建；TextEdit/Terminal四路径及长组合/撤销PASS，内嵌trace44样本total13.4/21.2ms、engine0.6/1.8ms（p50/p95）。TextEdit冷启动与窗口复用兼容按ADR-221修复；VSCode逐批守卫ADR-222本地回归9例通过但应用未装；单屏HUD截图BLOCKED（几何在屏），矩阵AX等待BLOCKED；报告104现pass10/blocked13，arm64项PASS。VO/睡眠待用户配合；修改与证据已落盘，真实数据摘要未变。
-
-- 2026-10-20 / Codex：探针修复 `8eb872f` 已推送；同提交 arm64 公证隔离包安装成功（strict/signature/stapler/架构与绑定均通过），等待用户添加独有源/必要时重新登录，未发键。正式 universal 构建已成功；ADR-220 补齐性能逐动作守卫及源检查，相关回归与 make verify 通过。真实执行/config/词库未改，当前源按用户选择保留 ABC；报告 104 与证据已落盘。

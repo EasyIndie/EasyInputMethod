@@ -1,0 +1,9 @@
+{
+  "checkedAt": "2026-10-20T22:11:28.103442+08:00",
+  "CGPreflightScreenCaptureAccess": false,
+  "CGRequestScreenCaptureAccess": false,
+  "originalDarkMode": true,
+  "VSCodeInstalled": false,
+  "source": "com.apple.keylayout.ABC",
+  "action": "No capture or injected keys attempted; waiting for user TCC authorization"
+}
