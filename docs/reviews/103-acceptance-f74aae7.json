@@ -115,9 +115,10 @@
     {
       "id": "imk-performance",
       "status": "PASS",
-      "reason": "宿主级基线已采集（设备 A，隔离宿主）：提交时延 n=15，p50 217ms / p95 250ms / max 276ms，其中 osascript 发送开销 p50 115ms（净时延约 100–135ms）；空闲 CPU 均值 0.3%（6 次采样）；宿主 RSS 29.5–29.7 MiB。方法为 AX 轮询（含客户端更新，不含 IMK dispatch 内部时延）；IT-12 的冷启动/满词库/面板/唤醒矩阵仍未覆盖，未据此宣称达标",
+      "reason": "宿主级基线 + IT-12 矩阵采样（设备 A，隔离宿主，AX 轮询上界）：提交时延基线 p50 217ms/p95 250ms（osascript 开销 p50 115ms）；冷启动样本 197ms（暖机对照 216ms，启动后 RSS 11.1MiB）；满词库（1 万条 / 1.97MB 合成词库）p50 173ms/p95 209ms、RSS 11.0MiB；首次简繁切换后 p50 225ms（含一处 480ms 离群，未定因）；睡眠唤醒前 29.4MiB → 唤醒后 29.5MiB，唤醒后首批提交 732/381/298/394ms 后回落到 ~225–315ms；空闲 CPU 0.3%。面板维度 BLOCKED（菜单 AX 树不含本宿主菜单项）。方法为 AX 轮询（含客户端更新、不含 IMK dispatch 内部时延），未据此宣称达标",
       "evidence": [
-        "103-evidence/103-perf-host.json"
+        "103-evidence/103-perf-host.json",
+        "103-evidence/103-perf-matrix.json"
       ]
     },
     {

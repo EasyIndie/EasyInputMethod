@@ -32,6 +32,11 @@
   候选 599×70 与 HUD 96×36 均 `onScreen=true`、跟随客户端窗口换屏、暗色下 HUD 可见、前台始终是 TextEdit：
   `103-evidence/103-hud-probe.json` 与三张截图。
 - 离屏逐场景验收 67 个观测全绿（绑定当前源码树摘要）：`103-evidence/103-local-acceptance.txt`。
+- IT-12 矩阵（`run-installed-perf-matrix-probe.py`，AX 轮询上界）：冷启动 197ms（暖机 216ms，启动后 RSS 11.1MiB）；
+  满词库 1 万条/1.97MB → p50 173ms/p95 209ms、RSS 11.0MiB；首次简繁切换后 p50 225ms（一处 480ms 离群未定因）；
+  睡眠唤醒 RSS 29.4→29.5MiB、唤醒后首批提交 732/381/298/394ms 再回落 ~225–315ms；面板维度 BLOCKED（菜单 AX 树
+  不含本宿主菜单项）：`103-evidence/103-perf-matrix.json`。过程中修掉两个工具缺陷（fixture 词库权限须 0600、
+  宿主按需启动偶发失效时的 open 兜底）。
 - 宿主级性能基线（`run-installed-perf-probe.py`）：提交时延 n=15，p50 217ms / p95 250ms / max 276ms，
   osascript 开销 p50 115ms；空闲 CPU 0.3%；宿主 RSS 29.5–29.7 MiB。方法为 AX 轮询（含客户端更新、不含 IMK dispatch），
   IT-12 的冷启动/满词库/面板/唤醒矩阵仍未覆盖：`103-evidence/103-perf-host.json`。
@@ -55,5 +60,5 @@
 |---|---|
 | `application-Chrome` | **Chrome 侧问题**：页面文本框不使用任何输入法 —— 搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（fixture 用标签页标题自报），地址栏等原生控件正常；同机 VS Code（Chromium/Electron）正常。先选源再重启 Chrome 仍复现。探针已就绪，待 Chrome 修复/换版本复测 |
 | `application-VSCode` | ✅ 四路径 PASS：自有临时文件「组合期不落盘 → 空格提交 → ⌘S 落盘 = 你seed」 |
-| `imk-performance` | 需宿主级 IMK 延迟/内存/唤醒采集（IT-12） |
+| `imk-performance` | 基线+矩阵已采集；面板维度与 in-process 计时待补 |
 | `arm64-macos27` / `independent-reproduction` / `one-person-five-days` / `application-WeChat` | 结构性阻断（B 机 / 第三方 / 5 日 / 微信无隔离草稿） |

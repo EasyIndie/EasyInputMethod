@@ -1,0 +1,147 @@
+{
+  "scope": "IT-12 matrix on device A with the isolated host; latency via AX polling (client update included, IMK dispatch internals excluded); no product threshold claimed",
+  "device": "A / Intel / macOS 13.7.8",
+  "samples": {
+    "cold": {
+      "passed": true,
+      "latenciesMs": {
+        "count": 2,
+        "p50": 196.8,
+        "p95": 216.4,
+        "max": 216.4,
+        "min": 196.8,
+        "mean": 206.6
+      },
+      "samplesMs": [
+        216.4,
+        196.8
+      ],
+      "rssMiB": {
+        "after-cold": 11.1
+      },
+      "osascriptOverheadMs": {
+        "count": 3,
+        "p50": 96.9,
+        "p95": 99.3,
+        "max": 99.3,
+        "min": 88.1,
+        "mean": 94.77
+      },
+      "evidence": "platforms/macos/build/imk12-cold-26pg3asg"
+    },
+    "dictionary": {
+      "passed": true,
+      "latenciesMs": {
+        "count": 10,
+        "p50": 172.9,
+        "p95": 208.9,
+        "max": 208.9,
+        "min": 170.0,
+        "mean": 180.26
+      },
+      "samplesMs": [
+        208.9,
+        170.0,
+        178.7,
+        184.5,
+        172.8,
+        172.9,
+        196.5,
+        172.9,
+        171.7,
+        173.7
+      ],
+      "rssMiB": {
+        "with-dictionary": 11.0
+      },
+      "osascriptOverheadMs": {
+        "count": 3,
+        "p50": 76.1,
+        "p95": 83.5,
+        "max": 83.5,
+        "min": 69.7,
+        "mean": 76.43
+      },
+      "synthetic": "合成容量词库：1978920 字节 / 10000条，无真实用户数据\n",
+      "evidence": "platforms/macos/build/imk12-dictionary-7pvfntbf"
+    },
+    "variant": {
+      "passed": true,
+      "latenciesMs": {
+        "count": 9,
+        "p50": 225.2,
+        "p95": 479.7,
+        "max": 479.7,
+        "min": 211.2,
+        "mean": 257.57
+      },
+      "samplesMs": [
+        225.2,
+        220.1,
+        211.7,
+        215.9,
+        211.2,
+        241.7,
+        287.0,
+        479.7,
+        225.6
+      ],
+      "rssMiB": {
+        "after-variant": 31.3
+      },
+      "osascriptOverheadMs": {
+        "count": 3,
+        "p50": 97.0,
+        "p95": 143.8,
+        "max": 143.8,
+        "min": 77.2,
+        "mean": 106.0
+      },
+      "evidence": "platforms/macos/build/imk12-variant-tkwb8huf"
+    },
+    "wake": {
+      "passed": true,
+      "latenciesMs": {
+        "count": 14,
+        "p50": 266.1,
+        "p95": 394.5,
+        "max": 732.4,
+        "min": 224.3,
+        "mean": 312.49
+      },
+      "samplesMs": [
+        732.4,
+        381.3,
+        298.3,
+        394.5,
+        234.9,
+        225.9,
+        237.4,
+        316.9,
+        266.1,
+        313.3,
+        238.5,
+        231.1,
+        224.3,
+        279.9
+      ],
+      "rssMiB": {
+        "after-wake": 29.5,
+        "before-sleep": 29.4
+      },
+      "osascriptOverheadMs": {
+        "count": 3,
+        "p50": 108.9,
+        "p95": 130.0,
+        "max": 130.0,
+        "min": 85.2,
+        "mean": 108.03
+      },
+      "evidence": "platforms/macos/build/imk12-wake-_p993abd"
+    }
+  },
+  "panels": {
+    "status": "BLOCKED",
+    "reason": "输入法菜单的 AX 树只暴露系统项（仿射到 TextInputMenuAgent），本宿主的设置/关于菜单项不在其中；面板时延需另一条驱动路径（例如在宿主内埋点或预览应用），本轮未采集"
+  }
+}

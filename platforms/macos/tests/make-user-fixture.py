@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """Generate synthetic capacity data only into a new explicit test file."""
+import os
 import sys
 from pathlib import Path
 path = Path(sys.argv[1])
-with path.open('x', encoding='utf-8') as output:
+# 宿主对数据文件要求 owner-only（0600）；用默认 umask 会被自己的所有权守卫拒绝。
+descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+with os.fdopen(descriptor, 'w', encoding='utf-8') as output:
     output.write('# lampyris-user-dictionary v1\n')
     for index in range(10000):
         code = 'a' + ''.join(chr(97 + (index // (26 ** power)) % 26) for power in [2, 1, 0])

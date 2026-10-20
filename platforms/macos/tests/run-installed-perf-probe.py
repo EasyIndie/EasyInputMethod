@@ -45,7 +45,8 @@ refocus() {
     return 1
 }
 refocus || exit 98
-host=$(pgrep -f "LampyrisIMKTest-.*MacOS/LampyrisIMKTest" | head -1)
+# 精确进程名匹配：`pgrep -f` 会命中探针自己的 bash 命令行。
+host=$(pgrep -x LampyrisIMKTest | head -1)
 client=$(pgrep -f "TextEdit.app/Contents/MacOS/TextEdit" | head -1)
 [ -n "$host" ] && [ -n "$client" ] || exit 98
 printf '%s' "$host" > "$WORK/host-pid.txt"

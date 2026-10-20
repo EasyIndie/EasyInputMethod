@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 12:40 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 13:05 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
@@ -45,8 +45,9 @@
   搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
   地址栏等原生控件正常；同机 VS Code（Chromium/Electron）**正常**（四路径 PASS）。已排除"输入上下文陈旧"（先选源再重启仍复现）。
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
-- **`imk-performance` 基线已采集（PASS）**：`run-installed-perf-probe.py`（AX 轮询时延 + RSS + 空闲 CPU，
-  单独报告 osascript 开销）；IT-12 完整矩阵仍未覆盖。
+- **`imk-performance` 基线与 IT-12 矩阵已采集（PASS）**：`run-installed-perf-probe.py` + `run-installed-perf-matrix-probe.py`
+  （冷启动/满词库/首次简繁/唤醒；面板维度 BLOCKED——菜单 AX 树不含本宿主菜单项）。
+  过程修复：`make-user-fixture.py` 写 0600（默认 0644 会被宿主所有权守卫拒绝启动）、宿主按需启动偶发失效时 open 兜底。
 - **`accessibility` 已 PASS**（VoiceOver 开启下）：候选面板 AX 面完整 + 状态切换后客户端焦点不被夺；
   探针 `run-installed-accessibility-probe.py`（未运行时直接 BLOCK）。
 - **`sleep-wake` 已 PASS**：`run-installed-sleep-wake-probe.py`（判据＝睡前/唤醒后各一次 TextEdit 探针）；
@@ -67,7 +68,7 @@
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. 报告 103 剩余 BLOCKED 全部是外部/结构性：`application-Chrome`（Chrome 侧）、`arm64-macos27`（B 机）、
    `independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
-4. IT-12 完整矩阵（冷启动/满词库/简繁回切/面板/唤醒）仍待补，未纳入报告 103 的 `imk-performance` 结论。
+4. IT-12 剩余：面板维度与「按键→候选 <16ms」的 in-process 计时（后者需 ADR 加测试钩子）。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
