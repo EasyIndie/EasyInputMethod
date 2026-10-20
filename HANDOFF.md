@@ -45,9 +45,9 @@
   搜狗、生产 Lampyris、隔离包三种源下字母都原样落进页面（file:// 与 data: 页面都复现，fixture 用标题通道自报）；
   地址栏等原生控件正常；同机 VS Code（Chromium/Electron）**正常**（四路径 PASS）。已排除"输入上下文陈旧"（先选源再重启仍复现）。
 - **`application-VSCode` 已 PASS**：探针 `run-installed-vscode-probe.py`（自有临时文件 + ⌘S 落盘读回），四路径全过。
-- **内嵌计时钩子（ADR-218）**：`PerfTrace` 已实现并编入宿主（默认关闭、不记录输入内容、0600 写入），
-  env 路径手动测得 total 18.7/22.8/9.5 ms（engine 0.11/0.31/1.73 ms）——**这是唯一一次成功样本**，
-  标记文件路径尚未验证，故未写入验收结论。
+- **内嵌计时钩子（ADR-218）**：`PerfTrace` 已实现并编入宿主（默认关闭、不记录输入内容、0600 写入）。
+  唯一一次成功样本：total 18.7/22.8/9.5 ms（engine 0.11/0.31/1.73 ms）；可重复采样受「宿主按需启动失效 / 手工启动不接管连接」阻塞，
+  需重新登录后按 ADR-218 的流程补采。诊断完成后已恢复干净源码并重装（无调试日志）。
 - **`imk-performance` 基线与 IT-12 矩阵已采集（PASS）**：`run-installed-perf-probe.py` + `run-installed-perf-matrix-probe.py`
   （冷启动/满词库/首次简繁/唤醒；面板维度 BLOCKED——菜单 AX 树不含本宿主菜单项）。
   过程修复：`make-user-fixture.py` 写 0600（默认 0644 会被宿主所有权守卫拒绝启动）、宿主按需启动偶发失效时 open 兜底。
@@ -71,9 +71,10 @@
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. 报告 103 剩余 BLOCKED 全部是外部/结构性：`application-Chrome`（Chrome 侧）、`arm64-macos27`（B 机）、
    `independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
-4. IT-12 剩余：**内嵌计时钩子接线**（ADR-218 已写、`PerfTrace` 已实现并编入宿主；env 路径有一次 3 样本成功：
-   total 18.7/22.8/9.5 ms、engine 0.11/0.31/1.73 ms，但 `perf-trace.enabled` 标记路径尚未端到端生效，
-   `trace` 场景现在会如实 BLOCK）；面板维度同样待接线后用 `{panel,totalUs}` 采样。
+4. IT-12 剩余：**内嵌计时采样**。钩子已实现并编入宿主（ADR-218），标记路径已确认「宿主启动时读到了标记并启用」
+   （`LAMPYRIS-PERF enabled` 日志），但**手工启动的宿主不接管客户端连接**，而反复 SIGTERM 后 macOS 停止按需启动宿主。
+   下一步：**重新登录**后按 `launchctl setenv LAMPYRIS_PERF_TRACE=<file>` → 正常切输入源（系统拉起宿主）→ 采样 →
+   `launchctl unsetenv`；面板用 `{panel,totalUs}` 同法采集。唯一一次成功样本：total 18.7/22.8/9.5 ms。
 3. **B 机（arm64）**复验仍缺：需 B 上出 arm64 隔离包（CI `arch=arm64`）并按 ADR-130/131 重新登录后添加输入源。
 
 ## 5. 授权与边界
@@ -87,8 +88,8 @@
 
 ## 9. 会话日志
 
-- 2026-10-20 / pi：新增内嵌计时钩子（ADR-218，`PerfTrace` + 测试入口标记）；env 路径一次成功样本 18.7/22.8/9.5 ms，
-  标记路径接线仍未生效 → `trace` 场景如实 BLOCK，未用于门禁结论。
+- 2026-10-20 / pi：内嵌计时钩子（ADR-218）接线诊断：标记已被宿主读到并启用（日志可证），但手工宿主不接管客户端、
+  反复 SIGTERM 后系统不再按需启动 → 可重复采样需重新登录后按 ADR-218 流程；`trace` 场景如实 BLOCK。
 - 2026-10-20 / pi：宿主级性能基线 PASS（新探针 `run-installed-perf-probe.py` + `ax-text-wait`）；报告 103 → pass 18 / blocked 5。
 - 2026-10-20 / pi：无障碍 PASS（VoiceOver AX 面 + 焦点保持）；报告 103 → pass 17 / blocked 6。
 - 2026-10-20 / pi：睡眠唤醒 PASS（新增 `run-installed-sleep-wake-probe.py`）；顺手把 TextEdit 探针的焦点守卫改成轮询到 AXTextArea，
