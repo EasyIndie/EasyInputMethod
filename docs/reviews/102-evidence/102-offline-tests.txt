@@ -1,0 +1,39 @@
+# 报告 102：设备 A 离线回归（2026-10-20 09:0x，Swift 5.8.1 修复后）
+
+- 结果：`passed=True`，文件 32 个，用例 122 个，失败 0
+- 命令：`PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py`
+
+## 逐文件
+
+- PASS `platforms/macos/tests/test-acceptance-results.py` (10 用例, 0.338s)
+- PASS `platforms/macos/tests/test-appearance-contract.py` (1 用例, 10.895s)
+- PASS `platforms/macos/tests/test-build-metadata.py` (4 用例, 0.183s)
+- PASS `platforms/macos/tests/test-candidate-presentation.py` (1 用例, 8.633s)
+- PASS `platforms/macos/tests/test-composition-navigation.py` (1 用例, 7.919s)
+- PASS `platforms/macos/tests/test-controller-menu.py` (1 用例, 23.947s)
+- PASS `platforms/macos/tests/test-fixture-guard.py` (5 用例, 2.956s)
+- PASS `platforms/macos/tests/test-formal-profile-guard.py` (9 用例, 0.297s)
+- PASS `platforms/macos/tests/test-guarded-ax.py` (1 用例, 4.324s)
+- PASS `platforms/macos/tests/test-input-menu.py` (1 用例, 2.909s)
+- PASS `platforms/macos/tests/test-install.py` (5 用例, 0.405s)
+- PASS `platforms/macos/tests/test-installed-safari-probe.py` (8 用例, 0.237s)
+- PASS `platforms/macos/tests/test-installed-terminal-probe.py` (2 用例, 0.24s)
+- PASS `platforms/macos/tests/test-installed-textedit-probe.py` (8 用例, 2.526s)
+- PASS `platforms/macos/tests/test-isolated-imk.py` (6 用例, 0.24s)
+- PASS `platforms/macos/tests/test-isolated-source-probe.py` (6 用例, 0.245s)
+- PASS `platforms/macos/tests/test-local-acceptance.py` (10 用例, 1.363s)
+- PASS `platforms/macos/tests/test-offline-reporting.py` (2 用例, 0.284s)
+- PASS `platforms/macos/tests/test-owned-probe.py` (4 用例, 0.336s)
+- PASS `platforms/macos/tests/test-owned-resources.py` (7 用例, 0.825s)
+- PASS `platforms/macos/tests/test-panel-gate.py` (1 用例, 0.131s)
+- PASS `platforms/macos/tests/test-physical-source-probe.py` (3 用例, 0.173s)
+- PASS `platforms/macos/tests/test-prepare-imk-acceptance.py` (3 用例, 0.181s)
+- PASS `platforms/macos/tests/test-preview-menu.py` (1 用例, 11.131s)
+- PASS `platforms/macos/tests/test-settings-presentation.py` (1 用例, 16.433s)
+- PASS `platforms/macos/tests/test-terminal-input-sink.py` (4 用例, 1.624s)
+- PASS `platforms/macos/tests/test-terminal-ownership.py` (1 用例, 0.131s)
+- PASS `platforms/macos/tests/test-tools-presentation.py` (1 用例, 12.728s)
+- PASS `platforms/macos/tests/test-wubi-learning.py` (1 用例, 16.657s)
+- PASS `packaging/macos/tests/test-ci-sign.py` (None 用例, 1.296s)
+- PASS `packaging/macos/tests/test-isolated-ci.py` (3 用例, 0.195s)
+- PASS `packaging/macos/tests/test-validate-release.py` (11 用例, 0.288s)

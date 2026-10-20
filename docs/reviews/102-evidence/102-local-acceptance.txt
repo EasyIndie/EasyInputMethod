@@ -1,0 +1,28 @@
+# 报告 102：设备 A 本地逐场景验收（离屏，绑定当前源码树）
+
+- 结果：`local_result=PASS`；场景 67 个；产物 90 个
+- 产品源码摘要：`4757a74973d40ef9d7ae33eacbfaeb45e2951ed356220d04fe34a0e3143d76f0`（收尾摘要一致：`4757a74973d40ef9d7ae33eacbfaeb45e2951ed356220d04fe34a0e3143d76f0`）
+- 环境：macOS-13.7.8-x86_64-i386-64bit · macOS 13.7.8 · Python 3.9.6
+- 运行目录（本地，不入库）：`platforms/macos/build/local-acceptance/run-zi4gen3u`
+
+## 套件
+
+- `menu-view`（test-input-menu.py）：PASS，4 例，2.53s
+- `menu`（test-preview-menu.py）：PASS，12 例，9.366s
+- `settings`（test-settings-presentation.py）：PASS，10 例，18.888s
+- `candidate`（test-candidate-presentation.py）：PASS，15 例，10.115s
+- `tools`（test-tools-presentation.py）：PASS，12 例，12.983s
+- `learning`（test-wubi-learning.py）：PASS，14 例，15.349s
+
+## 场景 ID
+
+- menu-view: menu-view.state, menu-view.structure, menu-view.cycle, menu-view.copy
+- menu: menu.parent-cycle, menu.cycle-order, menu.same-mode, menu.change-mode, menu.states, menu.external-settings, menu.shortcut-refresh, menu.shortcut-event, menu.write-failure, menu.recovery, menu.routes, menu.dictionary
+- settings: settings.groups, settings.count, settings.shortcuts, settings.shortcut-rebind, settings.descriptions, settings.appearances, settings.theme, settings.failure, settings.dictionary-session, settings.reopen
+- candidate: candidate.body, candidate.ax-selection, candidate.paging, candidate.padding, candidate.page-centres, candidate.warning, candidate.long, candidate.glyph-display, candidate.glyph-commit, candidate.stale, candidate.status, candidate.hud, candidate.hud-position, candidate.hud-source, paths.support-dir-override
+- tools: tools.form.light.add, tools.form.light.delete, tools.about.light, tools.link-fallback.light, tools.link-success.light, tools.form.dark.add, tools.form.dark.delete, tools.about.dark, tools.link-fallback.dark, tools.link-success.dark, tools.hidden-parent, tools.clipboard
+- learning: learning.facts, learning.defaults, learning.display, learning.hidden, learning.shortcut, learning.width-shortcut, learning.stale-chord, learning.conflict, learning.body-width, learning.stale, learning.contrast.light, learning.contrast.dark, learning.scroll, learning.viewport
+
+说明：范围是 `native-offscreen-components`（离屏组件级），不是整机/IMK 级产品验收；
+`candidate.hud*` 覆盖 HUD 取值优先级（attributes 优先、终端 firstRect 兜底）、边界与不夺焦点；
+`appearance-contract` 覆盖亮/暗自适应与对比度目标。

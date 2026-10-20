@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 08:40 / pi（deepseek-flash）· **隔离验收完成并已彻底收尾**（三组 16/16 PASS；测试包、
-  输入源、私有根全部移除，生产包与真实数据回读一致）
-- 分支：`main` @ `b757c08`（工具修复）+ 本提交（文档/HANDOFF）
+- 更新：2026-10-20 09:20 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+  （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
+- 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
 - 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
   报告 101 机器报告由 pass 9 / blocked 14 → **pass 11 / blocked 12**
 - 最近验证：`make verify` 全绿；`test-installed-safari-probe.py` 8 项绿；隔离公证 CI run `39269308347` success
@@ -30,16 +30,18 @@
 | `run-installed-terminal-probe.py` × 4 场景 | **4/4 PASS** | 102 §5.2 |
 | `run-installed-safari-probe.py` × 4 场景 | **4/4 PASS**（先修工具：`b757c08` 改 LaunchServices 投递） | 102 §5.3 |
 | 报告 101 改判 | `application-Terminal` / `application-Safari` BLOCKED→PASS（pass 11 / blocked 12） | 102 §7 |
+| A 离线门禁解阻（`edd427e`） | Swift 5.8 兼容 + 编码声明 + 过期用例表 → 122 例 / 67 观测全绿 | 102 §8 |
 
 ## 3. 当前未决
 
 - **本地证据目录**：`platforms/macos/build/installed-*`（19 个，探针 `result.json`，不入库）可随时删除。
-- **A 上 `make macos-offline-tests` 仍红 7 个 Swift 用例**（Swift 5.8.1 对异构字面量推断报错，与本次改动无关；
-  Python 用例 25/32 绿，含新增 `test-installed-safari-probe.py`）。Swift 侧门禁以 CI 为准。
+- **A 的 Swift 门禁已修复**（`edd427e`）：`make macos-offline-tests` 32 文件/122 用例全绿、`make macos-local-acceptance`
+  67 观测全绿。A 上单文件 `swiftc` 仍要 1–3 分钟，命令超时别给 300s 以下。
 - **IT-01 剩余**：微信聊天隔离草稿（BLOCKED）、完整剪贴板多类型恢复（仅命名剪贴板 + mock 证据）。
 - **IT-12/IT-15/IT-23**、**IT-03 其余 13 项 BLOCKED**：未开始。
-- **A 工具链差异**：`make macos-offline-tests` 在 A 必红（Swift 5.8.1 + 高负载 `swiftc` 超时）；Swift 侧门禁以 CI 为准。
-  单文件 `swiftc` 实测 1m12s，命令超时别给 300s 以下。
+- **报告 101 剩余 6 项 A 侧 BLOCKED**（`focus`/`light-dark-layout`/`multi-display`/`imk-performance`/`sleep-wake`/`accessibility`）
+  与 Chrome/VSCode 客户端矩阵：都需要**隔离身份包**（生产包会写真实学习词库，规则禁止合成打字），
+  且 Chrome/VSCode 探针尚未编写。另 4 项结构性阻断（B 机 arm64、第三方复现、五日试用、微信草稿）。
 
 ## 4. 下一步
 

@@ -139,6 +139,29 @@ LaunchServices 可能把页面放进旧窗口 → 探针会 BLOCK 而不是接�
 - `application-Safari`：**BLOCKED → PASS**。同一隔离包四路径全过（`102-evidence/102-safari-probes.txt`）；
   解阻详情见 §5.3（Safari 沙箱扩展 + 工具侧 LaunchServices 投递）。
 
+## 8. 离线门禁在 A 的解阻（2026-10-20，提交 `edd427e`）
+
+报告 101 的六项（`focus`/`light-dark-layout`/`multi-display`/`imk-performance`/`sleep-wake`/`accessibility`）
+在 A 上先被两个**工具缺陷**挡住，与产品无关：
+
+| 缺陷 | 现象 | 修法 |
+|---|---|---|
+| `LocalAcceptanceEvidence.record(actual: Any)` 收到异构字典字面量 | Swift 5.8.1 报 `heterogeneous collection literal`，7 个 Swift 用例与本地逐场景验收全红（曾被误记为「A 工具链差异」） | 增加 `[String: Any]` 重载 + 显式 `payload` 类型 |
+| `run-local-acceptance.py` 无编码声明 | Apple `python3`(3.9.6) 报 `Non-UTF-8 code starting with '\xef'`，脚本根本跑不起来（3.11/3.13 正常） | 补 `# -*- coding: utf-8 -*-` |
+| candidate 套件期望用例表过期 | 早于 `candidate.hud-source` / `paths.support-dir-override`，`observe()` 判「未知场景」→ 套件永远 BLOCKED | 用例表补齐 |
+
+结果：
+
+- `make macos-offline-tests`：**32 文件 / 122 用例全绿**（A 上首次）——证据 `102-evidence/102-offline-tests.txt`。
+- `make macos-local-acceptance`：**67 个观测全绿**，绑定当前源码树摘要、90 个产物——证据 `102-evidence/102-local-acceptance.txt`。
+  覆盖 `candidate.hud`/`hud-position`/`hud-source`（attributes 优先、终端 `firstRect` 兜底、边界夹取、面板不夺焦点）、
+  亮/暗候选与面板、对比度目标、菜单/设置/工具/学习区 AX。
+- `run-perf.sh`（A/Intel，高负载）：p50 0.55ms、p95 29.6ms、max 503ms、peak RSS 16.9MiB、稳态 12.4MiB
+  —— 仅引擎级，不能当宿主门禁（`102-evidence/102-perf-engine-a.txt`）。
+
+仍未解（都要**隔离身份包**，因为生产包会写真实学习词库，规则禁止合成打字污染）：真机 HUD/焦点、真机亮暗截图、
+双屏 HUD、宿主级性能、睡眠唤醒、VoiceOver，以及 Chrome/VSCode 客户端矩阵（探针尚未编写）。
+
 ## 证据
 
 - `platforms/macos/build/installed-{textedit,terminal,safari}-*/`（本地，不入库）

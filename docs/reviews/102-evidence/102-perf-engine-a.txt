@@ -1,0 +1,21 @@
+# 报告 102：设备 A 引擎性能（run-perf.sh 单会话 2200 键，2026-10-20）
+# 边界：仅同步 FFI/引擎，不含 IMK dispatch 与合成器；A 为 Intel + 高负载，不能当作产品门禁
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on build directory
+    Finished `release` profile [optimized] target(s) in 21.22s
+sessions=1 loaded_footprint_mib=11.88
+round=0 footprint=11.88
+round=10 footprint=12.31
+round=20 footprint=12.32
+round=30 footprint=12.32
+round=40 footprint=12.32
+round=50 footprint=12.34
+round=60 footprint=12.34
+round=70 footprint=12.34
+round=80 footprint=12.36
+round=90 footprint=12.36
+keys=2200 p50_ms=0.550 p95_ms=29.603 max_ms=502.624 peak_rss_mib=16.93
+steady_footprint_mib=12.37
+perf rc=0

@@ -67,7 +67,7 @@
     {
       "id": "focus",
       "status": "BLOCKED",
-      "reason": "HUD/焦点规则在 a278d70 验过（报告 096），07bbb2f 未复验；且 QQ 抢焦点事故后要求逐批发键闸门",
+      "reason": "离屏 HUD/焦点规则已绑定本候选并通过（`candidate.hud`/`hud-position`/`hud-source`：attributes 优先、终端 firstRect 兜底、边界夹取、面板不夺焦点）；仍缺真实 IMK 下的 HUD 实机复验与逐批发键闸门记录（合成打字必须用隔离身份包，生产包会写真实学习词库）",
       "evidence": []
     },
     {
@@ -93,19 +93,19 @@
     {
       "id": "light-dark-layout",
       "status": "BLOCKED",
-      "reason": "离屏快照与真机亮暗截图未与新候选绑定",
+      "reason": "离屏亮/暗候选与面板截图、对比度目标已绑定本候选（67 个观测 + 90 个产物）；仍缺真机亮暗截图（需实时 IMK 候选窗，同样要求隔离身份包）",
       "evidence": []
     },
     {
       "id": "multi-display",
       "status": "BLOCKED",
-      "reason": "双屏布局下仅做过 HUD 定位问题排查（报告 095/096），未做完整多屏验收",
+      "reason": "离屏屏幕几何/边界算法有覆盖，双屏（内建 2560×1600 + LG 4K）实机 HUD 定位仍未验证；需隔离身份包 + 实机两屏交互",
       "evidence": []
     },
     {
       "id": "imk-performance",
       "status": "BLOCKED",
-      "reason": "宿主级时延/内存基线未采集（IT-12）",
+      "reason": "本次采集了 A 侧引擎基线（p50 0.55ms / p95 29.6ms / max 503ms，2200 键，Intel 高负载），但 IT-12 要求的宿主级 IMK 延迟/内存/唤醒仍未采集，不能据此关闭",
       "evidence": []
     },
     {
