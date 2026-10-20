@@ -2,11 +2,11 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-20 15:10 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
+- 更新：2026-10-20 15:45 / pi（deepseek-flash）· 隔离验收已收尾（16/16）；**再修掉 A 的两个离线门禁缺陷**
   （Swift 5.8 异构字面量 + 脚本编码），A 上 `macos-offline-tests` 122 例、`macos-local-acceptance` 67 观测全绿
 - 分支：`main` @ `edd427e`（离线门禁修复）+ 本提交（文档/HANDOFF）
-- 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`，宿主重启后**未启动**）；报告 102 已补实测结果；
-  报告 101 机器报告由 pass 9 / blocked 14 → **pass 11 / blocked 12**
+- 阶段：A 生产包 `07bbb2f`（执行 `681fb1c8…`）；报告 103（候选 `f74aae7`）= **pass 18 / fail 0 / blocked 5**；
+  隔离测试包、私有根与本地构建产物已移除
 - 最近验证：`make verify` 全绿；`test-installed-safari-probe.py` 8 项绿；隔离公证 CI run `39269308347` success
 
 ## 1. 安装与数据
@@ -14,7 +14,7 @@
 | 设备 | 系统 | 已装包 | 状态 |
 |---|---|---|---|
 | A（`bot`，Intel / macOS 13.7.8） | x86_64 | 生产 `07bbb2f`（执行 `681fb1c8…`，Notarized Developer ID） | 宿主**未运行**（10-20 07:37 重启后未启动）；真实 `config.toml` `809e2cae…`（19 日 20:45 后未变）、词库 `2ee1a469…`（20 日 07:17，用户自己打字学词，不是本轮写入）；输入源当前 `com.apple.keylayout.ABC`（探针还原值，用户可切回 sogou） |
-| A（同上） | x86_64 | ~~隔离测试包 `…LampyrisIMKTest.fd15c596-…`~~（CI run `39269308347`，commit `c60bd88`，zip `d14a395b…`） | **已彻底移除**：`disable-owned` → 用户在系统设置删除输入源 → `lsregister -u` + 删实体包 → 删私有根（含其 config/词库）；`~/.Library/Input Methods` 只剩生产 `Lampyris.app` |
+| A（同上） | x86_64 | ~~隔离测试包~~ | **已彻底移除（2026-10-20 15:40）**：`disable-owned` → 用户系统设置移除 → `lsregister -u` + 删实体包 + 删私有根；`~/Library/Input Methods` 只剩生产 `Lampyris.app`（公证，`spctl accepted`）。⚠️ 用户移除时**把生产「萤火虫」输入源也一起移除了**（TIS 现只剩 ABC/搜狗）；需要时在系统设置重新添加即可，包未动 |
 | B（`joker`，arm64 / macOS 27） | arm64 | `17053e1`（`535d546f…`） | 报告 093；本轮未参与 |
 
 - 隔离包本机前置（一次性，已由用户授权）：**Ghostty 需「辅助功能」**（否则 `osascript` `-1728`）+
@@ -34,7 +34,8 @@
 
 ## 3. 当前未决
 
-- **本地证据目录**：`platforms/macos/build/installed-*`（19 个，探针 `result.json`，不入库）可随时删除。
+- **本地构建产物已清理**：`build/imk12-*`、`build/installed-*`、`build/local-acceptance`、`packaging/out/notary-1018` 已删；
+  `build/` 剩 118 MB 历史构建（`Lampyris.app`/`Yinghuo.app` 等），未清理。
 - **A 的 Swift 门禁已修复**（`edd427e`）：`make macos-offline-tests` 32 文件/122 用例全绿、`make macos-local-acceptance`
   67 观测全绿。A 上单文件 `swiftc` 仍要 1–3 分钟，命令超时别给 300s 以下。
 - **IT-01 剩余**：微信聊天隔离草稿（BLOCKED）、完整剪贴板多类型恢复（仅命名剪贴板 + mock 证据）。
@@ -73,7 +74,7 @@
    或用 Chrome 的「访达/终端里输入」对照；不影响产品验收结论（VSCode/Safari/TextEdit/Terminal 均正常）。
 2. ~~VSCode 探针~~ ✅ 已完成（AX 不可用，改为自有文件 + ⌘S 读回）。
 3. 报告 103 剩余 BLOCKED 全部是外部/结构性：`application-Chrome`（Chrome 侧）、`arm64-macos27`（B 机）、
-   `independent-reproduction`（第三方）、`one-person-five-days`（5 日）、`application-WeChat`（策略）。
+   `independent-reproduction`（第三方）、`one-person-five-days`（待 RC 锁定后开始 5 工作日）、`application-WeChat`（策略）。
 4. IT-12 剩余：内嵌计时采样入口已脚本化（`platforms/macos/tests/run-installed-perf-trace.sh`，3 轮重试 + 候选窗探测，
    失败不写假样本）。**但同一会话反复 pkill 宿主后系统会停止按需拉起/接管**，所以采样要在「新登录 + 少杀进程」的会话里做；
    矩阵探针的 `trace` 场景同样会 BLOCK（只报 BLOCK，不给数字）。已有两次成功数据见报告 103。
@@ -90,6 +91,9 @@
 
 ## 9. 会话日志
 
+- 2026-10-20 / pi：**会话收尾**：文档同步（IT-12 卡补 A 机实测章节、IT-23 写明待 RC、ROADMAP 加注）；
+  隔离包/私有根/本地构建产物移除；生产回读 执行 `681fb1c8…`、config `809e2cae…`、词库 `2ee1a469…` 均未变；
+  注意用户移除时连带移除了生产输入源，需要时重新添加。
 - 2026-10-20 / pi：内嵌计时打通并采到 n=45（total p50 14.1–14.9 ms / p95 20.6–23.5 ms；engine 1.0 ms；面板 42/165 ms），
   写入报告 103 与 ADR-218；同时确认 ad-hoc 构建被 Gatekeeper 拦截、必须用 CI 公证包采样。
 - 2026-10-20 / pi：重新登录后复测计时采样：系统不再按需拉起宿主、`launchctl setenv` 到不了 LaunchServices 进程、
