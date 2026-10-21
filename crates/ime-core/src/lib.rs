@@ -384,7 +384,7 @@ impl Session {
         if eligible.is_empty() {
             return;
         }
-        let insertion = table_count.min(self.page_size - eligible.len());
+        let insertion = table_count.min(self.page_size - 2);
         let mut fallback = Vec::new();
         for index in eligible.into_iter().rev() {
             fallback.push(self.candidates.remove(index));
@@ -697,6 +697,30 @@ mod tests {
                 s.handle_key(ch);
             }
             assert_eq!(s.handle_key('g'), KeyOutcome::Committed("佢".into()));
+        }
+    }
+
+    #[test]
+    fn mixed_fallback_has_a_fixed_start_for_one_or_two_pinyin_candidates() {
+        for size in [3, 5, 9] {
+            for count in [1, 2] {
+                let mut s = Session::new(InputMode::Mixed);
+                s.set_page_size(size);
+                s.set_wubi_engine(Box::new(ManyEngine));
+                s.handle_key('a');
+                let extra = (0..count)
+                    .map(|i| Candidate::new(format!("拼{i}"), "a", 10 - i, CandidateSource::Pinyin))
+                    .collect();
+                s.personalize(extra, |_| 0);
+                assert_eq!(s.candidates()[size - 2].text, "拼0");
+                for index in 0..size - 2 {
+                    assert_eq!(s.candidates()[index].text, format!("词{index:02}"));
+                }
+                assert_eq!(
+                    s.handle_key(char::from(b'1' + (size - 2) as u8)),
+                    KeyOutcome::Committed("拼0".into())
+                );
+            }
         }
     }
 

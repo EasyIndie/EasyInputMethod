@@ -1,3 +1,3 @@
-load_ms=61.750
+load_ms=59.033
 loaded_process_rss_kib=28176
-keys=7819 key_p50_ms=0.003292 key_p95_ms=0.123500 key_max_ms=0.192083
+keys=7819 key_p50_ms=0.003250 key_p95_ms=0.122666 key_max_ms=0.191208

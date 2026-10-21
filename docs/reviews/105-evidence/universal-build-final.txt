@@ -1,0 +1,29 @@
+▶ 1/5 构建各架构 staticlib + Swift 宿主：arm64 x86_64
+   • arm64
+   Compiling ime-core v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-core)
+   Compiling ime-pinyin v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-pinyin)
+   Compiling ime-table v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-table)
+   Compiling ime-ffi v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-ffi)
+    Finished `release` profile [optimized] target(s) in 2.49s
+   • x86_64
+   Compiling ime-core v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-core)
+   Compiling ime-table v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-table)
+   Compiling ime-pinyin v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-pinyin)
+   Compiling ime-ffi v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-ffi)
+    Finished `release` profile [optimized] target(s) in 2.57s
+▶ 2/5 重置 bundle 目录
+▶ 3/5 复制数据文件（缺失的给出复现提示）
+   ✅ wubi86-core.tsv
+   ✅ pinyin-chars.tsv
+   ✅ pinyin-core.tsv
+   ✅ variant-s2t.tsv
+▶ 4/5 合成可执行文件（lipo）
+   架构：x86_64 arm64
+▶ 5/5 校验 Info.plist + ad-hoc 签名
+/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app/Contents/Info.plist: OK
+/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app: replacing existing signature
+   ✅ ad-hoc 签名完成
+
+✅ 构建完成：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app
+   此 ad-hoc 构建仅供开发验证；日常运行 make macos-preview。
+   分发签名/公证及可信安装流程见 packaging/README.md。

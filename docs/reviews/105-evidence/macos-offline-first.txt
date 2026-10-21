@@ -1,0 +1,91 @@
+PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py
+PASS platforms/macos/tests/test-acceptance-results.py
+PASS platforms/macos/tests/test-appearance-contract.py
+PASS platforms/macos/tests/test-build-metadata.py
+PASS platforms/macos/tests/test-candidate-presentation.py
+PASS platforms/macos/tests/test-composition-navigation.py
+FAIL platforms/macos/tests/test-controller-menu.py
+失败诊断：F
+======================================================================
+FAIL: test_real_imk_dispatch_and_reactivation (__main__.ControllerMenuTests.test_real_imk_dispatch_and_reactivation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-controller-menu.py", line 51, in test_real_imk_dispatch_and_reactivation
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: -6 != 0 : 
+
+----------------------------------------------------------------------
+Ran 1 test in 12.834s
+
+FAILED (failures=1)
+
+PASS platforms/macos/tests/test-fixture-guard.py
+PASS platforms/macos/tests/test-formal-profile-guard.py
+FAIL platforms/macos/tests/test-guarded-ax.py
+失败诊断：F
+======================================================================
+FAIL: test_order_and_fail_closed_without_desktop (__main__.GuardedAXTests.test_order_and_fail_closed_without_desktop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-guarded-ax.py", line 21, in test_order_and_fail_closed_without_desktop
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : <unknown>:0: error: unable to open output file '/Users/joker/.cache/clang/ModuleCache/2GZCSQVHG73UI/SwiftShims-29GVX263RXXQ.pcm': 'Operation not permitted'
+<unknown>:0: error: could not build Objective-C module 'SwiftShims'
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.141s
+
+FAILED (failures=1)
+
+PASS platforms/macos/tests/test-input-menu.py
+PASS platforms/macos/tests/test-install.py
+PASS platforms/macos/tests/test-installed-accessibility-probe.py
+PASS platforms/macos/tests/test-installed-chrome-probe.py
+PASS platforms/macos/tests/test-installed-hud-probe.py
+PASS platforms/macos/tests/test-installed-ime-features-probe.py
+PASS platforms/macos/tests/test-installed-perf-matrix-probe.py
+PASS platforms/macos/tests/test-installed-perf-probe.py
+PASS platforms/macos/tests/test-installed-safari-probe.py
+PASS platforms/macos/tests/test-installed-sleep-wake-probe.py
+PASS platforms/macos/tests/test-installed-terminal-probe.py
+PASS platforms/macos/tests/test-installed-textedit-probe.py
+PASS platforms/macos/tests/test-installed-vscode-probe.py
+PASS platforms/macos/tests/test-isolated-imk.py
+PASS platforms/macos/tests/test-isolated-source-probe.py
+PASS platforms/macos/tests/test-local-acceptance.py
+PASS platforms/macos/tests/test-offline-reporting.py
+PASS platforms/macos/tests/test-owned-probe.py
+PASS platforms/macos/tests/test-owned-resources.py
+PASS platforms/macos/tests/test-panel-gate.py
+PASS platforms/macos/tests/test-physical-source-probe.py
+PASS platforms/macos/tests/test-prepare-imk-acceptance.py
+PASS platforms/macos/tests/test-preview-menu.py
+PASS platforms/macos/tests/test-settings-presentation.py
+PASS platforms/macos/tests/test-terminal-input-sink.py
+PASS platforms/macos/tests/test-terminal-ownership.py
+FAIL platforms/macos/tests/test-tools-presentation.py
+失败诊断：F
+======================================================================
+FAIL: test_native_forms_and_information_states (__main__.ToolsPresentationTests.test_native_forms_and_information_states)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-tools-presentation.py", line 42, in test_native_forms_and_information_states
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : FAIL: private copy
+
+
+----------------------------------------------------------------------
+Ran 1 test in 7.795s
+
+FAILED (failures=1)
+
+PASS platforms/macos/tests/test-wubi-learning.py
+PASS packaging/macos/tests/test-ci-sign.py
+PASS packaging/macos/tests/test-isolated-ci.py
+PASS packaging/macos/tests/test-validate-release.py
+EVIDENCE=/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-1a1oootz/summary.json
+make: *** [macos-offline-tests] Error 1
