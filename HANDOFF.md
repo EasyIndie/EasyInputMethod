@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-21 / Codex（Luna）；PR #58合入`288c750`、开发载荷原位更新；新PID/SHA及TextEdit `wq→你`通过，模式循环窗口守卫BLOCKED。
+- 更新：2026-10-21 / Codex（Luna）；TextEdit共享夹具按ADR-091/092修正，`make verify`通过；原生复验被System Events自动化`-10827`阻断。
 - 产品RC源码仍为`3728dfc`（PR #54）；正式与A/B、安装升级及五日试用未完成；main上的开发路径为固定身份私有根，未锁正式RC。
-- 当前文档分支`docs/106-imk-post-replacement`，提交`9ff0431`；PR #59四项CI全绿、待合入。
+- 当前分支`docs/106-imk-post-replacement`，基线`46e0d34`；本轮夹具/文档改动待提交，PR #59旧HEAD门禁曾全绿，本轮后CI待查。
 - 排序915a70a、词库/整词回查8e35700、混输固定入口323b1a1；ADR-226…229，报告105。旧产品候选8eb872f的104结果不继承。
 - PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新PID26819/SHA `be7deecf…78a68318`的TextEdit `wq→你`/marked/恢复通过。模式探针创建唯一窗口BLOCKED、未发键。旧b652包可恢复，正式包与真实配置/词库未改变。
 
@@ -15,7 +15,7 @@
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（10-21本轮回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，Developer ID/accepted本轮正常权限回读通过；生产宿主未启动 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 本轮精确API与实际列表均为ABC，未切源；真实三SHA与104收尾相同 |
 | B历史隔离（报告104） | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 报告104补验后已归档，宿主按精确路径停止；本轮代码改进未再安装或激活该身份 |
-| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | 父源/default实际启用；换包前后源集合相同，当前ABC；TextEdit窗口创建超时，未发键，当前/集合恢复；新PID未证实 |
+| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | source-state回读ABC、开发default启用；当前宿主未运行。自动化预检-10827，未创建夹具/发键；生产SHA不变 |
 | B新隔离（105） | 3728dfc/arm64公证；zip0d29ed9a…/执行45c3b627…，标签萤火虫隔离验收 dce4ae25 | 新私有根0700+owner0600，私有mode=mixed，探针词已经FFI精确删除；真实数据未变 | 用户要求清理；实际未启用/无进程，撤销登记exit0后归档packaging/out/retired-imk-dce4ae25-20261021；原临时根登录时已清理，正式zip保留 |
 
 - 新两包完整zip/执行SHA、CI、私有根、静态信任及B四条隔离进程路径见报告105；正式universal仅验证未安装。历史两包归档证据仍见104。
@@ -23,7 +23,7 @@
 
 ## 2. 本轮结论
 
-- ADR-230/报告106：固定开发私有根/身份、公证选项、精确换包及旧包回退已实现；PR #56工程实现的历史验证见下文。PR #58已合入288c750，新arm64包公证成功并在启用源期间换入不同执行SHA；TextEdit客户端输入未证实。
+- ADR-230/报告106：固定开发私有根/身份、公证选项、精确换包及旧包回退已实现；PR #58合入288c750，新arm64公证包在源启用期间换入不同执行SHA；PID26819的TextEdit `wq→你`/marked/恢复历史通过。
 
 - 五笔单字按基础频次，词组有限调频；统一精确/补全，混输一/两个拼音均从固定起点插入。最小测试旧版失败、修复后通过；原生用户根因仍待最小实例。
 - 五笔20,064词组、拼音20,067词；433项工程集五笔211→329、拼音227→331可达。292训练、69探索、72冻结后保留；保留集仅29/28命中，领域及长词覆盖未完成。
@@ -32,7 +32,7 @@
 
 ## 3. 未决
 
-- 固定开发源首次发现/启用、新执行SHA在同身份免注销加载，以及基本TextEdit `wq→你`输入已通过；模式循环探针因未取得唯一自有窗口BLOCKED，拼音/Esc、显示候选与数字提交一致性仍待。
+- 本轮按ADR-091/092修复共享TextEdit夹具，`osacompile`与`make verify`通过；模式探针被System Events自动化权限-10827挡在建窗前，未发键。source-state为ABC/开发源已启用，生产数据SHA不变；原生复验及拼音/Esc、候选一致性仍待。
 - 首次新载荷TextEdit AppleEvent超时和后续模式窗口识别失败均在发键前停止并恢复ABC/集合；不得把未运行场景算PASS，也不得关闭身份不明窗口。
 
 - PR #54的check/DCO/fuzz/macos全部通过（CI39519832333）；签名公证候选3728dfc已核；B新私有根见105-evidence/isolated-target.json。105旧隔离安装副本已按用户要求归档；正式zip保留。其原生/RC结果不继承固定开发源结果。
@@ -43,7 +43,7 @@
 ## 4. 下一步（断点）
 
 0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb已启用，当前ABC；不要再要求用户添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
-1. 新包`288c750` SHA `be7deecf…78a68318`已装入且PID26819加载；基本`wq→你`探针通过，证据`installed-textedit-uy16l3pt/`。下一步在不动“未命名”窗口前提下，解决TextEdit无法唯一识别新自有窗口的模式探针，再测模式、拼音/Esc和数字选词；失败继续记录BLOCKED。
+1. 新包`288c750` SHA `be7deecf…78a68318`已安装；历史PID26819加载确认，基本`wq→你`通过，证据`installed-textedit-uy16l3pt/`。共享夹具现直接打开唯一文件；待自动化权限可用后只运行一次模式探针，再测拼音/Esc和数字提交一致性，不绕过预检。
 2. 若需要回退，以previous.app调用`python3 scripts/macos-imk-dev.py install --app <previous.app> --stop-host`；验证恢复后再继续。正式RC验收与开发身份结果分开安排。
 
 3. 核心体验与安装升级、宿主16ms/30MB、兼容及独立复核完成后才锁RC开始五日。词库后续另选合规领域词，不把72项保留集补入后仍称其独立保留。
@@ -57,6 +57,8 @@
 - 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，补验安装副本和私有根现已归档至packaging/out/b-8eb872f-supplement-retired。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止，未发键；source-state仍ABC/开发源启用、生产SHA不变。原生复验待权限可用；报告106。
 
 - 2026-10-21 / Codex（Luna）：PR #58合入288c750并公证；新包免注销替换后PID26819/SHA已确认，TextEdit `wq→你`/marked/恢复通过。模式循环探针未取得唯一自有窗口，发键前BLOCKED并恢复ABC；生产数据SHA不变。旧包保留；证据106。
 
@@ -72,5 +74,3 @@
 - 2026-10-20 / Codex：用户授权并重启后台后，权限页codex及Computer Use均on，但命令行录屏预检false、自有窗截图失败，Computer Use绑定隔离宿主超时。停止重复申请，亮暗保持BLOCKED；ABC/真实三SHA已恢复，隔离宿主精确停止且无socket，等待用户移除源后归档。
 
 - 2026-10-20 / Codex：继续后录屏预检和官方请求均false，未截图或发键，等待用户TCC授权。发现原外观暗色会让探针两张图均暗色，ADR-225显式亮色起点并沿用trap恢复；HUD专项7例通过，报告14/9不变。
-
-- 2026-10-20 / Codex：继续可验项，恢复同公证包及隔离根，用户重新添加源；ADR-223/224修复激活/窗口与AX文本框就绪，模式循环及Safari四路径PASS。简繁/冷启动/1万条词库AX矩阵PASS，宿主基线创建守卫停止；录屏预检false待授权，报告14/9，真实数据未变。

@@ -18,6 +18,12 @@
 - 下一步：在不触碰既有“未命名”窗口的前提下解决TextEdit自有窗口唯一性，再跑模式、拼音/Esc和候选数字提交；保持不移除/添加/注销。旧包可按原校验脚本回退。
 - 参考：[迭代计划](../迭代计划.md)、[审计009](../reviews/009-macos-product-engineering-audit.md)、根目录 AGENTS.md；配置行为另读配置架构.md与相关ADR。
 
+## 2026-10-21 共享 TextEdit 夹具修正（未完成原生复验）
+
+- 将 `owned-textedit.applescript` 创建路径改为直接打开唯一0600临时文件，沿用文档名、规范化路径、可见窗口唯一性和初始窗口ID集合校验；不再先 `make new document`，避免TextEdit复用既有空白窗口。符合ADR-091/092，不放宽所有权契约。
+- `osacompile`及`make verify`通过。当前包模式探针在预检阶段遭系统拒绝 `System Events` AppleEvent（`-10827`），未创建测试窗口、未发键。机器证据 `platforms/macos/build/installed-mode-current-134728/`；实际源/启用集合、生产数据SHA保持。
+- 待系统自动化权限可用后，对当前新载荷只重试一次 `--scenario mode`；成功后再按报告106顺序补拼音/Esc及显示/数字提交一致性。权限不允许时保持BLOCKED，不直接改TCC或跳过预检。
+
 ## 2026-10-11 推进记录
 
 - ADR-083：先限定清理所有权。新增共享 owned-resources.sh，创建即登记应用对象ID，两脚本退出只关闭登记对象；失败不回退前台/全部对象。

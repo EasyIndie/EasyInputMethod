@@ -11,6 +11,13 @@
 - 之前固定包b652cd6的 `wq`→“你”结果仍作为单独历史证据（`installed-textedit-ol5y0d69`），新包有自己的独立PASS，二者不跨SHA继承。旧隔离包dce4ae25可恢复归档在 `packaging/out/retired-imk-dce4ae25-20261021/`。
 - [机器证据](106-stable-imk-evidence.json)已同步。不同执行SHA的包替换和基本真实输入已通过；模式循环、拼音/Esc及完整候选一致性范围未证实。无需用户再次添加或注销，旧包回退副本继续保留。
 
+## 2026-10-21 共享 TextEdit 夹具修正
+
+- 复核发现共享 `owned-textedit.applescript` 在打开唯一临时文件前先执行 `make new document`。TextEdit 可能复用已有空白窗口，导致“新自有空白窗口”条件无法成立；同类历史问题在报告024中通过直接打开唯一文件解决。
+- 按 ADR-091/092，将创建步骤改为直接打开 0600 唯一临时文件，继续验证唯一文档名、完整文件路径、可见窗口唯一性和窗口ID不属于原有集合；没有放宽所有权守卫。`osacompile`通过，`make verify`全绿。
+- 用新脚本重跑模式探针时，系统自动化预检在创建文档前以 `System Events -10827` 拒绝，故未发键、未切换输入源；TIS只读状态仍为ABC，开发输入模式实际启用，生产配置/词库未变。证据目录 `platforms/macos/build/installed-mode-current-134728/`。因此夹具修复尚无本机运行证据，模式/拼音/Esc/候选一致性仍待验。
+- 旧失败证据保留；下一步是在 macOS“隐私与安全性→自动化”允许本验收执行器控制 System Events 后，只运行一次既有模式探针。若权限不可授予，则保持BLOCKED，不改TCC数据库、不绕过预检。
+
 ## 签名包安装历史
 
 - PR [#56](https://github.com/EasyIndie/EasyInputMethod/pull/56)最新59ee533四门禁全通过（CI39526751254），合入main **b652cd6**。固定开发公证任务 [39527358251](https://github.com/EasyIndie/EasyInputMethod/actions/runs/39527358251)成功；[机器证据](106-stable-imk-evidence.json)绑定源码、zip/执行SHA、设备与未验项。
