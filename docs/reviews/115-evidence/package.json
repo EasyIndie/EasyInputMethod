@@ -1,0 +1,83 @@
+{
+  "source_commit": "eb151c5aeb1ff35c4b0188f90bbb5beddce723bb",
+  "run": 39659151625,
+  "app": "/Users/joker/Documents/EasyInputMethod/packaging/out/run-39659151625/Lampyris-isolated-imk-arm64-eb151c5aeb1ff35c4b0188f90bbb5beddce723bb/extracted/Lampyris.app",
+  "zip_sha256": "9200cffb7cd2821e95b475487a91b96a94d032ccd3b6cdb2fc5a5a06359bec1b",
+  "executable_sha256": "67028d52a2106489176d4d40cf81d3fcb6ad5e3d0bd8598b347b268d553fd3a5",
+  "resources_sha256": {
+    "wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
+  },
+  "static_verification": "PASS",
+  "updater_included": false,
+  "data_before": {
+    "private/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "private/user-dictionary.tsv": "104d0f601cc900eacb3a91a8d309fcacc72932feac027c15f5ef0ce417d2c0b5",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "trace": {
+    "marker": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/perf-trace.enabled",
+    "path": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-115/trace.jsonl",
+    "fields": [
+      "engineUs",
+      "totalUs",
+      "candidates",
+      "committed"
+    ],
+    "enabled_for_test": true
+  },
+  "installation": {
+    "root": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+    "installed": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app",
+    "backup": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-xuw9_efr/previous.app",
+    "source_commit": "eb151c5aeb1ff35c4b0188f90bbb5beddce723bb",
+    "executable_sha256": "67028d52a2106489176d4d40cf81d3fcb6ad5e3d0bd8598b347b268d553fd3a5",
+    "before": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "after": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "source_state_unchanged": true,
+    "native_input_verified": false
+  },
+  "data_after": {
+    "private/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "private/user-dictionary.tsv": "104d0f601cc900eacb3a91a8d309fcacc72932feac027c15f5ef0ce417d2c0b5",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "all_data_sha_unchanged": true,
+  "checkpoint": {
+    "current_source": "com.apple.keylayout.ABC",
+    "native_performance": "PENDING",
+    "note": "等待用户切回开发输入源；尚未发键，不继承旧候选结果。"
+  }
+}

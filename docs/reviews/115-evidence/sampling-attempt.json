@@ -1,0 +1,19 @@
+{
+  "status": "BLOCKED",
+  "source_commit": "eb151c5aeb1ff35c4b0188f90bbb5beddce723bb",
+  "pid": 3115,
+  "executable_sha256": "67028d52a2106489176d4d40cf81d3fcb6ad5e3d0bd8598b347b268d553fd3a5",
+  "current_source": "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+  "fixture": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/acceptance-115/cg.n0ZYkB",
+  "expected": "你",
+  "actual": "w",
+  "trace_bytes": 0,
+  "sent_keycodes": [
+    13,
+    12,
+    49
+  ],
+  "sampling_stopped": true,
+  "cleanup": "owned_cleanup exit trap; no failure reported",
+  "attribution": "未确认：合成事件接管/客户端状态/产品行为待区分；不计性能样本。"
+}
