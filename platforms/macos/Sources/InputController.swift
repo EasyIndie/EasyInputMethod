@@ -11,6 +11,7 @@ import ime
 final class LampyrisInputController: IMKInputController {
     private var session: ImeSession?
     private var candidateWindow: CandidateWindow?
+    private var candidateSelection = CandidateSelectionState()
     private var candidateCount = 7
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
@@ -68,6 +69,7 @@ final class LampyrisInputController: IMKInputController {
 
     private func finishComposition(_ textClient: (any IMKTextInput)?) {
         candidateWindow?.hide()
+        candidateSelection.reset()
         session?.focusOut()
         clearMarked(textClient)
     }
@@ -126,10 +128,12 @@ final class LampyrisInputController: IMKInputController {
         session.prepare()
         presentDataError()
         if let count = ImeConfig.int("candidate.count"), (3...9).contains(count) {
+            if candidateCount != count { candidateSelection.reset() }
             candidateCount = count
             session.setPageSize(count)
         }
         if let mode = ImeConfig.string("mode"), session.mode != mode {
+            candidateSelection.reset()
             session.setMode(mode)
             if let client = activeClient { clearMarked(client) }
             candidateWindow?.hide()
@@ -477,6 +481,7 @@ final class LampyrisInputController: IMKInputController {
         session.markKeyWhileShift()
         if let mode = ImeConfig.string("mode"), session.mode != mode {
             session.setMode(mode)
+            candidateSelection.reset()
             clearMarked(client)
             candidateWindow?.hide()
         }
@@ -513,6 +518,13 @@ final class LampyrisInputController: IMKInputController {
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
         }
+        if session.isComposing, event.keyCode == 126 || event.keyCode == 125 {
+            let count = session.candidates(limit: candidateCount).count
+            _ = candidateSelection.move(event.keyCode == 126 ? -1 : 1, count: count)
+            updateMarked(client, session.buffer)
+            showCandidates(client, session: session)
+            return true
+        }
         // Do not let the client edit marked text behind the engine's buffer.
         if session.consumesCompositionNavigation(event) {
             updateMarked(client, session.buffer)
@@ -528,6 +540,7 @@ final class LampyrisInputController: IMKInputController {
         }
         if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
             session.page(scalar.value == 0xF72C ? -1 : 1)
+            candidateSelection.reset()
             showCandidates(client, session: session)
             return true
         }
@@ -536,13 +549,24 @@ final class LampyrisInputController: IMKInputController {
             scalar == "," || scalar == "."
         {
             session.page(scalar == "," ? -1 : 1)
+            candidateSelection.reset()
             showCandidates(client, session: session)
+            return true
+        }
+
+        if session.isComposing, event.keyCode == 49, candidateSelection.index > 0,
+            let text = session.select(candidateSelection.index)
+        {
+            commit(text, to: client)
+            candidateSelection.reset()
+            candidateWindow?.hide()
             return true
         }
 
         let codepoint = feedCodepoint(scalar, shift: flags.contains(.shift), session: session)
         guard let codepoint else { return false }
 
+        candidateSelection.reset()
         let trace = PerfTrace.shared.begin()
         let outcome = session.feed(codepoint)
         let engineStamp = PerfTrace.shared.stamp()
@@ -616,17 +640,21 @@ final class LampyrisInputController: IMKInputController {
             if let text = session.select(index) {
                 self.commit(text, to: client)
             }
+            self.candidateSelection.reset()
             self.candidateWindow?.hide()
         }
         window.onPage = { [weak self] delta in
             guard let self, let client = self.activeClient, let session = self.session else { return }
             session.page(delta)
+            self.candidateSelection.reset()
             self.showCandidates(client, session: session)
         }
         window.updateStatus(candidateStatus())
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            input: session.buffer, warning: session.variantErrorMessage)
+            selectedIndex: candidateSelection.index,
+            input: session.buffer, hint: "↑↓浏览 · 空格确认 · 数字直选",
+            warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
         return candidates.count
     }
