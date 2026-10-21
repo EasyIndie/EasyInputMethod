@@ -60,4 +60,3 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 - 未决：main公证开发包、首次发现/添加、同身份不同执行SHA的免注销换包、旧包回退、A/B真实客户端及调试器附加。仅前置通过，不把脚本/mock/直接进程测试计为以上原生通过。
 
 补充原生证据：精确路径自建宿主停止通过；ad-hoc包被Developer ID门禁拒绝、未安装。换包持有owner文件的排他锁，并发调用在修改前拒绝；失败不会移动不是本次安装产生的目标包。
-
