@@ -239,7 +239,7 @@ final class WubiLearningView: NSView {
             clearContent()
             detailOrigin = .zero
             identity = text ?? ""
-            expanded = false
+            if text == nil { expanded = false }
             expandedCharacters.removeAll()
         }
         let result = text.flatMap(WubiLearning.lookup)
@@ -766,7 +766,6 @@ final class CandidateWindow: NSObject {
                 input: String = "", hint: String? = nil, showsNavigationHint: Bool = false,
                 warning: String? = nil) {
         refreshAppearance()
-        learningView.update(ImeConfig.bool("candidate.show_wubi_learning") ? candidates.first?.text : nil)
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
         self.showsNavigationHint = !candidates.isEmpty && showsNavigationHint
@@ -774,6 +773,8 @@ final class CandidateWindow: NSObject {
         self.pageCount = candidates.isEmpty ? 0 : max(1, pageCount)
         self.pageIndex = min(max(0, pageIndex), max(0, self.pageCount - 1))
         self.selectedIndex = candidates.isEmpty ? 0 : min(max(0, selectedIndex), candidates.count - 1)
+        learningView.update(ImeConfig.bool("candidate.show_wubi_learning") && !candidates.isEmpty
+            ? candidates[self.selectedIndex].text : nil)
         inputLabel.stringValue = self.input
         inputLabel.toolTip = self.input
         inputLabel.setAccessibilityValue(self.input)
@@ -946,6 +947,10 @@ final class CandidateWindow: NSObject {
     }
 
     var learningVisibleForTesting: Bool { !learningView.isHidden }
+    var learningDetailsExpandedForTesting: Bool { learningView.expandedForTesting }
+    var learningSummaryForTesting: String {
+        learningView.subviews.compactMap { ($0 as? NSTextField)?.stringValue }.joined(separator: " ")
+    }
     var learningActionForTesting: NSButton? { learningView.actionForTesting }
     var candidateViewportForTesting: NSSize { scrollView.frame.size }
     var candidateViewportFrameForTesting: NSRect { scrollView.frame }

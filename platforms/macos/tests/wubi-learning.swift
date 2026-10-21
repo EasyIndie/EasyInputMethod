@@ -38,6 +38,19 @@ LocalAcceptanceEvidence.record("learning.defaults", expected: "Schema默认收�
 require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "save display preference")
 let window = CandidateWindow()
 let area = NSRect(x: 0, y: 0, width: 1000, height: 800)
+let focusedValues = [ImeCandidate(text: "我们", code: "wuw", source: .codeTable, isPrefix: false),
+                     ImeCandidate(text: "我国", code: "tlg", source: .codeTable, isPrefix: false)]
+window.update(candidates: focusedValues, selectedIndex: 0)
+window.layout(at: .zero, within: area)
+window.toggleLearningDetailsForTesting()
+window.update(candidates: focusedValues, selectedIndex: 1)
+window.layout(at: .zero, within: area)
+require(window.learningSummaryForTesting.contains(WubiLearning.lookup("我国")?.code?.uppercased() ?? "missing"),
+        "learning summary follows focused candidate")
+require(window.learningDetailsExpandedForTesting, "focus change keeps learning details open")
+window.update(candidates: focusedValues, selectedIndex: 999)
+require(window.selectedCandidateIndexForTesting == 1, "learning focus index is clamped")
+window.hide()
 func snapshot(_ name: String) {
     guard let image = window.renderSnapshotForTesting(), let data = image.representation(using: .png, properties: [:]) else { exit(1) }
     do { try data.write(to: output.appendingPathComponent(name + ".png")) } catch { exit(1) }
