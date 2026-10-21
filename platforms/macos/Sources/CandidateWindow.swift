@@ -586,7 +586,23 @@ final class CandidateWindow: NSObject {
     private var available = NSSize(width: 640, height: 800)
     private var input = ""
     private var hint: String?
+    private var showsNavigationHint = false
+    private(set) var isVertical = false
     private var warning: String?
+
+    var navigationHint: String { "\(isVertical ? "↑↓" : "←→")浏览 · 空格确认 · 数字直选" }
+
+    /// Use the axis of the last rendered layout, shared by preview and IMK.
+    func navigationDelta(for event: NSEvent) -> Int? {
+        guard event.type == .keyDown,
+            event.modifierFlags.intersection([.command, .control, .option]).isEmpty
+        else { return nil }
+        switch event.keyCode {
+        case isVertical ? 126 : 123: return -1
+        case isVertical ? 125 : 124: return 1
+        default: return nil
+        }
+    }
 
     var onSelect: ((Int) -> Void)?
     var onPage: ((Int) -> Void)?
@@ -606,6 +622,7 @@ final class CandidateWindow: NSObject {
     var stateStripFrameForTesting: NSRect { stateStrip.frame }
     var inputFrameForTesting: NSRect { inputLabel.frame }
     var displayedInput: String { inputLabel.stringValue }
+    var displayedHintForTesting: String { hintLabel.stringValue }
     var displayedWarning: String? { warningLabel.isHidden ? nil : warningLabel.stringValue }
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
     var candidateAccessibilityLabelsForTesting: [String] { labels.prefix(renderedCount).map { $0.accessibilityLabel() ?? "" } }
@@ -746,11 +763,13 @@ final class CandidateWindow: NSObject {
 
     func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
                 selectedIndex: Int = 0,
-                input: String = "", hint: String? = nil, warning: String? = nil) {
+                input: String = "", hint: String? = nil, showsNavigationHint: Bool = false,
+                warning: String? = nil) {
         refreshAppearance()
         learningView.update(ImeConfig.bool("candidate.show_wubi_learning") ? candidates.first?.text : nil)
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
+        self.showsNavigationHint = !candidates.isEmpty && showsNavigationHint
         self.warning = candidates.isEmpty ? nil : warning
         self.pageCount = candidates.isEmpty ? 0 : max(1, pageCount)
         self.pageIndex = min(max(0, pageIndex), max(0, self.pageCount - 1))
@@ -818,6 +837,11 @@ final class CandidateWindow: NSObject {
         let widths = visible.map { ceil($0.attributedStringValue.size().width) + 2 * PaddedCandidateCell.horizontal + 2 }
         let horizontalWidth = widths.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 14
         let vertical = horizontalWidth > innerLimit
+        isVertical = vertical
+        let displayedHint = showsNavigationHint ? navigationHint : hint
+        hintLabel.stringValue = displayedHint ?? ""
+        hintLabel.toolTip = displayedHint
+        hintLabel.setAccessibilityLabel(displayedHint)
         let pagesVisible = renderedCount > 0 && pageCount > 1
         let pageSize = pageLabel.cell?.cellSize ?? pageLabel.intrinsicContentSize
         let pageWidth = ceil(pageSize.width)
@@ -833,7 +857,7 @@ final class CandidateWindow: NSObject {
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
         let headerHeight: CGFloat = headerVisible ? 26 : 0
-        let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
+        let hintHeight: CGFloat = displayedHint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
         // 只有真的要显示附行/警告时才保留底部 22pt 区（hint 下留 8pt 边距）；
         // 否则底部只留 10pt，避免窗口比内容“多出”一大截、整体显得上移（报告 073）。

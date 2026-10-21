@@ -38,6 +38,31 @@ guard window.selectedCandidateIndexForTesting == 1,
       window.keyboardSelectedCandidatesForTesting == [1],
       window.candidateAccessibilityLabelsForTesting[1].contains("键盘焦点")
 else { fail("keyboard focus presentation/accessibility") }
+// Reflow the same selected candidates; navigation and hints must follow rendered geometry.
+for width: CGFloat in [320, 90, 320] {
+    window.update(candidates: values, selectedIndex: 1, input: "wq", showsNavigationHint: true)
+    window.layout(at: caret, within: NSRect(x: 0, y: 0, width: width, height: 500))
+    let vertical = width == 90
+    guard window.isVertical == vertical,
+          window.selectedCandidateIndexForTesting == 1,
+          window.displayedHintForTesting.hasPrefix(vertical ? "↑↓" : "←→"),
+          let geometry = window.layoutForTesting(), geometry.labels.count == 2,
+          vertical ? geometry.labels[0].minY > geometry.labels[1].minY
+                   : geometry.labels[0].minX < geometry.labels[1].minX
+    else { fail("reflow axis/hint/focus/geometry") }
+    for key: UInt16 in [123, 124, 125, 126] {
+        for flags: NSEvent.ModifierFlags in [[], .shift, .command, .control, .option] {
+            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: flags, timestamp: 0, windowNumber: 0, context: nil,
+                characters: "\u{1f}", charactersIgnoringModifiers: "\u{1f}",
+                isARepeat: true, keyCode: key) else { fail("axis event") }
+            let expected: Int? = flags.intersection([.command, .control, .option]).isEmpty
+                ? (key == (vertical ? 126 : 123) ? -1 : key == (vertical ? 125 : 124) ? 1 : nil)
+                : nil
+            guard window.navigationDelta(for: event) == expected else { fail("layout navigation mapping") }
+        }
+    }
+}
 guard let selectedSnapshot = window.renderSnapshotForTesting(), selectedSnapshot.pixelsWide > 0 else {
     fail("keyboard focus snapshot")
 }

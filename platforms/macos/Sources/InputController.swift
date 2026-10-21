@@ -518,9 +518,9 @@ final class LampyrisInputController: IMKInputController {
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
         }
-        if session.isComposing, event.keyCode == 126 || event.keyCode == 125 {
+        if session.isComposing, let delta = candidateWindow?.navigationDelta(for: event) {
             let count = session.candidates(limit: candidateCount).count
-            _ = candidateSelection.move(event.keyCode == 126 ? -1 : 1, count: count)
+            _ = candidateSelection.move(delta, count: count)
             updateMarked(client, session.buffer)
             showCandidates(client, session: session)
             return true
@@ -653,7 +653,7 @@ final class LampyrisInputController: IMKInputController {
         window.update(
             candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
             selectedIndex: candidateSelection.index,
-            input: session.buffer, hint: "↑↓浏览 · 空格确认 · 数字直选",
+            input: session.buffer, showsNavigationHint: true,
             warning: session.variantErrorMessage)
         window.show(at: caretRect(client))
         return candidates.count
