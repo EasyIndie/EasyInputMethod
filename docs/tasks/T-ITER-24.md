@@ -2,6 +2,8 @@
 
 ## 2026-10-21 后续用户反馈
 
+用户确认使用默认Option+字母。三修复已推送至a39bf0f；最终两次隔离预览均已正常清理，真实数据SHA不变。CUA连接长时间超时/Invalid app，当前无本轮仍打开窗口，无新增物理键验收PASS；不要重复等待此连接，GUI终端make macos-dev可供下一轮手验。
+
 - ADR-234：学习区固定首选导致与键盘焦点不一致，现改为读取当前焦点并保留整体详情展开；新候选逐字展开/滚动重置。实际学习说明回归修复前失败、修复后通过；`test-wubi-learning.py`及`make verify`通过。证据`/private/tmp/lampyris-learning-focus-{before,after,verify}.log`。用户同版物理键复验待做。
 - ADR-235：实际Option字符事件µ/物理M在原匹配器失败；现按当前布局还原非ASCII/空字符，预览`performKeyEquivalent`与keyDown共用处理器，设置/关于回调补齐，学习开关HUD同步。真实Option匹配修复前失败/后通过；预览全部默认状态键循环恢复、设置/关于回调、controller及make verify通过。证据`/private/tmp/lampyris-shortcut-*.log`；用户物理键/HUD复验待做。
 - ADR-236：输入区使用动态文本前景/背景/光标色，组合以强调色下划线区分；窗口主题启动/配置变更同步。新增真实文本属性回归修复前失败、后通过；亮/暗下已提交字、组合字、光标对比度分别21.0/16.67，>=4.5；两张实际输入区快照已目视检查。完整预览冒烟通过，用户同版屏幕与主题切换复验待做。证据`/private/tmp/lampyris-contrast-*.log`及报告106。
