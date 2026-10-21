@@ -4,7 +4,7 @@
 
 - 更新：2026-10-21 / Codex（Luna）；ADR-231已实现上下方向键浏览当前页候选、空格确认；定向测试/Preview strict build/controller集成复跑/`make verify`通过；全量macOS离线集有一项私有剪贴板失败。新源码未签名装机，实机验收待做。
 - 产品RC源码仍为`3728dfc`（PR #54）；正式与A/B、安装升级及五日试用未完成；main上的开发路径为固定身份私有根，未锁正式RC。
-- 当前分支`docs/106-imk-post-replacement`，HEAD `7c696be`；本轮ADR-231、宿主/预览、候选展示测试与验收文档待提交。PR #59新HEAD CI无法在本机查询。
+- 当前分支`docs/106-imk-post-replacement`，候选导航实现提交`cfa4e36`；本交接记录随后单独提交。PR #59新HEAD CI无法在本机查询。
 - 排序915a70a、词库/整词回查8e35700、混输固定入口323b1a1；ADR-226…229，报告105。旧产品候选8eb872f的104结果不继承。
 - PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新包别名SHA `be7deecf…78a68318`匹配，历史PID26819已确认。当前手工UI观察到wq/nihao提交、Esc、退格重输、数字键与空格提交结果相同、三模式循环；候选面板未显示，当前宿主PID未独立确认。TIS仍回读ABC，输入源状态存在矛盾。旧b652包可恢复，正式包与真实配置/词库未改变。
 
