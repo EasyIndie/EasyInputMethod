@@ -1,0 +1,94 @@
+{
+  "source_commit": "eb151c5aeb1ff35c4b0188f90bbb5beddce723bb",
+  "executable_sha256": "67028d52a2106489176d4d40cf81d3fcb6ad5e3d0bd8598b347b268d553fd3a5",
+  "pid": 3115,
+  "scope": "TextEdit/mixed: session.feed开始至客户端/候选更新返回；不含前置事件分类、IMK调度或屏幕合成",
+  "offset_bytes": {
+    "start": 280,
+    "end": 10615
+  },
+  "cohort_sha256": "9fec5204871931a313c1f326752880ce40c06ee74ab34e29e0f5d619fbe0e127",
+  "quantile": "nearest rank",
+  "all": {
+    "engineUs": {
+      "n": 150,
+      "p50_ms": 0.1231,
+      "p95_ms": 1.1220999999999999,
+      "max_ms": 2.0262000000000002,
+      "at_or_above_16ms": 0
+    },
+    "totalUs": {
+      "n": 150,
+      "p50_ms": 7.0688,
+      "p95_ms": 11.6057,
+      "max_ms": 18.4636,
+      "at_or_above_16ms": 2
+    }
+  },
+  "by_commit": {
+    "False": {
+      "engineUs": {
+        "n": 132,
+        "p50_ms": 0.10990000000000001,
+        "p95_ms": 0.6307999999999999,
+        "max_ms": 0.998,
+        "at_or_above_16ms": 0
+      },
+      "totalUs": {
+        "n": 132,
+        "p50_ms": 7.2148,
+        "p95_ms": 11.825700000000001,
+        "max_ms": 18.4636,
+        "at_or_above_16ms": 2
+      }
+    },
+    "True": {
+      "engineUs": {
+        "n": 18,
+        "p50_ms": 1.1133,
+        "p95_ms": 2.0262000000000002,
+        "max_ms": 2.0262000000000002,
+        "at_or_above_16ms": 0
+      },
+      "totalUs": {
+        "n": 18,
+        "p50_ms": 5.3771,
+        "p95_ms": 11.0079,
+        "max_ms": 11.0079,
+        "at_or_above_16ms": 0
+      }
+    }
+  },
+  "rss_kib": {
+    "rss-round-3-kib": 52208,
+    "rss-round-2-kib": 52592,
+    "rss-start-kib": 44416,
+    "rss-round-1-kib": 53264
+  },
+  "committed_text": {
+    "1-wq": "你",
+    "1-nihao": "你好",
+    "1-xi'an": "西安",
+    "1-shurufa": "输入法",
+    "1-huiguiceshi": "回归测试",
+    "1-rengongzhineng": "人工智能",
+    "2-wq": "你",
+    "2-nihao": "你好",
+    "2-xi'an": "西安",
+    "2-shurufa": "输入法",
+    "2-huiguiceshi": "回归测试",
+    "2-rengongzhineng": "人工智能",
+    "3-wq": "你",
+    "3-nihao": "你好",
+    "3-xi'an": "西安",
+    "3-shurufa": "输入法",
+    "3-huiguiceshi": "回归测试",
+    "3-rengongzhineng": "人工智能"
+  },
+  "not_comparable_as_controlled_before_after": "旧候选采样词串、冷热状态及环境不相同；不能仅据旧21.2ms归因优化幅度。",
+  "precohort": {
+    "rows": 4,
+    "max_total_ms": 74.17,
+    "status": "非受控手工输入阶段，完整保留；不得据后续暖态样本排除首次/冷态长尾风险。"
+  }
+}

@@ -1,0 +1,48 @@
+{
+  "source_before": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "source_after": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "marker_absent": true,
+  "stopped_exact_pid": 3115,
+  "stopped_executable": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app/Contents/MacOS/LampyrisIMKTest",
+  "host_exit_confirmed": true,
+  "data_after_sampling": {
+    "private/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "private/user-dictionary.tsv": "ed6874dc9fc0e3de36328dcdb386231cec10b139759084f17c999ed8aefa61e7",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "production_data_unchanged": true,
+  "private_config_unchanged": true,
+  "private_dictionary_changed_by_test_learning": true,
+  "note": "仅开发私有个人词库发生正常选词学习；未清空或还原词库。"
+}
