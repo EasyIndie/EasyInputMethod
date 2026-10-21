@@ -1,0 +1,9 @@
+{
+  "signed_release": false,
+  "installed": false,
+  "sha256": {
+    "platforms/macos/build/Lampyris.app/Contents/MacOS/Lampyris": "b79d4fe0a62b6086ce19bac1938e0d19be14f920d91e817696f04b3672664c8e",
+    "platforms/macos/build/Lampyris.app/Contents/Resources/wubi86-core.tsv": "511edd6237d47a83ed79237b0e9916cd65d8f926aadb747331c3f8d3f7a43561",
+    "platforms/macos/build/Lampyris.app/Contents/Resources/pinyin-core.tsv": "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3"
+  }
+}

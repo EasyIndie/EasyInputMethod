@@ -1,0 +1,294 @@
+    Checking ime-core v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-core)
+    Checking ime-pinyin v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-pinyin)
+    Checking ime-table v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-table)
+    Checking ime-ffi v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-ffi)
+    Checking ime-cli v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-cli)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.93s
+   Compiling ime-core v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-core)
+   Compiling ime-pinyin v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-pinyin)
+   Compiling ime-table v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-table)
+   Compiling ime-ffi v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-ffi)
+   Compiling ime-cli v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-cli)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.30s
+     Running unittests src/main.rs (target/debug/deps/ime_cli-b8deba8ee9816ab3)
+
+running 2 tests
+test tests::mode_of_and_config_mode_read_snapshot ... ok
+test tests::candidate_count_reads_file_and_falls_back_to_default ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/core_vocabulary.rs (target/debug/deps/core_vocabulary-cb76ca33520eb2ca)
+
+running 1 test
+test common_input_terms_are_reachable_and_submit_the_displayed_candidate ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_config-991bff7d2aa38e5e)
+
+running 16 tests
+test tests::schema_is_single_source_and_matches_v1 ... ok
+test tests::invalid_value_returns_error_and_leaves_file_unchanged ... ok
+test tests::load_or_defaults_records_error_and_reload_clears_it ... ok
+test tests::reload_error_notifies_error_key_and_keeps_snapshot ... ok
+test tests::deleted_line_falls_back_to_schema_default ... ok
+test tests::missing_file_uses_defaults_and_first_set_generates_annotated_file ... ok
+test tests::syntax_error_keeps_last_snapshot_and_reports_line ... ok
+test tests::set_writes_atomically_updates_snapshot_and_notifies_subscriber ... ok
+test tests::shortcut_defaults_reduce_accidental_toggles_without_overwriting_explicit_values ... ok
+test tests::unknown_keys_are_ignored_and_preserved ... ok
+test tests::written_config_is_owner_only ... ok
+test tests::failed_writes_publish_reason_keep_state_and_recover_after_lock_release ... ok
+test tests::shortcut_aliases_normalize_and_file_reload_preserves_good_snapshot ... ok
+test tests::enum_and_bool_literals_accept_quoted_and_bare_forms ... ok
+test tests::shortcuts_reject_invalid_syntax_and_collisions_without_writes ... ok
+test tests::watcher_reloads_on_external_edit ... ok
+
+test result: ok. 16 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.16s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_core-2fc3b754a594a2f8)
+
+running 25 tests
+test tests::full_width_reflects_options_and_override ... ok
+test tests::digit_selects_candidate ... ok
+test tests::backspace_and_escape ... ok
+test tests::focus_out_resets_quotes_without_resetting_mode_or_width ... ok
+test tests::engines_are_skipped_beyond_declared_code_length ... ok
+test tests::compose_buffer_is_bounded_and_backspace_recovers ... ok
+test tests::engine_option_changes_recompute_without_commit_and_duplicates_preserve_page ... ok
+test tests::exact_wubi_precedes_high_frequency_completion_on_every_path ... ok
+test tests::mode_cycle ... ok
+test tests::mode_from_str ... ok
+test tests::mixed_fallback_stays_visible_after_learning_and_page_size_changes ... ok
+test tests::mixed_auto_commit_waits_for_distinct_pinyin_and_allows_explicit_choice ... ok
+test tests::personalization_evaluates_each_frequency_once ... ok
+test tests::pagination_selects_visible_candidates_and_resets_on_edit ... ok
+test tests::personalization_keeps_exact_pinyin_before_fuzzy_even_with_maximal_learning ... ok
+test tests::mixed_fallback_has_a_fixed_start_for_one_or_two_pinyin_candidates ... ok
+test tests::pinyin_mode_without_engine_yields_no_candidates ... ok
+test tests::punctuation_quotes_width_and_english_are_session_state ... ok
+test tests::space_commits_first ... ok
+test tests::pinyin_separator_preserves_raw_buffer_editing_and_mode_quotes ... ok
+test tests::width_preference_does_not_cancel_composition_or_change_other_state ... ok
+test tests::return_commits_raw_composition_and_passes_through_when_idle ... ok
+test tests::pure_wubi_and_same_text_mixed_keep_unique_auto_commit ... ok
+test tests::typing_produces_candidates ... ok
+test tests::wubi_single_order_ignores_learning_but_phrases_have_bounded_bonus ... ok
+
+test result: ok. 25 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_dict-7afcd65629cd4ef1)
+
+running 12 tests
+test tests::adversarial_corpus_is_handled_without_panicking ... ok
+test tests::rejects_untrusted_rows ... ok
+test tests::read_only_directory_preserves_existing_data ... ok
+test tests::preferred_learning_is_grouped_and_shared_across_stores ... ok
+test tests::persists_merges_and_preserves_good_data_on_failure ... ok
+test tests::stale_lock_blocks_writes_preserves_data_and_manual_recovery_works ... ok
+test tests::preferred_learning_rebases_saturated_weights_without_losing_entries ... ok
+test tests::wildcard_preference_uses_only_the_selected_full_code_group ... ok
+test tests::snapshots_refresh_atomically_and_export_latest_version ... ok
+test tests::capacity_limits_are_enforced ... ok
+test tests::preferred_learning_rolls_back_rebasing_when_capacity_is_full ... ok
+test tests::failed_atomic_write_and_capacity_keep_memory_and_disk_unchanged ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.07s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_ffi-032845971ca16c21)
+
+running 35 tests
+test config::tests::schema_layout_matches_v1 ... ok
+test config::tests::last_error_is_empty_without_config_error ... ok
+test config::tests::get_returns_value_as_string ... ok
+test config::tests::concurrent_snapshots_do_not_share_a_single_slot ... ok
+test data::tests::pinyin_is_shared_and_options_remain_per_engine ... ok
+test session::tests::candidates_expose_source_codes ... ok
+test session::tests::create_key_candidates_select_commit ... ok
+test session::tests::candidate_strings_are_terminated_and_owned_across_pages ... ok
+test session::tests::full_width_accessor_tracks_toggle ... ok
+test session::tests::invalid_codepoint_returns_error ... ok
+test session::tests::key_outcome_and_buffer ... ok
+test session::tests::focus_out_releases_user_snapshot_but_reset_keeps_active_data ... ok
+test data::tests::tables_are_shared_and_changed_files_create_a_new_snapshot ... ok
+test data::tests::packaged_pinyin_rejects_empty_characters_and_explicit_empty_words ... ok
+test session::tests::learning_abi_is_bounded_owned_and_distinguishes_missing_explanations ... ok
+test session::tests::new_with_data_missing_file_returns_null ... ok
+test session::tests::null_session_is_safe ... ok
+test session::tests::page_without_composition_is_safe ... ok
+test session::tests::explicit_pinyin_choices_keep_unit_learning ... ok
+test session::tests::new_with_data_loads_tsv ... ok
+test config::tests::set_and_reload_roundtrip ... ok
+test session::tests::reverse_lookup_is_owned_read_only_and_handles_invalid_input ... ok
+test session::tests::select_out_of_range_returns_error ... ok
+test session::tests::set_mode_validates_and_switches ... ok
+test session::tests::user_candidates_scan_cost_probe ... ignored, timing probe; run with --ignored --nocapture
+test tests::abi_version_is_reported ... ok
+test variant::tests::empty_and_corrupt_maps_are_rejected ... ok
+test variant::tests::longest_match_prefers_phrases_then_chars ... ok
+test session::tests::user_candidates_keep_source_exact_and_frequency_priority_with_a_bound ... ok
+test session::tests::lazy_variant_errors_are_visible_and_reinjection_recovers_effective_output ... ok
+test config::tests::subscribe_and_unsubscribe ... ok
+test session::tests::later_page_first_choices_are_explicit_but_default_space_is_not ... ok
+test session::tests::personal_dictionary_correction_export_import_and_reload_use_the_same_store ... ok
+test session::tests::rare_single_choice_keeps_rank_after_backspace_paging_and_store_reload ... ok
+test session::tests::explicit_wubi_choices_respect_base_frequency_gap_after_reload ... ok
+
+test result: ok. 34 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_pinyin-a4c9bd72ba6c5c78)
+
+running 22 tests
+test syllable::tests::segment_rejects_non_ascii_and_empty ... ok
+test engine::tests::fuzzy_is_opt_in_and_deduplicated ... ok
+test engine::tests::convert_marks_source_pinyin ... ok
+test syllable::tests::segment_handles_overlong_input ... ok
+test syllable::tests::segment_longest_match_with_backtracking ... ok
+test engine::tests::engine_type_is_pinyin ... ok
+test syllable::tests::tone_base_maps_vowels_ue_and_syllabic_nasals ... ok
+test syllable::tests::strip_tones_handles_combining_marks ... ok
+test table::tests::adversarial_corpus_is_handled_without_panicking ... ok
+test engine::tests::exact_spelling_precedes_frequent_fuzzy_matches_and_fuzzy_reaches_later_syllables ... ok
+test table::tests::convert_initial_letters ... ok
+test table::tests::convert_non_ascii_yields_empty ... ok
+test table::tests::from_tsv_rejects_bad_lines ... ok
+test table::tests::convert_overlong_and_zero_max ... ok
+test table::tests::explicit_syllable_boundaries_do_not_merge_or_accept_empty_parts ... ok
+test table::tests::reverse_index_shares_readings_and_preserves_first_pronunciation ... ok
+test table::tests::convert_full_pinyin_single_and_word ... ok
+test engine::tests::fuzzy_query_budget_is_bounded_for_many_ambiguous_syllables ... ok
+test table::tests::reverse_lookup_prefers_first_listed_reading ... ok
+test table::tests::full_word_lookup_recovers_from_a_different_greedy_segmentation ... ok
+test table::tests::segment_uses_collected_syllable_set ... ok
+test table::tests::reverse_lookup_char_and_word ... ok
+
+test result: ok. 22 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/reading_quality.rs (target/debug/deps/reading_quality-d3d5f7a754d25f49)
+
+running 1 test
+test shipped_common_readings_stay_on_first_page ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.25s
+
+     Running unittests examples/generate.rs (target/debug/examples/generate_pinyin-340e6a19134f2ad2)
+
+running 2 tests
+test tests::secondary_readings_use_bounded_evidence_without_erasing_rare_readings ... ok
+test tests::reading_evidence_uses_final_aligned_legal_phrase_once ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/debug/deps/ime_table-e27b2c01aeaaa04d)
+
+running 18 tests
+test learning::tests::verified_examples_cover_every_recognition_key_and_basic_strokes ... ok
+test learning::tests::phrases_use_full_codes_and_preserve_every_character ... ok
+test learning::tests::roots_and_recognition_are_distinct_and_reconstruct_code ... ok
+test learning::tests::feedback_characters_have_verified_roots_without_invented_suffixes ... ok
+test tests::configured_wildcard_and_auto_commit_change_behavior ... ok
+test tests::adversarial_corpus_is_handled_without_panicking ... ok
+test tests::exact_returns_weight_sorted_entries ... ok
+test tests::from_tsv_parses_normal_lines_and_skips_comments_and_blanks ... ok
+test tests::from_tsv_rejects_empty_code_or_text ... ok
+test tests::from_tsv_rejects_invalid_weight ... ok
+test tests::from_tsv_rejects_missing_column ... ok
+test tests::prefix_returns_matches_in_code_order_with_limit ... ok
+test learning::tests::missing_data_and_oversized_queries_are_explicit ... ok
+test tests::convert_matches_full_scan_reference ... ok
+test learning::tests::primary_index_is_sorted_complete_and_queryable ... ok
+test learning::tests::generated_teaching_types_preserve_uncertainty_and_publication_boundaries ... ok
+test learning::tests::embedded_codes_match_every_primary_entry ... ok
+test tests::bounded_top_k_preserves_best_candidates_for_prefix_and_wildcard ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+
+     Running unittests src/lib.rs (target/debug/deps/wubi_encoder-eb40f9f342f5425f)
+
+running 27 tests
+test tests::chengzi_single_stroke_uses_l_padding ... ok
+test tests::empty_or_comment_only_input_is_empty_error ... ok
+test tests::comments_and_blank_lines_are_skipped ... ok
+test tests::hechengzi_requires_at_least_two_radicals ... ok
+test tests::chengzi_requires_at_least_one_stroke ... ok
+test tests::hechengzi_three_radicals_appends_recognition_code ... ok
+test tests::chengzi_unknown_radical_is_rejected ... ok
+test tests::chengzi_uses_key_plus_first_second_last_stroke ... ok
+test tests::chengzi_two_strokes_omits_last ... ok
+test tests::hechengzi_four_or_more_radicals_uses_first_second_third_last ... ok
+test tests::hechengzi_unknown_radical_is_rejected ... ok
+test tests::hechengzi_two_radicals_appends_recognition_code ... ok
+test tests::is_radical_char_checks_membership ... ok
+test tests::key_name_char_covers_all_25_keys ... ok
+test tests::key_name_encodes_as_four_repeats ... ok
+test tests::loads_fixture_and_looks_up ... ok
+test tests::malformed_lines_are_rejected ... ok
+test tests::phrase_four_or_more_chars_uses_first_second_third_last ... ok
+test tests::phrase_known_samples_encode_correctly ... ok
+test tests::phrase_rejects_insufficient_codes ... ok
+test tests::phrase_three_chars_takes_first_three_plus_third_second ... ok
+test tests::phrase_requires_at_least_two_characters ... ok
+test tests::phrase_two_chars_takes_two_codes_each ... ok
+test tests::stroke_to_key_maps_wubi_stroke_zone ... ok
+test tests::unknown_key_is_rejected ... ok
+test tests::recognition_key_covers_all_fifteen_combinations ... ok
+test tests::unknown_radical_returns_none ... ok
+
+test result: ok. 27 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_config
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_core
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_dict
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_ffi
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_pinyin
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests ime_table
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests wubi_encoder
+
+running 1 test
+test crates/wubi-encoder/src/lib.rs - encode_phrase (line 338) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.29s
+
+advisories ok, bans ok, licenses ok, sources ok
+✅ make verify 全部通过（编码阶段）
+./scripts/verify-no-network.sh
+▶ 1/2 源码级检查：核心 crate 依赖
+  ✅ ime-core
+  ✅ ime-table
+  ✅ ime-pinyin
+  ✅ ime-dict
+  ✅ ime-config
+▶ 2/2 产物级检查：符号表
+  已检查 198 个产物。
+✅ 隐私断言通过：未发现网络依赖或网络符号。

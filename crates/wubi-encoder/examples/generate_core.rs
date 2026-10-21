@@ -1,10 +1,10 @@
 //! T-M1-09：生成**内置核心码表**（单字全量 + 精选高频词组）。
 //!
-//! 体积预算（`docs/技术方案.md` §7.2）：内置核心 ≤ 0.6 MB。
+//! 体积预算（`docs/技术方案.md` §7.2）：内置核心 ≤ 0.8 MB。
 //! 裁剪规则（见文件头注释，也写入报告）：
 //!   - 单字：`wubi86-single.tsv` **全量保留**（约 313 KB）；
 //!   - 词组：按 jieba 真实词频（ADR-013）**全局降序**，取前
-//!     [`CORE_PHRASE_LIMIT`] 条（等权按 code、text 升序，保证可复现）。
+//!     [`CORE_PHRASE_LIMIT`] 条，加 D15 训练词（等权按 code、text 升序）。
 //!
 //! 输入：
 //!   - 单字码表：`data/generated/wubi86-single.tsv`（T-M1-05，`code\t字\tweight`）；
@@ -23,14 +23,15 @@ use std::fmt::Write as _;
 use std::fs;
 use std::path::{Path, PathBuf};
 
-/// 内置核心码表的词组上限条数（`docs/技术方案.md` §7.2 的「~10k 高频词组」）。
-const CORE_PHRASE_LIMIT: usize = 10_000;
+/// 内置核心码表的词组上限条数（`docs/技术方案.md` §7.2 的「20k 基础词组加训练词」）。
+const CORE_PHRASE_LIMIT: usize = 20_000;
 
-/// 内置核心体积预算（0.6 MB，按 1000 进制保守取值）。
-const BUDGET_BYTES: usize = 600_000;
+/// 内置核心体积预算（0.8 MB，按 1000 进制保守取值）。
+const BUDGET_BYTES: usize = 800_000;
 
 /// 内置核心必须包含的验收样本词组（码写死，见 T-M1-06b / 技术方案 §6.2）。
 const REQUIRED_PHRASES: &[(&str, &str)] = &[
+    ("输入法", "ltif"),
     ("世界", "anlw"),
     ("人民", "wwna"),
     ("中文", "khyy"),
@@ -44,7 +45,7 @@ const REQUIRED_PHRASES: &[(&str, &str)] = &[
 const REQUIRED_SINGLES: &[(&str, &str)] = &[("你", "wqiy")];
 
 /// 因词频过低被排除出内置核心的样本（存在于全量词组表，属可选包 1）。
-const BELOW_CUTOFF_SAMPLES: &[(&str, &str)] = &[("输入法", "ltif")];
+const BELOW_CUTOFF_SAMPLES: &[(&str, &str)] = &[];
 
 struct Row {
     code: String,
@@ -83,7 +84,16 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("单字码表为空".into());
     }
 
-    let kept_phrases = top_phrases(&phrases, CORE_PHRASE_LIMIT);
+    let coverage = fs::read_to_string(root.join("data/input-quality.tsv"))?;
+    let selected: std::collections::BTreeSet<&str> = coverage
+        .lines()
+        .filter(|line| !line.starts_with('#'))
+        .filter_map(|line| {
+            let fields: Vec<_> = line.split('\t').collect();
+            (fields.len() == 3 && fields[1] == "train").then(|| fields[2])
+        })
+        .collect();
+    let kept_phrases = top_phrases(&phrases, CORE_PHRASE_LIMIT, &selected);
     verify_required(&singles, &kept_phrases)?;
 
     let core_tsv = render_core(&singles, &kept_phrases);
@@ -142,7 +152,11 @@ fn parse_rows(input: &str, label: &str) -> Result<Vec<Row>, Box<dyn Error>> {
 }
 
 /// 全局按词频降序取前 `limit` 条（等权按 code、text 升序，可复现）。
-fn top_phrases(phrases: &[Row], limit: usize) -> Vec<Row> {
+fn top_phrases(
+    phrases: &[Row],
+    limit: usize,
+    selected: &std::collections::BTreeSet<&str>,
+) -> Vec<Row> {
     let mut sorted: Vec<&Row> = phrases.iter().collect();
     sorted.sort_by(|a, b| {
         b.weight
@@ -152,8 +166,9 @@ fn top_phrases(phrases: &[Row], limit: usize) -> Vec<Row> {
     });
     sorted
         .into_iter()
-        .take(limit)
-        .map(|r| Row {
+        .enumerate()
+        .filter(|(index, row)| *index < limit || selected.contains(row.text.as_str()))
+        .map(|(_, r)| Row {
             code: r.code.clone(),
             text: r.text.clone(),
             weight: r.weight,
@@ -211,7 +226,7 @@ fn render_core(singles: &[Row], phrases: &[Row]) -> String {
     );
     let _ = writeln!(
         out,
-        "# 裁剪规则：单字全量保留；词组按 jieba 词频全局降序取前 {CORE_PHRASE_LIMIT} 条。"
+        "# 裁剪规则：单字全量保留；词组按 jieba 词频全局降序取前 {CORE_PHRASE_LIMIT} 条，加D15训练词。"
     );
     let _ = writeln!(
         out,
@@ -256,7 +271,7 @@ fn render_report(
     let _ = writeln!(out, "phrase_rows_full = {}", phrases.len());
     let _ = writeln!(
         out,
-        "phrase_limit = {CORE_PHRASE_LIMIT}（按 weight 全局降序取前 N 条，等权按 code/text 升序）"
+        "phrase_limit = {CORE_PHRASE_LIMIT}（按 weight 全局降序取前 N 条，加D15训练词，等权按 code/text 升序）"
     );
     let _ = writeln!(out, "phrase_rows_kept = {}", kept_phrases.len());
     let _ = writeln!(out);
@@ -264,7 +279,7 @@ fn render_report(
     let _ = writeln!(out, "[size]");
     let _ = writeln!(out, "core_rows = {}", singles.len() + kept_phrases.len());
     let _ = writeln!(out, "core_bytes = {core_bytes}");
-    let _ = writeln!(out, "budget_bytes = {BUDGET_BYTES}（0.6 MB）");
+    let _ = writeln!(out, "budget_bytes = {BUDGET_BYTES}（0.8 MB）");
     let _ = writeln!(
         out,
         "within_budget = {}",

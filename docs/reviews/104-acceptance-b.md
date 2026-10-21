@@ -1,5 +1,7 @@
 # 104 — B（arm64 / macOS 27）隔离候选复验
 
+> 历史候选专项：本报告只描述8eb872f及下列产物，后续源码改进见[报告105](105-mvp-input-quality.md)与HANDOFF。正文的“当前”均限本次历史候选，PASS不得累计到新RC。
+
 2026-10-20，MacBook-Air / macOS 27.0.1。**arm64-macos27 已转 PASS；当前 pass 14 / fail 0 / skip 0 / blocked 9**。`acceptance-results.py check` 返回预期 BLOCKED（3），格式与证据引用有效；不代表完整发布验收通过。
 
 ## 1. 候选与边界

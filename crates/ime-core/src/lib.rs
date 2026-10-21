@@ -324,7 +324,17 @@ impl Session {
             .candidates
             .drain(..)
             .map(|c| {
-                let frequency = score(&c);
+                let learned = score(&c);
+                let frequency = if c.source == CandidateSource::Pinyin {
+                    i64::from(learned)
+                } else {
+                    let bonus = if c.text.chars().count() > 1 {
+                        learned.min(32)
+                    } else {
+                        0
+                    };
+                    i64::from(c.weight) + i64::from(bonus)
+                };
                 (c, frequency)
             })
             .collect();
@@ -374,7 +384,7 @@ impl Session {
         if eligible.is_empty() {
             return;
         }
-        let insertion = table_count.min(self.page_size - eligible.len());
+        let insertion = table_count.min(self.page_size - 2);
         let mut fallback = Vec::new();
         for index in eligible.into_iter().rev() {
             fallback.push(self.candidates.remove(index));
@@ -596,6 +606,7 @@ impl Session {
         merged.sort_by(|a, b| {
             usize::from(a.source == CandidateSource::Pinyin)
                 .cmp(&usize::from(b.source == CandidateSource::Pinyin))
+                .then_with(|| a.is_prefix.cmp(&b.is_prefix))
                 .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
@@ -686,6 +697,30 @@ mod tests {
                 s.handle_key(ch);
             }
             assert_eq!(s.handle_key('g'), KeyOutcome::Committed("佢".into()));
+        }
+    }
+
+    #[test]
+    fn mixed_fallback_has_a_fixed_start_for_one_or_two_pinyin_candidates() {
+        for size in [3, 5, 9] {
+            for count in [1, 2] {
+                let mut s = Session::new(InputMode::Mixed);
+                s.set_page_size(size);
+                s.set_wubi_engine(Box::new(ManyEngine));
+                s.handle_key('a');
+                let extra = (0..count)
+                    .map(|i| Candidate::new(format!("拼{i}"), "a", 10 - i, CandidateSource::Pinyin))
+                    .collect();
+                s.personalize(extra, |_| 0);
+                assert_eq!(s.candidates()[size - 2].text, "拼0");
+                for index in 0..size - 2 {
+                    assert_eq!(s.candidates()[index].text, format!("词{index:02}"));
+                }
+                assert_eq!(
+                    s.handle_key(char::from(b'1' + (size - 2) as u8)),
+                    KeyOutcome::Committed("拼0".into())
+                );
+            }
         }
     }
 
@@ -962,7 +997,62 @@ mod tests {
             u32::from(c.text == "新增")
         });
         assert_eq!(calls.get(), original + 1);
-        assert_eq!(s.candidates[0].text, "新增");
+        assert_eq!(s.candidates[0].text, "甲");
+    }
+
+    #[test]
+    fn wubi_single_order_ignores_learning_but_phrases_have_bounded_bonus() {
+        let mut s = Session::new(InputMode::WubiOnly);
+        let candidates = vec![
+            Candidate::new("甲", "a", 100, CandidateSource::CodeTable),
+            Candidate::new("乙", "a", 90, CandidateSource::CodeTable),
+            Candidate::new("常用词", "a", 80, CandidateSource::Phrase),
+            Candidate::new("冷门词", "a", 1, CandidateSource::Phrase),
+        ];
+        s.personalize(candidates, |c| if c.text == "甲" { 0 } else { u32::MAX });
+        let texts: Vec<_> = s.candidates().iter().map(|c| c.text.as_str()).collect();
+        assert_eq!(texts, ["常用词", "甲", "乙", "冷门词"]);
+        s.personalize(vec![], |_| 0);
+        assert_eq!(s.candidates()[0].text, "甲");
+    }
+
+    #[test]
+    fn exact_wubi_precedes_high_frequency_completion_on_every_path() {
+        struct BoundaryEngine;
+        impl Engine for BoundaryEngine {
+            fn convert(&self, input: &str, _: usize) -> ConvertResult {
+                let mut prefix = Candidate::new("乙", "ab", 1000, CandidateSource::CodeTable);
+                prefix.is_prefix = input != "ab";
+                ConvertResult {
+                    candidates: vec![
+                        prefix,
+                        Candidate::new("甲", input, 1, CandidateSource::CodeTable),
+                    ],
+                    should_commit: None,
+                }
+            }
+            fn engine_type(&self) -> EngineType {
+                EngineType::CodeTable
+            }
+            fn max_code_length(&self) -> usize {
+                4
+            }
+        }
+        for mode in [InputMode::WubiOnly, InputMode::Mixed] {
+            let mut s = Session::new(mode);
+            s.set_wubi_engine(Box::new(BoundaryEngine));
+            for _ in 0..3 {
+                s.handle_key('a');
+                assert_eq!(s.candidates()[0].text, "甲");
+                s.personalize(vec![], |_| u32::MAX);
+                assert_eq!(s.candidates()[0].text, "甲");
+                s.handle_key('b');
+                assert_eq!(s.candidates()[0].text, "乙");
+                s.handle_key('\u{8}');
+                assert_eq!(s.candidates()[0].text, "甲");
+                assert_eq!(s.handle_key('2'), KeyOutcome::Committed("乙".into()));
+            }
+        }
     }
 
     #[test]

@@ -7,18 +7,19 @@
 [trim_rule]
 single_rows = 27823（全量保留）
 phrase_rows_full = 337231
-phrase_limit = 10000（按 weight 全局降序取前 N 条，等权按 code/text 升序）
-phrase_rows_kept = 10000
+phrase_limit = 20000（按 weight 全局降序取前 N 条，加D15训练词，等权按 code/text 升序）
+phrase_rows_kept = 20064
 
 [size]
-core_rows = 37823
-core_bytes = 491854
-budget_bytes = 600000（0.6 MB）
+core_rows = 47887
+core_bytes = 663799
+budget_bytes = 800000（0.8 MB）
 within_budget = yes
 
 [required_samples]
 # text	code	weight
 你	wqiy	234587
+输入法	ltif	19
 世界	anlw	34387
 人民	wwna	43719
 中文	khyy	1755
@@ -30,4 +31,3 @@ within_budget = yes
 [below_cutoff]
 # 以下样本因词频过低被排除出内置核心（存于全量词组表 / 可选包 1）：
 # text	code	weight
-输入法	ltif	19

@@ -1,14 +1,16 @@
 {
   "source_sha256": "96f310a83c26d51cd8cdc13ea99c6232824ec0cff3276ba96ef5f636b77d931f",
-  "output_sha256": "0d4325cd502a3bf7fde65b8f64a202912cf505c10bf0e60e04aaad47beab648f",
-  "budget_bytes": 262144,
-  "output_bytes": 262131,
-  "entries": 12403,
-  "order": "weight descending, word ascending, pinyin ascending",
+  "output_sha256": "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3",
+  "budget_bytes": 800000,
+  "output_bytes": 432250,
+  "entries": 20067,
+  "order": "top 20000 by weight, word, pinyin plus D15 train; holdout excluded",
+  "selection_sha256": "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d",
   "sources": [
     "D4",
     "D5",
-    "D10"
+    "D10",
+    "D15"
   ],
   "license": "CC-BY-SA-4.0"
 }

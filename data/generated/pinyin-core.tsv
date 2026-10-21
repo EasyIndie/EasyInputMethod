@@ -1,5 +1,5 @@
 # 萤火虫核心拼音词表；CC-BY-SA-4.0；ADR-031
-# 来源 D4/D5/D10（MIT）；256KiB 内按词频降序保留，详见数据许可文档。
+# 来源 D4/D5/D10（MIT）；前20000条加D15训练词，原始词频不变，详见数据许可文档。
 yi ge	一个	142747
 zhong guo	中国	129470
 wo men	我们	98740
@@ -12403,3 +12403,7667 @@ pu tong ren	普通人	360
 you sheng	有生	360
 han shu	汉书	360
 yan xi	沿袭	360
+tian ye	田野	360
+kong di	空地	360
+qiang zu	羌族	360
+kao ru	考入	360
+yao ye	药业	360
+mi feng	蜜蜂	360
+gu fu	辜负	360
+yi shu	遗书	360
+hao yao qi	郝摇旗	360
+zhong chen	重臣	360
+yin yue	隐约	360
+ma lie zhu yi	马列主义	360
+yi qu	一曲	359
+zhong nan hai	中南海	359
+hua xue jia	化学家	359
+yuan ze shang	原则上	359
+can jun	参军	359
+zeng fu	增幅	359
+duo zi	多子	359
+duo yang xing	多样性	359
+tian jin dui	天津队	359
+zun hao	尊号	359
+yan qi	延期	359
+e yi	恶意	359
+la dong	拉动	359
+san she	散射	359
+xin yao	新药	359
+zao fan	早饭	359
+mao bi	毛笔	359
+shui dao	水道	359
+chu li	矗立	359
+zhan tai	站台	359
+jie meng	结盟	359
+jiang xue	讲学	359
+jiang shou	讲授	359
+diao du	调度	359
+dao chang	道场	359
+wen hua	问话	359
+a er ba ni ya	阿尔巴尼亚	359
+gao gui	高贵	359
+xiu bu	修补	358
+shan chu	删除	358
+nan xiang	南湘	358
+fa jiao	发酵	358
+hui he	回合	358
+guo bao	国宝	358
+zong zu	宗族	358
+gong shi	工事	358
+ju ren	巨人	358
+miao li	庙里	358
+qiang guo	强国	358
+qiang han	强悍	358
+zong can mou zhang	总参谋长	358
+ci bei	慈悲	358
+zhan guo	战果	358
+jiao wu	教务	358
+ri ben zheng fu	日本政府	358
+ming yue	明月	358
+gou si	构思	358
+huo zhuo	活捉	358
+te wei	特委	358
+li suo dang ran	理所当然	358
+sheng hua	生化	358
+li bai	礼拜	358
+she hui zhi du	社会制度	358
+zhong xing	种姓	358
+chun jie	纯洁	358
+jing ji lin	经济林	358
+shu gei	输给	358
+zao hua	造化	358
+xue di	雪地	358
+gu bu shang	顾不上	358
+zhu zai	主宰	357
+pian jian	偏见	357
+xing wang	兴旺	357
+lao dong sheng chan lv	劳动生产率	357
+dan ti	单体	357
+luan chao	卵巢	357
+shang lv	商旅	357
+jian jiao	尖叫	357
+zheng zhi xue	政治学	357
+fei teng	沸腾	357
+qing suan	清算	357
+xiang chi	相持	357
+na xi zu	纳西族	357
+shuai jie	衰竭	357
+xi hua	西华	357
+yao dao	要道	357
+wu qu	误区	357
+pao dao	跑道	357
+lian cheng yi pian	连成一片	357
+chang yu	长于	357
+e mi tuo fo	阿弥陀佛	357
+ji xun	集训	357
+ji min	饥民	357
+shang yuan	上院	356
+jian mei	健美	356
+gong jue	公爵	356
+ce li	册立	356
+bei fa jun	北伐军	356
+nan jing cheng	南京城	356
+chuang dan	床单	356
+wei fen fang cheng	微分方程	356
+xi cheng	戏称	356
+ji fa	技法	356
+sou bu	搜捕	356
+di wo	敌我	356
+wen zhong	文中	356
+ji xie chang	机械厂	356
+sheng li xue	生理学	356
+zhi xi	直系	356
+zhi shi dian	知识点	356
+jing yu	精于	356
+han lin	翰林	356
+fu xie	腹泻	356
+yao qian	要钱	356
+jie fang si xiang	解放思想	356
+zai ru	载入	356
+bian yan	边沿	356
+jin zi	金子	356
+gao shan zu	高山族	356
+hei ying	黑影	356
+bu xie	不屑	355
+zhong chang	中场	355
+feng fu duo cai	丰富多彩	355
+jiu jiu	久久	355
+yun duo	云朵	355
+shang hen	伤痕	355
+jun wei	军委	355
+shi ming	十名	355
+fa cai	发财	355
+po niang	婆娘	355
+yun yu	孕育	355
+xuan wu men	宣武门	355
+lu yin	录音	355
+ji hui	忌讳	355
+yi zai	意在	355
+zheng qian	挣钱	355
+gai zheng	改正	355
+wu suo wei	无所谓	355
+ku shui qi	枯水期	355
+zheng de	正德	355
+ji hua	激化	355
+you tai	犹太	355
+shen yun	神韵	355
+yan xi	筵席	355
+su qing	肃清	355
+fang xiang	芳香	355
+cao ben	草本	355
+kui hua	葵花	355
+lu pang	路旁	355
+fu zuo	辅佐	355
+zhe bang	这帮	355
+li yu	鲤鱼	355
+diu xia	丢下	354
+zuo fa	作法	354
+fen bian lv	分辨率	354
+nu er ha	努尔哈	354
+shang ye yin xing	商业银行	354
+shan yang	山羊	354
+bei zhuang	悲壮	354
+yu jia	愈加	354
+zeng hen	憎恨	354
+quan fa	拳法	354
+gai jin xing	改进型	354
+zheng qu	政区	354
+ni qiu	泥鳅	354
+shen hai	深海	354
+ying pan	硬盘	354
+lin kuang	磷矿	354
+shen tong	神通	354
+zhong zhi	种质	354
+gao zi	稿子	354
+di er dai	第二代	354
+su yang	素养	354
+hu men	虎门	354
+mou sha	谋杀	354
+nan dang	难当	354
+shou lun	首轮	354
+hei dian	黑点	354
+qi shi	七十	353
+bu shi	不失	353
+heng te	亨特	353
+liang dian	亮点	353
+ti mian	体面	353
+ban ju	半句	353
+xian li	县里	353
+fa bing lv	发病率	353
+shi ke fa	史可法	353
+di pan	地盘	353
+po du	坡度	353
+wai zhai	外债	353
+tai xing	太行	353
+shi di	失地	353
+zun gui	尊贵	353
+kong huang	恐慌	353
+wu lun shi	无论是	353
+tao yuan	桃源	353
+ying tao	樱桃	353
+bi sheng	毕生	353
+re xue	热血	353
+zhi qing	知青	353
+xi shu	稀疏	353
+rao dao	绕道	353
+gei shi zhong	给事中	353
+xing zhi	行至	353
+yi wu	遗物	353
+ye wei	野味	353
+fei xian xing	非线性	353
+pian ren	骗人	353
+gao e	高额	353
+yi bing	一并	352
+san jie	三节	352
+wei de shi	为的是	352
+ya jun	亚军	352
+dang wei shu ji	党委书记	352
+nong tian shui li	农田水利	352
+chong xu	冲虚	352
+deng zi	凳子	352
+chuang shang	创伤	352
+shuang da	双打	352
+fan kong	反恐	352
+hou tian	后天	352
+qi meng	启蒙	352
+di biao shui	地表水	352
+da wan	大碗	352
+yao guai	妖怪	352
+yi tai tai	姨太太	352
+she jian	射箭	352
+xiao gui	小鬼	352
+qu ru	屈辱	352
+zhao mu	招募	352
+jie lian bu duan	接连不断	352
+wen ben	文本	352
+zhen zhuo	斟酌	352
+wang ping	王平	352
+dian lan	电缆	352
+huang zi	皇子	352
+mang ren	盲人	352
+di yi juan	第一卷	352
+shai xuan	筛选	352
+jing miao	精妙	352
+na shui	纳税	352
+cha shui	茶水	352
+shang shi	赏识	352
+yuan yang	远洋	352
+jin zheng ri	金正日	352
+qing zhu	青竹	352
+wu jiao da lou	五角大楼	351
+ren dao zhu yi	人道主义	351
+he zang	合葬	351
+chang ge	唱歌	351
+sang yin	嗓音	351
+nv hai er	女孩儿	351
+zhang guo dao	张国焘	351
+mu ming	慕名	351
+ji gai	技改	351
+fang yang	放养	351
+li yun feng	李云风	351
+guan guo	棺椁	351
+hai shen	海参	351
+man zai	满载	351
+shen xiang	神像	351
+yao wu yang wei	耀武扬威	351
+ye lu sa leng	耶路撒冷	351
+huang shan	荒山	351
+chu dong	触动	351
+xu ke zheng	许可证	351
+guo ri zi	过日子	351
+da da	鞑靼	351
+huang shan	黄鳝	351
+jing kou	井口	350
+chuang kan	创刊	350
+da yi	大衣	350
+dao nian	悼念	350
+si xia	撕下	350
+xin ren	新任	350
+you shu	有数	350
+ben zhe	本着	350
+liang shu guang	梁曙光	350
+hong liu	洪流	350
+hai fang	海防	350
+hou tou	猴头	350
+chu qin	畜禽	350
+jian shi hui	监事会	350
+lian kong	脸孔	350
+qing nian ren	青年人	350
+han tai tai	韩太太	350
+yu bei yi	预备役	350
+gao tie	高铁	350
+liang ji	两极	349
+hui shi	会师	349
+chuan yan	传言	349
+tai ji	台基	349
+zuo ding	坐定	349
+xia yu lian	夏玉莲	349
+zong pai	宗派	349
+nian man	年满	349
+zong fen	总分	349
+an zhe	按着	349
+you zui	有罪	349
+li shi zhen	李时珍	349
+lian zhi	炼制	349
+zhi jia ge	芝加哥	349
+xing lu	行路	349
+hong ji	轰击	349
+you piao	邮票	349
+chong die	重叠	349
+guo lu	锅炉	349
+yi he yuan	颐和园	349
+ti ci	题词	349
+chan dong	颤动	349
+feng yun	风云	349
+yi juan	一卷	348
+yi di	一滴	348
+san bai	三百	348
+shang bu	上部	348
+bu fan	不凡	348
+zhong tang	中堂	348
+yang tian	仰天	348
+jun zhong	军种	348
+dong bu dong	动不动	348
+dan diao	单调	348
+tong sheng	同声	348
+guo qing jie	国庆节	348
+bing cun	并存	348
+shou dian tong	手电筒	348
+sao di	扫地	348
+wen yuan ge	文渊阁	348
+xin wen wang	新闻网	348
+li zi	李子	348
+mian sha	棉纱	348
+xiong zhang	熊掌	348
+luo cha	落差	348
+shen shi	身世	348
+nan bao	难保	348
+xian nen	鲜嫩	348
+yi lian chuan	一连串	347
+bu gui ze	不规则	347
+zhong hang	中行	347
+wu gu	五谷	347
+ren shen	人参	347
+bing jia bi zheng zhi di	兵家必争之地	347
+dian zhang	典章	347
+nei she	内设	347
+jun xin	军心	347
+bing liang	冰凉	347
+ji tui	击退	347
+ban lu	半路	347
+chao jia	吵架	347
+sheng shi hao da	声势浩大	347
+hao rong yi	好容易	347
+po zi	婆子	347
+zi fu	字符	347
+ping min bai xing	平民百姓	347
+yi yu	意欲	347
+huan dao	环岛	347
+deng ji ri	登记日	347
+du cu	督促	347
+jing xiang	竞相	347
+di er pao bing	第二炮兵	347
+jue fei	绝非	347
+lao jiang	老将	347
+huo li	获利	347
+zheng qi	蒸气	347
+tiao wei	调味	347
+cai shui	财税	347
+gui yang	贵阳	347
+tiao tou	跳投	347
+cuo luo	错落	347
+xiong rui	雄蕊	347
+ma wei song	马尾松	347
+ye nei	业内	346
+er shi yi	二十一	346
+he chang	何尝	346
+ci sha	刺杀	346
+fu zhi	副职	346
+dong wu yuan	动物园	346
+hua xue gong ye	化学工业	346
+fa qi ren	发起人	346
+gao zhuang	告状	346
+ha sa ke zu	哈萨克族	346
+lian zheng	廉政	346
+qing qu	情趣	346
+cheng qun	成群	346
+liu yan	流言	346
+jue yuan	绝缘	346
+zhi gao	职高	346
+xi ban ya ren	西班牙人	346
+zhuan yan	转眼	346
+yin he	银河	346
+yan hong lie	颜洪烈	346
+ye zhu	业主	345
+liang ke	两颗	345
+cheng che	乘车	345
+ya ping	亚平	345
+ru guan	入关	345
+jue duan	决断	345
+hua xue fan ying	化学反应	345
+fa dian ji	发电机	345
+shou re	受热	345
+ming tou	名头	345
+xi fu	吸附	345
+sheng ming	声名	345
+ke fang	客房	345
+shan men	山门	345
+ping zheng	平整	345
+dang yang	当阳	345
+huang ran da wu	恍然大悟	345
+shu li	数理	345
+shi shu	时数	345
+shi su	时速	345
+zhu tou	柱头	345
+mian fang	棉纺	345
+shui zu	水族	345
+lun xian	沦陷	345
+hun xiao	混淆	345
+xiang yun	湘云	345
+xian di	献帝	345
+zhi jue	直觉	345
+zhi xi	窒息	345
+ping ding	评定	345
+liang qiang	踉跄	345
+chong xian	重现	345
+jian duan	间断	345
+wan ge	万个	344
+er shi yi tiao	二十一条	344
+dong gua	冬瓜	344
+ji kuai	几块	344
+gu tian	古田	344
+diao jiao lou	吊脚楼	344
+jia za	夹杂	344
+xue yi	学艺	344
+kai zao	开凿	344
+zheng nan	正南	344
+shan dong	煽动	344
+pi zhi	皮质	344
+jin jun	禁军	344
+xiao yin yin	笑吟吟	344
+xi nen	细嫩	344
+yuan shi zhong	袁时中	344
+yuan jin	远近	344
+jin huang se	金黄色	344
+chang mao	长矛	344
+mo tou	魔头	344
+zhong liu di zhu	中流砥柱	343
+chuan qiu	传球	343
+mian yu	免于	343
+tu zi	兔子	343
+zai jian	再见	343
+tang wu	堂屋	343
+ling nan	岭南	343
+ba dong	巴东	343
+ba bi lun	巴比伦	343
+zhang yi min	张义民	343
+wang hui	往回	343
+huo duo huo shao	或多或少	343
+wu li	无礼	343
+guo yuan	果园	343
+ran se	染色	343
+yang hua wu	氧化物	343
+jia gu wen	甲骨文	343
+xiang yi	相宜	343
+di yi tai	第一台	343
+bian yi	编译	343
+wang luo you xi	网络游戏	343
+luo bo	萝卜	343
+bao mo	薄膜	343
+qun zi	裙子	343
+diao yong	调用	343
+bei mu	贝母	343
+fu zhai	负债	343
+ge kai	隔开	343
+ding zhu	顶住	343
+shi jie xing	世界性	342
+qian kun	乾坤	342
+ka la	卡拉	342
+han jiao	喊叫	342
+zui bian	嘴边	342
+xue qi	学期	342
+bao wu	宝物	342
+hai ren	害人	342
+yan yan	岩盐	342
+jian hua	建华	342
+cheng pin	成品	342
+cheng se	成色	342
+cuo bai	挫败	342
+li tie ying	李铁映	342
+can bao	残暴	342
+lao qian bei	老前辈	342
+jian xin	艰辛	342
+yan she	衍射	342
+yao bu ran	要不然	342
+zhi gan	质感	342
+gui zhong	贵重	342
+bian bie	辨别	342
+ying qu	迎娶	342
+jin fan	进犯	342
+lian dai	连带	342
+tie ding	铁钉	342
+fu zhuo	附着	342
+lu yu	陆羽	342
+san bu	三步	341
+yi he tuan yun dong	义和团运动	341
+ting bu	停步	341
+jian tui	减退	341
+fu guan	副官	341
+shou hui	受贿	341
+ke yi	可疑	341
+zhou liu	周六	341
+guo qi	国企	341
+jian xin	坚信	341
+shi zhi xing	实质性	341
+wei xing	微型	341
+zheng ji	政绩	341
+wen chang	文昌	341
+an suan	暗算	341
+chao ye	朝野	341
+zong se	棕色	341
+qi nang	气囊	341
+shen gu	深谷	341
+man shen	满身	341
+jiao huang	焦黄	341
+duan jian	短剑	341
+duan xian	短线	341
+zhi shen	置身	341
+lao fo ye	老佛爷	341
+du tong	都统	341
+yin zhen	银针	341
+mian pi	面皮	341
+shi dai xiang chuan	世代相传	340
+diu diao	丢掉	340
+jiu shi	九十	340
+he yong	何用	340
+dang feng	党风	340
+ling kong	凌空	340
+tai feng	台风	340
+wei xin zhu yi	唯心主义	340
+da jian	大件	340
+shen zi	婶子	340
+xian yi	嫌疑	340
+chen ai	尘埃	340
+ying sheng	应声	340
+xiao yong	效用	340
+zhao jun	昭君	340
+she zu	涉足	340
+xuan yao	炫耀	340
+li gong	立功	340
+jue zhe	觉着	340
+gui zhou sheng	贵州省	340
+guo shi	过时	340
+chuang jin	闯进	340
+qing wa	青蛙	340
+bu xiu	不朽	339
+yan xing	严刑	339
+zhu jiang	主将	339
+yu zhang jiang	于长江	339
+zhong suo zhou zhi	众所周知	339
+ke ben	刻本	339
+mai chu	卖出	339
+zhan you shi	占优势	339
+ke xing xing	可行性	339
+sheng bi de bao	圣彼得堡	339
+da mai	大麦	339
+xian bing	宪兵	339
+shan ling	山岭	339
+bu dai	布袋	339
+de shou	得手	339
+huan you	患有	339
+zhan chuan	战船	339
+da dong	打动	339
+fang zong	放纵	339
+qi gan	旗杆	339
+lin dai yu	林黛玉	339
+shui xing	水性	339
+dian xin	点心	339
+liu you	留有	339
+wen jian	稳健	339
+mu nian ci	穆念慈	339
+di san zhong	第三种	339
+cu zhuang	粗壮	339
+bian dao	编导	339
+kao guan	考官	339
+bu xue	补血	339
+zhu ban	诸般	339
+pei kuan	赔款	339
+bian zheng	辩证	339
+diao yu dao	钓鱼岛	339
+yu ji	雨季	339
+yi yong jun	义勇军	338
+yi li	伊犁	338
+qing xin	倾心	338
+jia ri	假日	338
+guan ya	关押	338
+ting jue	听觉	338
+chui deng	吹灯	338
+da ba shan	大巴山	338
+tou lu	头颅	338
+hao ban	好办	338
+cun wang	存亡	338
+da ren	打人	338
+bo da	拨打	338
+zhuo zhu	捉住	338
+wu yuan	无缘	338
+jin dai	晋代	338
+xin xi	欣喜	338
+qi ya	气压	338
+sha e	沙俄	338
+hui he se	灰褐色	338
+lian you	炼油	338
+mu min	牧民	338
+wu shi	物事	338
+tian fu xian	田福贤	338
+dian neng	电能	338
+si you zhi	私有制	338
+bi shi	笔试	338
+zui guo	罪过	338
+ying guo yi hui	英国议会	338
+cha zhuang	茶庄	338
+chen shan	衬衫	338
+wan shi	万世	337
+liang zu	两组	337
+lin zhong	临终	337
+wei zheng	为政	337
+dang zheng jun	党政军	337
+jun ji	军纪	337
+ban jin	半斤	337
+gu shi	古时	337
+ge men	各门	337
+he ying	合影	337
+jun quan	君权	337
+zhou ri	周日	337
+ju jue	咀嚼	337
+da shuai	大帅	337
+tai yang xi	太阳系	337
+shi xian	失陷	337
+an quan xing	安全性	337
+jian zhu shi	建筑师	337
+sao lei	扫雷	337
+ba jian	拔剑	337
+wen xue shi	文学史	337
+ti bu	替补	337
+ran fa	染发	337
+bo si wan	波斯湾	337
+bo lang	波浪	337
+jia zhuang xian	甲状腺	337
+wei kou	胃口	337
+he ze	菏泽	337
+chi dao	迟到	337
+qian cai	钱财	337
+lei sheng	雷声	337
+yi ru	一如	336
+bu kui	不愧	336
+yue qu	乐曲	336
+ping pang qiu	乒乓球	336
+fang zhao	仿照	336
+qi nei	其内	336
+ning jie	凝结	336
+liu xu yun	刘絮云	336
+zhi tang	制糖	336
+ke yi	刻意	336
+fu jiang	副将	336
+lao li	劳力	336
+qu cai	取材	336
+shou sun	受损	336
+tong meng hui	同盟会	336
+hou men	后门	336
+gao jie	告诫	336
+ge jie	圪节	336
+xing shi	姓氏	336
+fan chuan	帆船	336
+bi de	彼得	336
+qing bu zi jin	情不自禁	336
+yi liao zhi wai	意料之外	336
+la gen ni	拉根尼	336
+san bu	散步	336
+wu lai	无赖	336
+shu mi yuan	枢密院	336
+kuan xiang	款项	336
+wu da	武大	336
+ao men te bie xing zheng qu	澳门特别行政区	336
+fen hui	焚毁	336
+bai nen	白嫩	336
+gui gu	硅谷	336
+ying cun	英寸	336
+jiang xi	讲习	336
+fu he	负荷	336
+chi zi	赤字	336
+tiao wu	跳舞	336
+guo liang	过量	336
+jin dai shi	近代史	336
+lian ri	连日	336
+xiao yao	逍遥	336
+zun zhao	遵照	336
+zhang yang	长阳	336
+you yu	鱿鱼	336
+zhong da	中大	335
+he xin yin	何心隐	335
+yu mai	余脉	335
+jia ruo	假若	335
+jun rong	军容	335
+leng shui	冷水	335
+ji kui	击溃	335
+shi ci	十次	335
+duo zhong duo yang	多种多样	335
+ru shi	如实	335
+zuo tui	左腿	335
+ping rang	平壤	335
+ying xiang	影像	335
+wei miao	微妙	335
+zong dong yuan	总动员	335
+huan ju hua shuo	换句话说	335
+zheng gong	政工	335
+qiang dan	枪弹	335
+liu dan pao	榴弹炮	335
+wen xin	温馨	335
+re dai yu lin	热带雨林	335
+bai huo	百货	335
+wang ba	网吧	335
+yi shu lei	艺术类	335
+gong pin	贡品	335
+zou ru	走入	335
+jin lian	金莲	335
+tie zhang	铁掌	335
+yang xing	阳性	335
+xian yao	险要	335
+fei nong ye	非农业	335
+hei ge er	黑格尔	335
+gu dong	鼓动	335
+er shi qi ri	二十七日	334
+wu zhang	五丈	334
+chuan jiao shi	传教士	334
+ru ku	入库	334
+guan zhao	关照	334
+dao qi	到期	334
+qian shao	前哨	334
+sheng ren	升任	334
+lu bu	卢布	334
+qu lu	去路	334
+chu fang	处方	334
+jian zei	奸贼	334
+wei ming	威名	334
+ren xin	忍心	334
+qiao sheng	悄声	334
+qiao ran	悄然	334
+cheng ming	成名	334
+kang bing	抗病	334
+huan lai	换来	334
+sou xun	搜寻	334
+fang kuan	放宽	334
+wen hua jiao yu	文化教育	334
+qi zi	棋子	334
+mei mei	每每	334
+shui jun	水军	334
+liu su	流速	334
+lu huo	炉火	334
+yong dao	用到	334
+bai yin	白银	334
+po jie	破解	334
+tu qi	突起	334
+chuang zi	窗子	334
+hong lou meng	红楼梦	334
+lian jie	联结	334
+zhe tang	蔗糖	334
+xiang ya	象牙	334
+lian ren	连任	334
+shang feng	上风	333
+wu jiu	乌桕	333
+ren min zheng xie	人民政协	333
+yang niu	养牛	333
+chong feng	冲锋	333
+qu qu	去取	333
+ha li	哈里	333
+xuan chuan bu	宣传部	333
+fu qiang	富强	333
+ping fang li mi	平方厘米	333
+kai shui	开水	333
+ting shen er chu	挺身而出	333
+xin ying	新颖	333
+fang jie shi	方解石	333
+qing wen	晴雯	333
+qu zi	曲子	333
+shu hou	术后	333
+qian xin	潜心	333
+huan liu	环流	333
+zi you zhu yi	自由主义	333
+lan tu	蓝图	333
+zheng quan bao	证券报	333
+zou kai	走开	333
+tie lu qiao	铁路桥	333
+jiang yu liang	降雨量	333
+yin mi	隐秘	333
+yu shi	预示	333
+feng li	风力	333
+qie man	且慢	332
+dong zhou	东州	332
+ya huan	丫环	332
+wei zao	伪造	332
+ti tie	体贴	332
+ke luo di ya	克罗地亚	332
+qi zi	其子	332
+mao chong	冒充	332
+juan ru	卷入	332
+lv bu	吕布	332
+ai qiu	哀求	332
+tuo mo	唾沫	332
+xian zong	宪宗	332
+lv ci	屡次	332
+ba na ma	巴拿马	332
+you ling	幽灵	332
+xu xia ke	徐霞客	332
+qing diao	情调	332
+kang zhen jiu zai	抗震救灾	332
+jie rang	接壤	332
+mu he	木盒	332
+qiao xia	桥下	332
+ge ci	歌词	332
+wu jing bu dui	武警部队	332
+yin qin	殷勤	332
+huo chai	火柴	332
+rong yan	熔岩	332
+yong cai lin	用材林	332
+chang tong	畅通	332
+zhi guan	直观	332
+xiao yi	笑意	332
+guan shi	管事	332
+wang dian	网点	332
+ju jiao	聚焦	332
+tiao shui	跳水	332
+tie qing	铁青	332
+yi zhe	一着	331
+dai wei	代为	331
+yi wu	医务	331
+wu hou	午后	331
+yuan wen	原文	331
+you tui	右腿	331
+hou tai	后台	331
+hu xi dao	呼吸道	331
+hui kou	回扣	331
+hui luo	回落	331
+fu yuan	复原	331
+bing cheng	并称	331
+chuang bian	床边	331
+yin xin	引信	331
+tiao xin	挑衅	331
+shu li	数里	331
+qi kan	期刊	331
+zhu hou zhao	朱厚照	331
+zhu ming	注明	331
+shen shui	深水	331
+zai min	灾民	331
+ji chi	疾驰	331
+di jiu jie	第九届	331
+feng mi	蜂蜜	331
+di si ni	迪斯尼	331
+song li	送礼	331
+jin yong	金庸	331
+shou fa	首发	331
+qu gan	驱赶	331
+wan tou	万头	330
+zhong xi	中西	330
+liao jie	了结	330
+chan ye zi ben	产业资本	330
+bo mu	伯母	330
+ti wai	体外	330
+dao di	倒地	330
+ting bo	停泊	330
+liu jie	六届	330
+guan wai	关外	330
+xia huai	吓坏	330
+dai ding	待定	330
+ming zhi	明智	330
+li si guang	李四光	330
+he suan	核算	330
+xiong yong	汹涌	330
+hu zhong	湖中	330
+ling min	灵敏	330
+pao tai	炮台	330
+yan zheng zheng	眼睁睁	330
+di yi zhang	第一章	330
+di san zhang	第三章	330
+di shi jie	第十届	330
+jing ji ji chu	经济基础	330
+ji hua jing ji	计划经济	330
+yi zhu	遗嘱	330
+fang fu ji	防腐剂	330
+can yin	餐饮	330
+san wang	三王	329
+san dao	三道	329
+san men	三门	329
+bu xu	不须	329
+xin yong ka	信用卡	329
+chong xi	冲洗	329
+chu ju	出具	329
+chu qi	出奇	329
+liu ti chun	刘体纯	329
+qu di	取缔	329
+mai cang	埋藏	329
+tou jing	头颈	329
+wang xiang	妄想	329
+xun mi	寻觅	329
+zuo jiao	左脚	329
+ju xing	巨型	329
+bian ping	扁平	329
+da zhong	打中	329
+kou chu	扣除	329
+xin lu	新路	329
+ji shang	机上	329
+yong di	用地	329
+deng chang	登场	329
+yue hui	约会	329
+zi zhi	自制	329
+jie shuo	解说	329
+shen jia	身价	329
+feng xue	风雪	329
+yi ding liang	一定量	328
+yi zhuang	一桩	328
+shang chuan	上船	328
+liang fu	两幅	328
+gu ren lei	古人类	328
+zhi yong	只用	328
+xiao chuan	哮喘	328
+ao miao	奥妙	328
+hao qi xin	好奇心	328
+yue jia	岳家	328
+wei mu	帷幕	328
+yan wu	延误	328
+can bai	惨白	328
+wan qing	晚清	328
+hui ru	汇入	328
+he an	河岸	328
+you jia	油价	328
+huo tui chang	火腿肠	328
+fu kang an	福康安	328
+qin an	秦安	328
+qin qiang	秦腔	328
+di er zhong	第二种	328
+su li	肃立	328
+gu fen zhi	股份制	328
+xue jiang	血浆	328
+guo ying	过硬	328
+jin qian bao	金钱豹	328
+zhen jiu	针灸	328
+gu sheng	鼓声	328
+yan zheng	严正	327
+shi tu	仕途	327
+hui zhi	会址	327
+bao yang	保养	327
+jun xian	军衔	327
+jia hai	加害	327
+fa yin	发音	327
+ming zhu	名著	327
+wu yi	吴仪	327
+zhou yi	周一	327
+da tou	大头	327
+da guan	大官	327
+fei hua	废话	327
+lu qu lv	录取率	327
+jing xin dong po	惊心动魄	327
+jie duan	截断	327
+gong xing	拱形	327
+gong xia	攻下	327
+pang guan	旁观	327
+heng xing	横行	327
+zhi yu	治愈	327
+zi sheng	滋生	327
+man bu	漫步	327
+lian dan	炼丹	327
+ai zi	矮子	327
+ai xiao	矮小	327
+shi diao	石雕	327
+lin fei	磷肥	327
+zhu fu	祝福	327
+xuan li	绚丽	327
+bian ma	编码	327
+ba xiu	罢休	327
+rong hua	融化	327
+zi cai	资财	327
+qian bi	铅笔	327
+chen jiu	陈旧	327
+jing mo	静默	327
+lu zhi shen	鲁智深	327
+yi ping	一瓶	326
+wei zi	位子	326
+gong shi	公事	326
+nei ce	内侧	326
+fen chu	分出	326
+qian dao	前导	326
+ju qing	剧情	326
+bei bing yang	北冰洋	326
+kou fu	口服	326
+kou yu	口语	326
+xiang dao	向导	326
+tan ran	坦然	326
+wai li	外力	326
+da pai	大牌	326
+ping huan	平缓	326
+nian you	年幼	326
+fu shang	府上	326
+yi xing	异性	326
+qiang ruo	强弱	326
+gui guo	归国	326
+suo zuo suo wei	所作所为	326
+jiu zhi	救治	326
+jiu zhi	旧制	326
+zheng shi	正视	326
+mei miao	每秒	326
+chen xiang	沉香	326
+hun za	混杂	326
+you zi	游子	326
+te da	特大	326
+nan peng you	男朋友	326
+mi jue	秘诀	326
+jian jie	简洁	326
+liang yao	良药	326
+po yu	迫于	326
+jiu ba	酒吧	326
+ma an shan	马鞍山	326
+yi bang	一帮	325
+wu dao	五道	325
+jing xi	京西	325
+zuo qu	作曲	325
+jie yong	借用	325
+ji dao	几道	325
+chu sheng lv	出生率	325
+wo xin chang dan	卧薪尝胆	325
+fan chang	反常	325
+hao jiao	号角	325
+tuan yuan	团员	325
+du zhu	堵住	325
+fu fa	复发	325
+fu xian	复线	325
+shen shi	审视	325
+shan shi	山势	325
+qiao yu	巧遇	325
+cheng bai	成败	325
+zhan sheng guo	战胜国	325
+pu mie	扑灭	325
+zhi jiao	执教	325
+qiang duo	抢夺	325
+xiao neng	效能	325
+si mi	斯密	325
+ji ding	既定	325
+wei ji	未及	325
+jia qiao	架桥	325
+qi shou	棋手	325
+min fa	民法	325
+chen jing	沉静	325
+he wan	河湾	325
+du he	渡河	325
+huo su	火速	325
+hu li	狐狸	325
+sheng si cun wang	生死存亡	325
+jian ming	简明	325
+zhong ji	终极	325
+bian zu	编组	325
+cao mu	草木	325
+bei ke	贝壳	325
+shi yu	鲥鱼	325
+bu zai hua xia	不在话下	324
+zhong gong zhong yang zheng zhi ju	中共中央政治局	324
+hui yi	会意	324
+yu chu	余处	324
+ji fen zhong	几分钟	324
+chu hu	出乎	324
+wai jia	外加	324
+da guan	大观	324
+wei tuo ren	委托人	324
+wei she	威慑	324
+ding zhi	定制	324
+chong ai	宠爱	324
+lan de	懒得	324
+shou biao	手表	324
+da gu	打鼓	324
+pin yin	拼音	324
+zhi zhu	止住	324
+he li	河里	324
+lie ren	猎人	324
+ci dai	磁带	324
+lao ban	老伴	324
+hu xu	胡须	324
+ma yi	蚂蚁	324
+qi jiang	起降	324
+yun shu liang	运输量	324
+jing qiao qiao	静悄悄	324
+sao dong	骚动	324
+gao ang	高昂	324
+hui shen	会审	323
+jun wei hui	军委会	323
+chu qi zhi sheng	出奇制胜	323
+shou ti	受体	323
+chi diao	吃掉	323
+tang zhen guan	唐贞观	323
+bao lei	堡垒	323
+zeng liang	增量	323
+hao ji	好几	323
+kong dao	孔道	323
+ke ji	客机	323
+zhuang yuan	庄园	323
+gui qiao	归侨	323
+ying bi	影壁	323
+he dong li	核动力	323
+tuo yuan	椭圆	323
+wu zhuang bu dui	武装部队	323
+xia chang	狭长	323
+lao ling	老龄	323
+gu shu	股数	323
+dan gu chun	胆固醇	323
+yi zhuo	衣着	323
+yao sai	要塞	323
+xiang jin	详尽	323
+tie jin	贴近	323
+bu jiang	部将	323
+ji zi	集资	323
+song yang	颂扬	323
+huang yi biao	黄一彪	323
+xia chang	下场	322
+luan kan	乱砍	322
+yu cheng bang	于城邦	322
+xin tuo	信托	322
+liang ban	凉拌	322
+ke ku	刻苦	322
+mu juan	募捐	322
+tu lu	吐露	322
+si men	四门	322
+xue jia	学家	322
+ping qi ping zuo	平起平坐	322
+jing zi	径自	322
+ken qiu	恳求	322
+jing huang	惊惶	322
+huang kong	惶恐	322
+xin jin	新近	322
+ri cheng	日程	322
+xian er yi jian	显而易见	322
+gang gan	杠杆	322
+que zhen	确诊	322
+ji shui	积水	322
+zong zi	粽子	322
+fei da	肥大	322
+zhi ai	致癌	322
+cha ji	茶几	322
+jian jian	见见	322
+yi ding	议定	322
+kua guo	跨国	322
+jin guang	金光	322
+shun shi	顺势	322
+huang dou	黄豆	322
+ding li	鼎立	322
+yi qing er chu	一清二楚	321
+liang jin	两晋	321
+zheng bian	争辩	321
+er shi duo nian	二十多年	321
+ni lao	你老	321
+ting dang	停当	321
+jiao han	叫喊	321
+han xu	含蓄	321
+pin chang	品尝	321
+nu pu	奴仆	321
+ru yi	如意	321
+shi xi sheng	实习生	321
+mu fu	幕府	321
+zheng zhan	征战	321
+da fa	打法	321
+bao she	报社	321
+chan fu	搀扶	321
+sa huang	撒谎	321
+fu wu yuan	服务员	321
+ci fa	此法	321
+ci zhong	此种	321
+qing dan	清单	321
+yu wang	渔网	321
+shi du	湿度	321
+re chen	热忱	321
+die niang	爹娘	321
+pi rou	皮肉	321
+qi qiu	祈求	321
+piao ju	票据	321
+di san ji	第三纪	321
+di er ji	第二级	321
+fan sheng	繁盛	321
+lian mian	脸面	321
+zi fu	自负	321
+ke dou	蝌蚪	321
+zheng jian	证件	321
+mi gong	迷宫	321
+gu ji	顾忌	321
+pian zi	骗子	321
+yi zhou nian	一周年	320
+zhuan dian	专电	320
+yi xi	依稀	320
+quan ji	全集	320
+ji bai	几百	320
+chu tou	出头	320
+chu mo	出没	320
+chu ban wu	出版物	320
+fen guan	分管	320
+shi ji	十几	320
+shu fu	叔父	320
+ge xing	各型	320
+shi sheng	失声	320
+xiao gui zi	小桂子	320
+qing yu	情欲	320
+zhi yi	执意	320
+zhe dong	浙东	320
+hun he wu	混合物	320
+rong zhu	熔铸	320
+meng gong	猛攻	320
+sheng nei wai	省内外	320
+shen zhi	神智	320
+ji ju	积聚	320
+lian yi	联谊	320
+zheng qi ji	蒸汽机	320
+xie jia	谢家	320
+yi wang	遗忘	320
+tong qi	铜器	320
+pi li	霹雳	320
+yu an	预案	320
+feng lang	风浪	320
+xia chen	下沉	319
+qin xi	侵袭	319
+gong an bu	公安部	319
+liu jia	刘家	319
+hua yan	化验	319
+fa she qi	发射器	319
+fa pi qi	发脾气	319
+shang zhou	商周	319
+da yuan	大院	319
+wei lian	威廉	319
+jia chan	家产	319
+da tan	打探	319
+zheng qi	正气	319
+hao sheng	毫升	319
+jiang liu	江流	319
+pai zhao	牌照	319
+wang zhang shun	王长顺	319
+she zu	畲族	319
+zhi tiao	纸条	319
+jing wen	经文	319
+huan bu	缓步	319
+yan sheng	衍生	319
+jing bao	警报	319
+xu xu duo duo	许许多多	319
+xiang shan	象山	319
+chao qian	超前	319
+yi cun	遗存	319
+xi bo zu	锡伯族	319
+zhang shan	长山	319
+jian xi	间隙	319
+yun shi	陨石	319
+qing yi	青衣	319
+feng jing xian	风景线	319
+xian you	鲜有	319
+san zhi	三只	318
+liang yong	两用	318
+xi guan yu	习惯于	318
+cong tou	从头	318
+zai chuang	再创	318
+ping zheng	凭证	318
+wu ye	呜咽	318
+wai zu mu	外祖母	318
+tian xing	天性	318
+sun po po	孙婆婆	318
+an ding men	安定门	318
+shi da	师大	318
+lu jiang	庐江	318
+jian an	建安	318
+yin lai	引来	318
+suo dao zhi chu	所到之处	318
+pi shang	披上	318
+ji ran ru ci	既然如此	318
+he shi	核实	318
+shui jie	水解	318
+qi you	汽油	318
+he dong	河东	318
+liu fang	流放	318
+qing ming	清明	318
+kui yang	溃疡	318
+luo si fu	罗斯福	318
+lao bo	老伯	318
+xue qing	血清	318
+zhuang shu	装束	318
+zhuang jia shi	装甲师	318
+fei jia	飞架	318
+ma li	马里	318
+ding ru chang	丁汝昌	317
+san cha	三叉	317
+shang pu	上铺	317
+chuan zhu	串珠	317
+wu ya	乌鸦	317
+jiao jie	交接	317
+cong yan	从严	317
+cong shu	从属	317
+fang xiao	仿效	317
+ti xing	体形	317
+qin hua	侵华	317
+pian nan	偏南	317
+gong sun zhi	公孙止	317
+lao gong	劳工	317
+chi he	吃喝	317
+guo shi	国事	317
+nian hou	年后	317
+lian min	怜悯	317
+xiang nian	想念	317
+zhi zheng dang	执政党	317
+he cha	核查	317
+zhi xue	止血	317
+yong he	永和	317
+jiang zui zhang	江醉章	317
+pi mao	皮毛	317
+shi hui shi	石灰石	317
+fan gun	翻滚	317
+bei qi	背鳍	317
+cai yuan pei	蔡元培	317
+che zhang	车长	317
+tao sheng	逃生	317
+zhong dan	重担	317
+diao yu	钓鱼	317
+chen fu zhong	陈富忠	317
+ban jiang	颁奖	317
+fei kuai	飞快	317
+gao chao	高超	317
+long gong	龙宫	317
+zhuan chang	专场	316
+er qi	二七	316
+gu jia	估价	316
+dian fan	典范	316
+chu qi bu yi	出其不意	316
+hua gui	划归	316
+gong xun	功勋	316
+bao za	包扎	316
+bei zhou	北周	316
+zhi dang	只当	316
+zhou yu	周瑜	316
+shi shou	失守	316
+gong que	宫阙	316
+she shou	射手	316
+dao zhu	岛主	316
+ying chou	应酬	316
+zhong chen	忠臣	316
+pi shi	批示	316
+jiao lian ji	教练机	316
+wu shu ci	无数次	316
+ri guang	日光	316
+zhi shang	智商	316
+gun bang	棍棒	316
+wu ning	毋宁	316
+qiu jian	求见	316
+mu yu	沐浴	316
+you wan	游玩	316
+qi shu	漆树	316
+qian ru	潜入	316
+ling gan	灵感	316
+dian dian	点点	316
+que xin	确信	316
+mo zhi	磨制	316
+zhu lin	竹林	316
+ce dong	策动	316
+lao po zi	老婆子	316
+pang guang	膀胱	316
+ding gou	订购	316
+shuo dao di	说到底	316
+zou shou	走兽	316
+chong yan	重演	316
+xiao hui	销毁	316
+mo sheng ren	陌生人	316
+hai ran	骇然	316
+shi jie guan	世界观	315
+fang zhi	仿制	315
+ti ruo	体弱	315
+ao man	傲慢	315
+nong mu ye	农牧业	315
+qian tou	前头	315
+juan yan	卷烟	315
+fa shi	发誓	315
+tun bing	吞并	315
+hao he	好喝	315
+an qing	安庆	315
+gang shao	岗哨	315
+can bai	惨败	315
+cheng xiang	成像	315
+jia gou	架构	315
+mu qu	牧区	315
+du lian ti	独联体	315
+zhen bao	珍宝	315
+dan gao	蛋糕	315
+xue liu	血流	315
+jia sha	袈裟	315
+xie yan ke	谢烟客	315
+xing wu	醒悟	315
+ge ming zhan zheng	革命战争	315
+jing bu	颈部	315
+fei shen	飞身	315
+ding chun qiu	丁春秋	314
+dong dao	东道	314
+jiu qu	九曲	314
+wu zhong	五种	314
+ren yi	仁义	314
+dian ji	典籍	314
+nei wu	内务	314
+nan ning	南宁	314
+da jiang sai	大奖赛	314
+tou gu	头骨	314
+nian xian	年限	314
+zhang hai li	张海丽	314
+lian ren	恋人	314
+qing cao	情操	314
+li han jun	李汉俊	314
+liu ru yu	柳如玉	314
+shui lei	水雷	314
+luo sang	洛桑	314
+hong kao	烘烤	314
+bian fu	蝙蝠	314
+yi wu	衣物	314
+xie fu zhi	谢富治	314
+jin chu	近处	314
+pei you	配有	314
+cai hua	采花	314
+tong pai	铜牌	314
+fei dei	非得	314
+yi cun	一村	313
+shang diao	上调	313
+bu gan dang	不敢当	313
+jiu yin zhen jing	九阴真经	313
+er shi si	二十四	313
+ya li shi duo de	亚里士多德	313
+ke long	克隆	313
+nong fu	农夫	313
+gang guo	刚果	313
+jia bei	加倍	313
+tan qi	叹气	313
+hou jin	后金	313
+chuan qi	喘气	313
+su xing	塑性	313
+zou zhang	奏章	313
+xuan tong	宣统	313
+bu lei	布雷	313
+dian xiao er	店小二	313
+yan jin	延津	313
+dan dao	弹道	313
+lu xiang	录像	313
+huan bing	患病	313
+tuo kuan	拓宽	313
+ai zhe	挨着	313
+tan jiu	探究	313
+shu zu	数组	313
+shi lang	施琅	313
+wu ji	无机	313
+mu gun	木棍	313
+ji qu	汲取	313
+hai dao	海岛	313
+shen chu	渗出	313
+man hua	漫画	313
+chang jue	猖獗	313
+hong yan	红眼	313
+jian fu	肩负	313
+hu jiao	胡椒	313
+chao piao	钞票	313
+yin chen	阴沉	313
+ling shi	领事	313
+ma dao cheng gong	马到成功	313
+shang tian	上天	312
+yu wan yuan	余万元	312
+shi nv	侍女	312
+pian pi	偏僻	312
+ru men	入门	312
+ce feng	册封	312
+qian duan	前端	312
+si fa bu	司法部	312
+wei er	味儿	312
+xia wei yi	夏威夷	312
+da yang zhou	大洋洲	312
+wei tuo shu	委托书	312
+shi li	实例	312
+da jing	打井	312
+zhi kong	指控	312
+fang man	放慢	312
+si li lan ka	斯里兰卡	312
+wan bao	晚报	312
+jing ti guan	晶体管	312
+an dao	暗道	312
+sha lu	杀戮	312
+gan zi	杆子	312
+wu bei	武备	312
+shui ti	水体	312
+huo hua	火花	312
+jiang sheng	缰绳	312
+qu wei	趣味	312
+dou liu	逗留	312
+sao luan	骚乱	312
+yu chi	鱼翅	312
+qi guo	齐国	312
+dong fei	东非	311
+jiao hu	交互	311
+bao luo	保罗	311
+an men	俺们	311
+jun xun	军训	311
+chong san	冲散	311
+feng huang shan	凤凰山	311
+liu hua qing	刘华清	311
+hou tou	后头	311
+wen he	吻合	311
+shou jia	售价	311
+shang ding	商定	311
+ka shi	喀什	311
+xuan xiao	喧嚣	311
+bei you	备有	311
+wai gong	外公	311
+da xiu	大修	311
+tai zong	太宗	311
+yi yang	异样	311
+zhang luo	张罗	311
+dang tou	当头	311
+yang yan	扬言	311
+ti lian	提炼	311
+fang si	放肆	311
+duan yan	断言	311
+shi ren	时人	311
+nuan liu	暖流	311
+li lan qing	李岚清	311
+xie xi	歇息	311
+cong cong	淙淙	311
+du kou	渡口	311
+lao fang	牢房	311
+bai e luo si	白俄罗斯	311
+xiang bi zhi xia	相比之下	311
+zhi ming du	知名度	311
+shi ying sha	石英砂	311
+bian yin	编印	311
+rou si	肉丝	311
+zhi zhu	蜘蛛	311
+xing zheng bu men	行政部门	311
+xing yuan	行辕	311
+tan bu shang	谈不上	311
+lun tai	轮胎	311
+qi jin wei zhi	迄今为止	311
+chun hou	醇厚	311
+tong kuang	铜矿	311
+men jiang	门将	311
+bu zhi suo cuo	不知所措	310
+shi jin sai	世锦赛	310
+liang ba	两把	310
+jiao xiang le tuan	交响乐团	310
+guang zhao	光照	310
+nan shan	南山	310
+gu wen hua	古文化	310
+hou bei	后背	310
+zi xing	字型	310
+xu xu	徐徐	310
+you yu	忧郁	310
+cheng ban	承办	310
+shu zhao	数招	310
+jing qi	旌旗	310
+pu tong hua	普通话	310
+ben qi	本期	310
+yi yi	熠熠	310
+shuang kou	爽口	310
+peng jian	碰见	310
+kong jiang bing	空降兵	310
+lan zi	篮子	310
+hong hai	红海	310
+qun shan	群山	310
+dan qie	胆怯	310
+ji wei	计委	310
+nuo ji ya	诺基亚	310
+gu liu xian	谷六仙	310
+mi mi hu hu	迷迷糊糊	310
+mian dui mian	面对面	310
+yu tou	鱼头	310
+san ju	三局	309
+xia hui fen jie	下回分解	309
+bu wei	不畏	309
+ren gong hu	人工湖	309
+ba zhong	八中	309
+guan nei	关内	309
+feng gong gong	冯公公	309
+cou qiao	凑巧	309
+zhi qu	制取	309
+qian bai nian	千百年	309
+chang fang	厂房	309
+li fa	历法	309
+yuan zhi	原址	309
+han yi	含意	309
+gu shou	固守	309
+hao ting	好听	309
+sun yu ting	孙玉亭	309
+ding xing	定性	309
+xiao tan	小摊	309
+wei bu	尾部	309
+bu la ge	布拉格	309
+xin xue guan	心血管	309
+jing ying	晶莹	309
+you bie	有别	309
+biao shi	标识	309
+min zhu ren shi	民主人士	309
+xian dai ren	现代人	309
+ping zi	瓶子	309
+di er jie	第二节	309
+hong huo	红火	309
+lao dao	老道	309
+du pi	肚皮	309
+se qing	色情	309
+xue ji	血迹	309
+qing mie	轻蔑	309
+da xi	达西	309
+yun dao	运到	309
+xuan pai	选派	309
+lang jun	郎君	309
+shun cong	顺从	309
+gao ya	高雅	309
+shang chuang	上床	308
+bu yi wei ran	不以为然	308
+ge xing hua	个性化	308
+zhong guo da xue	中国大学	308
+qiao juan	侨眷	308
+si kong	司空	308
+hou shi	后市	308
+heng heng	哼哼	308
+tu zu	土族	308
+tan cheng	坦诚	308
+she dian	射电	308
+yue fu ren	岳夫人	308
+qing he	庆贺	308
+ji dan	忌惮	308
+la che	拉扯	308
+ai da	挨打	308
+qiao men	敲门	308
+wen tan	文坛	308
+jia shang	架上	308
+si qiu	死囚	308
+man you	漫游	308
+yan jiu shi	研究室	308
+wen gu	稳固	308
+gan yan	肝炎	308
+lie wen	裂纹	308
+guo bu qu	过不去	308
+li ling	醴陵	308
+gang ban	钢板	308
+zuan ru	钻入	308
+wen ming zhong wai	闻名中外	308
+mian tuan	面团	308
+ge ming dang	革命党	308
+wan duo gong li	万多公里	307
+yan ku	严酷	307
+xiang tu qi xi	乡土气息	307
+yu er long	于二龙	307
+chuan jiao	传教	307
+zuo guan	做官	307
+jue yi an	决议案	307
+fan shi	凡事	307
+chu deng jiao yu	初等教育	307
+hua sha	华沙	307
+qu xiang	去向	307
+hou tou	喉头	307
+he cai	喝彩	307
+tu cheng	土城	307
+fu za xing	复杂性	307
+qi zhen	奇珍	307
+nv shen	女神	307
+gong mao	工贸	307
+dang wu zhi ji	当务之急	307
+wei fen	微分	307
+wei mi	微米	307
+pi jia	披甲	307
+zheng che	整车	307
+zan xing	暂行	307
+nuan huo	暖和	307
+zhi min zhu yi	殖民主义	307
+tang ruo wang	汤若望	307
+huo fo	活佛	307
+shen yuan	深渊	307
+man mian	满面	307
+piao fu	漂浮	307
+yun shu xian	运输线	307
+zao fan pai	造反派	307
+sha shi jian	霎时间	307
+san dian	三点	306
+jiang ying	僵硬	306
+quan qiu xing	全球性	306
+dong zhi	冬至	306
+fen mian	分娩	306
+liu lao lao	刘姥姥	306
+shi dao	十道	306
+chang li	厂里	306
+ge jia ge hu	各家各户	306
+si shi nian	四十年	306
+da ni	大鲵	306
+tou hao	头号	306
+sun fu ren	孙夫人	306
+kai ming	开明	306
+qiang zhe	强者	306
+gong xi	恭喜	306
+jing tan	惊叹	306
+fang zai yan li	放在眼里	306
+fang liao	放疗	306
+ri ben zi wei dui	日本自卫队	306
+min jian	民建	306
+shui dong	水洞	306
+qian ceng	浅层	306
+ai guo zhe	爱国者	306
+fan kai	翻开	306
+lao tai ye	老太爷	306
+zi ran zai hai	自然灾害	306
+hang tian qi	航天器	306
+zheng long	蒸笼	306
+yuan shao	袁绍	306
+shuo cuo	说错	306
+qi xian	起先	306
+tong zhou	通州	306
+jun xian zhi	郡县制	306
+lu lu	陆路	306
+ling qu	陵区	306
+gao po	高坡	306
+zhong neng	中能	305
+ban bian	半边	305
+nan bian	南边	305
+si jiao	四角	305
+wai ji	外籍	305
+zhou si	宙斯	305
+xian zhang	宪章	305
+da tong	打通	305
+yi yu	抑郁	305
+zhen bi	振臂	305
+wen hua bu	文化部	305
+ji xiao	极小	305
+lin ping zhi	林平之	305
+pu yi	溥仪	305
+ling huo xing	灵活性	305
+pao hong	炮轰	305
+tong xin	痛心	305
+bei ting	碑亭	305
+hu feng	胡风	305
+ru dong	蠕动	305
+ji yi	计议	305
+pin dao	贫道	305
+die luo	跌落	305
+deng you mi	邓有米	305
+san xia	三下	304
+ge er	个儿	304
+zhong yang	中阳	304
+lin jie	临界	304
+cheng zhe	乘着	304
+shi qian	事前	304
+wu feng	五峰	304
+yi shan bang shui	依山傍水	304
+chong dian	充电	304
+fen mi wu	分泌物	304
+xu shi	叙事	304
+chi jiu	吃酒	304
+qi ju	器具	304
+guo yu	国语	304
+nv tong	女童	304
+zi ye	子叶	304
+shu shi	属实	304
+chang qing	常青	304
+di mian	底面	304
+kuai chuan	快船	304
+xing qi tian	星期天	304
+geng shen	更深	304
+hao bu you yu	毫不犹豫	304
+chen ji wu	沉积物	304
+he pan	河畔	304
+man xin	满心	304
+pa xing	爬行	304
+liu shen	留神	304
+bai qi	白旗	304
+deng jia	等价	304
+lao hua	老化	304
+sheng zhang	胜仗	304
+wa zi	袜子	304
+che lun	车轮	304
+zhuan wan	转弯	304
+qian ju	迁居	304
+yin jiang	银奖	304
+fu jian	附件	304
+chen tan qiu	陈潭秋	304
+xian qi	限期	304
+yi cun	一寸	303
+yi zhan	一站	303
+wan shi	万事	303
+wu men	五门	303
+jing du	京都	303
+sha gua	傻瓜	303
+ba bao	八宝	303
+chu hai	出海	303
+nan chang qi yi	南昌起义	303
+yuan zi neng	原子能	303
+qu jue yu	取决于	303
+tong men	同门	303
+guo jia lv you ju	国家旅游局	303
+tu kuai	土块	303
+fu ming	复明	303
+da hao	大好	303
+ru lin	如林	303
+zi tou	字头	303
+dui an	对岸	303
+lian zi	帘子	303
+zhang jia kou	张家口	303
+si lv	思虑	303
+wei kong	惟恐	303
+tan zi	摊子	303
+wu yan	无言	303
+zao xie	早些	303
+zui hou tong die	最后通牒	303
+song kai	松开	303
+ji fu	极富	303
+shen ru	渗入	303
+wang zhao guo	王兆国	303
+dian zu	电阻	303
+li pin	礼品	303
+lei ji	累积	303
+yue dan	约旦	303
+zong xiang	纵向	303
+jie wei	结为	303
+bian cheng	编程	303
+dan xiao	胆小	303
+pu tao ya ren	葡萄牙人	303
+you dao	诱导	303
+po bu ji dai	迫不及待	303
+nan ren	难忍	303
+nan dian	难点	303
+ling lve	领略	303
+feng du	风度	303
+fei su	飞速	303
+ren min wu zhuang	人民武装	302
+chong sha	冲杀	302
+chu jia	出家	302
+fen qi	分期	302
+sheng yu chan pin	剩余产品	302
+bei jing di qu	北京地区	302
+tai qian	台前	302
+he shui	喝水	302
+zai hu	在乎	302
+chui lian ting zheng	垂帘听政	302
+sheng wang	声望	302
+tai zhong	太重	302
+fu hao	富豪	302
+xiao zhang	小张	302
+zhan fa	战法	302
+jing wu	景物	302
+yin zheng mao	殷正茂	302
+qi li	气力	302
+sha bao	沙包	302
+man tou	满头	302
+niu ma	牛马	302
+te shu jiao yu	特殊教育	302
+wang zhao jun	王昭君	302
+sheng chan liang	生产量	302
+ke jiao	科教	302
+di er zhang	第二章	302
+chou ji	筹集	302
+xiang fan shi	襄樊市	302
+ling dui	领队	302
+wan dun ji	万吨级	301
+san yuan	三院	301
+shang gang	上岗	301
+zhong shu shen jing	中枢神经	301
+zhu dui	主队	301
+xiu xi	修习	301
+ru zhu	入主	301
+quan dui	全队	301
+gong sun	公孙	301
+nei meng gu zi zhi qu	内蒙古自治区	301
+chu lan	出栏	301
+gu luo ma	古罗马	301
+ke yan	可言	301
+di kong dao dan	地空导弹	301
+shi zu	士卒	301
+da niang	大娘	301
+tai bao	太保	301
+tai shi	太史	301
+bao bao	宝宝	301
+dui zhen	对阵	301
+kai wei	开胃	301
+yin de	引得	301
+da lie	打猎	301
+ba ya	拔牙	301
+zhao zhi	招致	301
+jie ke si luo fa ke	捷克斯洛伐克	301
+she shi du	摄氏度	301
+mo mo	摸摸	301
+wu chang	无常	301
+shi mao	时髦	301
+you qian you shi	有钱有势	301
+ji che	机车	301
+li chuang wang	李闯王	301
+you qi	油气	301
+you xi ji	游戏机	301
+du li xing	独立性	301
+yong you	用油	301
+dian dong ji	电动机	301
+dian zi you jian	电子邮件	301
+jing luan	痉挛	301
+zhen jing	真经	301
+shen ling	神灵	301
+zi wen dao	紫文道	301
+fang sha	纺纱	301
+su lu ke	苏鲁克	301
+yuan zong di	袁宗第	301
+jing jue	警觉	301
+zhuan zeng	转增	301
+bian ji	边际	301
+dian fu	颠覆	301
+li ba nen	黎巴嫩	301
+bu ji qi shu	不计其数	300
+bu wen	不问	300
+yi xi	乙烯	300
+he shi	合十	300
+hui xiang	回乡	300
+da tong dao	大通道	300
+tian wen tai	天文台	300
+she chi pin	奢侈品	300
+wan hun	完婚	300
+shan qiang	山墙	300
+qing xing	庆幸	300
+miao yu	庙宇	300
+suo wei	所为	300
+cheng xi	承袭	300
+tou kao	投靠	300
+jing yang	敬仰	300
+wu yi	无益	300
+jie zuo	杰作	300
+yin li ting	殷梨亭	300
+ji dang	激荡	300
+chao mian	炒面	300
+niu jin	牛筋	300
+kuang ben	狂奔	300
+zhi qing	知情	300
+suan pan	算盘	300
+hong tang	红糖	300
+wei xin	维新	300
+biao mei	表妹	300
+biao yang	表扬	300
+shuai bian	衰变	300
+lie bian	裂变	300
+ding dan	订单	300
+you ren	诱人	300
+diao qian	调遣	300
+da mo	达摩	300
+jin xian dai	近现代	300
+gang chang	钢厂	300
+can zhuo	餐桌	300
+bu guan zen yang	不管怎样	299
+dao ta	倒塌	299
+xing shan	兴山	299
+chu xin	出新	299
+qu qu	区区	299
+nan wei	南纬	299
+xi yang	夕阳	299
+an quan ju	安全局	299
+ping di	平底	299
+ping su	平素	299
+bing fa zheng	并发症	299
+ying xuan	应选	299
+kai shi	开时	299
+kong long	恐龙	299
+da cheng	打成	299
+ming tai zu	明太祖	299
+xian wei jing	显微镜	299
+jing zhi	景致	299
+kuan dai	款待	299
+jin pao	浸泡	299
+you dang	游荡	299
+yan shi	演示	299
+qian fu	潜伏	299
+yan huo	烟火	299
+bai guo	白果	299
+sheng ming	盛名	299
+po lan	破烂	299
+chuan tou	穿透	299
+di yi jia	第一家	299
+mei miao	美妙	299
+mei guan	美观	299
+chou dou fu	臭豆腐	299
+bu jiu	补救	299
+zhuang xie	装卸	299
+jia zhang shi	钾长石	299
+zhang tiao xing	长条形	299
+sui tong	随同	299
+xu qiu liang	需求量	299
+huang yuan	黄原	299
+yi zhang	一丈	298
+sang shi	丧事	298
+yi nian	亿年	298
+san bing	伞兵	298
+chuan dao	传导	298
+yong gong	佣工	298
+jue jiang	倔强	298
+ruo da	偌大	298
+dang zhi bu	党支部	298
+ji chu	几处	298
+xiong hen	凶狠	298
+chu qian	出钱	298
+qin wu	勤务	298
+nan shui bei diao	南水北调	298
+zhou jia	周家	298
+hui zhuan	回转	298
+hui gu	回鹘	298
+bao zang	宝藏	298
+ji yang	寄养	298
+qie yi	惬意	298
+ju cheng	据称	298
+fang yi zhi	方以智	298
+si li tao sheng	死里逃生	298
+chao xi	潮汐	298
+pian ke jian	片刻间	298
+te she	特赦	298
+sheng hui	盛会	298
+qin liu gan	禽流感	298
+jing ling	竟陵	298
+di si ji	第四纪	298
+deng jia wu	等价物	298
+lao niang	老娘	298
+lao li	老李	298
+shu chang	舒畅	298
+su ning	苏宁	298
+sai qian	赛前	298
+yin he xi	银河系	298
+zhang di	长堤	298
+shan shen	闪身	298
+yi ye jian	一夜间	297
+yi tian dao wan	一天到晚	297
+zhong guo gong chan dang zhong yang wei yuan hui	中国共产党中央委员会	297
+jiu zhang	九章	297
+wu tian	五天	297
+yi duo yuan	亿多元	297
+fu gei	付给	297
+kai xuan	凯旋	297
+chu shi	初始	297
+dao tou lai	到头来	297
+xian yu	县域	297
+ting hou	听候	297
+qi ji	契机	297
+ding xia	定下	297
+shi quan	实权	297
+yu yi	寓意	297
+yi liao	意料	297
+kong su	控诉	297
+sa la zu	撒拉族	297
+jiao shu	教书	297
+xing ye	星夜	297
+you ji wu	有机物	297
+ci yao	次要	297
+jiang cheng	江城	297
+jiang duan	江段	297
+fu dong	浮动	297
+tong chu	痛楚	297
+deng lu jian	登陆舰	297
+po tu dong gong	破土动工	297
+ke pu	科普	297
+ji sui	脊髓	297
+ying mei	英美	297
+yao zhi	要旨	297
+lu cheng	路程	297
+dun xia	蹲下	297
+fang fu	防腐	297
+xian hai	陷害	297
+ge jue	隔绝	297
+nian yu	鲇鱼	297
+fo luo lun sa	佛罗伦萨	296
+bao he dian	保和殿	296
+qing fu	倾覆	296
+jian rong	兼容	296
+ban gong lou	办公楼	296
+fa chou	发愁	296
+fa zi	发自	296
+ke wang	可望	296
+ge si qi zhi	各司其职	296
+xiang zhong fa	向忠发	296
+di ji	地基	296
+mo yu	墨鱼	296
+ao si man di guo	奥斯曼帝国	296
+lv lv	屡屡	296
+nian lao	年老	296
+niu tou	扭头	296
+hu fa	护法	296
+bu huo	捕获	296
+leng xing	棱形	296
+fan yi weng	樊一翁	296
+zheng fu	正副	296
+jian ji ji	歼击机	296
+qing jing	清静	296
+zao tai	灶台	296
+dian gong	电工	296
+shui meng	睡梦	296
+jian shi	简史	296
+qian fu	纤夫	296
+yue mo	约莫	296
+chun bai	纯白	296
+shen shi	绅士	296
+zi you hua	自由化	296
+su men ling	苏门羚	296
+xi zhuang	西装	296
+ti zi	蹄子	296
+zhuan da	转达	296
+guo guan	过关	296
+zhu chu	逐出	296
+guo zhong yao	郭中姚	296
+qing cao	青草	296
+yun lv	韵律	296
+gao jia	高家	296
+yi yong er shang	一拥而上	295
+yi kuan	一款	295
+wan jin	万斤	295
+san jian	三件	295
+shang wan yuan	上万元	295
+shi shi	事事	295
+ren min gong he guo	人民共和国	295
+xian li	先例	295
+ke lin dun	克林顿	295
+jun zhuang	军装	295
+chu que	出缺	295
+qian cheng	前程	295
+wei mian	卫冕	295
+juan zong	卷宗	295
+ke qu	可取	295
+shi da fu	士大夫	295
+tai lang	太郎	295
+an ge la	安哥拉	295
+zhan wang	展望	295
+xin di	心地	295
+cheng tian	成天	295
+da shang	打伤	295
+cha shou	插手	295
+fang xing	放行	295
+san huo	散货	295
+jing wei	敬畏	295
+wen shi	文史	295
+geng ti	更替	295
+ji dian	极点	295
+chu wen hua	楚文化	295
+gai mao	概貌	295
+ci qi bi fu	此起彼伏	295
+he gou	河沟	295
+zha hui	炸毁	295
+zhen qie	真切	295
+jin suo	紧缩	295
+fan zhi li	繁殖力	295
+fei cui	翡翠	295
+ba lei	芭蕾	295
+xun lian tuan	训练团	295
+tui wei	退位	295
+yin yuan	银元	295
+ma chang	马场	295
+ma bi	麻痹	295
+qi jie	七届	294
+san shi liu	三十六	294
+san bu qu	三部曲	294
+bu xiang	不祥	294
+liang chang	两场	294
+zhong xi bu	中西部	294
+shu dian	书店	294
+wu zuo	五座	294
+jing zu	京族	294
+bian dang	便当	294
+yuan qi	元气	294
+ba shi nian dai	八十年代	294
+jian mian	减免	294
+liu fang liang	刘芳亮	294
+jia le bi hai	加勒比海	294
+qian mu	千亩	294
+ban feng bi	半封闭	294
+xian ling	县令	294
+bian se	变色	294
+gu dong	古董	294
+ji pu che	吉普车	294
+fen zhan	奋战	294
+zi fang	子房	294
+shi hui	实惠	294
+kuai jie	快捷	294
+xing bie bi	性别比	294
+shou mang jiao luan	手忙脚乱	294
+bao biao	报表	294
+pin bo	拼搏	294
+zheng feng yun dong	整风运动	294
+zong huang se	棕黄色	294
+yong gu	永固	294
+xian shen	献身	294
+shu song	疏松	294
+di er juan	第二卷	294
+mi fei	米芾	294
+bei bao	背包	294
+zi ju	自居	294
+fan wen cheng	范文程	294
+bu xuan	补选	294
+zhuang zai	装载	294
+guan cha yuan	观察员	294
+yi ben	译本	294
+shi ju	诗句	294
+duo kai	躲开	294
+yuan gu	远古	294
+wei ji	违纪	294
+tong qian	铜钱	294
+luo gu	锣鼓	294
+yin le ting	音乐厅	294
+yu wei	鱼尾	294
+wan hu	万户	293
+liang san ge	两三个	293
+zhong guo gong nong hong jun	中国工农红军	293
+zhong mei zhou	中美洲	293
+mai zhe	买者	293
+jing shan	京山	293
+gu suan	估算	293
+guang cai duo mu	光彩夺目	293
+bing quan	兵权	293
+li ci	历次	293
+fa sheng di	发生地	293
+qu xiang	取向	293
+he zang mu	合葬墓	293
+guo zei	国贼	293
+di tan	地坛	293
+wai yi	外衣	293
+zhai zi	宅子	293
+wo xin	我心	293
+dai er	戴尔	293
+zhao pai	招牌	293
+yong ru	拥入	293
+wa chu	挖出	293
+li wei min	李为民	293
+tong bai shan	桐柏山	293
+zheng wu	正午	293
+mao guan lu	毛冠鹿	293
+shen ceng	深层	293
+shu zhi	熟知	293
+shuang kuai	爽快	293
+shan hu jiao	珊瑚礁	293
+ji si	祭司	293
+bian ru	编入	293
+wang zhi	网址	293
+ying mu	英亩	293
+wen zi	蚊子	293
+ping pan	评判	293
+mou fan	谋反	293
+yuan ju li	远距离	293
+pei dian	配殿	293
+jin lu sheng	金鲁生	293
+chen yun	陈云	293
+liang yang	两样	292
+mai lai	买来	292
+fen fu	分付	292
+sheng zhi	升至	292
+fan pan	反叛	292
+pin ge	品格	292
+yin te wang	因特网	292
+ta ji ke zu	塔吉克族	292
+duo gong li	多公里	292
+da xiong mao	大熊猫	292
+ding shi	定时	292
+bao ma	宝马	292
+shen ji shu	审计署	292
+shao bu liao	少不了	292
+tie zi	帖子	292
+yao yi	徭役	292
+ji chu	挤出	292
+cha tu	插图	292
+xiao zhong	效忠	292
+jiao fa	教法	292
+you shi yi lai	有史以来	292
+li yong bo	李永波	292
+qiang sha	枪杀	292
+he dan tou	核弹头	292
+qiu qing	求情	292
+yan yi	演绎	292
+yong gong	用功	292
+bai zhi	白纸	292
+jian shi	监事	292
+kuang wu zhi	矿物质	292
+chuo hao	绰号	292
+mei shu guan	美术馆	292
+er jin	而今	292
+sha shi bi ya	莎士比亚	292
+mi zao	蜜枣	292
+xing xing	行刑	292
+shuai wang	衰亡	292
+dou bi	陡壁	292
+gao li dai	高利贷	292
+zhong jian	中建	291
+jiu gong shan	九宫山	291
+er shi er nian	二十二年	291
+hu bu	互补	291
+ge lao zu	仡佬族	291
+di lian	低廉	291
+er xi	儿媳	291
+nong min qi yi	农民起义	291
+chu pin	出品	291
+jia xi	加息	291
+dong neng	动能	291
+qian ka	千卡	291
+tu di gai ge	土地改革	291
+hao duan duan	好端端	291
+gu su	姑苏	291
+hun hou	婚后	291
+sun chuan ting	孙传庭	291
+zong ren fu	宗人府	291
+ding ming	定名	291
+gong nei	宫内	291
+jia miao	家庙	291
+jia li ren	家里人	291
+feng jian zhu yi	封建主义	291
+lv dai	履带	291
+de xing	德行	291
+lian xi	怜惜	291
+kang ri min zu tong yi zhan xian	抗日民族统一战线	291
+bao quan	抱拳	291
+ji ya	挤压	291
+wen hua ceng	文化层	291
+shi zheng	施政	291
+you se	有色	291
+song san	松散	291
+ji shou	棘手	291
+wu chang yu	武昌鱼	291
+ce hui	测绘	291
+huo dui	火堆	291
+lie wu	猎物	291
+zhen hua	真话	291
+mo sun	磨损	291
+li fu	礼服	291
+zhong qun	种群	291
+zi wai xian	紫外线	291
+kao qian	考前	291
+hao zi	耗资	291
+chang dao	肠道	291
+chuan cang	船舱	291
+cao ping	草坪	291
+pu tao tang	葡萄糖	291
+xing ci	行刺	291
+zhuan zhe dian	转折点	291
+jin shan	金山	291
+fu zhong	附中	291
+lv zi	驴子	291
+er long	二龙	290
+hu he	呼喝	290
+sheng yuan	声援	290
+wai jing mao	外经贸	290
+duo bian	多边	290
+da zeng	大增	290
+tou pi	头皮	290
+shen pan quan	审判权	290
+dao ti	导体	290
+zong cheng	总成	290
+bao jing	报警	290
+zhi lu	指路	290
+pai guan	排灌	290
+zhi xing	支行	290
+fang cheng	方城	290
+jian tao	检讨	290
+peng li	棚里	290
+gang wan	港湾	290
+li tou	犁头	290
+si zi	私自	290
+kong jie	空姐	290
+di yi fen	第一分	290
+lv song shi	绿松石	290
+rou zhi	肉质	290
+gang men	肛门	290
+ang zang	肮脏	290
+yi dao su	胰岛素	290
+hu shan	虎山	290
+xue se	血色	290
+qian xu	谦虚	290
+zhuan ji	转机	290
+yin chuan	银川	290
+ci xiong	雌雄	290
+san wan	三万	289
+liang dui	两对	289
+chan xiao lv	产销率	289
+qin qing	亲情	289
+qin zheng	亲政	289
+guang lin	光临	289
+quan tian	全天	289
+shua shua	刷刷	289
+fan qing xiao	反倾销	289
+ke wu	可恶	289
+ge tiao	各条	289
+tang tai zong	唐太宗	289
+qi cai	奇才	289
+yu hang yuan	宇航员	289
+kuan chang	宽敞	289
+qi fei	岂非	289
+qiang di	强敌	289
+jing yi	惊疑	289
+zhe shan	折扇	289
+jiao yuan	教员	289
+xin chun	新春	289
+za cao cong sheng	杂草丛生	289
+quan fen li	权分立	289
+jiang zhe	江浙	289
+xuan ran	渲染	289
+ding zhu	盯住	289
+hu zi gao	胡自皋	289
+zi zhuan	自转	289
+ying xiong hao han	英雄好汉	289
+cang shu	藏书	289
+ni zhuan	逆转	289
+yao gan	遥感	289
+jiao wai	郊外	289
+zheng cheng gong	郑成功	289
+yu hui zhe	与会者	288
+shu zhuo	书桌	288
+ru xian	乳腺	288
+er huan	二环	288
+gong dian	供电	288
+dang zhang	党章	288
+liu lu	六路	288
+fan xing	反省	288
+diao cang	吊舱	288
+xian dan	咸蛋	288
+hui wei wu qiong	回味无穷	288
+shi chuan	失传	288
+shan ying	山影	288
+gong xin chu	工信处	288
+shu qian nian	数千年	288
+zui gao dian	最高点	288
+ben xiao	本校	288
+min meng	民盟	288
+qing liang	清凉	288
+huo dian zhan	火电站	288
+yan jie	眼界	288
+jie he bu	结合部	288
+hua er	花儿	288
+hua shan	花山	288
+cai tang	菜汤	288
+xiao tiao	萧条	288
+zhuang ban	装扮	288
+ci yu	词语	288
+cheng shi	诚实	288
+fu she liang	辐射量	288
+zheng jia	郑家	288
+a chang zu	阿昌族	288
+pei shen yuan	陪审员	288
+xian luo	陷落	288
+feng xiang	风向	288
+bu zhi qu xiang	不知去向	287
+zhong shan lu	中山路	287
+di gu	低估	287
+he ku	何苦	287
+quan jun fu mo	全军覆没	287
+feng shan	凤山	287
+hou wei	后魏	287
+xi ru	吸入	287
+chang ming	唱名	287
+si san	四散	287
+tan shuai	坦率	287
+xiao shan	小山	287
+gong cheng ju	工程局	287
+xu jia	徐家	287
+ji jiu	急救	287
+kang kai ji ang	慷慨激昂	287
+an shuo	按说	287
+xin qiao	新桥	287
+ming lang	明朗	287
+ji di	极地	287
+qi nao	气恼	287
+qiu jiu	求救	287
+sha wan	沙湾	287
+huo sheng sheng	活生生	287
+qian she	牵涉	287
+jia wu zhan zheng	甲午战争	287
+xiang he	祥和	287
+jian bian	简便	287
+rao cheng	绕城	287
+bian xiu	编修	287
+yao wu xue	药物学	287
+he qiang shi dan	荷枪实弹	287
+fu mie	覆灭	287
+fang hua	访华	287
+zhuan zhan	转战	287
+jin yuan bao	金元宝	287
+jin gang shi	金刚石	287
+tie jia	铁甲	287
+yin piao	银票	287
+yue li	阅历	287
+long chuan	龙船	287
+bu xiang	不详	286
+ren yi qiu	任意球	286
+dao zhuan	倒转	286
+ru xue	儒学	286
+gong jiao	公交	286
+xing gao cai lie	兴高采烈	286
+hua zhuang	化妆	286
+dan xiang	单向	286
+hou zhu	后主	286
+hou sheng	后生	286
+gao zhong	告终	286
+xiao zhang qi yan	嚣张气焰	286
+fu yin jian	复印件	286
+da han	大喊	286
+tian yu	天宇	286
+nv bing	女兵	286
+ji yuan	妓院	286
+wa wa yu	娃娃鱼	286
+zi yan	字眼	286
+xun hang	巡航	286
+xun shi yuan	巡视员	286
+she shi	摄氏	286
+shu shi wan	数十万	286
+zheng feng	整风	286
+wen zhi	文职	286
+ji mu	极目	286
+cha yue	查阅	286
+xin ran	欣然	286
+wu ying dian	武英殿	286
+hui bian	汇编	286
+you cai	油菜	286
+xiong mao	熊猫	286
+du ju yi ge	独具一格	286
+yong dian liang	用电量	286
+si li	私利	286
+lao wo	老挝	286
+ye lv da shi	耶律大石	286
+su da	苏打	286
+qi chun	蕲春	286
+xi ning	西宁	286
+jie wei	解围	286
+tan guan	贪官	286
+tong xiao	通宵	286
+wan gu pai	顽固派	286
+fei dao	飞刀	286
+wan tai	万台	285
+xia chui	下垂	285
+si chou zhi lu	丝绸之路	285
+ren dai hui	人代会	285
+zhu suo	住所	285
+fo jing	佛经	285
+shi yong zhe	使用者	285
+jue fei	决非	285
+ji shi jin	几十斤	285
+lao zuo	劳作	285
+fan dui pai	反对派	285
+jiao hao	叫好	285
+tai zhan	台站	285
+shang chuan	商船	285
+guo mei	国美	285
+zai cheng zhen	在城镇	285
+wai xiao	外校	285
+jian chen	奸臣	285
+wu nei	屋内	285
+xing bing	性病	285
+yuan hen	怨恨	285
+e du	恶毒	285
+pai cheng	排成	285
+ban zhu	斑竹	285
+xin bing	新兵	285
+fang yuan	方圆	285
+wu li	无理	285
+ming wen	明文	285
+ben fen	本分	285
+sha du	杀毒	285
+bi ming	毙命	285
+chen ji	沉寂	285
+cang zhou	沧州	285
+she wai	涉外	285
+dian huo	点火	285
+mei qi	煤气	285
+wang mang	王莽	285
+sheng lai	生来	285
+dian zi zhan	电子战	285
+xiang yi	相异	285
+zhen jia	真假	285
+hong wei bing	红卫兵	285
+que shi	缺失	285
+luo de	落得	285
+xi bei di qu	西北地区	285
+ren shu	认输	285
+yi zheng	议政	285
+song zou	送走	285
+xie e	邪恶	285
+zhong sheng	钟声	285
+yin xiang	音响	285
+mai jia	麦加	285
+dong zhi	东至	284
+shi guan qu	使馆区	284
+guang yuan	光源	284
+chu ren yi liao	出人意料	284
+fa nu	发怒	284
+qu nuan	取暖	284
+gu mu qun	古墓群	284
+wu ying xiong	吴应熊	284
+shao bing	哨兵	284
+dun tai	墩台	284
+da cheng	大乘	284
+hao huai	好坏	284
+shi de	实德	284
+zhang jia wan	张家湾	284
+qiang ying	强硬	284
+gan zhi	感知	284
+bian yuan xing	扁圆形	284
+cao chang	操场	284
+jiao yang	教养	284
+xin chen dai xie	新陈代谢	284
+ban deng	板凳	284
+mo te	模特	284
+ou ya	欧亚	284
+shui chan ye	水产业	284
+xiang bei	湘北	284
+huo jian pao	火箭炮	284
+te ji	特技	284
+du cha	督查	284
+xiao suan	硝酸	284
+zhong zhi ye	种植业	284
+ji ren	继任	284
+hu ren	胡人	284
+dan chen	诞辰	284
+yu yan xue	语言学	284
+ba zhu	霸主	284
+qing cong	青葱	284
+ding ji	顶级	284
+ling dao ren yuan	领导人员	284
+bu zi jin	不自禁	283
+qiao zhi	乔治	283
+jiao xiang qu	交响曲	283
+jing jiu tie lu	京九铁路	283
+yi qian wa shi	亿千瓦时	283
+bing huo	兵火	283
+chu shan	出山	283
+gu shi	古诗	283
+ge se	各色	283
+wu song kou	吴淞口	283
+cao za	嘈杂	283
+da nei	大内	283
+da shu	大叔	283
+shi shou	失手	283
+shi xian	市县	283
+you you	幽幽	283
+xu hai dong	徐海东	283
+jing cha	惊诧	283
+zhan lve xing	战略性	283
+ban ban	斑斑	283
+lv tu	旅途	283
+jiu wen	旧闻	283
+song zi	松滋	283
+shen guo fang	沈国放	283
+ce ping	测评	283
+shi mian	石棉	283
+she jiao	社交	283
+qin ji wei	秦基伟	283
+di yi xian	第一线	283
+guan jiao	管教	283
+lao bing	老兵	283
+rou ji	肉鸡	283
+bi bo	鄙薄	283
+chang shou	长寿	283
+qing hai sheng	青海省	283
+yu jian	预见	283
+ma ti sheng	马蹄声	283
+gao gao de	高高的	283
+ge zi	鸽子	283
+chi lun	齿轮	283
+yi chi	一尺	282
+yi ba shou	一把手	282
+bu ke yi shi	不可一世	282
+dong an men	东安门	282
+wei sha	为啥	282
+jiu chi	九尺	282
+er men	二门	282
+ya ke	亚科	282
+ren lei xue	人类学	282
+jia zhi liang	价值量	282
+chuan ran	传染	282
+ban lv	伴侣	282
+hou fang yu	侯方域	282
+seng lv	僧侣	282
+yang ji chang	养鸡场	282
+fen zi shi	分子式	282
+dan bo	单薄	282
+fa nan	发难	282
+ke xin	可信	282
+chi kui	吃亏	282
+tang shang	堂上	282
+duo chu	多出	282
+da yang shu	大杨树	282
+han qi	寒气	282
+feng kou	封口	282
+xiao pin	小品	282
+shao you	少有	282
+si xu	思绪	282
+tuo fu	托福	282
+la gu	拉古	282
+fu yan	敷衍	282
+lai jing	来京	282
+ye zi	椰子	282
+nan zhu	楠竹	282
+qian que	欠缺	282
+ci xiang	此项	282
+bo ji	波及	282
+hun dan	混蛋	282
+wen re	温热	282
+ai guo ren shi	爱国人士	282
+dian zhan	电站	282
+xiang jian	相间	282
+nian zi	碾子	282
+shu li	竖立	282
+chou cuo	筹措	282
+ji wei	纪委	282
+su bei	苏北	282
+xue tong	血统	282
+gui cheng	规程	282
+chu jiao	触角	282
+shi she	试射	282
+gai xiang	该项	282
+zai ren	载人	282
+tui hou	退后	282
+qian tang jiang	钱塘江	282
+niao er	鸟儿	282
+san sheng	三声	281
+xia ba	下巴	281
+dong gong	东宫	281
+liang guang	两广	281
+feng man	丰满	281
+zhu ren wei yuan	主任委员	281
+ren sheng	人声	281
+xiu ke	休克	281
+chong jun	充军	281
+ji zhang	几张	281
+bei cheng	北城	281
+hui you	回游	281
+ji ben gong zi	基本工资	281
+wai dian	外电	281
+meng hao ran	孟浩然	281
+an wen	安稳	281
+feng feng	峰峰	281
+bu er	布尔	281
+can zao	惨遭	281
+suo bu	所部	281
+jie ru	接入	281
+che hui	撤回	281
+wen gong tuan	文工团	281
+ji zhi	机智	281
+song hua	松花	281
+zao yang	枣阳	281
+chu zhuang wang	楚庄王	281
+qi ling	欺凌	281
+qiu he	求和	281
+shi re	湿热	281
+mu shi	牧师	281
+wang zhe	王者	281
+bai dai	白带	281
+po zhan	破绽	281
+shen jing yuan	神经元	281
+ji nian	纪年	281
+xi zuo	细作	281
+tong zhi	统制	281
+mian yang	绵羊	281
+zi you zi zai	自由自在	281
+cha shu	茶树	281
+en kun	蒽醌	281
+gui zhang zhi du	规章制度	281
+cai tuan	财团	281
+liao he	辽河	281
+yuan tiao	远眺	281
+tou chu	透出	281
+bi mu	闭幕	281
+lu jun da xue	陆军大学	281
+tao zui	陶醉	281
+qing mu	青木	281
+ling dao	领到	281
+ma dao	马道	281
+yi dong	一动	280
+shang xun	上旬	280
+zhuan cheng	专程	280
+dong xi fang	东西方	280
+zhong hua shu ju	中华书局	280
+ju shi wen ming	举世闻名	280
+jiao jing	交警	280
+yi bei	以备	280
+bing shan	冰山	280
+fen qu	分区	280
+yin du ren	印度人	280
+wai ceng	外层	280
+dao yin	导引	280
+chang chang	尝尝	280
+ju xian xing	局限性	280
+you shi	幼时	280
+shou lu	收录	280
+fang mu	放牧	280
+wen xue jia	文学家	280
+chao xian zhan zheng	朝鲜战争	280
+hui mie xing	毁灭性	280
+zi bu pin	滋补品	280
+qi qi	漆器	280
+re lei ying kuang	热泪盈眶	280
+miao zhong	秒钟	280
+xi men zi	西门子	280
+xi ling	西陵	280
+ren cuo	认错	280
+gu di	谷底	280
+dou lei	豆类	280
+tong cheng	通城	280
+zhang man	长满	280
+long long	隆隆	280
+wei xiang zhu	韦香主	280
+yi zhang	一章	279
+san min zhu yi	三民主义	279
+zhong yi yao da xue	中医药大学	279
+fu kuan	付款	279
+shi cong	侍从	279
+pian yao	偏要	279
+chu cang liang	储藏量	279
+xian di	先帝	279
+gong yong	共用	279
+jun li	军力	279
+fen zhi	分枝	279
+qian ren	前任	279
+bei fa zhan zheng	北伐战争	279
+qi cheng	启程	279
+jia qing	嘉庆	279
+da shi guan	大使馆	279
+jia jia	家家	279
+xiao shi	小史	279
+yan qing	延庆	279
+kai zhan	开战	279
+bei guan	悲观	279
+cheng qin	成亲	279
+wo shi	我市	279
+zhi zhi	指指	279
+dao luan	捣乱	279
+wen jiao wei sheng	文教卫生	279
+xin hun yan er	新婚燕尔	279
+wu ying wu zong	无影无踪	279
+jiu cheng	旧城	279
+zhu guang ya	朱光亚	279
+guo shu	果蔬	279
+gen ben xing	根本性	279
+liang zi hu	梁子湖	279
+min ban jiao shi	民办教师	279
+pan zhong	盘中	279
+zhu yuan	竹园	279
+zhu shan	竹山	279
+fen bian	粪便	279
+bian pai	编排	279
+geng zuo ye	耕作业	279
+zhi bing	致病	279
+yao shan	药膳	279
+gai ke	该科	279
+gai yuan	该院	279
+shuo bu de	说不得	279
+hao qiang	豪强	279
+gou zhi	购置	279
+xuan liao	选料	279
+zun cong	遵从	279
+chuang ru	闯入	279
+chen zheng wei	陈政委	279
+sui xing	随行	279
+ding sheng	鼎盛	279
+zhu xuan lv	主旋律	278
+ti neng	体能	278
+he lu li	何鲁丽	278
+guang he zuo yong	光合作用	278
+quan pan	全盘	278
+qi ran	凄然	278
+xiong e	凶恶	278
+li wu pu	利物浦	278
+mai diao	卖掉	278
+can zhan	参展	278
+duo da	多达	278
+shi heng	失衡	278
+qiao he	巧合	278
+bao fu	抱负	278
+san kai	散开	278
+wen hui	文汇	278
+shi yong liang	施用量	278
+qu jiu	曲酒	278
+zui zhong	最重	278
+chao xian ren	朝鲜人	278
+guan mu	棺木	278
+xiang shu	橡树	278
+du qi	毒气	278
+yong xin	永新	278
+yong fu	永福	278
+han ying	汉英	278
+re hu hu	热呼呼	278
+niu tou shan	牛头山	278
+wan yi er	玩意儿	278
+jia mi	甲醚	278
+quan yu	痊愈	278
+kuang chan di	矿产地	278
+tong zhuang	童装	278
+di si zhang	第四章	278
+cu xi	粗细	278
+xi wei	细微	278
+shen shang xian	肾上腺	278
+he lan ren	荷兰人	278
+xi kou	西口	278
+zhen guan	贞观	278
+di jian	递减	278
+pei zhi	配制	278
+pei se	配色	278
+tie zheng	铁证	278
+chen shi mei	陈世美	278
+dou qiao	陡峭	278
+yin yu	饮誉	278
+gao yi	高一	278
+mo wang	魔王	278
+gui yu	鳜鱼	278
+gu zhang	鼓掌	278
+ding mao	丁卯	277
+bu jun	不均	277
+luan qi ba zao	乱七八糟	277
+er li tou	二里头	277
+yu shu yan	余叔岩	277
+shu di	倏地	277
+nong jia le	农家乐	277
+chuang xia	创下	277
+jia su qi	加速器	277
+dong ci	动词	277
+shi wu dao	十五道	277
+hua rong	华容	277
+ming yue	名曰	277
+wu xiang xiang	吴香香	277
+mu xue	墓穴	277
+shi de dui	实德队	277
+ke huo lun	客货轮	277
+xiao shi qiao	小石桥	277
+de ti	得体	277
+wei bu zu dao	微不足道	277
+xuan nian	悬念	277
+jie zhu	截住	277
+shan xing	扇形	277
+tou zhi	投掷	277
+kang mei yuan chao	抗美援朝	277
+chou chu	抽搐	277
+zhao shi	招式	277
+bu huo liang	捕获量	277
+shu bai nian	数百年	277
+si luo fa ke	斯洛伐克	277
+chen bao	晨报	277
+chao xian ban dao	朝鲜半岛	277
+li ru song	李如松	277
+zhi ye	枝叶	277
+ou la	欧拉	277
+can fei	残废	277
+jiang di	江底	277
+yan jing da xue	燕京大学	277
+te pai yuan	特派员	277
+lve wei	略微	277
+sha yan	砂岩	277
+zhu yuan	祝愿	277
+fu xing	福星	277
+di yi zuo	第一座	277
+pian fu	篇幅	277
+hu yang lin	胡杨林	277
+xi fei	西非	277
+yu zhong	语种	277
+jian ren	贱人	277
+song ru	送入	277
+dao gu	道姑	277
+a la	阿拉	277
+fu he	附和	277
+yi yue fen	一月份	276
+zhong tu	中土	276
+shu cheng	书城	276
+er lv	二氯	276
+wu xian	五县	276
+chan ye yuan	产业园	276
+xian nv	仙女	276
+zuo dui	作对	276
+yin ji	印记	276
+yuan chan	原产	276
+yuan lai ru ci	原来如此	276
+qu xiao	取笑	276
+pan bian	叛变	276
+gu zhen	古镇	276
+fou jue	否决	276
+hu ying	呼应	276
+tang song	唐宋	276
+qiu jin	囚禁	276
+hui lang	回廊	276
+wei cheng	围城	276
+tu tai zi	土台子	276
+di qiu hua xue	地球化学	276
+su xiang	塑像	276
+da chu	大厨	276
+da tui	大腿	276
+tai gong	太公	276
+tai ji	太极	276
+bi yao tiao jian	必要条件	276
+huang hu	恍惚	276
+gong hou	恭候	276
+tuo ren	托人	276
+gua pai	挂牌	276
+fang pi	放屁	276
+wen chang shi	文昌市	276
+wu ming	无名	276
+xing ji	星际	276
+qi man	期满	276
+zhu bang zao	朱邦造	276
+sha chu	杀出	276
+song hua jiang	松花江	276
+liu da hua	柳大华	276
+yang ben	样本	276
+ti du	梯度	276
+ci xu	次序	276
+bi shi	比试	276
+fu xian	浮现	276
+xiao wang	消亡	276
+wen jia bao	温家宝	276
+fu nv	父女	276
+jie ding	界定	276
+huang tai zi	皇太子	276
+yan suan	盐酸	276
+gui hui shi	硅灰石	276
+tang guo	糖果	276
+jie wei	结尾	276
+yu zhong	育种	276
+yu ju	语句	276
+tao li	逃离	276
+bi han	避寒	276
+ling sheng	铃声	276
+a yi	阿姨	276
+diao lan	雕栏	276
+gui shen	鬼神	276
+bao chun lai	鲍春来	276
+mo qi	默契	276
+bi ti	鼻涕	276
+shang zhen	上阵	275
+dong guan	东莞	275
+zhong tong	中统	275
+ju li	举例	275
+dao bi	倒闭	275
+ji ling	即令	275
+xia hu	吓唬	275
+wu chu	吴楚	275
+wai shi wei yuan hui	外事委员会	275
+duo gong neng	多功能	275
+duo bian	多变	275
+duo qi	多期	275
+tian shen	天神	275
+tai wei	太尉	275
+nv you	女友	275
+xue fen	学分	275
+hong da	宏达	275
+jian duan	尖端	275
+yin ji fu	尹吉甫	275
+yin you	引诱	275
+bi sheng	必胜	275
+qing yi	情意	275
+ban qian	搬迁	275
+you xian	攸县	275
+jiao shi	教士	275
+jiao hui	教诲	275
+hun an	昏暗	275
+yue jun	月均	275
+wei liao	未了	275
+ou gong ti	欧共体	275
+wang yang	汪洋	275
+wen chuan	汶川	275
+ni hui yan	泥灰岩	275
+wen bao	温饱	275
+xiang jun	湘军	275
+zhao xiang ji	照相机	275
+wang shu sheng	王树声	275
+sheng huo zi liao	生活资料	275
+pi ri xiu	皮日休	275
+sheng ji	省籍	275
+jing dao	粳稻	275
+lao er	老二	275
+fei zao	肥皂	275
+neng nai	能耐	275
+zhi dian	质点	275
+chao e	超额	275
+jiu xi	酒席	275
+tie qi	铁器	275
+xian zhe	闲着	275
+yan liao	颜料	275
+liang men	两门	274
+yan jia	严加	274
+dan mai dui	丹麦队	274
+ting chan	停产	274
+jiang ju	僵局	274
+chong tian	冲天	274
+shi er wu	十二五	274
+ming wen xia er	名闻遐迩	274
+hou hu	后湖	274
+quan tao	圈套	274
+ji ben jian she	基本建设	274
+du jie	堵截	274
+da hong shan	大洪山	274
+an zang	安葬	274
+jia ding	家丁	274
+dui nei	对内	274
+an tang	庵堂	274
+shi yang	式样	274
+yin zhe	引着	274
+de yu	德语	274
+yi yue	怡悦	274
+cheng zhi	惩治	274
+yang qi	扬起	274
+chou diao	抽调	274
+an na bu zhu	按捺不住	274
+fang zhu	放逐	274
+xin zi	新字	274
+ming qi	明器	274
+ci xing	此行	274
+shui cao	水草	274
+fa lv wei yuan hui	法律委员会	274
+hong ling bo	洪凌波	274
+dian fan bao	电饭煲	274
+bai yi yuan	百亿元	274
+di yi mian	第一面	274
+lian ben	联苯	274
+jie neng	节能	274
+yao chong	要冲	274
+di jiao	递交	274
+zhen ye lin	针叶林	274
+huang hua	黄骅	274
+yi lv	一缕	273
+bu wu	不无	273
+qi pan	企盼	273
+he fang	何方	273
+xian yu	先于	273
+quan jia fu	全家福	273
+gong ren	公人	273
+ji bai jin	几百斤	273
+fen shu	分属	273
+fen dan	分担	273
+bao jin	包金	273
+bao yin	包银	273
+yi bao	医保	273
+nan gang	南港	273
+guo bin	国宾	273
+duo nao he	多瑙河	273
+da xing an ling	大兴安岭	273
+tian an	天安	273
+tai hang shan	太行山	273
+fu ren dao	夫人道	273
+qi guan	奇观	273
+yin chu	引出	273
+qing huai	情怀	273
+zhe kou	折扣	273
+jie shang	接上	273
+jiu hu	救护	273
+you xing	有幸	273
+you suo zuo wei	有所作为	273
+yang da ge	杨大哥	273
+yang jian hua	杨建华	273
+cha li	查理	273
+lou ge	楼阁	273
+mu ti	母体	273
+shui zhong	水肿	273
+kao yu	烤鱼	273
+ya kou	牙口	273
+wang ren zhong	王任重	273
+tian cai	甜菜	273
+shi long	石龙	273
+di yi jie	第一节	273
+hong an	红安	273
+jing ji dai	经济带	273
+yi shu jie	艺术节	273
+dong jia	董家	273
+gui hua shi	规划师	273
+ping ji	评级	273
+chuo xue lv	辍学率	273
+tui bing	退兵	273
+fang huo	防火	273
+ban xing	颁行	273
+feng sha	风沙	273
+qi da nei	齐达内	273
+san xia da ba	三峡大坝	272
+shang yi yuan	上议院	272
+bu shi wei	不失为	272
+dan jiang kou shi	丹江口市	272
+ju chu	举出	272
+mai mai ti	买买提	272
+ren jie di ling	人杰地灵	272
+lun bi	伦比	272
+bao jian	保荐	272
+yan ran	俨然	272
+dao hao	倒好	272
+leng luo	冷落	272
+chu shi	出世	272
+li ren	利刃	272
+jia zhuang	加装	272
+mai guo qiu rong	卖国求荣	272
+yin zheng	印证	272
+shou fang zhe	受访者	272
+ming shi	名士	272
+ming wang	名望	272
+qi de	启德	272
+wai po	外婆	272
+shan zhuang	山庄	272
+chang yu chun	常遇春	272
+you shen	幽深	272
+cai yin	彩印	272
+pai lian	排练	272
+jie gui	接轨	272
+heng gou	横沟	272
+wu han dui	武汉队	272
+shui yuan di	水源地	272
+dong ku	洞窟	272
+hu bei sheng wei	湖北省委	272
+kao ji	烤鸡	272
+shen bao xu	申包胥	272
+chang da	畅达	272
+fu qi	福气	272
+jue zhao	绝招	272
+wei he	维和	272
+qun luo	群落	272
+zhi dian	致电	272
+hang tian fei ji	航天飞机	272
+hua mu lan	花木兰	272
+chun cai	莼菜	272
+xin zi	薪资	272
+mi shi	觅食	272
+ren shi lun	认识论	272
+kua guo	跨过	272
+han dan	邯郸	272
+jin jun wu	金俊武	272
+lu guan ying	陆冠英	272
+yi tang	饴糖	272
+gu jia	骨架	272
+sha dan	傻蛋	271
+mao yan	冒烟	271
+chu jia ren	出家人	271
+qian tian	前天	271
+qu wei	区委	271
+shi ba ri	十八日	271
+hua zhong di qu	华中地区	271
+bo de	博得	271
+fa piao	发票	271
+shou hai zhe	受害者	271
+da xiang	大象	271
+fu ke	妇科	271
+an dun	安顿	271
+yi huang	宜黄	271
+fu shui	富水	271
+gong nong bing	工农兵	271
+shi shi	师师	271
+xi juan	席卷	271
+dian ji	惦记	271
+kang fu she	抗辐射	271
+jiu wang yun dong	救亡运动	271
+wan can	晚餐	271
+biao qian	标签	271
+shu cong	树丛	271
+han chao	汉朝	271
+sha zi	沙子	271
+meng qin	猛禽	271
+liu qing	留情	271
+zhi guan	直管	271
+jian duan	简短	271
+nuo mi fen	糯米粉	271
+chun jing	纯净	271
+zi xuan	自旋	271
+zao lei	藻类	271
+shi yan	誓言	271
+xu jia lu	许嘉璐	271
+diao xu	调蓄	271
+chao yin su	超音速	271
+zhuan zai	转载	271
+bian jie	辩解	271
+tui rang	退让	271
+ying zhou	郢州	271
+cai fa liang	采伐量	271
+yi zhan	驿站	271
+yi zhuo	一桌	270
+hu wei	互为	270
+wu zhong	五中	270
+ren zhong	人种	270
+ta sha	他杀	270
+ren ping	任凭	270
+gong ying shang	供应商	270
+gong an	公案	270
+jun gong	军工	270
+bing qi	冰期	270
+lie wei	列位	270
+bie niu	别扭	270
+ge duan	割断	270
+bei hu	北湖	270
+lu sen bao	卢森堡	270
+shuang qiao	双桥	270
+wa wa	哇哇	270
+xiu jue	嗅觉	270
+sheng bo	声波	270
+fu huo	复活	270
+wai guo yu	外国语	270
+da hong men	大红门	270
+tou qiu	头球	270
+an nei	安内	270
+gui zhou	归州	270
+si liang	思量	270
+cheng wen	成文	270
+cheng fang	成方	270
+bao qian	抱歉	270
+tan wang	探望	270
+tui xuan	推选	270
+fang liu	放流	270
+fang jin	放进	270
+zheng ri	整日	270
+xin zhou	新洲	270
+you yi shi	有意识	270
+chao chen	朝臣	270
+biao di	标的	270
+bi sheng	毕升	270
+jiang hai	江海	270
+sha te a la bo	沙特阿拉伯	270
+wen shi	温室	270
+huo jian dan	火箭弹	270
+zhen zhi bing	甄志丙	270
+bai yu lan	白玉兰	270
+huang gang	皇岗	270
+shi liu shi	石榴石	270
+yan tao ban	研讨班	270
+zu jin	租金	270
+fen zheng	纷争	270
+zhi zhang	纸张	270
+lao ma	老马	270
+er ji	耳机	270
+zang li	葬礼	270
+rong qia	融洽	270
+xi fang ren	西方人	270
+lun zhu	论著	270
+shi yong qi	试用期	270
+hong ran	轰然	270
+song hui	送回	270
+yun xian	郧县	270
+tong jing	铜镜	270
+zhang yang tu jia zu zi zhi xian	长阳土家族自治县	270
+gao xin qu	高新区	270
+chi wen	鸱吻	270
+shang shen	上身	269
+bu xie	不懈	269
+zhu liao	主料	269
+li jiang	丽江	269
+fa li	乏力	269
+wu xiang	五项	269
+jing jiu xian	京九线	269
+ren mian quan	任免权	269
+yi li	伊利	269
+bian mi	便秘	269
+xin xi chan ye bu	信息产业部	269
+ru wu	入伍	269
+gong tong ti	共同体	269
+fen feng	分封	269
+fen bu	分部	269
+liu zhi jun	刘志军	269
+nan zhang	南漳	269
+wei xiao	卫校	269
+gu qin tai	古琴台	269
+shi fang	史方	269
+zhou wu	周五	269
+he cai	喝采	269
+yu ming	域名	269
+ao si ka	奥斯卡	269
+ping fang	平方	269
+si ke	思科	269
+shou zhi tou	手指头	269
+da xiang	打响	269
+lan he ba	拦河坝	269
+ri ben guo hui	日本国会	269
+chun feng	春风	269
+yang wei	杨维	269
+dai jin	殆尽	269
+tang hua long	汤化龙	269
+liu dong xing	流动性	269
+she xian	涉嫌	269
+jian jin	渐近	269
+you li	游历	269
+hua xue	滑雪	269
+chao guo	炒锅	269
+sheng tai xue	生态学	269
+bai yang	白洋	269
+yan du	盐度	269
+zi gui xian	秭归县	269
+kong tou	空投	269
+li tao wan	立陶宛	269
+di yi feng	第一峰	269
+di yi tiao	第一条	269
+jing hun	精魂	269
+que xi	缺席	269
+pin yong	聘用	269
+du wu	读物	269
+fu yi	赋役	269
+huan gei	还给	269
+yue juan	阅卷	269
+zhen qian	阵前	269
+nan guan	难关	269
+ji san	集散	269
+yin xiang	音像	269
+ma kou	马口	269
+gao neng	高能	269
+yi jiu liu er nian	一九六二年	268
+qi ri	七日	268
+san deng	三等	268
+shang pin	上品	268
+ren liu	人流	268
+chong ji	冲积	268
+hua yi	划一	268
+ci shang	刺伤	268
+bian fei wei bao	变废为宝	268
+ke bu	可怖	268
+si ma yi	司马义	268
+yin guo	因果	268
+da zhai	大寨	268
+da wan	大湾	268
+tai yang nian	太阳年	268
+fen fa jin qu	奋发进取	268
+ru yuan	如愿	268
+gan zhong	干重	268
+zhang yang	张扬	268
+peng zhen	彭真	268
+wei ruan gong si	微软公司	268
+kang ni xing	抗逆性	268
+bao zhi	报知	268
+zhang shang	掌上	268
+yao shou	摇手	268
+jiao zhong	教众	268
+xin qi	新奇	268
+wu jin	无尽	268
+wu neng wei li	无能为力	268
+ri luo	日落	268
+ming yu zhen	明玉珍	268
+qu mian	曲面	268
+hui huai	毁坏	268
+tai zhou	泰州	268
+han jie	焊接	268
+yu nv	玉女	268
+di san tian	第三天	268
+jian ti zi	简体字	268
+fu tong	腹痛	268
+ying shan	英山	268
+mo guo yu	莫过于	268
+xue xing	血型	268
+ren gou	认购	268
+ping yi	评议	268
+tan tu	贪图	268
+lu yong xiang	路甬祥	268
+yao kong	遥控	268
+pu zhu	铺筑	268
+cuo jue	错觉	268
+ge lou	阁楼	268
+chen xi lian	陈锡联	268
+ya hu	雅虎	268
+ba wang	霸王	268
+ling tou	领头	268
+qu shi	驱使	268
+gao su gong lu wang	高速公路网	268
+nian yu	鲶鱼	268
+huang yong sheng	黄永胜	268
+san gu mao lu	三顾茅庐	267
+liang ge fan shi	两个凡是	267
+zhu jiao	主教	267
+jing guang	京广	267
+fu ming xia	伏明霞	267
+ba zi	八字	267
+qie kuai	切块	267
+wu can	午餐	267
+ban tou	半头	267
+ban bu	半部	267
+nan jiao	南郊	267
+xi xun	喜讯	267
+qi cai chang	器材厂	267
+cheng dong	城东	267
+jiang en zhu	姜恩柱	267
+xiao lin	小林	267
+ba xi dui	巴西队	267
+cheng ban	惩办	267
+san shui	散水	267
+xin yan	新颜	267
+ti zi	梯子	267
+qi zha	欺诈	267
+jiao zhu	浇注	267
+pu dong	浦东	267
+yu chuan	渔船	267
+shi gao kuang	石膏矿	267
+kong dong	空洞	267
+pian zhang	篇章	267
+hong lian	红莲	267
+ji shu	级数	267
+zhi bu	织布	267
+jing luo	经络	267
+luo jia	罗家	267
+zi ji zi zu	自给自足	267
+cao ni ma	草泥马	267
+xia zi	虾子	267
+miu wu	谬误	267
+yu xi nan	豫西南	267
+ci yu	赐予	267
+lian huan	连环	267
+yu xun	鱼汛	267
+long le hao	龙乐豪	267
+xia fang	下放	266
+xiang zheng fu	乡政府	266
+ru tou	乳头	266
+er lang miao	二郎庙	266
+yu zheng sheng	俞正声	266
+xiu zheng zhu yi	修正主义	266
+hou bu	候补	266
+chu you gou zao	储油构造	266
+gong an bu dui	公安部队	266
+ning ju li	凝聚力	266
+bie you feng wei	别有风味	266
+dong zhi wu yuan	动植物园	266
+xia zi	匣子	266
+qian dun ji	千吨级	266
+gu shan	古山	266
+he xing	合兴	266
+shang yong	商用	266
+gu cheng	固城	266
+ji feng xing	季风性	266
+xue hai	学海	266
+shou bei	守备	266
+xuan shi	宣誓	266
+kuan song	宽松	266
+ze you	择优	266
+cao chi	操持	266
+shou xia	收下	266
+fang mian jun	方面军	266
+xing zuo	星座	266
+zhi jiang	枝江	266
+qi qiu	气球	266
+tang yong tong	汤用彤	266
+he yu	河鱼	266
+wan shua	玩耍	266
+tian bing yi	田秉毅	266
+dian wang	电网	266
+bai hua yuan	百花园	266
+zhi ji	知己	266
+chuan xing	穿行	266
+li an	立案	266
+ji nian ri	纪念日	266
+lao he kou shi	老河口市	266
+nie hai sheng	聂海胜	266
+jing sha shi	荆沙市	266
+lai bi xi	莱比锡	266
+xu wei	虚伪	266
+jian wen	见闻	266
+tiao pi	调皮	266
+zi zhi	资质	266
+zhou wa	轴瓦	266
+yun wang	运往	266
+yun zai huo jian	运载火箭	266
+jin jiao	近郊	266
+tong shan xian	通山县	266
+tai li hua	邰丽华	266
+e wan	鄂皖	266
+ci xing	雌性	266
+jia che	驾车	266
+he feng	鹤峰	266
+huang tu gao yuan	黄土高原	266
+san zi	三子	265
+san xian	三鲜	265
+xia gong fu	下功夫	265
+zhong guo zheng jian hui	中国证监会	265
+zhong zhi	中止	265
+dan jiang kou shui ku	丹江口水库	265
+ren xin min	任新民	265
+yu ping fang mi	余平方米	265
+xing shan xian	兴山县	265
+zhun xu	准许	265
+pan xing	判刑	265
+bei dou	北斗	265
+yuan yi	原意	265
+tong ju	同居	265
+hui guo	回锅	265
+fu cha	复查	265
+wai sheng	外甥	265
+duo wan ping fang mi	多万平方米	265
+duo tai	多胎	265
+da ye shi	大冶市	265
+ben fu	奔赴	265
+mei wai	媚外	265
+guang du	广度	265
+yin jian	引见	265
+dang guan	当官	265
+xi ni	悉尼	265
+shou xia ren	手下人	265
+gua nian	挂念	265
+zhuo na	捉拿	265
+tan ting	探听	265
+gong jian	攻坚	265
+jing yi	敬意	265
+wu tiao jian	无条件	265
+chun you	春游	265
+ceng xian zi	曾宪梓	265
+ben se	本色	265
+lai shi	来势	265
+mei yu qi	梅雨期	265
+yang ba	氧吧	265
+jiang nan xi	江南西	265
+you ji zhan	游击战	265
+chao zhi	炒制	265
+cai yi	猜疑	265
+wan jia	玩家	265
+bai tou	百头	265
+gai ci	盖茨	265
+dao zei	盗贼	265
+ke wei te	科威特	265
+tu po kou	突破口	265
+hong an xian	红安县	265
+chan rao	缠绕	265
+lao tong zhi	老同志	265
+ying shan xian	英山县	265
+rong wei yi ti	融为一体	265
+yuan hong dao	袁宏道	265
+chu fan	触犯	265
+lun yu	论语	265
+zhui bing	追兵	265
+li cheng bei	里程碑	265
+yu jing ji	预警机	265
+xiang la	香辣	265
+gao han	高喊	265
+dong meng	东盟	264
+liang kou zi	两口子	264
+he chun lin	何椿霖	264
+fo shan	佛山	264
+bao kang xian	保康县	264
+jiang hua	僵化	264
+gong ban	公办	264
+chong ci	冲刺	264
+ji gen	几根	264
+dao gong	刀工	264
+bei jing shi zheng xie	北京市政协	264
+yin du he	印度河	264
+li wu wei	厉无畏	264
+fan mian	反面	264
+pan jun	叛军	264
+zhou yi qun	周逸群	264
+shang gu	商贾	264
+hui lao jia	回老家	264
+yan kou	堰口	264
+duo ji cai rang	多吉才让	264
+lei zu	嫘祖	264
+zong zhu hou	宗朱厚	264
+guan wei	官位	264
+xiao bai cai	小白菜	264
+qi qu	崎岖	264
+ba dong xian	巴东县	264
+bu lu sai er	布鲁塞尔	264
+nian dao	念道	264
+qiao gun	撬棍	264
+zheng jie	整洁	264
+ri yu	日语	264
+qu yi	曲艺	264
+wu xue shi	武穴市	264
+qi jie	气节	264
+shui li gong cheng	水利工程	264
+jiang dao	江道	264
+he shi	河势	264
+qing bai	清白	264
+mei tian	煤田	264
+zhao liang	照亮	264
+ran you	燃油	264
+wang ya nan	王亚南	264
+wa gong	瓦工	264
+gai zi	盖子	264
+duan zuo	端坐	264
+di san jie	第三届	264
+yu mao shan	羽毛扇	264
+lian bang yuan	联邦院	264
+hu chun hua	胡春华	264
+nao jin	脑筋	264
+zi lv	自律	264
+xiang yu tie lu	襄渝铁路	264
+tan si tong	谭嗣同	264
+gu cheng xian	谷城县	264
+che piao	车票	264
+la jiao jiang	辣椒酱	264
+jin luo	金锣	264
+jian ding hui	鉴定会	264
+ji shi	集市	264
+qing se	青色	264
+ma zui	麻醉	264
+wan min	万民	263
+wan bang	万镑	263
+xia he	下颌	263
+dong feng qi che gong si	东风汽车公司	263
+er shi wu	二十五	263
+qin kou	亲口	263
+yu mu	余亩	263
+liu qi	六期	263
+gong tong gang ling	共同纲领	263
+fen wai	分外	263
+fu jiao shou	副教授	263
+jia zhu	加筑	263
+hua shen	化身	263
+zhuo zhu	卓著	263
+si shi wu li	四十五里	263
+ji zhun	基准	263
+ru qi	如其	263
+wei wan	委婉	263
+mi mi ma ma	密密麻麻	263
+xun fang	寻访	263
+xiao nv hai	小女孩	263
+gan bei	干贝	263
+you er	幼儿	263
+guang bu zheng	广布政	263
+miao jie	庙街	263
+qiang zhuang	强壮	263
+dang yang shi	当阳市	263
+zhao lai	招来	263
+dao hui	捣毁	263
+ti bao	提包	263
+cha kou	插口	263
+gai dong	改动	263
+wu xia	无暇	263
+xing luo qi bu	星罗棋布	263
+yue kan	月刊	263
+yue hu	月湖	263
+du shen yan	杜审言	263
+zao yang shi	枣阳市	263
+jian cha yuan	检察员	263
+yong jiu xing	永久性	263
+you sha	油砂	263
+yang yi	洋溢	263
+ao zhou	澳洲	263
+jue shi	爵士	263
+wang cheng en	王承恩	263
+wang ying fan	王英凡	263
+ma nao	玛瑙	263
+sheng zhang liang	生长量	263
+zhi zhi	直指	263
+zhen wei	真味	263
+tu ru qi lai	突如其来	263
+zhu shan xian	竹山县	263
+fang zhi chang	纺织厂	263
+jie he	结核	263
+song li	耸立	263
+zi yi	自已	263
+zheng liu	蒸馏	263
+bei ping	被评	263
+zu zhou	诅咒	263
+yue wang gou	越王勾	263
+zhe jiu shi shuo	这就是说	263
+tou ming du	透明度	263
+lin bang	邻邦	263
+e yu shan	鄂豫陕	263
+zhong zi qi	钟子期	263
+bi mu	闭目	263
+fei qu	飞去	263
+gu rou	骨肉	263
+gao fa	高法	263
+xian pin	鲜品	263
+ma tang	麻糖	263
+huang ming sheng	黄明生	263
+yi shan	一扇	262
+ding shi sun	丁石孙	262
+shang xiao	上校	262
+xia qi	下棋	262
+wu yu	乌鱼	262
+jiu xian	九线	262
+yun meng xian	云梦县	262
+wu feng tu jia zu zi zhi xian	五峰土家族自治县	262
+ren xing	任性	262
+bao kang	保康	262
+fu zhi huan	傅志寰	262
+chu zhong	初衷	262
+li ya	利亚	262
+li qi	利器	262
+gua shui qi	刮水器	262
+dong hua	动画	262
+mu kuan	募款	262
+dan bing	单兵	262
+fa feng	发疯	262
+gu long zhong	古隆中	262
+zhi ci yi jia	只此一家	262
+ji pei ding	吉佩定	262
+zhou ji hong	周继红	262
+he feng	和丰	262
+he ping gong chu	和平共处	262
+si ya	嘶哑	262
+yuan lin shi	园林式	262
+tu er qi ren	土耳其人	262
+bei kao	备考	262
+dian ji ren	奠基人	262
+ao mi	奥秘	262
+ta jia	她家	262
+hao lai wu	好莱坞	262
+zong miao	宗庙	262
+shi xiao	实效	262
+gan mian	干面	262
+kai ken	开垦	262
+long tang	弄堂	262
+hu wai	户外	262
+zhi fa quan	执法权	262
+jie dai ri	接待日	262
+wen feng	文峰	262
+chi ze	斥责	262
+xin sha	新沙	262
+cao hua chun	曹化淳	262
+yang shou jing	杨守敬	262
+an hua	氨化	262
+sha kou	沙口	262
+sha yu	沙鱼	262
+he tou	河头	262
+yang wu	洋务	262
+xi lian	洗脸	262
+shen zao	深造	262
+lao ji	牢记	262
+lie tou	猎头	262
+xian shen	现身	262
+yong ju	用具	262
+zhuan wa	砖瓦	262
+she hui bao zhang	社会保障	262
+zui ren	罪人	262
+yan zhi	胭脂	262
+zi dong bu qiang	自动步枪	262
+zi zun	自尊	262
+wu hu	芜湖	262
+hua deng	花灯	262
+hua fen	花粉	262
+hua gu	花菇	262
+lian rou	莲肉	262
+qi chun xian	蕲春县	262
+xiang yu xian	襄渝线	262
+xi tian	西天	262
+gong cha	贡茶	262
+lai yi	赖以	262
+yuan an xian	远安县	262
+chi huan	迟缓	262
+zao xiang	造像	262
+ding duo	顶多	262
+bu zen me	不怎么	261
+qiao hong	乔红	261
+jiao huo zhi	交货值	261
+fu huo	俘获	261
+liu zhong	六中	261
+ji bei	几杯	261
+liu he zhen	刘和珍	261
+liu da xiang	刘大响	261
+liu xing long	刘醒龙	261
+chuang ye yuan	创业园	261
+nan xiang	南襄	261
+shuang hu	双湖	261
+ji xin peng	吉新鹏	261
+ming te you	名特优	261
+wu guo lun	吴国伦	261
+wu ding fu	吴定富	261
+zhou quan	周全	261
+guo wu yuan ling	国务院令	261
+xing pu	型谱	261
+sai er wei ya	塞尔维亚	261
+xia dou yin	夏斗寅	261
+da ben ying	大本营	261
+kua jiang	夸奖	261
+fu ru	妇孺	261
+shi jiao	市郊	261
+you zhou	幽州	261
+ying cheng shi	应城市	261
+kai fa xing	开发型	261
+bai fang	摆放	261
+wan jian	晚间	261
+zhu li lan	朱丽兰	261
+li jian ming	李建明	261
+bu zi	步子	261
+can cun	残存	261
+shui chan ju	水产局	261
+han kou zhan	汉口站	261
+jiang han qu	江汉区	261
+hai jun gong cheng da xue	海军工程大学	261
+xiong zhao zheng	熊召政	261
+cheng zhi	程志	261
+su cai	素材	261
+wang ju	网具	261
+ju he wu	聚合物	261
+zhou qu	舟曲	261
+yao ku	药库	261
+ge zhou ba shui dian zhan	葛洲坝水电站	261
+che cheng	车城	261
+guo zhao	过招	261
+song xing	送行	261
+zheng gong cheng	郑功成	261
+chang shan	长衫	261
+yang xin xian	阳新县	261
+chen zai dao	陈再道	261
+kui wu	魁梧	261
+huang tu gang	黄土岗	261
+huang bei qu	黄陂区	261
+dong po rou	东坡肉	260
+zhong guo zheng xie	中国政协	260
+yue wu	乐舞	260
+er shi wan	二十万	260
+chuan ren	传人	260
+qin quan	侵权	260
+xin chun ying	信春鹰	260
+ting fang	停放	260
+guang zi	光子	260
+quan cun	全村	260
+ba cheng	八成	260
+nong lin mu yu ye	农林牧渔业	260
+dao mei lan	刀美兰	260
+bei he kou	北河口	260
+jiao rang	叫嚷	260
+hou he	后河	260
+zhou dai	周代	260
+zhou zheng qing	周正庆	260
+zhou li	周礼	260
+da wu xian	大悟县	260
+fu ren cheng	夫人城	260
+tou deng	头等	260
+yao mo	妖魔	260
+xiao nv	小女	260
+jian shi xian	建始县	260
+gui fu	归附	260
+xu tian chuan	徐天川	260
+cheng si wei	成思危	260
+gai zhuang che	改装车	260
+fang yan	放眼	260
+wen dong wu	文东武	260
+shi bu shi	时不时	260
+man lian	曼联	260
+mu ye	木业	260
+quan wei xing	权威性	260
+song zi shi	松滋市	260
+zhuo yi	桌椅	260
+zheng se	正色	260
+ci hua	此话	260
+si shou	死守	260
+bi da	比达	260
+you shi	油饰	260
+jie jing	洁净	260
+liu tang	流淌	260
+yong ru	涌入	260
+man kou	满口	260
+dian huo qi	点火器	260
+yan qi	焉耆	260
+xiong shi li	熊十力	260
+mu liu biao	牧刘表	260
+hou tou gu	猴头菇	260
+wang cong er	王聪儿	260
+bai ye	白夜	260
+ke ji yuan qu	科技园区	260
+zhu xiang	竹乡	260
+zhu xi xian	竹溪县	260
+jin gu	筋骨	260
+fei ai	肺癌	260
+zhi fang suan	脂肪酸	260
+mai bo	脉搏	260
+jiao gen	脚跟	260
+ku lian	苦练	260
+yao fang	药房	260
+yuan xing pei	袁行霈	260
+tan jia	谭家	260
+ruan jian yuan	软件园	260
+dao jiao xie hui	道教协会	260
+zhen ci	针刺	260
+chen zhang liang	陈章良	260
+tao si ju	陶驷驹	260
+yu liang	雨量	260
+gu xiu lian	顾秀莲	260
+gao jian	高检	260
+bian yu	鳊鱼	260
+yi bu bu	一步步	259
+yi pen	一盆	259
+wan xian	万线	259
+san zi ai guo	三自爱国	259
+dong xi hu qu	东西湖区	259
+zhong cheng	中程	259
+mai fang	买房	259
+ling hu da ge	令狐大哥	259
+ren xian qi	任贤齐	259
+ti xu	体虚	259
+yu mi	余米	259
+fu jiao xie hui	佛教协会	259
+xia yi	侠义	259
+dui xian	兑现	259
+quan shen guan zhu	全神贯注	259
+feng zhi jun	冯之浚	259
+chong zhuang	冲撞	259
+tu chu	凸出	259
+liu ji bin	刘积斌	259
+li chuan shi	利川市	259
+bei jing shi lao dong ren min wen hua gong	北京市劳动人民文化宫	259
+sheng qian	升迁	259
+lu rui hua	卢瑞华	259
+fa bu quan	发布权	259
+shi ji	史籍	259
+ye jun jian	叶君健	259
+di tan chang	地毯厂	259
+di yuan	堤垸	259
+ao lin pi ke	奥林匹克	259
+sun jin long	孙金龙	259
+an xi	安息	259
+zai sheng ting	宰牲亭	259
+kuan dai	宽带	259
+dao chu	导出	259
+shan yang rou	山羊肉	259
+dian zhu	店主	259
+pang de gong	庞德公	259
+hong zhi	弘治	259
+e gui	恶鬼	259
+cheng jiao liang	成交量	259
+zha yi er	扎伊尔	259
+sao chu	扫除	259
+ba chi	把持	259
+kang ri jiu wang yun dong	抗日救亡运动	259
+zhen dong qi	振动器	259
+cuo shou bu ji	措手不及	259
+ban chu	搬出	259
+jiu guo tuan	救国团	259
+wen xuan	文选	259
+chun yi	春义	259
+quan gui	权贵	259
+li xiao shuang	李小双	259
+li zhi gao	李志高	259
+li shu wen	李树文	259
+du tie huan	杜铁环	259
+yang guo qing	杨国庆	259
+yang jing yu	杨景宇	259
+yang xian zhen	杨献珍	259
+lin wen yi	林文漪	259
+zi shu	梓树	259
+qi xuan	气旋	259
+jiang zhu	江猪	259
+chen chuan	沉船	259
+hong hu shi	洪湖市	259
+nong zhong	浓重	259
+xiao fang	消防	259
+shen zhong	深重	259
+qing zao	清早	259
+hu bei sheng wu jia ju	湖北省物价局	259
+hu bei mei shu xue yuan	湖北美术学院	259
+hui tao	灰陶	259
+re neng	热能	259
+jiao zhi xian	焦枝线	259
+yu mi bang	玉米棒	259
+wang bi cheng	王必成	259
+wang li ping	王立平	259
+wang mao lin	王茂林	259
+dao qie	盗窃	259
+shi xiang sheng	石象生	259
+lin fei chang	磷肥厂	259
+shen nong xi	神农溪	259
+cheng yi ju	程贻举	259
+zhong ri	终日	259
+mei shu zi	美术字	259
+kao jiu	考究	259
+teng long dong	腾龙洞	259
+jing sha	荆沙	259
+li zhi	荔枝	259
+ling hu	菱湖	259
+jiang zheng hua	蒋正华	259
+xu zhi hong	许智宏	259
+tie xian	贴现	259
+jia yi bin	贾亦斌	259
+jin li	金利	259
+chen yi yu	陈宜瑜	259
+ge he yan	隔河岩	259
+han xian chu	韩先楚	259
+xiang lu	香炉	259
+yu song	鱼松	259
+yu hua	鱼花	259
+huang pu jun xiao wu han fen xiao	黄埔军校武汉分校	259
+qi ba ge	七八个	258
+shang lan	上篮	258
+bu lie dian	不列颠	258
+bu ji	不计	258
+dong bao qu	东宝区	258
+dong hu kai fa qu	东湖开发区	258
+dong lian wu	东连吴	258
+liang wan	两万	258
+zhong guo ren min jie fang jun jun shi ke xue yuan	中国人民解放军军事科学院	258
+ting che	停车	258
+ru dang	入党	258
+nei wu si fa wei yuan hui	内务司法委员会	258
+jun xu	军需	258
+nong chang zhu	农场主	258
+chu shi	出事	258
+bie guo	别国	258
+ban hao	办好	258
+shi si suo	十四所	258
+shi zi jun	十字军	258
+qian qiu	千秋	258
+sheng teng	升腾	258
+nan kou zhen	南口镇	258
+nan zhen zhong	南振中	258
+nan zhang xian	南漳县	258
+gu yue	古月	258
+he chang tuan	合唱团	258
+dun liang tian	吨粮田	258
+zhe li	哲理	258
+jia mu yang	嘉木样	258
+mai tou	埋头	258
+cheng jiao xing	城郊型	258
+ji du jiao xie hui	基督教协会	258
+yan qiao	堰桥	258
+bei jiang	备降	258
+tai hui guan	太晖观	258
+hao ri zi	好日子	258
+xiao gan ren	孝感人	258
+xiao chang xian	孝昌县	258
+ji liang	季梁	258
+wan cheng lv	完成率	258
+xuan en xian	宣恩县	258
+jia men kou	家门口	258
+chong jing	崇敬	258
+guang shui shi	广水市	258
+yin shui	引水	258
+zhang guo guang	张国光	258
+cai hong	彩虹	258
+peng ke yu	彭克玉	258
+peng huan wu	彭桓武	258
+zhi jun	志军	258
+wan xi	惋惜	258
+huang zhang	慌张	258
+chou qian	抽签	258
+xie yan	斜眼	258
+yi xian zhong	易贤忠	258
+ben ti	本体	258
+li shan	李珊	258
+du yi jin	杜宜瑾	258
+gui yu	桂鱼	258
+zhi wu ti	植物体	258
+ge shou	歌手	258
+yin hai guang	殷海光	258
+mao fa	毛发	258
+han yang jun	汉阳军	258
+sha ju	沙咀	258
+sha shi shi	沙市市	258
+huo xing ran liao	活性染料	258
+liu chan	流产	258
+tu zhang wang	涂长望	258
+hu bei sheng cai zheng ting	湖北省财政厅	258
+ji guang qi	激光器	258
+yu quan lu	玉泉路	258
+wang zuo shu	王佐书	258
+wang huai yuan	王怀远	258
+wang meng kui	王梦奎	258
+shi guang sheng	石广生	258
+ke lin si	科林斯	258
+suan zuo	算作	258
+hong guang	红光	258
+tong zhi quan	统治权	258
+lian wang	联网	258
+hu guang bao	胡光宝	258
+hu de ping	胡德平	258
+zi li geng sheng	自力更生	258
+shu hui guo	舒惠国	258
+liang zhi	良知	258
+su shi	苏轼	258
+yuan zong dao	袁宗道	258
+xi sai shan	西塞山	258
+xi de	西德	258
+rang gei	让给	258
+xie huang en	谢皇恩	258
+gong shi	贡士	258
+qian ru	迁入	258
+guo cuo	过错	258
+su sheng feng chan lin	速生丰产林	258
+dao jia	道家	258
+xing shi zhong	邢世忠	258
+yun xi xian	郧西县	258
+qian yun lu	钱运录	258
+yin hai	银海	258
+chen yuan yuan	陈圆圆	258
+chen chang zhi	陈昌智	258
+tao bo jun	陶伯钧	258
+gao tai	高台	258
+ma cheng shi	麻城市	258
+huang mei xian	黄梅县	258
+shang pa	上爬	257
+xia lu qu	下陆区	257
+yan yi xun	严义埙	257
+zhu zhi	主治	257
+jiu yuan	久远	257
+jiu zhou	九州	257
+er qi lu	二七路	257
+er deng jiang	二等奖	257
+yu han chu	于汉初	257
+ren xing	人形	257
+yi zhu	亿株	257
+ren ke li	任克礼	257
+you meng	优孟	257
+hou yi bin	侯义斌	257
+fu zhen bang	傅振邦	257
+guan guang fu	关广富	257
+hua chu	划出	257
+liu ming zu	刘明祖	257
+liu jing song	刘精松	257
+hua xue yuan su	化学元素	257
+shi duo qi	十多起	257
+dan guo	单果	257
+nan yue shan	南岳山	257
+lu bang zheng	卢邦正	257
+yuan ji	原籍	257
+ke bi jia	可比价	257
+ji ni ma	吉尼玛	257
+wu ji chuan	吴基传	257
+zhou kun ren	周坤仁	257
+zhou chun quan	周纯全	257
+xian feng xian	咸丰县	257
+jia yu xian	嘉鱼县	257
+ren zi nian	壬子年	257
+xia zan zhong	夏赞忠	257
+da shou	大寿	257
+tian zhu jiao ai guo hui	天主教爱国会	257
+tian xin zhou	天心洲	257
+yi ling qu	夷陵区	257
+ru lai	如来	257
+yao qi zhi	姚期智	257
+an bang zhi guo	安邦治国	257
+song jiao ren	宋教仁	257
+guan shen	官绅	257
+ding dian	定点	257
+ding lun	定论	257
+yi cheng shi	宜城市	257
+shan zi xi	山自西	257
+chai qian	差遣	257
+gan jiao han	干椒含	257
+gan liang	干粮	257
+zhuang gong hui	庄公惠	257
+zhang zhi jian	张志坚	257
+zhang xin bao	张新宝	257
+zhang ming kai	张明楷	257
+zhang yu mao	张毓茂	257
+zhang ji yu	张继禹	257
+xu fu guan	徐复观	257
+xu zhi chun	徐志纯	257
+xuan tiao	悬挑	257
+gan xing	感性	257
+cheng jie	承接	257
+zhen dang	振荡	257
+juan xian	捐献	257
+jing pei	敬佩	257
+xin zhou qu	新洲区	257
+shi hui	时会	257
+shi zhuang	时装	257
+qu mu	曲目	257
+cao yan zhen	曹燕珍	257
+zhu xiang yuan	朱相远	257
+ji zhu	机主	257
+li yuan zheng	李元正	257
+li xin liang	李新良	257
+li zhong an	李重庵	257
+lai feng xian	来凤县	257
+yang ye gong	杨业功	257
+yang ke shi	杨可世	257
+yang guo ping	杨国屏	257
+yang mo xi	杨摩西	257
+yang xiao bo	杨晓波	257
+zhi jiang shi	枝江市	257
+sang guo wei	桑国卫	257
+mei xin yu	梅新育	257
+huan kuai	欢快	257
+ou yang	欧阳	257
+wu han zhi ye ji shu xue yuan	武汉职业技术学院	257
+wu lian yuan	武连元	257
+han chuan shi	汉川市	257
+han jiang quan	汉江全	257
+shen si	沈思	257
+he zi	河子	257
+ji nan shi	济南市	257
+xiong you lun	熊有伦	257
+wang li fen	王利芬	257
+wang xue ping	王学萍	257
+wang ning sheng	王宁生	257
+wang jia yao	王家耀	257
+wang shang rong	王尚荣	257
+wang jian an	王建安	257
+wang xin ting	王新亭	257
+wang yong yan	王永炎	257
+wang yu zhen	王玉珍	257
+wang wei cheng	王维城	257
+huan jing bao hu bu	环境保护部	257
+bai zhou	白昼	257
+gui yi	皈依	257
+ju zhen	矩阵	257
+shi pai ling	石牌岭	257
+li jie	礼节	257
+zhu ming shan	祝铭山	257
+jin bu	禁捕	257
+ke jiao xing shi	科教兴市	257
+qin guo	秦国	257
+li yu	立于	257
+li fa zhe	立法者	257
+di yi guan	第一罐	257
+di shi qi qi	第十七期	257
+deng e xuan ju	等额选举	257
+mi gong ci	米公祠	257
+fen zheng	粉蒸	257
+tang se	糖色	257
+wei xi	维系	257
+xiu kui	羞愧	257
+lao mu	老母	257
+lao lai zi	老莱子	257
+nie feng zhi	聂凤智	257
+yi ye sheng	肄业生	257
+bei fu	背负	257
+hu xian sheng	胡贤生	257
+jia zhi	茄汁	257
+zhuang xie liang	装卸量	257
+xi chao dong	西朝东	257
+jie fang gong yuan	解放公园	257
+chen jia ji	谌家矶	257
+xie fu zhan	谢伏瞻	257
+xie you qing	谢佑卿	257
+tan yuan chun	谭元春	257
+tan jia yuan	谭家渊	257
+gu jian fen	谷建芬	257
+zhi piao	质朴	257
+chi bi shi	赤壁市	257
+zhao ke ming	赵可铭	257
+qi shi	起始	257
+chao sheng	超声	257
+zhuan su	转速	257
+gu sheng zu	辜胜阻	257
+yu hui	迂回	257
+lian xu xing	连续性	257
+tong cheng xian	通城县	257
+guo feng lian	郭凤莲	257
+guo zhen qian	郭振乾	257
+guo chao ren	郭超人	257
+guo xi zhang	郭锡章	257
+jiu bao	酒保	257
+jin bing hua	金炳华	257
+tie shan qu	铁山区	257
+tie ji	铁戟	257
+zhang jiang san xia shui li shu niu gong cheng	长江三峡水利枢纽工程	257
+yan dang	阉党	257
+kui fu lin	隗福临	257
+wei jia neng	韦家能	257
+ma chun hua	马春花	257
+gao jia ling	高家岭	257
+he feng xian	鹤峰县	257
+huang wa zhu	黄瓦朱	257
+huang shi gang qu	黄石港区	257
+ding da wang	丁大旺	256
+qi xing yu	七星鱼	256
+wan xue wen	万学文	256
+wan xue yuan	万学远	256
+wan shou geng	万寿羹	256
+san qian li	三千粒	256
+shang guan zhou	上官洲	256
+dong sheng zhen	东升镇	256
+dong hu xin ji shu kai fa qu	东湖新技术开发区	256
+dong hu gao xin ji shu kai fa qu	东湖高新技术开发区	256
+yan xiao pin	严晓频	256
+yan zhi ze	严智泽	256
+jiu mei	久美	256
+wu yun qi mu ge	乌云其木格	256
+wu la gui	乌拉圭	256
+wu ri tu	乌日图	256
+jiu yang	九阳	256
+jiu long	九龙	256
+xi jia chi	习家池	256
+er zhu	二柱	256
+er lou	二楼	256
+wu heng	五横	256
+chan ye lian	产业链	256
+ren mao dong	任茂东	256
+yi si lan jiao xie hui	伊斯兰教协会	256
+wu zeng rong	伍增荣	256
+wu jia gang qu	伍家岗区	256
+he ye hui	何晔晖	256
+he cheng ming	何晟铭	256
+yu shao qun	余少群	256
+hou zhang xin	侯张信	256
+hou zhang an	侯长安	256
+bao zhen tang	保贞堂	256
+yu xiao fan	俞小凡	256
+xiu cheng tian	修承天	256
+ni jia ta	倪家塔	256
+ni yue feng	倪岳峰	256
+fu zi ying	傅自应	256
+chong chi	充斥	256
+ba wan jin	八万斤	256
+gong zhong wang	公众网	256
+gong tu	公凸	256
+lan shi li	兰世立	256
+lan hu	兰湖	256
+guan lu qi	关路圻	256
+jun ling	军令	256
+nong ye yu nong cun wei yuan hui	农业与农村委员会	256
+feng yun qiao	冯云乔	256
+liang shuang	凉爽	256
+fen tuan	分团	256
+liu yi fei	刘亦菲	256
+liu dong dong	刘冬冬	256
+liu wei dong	刘卫东	256
+liu he bing	刘合炳	256
+liu guo zheng	刘国正	256
+liu zi hou	刘子厚	256
+liu ying ming	刘应明	256
+liu zhen wei	刘振伟	256
+liu zhan en	刘湛恩	256
+liu shi quan	刘石泉	256
+liu dao yu	刘道玉	256
+liu yan fei	刘雁飞	256
+liu xue rong	刘雪荣	256
+liu li min	刘黎敏	256
+bie bi xiong	别必雄	256
+zhi dong fa	制动阀	256
+hua jun	化军	256
+qu si yuan	区四园	256
+qu zheng	区政	256
+shi yi wu shou nian	十一五首年	256
+shi ba sui	十八岁	256
+hua rong qu	华容区	256
+hua chen chun	华辰春	256
+dan guo xian	单果鲜	256
+nan yue jian	南岳尖	256
+nan he tou	南河头	256
+nan he zhou	南河洲	256
+nan zhou zi	南洲子	256
+bo xue liang	卜学亮	256
+wei tie	卫铁	256
+wei pin	危品	256
+gu san guo	古三国	256
+gu hua rong	古华容	256
+gu zhang di	古长堤	256
+jiao huan	叫唤	256
+ye ru tang	叶如棠	256
+ye hai feng	叶海峰	256
+ji xiang	吉象	256
+ji xiang pai	吉象牌	256
+lv zhong mei	吕忠梅	256
+wu shao xun	吴少勋	256
+wu de xin	吴德馨	256
+wu yan sheng	吴燕生	256
+zhou chuan xiong	周传雄	256
+zhou pei gong	周培公	256
+zhou jia hu	周家湖	256
+zhou shao bo	周少波	256
+zhou sen feng	周森锋	256
+zhou yu qing	周玉清	256
+ming zhong lv	命中率	256
+xian an qu	咸安区	256
+tang yi fei	唐一菲	256
+tang liang zhi	唐良智	256
+yu jia bei	喻家碑	256
+yu lin xiang	喻林祥	256
+tuan feng xian	团风县	256
+tu dan	图丹	256
+tu dao duo ji	图道多吉	256
+di ban chang	地板厂	256
+sheng yue	声乐	256
+xia zuo quan	夏佐全	256
+jia gong	夹攻	256
+feng heng gao	奉恒高	256
+yao lai quan	姚来泉	256
+yao xiang cheng	姚湘成	256
+jiang sheng yang	姜声扬	256
+zi tong ge	子童阁	256
+kong xiang fu	孔祥复	256
+sun jia guai	孙家拐	256
+sun bi gan	孙必干	256
+sun xiao qun	孙晓群	256
+xiao nan qu	孝南区	256
+meng chang hu	孟尝湖	256
+meng qing nan	孟庆南	256
+ji jia zui	季家嘴	256
+xue yuan	学苑	256
+an qi zhou	安七州	256
+an lu shi	安陆市	256
+song zhao su	宋照肃	256
+guan tian hu	官田湖	256
+yi dou shi	宜都市	256
+bao ye	宝业	256
+bao hai	宝海	256
+shen wen	审问	256
+rong shui liang	容水量	256
+wei mu xin	尉沐昕	256
+xiao he kou zhen	小河口镇	256
+yin han ning	尹汉宁	256
+yin ji zhen	尹集镇	256
+ju wen pei	居文沛	256
+shan si zhen	山寺镇	256
+shan su lin	山粟林	256
+zuo zhuan	左传	256
+guang dong he dian ji tuan	广东核电集团	256
+shu min	庶民	256
+tuo zong hua	庹宗华	256
+tuo zong kang	庹宗康	256
+zhang ye sui	张业遂	256
+zhang you cai	张佑才	256
+zhang pei gang	张培刚	256
+zhang xue dong	张学东	256
+zhang zhen shi	张振仕	256
+zhang chang er	张昌尔	256
+zhang chang ping	张昌平	256
+zhang zhi hua	张智华	256
+zhang gui hua	张桂华	256
+zhang run bin	张润斌	256
+zhang wei guo	张维国	256
+zhang mei lan	张美兰	256
+zhang shu yuan	张舒媛	256
+zhang rong rong	张蓉蓉	256
+zhang long jun	张龙俊	256
+peng qing hua	彭清华	256
+peng hong yan	彭红艳	256
+xu ke jun	徐克俊	256
+xu jia gang	徐家岗	256
+xu xiao feng	徐小凤	256
+xu yong qing	徐永清	256
+xu li hua	徐立华	256
+xu gao dong	徐高栋	256
+e hen hen	恶狠狠	256
+cheng qing bo	成清波	256
+dai zheng liang	戴证良	256
+duo dao qu	掇刀区	256
+yuan yin	援引	256
+gai you	改由	256
+gai guan	改观	256
+zheng xie chang wei hui	政协常委会	256
+xin kai pu	新开铺	256
+xin jiang	新江	256
+fang xiao dun	方小顿	256
+fang li bang	方李邦	256
+ming tai zi tai	明太子太	256
+ming wen jin	明文禁	256
+ming wu ying	明武英	256
+ming li bu	明礼部	256
+pu sheng si	普圣寺	256
+ceng wei chu	曾为楚	256
+ceng ling liang	曾令良	256
+ceng zi mo	曾子墨	256
+ceng dou qu	曾都区	256
+zhu jia du	朱家渡	256
+zhu bang fu	朱邦复	256
+zhu yang hu	朱阳湖	256
+zhu ya qiong	朱雅琼	256
+li san chun	李三春	256
+li cong jun	李从军	256
+li zuo rong	李作荣	256
+li ru xiong	李儒雄	256
+li da shuang	李大双	256
+li zong han	李宗翰	256
+li jia dun	李家墩	256
+li jian qun	李建群	256
+li shen ming	李慎明	256
+li xin jue	李新觉	256
+li ming yu	李明豫	256
+li chun ting	李春亭	256
+li xu e	李绪鄂	256
+li yi jun	李翊君	256
+li xing liang	李行亮	256
+li lian ning	李连宁	256
+li jin zao	李金早	256
+yang xing fu	杨兴富	256
+yang ye hu	杨叶湖	256
+yang tong zui	杨同嘴	256
+yang guo liang	杨国梁	256
+yang jia tai	杨家台	256
+yang jia tan	杨家潭	256
+yang de qing	杨德清	256
+yang chen hui	杨晨晖	256
+yang bai ling	杨柏龄	256
+yang bo tan	杨波坦	256
+yang chen gang	杨臣刚	256
+yang miao zhou	杨苗洲	256
+yang tie xin	杨铁心	256
+yang zhang huai	杨长槐	256
+yang wen sun	杨闻孙	256
+song lin shan	松林山	256
+song shui qiao	松水桥	256
+song jiang	松江	256
+lin zhao shu	林兆枢	256
+ke yue se	柯约瑟	256
+zhu dong	柱洞	256
+liu hu ba	柳湖坝	256
+biao zhun ji	标准计	256
+li lin zui	栗林嘴	256
+gui zhi ting	桂质廷	256
+liang zi hu qu	梁子湖区	256
+liang xiao xuan	梁孝宣	256
+meng ge	梦鸽	256
+chu yuan pai	楚源牌	256
+chu ji nan	楚纪南	256
+lou shi mu	楼式木	256
+lou yang sheng	楼阳生	256
+fan qi peng	樊启鹏	256
+fan cheng qu	樊城区	256
+ou yang xiang	欧阳祥	256
+wu dun ru	武敦儒	256
+wu chang zhan	武昌站	256
+wu han dong hu xin ji shu kai fa qu	武汉东湖新技术开发区	256
+wu han dong hu gao xin ji shu kai fa qu	武汉东湖高新技术开发区	256
+wu han zhan	武汉站	256
+wu han jing ji ji shu kai fa qu	武汉经济技术开发区	256
+wu ma	武麻	256
+duan si si	段思思	256
+bi hua	比划	256
+bi jia tang	毕家塘	256
+bi jia dang	毕家荡	256
+mao ru bai	毛如柏	256
+min yuan lu	民院路	256
+shui guo hu	水果湖	256
+han dan xian	汉丹线	256
+han shi lu	汉施路	256
+jiang xia zhi	江夏治	256
+jiang jia cha	江家岔	256
+jiang bo du	江波渡	256
+chi yu feng	池宇峰	256
+chi yue di	池月堤	256
+chi ji shang	池际尚	256
+tang hong gao	汤洪高	256
+wang xi gen	汪习根	256
+wang chao yong	汪潮涌	256
+wang ai qun	汪爱群	256
+shen chun yao	沈春耀	256
+shen xin sun	沈辛荪	256
+sha yang xian	沙洋县	256
+you zha	油榨	256
+jin nan	津南	256
+xi shui xian	浠水县	256
+tu li man	涂黎曼	256
+pan yue ming	潘粤明	256
+dian jun qu	点军区	256
+dian xue	点穴	256
+jiao liu xian	焦柳线	256
+zhao ying	照应	256
+niu pi	牛皮	256
+yu tian si	玉田寺	256
+yu huang jian	玉皇剑	256
+wang yun long	王云龙	256
+wang yi ming	王以铭	256
+wang yi feng	王伊锋	256
+wang zuo rong	王作荣	256
+wang dong sheng	王冬生	256
+wang li ming	王利明	256
+wang tai lan	王太岚	256
+wang song da	王宋大	256
+wang jia dun	王家墩	256
+wang jia gang	王家岗	256
+wang mei xiang	王梅祥	256
+wang zu xun	王祖训	256
+wang xiang xi	王祥喜	256
+wang ruo han	王若涵	256
+wang mao run	王茂润	256
+wang cheng han	王诚汉	256
+huan jing yu zi yuan bao hu wei yuan hui	环境与资源保护委员会	256
+luo jia	珞珈	256
+sheng wu quan	生物圈	256
+tian cheng zhong	田承忠	256
+tian yu ke	田玉科	256
+tian zhang chao	田长焯	256
+tian zhang lin	田长霖	256
+you ou chi	由藕池	256
+dian li	电离	256
+bai yun cun	白云村	256
+xiang feng	相逢	256
+qu jia hu	瞿家湖	256
+shi hua yan	石华堰	256
+shi an	石安	256
+shi shou yong	石寿永	256
+shi jing yi	石静宜	256
+qiao kou qu	硚口区	256
+shen huang zhou	神皇洲	256
+fu yin	福银	256
+qiu shen	秋审	256
+ke long	科隆	256
+qin ke hu	秦克湖	256
+qin jia zhou	秦家洲	256
+qin shu nan	秦属南	256
+qin zhi nan	秦置南	256
+qin zhong ying	秦钟英	256
+tong qing xi	童庆禧	256
+di san shi yi ci	第三十一次	256
+mi ye	米业	256
+su tian hu	粟田湖	256
+na sun fu ren	纳孙夫人	256
+jing jiang bo	经江波	256
+luo ya meng	罗亚蒙	256
+luo jia dun	罗家墩	256
+luo han	罗汉	256
+ba guan	罢官	256
+yang zi miao	羊子庙	256
+lao zhang	老张	256
+lao zhou ling	老洲岭	256
+pin wei	聘为	256
+xiao jia ling	肖家岭	256
+xiao hai liang	肖海亮	256
+hu jia	胡佳	256
+hu hou kun	胡厚昆	256
+hu kang sheng	胡康生	256
+hu ya xin	胡雅歆	256
+hu li ming	胡黎明	256
+zi ying quan	自营权	256
+ai chun rong	艾春荣	256
+hua tan	花坛	256
+su hui lun	苏慧伦	256
+fan heng shan	范恒山	256
+fan li miao	范蠡庙	256
+mao lin kou	茅林口	256
+mao jian qu	茅箭区	256
+mao cao jie	茅草街	256
+jing nan fu	荆南府	256
+jing yi cai	荆宜菜	256
+jing fu	荆府	256
+mo yan lin	莫艳琳	256
+jiang fang zhou	蒋方舟	256
+jiang shu sheng	蒋树声	256
+jiang shuo jie	蒋硕杰	256
+jiang hong xing	蒋红星	256
+jiang yuan hua	蒋远华	256
+kuai xiang tong	蒯祥同	256
+kuai lu ban	蒯鲁班	256
+cai hong zhu	蔡宏柱	256
+cai jia tan	蔡家潭	256
+cai wen jing	蔡文静	256
+cai dian qu	蔡甸区	256
+yuan shan shan	袁姗姗	256
+yuan si yi	袁思怡	256
+yuan han min	袁汉民	256
+cai jun	裁军	256
+pei gao cai	裴高才	256
+xi sai shan qu	西塞山区	256
+xi ling qu	西陵区	256
+ji hua sheng yu lv	计划生育率	256
+xu zhi qin	许志琴	256
+diao wei pin chang	调味品厂	256
+xie dan yang	谢丹阳	256
+tan zi guai	谭子拐	256
+tan jia zhou	谭家洲	256
+fei sheng chao	费胜潮	256
+he yi cheng	贺一诚	256
+he bing yan	贺炳炎	256
+he long lai	贺龙来	256
+zhao jia tiao	赵家条	256
+zhao jia wan	赵家湾	256
+zhao zhong quan	赵钟泉	256
+qi qiao	蹊跷	256
+bian gu shi	边孤石	256
+lian xin qiao	连心桥	256
+dao te	道特	256
+deng jia ling	邓家岭	256
+you ke yuan	邮科院	256
+qiu si hao	邱四豪	256
+zou yuan dong	邹远东	256
+zou gao yang	邹高阳	256
+zheng li hui	郑李辉	256
+zheng xiao zhuang	郑肖庄	256
+guo tian min	郭天民	256
+guo you ming	郭有明	256
+guo ke yu	郭柯宇	256
+guo yong hong	郭永宏	256
+guo sheng lian	郭生练	256
+e san zhou	鄂三州	256
+e cheng qu	鄂城区	256
+e cai yu	鄂菜鱼	256
+li hai	里海	256
+zhong peng rong	钟朋荣	256
+zhong yang yang	钟阳阳	256
+zhang ling gang	长岭岗	256
+wen shi zhen	闻世震	256
+ruan cheng fa	阮成发	256
+fang hong	防洪	256
+yang san zheng	阳三蒸	256
+yang fu	阳府	256
+chen dong sheng	陈东升	256
+chen jia gui	陈佳贵	256
+chen xing yu	陈兴瑜	256
+chen da min	陈大民	256
+chen jia hu	陈家湖	256
+chen jia pu	陈家铺	256
+chen bi qiao	陈币桥	256
+chen jian sheng	陈建生	256
+chen mu sen	陈木森	256
+chen xiu rong	陈秀榕	256
+chen yi ge	陈艺戈	256
+chen nan xian	陈难先	256
+yan hu	雁湖	256
+lei jia gou	雷家沟	256
+qing mu he	青木河	256
+han ning fu	韩宁夫	256
+han gao hu	韩高湖	256
+yan bang ping	颜邦屏	256
+fei wang	飞往	256
+ma jia peng	马家棚	256
+ma lin gong	马林工	256
+ma hu cun	马湖村	256
+gao ling feng	高凌风	256
+gao ling zhen	高陵镇	256
+wei xing jun	魏兴郡	256
+wei fu sheng	魏复盛	256
+yu yuan	鱼原	256
+yu tun yuan	鱼氽元	256
+lu gui cheng	鲁桂成	256
+lu mo lu	鲁磨路	256
+ge zi hua	鸽子花	256
+ma la jiang	麻辣酱	256
+huang er zhou	黄二州	256
+huang gu hao	黄古蒿	256
+huang jia hu	黄家湖	256
+huang jia tan	黄家潭	256
+huang zhou qu	黄州区	256
+huang zhou cai	黄州菜	256
+huang kang sheng	黄康生	256
+huang yue ying	黄月英	256
+huang ge xuan	黄格选	256
+huang cheng zi	黄橙子	256
+huang zhi zhen	黄知真	256
+huang lian hu	黄莲湖	256
+huang jin wan	黄金湾	256
+long he xi	龙合玺	256
+gong ze yi	龚泽艺	256
+zhuan yuan	专员	255
+dong hua men	东华门	255
+liang bei	两倍	255
+ren bi shi	任弼时	255
+lun li xue	伦理学	255
+gong shui	供水	255
+quan dao	全岛	255
+jia na	加纳	255
+si ma yi	司马懿	255
+tun shi	吞噬	255
+lou luo	喽罗	255
+chao feng	嘲讽	255
+qi min	器皿	255
+keng dong	坑洞	255
+jian ding bu yi	坚定不移	255
+da de	大德	255
+da bu	大步	255
+tai yi	太医	255
+xue feng	学风	255
+ding yu	定于	255
+feng jian zhu	封建主	255
+xiao he	小河	255
+di wei	帝位	255
+xin dong	心动	255
+reng xia	扔下	255
+yi huo	抑或	255
+bai xie	拜谢	255
+shou mai	收买	255
+cun li ren	村里人	255
+shu li	梳理	255
+lin ba	淋巴	255
+gang yuan	港元	255
+tu ji dui	突击队	255
+shu ming	署名	255
+hu qing niu	胡青牛	255
+yan li	艳丽	255
+cha yuan	茶园	255
+yan sheng wu	衍生物	255
+shi zi	识字	255
+tou jing	透镜	255
+po ju	颇具	255
+wan qian mi	万千米	254
+wei suo yu wei	为所欲为	254
+zhu gan	主干	254
+zuo hao	作好	254
+e guo ren	俄国人	254
+xin yu	信誉	254
+quan guo cheng	全过程	254
+gong li	公立	254
+guan ai	关爱	254
+bing ding	兵丁	254
+shi wu ri	十五日	254
+ge ju te se	各具特色	254
+dong dong	咚咚	254
+kuai dian	快点	254
+e dou	恶斗	254
+rong zhuang	戎装	254
+qiang zhan	抢占	254
+zheng zhi jing ji	政治经济	254
+qi pan	期盼	254
+kuang wang	狂妄	254
+wang hou	王侯	254
+wang zhong yang	王重阳	254
+dian jie zhi	电解质	254
+zhuan shi	砖石	254
+zhong shu	种属	254
+jing lve	经略	254
+chuan ti	船体	254
+ke ke	苛刻	254
+zhuang ji rong liang	装机容量	254
+fu shang	负伤	254
+tao nan	逃难	254
+chen xin jia	陈新甲	254
+wan pi	顽皮	254
+bu ke bu	不可不	253
+xiang li	乡里	253
+gong kai sai	公开赛	253
+chu wai	出外	253
+chu shi	出示	253
+jia gu	加固	253
+ge xian	各县	253
+ge shi ge yang	各式各样	253
+di gu	嘀咕	253
+guo shi	国势	253
+guo min shou ru	国民收入	253
+guo ji xing	国际性	253
+da bing	大病	253
+kuan shu	宽恕	253
+fu nong	富农	253
+xiao shou	小手	253
+jiu zhi	就职	253
+kai ping	开平	253
+cheng chu	惩处	253
+tuo qian	拖欠	253
+zhuang jian	撞见	253
+gai xie	改写	253
+shi li	施礼	253
+lou ding	楼顶	253
+zheng ban	正版	253
+hai pen	海盆	253
+hun dun	混沌	253
+zhi hou	滞后	253
+zhao jiu	照旧	253
+ai xi	爱惜	253
+yu dai	玉带	253
+meng you	盟友	253
+kan yang zi	看样子	253
+duan ming	短命	253
+cheng dao	称道	253
+di yi dao	第一道	253
+xiu ru	羞辱	253
+lao lao shi shi	老老实实	253
+zhong xin	衷心	253
+cai jian	裁减	253
+ma jiang	麻将	253
+bu li	不力	252
+shu shang	书上	252
+shu fa jia	书法家	252
+qin bi	亲笔	252
+you yue xing	优越性	252
+xin dao	信道	252
+bei ban qiu	北半球	252
+ha fu da xue	哈佛大学	252
+sang men	嗓门	252
+qiu fan	囚犯	252
+guo zheng	国政	252
+duo ri	多日	252
+feng zhi	奉旨	252
+ju zhong	居中	252
+shu zui	恕罪	252
+leng zhu	愣住	252
+tou piao quan	投票权	252
+pai ma pi	拍马屁	252
+jie ban ren	接班人	252
+yuan jun	援军	252
+zheng xiang	正向	252
+zu mu	祖母	252
+di qi zhang	第七章	252
+di er ming	第二名	252
+yue han xun	约翰逊	252
+lei gu	肋骨	252
+zhi zheng	至正	252
+qing ke	请客	252
+xie xing fang	谢杏芳	252
+zu jian	足见	252
+yong yue	踊跃	252
+guo jie	过节	252
+tui lu	退路	252
+gang dao	钢刀	252
+yin jing	阴茎	252
+fei guo	飞过	252
+gao jia	高价	252
+gao guan	高官	252
+ya lu jiang	鸭绿江	252
+xia yi shi	下意识	251
+mai ban	买办	251
+quan jing	全景	251
+jue wu	决无	251
+chu zu	出租	251
+qian jin	千金	251
+ke fou	可否	251
+dai dai di	呆呆地	251
+shang qiu	商丘	251
+cheng shi hua	城市化	251
+hao xiao xi	好消息	251
+ceng chu bu qiong	层出不穷	251
+ping yong	平庸	251
+zhuang jia ren	庄稼人	251
+pai da	拍打	251
+shi ge	时隔	251
+xian jian	显见	251
+kai shu	楷书	251
+ci zi	次子	251
+ou ji li de	欧几里得	251
+chen chen	沉沉	251
+liu lang	流浪	251
+zhang jia	涨价	251
+mo bei	漠北	251
+meng hu	猛虎	251
+wang xiao lan	王小兰	251
+wang dao	王道	251
+qiong si	琼斯	251
+she yuan	社员	251
+kong kuang	空旷	251
+di er tiao	第二条	251
+wei chang	胃肠	251
+huang yuan	荒原	251
+yao fang	药方	251
+cang shen	藏身	251
+ding huo	订货	251
+ren qing	认清	251
+da biao	达标	251
+zhui xun	追寻	251
+tui qu	退去	251
+zhang xiang	长相	251
+men bian	门边	251
+jiu da	九大	250
+wu chi	五尺	250
+ti yu guan	体育馆	250
+gong chai	公差	250
+chuang zao li	创造力	250
+bo luo	剥落	250
+lao dong zi liao	劳动资料	250
+yuan shi she hui	原始社会	250
+fa liang	发亮	250
+he huo	合伙	250
+tong ri	同日	250
+tu lu fan	吐鲁番	250
+xiang dong	响动	250
+suo shi	唆使	250
+pen qi	喷气	250
+ao ba ma	奥巴马	250
+ke liu	客流	250
+pang li na	庞丽娜	250
+hu you	忽悠	250
+jing hai	惊骇	250
+suo de shui	所得税	250
+zheng ke	政客	250
+wu quan	无权	250
+zuo er	昨儿	250
+hua pai	画派	250
+chan zhang	禅杖	250
+mei de	美德	250
+shen gong neng	肾功能	250
+hu shi	胡适	250
+ping lun jia	评论家	250
+cheng ran	诚然	250
+yue dong	越冬	250
+bian yuan	边远	250
+chi dun	迟钝	250
+xuan gou	选购	250
+huang zhi	黄纸	250
+wan fang	万方	249
+xia guan	下官	249
+lin tou	临头	249
+er shi wu nian	二十五年	249
+cong zheng	从政	249
+bian shi	便士	249
+gong zhong gu	公众股	249
+yuan ye	原野	249
+fa shao	发烧	249
+di zhu jie ji	地主阶级	249
+jian ren	坚韧	249
+ye mu	夜幕	249
+shi ye lv	失业率	249
+ba bu de	巴不得	249
+dai kuan	带宽	249
+zhang wang	张望	249
+cai piao	彩票	249
+wei li	微粒	249
+en ren	恩人	249
+qia qia xiang fan	恰恰相反	249
+xiang jian	想见	249
+yu yue	愉悦	249
+cheng hang	成行	249
+dan jia	担架	249
+she xiang ji	摄像机	249
+he neng	核能	249
+huan qing	欢庆	249
+wu ze tian	武则天	249
+liu luo	流落	249
+hun ru	混入	249
+ji jin	激进	249
+shao xiang	烧香	249
+wan yi	玩意	249
+sheng li	省里	249
+cheng de shang	称得上	249
+duan xiang	端详	249
+hu si luan xiang	胡思乱想	249
+zhi si	致死	249
+cang you	藏有	249
+hang dang	行当	249
+wu dao xing	误导性	249
+qian xun	谦逊	249
+bei hai shi	贝海石	249
+guo he	过河	249
+dao xie	道谢	249
+men pai	门派	249
+lei ting	雷霆	249
+er shi yi nian	二十一年	248
+yang mu	仰慕	248
+zhi nv	侄女	248
+guang su	光速	248
+liu wei	六位	248
+ji bi	击毙	248
+liu zheng feng	刘正风	248
+gong ming	功名	248
+shi er ge	十二个	248
+shi yu zhang	十余丈	248
+xiang liang	向量	248
+si wu	四五	248
+da qi ceng	大气层	248
+ni ri er	尼日尔	248
+kai jin	开进	248
+gui ru	归入	248
+zheng zhao	征兆	248
+zong er yan zhi	总而言之	248
+jing xia	惊吓	248
+ao hui	懊悔	248
+ju liu	拘留	248
+diao tou	掉头	248
+tui yi	推移	248
+bo chu	播出	248
+gong lve	攻略	248
+wen chen	文臣	248
+xin sheng er	新生儿	248
+yi jing	易经	248
+zhu qi	朱漆	248
+sha ru	杀入	248
+li zhong tang	李中堂	248
+liu shu	柳树	248
+can po	残破	248
+bi fang	比方	248
+qiu xue	求学	248
+he nei	河内	248
+qing cha	清查	248
+niu shi	牛市	248
+qian dong	牵动	248
+shuai kai	甩开	248
+bai xi bao	白细胞	248
+bai xue bing	白血病	248
+bai jiu	白酒	248
+fei yan	肺炎	248
+xi shuang ban na	西双版纳	248
+liang jie	谅解	248
+zi li	资历	248
+po yang hu	鄱阳湖	248
+suan ma	酸麻	248
+jia yu	驾驭	248
+huang he liu yu	黄河流域	248
+xia qiu nao	下丘脑	247
+dan qing	丹青	247
+quan tian hou	全天候	247
+nong min gong	农民工	247
+ju zhao	剧照	247
+bei jiao	北郊	247
+wu pei fu	吴佩孚	247
+sun wu kong	孙悟空	247
+guan zhi	官制	247
+xiao che	小车	247
+xin man yi zu	心满意足	247
+zong gong hui	总工会	247
+zha ying	扎营	247
+zhi zhen	指针	247
+qi pao	旗袍	247
+jiu shi qi shi dai	旧石器时代	247
+jian suo	检索	247
+liu dan	榴弹	247
+tang mu si bei	汤姆斯杯	247
+you deng	油灯	247
+nong lie	浓烈	247
+gan yuan	甘愿	247
+wen yi	瘟疫	247
+po kou da ma	破口大骂	247
+po men	破门	247
+she hui xue jia	社会学家	247
+ji xiao	绩效	247
+zi si	自私	247
+ku yu	苦于	247
+gai dang	该党	247
+zhui sha	追杀	247
+xing fu ren	邢夫人	247
+li ang	里昂	247
+shan guang	闪光	247
+yin yi	音译	247
+ding feng	顶峰	247
+shun ying	顺应	247
+feng su	风速	247
+shang pi	上皮	246
+zhong ke yuan	中科院	246
+wei yi	位移	246
+ru yu	入狱	246
+can zheng	参政	246
+shou xing	受刑	246
+chi ku	吃苦	246
+he chang	合唱	246
+xia ren	吓人	246
+shang hui	商会	246
+shan e	善恶	246
+guo ji dui	国际队	246
+ji du	基督	246
+jing kuang	境况	246
+chu yi	处以	246
+fu shi	复试	246
+xiao mei	小妹	246
+di zuo	底座	246
+hui xing	彗星	246
+wo bei	我辈	246
+ba shou	把守	246
+pai zhao	拍照	246
+jiu she hui	旧社会	246
+gou tu	构图	246
+ji huo	激活	246
+huo long	火龙	246
+zhao kan	照看	246
+te ci	特此	246
+hen du	狠毒	246
+sheng de	省得	246
+wen tuo	稳妥	246
+tu xi	突袭	246
+zu zhuang	组装	246
+lao ba	老爸	246
+kao gu xue jia	考古学家	246
+lian bang de guo	联邦德国	246
+xi bai po	西柏坡	246
+xu nuo	许诺	246
+chi shou kong quan	赤手空拳	246
+shan gan ning bian qu	陕甘宁边区	246
+fei zheng shi	非正式	246
+san jia	三甲	245
+zhong guo hua	中国画	245
+ren zhi	人质	245
+ti ye	体液	245
+mian qu	免去	245
+gong si fa	公司法	245
+zhun ga er	准噶尔	245
+ji xiang	几项	245
+dao qiang	刀枪	245
+qian lie xian	前列腺	245
+pou xi	剖析	245
+shi sui	十岁	245
+bian huan	变幻	245
+gu shi	古尸	245
+qi zou	启奏	245
+di di	地底	245
+da bian	大便	245
+shi xiao	失效	245
+zi hao	字号	245
+cun chu qi	存储器	245
+xiao dui	小队	245
+chang zhou	常州	245
+de cheng	得逞	245
+nian shu	念书	245
+nu bu ke e	怒不可遏	245
+xiang fang she fa	想方设法	245
+shou tou	手头	245
+xuan wo	旋涡	245
+yun dao	晕倒	245
+mian ao	棉袄	245
+fa bao	法宝	245
+qing ren	清人	245
+juan shu	眷属	245
+jue jing	绝境	245
+tong kao	统考	245
+huan cun	缓存	245
+que yang	缺氧	245
+hu yao bang	胡耀邦	245
+jiao ta	脚踏	245
+lian pang	脸庞	245
+yi shi hui	议事会	245
+zou dong	走动	245
+jun xian	郡县	245
+li li wai wai	里里外外	245
+gao jia suo	高加索	245
+wan zhen shan	万震山	244
+xia fang	下方	244
+liang lie	两列	244
+feng sheng	丰盛	244
+er shi sui	二十岁	244
+zhai quan ren	债权人	244
+ji shi wan	几十万	244
+fen ge	分隔	244
+xing chang	刑场	244
+chuang she	创设	244
+qian xiong	前胸	244
+shi ri	十日	244
+dan xiang	单项	244
+yuan zi liang	原子量	244
+shou zhong	受众	244
+hou sheng	吼声	244
+shan xing	善行	244
+hui ji	回击	244
+jia yu hu xiao	家喻户晓	244
+qi ke	岂可	244
+nian chan liang	年产量	244
+huai you	怀有	244
+zong neng	总能	244
+heng he	恒河	244
+pai xie	排泄	244
+ming ming bai bai	明明白白	244
+ben ke duan	本科段	244
+za cao	杂草	244
+li rui huan	李瑞环	244
+tiao zi	条子	244
+yang shang kun	杨尚昆	244
+qiang kou	枪口	244
+qian shen	欠身	244
+mao niu	牦牛	244
+te yi	特异	244
+liu zhu	留住	244
+she lun	社论	244
+di san shi jie	第三世界	244
+zhi yan	纸烟	244
+jing de qi	经得起	244
+jue mie	绝灭	244
+meng fa	萌发	244
+yan ci	言辞	244
+xun chi	训斥	244
+xiang jian	详见	244
+xing mu	醒目	244
+chong wei	重围	244
+liang zi li xue	量子力学	244
+yin an	阴暗	244
+jiang yu	降雨	244
+chu diao	除掉	244
+gu yuan	雇员	244
+shang shang xia xia	上上下下	243
+er zhong quan hui	二中全会	243
+jiao qing	交情	243
+wu ting fang	伍廷芳	243
+ce er	侧耳	243
+zuo ke	做客	243
+gong sun sheng	公孙胜	243
+liu zhong quan hui	六中全会	243
+nei shi	内侍	243
+nei mo	内膜	243
+ji yan	几眼	243
+fen li	分立	243
+jing feng	劲风	243
+xie zou qu	协奏曲	243
+zhuo you cheng xiao	卓有成效	243
+fan zei	反贼	243
+xiang che	响彻	243
+sheng shang	圣上	243
+duo zhong	多重	243
+meng jia la guo	孟加拉国	243
+kai fu	开赴	243
+huang ran	恍然	243
+jing ju	惊惧	243
+zhi jiao	指教	243
+cha zui	插嘴	243
+zhi shu	支书	243
+gong qu	攻取	243
+wu di	无敌	243
+tiao wen	条文	243
+meng jing	梦境	243
+li qing	沥青	243
+shao sha	烧杀	243
+te zhi	特制	243
+meng pu	猛扑	243
+xian jie duan	现阶段	243
+dian xun	电讯	243
+huang ma	皇马	243
+wen zhu	稳住	243
+kong dang dang	空荡荡	243
+li xian	立宪	243
+di er lun	第二轮	243
+jin yao guan tou	紧要关头	243
+hong chou	红绸	243
+lao ge	老哥	243
+zi zhu quan	自主权	243
+xue chuan xin	薛传薪	243
+jiang yan	讲演	243
+xu chang	许昌	243
+lun zhan	论战	243
+hua fei	话费	243
+bei le	贝勒	243
+zhuan yan jian	转眼间	243
+jin yuan	金元	243
+zu se	阻塞	243
+a bo luo	阿波罗	243
+fan hou	饭后	243
+huang rong xiao	黄蓉笑	243
+yi bai ge	一百个	242
+shang ceng jian zhu	上层建筑	242
+liang qian	两千	242
+ge shu	个数	242
+er shi san nian	二十三年	242
+ren li zi yuan bu	人力资源部	242
+dong tu	冻土	242
+ji bian	几遍	242
+lei ma	勒马	242
+nan lu	南麓	242
+fa bing	发兵	242
+jun shi tan ding bao	君士坦丁堡	242
+huan xing	唤醒	242
+duo mu	夺目	242
+zi dian	字典	242
+zong fa	宗法	242
+shi ze	实则	242
+yue mu	岳母	242
+xing yu	性欲	242
+shou xin	手心	242
+hu zhao	护照	242
+chai qian	拆迁	242
+ban jia	搬家	242
+shou yin ji	收音机	242
+mu se	暮色	242
+bao tu	暴徒	242
+ran fa ji	染发剂	242
+zheng pai	正派	242
+hai he	海河	242
+yan ye	烟叶	242
+wang fei	王妃	242
+dian ci chang	电磁场	242
+bai chi	白痴	242
+ying zhe tou pi	硬着头皮	242
+jing jue	精绝	242
+jiu ge	纠葛	242
+mei guo guo wu yuan	美国国务院	242
+nao men	脑门	242
+shan shi	膳食	242
+xing shu	行署	242
+guan mo	观摩	242
+jin zai zhi chi	近在咫尺	242
+tong ji	通缉	242
+tie qi	铁骑	242
+chang shi	长诗	242
+men fa	门阀	242
+yang tai	阳台	242
+dian bo	颠簸	242
+fan guan	饭馆	242
+xiang jing	香精	242
+wei wei	魏巍	242
+long jing	龙井	242
+wu hei	乌黑	241
+ren cong	人丛	241
+yi wan	伊万	241
+feng lu	俸禄	241
+seng dao	僧道	241
+nei can	内参	241
+liu yu chi	刘玉尺	241
+shuang ceng	双层	241
+ting ba	听罢	241
+chao nao	吵闹	241
+hu he hao te	呼和浩特	241
+gu gu	咕咕	241
+tian ming	天命	241
+shan ye	山野	241
+di pan	底盘	241
+jian she xing	建设性	241
+ruo shi	弱势	241
+e zei	恶贼	241
+zhe die	折叠	241
+huan zhuang	换装	241
+yao yao huang huang	摇摇晃晃	241
+bao zao	暴躁	241
+you lai yu	有赖于	241
+ye tai	液态	241
+di ding	滴定	241
+dian zhong	点中	241
+yong bu	用布	241
+yan quan	眼圈	241
+chuan suo	穿梭	241
+zhu zi	竹子	241
+di yi ke	第一颗	241
+di er bu	第二步	241
+cu bao	粗暴	241
+jing shen bing	精神病	241
+zhi zao	织造	241
+jing xiao shang	经销商	241
+lao shi	老式	241
+pi wei	脾胃	241
+zi wen	自刎	241
+gai xing	该行	241
+che fu	车夫	241
+bi zhen	逼真	241
+bi nan	避难	241
+qing ke zhi jian	顷刻之间	241
+xu zhi	须知	241
+yi kai	一开	240
+bu wei guo	不为过	240
+zhuan quan	专权	240
+er dao	二道	240
+cong rong bu po	从容不迫	240
+shang tong	伤痛	240
+jia shuo	假说	240
+guan dao	关岛	240
+leng ku	冷酷	240
+ning zhong	凝重	240
+sheng hua	升华	240
+sheng kong	升空	240
+dan fang mian	单方面	240
+yin ou yu	印欧语	240
+bian ya qi	变压器	240
+gu wan	古玩	240
+shi qian	史前	240
+hou tang	后唐	240
+e meng	噩梦	240
+ji yan	基岩	240
+tang gu	塘沽	240
+fu dan	复旦	240
+duo nian sheng	多年生	240
+tian gong	天宫	240
+lao lao	姥姥	240
+mi lin	密林	240
+dao xian	导线	240
+xing gan	性感	240
+bai nian	拜年	240
+ju dian	据点	240
+bai bai	摆摆	240
+zhi qi guan	支气管	240
+zhi xian	支线	240
+di yi	敌意	240
+hui qi	晦气	240
+he xi zou lang	河西走廊	240
+lei zhu	泪珠	240
+hun jiao lin	混交林	240
+wang hou	王后	240
+ji ku	疾苦	240
+mu bu zhuan jing	目不转睛	240
+qiao men	窍门	240
+li guo	立国	240
+she ren	舍人	240
+hua bai	花白	240
+hua niao	花鸟	240
+ya yi	衙役	240
+cai ding	裁定	240
+mi hu	迷糊	240
+zao fu	造福	240
+zhe yan	遮掩	240
+zhong chuang	重创	240
+rui qi	锐气	240
+bu gu yi qie	不顾一切	239
+liang pi	两匹	239
+zhong sheng dai	中生代	239
+wu zhong quan hui	五中全会	239
+ren you	任由	239
+jie ji	借机	239
+chong yu	充裕	239
+gong jia	公家	239
+jun shi jia	军事家	239
+nong ju	农具	239
+zhun bei jin	准备金	239
+ji lv	几率	239
+chu ru jing	出入境	239
+chu xi	出息	239
+you ren	友人	239
+pin wei	品味	239
+zuo zhen	坐镇	239
+zhuang shi	壮士	239
+wei ren	委任	239
+yu yan	寓言	239
+xiao ke	小可	239
+ju shi	居士	239
+ping yao	平遥	239
+huan jue	幻觉	239
+zhang zong qi	张宗琪	239
+tan huang	弹簧	239
+hui zhou	徽州	239
+guai ren	怪人	239
+jie lv	戒律	239
+gua gou	挂钩	239
+gai yuan	改元	239
+an sha	暗杀	239
+heng fu	横幅	239
+bu bing shi	步兵师	239
+shui shi	水师	239
+hai wan zhan zheng	海湾战争	239
+jian ao	煎熬	239
+wu ye	物业	239
+zhu zi	珠子	239
+bing chuang	病床	239
+ai pang	矮胖	239
+di si jie	第四节	239
+zong he guo li	综合国力	239
+kao ti	考题	239
+geng yun	耕耘	239
+tuo shui	脱水	239
+cang lao	苍老	239
+dang ran wu cun	荡然无存	239
+jian ta	践踏	239
+lian jie	连结	239
+yu shi	遇事	239
+xian zhi	闲置	239
+yin yin yue yue	隐隐约约	239
+ti xie	题写	239
+ma de li	马德里	239
+qi ba	七八	238
+qi li gou	七里沟	238
+mai fang	买方	238
+wu zhi	五指	238
+he ru	何如	238
+gong yong	公用	238
+chu ti	出题	238
+bao tian jian	包天剑	238
+qu diao	去掉	238
+tan sang ni ya	坦桑尼亚	238
+wai liu	外流	238
+tian ying	天鹰	238
+wan zhuan	婉转	238
+zi hua	字画	238
+rong ji	容积	238
+xiao chang	小肠	238
+kai lang	开朗	238
+dang zhi wu kui	当之无愧	238
+qing jie	情结	238
+tou she	投射	238
+shou qi	收起	238
+xin bian	新编	238
+jiu jin shan	旧金山	238
+jin ji	晋级	238
+an dan	暗淡	238
+xi jie	洗劫	238
+xi shou	洗手	238
+liu tong ling yu	流通领域	238
+yuan zi	源自	238
+ban ji	班级	238
+duan dao	短刀	238
+di er jie	第二届	238
+jing liang	精良	238
+ji nian bei	纪念碑	238
+chan zhu	缠住	238
+lao tai po	老太婆	238
+hao zi	耗子	238
+xie po	胁迫	238
+ku men	苦闷	238
+zhu lu	著录	238
+xi nan di qu	西南地区	238
+shi jing	诗经	238
+qi ju	起居	238
+mi mang	迷茫	238
+tong gao	通告	238
+ye cai	野菜	238
+yin le jia	音乐家	238
+gao yi gong	高一功	238
+yi zhi	一纸	237
+shang gu	上古	237
+zhuan ren	专人	237
+wu xing	五星	237
+xiu yang	休养	237
+bian yi	便衣	237
+xiu zheng an	修正案	237
+ru tu	入土	237
+nei li	内里	237
+nong fu chan pin	农副产品	237
+qian qin	前秦	237
+ju zhong	剧中	237
+yin di an	印第安	237
+wei wang	危亡	237
+hui yi lu	回忆录	237
+wei guan	围观	237
+tu mu	土木	237
+wai ke	外壳	237
+da jiu dian	大酒店	237
+hao gan	好感	237
+meng jia la	孟加拉	237
+cha cuo	差错	237
+chuang tou	床头	237
+du liang	度量	237
+zuo cang	座舱	237
+yi tong	异同	237
+nao huo	恼火	237
+shou ti	手提	237
+gong ji ji	攻击机	237
+gu ren	故人	237
+wen di	文帝	237
+lv you sheng di	旅游胜地	237
+wu wei	无畏	237
+shu jia	暑假	237
+an cang	暗藏	237
+qi chuan xu xu	气喘吁吁	237
+mei guan xi	没关系	237
+nan shi	男士	237
+pi qiu	皮球	237
+gao wan	睾丸	237
+chan shi	禅师	237
+kong kong dao dan	空空导弹	237
+chuang qian	窗前	237
+di liu zhang	第六章	237
+zhan xing	粘性	237
+jing jian	精简	237
+ying ming	英明	237
+huang di	荒地	237
+luo xuan jiang	螺旋桨	237
+pei wei	配位	237
+tie jiang	铁匠	237
+wei yi xiao	韦一笑	237
+san wei	三维	236
+shang fang	上房	236
+bu yao lian	不要脸	236
+bu jian de	不见得	236
+shi jie da zhan	世界大战	236
+zhong guo lian tong	中国联通	236
+zhu dong quan	主动权	236
+er bai	二百	236
+chong ren	充任	236
+guang shi	光是	236
+ji zhao	几招	236
+ya gen er	压根儿	236
+yan fan	厌烦	236
+shou ku	受苦	236
+jun zhu zhi	君主制	236
+ai yo	哎哟	236
+he zui	喝醉	236
+tu gai	土改	236
+da zhuan yuan xiao	大专院校	236
+tian jing	天井	236
+nv pai	女排	236
+zi fu	姊夫	236
+sao sao	嫂嫂	236
+yi ren	宜人	236
+zhan lan hui	展览会	236
+bei lun	悖论	236
+qing yi	情谊	236
+tiao ti	挑剔	236
+shuai jiao	摔跤	236
+che zou	撤走	236
+dun cu	敦促	236
+fang fa lun	方法论	236
+biao ming	标明	236
+liang zi weng	梁子翁	236
+bu bu	步步	236
+dian tang	殿堂	236
+tu mo	涂抹	236
+xi shui	溪水	236
+wang rui fen	王瑞芬	236
+jia quan	甲醛	236
+dian deng	电灯	236
+dao mi	稻米	236
+fen shen sui gu	粉身碎骨	236
+jin que	紧缺	236
+lao yi bei	老一辈	236
+bei ji	背脊	236
+zi xiao	自小	236
+zhi ji	至极	236
+huo de zhe	获得者	236
+bo luo	菠萝	236
+tan he rong yi	谈何容易	236
+zhao yun	赵云	236
+guo shi	过失	236
+jing jing	静静	236
+bian pao	鞭炮	236
+jun ma	骏马	236
+yi du zi	一肚子	235
+shang jie	上街	235
+xia jue xin	下决心	235
+bu ji	不济	235
+feng tian nan	凤天南	235
+fen lie	分列	235
+dao shou	到手	235
+shi ji sui	十几岁	235
+cen ci	参差	235
+kou jue	口诀	235
+ke gui	可贵	235
+chi yao	吃药	235
+ha mi	哈密	235
+zhuang lie	壮烈	235
+duo yi xie	多一些	235
+ye kong	夜空	235
+da zhen	大振	235
+da jie	大捷	235
+dui de qi	对得起	235
+chang gui sai	常规赛	235
+da ying	打赢	235
+da zai	搭载	235
+ben qian	本钱	235
+hui dui	汇兑	235
+hua lang	画廊	235
+lian pi	脸皮	235
+duo shan	躲闪	235
+bian zheng	辨证	235
+song da	送达	235
+fu you	附有	235
+ya ke	雅克	235
+ding dian	顶点	235
+hei dou	黑豆	235
+yi zheng tao	一整套	234
+bu jing yi	不经意	234
+dong bei jun	东北军	234
+ye men	也门	234
+wu wan	五万	234
+ya ma	亚麻	234
+jiao tong gong ju	交通工具	234
+he zhe	何者	234
+leng men	冷门	234
+fen pi	分批	234
+ci ji xing	刺激性	234
+jia you ji	加油机	234
+zhu zhang	助长	234
+sheng wen	升温	234
+da zhong	大中	234
+mi mou	密谋	234
+zhai zhu	寨主	234
+niao dao	尿道	234
+ji fang	己方	234
+shi ye	师爷	234
+xin de	心得	234
+can jiao	惨叫	234
+zhan li pin	战利品	234
+hui fa	挥发	234
+bai bu	摆布	234
+di guo	敌国	234
+qi zi	旗子	234
+yue ji	月季	234
+za ji	杂技	234
+lin zhen nan	林震南	234
+qiao shen	桥身	234
+mian yi	棉衣	234
+zhi bu zhu	止不住	234
+kui bai	溃败	234
+man wen	满文	234
+dian dong	电动	234
+xiang chen	相称	234
+ju xing	矩形	234
+kuang jing	矿井	234
+kuang gong	矿工	234
+po sun	破损	234
+mian huai	缅怀	234
+chan mian	缠绵	234
+pin fa	贫乏	234
+zi yuan guan li	资源管理	234
+lu tu	路途	234
+xuan ju fa	选举法	234
+tong huo	通货	234
+dun zu	顿足	234
+ma san jun	马三俊	234
+lin pian	鳞片	234
+yi mu	一目	233
+bu fa	不法	233
+liang fen	两份	233
+hu tong	互通	233
+di chao	低潮	233
+qing su	倾诉	233
+jiang chi	僵持	233
+liu ji	六级	233
+chu jing you	出境游	233
+chu guo	出过	233
+shou yong	受用	233
+shang pin sheng chan	商品生产	233
+wei shi	委实	233
+qiang xian	抢险	233
+she qu	摄取	233
+gai xing	改型	233
+shu bu	数步	233
+you qi tu xing	有期徒刑	233
+sha di	杀敌	233
+ci an	此案	233
+bi er	比尔	233
+qi guan	气管	233
+xuan wu yan	玄武岩	233
+huan gu	环顾	233
+yong dao	甬道	233
+tian gui nong	田归农	233
+duan xiao	短小	233
+li zhi	离职	233
+hong yun	红晕	233
+niu dai	纽带	233
+luo si	罗斯	233
+liao liao	聊聊	233
+ku zhan	苦战	233
+xi sha	西沙	233
+yao ling	要领	233
+yu zhi	谕旨	233
+zhao yi di	赵一荻	233
+wei zhe	违者	233
+hao da tong	郝大通	233
+jin ping mei	金瓶梅	233
+tie si	铁丝	233
+yin xing jia	银行家	233
+chan shi	阐释	233
+xian jun	险峻	233
+yi shun	一瞬	232
+jiao yi hui	交易会	232
+ting zi	亭子	232
+shang han	伤寒	232
+he tai chong	何太冲	232
+shi huan	使唤	232
+quan qiu tong	全球通	232
+xing long	兴隆	232
+jun bu	军部	232
+quan gao	劝告	232
+jia li fu ni ya	加利福尼亚	232
+jia peng	加蓬	232
+xi hao	喜好	232
+feng cheng	奉承	232
+nu jia	奴家	232
+shou yu	守御	232
+hai xiu	害羞	232
+ji zhu	寄主	232
+ba la gui	巴拉圭	232
+de hua	德化	232
+zong bian ji	总编辑	232
+zhan dou bu	战斗部	232
+shou xu fei	手续费	232
+da gou bang fa	打狗棒法	232
+tou lan	投篮	232
+bao xiao	报销	232
+pi gua	披挂	232
+wu zhu	捂住	232
+mo er	摩尔	232
+xin fang	新房	232
+you xiao xing	有效性	232
+chao fu	朝服	232
+hui ju	汇聚	232
+liu ti li xue	流体力学	232
+hao jie	浩劫	232
+tao tao	滔滔	232
+qian gua	牵挂	232
+pi ceng	皮层	232
+jiao huo	缴获	232
+fu se	肤色	232
+she ming	舍命	232
+hua cao	花草	232
+ying bang	英镑	232
+jiang ke	讲课	232
+zhi wen	质问	232
+chao qun	超群	232
+qing ying	轻盈	232
+jin shi	进食	232
+xuan zhong	选中	232
+jin zhen	金针	232
+gang guan	钢管	232
+fang xun	防汛	232
+lei feng	雷锋	232
+ling xian	领衔	232
+fan zhuo	饭桌	232
+yi xin yi yi	一心一意	231
+san chong	三重	231
+bu xiang gan	不相干	231
+zhong yang zheng zhi ju chang wei	中央政治局常委	231
+ren ji	人际	231
+hui mian	会面	231
+chu yu	出狱	231
+lie zhuan	列传	231
+jing di	劲敌	231
+qian wa	千瓦	231
+wu ye	午夜	231
+zhou ma	咒骂	231
+tian chong	填充	231
+xia shang zhou	夏商周	231
+tian qian	天堑	231
+jian yin	奸淫	231
+gu qie	姑且	231
+shan hou	山后	231
+shi fan xue xiao	师范学校	231
+xu yi xian	徐以显	231
+de li	德里	231
+wang que	忘却	231
+qing zhuang	情状	231
+zhan zhan jing jing	战战兢兢	231
+shou tao	手套	231
+shou gao	手稿	231
+zheng chang ren	正常人	231
+xiao hua dao	消化道	231
+piao liu	漂流	231
+zhen cang	珍藏	231
+bai lu yuan	白鹿原	231
+shi shi	石室	231
+sui xie	碎屑	231
+duan zhuang	端庄	231
+chun shu	纯熟	231
+na mi	纳米	231
+mei fen	美分	231
+chen zi	臣子	231
+ha ma	蛤蟆	231
+zhe yi lai	这一来	231
+yao wang	遥望	231
+jin she	金蛇	231
+qing chun qi	青春期	231
+qing shi	青石	231
+ma bian	马鞭	231
+huang dao	黄道	231
+xia di	下地	230
+zhong ren	中人	230
+zhong guo ren min yin xing	中国人民银行	230
+cheng ma	乘马	230
+zuo zheng	作证	230
+quan fu wu zhuang	全副武装	230
+quan jian	全歼	230
+guan yu	关羽	230
+chong ru	冲入	230
+can yu	参预	230
+pan ni	叛逆	230
+shang wu bu	商务部	230
+si zhong quan hui	四中全会	230
+shi zu	士族	230
+da fa	大发	230
+nv peng you	女朋友	230
+fu lian	妇联	230
+xue zhi	学制	230
+xiao peng you	小朋友	230
+wu wai	屋外	230
+ping dan	平淡	230
+hu er	忽而	230
+da luan	打乱	230
+shou ke	授课	230
+fang ying	放映	230
+wu yu lun bi	无与伦比	230
+qing tian	晴天	230
+you jia	有加	230
+mu zhi	木制	230
+song lin	松林	230
+shan tou	汕头	230
+hai er	海尔	230
+huo qiang	火枪	230
+te yi xing	特异性	230
+xian chu	献出	230
+li san	离散	230
+mei de	美的	230
+geng tian	耕田	230
+mo bu	莫不	230
+xu gou	虚构	230
+shuai ruo	衰弱	230
+zhuang tian	装填	230
+xi xi li	西西里	230
+chu fa	触发	230
+cai zhu	财主	230
+gui jin shu	贵金属	230
+mi shi	迷失	230
+tou shi	透视	230
+dao yi	道义	230
+na ma	那马	230
+qu chu	驱除	230
+shu biao	鼠标	230
+long zhou	龙舟	230
+bu yi hui er	不一会儿	229
+sang sheng	丧生	229
+zhu ying ye wu	主营业务	229
+jiu er jiu zhi	久而久之	229
+yun zhong he	云中鹤	229
+zuo gong	做工	229
+er xi fu	儿媳妇	229
+fen shen	分身	229
+ci xiu	刺绣	229
+lao de nuo	劳德诺	229
+qian jia wan hu	千家万户	229
+si tu	司徒	229
+ming lu	名录	229
+pao xiao	咆哮	229
+pin xing	品行	229
+song qing shu	宋青书	229
+jia qin	家禽	229
+fu rao	富饶	229
+jiu jin	就近	229
+dao nei	岛内	229
+kai xue	开学	229
+qiang ren	强忍	229
+xin li xue jia	心理学家	229
+shou ce	手册	229
+kang hong	抗洪	229
+pai xu	排序	229
+mu xing	木星	229
+hai bao	海报	229
+hai lang	海浪	229
+jin tou	浸透	229
+yu lan	玉兰	229
+nan hai zi	男孩子	229
+shou zi	瘦子	229
+bai ban	百般	229
+ying hua	硬化	229
+huo hai	祸害	229
+suo ma li	索马里	229
+lao tai	老太	229
+she yan	设宴	229
+qing jia	请假	229
+yan yu	谚语	229
+pin seng	贫僧	229
+ding zi	钉子	229
+long dong	隆冬	229
+qi tian	七天	228
+shang xian	上限	228
+shu ji chu	书记处	228
+wu bai nian	五百年	228
+fo fa	佛法	228
+ba ming	八名	228
+gong jian	共建	228
+fen xi jia	分析家	228
+quan shang	券商	228
+ju zhong	剧种	228
+kui fa	匮乏	228
+wei chun hua	卫春华	228
+yan juan	厌倦	228
+ming xiao	名校	228
+hou fei	后妃	228
+xi du	吸毒	228
+huai si	坏死	228
+duo kui	多亏	228
+pi mei	媲美	228
+an xie	安歇	228
+wan dan	完蛋	228
+si li	寺里	228
+xun bu	巡捕	228
+gong dang	工党	228
+nu hou	怒吼	228
+cheng hun	成婚	228
+zhao an	招安	228
+lan zu	拦阻	228
+wu si	无私	228
+lang song	朗诵	228
+shu shou wu ce	束手无策	228
+qiang xiang	枪响	228
+he shi	核试	228
+han wang	汉王	228
+chen mo	沉没	228
+yan si	淹死	228
+xia ai	狭隘	228
+hou er	猴儿	228
+wang guo guang	王国光	228
+nan you	男友	228
+zu shang	祖上	228
+di er dao	第二道	228
+fan fu	繁复	228
+suo hui	缩回	228
+ju zhong	聚众	228
+zhi jing	致敬	228
+ying guo zheng fu	英国政府	228
+xi cang zi zhi qu	西藏自治区	228
+zheng ren	证人	228
+zhu shi	诸事	228
+duo jiao	跺脚	228
+lun shi	轮式	228
+fu dao ban	辅导班	228
+zhe huo	这伙	228
+ye zhu	野猪	228
+qian zhi jiang	钱之江	228
+men ban	门板	228
+a la bo yu	阿拉伯语	228
+a la si jia	阿拉斯加	228
+gao li	高丽	228
+gui gui sui sui	鬼鬼祟祟	228
+gui hun	鬼魂	228
+yi zhong quan hui	一中全会	227
+bu zheng	不正	227
+ju zi	举子	227
+yi mi	乙醚	227
+jiu qing	九卿	227
+hu li	互利	227
+xiu jia	休假	227
+quan zhen	全真	227
+xie gei	写给	227
+jun shou	军售	227
+bing kuai	冰块	227
+ban feng jian	半封建	227
+yin zhang	印章	227
+ge er lia	哥儿俩	227
+guo ji huo bi ji jin zu zhi	国际货币基金组织	227
+da shun jun	大顺军	227
+yi ma	姨妈	227
+song qing ling	宋庆龄	227
+chan hui	忏悔	227
+ji zao	急躁	227
+e xing zhong liu	恶性肿瘤	227
+xiang xiang li	想象力	227
+kou ya	扣押	227
+jie zhong er lai	接踵而来	227
+wu wei	无为	227
+wei ding	未定	227
+meng huan	梦幻	227
+bo tao	波涛	227
+xi jing	洗净	227
+shen sui	深邃	227
+qing shi	清史	227
+ling ji yi dong	灵机一动	227
+te kun	特困	227
+huan xing	环形	227
+shu tong	疏通	227
+she hui min zhu dang	社会民主党	227
+xiao mi mi	笑眯眯	227
+ling yang	羚羊	227
+lian dan	脸蛋	227
+shu zhan	舒展	227
+shi yi	诗意	227
+gu cheng	谷城	227
+ze ling	责令	227
+chao biao	超标	227
+guo chang	过长	227
+jin shan	进山	227
+jiu hu	酒壶	227
+ju chi	锯齿	227
+zhang cheng	长成	227
+dui li	队里	227
+gao pao	高炮	227
+yi li	一例	226
+san sui	三岁	226
+yan ming	严明	226
+zhong shi	中式	226
+zhong ou	中欧	226
+zhu zhi	主旨	226
+shu ying	书影	226
+liao de	了得	226
+wu sa yun dong	五卅运动	226
+ren ji	人迹	226
+gong zheng	公证	226
+liu chao	六朝	226
+gong cun	共存	226
+zhun shi	准时	226
+xia dao	吓倒	226
+gao shi	告示	226
+si tiao	四条	226
+da le	大乐	226
+da di	大帝	226
+da jing shi se	大惊失色	226
+tou xu	头绪	226
+sun cheng zong	孙承宗	226
+ji jie xing	季节性	226
+shen shi duo shi	审时度势	226
+ba jie	巴结	226
+qiao qiao de	悄悄的	226
+ci xi tai hou	慈禧太后	226
+bao guo	报国	226
+la long	拉拢	226
+ze ye	择业	226
+jiao yu ju	教育局	226
+xin jiang wei wu er zi zhi qu	新疆维吾尔自治区	226
+fang shi	方始	226
+wu yi yu	无异于	226
+cao pi	曹丕	226
+you wu	有误	226
+gou qi	枸杞	226
+ci sheng	次生	226
+zhi min zhu yi zhe	殖民主义者	226
+ce suan	测算	226
+re xue fei teng	热血沸腾	226
+yu shan	玉山	226
+shen hua dui	申花队	226
+xiang rong	相容	226
+zhen shi xing	真实性	226
+bi lv	碧绿	226
+zhong nan shan	终南山	226
+rou yan	肉眼	226
+gui lv xing	规律性	226
+jiao zhi	角质	226
+shuo le suan	说了算	226
+zao feng	遭逢	226
+men sheng	门生	226
+jiang wen	降温	226
+ren xing	韧性	226
+san ge dai biao	三个代表	225
+shang diao	上吊	225
+chou e	丑恶	225
+jiu pin	九品	225
+fu bing	伏兵	225
+you dai	优待	225
+chuan cheng	传承	225
+xia ke	侠客	225
+ting kao	停靠	225
+guang gu	光顾	225
+quan xiao	全校	225
+bian xiang	变相	225
+hou tang	后堂	225
+shang pin fang	商品房	225
+ti ku	啼哭	225
+hui shou	回首	225
+an yang	安阳	225
+gong jing	宫颈	225
+mi shi	密室	225
+dui da	对答	225
+gong jian	工件	225
+xin gan qing yuan	心甘情愿	225
+bi yao xing	必要性	225
+pai hang bang	排行榜	225
+jie zhong	接种	225
+yao lan	摇篮	225
+cao yun qi	曹云奇	225
+he dan	核弹	225
+mei kuai	每块	225
+he jian	河间	225
+zhao ze di	沼泽地	225
+hai di	海地	225
+shen si	深思	225
+lang qun	狼群	225
+wang xi lie	王希烈	225
+kan de chu	看得出	225
+tiao wang	眺望	225
+qin shou	禽兽	225
+xi han	稀罕	225
+suo qu	索取	225
+mei lian she	美联社	225
+qun zhong yun dong	群众运动	225
+lao qu	老区	225
+zi ge er	自个儿	225
+lai yin he	莱茵河	225
+ying ye bu	营业部	225
+ying sheng	营生	225
+xi shuai	蟋蟀	225
+ying he	迎合	225
+na hui er	那会儿	225
+jin qi	锦旗	225
+fan pu	饭铺	225
+xiang huo	香火	225
+luo ma	骡马	225
+yi ben zheng jing	一本正经	224
+zhuan lan	专栏	224
+zhong guo qu	中国区	224
+qing jia	亲家	224
+cang huang	仓皇	224
+ling zun	令尊	224
+xin xi xi tong	信息系统	224
+guang bo	光波	224
+guang xu di	光绪帝	224
+mao xian zhu yi	冒险主义	224
+ge lie	割裂	224
+shi si da	十四大	224
+tu qiu	土丘	224
+kun ning gong	坤宁宫	224
+chui wei	垂危	224
+mu bei	墓碑	224
+tian xiang	天象	224
+miao ji	妙计	224
+shi wai	室外	224
+jin xin	尽心	224
+tu long dao	屠龙刀	224
+dai zhuang	带状	224
+yan huan	延缓	224
+yu mei	愚昧	224
+cheng zai	承载	224
+yao dong	摇动	224
+pu pu tong tong	普普通通	224
+qi xian	杞县	224
+heng gen	横亘	224
+yi li	毅力	224
+mao pi	毛皮	224
+you zhong	由衷	224
+xiang gan	相干	224
+zhang qi yue	章启月	224
+guan xian	管线	224
+xi tong gong cheng	系统工程	224
+tuo xian	脱险	224
+hua ting	花厅	224
+zhuang yao	装药	224
+jin qian	近前	224
+wei kang	违抗	224
+deng ken	邓肯	224
+jin hua	金华	224
+chang chu	长处	224
+qing ke	顷刻	224
+mo ren	默认	224
+wan gong li	万公里	223
+bu shun	不顺	223
+liang jia	两架	223
+liang pian	两片	223
+wei guan	为官	223
+er qian	二千	223
+ya mei ni ya	亚美尼亚	223
+xian tian xing	先天性	223
+ping zhe	凭着	223
+shuang xing	双星	223
+fan dui dang	反对党	223
+fa hao shi ling	发号施令	223
+fa shen wei	发审委	223
+ming yan	名言	223
+he wen	喝问	223
+guan bing men	官兵们	223
+xuan fu si	宣抚司	223
+cha ha er	察哈尔	223
+dao dian	导电	223
+hen zao	很早	223
+hen nan shuo	很难说	223
+xing ji	性急	223
+di kang li	抵抗力	223
+xin jun	新军	223
+wu zhi	武职	223
+hui cheng	汇成	223
+xiao qian	消遣	223
+lin ba jie	淋巴结	223
+wang jiu si	王九思	223
+wang quan	王权	223
+shu yuan	疏远	223
+kao dian	考点	223
+lian jie	联接	223
+cong ming ren	聪明人	223
+zang qi	脏器	223
+tun bu	臀部	223
+hua tie gan	花铁干	223
+ying yun	营运	223
+yun han	蕴含	223
+hang jia	行家	223
+zhen zhi	诊治	223
+tiao ban	跳板	223
+huan ji	还击	223
+sui xing	遂行	223
+jin sha jiang	金沙江	223
+zu ge	阻隔	223
+qing zhou	青州	223
+kao shan	靠山	223
+feng shang	风尚	223
+hai ren ting wen	骇人听闻	223
+ku lou	骷髅	223
+bu su	不俗	222
+dong jia	东家	222
+zheng qi	争气	222
+jiao huan	交还	222
+xian shi	先师	222
+gong guo	公国	222
+lin ran	凛然	222
+gong de	功德	222
+jia zhou	加州	222
+ban bu	半步	222
+qu chu	去除	222
+xi na	吸纳	222
+yuan zhong	园中	222
+zeng bu	增补	222
+da bo	大伯	222
+da di	大抵	222
+an nan	安南	222
+wei yi	尾翼	222
+shan gou	山沟	222
+you xiao	幼小	222
+jian qiao	建桥	222
+zhang yong hong	张永红	222
+qiang bao	强暴	222
+peng lian hu	彭连虎	222
+ci ning gong	慈宁宫	222
+jing shan	景山	222
+lin bo qu	林伯渠	222
+wu dang	武当	222
+zhu mu	注目	222
+yuan yuan bu duan	源源不断	222
+xiang ban	相伴	222
+shen fu	神父	222
+xi shi	稀释	222
+kong shou	空手	222
+li ba	篱笆	222
+zao ta	糟蹋	222
+suo jian	缩减	222
+nve dai	虐待	222
+xue hong dan bai	血红蛋白	222
+xu duo nian	许多年	222
+gou fang	购房	222
+zhuan zheng	转正	222
+shu xue	输血	222
+ying feng	迎风	222
+xing tai	邢台	222
+guo mo ruo	郭沫若	222
+ji san di	集散地	222
+lei zhen yu	雷阵雨	222
+ling hai	领海	222
+gu zhi	骨质	222
+hei dong	黑洞	222
+liang zhou	两周	221
+liang du	亮度	221
+dan fan	但凡	221
+jie zhu yu	借助于	221
+chu shi	出师	221
+chu san	初三	221
+dan dan	单单	221
+yuan jian	原件	221
+shuang qin	双亲	221
+zhao huan	召唤	221
+you jiao	右脚	221
+ji mi	吉米	221
+ha ha ha	哈哈哈	221
+zao yin	噪音	221
+si ye	四爷	221
+di qu xing	地区性	221
+fu chu	复出	221
+tian long	天龙	221
+ke zhan	客栈	221
+mu hou	幕后	221
+dang ye	当夜	221
+kong bu zhu yi	恐怖主义	221
+you xian	悠闲	221
+jing tian dong di	惊天动地	221
+ti xie	提携	221
+jiao guan	教官	221
+mu zhu	木柱	221
+he zhun	核准	221
+xie xie	歇歇	221
+wu lin zhong	武林中	221
+han tang	汉唐	221
+sha zhou	沙洲	221
+sha te	沙特	221
+ran qi	燃气	221
+du dao	独到	221
+bai cai	白菜	221
+bai ke quan shu	百科全书	221
+zhuo yan yu	着眼于	221
+shen yi	神医	221
+si shi	私事	221
+jing guang	精光	221
+miao ruo lan	苗若兰	221
+xi feng	西风	221
+du chang	赌场	221
+lun huan	轮换	221
+qing zhuang	轻装	221
+yi qi	遗弃	221
+bi yun	避孕	221
+bao man	饱满	221
+san zhang	三丈	220
+shang jiao	上交	220
+shang lou	上楼	220
+zhong yang ji lv jian cha wei yuan hui	中央纪律检查委员会	220
+wu ci	五次	220
+dai biao ren	代表人	220
+chuan bian	传遍	220
+ti yu yun dong	体育运动	220
+shi yong quan	使用权	220
+ru sheng	儒生	220
+ji ceng	几层	220
+li zhu	力主	220
+chan yu	单于	220
+yuan nei	园内	220
+zeng jian	增减	220
+da ge zi	大个子	220
+da fa	大法	220
+xiao shun	孝顺	220
+xuan fu shi	宣抚使	220
+jiang ling	将令	220
+shang ke	尚可	220
+guang wei	广为	220
+zhuang shang	庄上	220
+kang de	康德	220
+tu bu	徒步	220
+zhan qian	战前	220
+shou gong ye zhe	手工业者	220
+tuo guan	托管	220
+pai ma	拍马	220
+chi dao	持刀	220
+jue qu	攫取	220
+shou pan	收盘	220
+si wen	斯文	220
+wu zheng fu zhu yi	无政府主义	220
+guo pin	果品	220
+mao xi xue guan	毛细血管	220
+shui sheng	水声	220
+ran qi	燃起	220
+wan er	玩儿	220
+kan zhun	看准	220
+ci hua	磁化	220
+zhong shi dao	种师道	220
+kong que	空缺	220
+duan ni	端倪	220
+di san wei	第三位	220
+di shi yi	第十一	220
+lu lin	绿林	220
+mei guo guo fang bu	美国国防部	220
+kao shi yuan	考试院	220
+mo ming	莫名	220
+xue tang	血糖	220
+xing zong	行踪	220
+xing che	行车	220
+shi zuo	诗作	220
+chao e li run	超额利润	220
+gen jin	跟进	220
+shan gan	陕甘	220
+wu qi	雾气	220
+qing cang	青藏	220
+xiang shui	香水	220
+yi xi	一席	219
+yi bai nian	一百年	219
+yi shun jian	一瞬间	219
+zhong ceng	中曾	219
+zhu shi	主食	219
+mai xia	买下	219
+er yuan	二元	219
+er lao	二老	219
+yu bu	余部	219
+fo zu	佛祖	219
+guang du	光度	219
+dang ren	党人	219
+dang ji	党籍	219
+gong sun gu zhu	公孙谷主	219
+gong ming	共鸣	219
+ji sui	几岁	219
+fen hong	分红	219
+ban qiu	半球	219
+ting dong	听懂	219
+hu jiu	呼救	219
+pen she	喷射	219
+si chi	四尺	219
+sheng huo	圣火	219
+zuo an	左岸	219
+kai fang shi	开放式	219
+zhang jun bao	张君宝	219
+xu shi chang	徐世昌	219
+xin ji	心肌	219
+pa ren	怕人	219
+fen hen	愤恨	219
+shu fa	抒发	219
+wen ting shi	文廷式	219
+lv xing jia	旅行家	219
+ben zi	本子	219
+guan cong	灌丛	219
+pi ruan	疲软	219
+zhi liu	直流	219
+zu zhi zhe	组织者	219
+dan liang	胆量	219
+cang tian	苍天	219
+xing gong	行宫	219
+bei gao ren	被告人	219
+gu zhu	谷主	219
+ze guai	责怪	219
+du qi	赌气	219
+wen ji	问及	219
+yan wang	阎王	219
+fei jin shu	非金属	219
+ma da jia si jia	马达加斯加	219
+bi liang	鼻梁	219
+yi wu suo zhi	一无所知	218
+bu gong	不公	218
+shen chang	伸长	218
+di diao	低调	218
+guan dong jun	关东军	218
+qian chao	前朝	218
+you qing	友情	218
+shou zu	受阻	218
+ge shi	各式	218
+hou shan	后山	218
+tang jia xuan	唐家璇	218
+si bi	四壁	218
+guo ming	国名	218
+tu teng	图腾	218
+tan bai	坦白	218
+wai qi	外戚	218
+sun nv	孙女	218
+han xuan	寒暄	218
+qin shi	寝室	218
+shi gu	尸骨	218
+kai chang bai	开场白	218
+dai ren	待人	218
+wei liang	微量	218
+xin kuang shen yi	心旷神怡	218
+wang diao	忘掉	218
+zhi zhuo	执着	218
+fu zhi	扶植	218
+tan qin	探亲	218
+che zhi	撤职	218
+xing qi liu	星期六	218
+zhu bi	朱笔	218
+ji yuan	机缘	218
+jiang bian	江边	218
+fa guo dui	法国队	218
+dan hua	淡化	218
+wan nong	玩弄	218
+li xiang guo	理想国	218
+zu fen	祖坟	218
+bi fa	笔法	218
+di wu zhang	第五章	218
+nian ye	粘液	218
+lian wu	练武	218
+ba shi	罢市	218
+jie xiang	街巷	218
+shuo huang	说谎	218
+mou hua	谋划	218
+ze nan	责难	218
+he lu xiao fu	赫鲁晓夫	218
+qi yong	起用	218
+qing bo	轻薄	218
+chang bai shan	长白山	218
+bi se	闭塞	218
+sui jun	随军	218
+huang pai	黄牌	218
+huang niu	黄牛	218
+bu dan	不单	217
+yan yan shi shi	严严实实	217
+dai yan ren	代言人	217
+yang wang	仰望	217
+pei dai	佩戴	217
+xian ren	先人	217
+gong ji	公鸡	217
+jun xiang	军饷	217
+cou he	凑合	217
+ning wang	凝望	217
+chu han	出汗	217
+jiao mie	剿灭	217
+nan kai da xue	南开大学	217
+ka te	卡特	217
+shuang dao	双刀	217
+ming tang	名堂	217
+xi chu wang wai	喜出望外	217
+guo da dang	国大党	217
+da jing xiao guai	大惊小怪	217
+an shi zhi luan	安史之乱	217
+han guang	寒光	217
+cen chun xuan	岑春煊	217
+ruo zhe	弱者	217
+bo kai	拨开	217
+tui dao	推倒	217
+ti gong shang	提供商	217
+san luo	散落	217
+xie po	斜坡	217
+xin sheng dai	新生代	217
+qi jian	旗舰	217
+sha tou	杀头	217
+song shou	松手	217
+hai bao	海豹	217
+qing xiang	清香	217
+qian neng	潜能	217
+pian ming	片名	217
+wu li liang	物理量	217
+hen xin	狠心	217
+li lun jia	理论家	217
+gan shu	甘薯	217
+sheng huo fei	生活费	217
+mei mu	眉目	217
+tong kong	瞳孔	217
+yan xi	研习	217
+chuang lian	窗帘	217
+luo xiao mei	罗小梅	217
+mei shu shi	美术史	217
+ji bei	脊背	217
+zi min dang	自民党	217
+ying lian bang	英联邦	217
+xing hui	行贿	217
+bei ru	被褥	217
+yue ye	越野	217
+jin tui	进退	217
+bi shi	鄙视	217
+suan ruan	酸软	217
+chang chang	长长	217
+chen ming xia	陈名夏	217
+nan tao	难逃	217
+kao long	靠拢	217
+mian ban	面板	217
+xu yu	须臾	217
+shang ban zu	上班族	216
+ge ren chong bai	个人崇拜	216
+wu guan	五官	216
+ren shi	人氏	216
+bao zhong	保重	216
+ke li	克里	216
+mian yi li	免疫力	216
+zhan bu	占卜	216
+shang bao zhen	商宝震	216
+shang tao	商讨	216
+ka mai long	喀麦隆	216
+ru qi	如期	216
+mei er	妹儿	216
+shi zu	始祖	216
+de dang	得当	216
+zen me zhe	怎么着	216
+cheng du shi	成都市	216
+reng diao	扔掉	216
+ji shu xing	技术性	216
+kun bang	捆绑	216
+wu zui	无罪	216
+ming huang huang	明晃晃	216
+zhu xian zhen	朱仙镇	216
+zhu qi yu	朱祁钰	216
+sha qi	杀气	216
+lin ken	林肯	216
+mao wen long	毛文龙	216
+chen jiang	沉降	216
+he tan	河滩	216
+fa du	法度	216
+hong liang	洪亮	216
+nong yan	浓烟	216
+hai ning	海宁	216
+you jie	游街	216
+hu zhou	湖州	216
+jiao er	焦耳	216
+jia ji	甲基	216
+nan er	男儿	216
+xue wei	穴位	216
+jian lve	简略	216
+suan ming	算命	216
+suo xie	缩写	216
+wang dui	网队	216
+mei guo dui	美国队	216
+hu kou	虎口	216
+zai you	载有	216
+gu hong ming	辜鸿铭	216
+ying chun	迎春	216
+yin xing ka	银行卡	216
+men lu	门路	216
+xiong zi	雄姿	216
+ji qun	集群	216
+gu jin biao	顾金标	216
+ma an	马鞍	216
+yi sheng bu keng	一声不吭	215
+shang chao	上朝	215
+bu er	不二	215
+liang jian	两间	215
+yi fen tian ying	义愤填膺	215
+er pin	二品	215
+di luo	低落	215
+jia hua	假话	215
+li yong lv	利用率	215
+dong zhe	动辄	215
+hui sheng	回声	215
+cheng li ren	城里人	215
+duo yi dian	多一点	215
+da xing tu mu	大兴土木	215
+da yi	大意	215
+she hua	奢华	215
+nv fang	女方	215
+song yuan qiao	宋远桥	215
+shan jiao xia	山脚下	215
+jian shu	建树	215
+yin xiang	引向	215
+de yu	德育	215
+ke shou	恪守	215
+xuan fu	悬浮	215
+can lie	惨烈	215
+zhan fan	战犯	215
+sao zhou	扫帚	215
+pai hang	排行	215
+she zheng	摄政	215
+lei tai	擂台	215
+fang da qi	放大器	215
+gu shi pian	故事片	215
+ri kou	日寇	215
+ji ling	机灵	215
+qiang zhi	枪支	215
+bai shu	柏树	215
+ke da	柯达	215
+fa men	法门	215
+luo ke xi de	洛克希德	215
+jin ba bu wei	津巴布韦	215
+liu li	流利	215
+qian hai	浅海	215
+xi liu	溪流	215
+mie huo	灭火	215
+shao cheng	烧成	215
+re zhong	热衷	215
+hou wang	猴王	215
+shu san	疏散	215
+qin gui	秦桧	215
+jing chang xing	经常性	215
+xiong huai	胸怀	215
+tuo ying er chu	脱颖而出	215
+zi ge	自个	215
+she qi	舍弃	215
+cang nei	舱内	215
+diao lai	调来	215
+xie ruo ping	谢若萍	215
+bai zhang	败仗	215
+jiao zhi	较之	215
+shu shuo	述说	215
+yu nan	遇难	215
+xian tan	闲谈	215
+fei dian	非典	215
+ling dao ceng	领导层	215
+huang pu jun xiao	黄埔军校	215
+qiu ci	龟兹	215
+liang wan	两碗	214
+wu wei	五位	214
+qin lv	亲率	214
+cong wei you guo	从未有过	214
+jia wei	价位	214
+ru ge	入阁	214
+bing shu	兵书	214
+chuang wei	创维	214
+dong wu	动武	214
+fei yi suo si	匪夷所思	214
+yuan chuang	原创	214
+ming mai	命脉	214
+guo jing	国境	214
+bei wang lu	备忘录	214
+wai zhuan	外传	214
+da zhong cheng shi	大中城市	214
+tian bao	天宝	214
+ding du	定都	214
+xiao gang pao	小钢炮	214
+gong qian	工钱	214
+nian zhang	年长	214
+dang jia	当家	214
+zheng fa	征伐	214
+zheng tao	征讨	214
+mu rong gong zi	慕容公子	214
+shou cang jia	收藏家	214
+wen lian	文联	214
+quan heng	权衡	214
+xun guo	殉国	214
+dian li ceng	电离层	214
+lve dai	略带	214
+bai li na	白丽娜	214
+jie mao	睫毛	214
+hao jin	耗尽	214
+zi wo pi ping	自我批评	214
+bo re	般若	214
+meng gu guo	蒙古国	214
+biao zheng	表征	214
+chu nu	触怒	214
+mou lve	谋略	214
+fei shi	费时	214
+yue ru	跃入	214
+bi ren	逼人	214
+wei qing hui	魏清慧	214
+shang ying	上映	213
+bu pei	不配	213
+yu fei	与非	213
+zhuan mai	专卖	213
+cong sheng	丛生	213
+liang mi	两米	213
+mai ru	买入	213
+jie gei	借给	213
+guang fu	光复	213
+gong guan	公馆	213
+xing zhi bo bo	兴致勃勃	213
+jian qiao	剑桥	213
+shuang shui cun	双水村	213
+fa bu ting	发布厅	213
+qu shi	取食	213
+ke hao	可好	213
+tai da	台大	213
+di xia shi	地下室	213
+ji zuo	基座	213
+da hui tang	大会堂	213
+da ba	大坝	213
+tou zi	头子	213
+chang e	嫦娥	213
+zi fu chuan	字符串	213
+gu dan	孤单	213
+xiao fan	小贩	213
+xiao yu	小鱼	213
+gui su	归宿	213
+nian nian bu wang	念念不忘	213
+da lao	打捞	213
+la ding wen	拉丁文	213
+pai qiu	排球	213
+bai she	摆设	213
+zhan duan	斩断	213
+wu wang	无望	213
+geng ju	更具	213
+he fan ying	核反应	213
+min quan	民权	213
+sha tu	沙土	213
+you dong	游动	213
+te shi	特使	213
+fan zui fen zi	犯罪分子	213
+xuan wu	玄武	213
+yong yu	用语	213
+dian chang	电厂	213
+huang chao	皇朝	213
+duan cu	短促	213
+li yue	礼乐	213
+di shi	第十	213
+zu zhi bu	组织部	213
+xi xi de	细细的	213
+lao gao	老高	213
+jiao ti	胶体	213
+neng ji	能级	213
+zi zhu	自助	213
+ku xin	苦心	213
+mo sang bi ke	莫桑比克	213
+xue po	血泊	213
+chen yi	衬衣	213
+cai feng	裁缝	213
+ying li	赢利	213
+hui ying	辉映	213
+na gen	那根	213
+chang zu	长足	213
+zha men	闸门	213
+lei ji	雷击	213
+yan mian	颜面	213
+feng yun	风韵	213
+yi cha na	一刹那	212
+shang fang	上访	212
+liang he	两河	212
+jiu tian	九天	212
+luan shi	乱石	212
+jin er ge	今儿个	212
+fang zhen	仿真	212
+di wei	低微	212
+xian lie	先烈	212
+guang shu	光束	212
+jia su du	加速度	212
+dong liang	动量	212
+hua mei	华美	212
+nan jiang	南疆	212
+xia ri	夏日	212
+tian xian	天仙	212
+xiao dian	小店	212
+jian dao	尖刀	212
+shan qiu	山丘	212
+kai chang	开场	212
+cheng gong lv	成功率	212
+quan ji	拳击	212
+zhang yin	掌印	212
+yan mai	掩埋	212
+jie xiao	揭晓	212
+san luan	散乱	212
+shi zhi jin ri	时至今日	212
+song shan	松山	212
+heng chong zhi zhuang	横冲直撞	212
+ge gong song de	歌功颂德	212
+fa ming	法名	212
+dong kai	洞开	212
+wu li hua xue	物理化学	212
+li zhi qi zhuang	理直气壮	212
+zu da shou	祖大寿	212
+shen ming	神明	212
+fei li	肥力	212
+zhi mi	致密	212
+mie shi	蔑视	212
+yao fan	要犯	212
+hao mai	豪迈	212
+zei ren	贼人	212
+che dui	车队	212
+liao xi	辽西	212
+jin guan	金冠	212
+rui li	锐利	212
+min xi	闽西	212
+chen yong fu	陈永福	212
+yu bei dui	预备队	212
+yin yan	饮宴	212
+xia ban ye	下半叶	211
+bu yan er yu	不言而喻	211
+zhong yang shu ji chu	中央书记处	211
+zhu gong	主攻	211
+yun ti	云梯	211
+jian pu	俭朴	211
+dao xiang	倒像	211
+dao teng	倒腾	211
+bing zhi	兵制	211
+leng qi	冷气	211
+xie yue guo	协约国	211
+qu she	取舍	211
+shou fa	受罚	211
+ke ni	可逆	211
+zhou san	周三	211
+za jia	咱家	211
+tang xuan zong	唐玄宗	211
+tou jin	头巾	211
+zi er	字儿	211
+feng cun	封存	211
+xiao qu	小觑	211
+jiu zhen	就诊	211
+ba sai luo na	巴塞罗那	211
+zhuang ke	庄客	211
+lian jie	廉洁	211
+qiang jian	强奸	211
+fang she	房舍	211
+shou shu	手书	211
+zhi shi	执事	211
+zhe hui	折回	211
+fu wei	抚慰	211
+bao ye	报业	211
+bao ying	报应	211
+tai shou	抬手	211
+jing jiu	敬酒	211
+ban dian	斑点	211
+xin jiu	新旧	211
+wu ji yu shi	无济于事	211
+gen xi	根系	211
+ge yao	歌谣	211
+shen lv ai	沈绿爱	211
+luo yang cheng	洛阳城	211
+yu ren	渔人	211
+re zhong yu	热衷于	211
+qiu men	球门	211
+liu lian	留恋	211
+bai li	百里	211
+sheng shi	盛世	211
+zhen zhi	真挚	211
+jin du	禁毒	211
+miao shi	藐视	211
+xue rou zhi qu	血肉之躯	211
+jie shi	街市	211
+ta jin	踏进	211
+duo guo	躲过	211
+tong zhi shu	通知书	211
+ba dao	霸道	211
+lu mang	鲁莽	211
+san bei	三杯	210
+zhong xiao xue sheng	中小学生	210
+shu jia	书架	210
+wu shi	五世	210
+fen pai	分派	210
+qian tai	前台	210
+bei po	北坡	210
+wei xian xing	危险性	210
+fan dao	反导	210
+ye er niang	叶二娘	210
+tong ming	同名	210
+ming li	名利	210
+han lei	含泪	210
+xuan wu	宣武	210
+wu yan	屋檐	210
+heng ding	恒定	210
+chong jing	憧憬	210
+wei hun	未婚	210
+ben zhou	本周	210
+rou qing	柔情	210
+ge dou	格斗	210
+jian yi	检疫	210
+jiang yin	江阴	210
+qing re	清热	210
+qing xiu	清秀	210
+zhao wa	爪哇	210
+mu cao	牧草	210
+kuang huan	狂欢	210
+du cai zhe	独裁者	210
+lv zhong	率众	210
+xian shi	现时	210
+bo li wei ya	玻利维亚	210
+liu chu	留出	210
+shui lv	税率	210
+zhan dian	站点	210
+guan zi	管子	210
+jue wu jin you	绝无仅有	210
+wei wu er	维吾尔	210
+jian pao	舰炮	210
+ku se	苦涩	210
+ying ge lan yin xing	英格兰银行	210
+dang yang	荡漾	210
+he ma	荷马	210
+xing zhi you xiao	行之有效	210
+xing zheng yuan	行政院	210
+xi xue	西学	210
+xi an shi bian	西安事变	210
+huang yan	谎言	210
+gui bai	跪拜	210
+tiao san	跳伞	210
+qing fang	轻纺	210
+zao chuan chang	造船厂	210
+bi feng	避风	210
+zhong bing	重病	210
+qin ding	钦定	210
+chang fa	长发	210
+chang sheng	长生	210
+lu cheng wei	陆承伟	210
+sui xin suo yu	随心所欲	210
+ci ji su	雌激素	210
+yi ru ji wang	一如既往	209
+yi zun	一尊	209
+yi chuang	一幢	209
+zhong yong	中用	209
+dan yang	丹阳	209
+ju zu qing zhong	举足轻重	209
+er hao	二号	209
+yu jin	于今	209
+jia li lve	伽利略	209
+e gong	俄共	209
+ting pai	停牌	209
+quan neng	全能	209
+guan xin bing	冠心病	209
+sheng zhi	升职	209
+e gua duo er	厄瓜多尔	209
+chu shi	厨师	209
+tong xin	同心	209
+chang xi	唱戏	209
+guo jun	国军	209
+di dai xing	地带性	209
+ji tuan	基团	209
+xue shi	学识	209
+shi wu	实务	209
+xiao shuo jia	小说家	209
+dao guo	岛国	209
+bang bang	帮帮	209
+fei shui	废水	209
+dan ke	弹壳	209
+de hei lan	德黑兰	209
+qing you	情由	209
+cheng xing	成形	209
+pin si	拼死	209
+jie tong	接通	209
+zhuan wen	撰文	209
+shou liu	收留	209
+jiao tou	教头	209
+pu bian xing	普遍性	209
+you shang	有伤	209
+ben gai	本该	209
+hui diao	毁掉	209
+qi kong	气孔	209
+shen xin	深信	209
+shen xian	深陷	209
+jue wei	爵位	209
+tian wei ji	甜味剂	209
+jia wan	甲烷	209
+jia ji	甲级	209
+shi liao	石料	209
+zhan wen	站稳	209
+hong zhong	红肿	209
+ji shi	纪事	209
+cha wan	茶碗	209
+cai lan zi	菜篮子	209
+cheng xin	诚心	209
+bei lei	贝类	209
+zhang mu	账目	209
+xuan ran da bo	轩然大波	209
+qing du	轻度	209
+da lai	达赖	209
+xuan ze xing	选择性	209
+fu dai	附带	209
+zhen chan	震颤	209
+yi mi	一米	208
+yi tong	一统	208
+shang wan	上万	208
+shang hai jiao tong da xue	上海交通大学	208
+liang ban	两半	208
+er shi ba nian	二十八年	208
+cong jin	从今	208
+tang huo	倘或	208
+pian jiang	偏将	208
+zuo wei	做为	208
+nong mu	农牧	208
+feng xi fan	冯锡范	208
+feng yang	凤阳	208
+ji chen	击沉	208
+fen shen	分神	208
+shi xue jia	史学家	208
+tong liao	同僚	208
+hou chang	后场	208
+rang rang	嚷嚷	208
+guo jie	国界	208
+bei yong	备用	208
+jia ye	家业	208
+jia jiao	家教	208
+feng dong	封冻	208
+chang ren	常任	208
+you chou	忧愁	208
+yu yan yu lie	愈演愈烈	208
+gan shou qi	感受器	208
+shou zu wu cuo	手足无措	208
+chuai mo	揣摩	208
+ri ri	日日	208
+ri er man	日耳曼	208
+ben qu	本区	208
+mei di	没底	208
+he yuan	河源	208
+xiao shou	消瘦	208
+qian tou	牵头	208
+du li guo jia	独立国家	208
+bing shi	病逝	208
+bai gu	白骨	208
+xing wu	省悟	208
+shi jie	石阶	208
+si xin	私心	208
+fan teng	翻腾	208
+zhong zhang	肿胀	208
+xiong jin	胸襟	208
+la yue	腊月	208
+zi zun xin	自尊心	208
+jie jia ri	节假日	208
+he ren long	贺人龙	208
+jin xie nian	近些年	208
+lian lei	连累	208
+pei fang	配方	208
+jiu quan	酒泉	208
+chen bao zhu	陈宝柱	208
+huo di	霍地	208
+ma sai	马赛	208
+gao pin	高频	208
+shang ge yue	上个月	207
+shang yue	上月	207
+zhu zheng	主政	207
+ru zhi	乳汁	207
+jun gang	军港	207
+gang ti	刚体	207
+jian qiao da xue	剑桥大学	207
+gong guo	功过	207
+die jia	叠加	207
+tong gui yu jin	同归于尽	207
+shan yi	善意	207
+di gong	地宫	207
+jiang xiang	奖项	207
+xiao cun	小村	207
+ying de	应得	207
+yin lu	引路	207
+tan she	弹射	207
+xin yan	心眼	207
+you xin chong chong	忧心忡忡	207
+jing dai	惊呆	207
+xi ju xing	戏剧性	207
+tou ying	投影	207
+da jian	搭建	207
+zhai jie	斋戒	207
+fu yao	服药	207
+ji hui zhu yi	机会主义	207
+ci wu	此物	207
+du la	毒辣	207
+qi po	气魄	207
+lei hua	泪花	207
+hai dian qu	海淀区	207
+shao si	烧死	207
+du yi wu er	独一无二	207
+yu nv xin jing	玉女心经	207
+zu shi ye	祖师爷	207
+rong mao	绒毛	207
+xiu se	羞涩	207
+cha lou	茶楼	207
+xi hai an	西海岸	207
+yi wen	译文	207
+shi zhi	试制	207
+gai chu	该处	207
+lun zi	轮子	207
+guo mu	过目	207
+jin hua lun	进化论	207
+xuan ze ti	选择题	207
+zheng xiao jing	郑晓京	207
+bi he	闭合	207
+lu xi rong	陆希荣	207
+fei sheng	飞升	207
+guan zhang	馆长	207
+shou ge	首个	207
+long gu	龙骨	207
+qi shi er	七十二	206
+zhang liang	丈量	206
+xiang xia ren	乡下人	206
+shu bao	书包	206
+er san shi	二三十	206
+jiao ji	交际	206
+gong zhi	供职	206
+fu chong	俯冲	206
+ke shi mi er	克什米尔	206
+jue ce zhe	决策者	206
+shi mi si	史密斯	206
+wu xian	吴县	206
+tan yan	坦言	206
+da jia ting	大家庭	206
+da chao	大潮	206
+wu mei	妩媚	206
+shou heng	守恒	206
+guan liao zhu yi	官僚主义	206
+xuan jiang hui	宣讲会	206
+fu li tang huang	富丽堂皇	206
+jian kang	建康	206
+qiang jia	强加	206
+wei chen	微臣	206
+xin li hua	心里话	206
+huan nan	患难	206
+chao jia	抄家	206
+chou cha	抽查	206
+sa ha la	撒哈拉	206
+zu zhang	族长	206
+nuan nuan de	暖暖的	206
+chao yang qu	朝阳区	206
+yang yang	样样	206
+mian bu	棉布	206
+zha you	榨油	206
+ci shi ci ke	此时此刻	206
+qing qi	氢气	206
+shui yin	水银	206
+chen wen	沉稳	206
+dan dan di	淡淡地	206
+zhang zhou	漳州	206
+bai se kong bu	白色恐怖	206
+lin suan yan	磷酸盐	206
+dao tian	稻田	206
+di zao	缔造	206
+lao po po	老婆婆	206
+fu mian	腹面	206
+wu dong	舞动	206
+ying chi	英尺	206
+huang wu	荒芜	206
+lai yin	莱茵	206
+lie kai	裂开	206
+jing shi	警示	206
+nuo yan	诺言	206
+tiao jin	跳进	206
+fu zheng	辅政	206
+guo wen	过问	206
+jiang you	酱油	206
+cai zhai	采摘	206
+zhu cheng	铸成	206
+chang nian	长年	206
+shan liang	闪亮	206
+yin du	阴毒	206
+long shan	龙山	206
+qi ling ba luo	七零八落	205
+xia shu	下述	205
+yi wu ren	义务人	205
+fu er jia he	伏尔加河	205
+nei ke	内科	205
+nong geng	农耕	205
+liang zhou	凉州	205
+hua lai shi	华莱士	205
+tang shi	唐诗	205
+sheng xian	圣贤	205
+ju liu	居留	205
+guang xi zhuang zu zi zhi qu	广西壮族自治区	205
+di xian	底线	205
+cai yun	彩云	205
+ying she	影射	205
+wei liang yuan su	微量元素	205
+zhang gui de	掌柜的	205
+lei gu	擂鼓	205
+xing tuan	星团	205
+ying zhao	映照	205
+gui zi	柜子	205
+shui rong ye	水溶液	205
+te shu xing	特殊性	205
+ji huan	疾患	205
+xuan yun	眩晕	205
+qiu shui	秋水	205
+di si juan	第四卷	205
+guan li yuan	管理员	205
+suo yin	索引	205
+ji lu pian	纪录片	205
+lao wai	老外	205
+zi qiang	自强	205
+wu ju	舞剧	205
+ying zhai	营寨	205
+xin jin	薪金	205
+xu ming	虚名	205
+luo ti	裸体	205
+jing bei	警备	205
+jiang yi	讲义	205
+nuo bei er	诺贝尔	205
+diao pei	调配	205
+mou shi	谋士	205
+shang xin	赏心	205
+gan wang	赶往	205
+jun wang	郡王	205
+zhong tou	钟头	205
+zhu bi	铸币	205
+yi ju cheng ming	一举成名	204
+yi die	一叠	204
+jiao shou	交手	204
+hui guan	会馆	204
+fo men	佛门	204
+chu hu yi liao	出乎意料	204
+chu dong	初冬	204
+hua cheng	化成	204
+yuan wei	原委	204
+zhou si	周四	204
+si jia	四家	204
+tu biao	图表	204
+kan ke	坎坷	204
+da bing	大兵	204
+wan yan ping	完颜萍	204
+shi shu	实数	204
+fu weng	富翁	204
+feng bi shi	封闭式	204
+chai yi	差役	204
+wei guang	微光	204
+xin xu	心绪	204
+you shang	忧伤	204
+nian zhu	念珠	204
+ji cong cong	急匆匆	204
+chai jie	拆解	204
+pai wai	排外	204
+sou suo yin qing	搜索引擎	204
+zhi jia	支架	204
+wu you	无忧	204
+ceng guo fan	曾国藩	204
+qiang pao	枪炮	204
+cha zhao	查找	204
+zhuo qian	桌前	204
+mei jia	每家	204
+yi qing	疫情	204
+gai de	盖德	204
+sheng jing	盛京	204
+zu ji	祖籍	204
+hong li	红利	204
+tai pan	胎盘	204
+luo hu	落户	204
+yi guan	衣冠	204
+fu zhong	负重	204
+qu gan	躯干	204
+jing tai	静态	204
+fei ma	飞马	204
+gao ling	高龄	204
+bu zuo sheng	不做声	203
+bu yue	不悦	203
+bu xiao	不消	203
+dong zheng jiao	东正教	203
+yue tuan	乐团	203
+er qi	二期	203
+ren ci	仁慈	203
+jie yi	介意	203
+yi teng bo wen	伊藤博文	203
+zuo bi	作弊	203
+ji dai	几代	203
+qian chang	前场	203
+gong ye	功业	203
+kan ce	勘测	203
+you ai	友爱	203
+fa xing liang	发行量	203
+kou kou sheng sheng	口口声声	203
+si zhi	四只	203
+yuan yuan de	圆圆的	203
+da zhou	大洲	203
+sun da sheng	孙大圣	203
+chong wu	宠物	203
+su zhu	宿主	203
+feng jue	封爵	203
+xiao bian	小便	203
+shao er	少儿	203
+kong dong	崆峒	203
+shi men	师门	203
+gan shi	干尸	203
+yin bao	引爆	203
+xing xing se se	形形色色	203
+de sheng men	德胜门	203
+ji man	挤满	203
+wen mang	文盲	203
+yue se	月色	203
+zhao xia	朝霞	203
+cang sang	沧桑	203
+xi yi ji	洗衣机	203
+qian se	浅色	203
+hu pan	湖畔	203
+yan xi	演戏	203
+man tian	漫天	203
+xun tao	熏陶	203
+te lu xi ai	特鲁西埃	203
+xia shuo	瞎说	203
+li tui xiu	离退休	203
+cheng wang	称王	203
+li zhi	立志	203
+chou duan	绸缎	203
+gu zi	股子	203
+dan da	胆大	203
+fei li	腓力	203
+su mu	苏木	203
+xue lei	血泪	203
+xing yi	行医	203
+hua tong	话筒	203
+ti sheng	蹄声	203
+shen chang	身长	203
+na ban	那般	203
+ling zhu	领主	203
+shi yan	饰演	203
+hei ya ya	黑压压	203
+xia wen	下文	202
+bu huang bu mang	不慌不忙	202
+liang san nian	两三年	202
+zhong xin	中信	202
+di ya	低压	202
+di wa	低洼	202
+jie qian	借钱	202
+yang fen	养分	202
+ran ran	冉冉	202
+bing dao	冰岛	202
+jian qu	减去	202
+cou jin	凑近	202
+ya qiang	压强	202
+diao qiao	吊桥	202
+ming mu	名目	202
+ji fu	基辅	202
+duo wei	多位	202
+da dao	大岛	202
+da hu zi	大胡子	202
+tian bian	天边	202
+shi shu	实属	202
+jia zhu	家主	202
+jiu ye lv	就业率	202
+nian shou ru	年收入	202
+ying kao	应考	202
+gan wu	感悟	202
+xi tai	戏台	202
+da fen	打分	202
+lu lve	掳掠	202
+sa shou	撒手	202
+jiao wei	教委	202
+ge diao	格调	202
+ge lu ji ya	格鲁吉亚	202
+qi si	气死	202
+shui hu	水壶	202
+fa shi	法师	202
+xi yi	洗衣	202
+pai xi	派系	202
+ye hua	液化	202
+qing jing	清净	202
+man fu	满腹	202
+huo shan kou	火山口	202
+bai fen bi	百分比	202
+pi xia	皮下	202
+kui jia	盔甲	202
+po huai xing	破坏性	202
+wen zhong	稳重	202
+di si jie	第四届	202
+bian zao	编造	202
+pei zhu	胚珠	202
+cha hu	茶壶	202
+yao wan	药丸	202
+meng gu yu	蒙古语	202
+xue xing	血性	202
+pao zi	袍子	202
+xi ban ya yu	西班牙语	202
+xun lian chang	训练场	202
+yu diao	语调	202
+guo ye	过夜	202
+tui huan	退还	202
+rui jian	锐减	202
+cuo zong fu za	错综复杂	202
+chang le	长乐	202
+tuo luo	陀螺	202
+han xin	韩信	202
+ju feng	飓风	202
+bing gan	饼干	202
+san duan	三端	201
+xia ding jue xin	下定决心	201
+zhuan guan	专管	201
+jiao huan jia zhi	交换价值	201
+qin shi	亲事	201
+cong jun	从军	201
+ni si wo huo	你死我活	201
+yuan bao	元宝	201
+gong an bu men	公安部门	201
+gong niu	公牛	201
+xing xiu	兴修	201
+jian yong	兼用	201
+qie he	切合	201
+shua xin	刷新	201
+bo shi	剥蚀	201
+shi san jie	十三届	201
+ge lun bu	哥伦布	201
+da ban ge	大半个	201
+jian xi	奸细	201
+xue tu	学徒	201
+bao ta	宝塔	201
+ke ti	客体	201
+wei jian xing	尉健行	201
+xiao kan	小看	201
+tu dao	屠刀	201
+zhuang zhou	庄周	201
+jian hang	建行	201
+kai mu ci	开幕词	201
+xin sheng	心声	201
+wen hua ju	文化局	201
+mei wan mei liao	没完没了	201
+he tao	河套	201
+hai gou	海沟	201
+miao mang	渺茫	201
+teng yi lei	滕一雷	201
+yan cong	烟囱	201
+qiu xing	球星	201
+dian jie	电解	201
+deng ji zai ce	登记在册	201
+shi jiang	石匠	201
+she hui guan xi	社会关系	201
+si jia	私家	201
+zhu gan	竹竿	201
+su bu xiang shi	素不相识	201
+mei jing	美景	201
+lao die	老爹	201
+ping shuo	评说	201
+zha pian	诈骗	201
+guo shang	过上	201
+bi yi	鄙夷	201
+zhong wan chou	钟万仇	201
+yin pai	银牌	201
+bao shou	饱受	201
+huang gua	黄瓜	201
+yi mo	一抹	200
+bu wei ren zhi	不为人知	200
+liang duan	两段	200
+sang ming	丧命	200
+biao ge	表格	191
+chang liang	常量	184
+wen dang	文档	181
+cai dan	菜单	169
+liu lan qi	浏览器	159
+zhe jiang da xue	浙江大学	157
+ren gong zhi neng	人工智能	151
+hou xuan	候选	127
+yu shi ju jin	与时俱进	120
+bei fen	备份	116
+wang luo an quan	网络安全	107
+biao dian	标点	106
+ci zu	词组	104
+zhu zuo quan	著作权	99
+shang chuan	上传	98
+an niu	按钮	98
+dao ru	导入	92
+ye mian	页面	92
+dan zi	单字	79
+jian rong xing	兼容性	71
+xiang mu guan li	项目管理	71
+kai yuan	开源	70
+chong qi	重启	68
+kai fa zhe	开发者	64
+jie ma	解码	62
+shu ju jie gou	数据结构	57
+ha er bin gong ye da xue	哈尔滨工业大学	52
+jiu cuo	纠错	48
+guang biao	光标	43
+ke hu duan	客户端	42
+dui zhan	堆栈	38
+bian yi cheng xu	编译程序	37
+li xian	离线	34
+yong hu jie mian	用户界面	28
+cheng xu she ji	程序设计	28
+xie zai	卸载	25
+wan an	晚安	24
+fan ti	繁体	20
+shu ru fa	输入法	19
+ce shi yong li	测试用例	14
+ji suan ji ke xue	计算机科学	13
+wu bi zi xing	五笔字型	10
+duo xian cheng	多线程	10
+yuan ma	源码	10
+jian ti zhong wen	简体中文	9
+fen ye	分页	7
+an zhuang cheng xu	安装程序	6
+kuai jie jian	快捷键	6
+shu ju bei fen	数据备份	6
+wu bi	五笔	5
+shang ping	上屏	3
+quan jiao	全角	3
+ban jiao	半角	3
+ce shi bao gao	测试报告	3
+ban ben kong zhi	版本控制	3
+yong hu shou ce	用户手册	3
+fan ti zhong wen	繁体中文	3
+zi dong geng xin	自动更新	3
+ci ku	词库	3
+shu ru shu chu	输入输出	3
+tui ge	退格	3
+cuo wu chu li	错误处理	3
+quan wen jian suo	全文检索	2
+shu ju hui fu	数据恢复	2
+zhong guo ke xue ji shu da xue	中国科学技术大学	1
+deng yi xia	等一下	1
+shei de	谁的	1

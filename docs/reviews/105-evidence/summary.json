@@ -1,0 +1,132 @@
+{
+  "baseline": {
+    "quality": {
+      "wubi/train": {
+        "samples": 292,
+        "reachable": 157,
+        "first_page": 157,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/validation": {
+        "samples": 69,
+        "reachable": 39,
+        "first_page": 39,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/holdout": {
+        "samples": 72,
+        "reachable": 15,
+        "first_page": 15,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/all": {
+        "samples": 433,
+        "reachable": 211,
+        "first_page": 211,
+        "mean_keys_reachable_only": 5
+      },
+      "pinyin/train": {
+        "samples": 292,
+        "reachable": 166,
+        "first_page": 166,
+        "mean_keys_reachable_only": 7.735
+      },
+      "pinyin/validation": {
+        "samples": 69,
+        "reachable": 42,
+        "first_page": 42,
+        "mean_keys_reachable_only": 7.619
+      },
+      "pinyin/holdout": {
+        "samples": 72,
+        "reachable": 19,
+        "first_page": 19,
+        "mean_keys_reachable_only": 7.684
+      },
+      "pinyin/all": {
+        "samples": 433,
+        "reachable": 227,
+        "first_page": 227,
+        "mean_keys_reachable_only": 7.709
+      }
+    },
+    "performance_medians": {
+      "load_ms": 46.703,
+      "loaded_process_rss_kib": 19904.0,
+      "keys": 7819.0,
+      "key_p50_ms": 0.003084,
+      "key_p95_ms": 0.114583,
+      "key_max_ms": 0.191542
+    }
+  },
+  "final": {
+    "quality": {
+      "wubi/train": {
+        "samples": 292,
+        "reachable": 252,
+        "first_page": 252,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/validation": {
+        "samples": 69,
+        "reachable": 48,
+        "first_page": 48,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/holdout": {
+        "samples": 72,
+        "reachable": 29,
+        "first_page": 29,
+        "mean_keys_reachable_only": 5
+      },
+      "wubi/all": {
+        "samples": 433,
+        "reachable": 329,
+        "first_page": 329,
+        "mean_keys_reachable_only": 5
+      },
+      "pinyin/train": {
+        "samples": 292,
+        "reachable": 255,
+        "first_page": 255,
+        "mean_keys_reachable_only": 8.576
+      },
+      "pinyin/validation": {
+        "samples": 69,
+        "reachable": 48,
+        "first_page": 48,
+        "mean_keys_reachable_only": 7.688
+      },
+      "pinyin/holdout": {
+        "samples": 72,
+        "reachable": 28,
+        "first_page": 28,
+        "mean_keys_reachable_only": 7.786
+      },
+      "pinyin/all": {
+        "samples": 433,
+        "reachable": 331,
+        "first_page": 331,
+        "mean_keys_reachable_only": 8.381
+      }
+    },
+    "performance_medians": {
+      "load_ms": 59.033,
+      "loaded_process_rss_kib": 28176.0,
+      "keys": 7819.0,
+      "key_p50_ms": 0.003292,
+      "key_p95_ms": 0.12325,
+      "key_max_ms": 0.192083
+    }
+  },
+  "identities": {
+    "data/input-quality.tsv": "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d",
+    "data/generated/wubi86-core.tsv": "511edd6237d47a83ed79237b0e9916cd65d8f926aadb747331c3f8d3f7a43561",
+    "data/generated/pinyin-core.tsv": "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3",
+    "crates/ime-cli/examples/input_quality.rs": "ea36158ed22d00d3443d661ac710058c3add984ef9097e49616fddf6372f11dd",
+    "crates/ime-core/src/lib.rs": "37af303ebc201c772072fa990b47550ef88ea18a49b92db1cffe53f2f62d5078",
+    "crates/ime-pinyin/src/table.rs": "b7d1f8a4f96f8e754d75ab55fa6e1f35eb6a68e9b65f83039c21df4b94c2210a",
+    "target/release/examples/input_quality": "b9b379132189c984b41a027daae5b3df34646c2ebe83967ad87475db09953980"
+  },
+  "environment": "arm64 / macOS 27.0.1 / Rust 1.98.1; final rerun 2026-10-21; no concurrent build"
+}
