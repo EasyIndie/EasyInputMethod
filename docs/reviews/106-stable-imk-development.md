@@ -18,6 +18,14 @@
 - 用新脚本重跑模式探针时，系统自动化预检在创建文档前以 `System Events -10827` 拒绝，故未发键、未切换输入源；TIS只读状态仍为ABC，开发输入模式实际启用，生产配置/词库未变。证据目录 `platforms/macos/build/installed-mode-current-134728/`。随后尝试既有`source-state select-owned`时，TIS返回-50；当前ABC、开发模式项enabled/selectable但父源disabled。未切换源；临时唯一文件未输入并已关闭清理。夹具修复尚无本机运行证据，模式/拼音/Esc/候选一致性仍待验。
 - 旧失败证据保留；下一步是先由用户在输入源菜单手动选中已启用的固定开发源；确认来源后再用 Computer Use 在唯一临时文档做人工输入验证，保持ABC可手动恢复。若要运行脚本探针，还需解决System Events `-10827`；不改TCC数据库、不绕过预检。
 
+## 2026-10-21 用户切换后的人工原生补验
+
+- 用户确认已切换开发源。在独有临时 TextEdit 文档通过 Computer Use 手工输入：`wq` 空格提交“你”；`nihao` 空格提交“你好”；重复 `nihao` 后 Esc 保持既有文本不变；退格删除末尾后重输并空格提交“你好”；`nihao` 按数字键 `1` 提交结果与空格提交相同。目标窗口截图未显示候选面板，故不能据此确认候选显示次序，也不能确认数字键提交与画面上指定候选逐项一致。
+- `alt+m` 连续三次后，隔离开发根配置回读依次为 mixed→wubi→pinyin→mixed，输入文本未变化；这是模式切换的实际 UI 行为证据。独有临时文档关闭时选择“复原更改”，原“未命名”窗口保持存在；只删除本轮创建的临时文件和目录。
+- TIS `source-state` 仍回读 `com.apple.keylayout.ABC`，与用户选择及实际热键行为不一致；不据此断言当前输入源，亦未再调用选源 API。开发包注册别名可执行 SHA 为 `be7deecf…78a68318`，匹配新包；本轮 HUD 宿主探针仍报告宿主未运行，故不把这些手工 UI 观察单独归因到已确认 PID。此前 PID 26819 加载该 SHA 的独立探针及 `wq→你` 证据仍有效。
+- 生产执行/config/词库 SHA 仍为 `535d546f…` / `3bc1117c…` / `74f76e92…`。机器记录见同目录 JSON 的 `manual_computer_use_followup`。夹具本身的脚本模式探针仍被 `System Events -10827` 阻断；本次手工操作不解除该自动化权限阻塞。
+- 当前补验将“基本五笔与拼音提交、取消/退格重输、模式热键循环”从未测提升为人工原生观察；候选面板可见性/排序、数字键与屏显候选一致性、重启后输入、应用兼容、A机、升级恢复以及完整RC验收仍未关闭。
+
 ## 签名包安装历史
 
 - PR [#56](https://github.com/EasyIndie/EasyInputMethod/pull/56)最新59ee533四门禁全通过（CI39526751254），合入main **b652cd6**。固定开发公证任务 [39527358251](https://github.com/EasyIndie/EasyInputMethod/actions/runs/39527358251)成功；[机器证据](106-stable-imk-evidence.json)绑定源码、zip/执行SHA、设备与未验项。

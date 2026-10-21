@@ -127,5 +127,36 @@
       "real_config_and_dictionary_unchanged": true,
       "temporary_unique_fixture": "closed without edits and removed"
     }
+  },
+  "manual_computer_use_followup": {
+    "date": "2026-10-21",
+    "package_executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+    "package_sha_matches_registered_alias": true,
+    "current_host_pid_independently_confirmed": false,
+    "hud_probe": "BLOCKED host not running",
+    "input_source_readback": "com.apple.keylayout.ABC (contradicts observed IME behavior; no further TIS selection attempted)",
+    "fixture": "unique /private/tmp/lampyris-manual-accept.eRPPQD/owned-fixture.txt; closed with Revert Changes and deleted; prior Untitled window retained",
+    "observations": {
+      "wubi_wq_space": "committed 你",
+      "pinyin_nihao_space": "committed 你好",
+      "repeat_nihao_escape": "no additional committed text observed",
+      "backspace_retype_nihao_space": "committed 你好",
+      "number_1_vs_space": "same committed text (你好)",
+      "mode_cycle": [
+        "mixed",
+        "wubi",
+        "pinyin",
+        "mixed"
+      ],
+      "mode_cycle_evidence": "alt+m pressed three times; isolated development config read after each; text unchanged",
+      "candidate_panel_visible": false,
+      "visual_candidate_order_verified": false,
+      "numeric_choice_matches_specific_visible_candidate_verified": false
+    },
+    "production_sha256_unchanged": {
+      "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+      "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+      "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+    }
   }
 }
