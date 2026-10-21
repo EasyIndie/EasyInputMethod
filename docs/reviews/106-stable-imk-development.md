@@ -15,8 +15,8 @@
 
 - 复核发现共享 `owned-textedit.applescript` 在打开唯一临时文件前先执行 `make new document`。TextEdit 可能复用已有空白窗口，导致“新自有空白窗口”条件无法成立；同类历史问题在报告024中通过直接打开唯一文件解决。
 - 按 ADR-091/092，将创建步骤改为直接打开 0600 唯一临时文件，继续验证唯一文档名、完整文件路径、可见窗口唯一性和窗口ID不属于原有集合；没有放宽所有权守卫。`osacompile`通过，`make verify`全绿。
-- 用新脚本重跑模式探针时，系统自动化预检在创建文档前以 `System Events -10827` 拒绝，故未发键、未切换输入源；TIS只读状态仍为ABC，开发输入模式实际启用，生产配置/词库未变。证据目录 `platforms/macos/build/installed-mode-current-134728/`。因此夹具修复尚无本机运行证据，模式/拼音/Esc/候选一致性仍待验。
-- 旧失败证据保留；下一步是在 macOS“隐私与安全性→自动化”允许本验收执行器控制 System Events 后，只运行一次既有模式探针。若权限不可授予，则保持BLOCKED，不改TCC数据库、不绕过预检。
+- 用新脚本重跑模式探针时，系统自动化预检在创建文档前以 `System Events -10827` 拒绝，故未发键、未切换输入源；TIS只读状态仍为ABC，开发输入模式实际启用，生产配置/词库未变。证据目录 `platforms/macos/build/installed-mode-current-134728/`。随后尝试既有`source-state select-owned`时，TIS返回-50；当前ABC、开发模式项enabled/selectable但父源disabled。未切换源；临时唯一文件未输入并已关闭清理。夹具修复尚无本机运行证据，模式/拼音/Esc/候选一致性仍待验。
+- 旧失败证据保留；下一步是先由用户在输入源菜单手动选中已启用的固定开发源；确认来源后再用 Computer Use 在唯一临时文档做人工输入验证，保持ABC可手动恢复。若要运行脚本探针，还需解决System Events `-10827`；不改TCC数据库、不绕过预检。
 
 ## 签名包安装历史
 

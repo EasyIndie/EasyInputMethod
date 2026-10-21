@@ -21,8 +21,8 @@
 ## 2026-10-21 共享 TextEdit 夹具修正（未完成原生复验）
 
 - 将 `owned-textedit.applescript` 创建路径改为直接打开唯一0600临时文件，沿用文档名、规范化路径、可见窗口唯一性和初始窗口ID集合校验；不再先 `make new document`，避免TextEdit复用既有空白窗口。符合ADR-091/092，不放宽所有权契约。
-- `osacompile`及`make verify`通过。当前包模式探针在预检阶段遭系统拒绝 `System Events` AppleEvent（`-10827`），未创建测试窗口、未发键。机器证据 `platforms/macos/build/installed-mode-current-134728/`；实际源/启用集合、生产数据SHA保持。
-- 待系统自动化权限可用后，对当前新载荷只重试一次 `--scenario mode`；成功后再按报告106顺序补拼音/Esc及显示/数字提交一致性。权限不允许时保持BLOCKED，不直接改TCC或跳过预检。
+- `osacompile`及`make verify`通过。当前包模式探针在预检阶段遭系统拒绝 `System Events` AppleEvent（`-10827`），未创建测试窗口、未发键。机器证据 `platforms/macos/build/installed-mode-current-134728/`；当前ABC、开发模式项enabled/selectable但父源disabled；`source-state select-owned`返回TIS -50，未改变来源。生产数据SHA保持。唯一临时文件未输入、已关闭删除。
+- 下一步请用户从输入源菜单手动选中固定开发源，再在唯一临时文档用Computer Use作人工输入验证；运行自动脚本仍受System Events -10827阻断。不得绕过检查或直接改TCC；选源失败则保持BLOCKED。
 
 ## 2026-10-11 推进记录
 
