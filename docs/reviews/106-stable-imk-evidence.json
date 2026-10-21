@@ -14,6 +14,43 @@
   "current": "com.apple.keylayout.ABC",
   "development_source_actually_enabled": true,
   "different_payload_no_logout_client_input": "NOT_RUN",
+  "post_merge_replacement": {
+    "merge_commit": "288c750e01db3d68c1284a754ae8a665ce1e6f92",
+    "pr": "https://github.com/EasyIndie/EasyInputMethod/pull/58",
+    "pr_head_ci": {
+      "check": "SUCCESS",
+      "dco": "SUCCESS",
+      "fuzz": "SUCCESS",
+      "macos": "SUCCESS"
+    },
+    "notarization_run": "https://github.com/EasyIndie/EasyInputMethod/actions/runs/39532557520",
+    "notarization_result": "SUCCESS",
+    "architecture": "arm64",
+    "zip_sha256": "daa077a4e9c1de1abf5333e3cb5b1d58b7efd2a5d1ec4d02f09a73275f395a0f",
+    "executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+    "installation_record": "~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-7eurs9cz/installation.json",
+    "previous_package_retained": true,
+    "source_and_enabled_set_unchanged": true,
+    "current_after": "com.apple.keylayout.ABC",
+    "native_input": {
+      "status": "PASS",
+      "result": "platforms/macos/build/installed-textedit-uy16l3pt/result.json",
+      "detail": "On the new executable, owned TextEdit probe verified wq marked range 1,2, space committed 你, marked range cleared, and original input source/enabled set restored. Production config/dictionary hashes unchanged.",
+      "computer_use": "TextEdit owned window observed; existing unnamed window remained unchanged",
+      "host_pid": 26819,
+      "host_executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+      "new_executable_process_confirmed": true,
+      "earlier_blocked_attempts": [
+        "platforms/macos/build/installed-textedit-vbmg41p1/result.json: TextEdit AppleEvent timed out while creating the owned document; no keys sent; state restored",
+        "platforms/macos/build/installed-textedit-a10mpikf/result.json: wrong helper interface rejected before source selection"
+      ]
+    },
+    "mode_probe": {
+      "status": "BLOCKED",
+      "result": "platforms/macos/build/installed-mode-fpvhla9z/result.json",
+      "detail": "TextEdit could not provide a uniquely identifiable new window (BLOCKED 未取得自有空白窗口); no keys sent; original source/enabled set and production data restored. No mode-switch conclusion."
+    }
+  },
   "production_sha256": {
     "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
     "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
