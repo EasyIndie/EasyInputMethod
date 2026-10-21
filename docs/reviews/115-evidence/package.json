@@ -77,7 +77,9 @@
   "all_data_sha_unchanged": true,
   "checkpoint": {
     "current_source": "com.apple.keylayout.ABC",
-    "native_performance": "PENDING",
-    "note": "等待用户切回开发输入源；尚未发键，不继承旧候选结果。"
+    "native_input": "用户物理wq及独立夹具18词提交通过",
+    "native_performance": "150暖态样本已采，产品全场景门禁未关闭",
+    "trace_disabled": true,
+    "evidence": "summary.json, cleanup.json"
   }
 }
