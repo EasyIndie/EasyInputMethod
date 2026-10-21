@@ -34,6 +34,7 @@
 
 - 夹具探针此前被System Events -10827挡在建窗前；本轮只读复核也发现`NSRunningApplication`宿主枚举与lsof路径持有不一致、ps受限。Computer Use曾在临时TextEdit文稿观察到wq+空格提交“你”；已清空并删除该文稿，确认回到原“未命名”文稿。候选面板仍无独立窗口证据；生产SHA与源选择未改。
 - ADR-231候选导航已在新源码实现并完成本地验证；开发预览可构建，但没有新签名包/同SHA实机证据。离线套件 `test-tools-presentation.py` 私有剪贴板断言仍失败；不计完整离线套件通过。
+- Computer Use启动独立预览超时，应用清单回读为运行中但AX返回`-10005`；未发键，没有可视交互结果。不要用shell/AppleScript替代UI自动化；后续用户可直接在`make macos-dev`预览确认，或解决CUA绑定后再测。
 - 候选可见性仍无新的产品结论；报告106上一轮手工输入观察保留但不扩展为排序PASS。工作流旧“每次换包注销”说明已核实过期，现更新为固定开发源/最终RC分层，待本轮验证。
 - 首次新载荷TextEdit AppleEvent超时和后续模式窗口识别失败均在发键前停止并恢复ABC/集合；不得把未运行场景算PASS，也不得关闭身份不明窗口。
 
@@ -62,7 +63,7 @@
 
 
 - 2026-10-21 / Codex（Luna）：复读TIS见ABC、父源disabled/模式enabled；lsof见开发包可执行路径由PID26819持有，但NSRunningApplication窗口探针不认bundle、ps受限。候选探针与HUD/外观/第二屏耦合。CUA在临时文稿观察wq+空格提交“你”，随后清空删除并确认原文稿仍在；无候选窗证据。报告/任务卡补充，工作流改进已推送，补充文档待verify/提交。
-- 2026-10-21 / Codex（Luna）：ADR-231实现组合态↑↓浏览当前页候选、空格确认并保持数字/鼠标直选；定向候选测试、warnings-as-errors预览构建、controller集成正常权限复跑及make verify通过。macos-offline-tests仅test-tools-presentation私有剪贴板失败；新签名候选未装机，原生IMK结果待验。
+- 2026-10-21 / Codex（Luna）：ADR-231实现组合态↑↓浏览当前页候选、空格确认并保持数字/鼠标直选；定向候选测试、warnings-as-errors预览构建、controller集成正常权限复跑及make verify通过。macos-offline-tests仅test-tools-presentation私有剪贴板失败；CUA预览AX超时且未发键；新签名候选未装机，原生IMK结果待验。
 - 2026-10-21 / Codex（Luna）：用户切换后在唯一临时TextEdit文档手验wq/nihao、Esc、退格重输、数字1与空格提交结果相同、alt+m三模式循环；未见候选面板，PID本轮不可确认。TIS仍回读ABC；临时文档复原关闭并删除，原未命名文档保留、生产SHA不变。报告106/任务卡已更新，待verify和提交。
 
 - 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止；source-state选源又因TIS `-50`失败，ABC未变。唯一临时文件已关闭删除、生产SHA不变；待用户手动选开发源后人工UI验收，报告106。
