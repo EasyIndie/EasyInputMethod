@@ -171,8 +171,11 @@ window.layout(at: NSRect(x: 20, y: 20, width: 2, height: 20), within: area)
 let stableAction = window.learningActionForTesting
 var selectionCalls = 0
 window.onSelect = { _ in selectionCalls += 1 }
+let collapsedLearningHeight = window.frame.height
 window.toggleLearningDetailsForTesting()
 require(window.learningActionForTesting === stableAction, "summary AX identity retained")
+require(window.frame.height > collapsedLearningHeight && area.contains(window.frame),
+        "disclosure immediately reflows at unchanged screen size")
 window.scrollLearningForTesting(45)
 let origin = window.learningScrollOriginForTesting
 window.toggleLearningCharacterForTesting(5)

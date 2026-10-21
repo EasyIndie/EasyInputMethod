@@ -1,0 +1,91 @@
+{
+  "source_commit": "a3853aa234422e1fc98c5d94596566dab87a284c",
+  "pid": 16934,
+  "executable_sha256": "39049c79c71acc1a1cc8485c22c37875f91f3cccde36a3653c24ae68fb69e0b7",
+  "status": "首轮完成；第二轮失焦停止，未重试",
+  "quantile": "nearest rank",
+  "scope": "TextEdit/mixed首轮6组，按键feed至客户端/候选更新返回，不含IMK调度/合成",
+  "cohort_bytes": {
+    "start": 2160,
+    "end": 14625
+  },
+  "cohort_sha256": "898114d05d95b4d483d63ed5b6869cdb820ce76c5897b3fa2e7293d047874251",
+  "all": {
+    "engineUs": {
+      "n": 50,
+      "p50_ms": 0.128,
+      "p95_ms": 1.097292,
+      "max_ms": 2.178125
+    },
+    "totalUs": {
+      "n": 50,
+      "p50_ms": 7.463917,
+      "p95_ms": 13.779167,
+      "max_ms": 28.408375
+    }
+  },
+  "phases": {
+    "candidateDataUs": {
+      "n": 44,
+      "p50_ms": 0.002334,
+      "p95_ms": 0.006875,
+      "max_ms": 0.009375
+    },
+    "caretUs": {
+      "n": 42,
+      "p50_ms": 0.933917,
+      "p95_ms": 1.151458,
+      "max_ms": 1.561375
+    },
+    "commitUs": {
+      "n": 6,
+      "p50_ms": 5.513542,
+      "p95_ms": 6.964917000000001,
+      "max_ms": 6.964917000000001
+    },
+    "contentUs": {
+      "n": 42,
+      "p50_ms": 2.707084,
+      "p95_ms": 7.263083,
+      "max_ms": 12.304625
+    },
+    "preeditUs": {
+      "n": 44,
+      "p50_ms": 2.286209,
+      "p95_ms": 3.036458,
+      "max_ms": 4.919334
+    },
+    "statusUs": {
+      "n": 42,
+      "p50_ms": 0.006125,
+      "p95_ms": 0.012625,
+      "max_ms": 4.0754589999999995
+    },
+    "windowUs": {
+      "n": 42,
+      "p50_ms": 1.510667,
+      "p95_ms": 3.109917,
+      "max_ms": 4.7255
+    }
+  },
+  "at_or_above_16ms": 1,
+  "committed_text": {
+    "wq": "你",
+    "nihao": "你好",
+    "xi'an": "西安",
+    "shurufa": "输入法",
+    "huiguiceshi": "回归测试",
+    "rengongzhineng": "人工智能"
+  },
+  "rss_kib": {
+    "rss-start-kib": 33056,
+    "rss-round-1-kib": 45600
+  },
+  "precohort": {
+    "rows": 9,
+    "max_total_ms": 32.038667000000004
+  },
+  "remainder_rows": 12,
+  "limitation": "轮次不足且环境/首次状态不同，不作为115受控前后对照，不关闭门禁。",
+  "after_stop_unscoped_rows": 0
+}
