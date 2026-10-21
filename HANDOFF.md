@@ -32,7 +32,7 @@
 
 ## 3. 未决
 
-- 本轮按ADR-091/092修复共享TextEdit夹具，`osacompile`与`make verify`通过；模式探针被System Events自动化权限-10827挡在建窗前，未发键。source-state为ABC/开发源已启用，生产数据SHA不变；原生复验及拼音/Esc、候选一致性仍待。
+- 本轮按ADR-091/092修复共享TextEdit夹具，`osacompile`与`make verify`通过；模式探针被System Events -10827挡在建窗前；随后source-state select-owned返回TIS -50（父源disabled、开发模式enabled/selectable），当前ABC未变。临时文件已关闭删除，生产SHA不变；原生输入及拼音/Esc、候选一致性仍待。
 - 首次新载荷TextEdit AppleEvent超时和后续模式窗口识别失败均在发键前停止并恢复ABC/集合；不得把未运行场景算PASS，也不得关闭身份不明窗口。
 
 - PR #54的check/DCO/fuzz/macos全部通过（CI39519832333）；签名公证候选3728dfc已核；B新私有根见105-evidence/isolated-target.json。105旧隔离安装副本已按用户要求归档；正式zip保留。其原生/RC结果不继承固定开发源结果。
@@ -43,7 +43,7 @@
 ## 4. 下一步（断点）
 
 0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb已启用，当前ABC；不要再要求用户添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
-1. 新包`288c750` SHA `be7deecf…78a68318`已安装；历史PID26819加载确认，基本`wq→你`通过，证据`installed-textedit-uy16l3pt/`。共享夹具现直接打开唯一文件；待自动化权限可用后只运行一次模式探针，再测拼音/Esc和数字提交一致性，不绕过预检。
+1. 新包`288c750` SHA `be7deecf…78a68318`已安装；历史PID26819加载确认，基本`wq→你`通过，证据`installed-textedit-uy16l3pt/`。共享夹具现直接打开唯一文件；请用户从输入源菜单手动选择固定开发源；随后在唯一临时文档用Computer Use人工验证，归档清理并恢复ABC。脚本自动化仍受System Events -10827阻断；不绕过预检。
 2. 若需要回退，以previous.app调用`python3 scripts/macos-imk-dev.py install --app <previous.app> --stop-host`；验证恢复后再继续。正式RC验收与开发身份结果分开安排。
 
 3. 核心体验与安装升级、宿主16ms/30MB、兼容及独立复核完成后才锁RC开始五日。词库后续另选合规领域词，不把72项保留集补入后仍称其独立保留。
@@ -58,7 +58,7 @@
 
 ## 9. 会话日志
 
-- 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止，未发键；source-state仍ABC/开发源启用、生产SHA不变。原生复验待权限可用；报告106。
+- 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止；source-state选源又因TIS `-50`失败，ABC未变。唯一临时文件已关闭删除、生产SHA不变；待用户手动选开发源后人工UI验收，报告106。
 
 - 2026-10-21 / Codex（Luna）：PR #58合入288c750并公证；新包免注销替换后PID26819/SHA已确认，TextEdit `wq→你`/marked/恢复通过。模式循环探针未取得唯一自有窗口，发键前BLOCKED并恢复ABC；生产数据SHA不变。旧包保留；证据106。
 

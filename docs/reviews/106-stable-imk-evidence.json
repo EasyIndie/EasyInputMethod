@@ -115,6 +115,17 @@
       "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
       "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
     },
-    "native_fixture_fix_verified": false
+    "native_fixture_fix_verified": false,
+    "source_selection_followup": {
+      "result": "BLOCKED; no input source changed",
+      "helper": "source-state select-owned against the fixed development root",
+      "tis_status": -50,
+      "current": "com.apple.keylayout.ABC",
+      "development_parent_enabled": false,
+      "development_mode_enabled": true,
+      "development_mode_select_capable": true,
+      "real_config_and_dictionary_unchanged": true,
+      "temporary_unique_fixture": "closed without edits and removed"
+    }
   }
 }
