@@ -12,11 +12,55 @@
   "signed_same_payload_install_replace_rollback": true,
   "actual_enabled_set_unchanged": true,
   "current": "com.apple.keylayout.ABC",
-  "development_source_actually_enabled": false,
+  "development_source_actually_enabled": true,
   "different_payload_no_logout_client_input": "NOT_RUN",
   "production_sha256": {
     "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
     "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
     "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "post_login": {
+    "discovery": "user added; actual enabled parent and mode confirmed",
+    "normal_textedit": {
+      "passed": true,
+      "status": 0,
+      "sourceAndEnabledRestored": true,
+      "realDataUnchanged": true,
+      "error": null,
+      "markedRangeVerified": true,
+      "markedRangeCleared": true,
+      "scenario": "normal",
+      "prefixVerified": false,
+      "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance"
+    },
+    "normal_evidence": "platforms/macos/build/installed-textedit-ol5y0d69",
+    "failure_textedit": {
+      "passed": false,
+      "status": 99,
+      "sourceAndEnabledRestored": true,
+      "realDataUnchanged": true,
+      "error": "单文档探针退出码99",
+      "markedRangeVerified": false,
+      "markedRangeCleared": false,
+      "scenario": "failure",
+      "prefixVerified": false,
+      "scope": "isolated TextEdit prefix recovery or basic commit only; not final product acceptance"
+    },
+    "failure_evidence": "platforms/macos/build/installed-textedit-unapdwo8",
+    "actual_enabled_set_restored": true
+  },
+  "old_isolated_retirement": {
+    "identity": "cn.jokerhub.inputmethod.LampyrisIMKTest.dce4ae25-3705-48f5-aa29-79bc321863fe",
+    "archive": "/Users/joker/Documents/EasyInputMethod/packaging/out/retired-imk-dce4ae25-20261021/LampyrisIMKTest-dce4ae25-3705-48f5-aa29-79bc321863fe.app",
+    "tree_sha256": "97724a625561b1d05a38562e988b8e89e3a8a41bed741a4313f51990b643d77b",
+    "file_count": 16,
+    "unregister": {
+      "exit": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    "actual_source_set_unchanged": true,
+    "old_temp_root_exists": false,
+    "reversible": true
   }
 }

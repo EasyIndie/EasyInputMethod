@@ -2,7 +2,15 @@
 
 日期：2026-10-21。关联 IT-01、ADR-230；产品RC仍为3728dfc，本报告不是新RC验收。
 
-## 当前状态（签名包安装后，以本节为准）
+## 当前状态（重新登录及旧包清理后，以本节为准）
+
+- 用户重新登录后已添加固定开发源；B本机实际列表确认父源及default模式均启用。开始/结束当前源均ABC；私有长期根跨登录保留，固定包执行SHA仍cda17638…，源码b652cd6。
+- 复用现有逐动作守卫的自有TextEdit协议，`wq`预编辑范围、空格提交“你”、预编辑清除及原源/完整集合恢复通过；真实生产配置/词库未变。证据 `platforms/macos/build/installed-textedit-ol5y0d69/result.json`。
+- failure场景在“未取得自有空白窗口”守卫停止，未发键，prefix/marked均未验证；退出99，源集合及真实数据恢复。证据 `installed-textedit-unapdwo8/result.json`及driver-stderr.txt。未继续INT/TERM/拼音/Esc，不作输入法缺陷结论，不计通过。
+- 用户要求清理旧隔离包后，精确核对dce4ae25身份/执行SHA45c3b627…/严格签名、实际未启用、无持有进程；LaunchServices撤销登记exit0，再可恢复归档到 `packaging/out/retired-imk-dce4ae25-20261021/`。16文件树摘要97724a62…，移动前后一致、签名保持；旧临时根已在此前登录时清理。没有删除生产/固定开发包或数据，实际启用集合未变。
+- [机器证据](106-stable-imk-evidence.json)已同步。不同执行SHA同身份免注销更新仍NOT_RUN；本轮组合命令中的PR合并/CI签名构建被自动审批以授权范围为由拒绝，已剔除这两项，仅执行获准的可恢复清理及现有包验收。后续合并/构建需用户明确授权，且仍须四门禁全绿。
+
+## 签名包安装历史
 
 - PR [#56](https://github.com/EasyIndie/EasyInputMethod/pull/56)最新59ee533四门禁全通过（CI39526751254），合入main **b652cd6**。固定开发公证任务 [39527358251](https://github.com/EasyIndie/EasyInputMethod/actions/runs/39527358251)成功；[机器证据](106-stable-imk-evidence.json)绑定源码、zip/执行SHA、设备与未验项。
 - B已安装 `~/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app`，系统目录枚举的实际名称为 **萤火虫开发 d4fcecfb**。严格签名、项目Developer ID、Gatekeeper、公证票据、源码绑定和四份词表逐字节核验通过；签名包直接normal探针exit0。
@@ -10,6 +18,12 @@
 - 当前ABC，实际启用集合无固定开发源，未主动注册/启用/切源或向客户端发键。全注册目录里的default.enabled=true仍不是实际启用证明；实际列表用dev-state.swift的includeAllInstalled=false。
 - 私有测试词已经FFI删除，私有mode恢复mixed；生产执行/config/词库三SHA仍与105一致，生产宿主未运行。未改旧105候选。
 - **下一步**：用户在系统设置添加“萤火虫开发 d4fcecfb”（若“＋”找不到，保存工作后手动注销再找）。确认实际启用后先做自有窗口输入，再构建同根、不同执行SHA包验证免移除/添加/注销更新及真实输入；A机另初始化其独有长期根。调试附加与正式RC门禁仍待。
+
+## 首次添加界面实查（后续补验）
+
+用户报告找不到后，以Computer Use打开系统设置→键盘→文字输入→编辑→添加。简体中文右侧及搜索“萤火虫”均只显示正式“萤火虫”，没有“萤火虫开发 d4fcecfb”。未点击添加/移除，取消搜索对话框并返回键盘面板，设置未变。
+
+同轮严格签名、Gatekeeper Notarized Developer ID及stapler再次通过；执行SHA仍cda17638…，TIS全目录仍枚举正确开发名称/身份，实际启用列表无开发源、当前ABC；真实config3bc1117c…和词库74f76e92…未变。只证明添加界面尚未发现，不把目录default.enabled=true当启用；也不能唯一归因具体缓存组件。下一步保存工作后手动注销重登，复查同一已装身份，不重新生成UUID、不清系统缓存。首次发现仍BLOCKED，后续同身份免注销更新未开始。
 
 ## 官方依据与边界
 
