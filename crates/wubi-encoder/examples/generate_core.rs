@@ -4,7 +4,8 @@
 //! 裁剪规则（见文件头注释，也写入报告）：
 //!   - 单字：`wubi86-single.tsv` **全量保留**（约 313 KB）；
 //!   - 词组：按 jieba 真实词频（ADR-013）**全局降序**，取前
-//!     [`CORE_PHRASE_LIMIT`] 条，加 D15 训练词（等权按 code、text 升序）。
+//!     [`CORE_PHRASE_LIMIT`] 条，加 D15 训练词及 D16 自编组合词；
+//!     新组合由现有编码器生成，权重 1，不改变已有词频（等权按 code、text 升序）。
 //!
 //! 输入：
 //!   - 单字码表：`data/generated/wubi86-single.tsv`（T-M1-05，`code\t字\tweight`）；
@@ -79,20 +80,23 @@ fn main() -> Result<(), Box<dyn Error>> {
         .map_err(|e| format!("读取词组码表失败（{}）：{e}", phrases_path.display()))?;
 
     let singles = parse_rows(&single_text, "单字码表")?;
-    let phrases = parse_rows(&phrases_text, "词组码表")?;
+    let mut phrases = parse_rows(&phrases_text, "词组码表")?;
     if singles.is_empty() {
         return Err("单字码表为空".into());
     }
 
+    let domain = fs::read_to_string(root.join("data/domain-vocabulary.tsv"))?;
+    let mut selected = supplement_phrases(&mut phrases, &singles, &domain)?;
     let coverage = fs::read_to_string(root.join("data/input-quality.tsv"))?;
-    let selected: std::collections::BTreeSet<&str> = coverage
-        .lines()
-        .filter(|line| !line.starts_with('#'))
-        .filter_map(|line| {
-            let fields: Vec<_> = line.split('\t').collect();
-            (fields.len() == 3 && fields[1] == "train").then(|| fields[2])
-        })
-        .collect();
+    selected.extend(
+        coverage
+            .lines()
+            .filter(|line| !line.starts_with('#'))
+            .filter_map(|line| {
+                let fields: Vec<_> = line.split('\t').collect();
+                (fields.len() == 3 && fields[1] == "train").then(|| fields[2].to_string())
+            }),
+    );
     let kept_phrases = top_phrases(&phrases, CORE_PHRASE_LIMIT, &selected);
     verify_required(&singles, &kept_phrases)?;
 
@@ -155,7 +159,7 @@ fn parse_rows(input: &str, label: &str) -> Result<Vec<Row>, Box<dyn Error>> {
 fn top_phrases(
     phrases: &[Row],
     limit: usize,
-    selected: &std::collections::BTreeSet<&str>,
+    selected: &std::collections::BTreeSet<String>,
 ) -> Vec<Row> {
     let mut sorted: Vec<&Row> = phrases.iter().collect();
     sorted.sort_by(|a, b| {
@@ -174,6 +178,53 @@ fn top_phrases(
             weight: r.weight,
         })
         .collect()
+}
+
+/// Add explicitly registered combinations without changing existing frequencies.
+fn supplement_phrases(
+    phrases: &mut Vec<Row>,
+    singles: &[Row],
+    source: &str,
+) -> Result<std::collections::BTreeSet<String>, Box<dyn Error>> {
+    let codes: std::collections::BTreeMap<&str, &str> = singles
+        .iter()
+        .map(|row| (row.text.as_str(), row.code.as_str()))
+        .collect();
+    let existing: std::collections::BTreeSet<String> =
+        phrases.iter().map(|row| row.text.clone()).collect();
+    let mut selected = std::collections::BTreeSet::new();
+    for (index, line) in source
+        .lines()
+        .enumerate()
+        .filter(|(_, line)| !line.starts_with('#') && !line.is_empty())
+    {
+        let fields: Vec<_> = line.split('\t').collect();
+        if fields.len() != 3
+            || fields[1].chars().count() < 2
+            || fields[1].chars().count() != fields[2].split_whitespace().count()
+            || !selected.insert(fields[1].to_string())
+        {
+            return Err(format!("D16第{}行格式、字音对齐或重复词错误", index + 1).into());
+        }
+        let character_codes = fields[1]
+            .chars()
+            .map(|ch| {
+                codes
+                    .get(ch.to_string().as_str())
+                    .copied()
+                    .ok_or_else(|| format!("D16词{}的字{ch}缺少单字全码", fields[1]))
+            })
+            .collect::<Result<Vec<_>, _>>()?;
+        let code = wubi_encoder::encode_phrase(&character_codes)?;
+        if !existing.contains(fields[1]) {
+            phrases.push(Row {
+                code,
+                text: fields[1].to_string(),
+                weight: 1,
+            });
+        }
+    }
+    Ok(selected)
 }
 
 /// 断言验收样本在核心表中；码不一致或缺失则报错。
@@ -226,11 +277,11 @@ fn render_core(singles: &[Row], phrases: &[Row]) -> String {
     );
     let _ = writeln!(
         out,
-        "# 裁剪规则：单字全量保留；词组按 jieba 词频全局降序取前 {CORE_PHRASE_LIMIT} 条，加D15训练词。"
+        "# 裁剪规则：单字全量保留；前 {CORE_PHRASE_LIMIT} 基础词组+D15训练词+D16组合词；已有频次不变，新组合权重1。"
     );
     let _ = writeln!(
         out,
-        "# 单字来源：WindInput wubi86_chaizi.txt（MIT）；词组/词频：fxsjy/jieba dict.txt（MIT）。"
+        "# 单字来源：WindInput（MIT，D3）；词组/词频：jieba（MIT，D10）及自编组合词（CC-BY-SA-4.0，D16）。"
     );
     let _ = writeln!(out, "# code\ttext\tweight");
     for row in rows {
@@ -260,7 +311,7 @@ fn render_report(
     );
     let _ = writeln!(
         out,
-        "# 词组码表：{}（裁剪）",
+        "# 词组码表：{}（裁剪，并补充data/domain-vocabulary.tsv）",
         display_path(root, phrases_path)
     );
     let _ = writeln!(out, "# 输出：{}", display_path(root, core_path));
@@ -268,10 +319,10 @@ fn render_report(
 
     let _ = writeln!(out, "[trim_rule]");
     let _ = writeln!(out, "single_rows = {}（全量保留）", singles.len());
-    let _ = writeln!(out, "phrase_rows_full = {}", phrases.len());
+    let _ = writeln!(out, "phrase_rows_full = {}（含D16新组合）", phrases.len());
     let _ = writeln!(
         out,
-        "phrase_limit = {CORE_PHRASE_LIMIT}（按 weight 全局降序取前 N 条，加D15训练词，等权按 code/text 升序）"
+        "phrase_limit = {CORE_PHRASE_LIMIT}（前 N 基础词+D15训练词+D16组合词；新词权重1，等权按 code/text 升序）"
     );
     let _ = writeln!(out, "phrase_rows_kept = {}", kept_phrases.len());
     let _ = writeln!(out);
@@ -343,4 +394,30 @@ fn write_file(path: &Path, content: &str) -> Result<(), Box<dyn Error>> {
     }
     fs::write(path, content).map_err(|e| format!("写入失败（{}）：{e}", path.display()))?;
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn domain_generation_preserves_existing_weights_and_rejects_unencodable_data() {
+        let singles = parse_rows("wqiy\t你\t10\nvbg\t好\t9\n", "fixture").unwrap();
+        let mut phrases = parse_rows("wqvb\t你好\t123\n", "fixture").unwrap();
+        let selected = supplement_phrases(&mut phrases, &singles, "聊天\t你好\tni hao\n").unwrap();
+        assert!(selected.contains("你好"));
+        assert_eq!(phrases.len(), 1);
+        assert_eq!(phrases[0].weight, 123);
+        let mut empty = Vec::new();
+        supplement_phrases(&mut empty, &singles, "聊天\t你好\tni hao\n").unwrap();
+        assert_eq!((empty[0].code.as_str(), empty[0].weight), ("wqvb", 1));
+        assert!(supplement_phrases(&mut Vec::new(), &singles, "聊天\t你们\tni men\n").is_err());
+        assert!(supplement_phrases(&mut Vec::new(), &singles, "聊天\t你好\tni\n").is_err());
+        assert!(supplement_phrases(
+            &mut Vec::new(),
+            &singles,
+            "聊天\t你好\tni hao\n聊天\t你好\tni hao\n"
+        )
+        .is_err());
+    }
 }

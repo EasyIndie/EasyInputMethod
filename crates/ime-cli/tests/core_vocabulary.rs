@@ -26,7 +26,7 @@ fn common_input_terms_are_reachable_and_submit_the_displayed_candidate() {
     });
     for mode in [InputMode::WubiOnly, InputMode::PinyinOnly, InputMode::Mixed] {
         session.set_mode(mode);
-        for text in [
+        let baseline = [
             "输入法",
             "五笔",
             "拼音",
@@ -34,7 +34,12 @@ fn common_input_terms_are_reachable_and_submit_the_displayed_candidate() {
             "候选",
             "开发者",
             "人工智能",
-        ] {
+        ];
+        let domain = include_str!("../../../data/domain-vocabulary.tsv")
+            .lines()
+            .filter(|line| !line.starts_with('#') && !line.is_empty())
+            .map(|line| line.split('\t').nth(1).unwrap());
+        for text in baseline.into_iter().chain(domain) {
             for (table, is_pinyin) in [(wubi, false), (pinyin, true)] {
                 if (mode == InputMode::WubiOnly && is_pinyin)
                     || (mode == InputMode::PinyinOnly && !is_pinyin)
