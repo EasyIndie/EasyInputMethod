@@ -53,5 +53,29 @@
   "local_tests": {
     "tools_presentation": "PASS on 594c8c6, normal permissions; historical failure retained",
     "composition_navigation": "PASS on 594c8c6"
+  },
+  "native_followup": {
+    "host_pid": 7730,
+    "process_path_verified": true,
+    "current_source": "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+    "owned_textedit": {
+      "wq_space": "你",
+      "wq_digit1": "你",
+      "esc_preserves_committed_text": true
+    },
+    "unresolved_automation": {
+      "wq_right_space": "你",
+      "wq_down_space": "你",
+      "wq_digit2": "wq",
+      "option_m_private_mode": "wubi unchanged",
+      "huiguiceshi_space": "huiguiceshi"
+    },
+    "physical_key_comparison": "pending user",
+    "mode_after": "wubi",
+    "owned_windows_closed": true
+  },
+  "production_data_sha256": {
+    "config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
   }
 }
