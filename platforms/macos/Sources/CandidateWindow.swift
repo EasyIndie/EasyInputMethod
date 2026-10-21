@@ -126,6 +126,7 @@ final class PaddedCandidateCell: NSTextFieldCell {
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
     private(set) var isHovered = false
+    private(set) var isKeyboardSelected = false
     private var hoverTrackingArea: NSTrackingArea?
 
     override init(frame frameRect: NSRect) {
@@ -180,11 +181,24 @@ final class CandidateLabel: NSTextField {
     func setHovered(_ hovered: Bool) {
         guard isHovered != hovered else { return }
         isHovered = hovered
+        paintSelection()
+    }
+
+    func setKeyboardSelected(_ selected: Bool) {
+        guard isKeyboardSelected != selected else { return }
+        isKeyboardSelected = selected
+        paintSelection()
+    }
+
+    private func paintSelection() {
         guard wantsLayer else { return }
         effectiveAppearance.performAsCurrentDrawingAppearance {
-            layer?.backgroundColor = hovered ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor : nil
+            let alpha: CGFloat = isHovered ? 0.30 : isKeyboardSelected ? 0.18 : 0
+            layer?.backgroundColor = alpha > 0
+                ? NSColor.selectedContentBackgroundColor.withAlphaComponent(alpha).cgColor : nil
         }
     }
+    func refreshSelectionAppearance() { paintSelection() }
 }
 
 private final class CandidatePanel: NSPanel {
@@ -567,6 +581,7 @@ final class CandidateWindow: NSObject {
     private var renderedCount = 0
     private var pageIndex = 0
     private var pageCount = 0
+    private var selectedIndex = 0
     private var themeTimer: Timer?
     private var available = NSSize(width: 640, height: 800)
     private var input = ""
@@ -597,6 +612,10 @@ final class CandidateWindow: NSObject {
     var configuredAppearanceForTesting: NSAppearance.Name? { panel.appearance?.name }
     var pageStateForTesting: (visible: Bool, previous: Bool, next: Bool, text: String) {
         (!pageLabel.isHidden, previousButton.isEnabled, nextButton.isEnabled, pageLabel.stringValue)
+    }
+    var selectedCandidateIndexForTesting: Int { selectedIndex }
+    var keyboardSelectedCandidatesForTesting: [Int] {
+        labels.prefix(renderedCount).enumerated().compactMap { $0.element.isKeyboardSelected ? $0.offset : nil }
     }
     var pageFramesForTesting: [NSRect] { [previousButton.frame, pageLabel.frame, nextButton.frame] }
     var scrollingForTesting: Bool { scrollView.hasVerticalScroller }
@@ -698,15 +717,19 @@ final class CandidateWindow: NSObject {
             panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
             panel.contentView?.layer?.borderColor = ImeAppearance.candidateBorderColor(highContrast: ImeAppearance.isHighContrast(panel.effectiveAppearance)).cgColor
             for label in labels.prefix(renderedCount) where label.isHovered {
-                label.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
+                label.refreshSelectionAppearance()
+            }
+            for label in labels.prefix(renderedCount) where !label.isHovered {
+                label.refreshSelectionAppearance()
             }
             stateStrip.paint(for: panel.effectiveAppearance)
         }
     }
 
-    private static func render(index: Int, _ candidate: ImeCandidate) -> NSAttributedString {
+    private static func render(index: Int, selected: Bool, _ candidate: ImeCandidate) -> NSAttributedString {
         let number = "\(index + 1)"
-        let ordinalFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: index == 0 ? .semibold : .regular)
+        let weight: NSFont.Weight = selected ? .semibold : .regular
+        let ordinalFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: weight)
         let text = NSMutableAttributedString(string: number, attributes: [
             .font: ordinalFont,
             .foregroundColor: ImeAppearance.secondaryText,
@@ -714,14 +737,15 @@ final class CandidateWindow: NSObject {
         let prefixWidth = ((number + " ") as NSString).size(withAttributes: [.font: ordinalFont]).width
         text.append(NSAttributedString(string: " ", attributes: [.font: ordinalFont,
             .kern: max(0, 20 - prefixWidth), .foregroundColor: ImeAppearance.secondaryText]))
-        text.append(NSAttributedString(string: CandidateTextPresentation.display(candidate.text, font: .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)), attributes: [
-            .font: NSFont.systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular),
+        text.append(NSAttributedString(string: CandidateTextPresentation.display(candidate.text, font: .systemFont(ofSize: 17, weight: weight)), attributes: [
+            .font: NSFont.systemFont(ofSize: 17, weight: weight),
             .foregroundColor: NSColor.labelColor,
         ]))
         return text
     }
 
     func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
+                selectedIndex: Int = 0,
                 input: String = "", hint: String? = nil, warning: String? = nil) {
         refreshAppearance()
         learningView.update(ImeConfig.bool("candidate.show_wubi_learning") ? candidates.first?.text : nil)
@@ -730,6 +754,7 @@ final class CandidateWindow: NSObject {
         self.warning = candidates.isEmpty ? nil : warning
         self.pageCount = candidates.isEmpty ? 0 : max(1, pageCount)
         self.pageIndex = min(max(0, pageIndex), max(0, self.pageCount - 1))
+        self.selectedIndex = candidates.isEmpty ? 0 : min(max(0, selectedIndex), candidates.count - 1)
         inputLabel.stringValue = self.input
         inputLabel.toolTip = self.input
         inputLabel.setAccessibilityValue(self.input)
@@ -759,15 +784,17 @@ final class CandidateWindow: NSObject {
             }
             let label = labels[index]
             label.isHidden = false
-            label.font = .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)
-            label.attributedStringValue = Self.render(index: index, candidate)
+            let selected = index == self.selectedIndex
+            label.font = .systemFont(ofSize: 17, weight: selected ? .semibold : .regular)
+            label.attributedStringValue = Self.render(index: index, selected: selected, candidate)
             let visibleText = CandidateTextPresentation.display(candidate.text, font: label.font ?? .systemFont(ofSize: 17))
             let missing = visibleText != candidate.text
             let detail = missing ? "系统字体缺字；选择仍输入原字符" : candidate.source.label
             label.toolTip = "\(visibleText) · \(detail)"
             label.setAccessibilityElement(true)
-            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(index == 0 ? "，首选" : "")")
+            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(selected ? "，键盘焦点" : "")\(index == 0 ? "，首选" : "")")
             label.onClick = { [weak self] in self?.onSelect?(index) }
+            label.setKeyboardSelected(selected)
             label.setHovered(false)
         }
         renderedCount = candidates.count

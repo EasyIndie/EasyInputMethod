@@ -25,6 +25,26 @@ guard !window.permitsKeyboardFocusForTesting, area.contains(window.frame),
       window.candidateFontForTesting(at: 0)?.pointSize == 17,
       window.candidateFontForTesting(at: 0) != window.candidateFontForTesting(at: 1)
 else { fail("minimal body/source accessibility/font/focus") }
+var navigation = CandidateSelectionState()
+guard navigation.move(1, count: 2) == 1,
+      navigation.move(1, count: 2) == 1,
+      navigation.move(-1, count: 2) == 0,
+      navigation.move(-1, count: 2) == 0,
+      navigation.move(1, count: 0) == nil, navigation.index == 0
+else { fail("candidate navigation bounds/reset") }
+window.update(candidates: values, selectedIndex: 1, input: "wq")
+window.layout(at: caret, within: area)
+guard window.selectedCandidateIndexForTesting == 1,
+      window.keyboardSelectedCandidatesForTesting == [1],
+      window.candidateAccessibilityLabelsForTesting[1].contains("键盘焦点")
+else { fail("keyboard focus presentation/accessibility") }
+guard let selectedSnapshot = window.renderSnapshotForTesting(), selectedSnapshot.pixelsWide > 0 else {
+    fail("keyboard focus snapshot")
+}
+if let data = selectedSnapshot.representation(using: .png, properties: [:]) {
+    do { try data.write(to: output.appendingPathComponent("keyboard-selection.png")) }
+    catch { fail("keyboard focus snapshot output") }
+} else { fail("keyboard focus png encoding") }
 LocalAcceptanceEvidence.record("candidate.body", expected: "候选正文/来源AX正确，非key且在边界内", actual: ["labels": window.displayedCandidateTexts, "input": window.displayedInput, "keyboard_focus": window.permitsKeyboardFocusForTesting])
 var selected = -1
 window.onSelect = { selected = $0 }
@@ -52,6 +72,13 @@ guard session.pageCount == 3, window.pageStateForTesting.text == "1/3",
       window.pagePressForTesting(-1), session.pageIndex == 1, session.buffer == "ab"
 else { fail("real bounded paging without commit") }
 LocalAcceptanceEvidence.record("candidate.paging", expected: "1/3→2/3→3/3→2/3，首尾拒绝越界，保留ab组合", actual: ["label": window.pageStateForTesting.text, "page_index": session.pageIndex, "buffer": session.buffer])
+navigation.reset()
+guard navigation.move(1, count: 9) == 1,
+      let expectedFocused = session.candidates(limit: 9).dropFirst().first?.text,
+      session.select(navigation.index) == expectedFocused,
+      !session.isComposing
+else { fail("space confirmation target follows keyboard focus") }
+LocalAcceptanceEvidence.record("candidate.keyboard-confirm-target", expected: "焦点索引1确认后提交当前页显示的第2项", actual: expectedFocused)
 
 func snapshot(_ name: String) {
     guard let image = window.renderSnapshotForTesting(),

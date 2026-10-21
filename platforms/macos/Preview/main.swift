@@ -6,6 +6,7 @@ final class PreviewInput: NSTextView {
     let session: ImeSession
     let candidates = CandidateWindow()
     private var committed = ""
+    private var candidateSelection = CandidateSelectionState()
     private let previewStorage = NSTextStorage()
     private var lastFeedback: (String, Bool, Bool, Bool, Bool)?
     var status: ((String) -> Void)?
@@ -27,6 +28,7 @@ final class PreviewInput: NSTextView {
         candidates.onSelect = { [weak self] index in
             guard let self, let text = self.session.select(index) else { return }
             self.committed += text
+            self.candidateSelection.reset()
             self.refresh()
         }
     }
@@ -48,6 +50,12 @@ final class PreviewInput: NSTextView {
             super.keyDown(with: event)
             return
         }
+        if session.isComposing, event.keyCode == 126 || event.keyCode == 125 {
+            _ = candidateSelection.move(event.keyCode == 126 ? -1 : 1,
+                                        count: session.candidates(limit: ImeConfig.int("candidate.count") ?? 9).count)
+            refresh()
+            return
+        }
         guard let text = event.charactersIgnoringModifiers, let scalar = text.unicodeScalars.first else { return }
         if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
         if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
@@ -56,11 +64,17 @@ final class PreviewInput: NSTextView {
             scalar == "," || scalar == "."
         {
             session.page(scalar == "," ? -1 : 1)
+            candidateSelection.reset()
+        } else if session.isComposing, event.keyCode == 49, candidateSelection.index > 0,
+                  let text = session.select(candidateSelection.index) {
+            committed += text
+            candidateSelection.reset()
         } else if scalar == "\r" || scalar == "\n" {
             if session.isComposing {
                 if case .committed(let raw) = session.feed(scalar.value) { committed += raw }
             } else { committed += "\n" }
         } else {
+            candidateSelection.reset()
             let input = !session.isEnglish && scalar.isASCII && scalar.properties.isAlphabetic
                 ? String(scalar).lowercased().unicodeScalars.first?.value : scalar.value
             guard let input else { return }
@@ -68,7 +82,7 @@ final class PreviewInput: NSTextView {
                 committed += text
             } else {
                 switch session.feed(input) {
-                case .committed(let value): committed += value
+                case .committed(let value): committed += value; candidateSelection.reset()
                 case .consumed: break
                 case .passThrough:
                     if scalar.value == 127 || scalar.value == 8 {
@@ -78,6 +92,7 @@ final class PreviewInput: NSTextView {
                 }
             }
         }
+        if !session.isComposing { candidateSelection.reset() }
         refresh()
     }
 
@@ -133,8 +148,15 @@ final class PreviewInput: NSTextView {
             candidates.updateStatus(status)
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
-                input: session.buffer, warning: session.variantErrorMessage)
-            candidates.onPage = { [weak self] delta in self?.session.page(delta); self?.refresh() }
+                selectedIndex: candidateSelection.index,
+                input: session.buffer, hint: "↑↓浏览 · 空格确认 · 数字直选",
+                warning: session.variantErrorMessage)
+            candidates.onPage = { [weak self] delta in
+                guard let self else { return }
+                self.session.page(delta)
+                self.candidateSelection.reset()
+                self.refresh()
+            }
             candidates.show(at: caret)
         } else { candidates.hide() }
     }

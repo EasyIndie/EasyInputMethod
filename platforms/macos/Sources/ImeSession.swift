@@ -6,6 +6,23 @@
 import Cocoa
 import ime
 
+/// Keyboard focus within the currently visible candidate page.
+struct CandidateSelectionState {
+    private(set) var index = 0
+
+    @discardableResult
+    mutating func move(_ delta: Int, count: Int) -> Int? {
+        guard count > 0 else {
+            reset()
+            return nil
+        }
+        index = min(max(index + delta, 0), count - 1)
+        return index
+    }
+
+    mutating func reset() { index = 0 }
+}
+
 /// 候选来源（对应 C 头 `IME_SOURCE_*`）。
 enum CandidateSource: Int32 {
     case codeTable = 0
