@@ -122,7 +122,7 @@ final class PaddedCandidateCell: NSTextFieldCell {
     }
 }
 
-/// 可点击的候选标签：单击即选中该候选；鼠标悬停时高亮（体验打磨）。
+/// Click commits the pointed candidate; only keyboard focus receives a filled background.
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
     private(set) var isHovered = false
@@ -142,7 +142,7 @@ final class CandidateLabel: NSTextField {
     private func setUpLayer() {
         wantsLayer = true
         layer?.cornerRadius = 4
-        layer?.actions = ["backgroundColor": NSNull()]
+        layer?.actions = ["backgroundColor": NSNull(), "borderColor": NSNull(), "borderWidth": NSNull()]
         setAccessibilityRole(.button)
     }
 
@@ -193,9 +193,12 @@ final class CandidateLabel: NSTextField {
     private func paintSelection() {
         guard wantsLayer else { return }
         effectiveAppearance.performAsCurrentDrawingAppearance {
-            let alpha: CGFloat = isHovered ? 0.30 : isKeyboardSelected ? 0.18 : 0
+            let alpha: CGFloat = isKeyboardSelected ? 0.18 : 0
             layer?.backgroundColor = alpha > 0
                 ? NSColor.selectedContentBackgroundColor.withAlphaComponent(alpha).cgColor : nil
+            let showsHoverOutline = isHovered && !isKeyboardSelected
+            layer?.borderWidth = showsHoverOutline ? 1 : 0
+            layer?.borderColor = showsHoverOutline ? NSColor.secondaryLabelColor.cgColor : nil
         }
     }
     func refreshSelectionAppearance() { paintSelection() }
