@@ -1,0 +1,10 @@
+enabled com.apple.keylayout.ABC
+enabled com.apple.PressAndHold
+enabled com.apple.CharacterPaletteIM
+enabled com.sogou.inputmethod.sogouWB.wubi
+enabled com.sogou.inputmethod.sogouWB
+enabled com.sogou.inputmethod.sogou.pinyin
+enabled com.sogou.inputmethod.sogou
+enabled cn.jokerhub.inputmethod.Lampyris.default
+enabled cn.jokerhub.inputmethod.Lampyris
+current com.apple.keylayout.ABC

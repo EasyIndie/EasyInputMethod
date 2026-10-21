@@ -1,0 +1,1 @@
+PASS：仅经ime-config恢复私有mode=mixed；经词库FFI精确删除zz/IMK隔离测试词；真实config/词库SHA未变。

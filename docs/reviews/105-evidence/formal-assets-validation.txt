@@ -1,0 +1,5 @@
+附件摘要、版本、双架构、提交与对应源码核验通过（Apple签名/公证由macOS另验）
+packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/Lampyris-0.1.0-universal.zip
+packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/Lampyris-0.1.0-source.tar.gz
+packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/Lampyris-0.1.0-universal.zip.sha256
+packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/Lampyris-0.1.0-source.tar.gz.sha256

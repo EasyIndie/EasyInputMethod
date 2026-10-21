@@ -1,0 +1,4 @@
+PASS signed arm64 isolated native entry normal
+PASS signed arm64 isolated native entry failure
+PASS signed arm64 isolated native entry INT
+PASS signed arm64 isolated native entry TERM

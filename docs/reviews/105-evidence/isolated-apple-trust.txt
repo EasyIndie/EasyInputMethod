@@ -1,0 +1,44 @@
+$ codesign --verify --strict --deep /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app
+exit=0
+$ codesign -dv --verbose=4 /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app
+Executable=/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app/Contents/MacOS/LampyrisIMKTest
+Identifier=cn.jokerhub.inputmethod.LampyrisIMKTest.dce4ae25-3705-48f5-aa29-79bc321863fe
+Format=app bundle with Mach-O thin (arm64)
+CodeDirectory v=20500 size=8376 flags=0x10000(runtime) hashes=253+3 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=7f6a833c8c1a9127ed230f827460df67cdb1c688
+CandidateCDHashFull sha256=7f6a833c8c1a9127ed230f827460df67cdb1c68897c2172d961083de29756adc
+Hash choices=sha256
+CMSDigest=7f6a833c8c1a9127ed230f827460df67cdb1c68897c2172d961083de29756adc
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=2195456
+Executable Segment flags=0x1
+Page size=16384
+CDHash=7f6a833c8c1a9127ed230f827460df67cdb1c688
+Signature size=9044
+Authority=Developer ID Application: Zhizhou Wang (2N62934Y28)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Oct 21, 2026 at 08:26:00
+Notarization Ticket=stapled
+Info.plist entries=25
+TeamIdentifier=2N62934Y28
+Runtime Version=26.5.0
+Sealed Resources version=2 rules=13 files=12
+Internal requirements count=1 size=236
+Total signatures=1
+Chosen signature=1
+exit=0
+$ xcrun stapler validate /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app
+Processing: /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app
+The validate action worked!
+exit=0
+$ spctl --assess --type execute -vv /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app
+/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe/LampyrisIMKTest.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+exit=0

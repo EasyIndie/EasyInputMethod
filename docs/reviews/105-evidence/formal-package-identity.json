@@ -1,0 +1,11 @@
+{
+  "source_commit": "3728dfcd28117857de65b64b57098f248848125d",
+  "run": 39520979475,
+  "zip_sha256": "b117318d8231ef00b04d57e4ecfcedbdf9c9ee90a9b7d5cf8ae335f99e2f910a",
+  "execution_sha256": "df1f17ff97a2a61a8c1b2883cba309e7eecaf1c083af9de7acaec34edde1899e",
+  "source_archive_sha256": "31cb59ec232aa623169ff4788aba60d73ca5efcbf57190dab190506556a338fe",
+  "zip_bytes": 5188749,
+  "arch": "x86_64 arm64",
+  "installed": false,
+  "app_path": "/Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app"
+}
