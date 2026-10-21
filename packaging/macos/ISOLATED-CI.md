@@ -32,3 +32,7 @@ UUID/所有权/0700 权限及 `owner` 文件正确，再用 `ditto` 解压，核
 不能以公证成功代替。
 
 设备绑定导致该包只允许在声明根所在的设备上运行；换设备或换根必须重新出包。
+
+## 固定开发身份（ADR-230）
+
+工作流development默认false，既有临时根候选不变。仅显式true允许 `/Users/<user>/Library/Application Support/LampyrisIMKDev/lampyris-imk-<UUID>`，同一设备重复构建复用同根；签名前写入开发标记和源码提交，标签为“萤火虫开发 <UUID前8位>”。宿主验证当前用户专用父目录的所有权/权限，拒绝生产根及重定向。使用[报告106](../../docs/reviews/106-stable-imk-development.md)的初始化与安装入口；该可变身份不用于正式RC。

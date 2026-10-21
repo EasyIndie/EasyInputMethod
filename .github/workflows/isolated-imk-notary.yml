@@ -3,9 +3,14 @@ on:
   workflow_dispatch:
     inputs:
       target_root:
-        description: Existing owned private temp root on the receiving device (under its system temp dir)
+        description: Owned receiving-device root (temporary, or persistent development root)
         required: true
         type: string
+      development:
+        description: Stable device development identity (not a release candidate)
+        required: false
+        default: false
+        type: boolean
       arch:
         description: Payload architecture (arm64, x86_64 or universal); cross-built on the arm64 runner
         required: true
@@ -46,6 +51,7 @@ jobs:
         env:
           TARGET_TEST_ROOT: ${{ inputs.target_root }}
           TARGET_ARCH: ${{ inputs.arch }}
+          IMK_DEVELOPMENT: ${{ inputs.development }}
         run: |
           make verify
           PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/test-isolated-imk.py
@@ -65,7 +71,7 @@ jobs:
             *) echo "未知架构：${TARGET_ARCH}" >&2; exit 1 ;;
           esac
           actual="$(lipo -archs "${app}/Contents/MacOS/LampyrisIMKTest")"
-          [ "$(printf '%s\n' ${expected} | sort | tr '\n' ' ')" = "$(printf '%s\n' ${actual} | sort | tr '\n' ' ')" ] || { echo "架构不符：期望 ${expected}，实际 ${actual}" >&2; exit 1; }
+          [ "$(printf '%s\n' "${expected}" | tr ' ' '\n' | sort | tr '\n' ' ')" = "$(printf '%s\n' "${actual}" | tr ' ' '\n' | sort | tr '\n' ' ')" ] || { echo "架构不符：期望 ${expected}，实际 ${actual}" >&2; exit 1; }
           grep -Fx "requested=${TARGET_ARCH}" packaging/out/isolated-imk/TARGET-ARCH.txt
           /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${app}/Contents/Info.plist"
           test "$(cat "${app}/Contents/Resources/IMKTestRoot")" = "$(cat packaging/out/isolated-imk/TARGET-ROOT.txt)"

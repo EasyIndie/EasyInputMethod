@@ -21,6 +21,15 @@ class TargetTests(unittest.TestCase):
                       f"/private/var/folders/test/C/lampyris-imk-{UUID}", f"/tmp/../tmp/lampyris-imk-{UUID}", f"/private/tmp/sub/lampyris-imk-{UUID}"]:
             with self.subTest(value=value), self.assertRaises(ValueError):
                 prepare.target_identity(value)
+    def test_persistent_root_requires_explicit_development(self):
+        value = f"/Users/user/Library/Application Support/LampyrisIMKDev/lampyris-imk-{UUID}"
+        self.assertEqual(str(prepare.target_identity(value, True)), value)
+        with self.assertRaises(ValueError):
+            prepare.target_identity(value)
+        for bad in [f"/private/tmp/lampyris-imk-{UUID}", value.replace("LampyrisIMKDev", "Lampyris"), value.replace("/Users/user", "/Applications")]:
+            with self.subTest(bad=bad), self.assertRaises(ValueError):
+                prepare.target_identity(bad, True)
+
     def test_arch_request(self):
         for value in ["native", "", None]:
             self.assertEqual(prepare.target_arch(value), "native")

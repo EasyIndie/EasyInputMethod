@@ -30,8 +30,11 @@ if let tracePath = try? String(contentsOf: traceMarker, encoding: .utf8) {
     PerfTrace.configureForTest(tracePath: tracePath.trimmingCharacters(in: .whitespacesAndNewlines))
 }
 let installed = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Input Methods/LampyrisIMKTest-\(suffix).app")
+let developmentParent = URL(fileURLWithPath: NSHomeDirectory()).appendingPathComponent("Library/Application Support/LampyrisIMKDev")
+let development = Bundle.main.infoDictionary?["LampyrisIMKDevelopment"] as? Bool == true
+let expectedParent = development ? developmentParent : URL(fileURLWithPath: NSTemporaryDirectory()).resolvingSymlinksInPath()
 guard root.path == root.resolvingSymlinksInPath().path,
-      root.deletingLastPathComponent().path == URL(fileURLWithPath: NSTemporaryDirectory()).resolvingSymlinksInPath().path,
+      root.deletingLastPathComponent().path == expectedParent.path,
       root.lastPathComponent.hasPrefix(prefix), UUID(uuidString: suffix) != nil,
       [root.appendingPathComponent("LampyrisIMKTest.app").path, installed.path].contains(canonicalApp.path),
       Bundle.main.bundleIdentifier == "cn.jokerhub.inputmethod.LampyrisIMKTest.\(suffix.lowercased())"
@@ -44,6 +47,10 @@ func validateOwned(_ path: URL, type: FileAttributeType) {
           let permissions = attributes[.posixPermissions] as? NSNumber,
           permissions.intValue & 0o077 == 0
     else { blocked("验收资源归属、类型或权限不符") }
+}
+if development {
+    guard developmentParent.path == developmentParent.resolvingSymlinksInPath().path else { blocked("开发父目录不得重定向") }
+    validateOwned(developmentParent, type: .typeDirectory)
 }
 validateOwned(root, type: .typeDirectory)
 let marker = root.appendingPathComponent("owner")
