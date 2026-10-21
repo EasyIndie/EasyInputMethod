@@ -50,8 +50,8 @@ final class PreviewInput: NSTextView {
             super.keyDown(with: event)
             return
         }
-        if session.isComposing, event.keyCode == 126 || event.keyCode == 125 {
-            _ = candidateSelection.move(event.keyCode == 126 ? -1 : 1,
+        if session.isComposing, let delta = candidates.navigationDelta(for: event) {
+            _ = candidateSelection.move(delta,
                                         count: session.candidates(limit: ImeConfig.int("candidate.count") ?? 9).count)
             refresh()
             return
@@ -153,7 +153,7 @@ final class PreviewInput: NSTextView {
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
                 selectedIndex: candidateSelection.index,
-                input: session.buffer, hint: "↑↓浏览 · 空格确认 · 数字直选",
+                input: session.buffer, showsNavigationHint: true,
                 warning: session.variantErrorMessage)
             candidates.onPage = { [weak self] delta in
                 guard let self else { return }
@@ -569,32 +569,39 @@ if CommandLine.arguments.contains("--smoke-test") {
         }
     }
     // Exercise the actual preview adapter, not only the shared navigation predicate.
-    for (key, functionCharacter): (UInt16, String) in [
-        (123, "\u{f702}"), (124, "\u{f703}"),
-        (125, "\u{f701}"), (126, "\u{f700}"),
-        (115, "\u{f729}"), (119, "\u{f72b}"), (117, "\u{f728}"),
-    ] {
-        for characters in [functionCharacter, "\u{1f}", ""] {
-            view.clear()
-            keys("wq")
-            let values = session.candidates(limit: 9).map(\.text)
-            guard values.count > 1,
-                let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+    for vertical in [false, true] {
+        for (key, functionCharacter): (UInt16, String) in [
+            (123, "\u{f702}"), (124, "\u{f703}"),
+            (125, "\u{f701}"), (126, "\u{f700}"),
+            (115, "\u{f729}"), (119, "\u{f72b}"), (117, "\u{f728}"),
+        ] {
+            for characters in [functionCharacter, "\u{1f}", ""] {
+                view.clear()
+                keys("wq")
+                let page = session.candidates(limit: 9)
+                let values = page.map(\.text)
+                view.candidates.update(candidates: page, showsNavigationHint: true)
+                view.candidates.layout(at: .zero,
+                    within: NSRect(x: 0, y: 0, width: vertical ? 120 : 640, height: 800))
+                guard view.candidates.isVertical == vertical else { exit(1) }
+                guard values.count > 1,
+                    let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                        characters: characters, charactersIgnoringModifiers: characters,
+                        isARepeat: false, keyCode: key) else { exit(1) }
+                view.keyDown(with: event)
+                guard session.buffer == "wq", view.string == "wq",
+                    session.candidates(limit: 9).map(\.text) == values else {
+                    fputs("预览方向键污染文本或组合：keyCode=\(key)\n", stderr); exit(1)
+                }
+                guard let space = NSEvent.keyEvent(with: .keyDown, location: .zero,
                     modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
-                    characters: characters, charactersIgnoringModifiers: characters,
-                    isARepeat: false, keyCode: key) else { exit(1) }
-            view.keyDown(with: event)
-            guard session.buffer == "wq", view.string == "wq",
-                session.candidates(limit: 9).map(\.text) == values else {
-                fputs("预览方向键污染文本或组合：keyCode=\(key)\n", stderr); exit(1)
+                    characters: " ", charactersIgnoringModifiers: " ",
+                    isARepeat: false, keyCode: 49) else { exit(1) }
+                view.keyDown(with: space)
+                check(values[key == (vertical ? 125 : 124) ? 1 : 0])
+                guard session.buffer.isEmpty else { exit(1) }
             }
-            guard let space = NSEvent.keyEvent(with: .keyDown, location: .zero,
-                modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
-                characters: " ", charactersIgnoringModifiers: " ",
-                isARepeat: false, keyCode: 49) else { exit(1) }
-            view.keyDown(with: space)
-            check(values[key == 125 ? 1 : 0])
-            guard session.buffer.isEmpty else { exit(1) }
         }
     }
     view.clear()
