@@ -99,5 +99,22 @@
     "actual_source_set_unchanged": true,
     "old_temp_root_exists": false,
     "reversible": true
+  },
+  "textedit_fixture_followup": {
+    "date": "2026-10-21",
+    "change": "owned-textedit.applescript now opens the uniquely named, path-verified temporary file directly; preserves the original visible-window ID guard per ADR-091/092",
+    "compile": "osacompile exit 0",
+    "make_verify": "pass (rerun with normal permissions after sandbox advisory-lock denial)",
+    "probe": {
+      "scenario": "mode",
+      "result": "BLOCKED before fixture creation or key events",
+      "preflight": "System Events AppleEvent returned -10827",
+      "evidence": "platforms/macos/build/installed-mode-current-134728/",
+      "input_source": "ABC",
+      "development_source_enabled": true,
+      "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+      "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+    },
+    "native_fixture_fix_verified": false
   }
 }

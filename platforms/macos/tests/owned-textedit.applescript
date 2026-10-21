@@ -10,19 +10,6 @@ on run argv
                 set originalIDs to id of every window
                 if exists document fixtureName then error "BLOCKED 测试文档名称冲突"
                 activate
-                make new document
-                set blankID to 0
-                repeat 30 times
-                    if exists front window then
-                        set candidateID to id of front window
-                        if candidateID is not in originalIDs then
-                            set blankID to candidateID
-                            exit repeat
-                        end if
-                    end if
-                    delay 0.1
-                end repeat
-                if blankID is 0 then error "BLOCKED 未取得自有空白窗口"
                 open fixtureFile
                 repeat 40 times
                     if (count of (documents whose name is fixtureName)) is 1 and (count of (windows whose name is fixtureName and visible is true)) is 1 then exit repeat
@@ -47,19 +34,6 @@ on run argv
                 if (count of matches) is not 1 then error "BLOCKED 测试窗口身份不唯一"
                 set testID to id of item 1 of matches
                 if testID is in originalIDs then error "BLOCKED 测试窗口ID重复"
-                if testID is not blankID and (exists window id blankID) then
-                    set blankName to name of window id blankID
-                    set blankMatches to documents whose name is blankName
-                    if (count of blankMatches) is not 1 then error "BLOCKED 自有空白文档身份已变"
-                    set blankDocument to item 1 of blankMatches
-                    try
-                        if (path of blankDocument) is not missing value then error "BLOCKED 自有空白文档路径已变"
-                    on error messageText number errorCode
-                        if errorCode is not -2763 then error messageText number errorCode
-                    end try
-                    if (text of blankDocument) is not "" then error "BLOCKED 自有空白文档内容已变"
-                    close blankDocument saving no
-                end if
                 return testID
             end if
             if not (exists window id testID) then error "BLOCKED 测试窗口不存在"
