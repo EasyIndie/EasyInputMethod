@@ -25,6 +25,30 @@ guard !window.permitsKeyboardFocusForTesting, area.contains(window.frame),
       window.candidateFontForTesting(at: 0)?.pointSize == 17,
       window.candidateFontForTesting(at: 0) != window.candidateFontForTesting(at: 1)
 else { fail("minimal body/source accessibility/font/focus") }
+// Hover must not create a second filled selection beside keyboard focus.
+for appearance in [NSAppearance.Name.aqua, .darkAqua] {
+    let focused = CandidateLabel(labelWithString: "1 你")
+    let hovered = CandidateLabel(labelWithString: "2 像")
+    focused.appearance = NSAppearance(named: appearance)
+    hovered.appearance = NSAppearance(named: appearance)
+    focused.setKeyboardSelected(true)
+    hovered.setHovered(true)
+    guard (focused.layer?.backgroundColor?.alpha ?? 0) > 0,
+          (hovered.layer?.backgroundColor?.alpha ?? 0) == 0,
+          (hovered.layer?.borderWidth ?? 0) > 0
+    else { fail("hover must not duplicate filled keyboard focus") }
+    hovered.setKeyboardSelected(true)
+    focused.setKeyboardSelected(false)
+    guard (focused.layer?.backgroundColor?.alpha ?? 0) == 0,
+          (hovered.layer?.backgroundColor?.alpha ?? 0) > 0,
+          hovered.layer?.borderWidth == 0
+    else { fail("focused hover uses one filled selection") }
+    hovered.setKeyboardSelected(false)
+    hovered.setHovered(false)
+    guard hovered.layer?.borderWidth == 0,
+          (hovered.layer?.backgroundColor?.alpha ?? 0) == 0
+    else { fail("hover reuse clears decoration") }
+}
 var navigation = CandidateSelectionState()
 guard navigation.move(1, count: 2) == 1,
       navigation.move(1, count: 2) == 1,

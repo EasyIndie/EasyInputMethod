@@ -180,5 +180,176 @@
     "make_verify": "PASS; original 200 products scanned"
   },
   "real_IMK_acceptance": false,
-  "production_installed": false
+  "production_installed": false,
+  "after_main_sync": {
+    "base_commit": "ef566cd9a09f2e0353a4eb9600a88d7237235545",
+    "pairs": [
+      {
+        "baseline": {
+          "milliseconds": [
+            {
+              "max": 6.999542,
+              "p50": 0.822875,
+              "p95": 1.195416
+            },
+            {
+              "max": 7.661375,
+              "p50": 1.185834,
+              "p95": 1.514375
+            },
+            {
+              "max": 6.02125,
+              "p50": 0.746333,
+              "p95": 1.005667
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        },
+        "candidate": {
+          "milliseconds": [
+            {
+              "max": 1.74925,
+              "p50": 8.3e-05,
+              "p95": 0.00025
+            },
+            {
+              "max": 8.66125,
+              "p50": 1.210667,
+              "p95": 4.621958
+            },
+            {
+              "max": 7.888458,
+              "p50": 0.794584,
+              "p95": 4.107708
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        }
+      },
+      {
+        "baseline": {
+          "milliseconds": [
+            {
+              "max": 6.485083,
+              "p50": 0.888417,
+              "p95": 4.957375
+            },
+            {
+              "max": 6.164166,
+              "p50": 1.223375,
+              "p95": 3.955917
+            },
+            {
+              "max": 5.82525,
+              "p50": 0.780291,
+              "p95": 2.2775
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        },
+        "candidate": {
+          "milliseconds": [
+            {
+              "max": 1.935125,
+              "p50": 0.000125,
+              "p95": 0.000583
+            },
+            {
+              "max": 7.640375,
+              "p50": 1.237792,
+              "p95": 4.837542
+            },
+            {
+              "max": 7.119166,
+              "p50": 0.824083,
+              "p95": 3.20925
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        }
+      },
+      {
+        "baseline": {
+          "milliseconds": [
+            {
+              "max": 11.819958,
+              "p50": 2.952708,
+              "p95": 5.886083
+            },
+            {
+              "max": 15.964209,
+              "p50": 3.695459,
+              "p95": 7.470958
+            },
+            {
+              "max": 17.072292,
+              "p50": 2.599958,
+              "p95": 7.185166
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        },
+        "candidate": {
+          "milliseconds": [
+            {
+              "max": 6.077958,
+              "p50": 0.000666,
+              "p95": 0.000958
+            },
+            {
+              "max": 16.403834,
+              "p50": 3.157167,
+              "p95": 6.899666
+            },
+            {
+              "max": 10.944083,
+              "p50": 2.539791,
+              "p95": 6.653334
+            }
+          ],
+          "samples": 600,
+          "stage_names": [
+            "status",
+            "candidate_update",
+            "position_layout"
+          ]
+        }
+      }
+    ],
+    "binary_sha256": {
+      "baseline": "6247cd5fcbae10a415ae6a5b6effa53229b0a226e403887ba72e4c4227388048",
+      "candidate": "ca78760beb70a631f1846f3dac8914221496e232191ac64e165f2bc6af319eb1"
+    },
+    "observation": "Substantial variability in other phases, both variants; retain all runs. No overall IMK or significance claim.",
+    "validation": {
+      "candidate_presentation": "PASS (9.789 seconds)",
+      "make_verify": "PASS",
+      "strict_native_build": "PASS"
+    }
+  }
 }
