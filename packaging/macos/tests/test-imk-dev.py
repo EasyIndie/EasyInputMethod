@@ -103,6 +103,14 @@ class DevelopmentTests(unittest.TestCase):
                 dev.install(self.home / 'candidate.app', self.root, self.home, 'helper', True)
             idle.assert_not_called()
 
+    def test_concurrent_installer_is_rejected_before_mutation(self):
+        with (self.root / 'owner').open() as marker:
+            dev.fcntl.flock(marker, dev.fcntl.LOCK_EX | dev.fcntl.LOCK_NB)
+            with patch.object(dev, 'replace_package') as replace:
+                with self.assertRaises(BlockingIOError):
+                    dev.install(self.home / 'candidate.app', self.root, self.home, 'helper')
+                replace.assert_not_called()
+
     def test_current_development_source_blocks_before_copy_or_stop(self):
         with patch.object(dev, 'verify_app', return_value={'CFBundleIdentifier': self.identity}), patch.object(dev, 'state', return_value={'current': self.identity + '.default', 'enabled': []}), patch.object(dev, 'run') as run, patch.object(dev, 'idle') as idle:
             with self.assertRaises(ValueError):

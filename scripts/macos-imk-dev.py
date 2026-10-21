@@ -2,6 +2,7 @@
 """Manage one persistent, privately owned IMK development identity per device."""
 import argparse
 import hashlib
+import fcntl
 import importlib.util
 import json
 import os
@@ -121,6 +122,13 @@ def idle(target, stop):
 
 
 def install(app, root, home, helper, stop=False):
+    # Lock the existing ownership marker without creating another state file.
+    with (root / 'owner').open() as marker:
+        fcntl.flock(marker, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        return replace_package(app, root, home, helper, stop)
+
+
+def replace_package(app, root, home, helper, stop=False):
     info = verify_app(app, root)
     target = home / ('Library/Input Methods/LampyrisIMKTest-' + root.name.removeprefix('lampyris-imk-') + '.app')
     if target.parent.resolve() != target.parent or not target.parent.is_dir():
@@ -148,13 +156,15 @@ def install(app, root, home, helper, stop=False):
     if previous:
         idle(target, False)
         target.rename(backup)
+    installed = False
     try:
         staged.rename(target)
+        installed = True
         verify_app(target, root)
     except Exception:
-        if target.exists():
+        if installed and target.exists():
             target.rename(work / 'rejected.app')
-        if backup.exists():
+        if backup.exists() and not target.exists():
             backup.rename(target)
         raise
     after = state(helper)

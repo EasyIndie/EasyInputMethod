@@ -44,8 +44,10 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 ## 当前证据
 
 - 本地arm64/macOS27.0.1：固定开发根原生normal/failure/INT/TERM退出0/7/-2/-15；错误owner及过宽权限均拒绝exit3。证据 `platforms/macos/build/stable-imk-dev/native-final.json`。这是自建ad-hoc隔离宿主直接进程验证，不是系统IMK客户端输入。
-- 新8项开发工具回归覆盖固定身份、真实数据目录不创建、符号链接/宽权限/多根拒绝、开发源正在使用时零换包/零停止、路径不符零信号、保留数据/旧包、登记声明变化拒绝、最终校验失败回滚。现有隔离6项、CI根/架构4项通过。
+- 新9项开发工具回归覆盖固定身份、真实数据目录不创建、符号链接/宽权限/多根拒绝、开发源正在使用时零换包/零停止、路径不符零信号、保留数据/旧包、登记声明变化拒绝、并发换包零修改、最终校验失败回滚。现有隔离6项、CI根/架构4项通过。
 - 完整离线41文件187项：38文件首次通过，3项系统服务沙箱失败后正常权限重跑通过；原始失败保留于 `/private/tmp/lampyris-dev-offline.log`，不删去失败历史。actionlint与make verify零诊断通过（`/private/tmp/lampyris-dev-final-verify.log`）。
 - 本机固定根 `LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05` 已初始化，重复调用不换UUID；测试词已通过FFI移除，私有mode恢复mixed。未安装/登记/启用开发源，无真实客户端发键。
 - 生产执行535d546f…、config3bc1117c…、词库74f76e92…与105一致；实际当前ABC，启用集合未变。
 - 未决：main公证开发包、首次发现/添加、同身份不同执行SHA的免注销换包、旧包回退、A/B真实客户端及调试器附加。仅前置通过，不把脚本/mock/直接进程测试计为以上原生通过。
+
+补充原生证据：精确路径自建宿主停止通过；ad-hoc包被Developer ID门禁拒绝、未安装。换包持有owner文件的排他锁，并发调用在修改前拒绝；失败不会移动不是本次安装产生的目标包。
