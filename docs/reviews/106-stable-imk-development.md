@@ -2,6 +2,15 @@
 
 日期：2026-10-21。关联 IT-01、ADR-230；产品RC仍为3728dfc，本报告不是新RC验收。
 
+## 当前状态（签名包安装后，以本节为准）
+
+- PR [#56](https://github.com/EasyIndie/EasyInputMethod/pull/56)最新59ee533四门禁全通过（CI39526751254），合入main **b652cd6**。固定开发公证任务 [39527358251](https://github.com/EasyIndie/EasyInputMethod/actions/runs/39527358251)成功；[机器证据](106-stable-imk-evidence.json)绑定源码、zip/执行SHA、设备与未验项。
+- B已安装 `~/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app`，系统目录枚举的实际名称为 **萤火虫开发 d4fcecfb**。严格签名、项目Developer ID、Gatekeeper、公证票据、源码绑定和四份词表逐字节核验通过；签名包直接normal探针exit0。
+- 使用同一签名载荷实际完成安装→替换→previous.app回退，三次实际源集合均与开始相同，数据保留。这只证明未启用时的包级交易，不证明不同版本热更新或客户端输入。证据 `platforms/macos/build/stable-imk-dev/signed-install.log`、`signed-replace.log`、`signed-rollback.log`、`signed-native.json`。
+- 当前ABC，实际启用集合无固定开发源，未主动注册/启用/切源或向客户端发键。全注册目录里的default.enabled=true仍不是实际启用证明；实际列表用dev-state.swift的includeAllInstalled=false。
+- 私有测试词已经FFI删除，私有mode恢复mixed；生产执行/config/词库三SHA仍与105一致，生产宿主未运行。未改旧105候选。
+- **下一步**：用户在系统设置添加“萤火虫开发 d4fcecfb”（若“＋”找不到，保存工作后手动注销再找）。确认实际启用后先做自有窗口输入，再构建同根、不同执行SHA包验证免移除/添加/注销更新及真实输入；A机另初始化其独有长期根。调试附加与正式RC门禁仍待。
+
 ## 官方依据与边界
 
 [Apple DTS于2026年6月的回复](https://developer.apple.com/forums/thread/775526)确认系统设置发现新输入源暂无已知免注销方法，反馈FB23026482。不能由此推断每次同身份二进制更新都必须注销，也不能保证同身份更新一定免注销。
@@ -41,7 +50,7 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 
 长期开发源可变，不能代替不可变RC、正式安装升级、首次登记、独立重建及五日试用。现有UUID临时候选不迁移、不移除，105等待用户添加的候选仍保留。
 
-## 当前证据
+## 工程验证历史（签名包安装前）
 
 - 本地arm64/macOS27.0.1：固定开发根原生normal/failure/INT/TERM退出0/7/-2/-15；错误owner及过宽权限均拒绝exit3。证据 `platforms/macos/build/stable-imk-dev/native-final.json`。这是自建ad-hoc隔离宿主直接进程验证，不是系统IMK客户端输入。
 - 新9项开发工具回归覆盖固定身份、真实数据目录不创建、符号链接/宽权限/多根拒绝、开发源正在使用时零换包/零停止、路径不符零信号、保留数据/旧包、登记声明变化拒绝、并发换包零修改、最终校验失败回滚。现有隔离6项、CI根/架构4项通过。
@@ -51,3 +60,4 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 - 未决：main公证开发包、首次发现/添加、同身份不同执行SHA的免注销换包、旧包回退、A/B真实客户端及调试器附加。仅前置通过，不把脚本/mock/直接进程测试计为以上原生通过。
 
 补充原生证据：精确路径自建宿主停止通过；ad-hoc包被Developer ID门禁拒绝、未安装。换包持有owner文件的排他锁，并发调用在修改前拒绝；失败不会移动不是本次安装产生的目标包。
+
