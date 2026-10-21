@@ -143,3 +143,8 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 ## 2026-10-21 用户预览补验通过及收尾
 
 用户在源码a39bf0f对应预览（执行SHA `01bb15edcb58a65a5bdce1b493ce36b38895c8e806fae6620377e7e51e181cfd`）回复“验收通过”，范围是前述三项。当前是用户手工结论，没有逐键截图，不能扩展为系统IMK或完整方向/翻页矩阵通过。窗口已通过本轮包装器结束，exit0；私有根lf3r82lh已移除，真实config/词库SHA不变。运行日志有IMK mach port消息及NSLayoutConstraint常量范围提示，另行定位，不用用户通过掩盖该诊断，也不据此倒推体验失败。
+
+
+## 2026-10-21 PR门禁收敛
+
+PR #59在744bae2的check/macos/fuzz通过，DCO因7个历史提交缺Signed-off-by失败。保留原分支、验收SHA和PR，不强推；新分支fix/mvp-experience-signed-history从main逐提交补同一作者签署，代码树与744bae2完全一致（git diff --exit-code通过）。原a39bf0f用户预览证据保留，签名开发包将绑定新构建源码，不继承旧执行SHA。
