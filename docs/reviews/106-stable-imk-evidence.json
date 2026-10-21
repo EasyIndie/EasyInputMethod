@@ -158,5 +158,37 @@
       "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
       "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
     }
+  },
+  "preview_user_acceptance_234_236": {
+    "date": "2026-10-21",
+    "environment": "B / arm64 / macOS 27.0.1",
+    "scope": [
+      "学习区随当前候选更新并保留详情展开",
+      "默认Option字母状态快捷键及HUD",
+      "输入区亮暗文字及光标可读性"
+    ],
+    "method": "用户在隔离预览窗口手工验收后回复验收通过；不是自动逐键取证",
+    "user_statement": "验收通过",
+    "result": "PASS_USER_REPORTED_PREVIEW",
+    "implementation_commit": "a39bf0fce55135e09e7d9849f9e0f02c524496e4",
+    "checkout_commit": "56c9044",
+    "executable_sha256": "01bb15edcb58a65a5bdce1b493ce36b38895c8e806fae6620377e7e51e181cfd",
+    "bundle_id": "cn.jokerhub.lampyris.isolatedpanel.lf3r82lh",
+    "pid": 51683,
+    "private_root": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-panel-lf3r82lh",
+    "cleanup": {
+      "wrapper_exit_code": 0,
+      "message": "PASS interactive cleanup: owned process exited; real files unchanged",
+      "private_root_removed": true
+    },
+    "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137",
+    "limits": [
+      "不包含系统IMK或签名包安装升级",
+      "不扩展为全部方向键/翻页/应用兼容矩阵通过"
+    ],
+    "runtime_notes": [
+      "本轮运行日志出现IMKCFRunLoopWakeUpReliable的mach port消息及NSLayoutConstraint常量超过内部范围提示，待单独定位；用户未报告对应体验失败"
+    ]
   }
 }
