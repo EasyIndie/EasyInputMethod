@@ -22,7 +22,12 @@
 
 - 将 `owned-textedit.applescript` 创建路径改为直接打开唯一0600临时文件，沿用文档名、规范化路径、可见窗口唯一性和初始窗口ID集合校验；不再先 `make new document`，避免TextEdit复用既有空白窗口。符合ADR-091/092，不放宽所有权契约。
 - `osacompile`及`make verify`通过。当前包模式探针在预检阶段遭系统拒绝 `System Events` AppleEvent（`-10827`），未创建测试窗口、未发键。机器证据 `platforms/macos/build/installed-mode-current-134728/`；当前ABC、开发模式项enabled/selectable但父源disabled；`source-state select-owned`返回TIS -50，未改变来源。生产数据SHA保持。唯一临时文件未输入、已关闭删除。
-- 下一步请用户从输入源菜单手动选中固定开发源，再在唯一临时文档用Computer Use作人工输入验证；运行自动脚本仍受System Events -10827阻断。不得绕过检查或直接改TCC；选源失败则保持BLOCKED。
+
+### 用户切换后的人工原生补验
+
+用户确认已切换后，Computer Use 在唯一临时 TextEdit 文件实际观察到 `wq` 空格提交“你”、`nihao` 空格提交“你好”、重复输入后 Esc 无新增文本、退格重输成功、数字键1的提交文本与空格一致；`alt+m` 三次后隔离配置回读 mixed→wubi→pinyin→mixed。关闭时复原更改，原未命名文档未关闭，夹具已删除。开发包别名 SHA 匹配本轮公证包，但本轮 HUD 探针未确认宿主PID；TIS仍报告ABC，与实际模式响应不符。目标截图没有候选面板，故屏显排序及数字选择与具体屏显项一致性仍未验。详见[报告106](../reviews/106-stable-imk-development.md)及机器证据 JSON。System Events -10827 仍阻断脚本探针；本次人工操作不关闭该阻塞。
+- 后续最小步骤：在另一个受支持客户端确认候选面板/数字项，恢复可独立核验的开发源与宿主身份采集，再做重启后输入和升级回退；生产RC、A机、兼容矩阵及最终发布验收仍待。
+- 上述“等待用户切换后手验”已由本节补验完成；按本节列出的候选面板、宿主身份、重启与升级回退范围继续，自动脚本仍不得绕过System Events -10827。
 
 ## 2026-10-11 推进记录
 

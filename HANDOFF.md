@@ -2,11 +2,11 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-21 / Codex（Luna）；TextEdit共享夹具按ADR-091/092修正，`make verify`通过；原生复验被System Events自动化`-10827`阻断。
+- 更新：2026-10-21 / Codex（Luna）；用户切换后完成TextEdit手工原生补验（报告106），本轮文档更新后`make verify`全绿。
 - 产品RC源码仍为`3728dfc`（PR #54）；正式与A/B、安装升级及五日试用未完成；main上的开发路径为固定身份私有根，未锁正式RC。
-- 当前分支`docs/106-imk-post-replacement`，基线`46e0d34`；本轮夹具/文档改动待提交，PR #59旧HEAD门禁曾全绿，本轮后CI待查。
+- 当前分支`docs/106-imk-post-replacement`，HEAD `117ebe1`；本轮验收记录改动待提交，PR #59旧HEAD门禁曾全绿，本轮后CI待查。
 - 排序915a70a、词库/整词回查8e35700、混输固定入口323b1a1；ADR-226…229，报告105。旧产品候选8eb872f的104结果不继承。
-- PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新PID26819/SHA `be7deecf…78a68318`的TextEdit `wq→你`/marked/恢复通过。模式探针创建唯一窗口BLOCKED、未发键。旧b652包可恢复，正式包与真实配置/词库未改变。
+- PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新包别名SHA `be7deecf…78a68318`匹配，历史PID26819已确认。当前手工UI观察到wq/nihao提交、Esc、退格重输、数字键与空格提交结果相同、三模式循环；候选面板未显示，当前宿主PID未独立确认。TIS仍回读ABC，输入源状态存在矛盾。旧b652包可恢复，正式包与真实配置/词库未改变。
 
 ## 1. 设备与数据
 
@@ -15,7 +15,7 @@
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（10-21本轮回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，Developer ID/accepted本轮正常权限回读通过；生产宿主未启动 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 本轮精确API与实际列表均为ABC，未切源；真实三SHA与104收尾相同 |
 | B历史隔离（报告104） | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 报告104补验后已归档，宿主按精确路径停止；本轮代码改进未再安装或激活该身份 |
-| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | source-state回读ABC、开发default启用；当前宿主未运行。自动化预检-10827，未创建夹具/发键；生产SHA不变 |
+| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | 手工UI有输入响应并完成模式循环；TIS仍回读ABC且本轮PID不可确认。候选显示未核，生产SHA不变；详情报告106 |
 | B新隔离（105） | 3728dfc/arm64公证；zip0d29ed9a…/执行45c3b627…，标签萤火虫隔离验收 dce4ae25 | 新私有根0700+owner0600，私有mode=mixed，探针词已经FFI精确删除；真实数据未变 | 用户要求清理；实际未启用/无进程，撤销登记exit0后归档packaging/out/retired-imk-dce4ae25-20261021；原临时根登录时已清理，正式zip保留 |
 
 - 新两包完整zip/执行SHA、CI、私有根、静态信任及B四条隔离进程路径见报告105；正式universal仅验证未安装。历史两包归档证据仍见104。
@@ -32,7 +32,7 @@
 
 ## 3. 未决
 
-- 本轮按ADR-091/092修复共享TextEdit夹具，`osacompile`与`make verify`通过；模式探针被System Events -10827挡在建窗前；随后source-state select-owned返回TIS -50（父源disabled、开发模式enabled/selectable），当前ABC未变。临时文件已关闭删除，生产SHA不变；原生输入及拼音/Esc、候选一致性仍待。
+- 夹具探针仍被System Events -10827挡在建窗前；人工UI已观察wq/nihao、Esc、退格、数字键提交结果与空格一致及模式循环，但候选面板未见、数字键未能对照具体屏显项。TIS仍报ABC、与界面行为矛盾；本轮进程PID未独立确认。临时文件已关闭删除，生产SHA不变。
 - 首次新载荷TextEdit AppleEvent超时和后续模式窗口识别失败均在发键前停止并恢复ABC/集合；不得把未运行场景算PASS，也不得关闭身份不明窗口。
 
 - PR #54的check/DCO/fuzz/macos全部通过（CI39519832333）；签名公证候选3728dfc已核；B新私有根见105-evidence/isolated-target.json。105旧隔离安装副本已按用户要求归档；正式zip保留。其原生/RC结果不继承固定开发源结果。
@@ -42,8 +42,8 @@
 
 ## 4. 下一步（断点）
 
-0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb已启用，当前ABC；不要再要求用户添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
-1. 新包`288c750` SHA `be7deecf…78a68318`已安装；历史PID26819加载确认，基本`wq→你`通过，证据`installed-textedit-uy16l3pt/`。共享夹具现直接打开唯一文件；请用户从输入源菜单手动选择固定开发源；随后在唯一临时文档用Computer Use人工验证，归档清理并恢复ABC。脚本自动化仍受System Events -10827阻断；不绕过预检。
+0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb包已安装。用户已手动切换过，但TIS仍报ABC；不要再次调用选源API或要求重复添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
+1. 下一步先用可见候选客户端复核候选面板及数字键所选项，再定位TIS状态矛盾/确认宿主PID；脚本自动化仍受System Events -10827阻断，不绕过预检。此前手工TextEdit结果和边界见报告106机器证据。
 2. 若需要回退，以previous.app调用`python3 scripts/macos-imk-dev.py install --app <previous.app> --stop-host`；验证恢复后再继续。正式RC验收与开发身份结果分开安排。
 
 3. 核心体验与安装升级、宿主16ms/30MB、兼容及独立复核完成后才锁RC开始五日。词库后续另选合规领域词，不把72项保留集补入后仍称其独立保留。
@@ -57,6 +57,8 @@
 - 生产包未替换；归档副本在packaging/out/b-8eb872f-retired，补验安装副本和私有根现已归档至packaging/out/b-8eb872f-supplement-retired。完整身份与平台差异只放报告104。
 
 ## 9. 会话日志
+
+- 2026-10-21 / Codex（Luna）：用户切换后在唯一临时TextEdit文档手验wq/nihao、Esc、退格重输、数字1与空格提交结果相同、alt+m三模式循环；未见候选面板，PID本轮不可确认。TIS仍回读ABC；临时文档复原关闭并删除，原未命名文档保留、生产SHA不变。报告106/任务卡已更新，待verify和提交。
 
 - 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止；source-state选源又因TIS `-50`失败，ABC未变。唯一临时文件已关闭删除、生产SHA不变；待用户手动选开发源后人工UI验收，报告106。
 
