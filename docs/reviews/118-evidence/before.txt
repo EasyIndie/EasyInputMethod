@@ -1,0 +1,22 @@
+   Compiling ime-dict v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-dict)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.65s
+     Running unittests src/lib.rs (target/debug/deps/ime_dict-7afcd65629cd4ef1)
+
+running 1 test
+test tests::failed_flush_retries_until_the_file_is_available ... FAILED
+
+failures:
+
+---- tests::failed_flush_retries_until_the_file_is_available stdout ----
+
+thread 'tests::failed_flush_retries_until_the_file_is_available' (1960126) panicked at crates/ime-dict/src/lib.rs:623:38:
+called `Result::unwrap_err()` on an `Ok` value: ()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    tests::failed_flush_retries_until_the_file_is_available
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 12 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `-p ime-dict --lib`

@@ -369,11 +369,11 @@ impl Store {
         if !self.dirty {
             return Ok(());
         }
-        self.dirty = false;
         fs::File::open(&self.path)?.sync_all()?;
         if let Some(parent) = self.path.parent().filter(|p| !p.as_os_str().is_empty()) {
             let _ = fs::File::open(parent).and_then(|dir| dir.sync_all());
         }
+        self.dirty = false;
         Ok(())
     }
 }
@@ -610,6 +610,29 @@ mod tests {
         }
         assert!(parse(&"x".repeat(MAX_BYTES as usize + 1)).is_err());
     }
+    #[test]
+    fn failed_flush_retries_until_the_file_is_available() {
+        let dir = unique_dir("flush-retry");
+        let path = dir.join("user.tsv");
+        let saved = dir.join("saved.tsv");
+        let mut store = Store::load(&path).unwrap();
+        store.learn("wubi", "ab", "测试词").unwrap();
+        let bytes = fs::read(&path).unwrap();
+        fs::rename(&path, &saved).unwrap();
+        for _ in 0..2 {
+            assert_eq!(store.flush().unwrap_err().kind(), io::ErrorKind::NotFound);
+        }
+        fs::rename(&saved, &path).unwrap();
+        store.flush().unwrap();
+        assert_eq!(fs::read(&path).unwrap(), bytes);
+        assert_eq!(Store::load(&path).unwrap().entries(), store.entries());
+        // A completed flush stays a no-op until there is another write.
+        fs::rename(&path, &saved).unwrap();
+        store.flush().unwrap();
+        drop(store);
+        fs::remove_dir_all(dir).unwrap();
+    }
+
     #[test]
     fn persists_merges_and_preserves_good_data_on_failure() {
         let dir = std::env::temp_dir().join(format!(
