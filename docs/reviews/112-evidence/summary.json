@@ -1,0 +1,184 @@
+{
+  "base_commit": "594c8c6c03fdfe77ed03e74575ffeb83e02c1ff7",
+  "environment": {
+    "architecture": "arm64",
+    "macOS": "27.0.1",
+    "swift": "Apple Swift version 6.4 (swiftlang-6.4.0.34.1 clang-2100.3.34.1)\nTarget: arm64-apple-macosx27.0.0"
+  },
+  "scope": "offscreen updateStatus/update/layout, real core dictionaries, private config; excludes engine feeding and IMK client/scheduling/compositor",
+  "iterations_per_run": 600,
+  "pairs": [
+    {
+      "baseline": {
+        "milliseconds": [
+          {
+            "max": 8.088917,
+            "p50": 0.748417,
+            "p95": 0.965791
+          },
+          {
+            "max": 6.113625,
+            "p50": 1.118958,
+            "p95": 1.321708
+          },
+          {
+            "max": 7.131083,
+            "p50": 0.663792,
+            "p95": 1.00025
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      },
+      "candidate": {
+        "milliseconds": [
+          {
+            "max": 1.613083,
+            "p50": 8.3e-05,
+            "p95": 0.000125
+          },
+          {
+            "max": 4.770041,
+            "p50": 1.131458,
+            "p95": 1.215083
+          },
+          {
+            "max": 0.981458,
+            "p50": 0.704208,
+            "p95": 0.929583
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "baseline": {
+        "milliseconds": [
+          {
+            "max": 3.457208,
+            "p50": 0.833291,
+            "p95": 0.978541
+          },
+          {
+            "max": 4.914459,
+            "p50": 1.11675,
+            "p95": 1.311875
+          },
+          {
+            "max": 1.057458,
+            "p50": 0.787542,
+            "p95": 0.985541
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      },
+      "candidate": {
+        "milliseconds": [
+          {
+            "max": 1.518625,
+            "p50": 8.3e-05,
+            "p95": 0.000125
+          },
+          {
+            "max": 5.143292,
+            "p50": 1.140458,
+            "p95": 1.225792
+          },
+          {
+            "max": 1.863625,
+            "p50": 0.785,
+            "p95": 0.939166
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "baseline": {
+        "milliseconds": [
+          {
+            "max": 2.04075,
+            "p50": 0.814209,
+            "p95": 0.910333
+          },
+          {
+            "max": 4.766625,
+            "p50": 1.122542,
+            "p95": 1.218
+          },
+          {
+            "max": 0.979875,
+            "p50": 0.773625,
+            "p95": 0.933458
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      },
+      "candidate": {
+        "milliseconds": [
+          {
+            "max": 1.520334,
+            "p50": 4.2e-05,
+            "p95": 8.4e-05
+          },
+          {
+            "max": 4.925625,
+            "p50": 1.115625,
+            "p95": 1.233667
+          },
+          {
+            "max": 1.8045,
+            "p50": 0.797209,
+            "p95": 0.941833
+          }
+        ],
+        "samples": 600,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    }
+  ],
+  "binary_sha256": {
+    "baseline": "c2d48cc7360cdc21f23c2869a0ad35d1ae9ab0a251c4b8c5f72a090a0e3a9c8f",
+    "candidate": "345df9fe6095397fc89e8e9a67508701db5ec321705b4df133074a5710bb7ed3"
+  },
+  "probe_sha256": "673788c4a7c836d112ca10de2d4ffd8fb850b9671f1815bf6b27f91afb56d07b",
+  "dictionary_sha256": {
+    "wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
+  },
+  "validation": {
+    "candidate_presentation": "PASS (9.155 seconds)",
+    "strict_native_build": "PASS",
+    "make_verify": "PASS; original 200 products scanned"
+  },
+  "real_IMK_acceptance": false,
+  "production_installed": false
+}

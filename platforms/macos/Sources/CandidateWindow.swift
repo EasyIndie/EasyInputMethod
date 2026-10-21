@@ -455,7 +455,7 @@ private final class LearningDetailsView: NSView {
 }
 
 /// 候选窗顶部右侧的状态摘要；单字芯片，压缩到不抢候选与翻页的注意力。
-struct CandidateStatus {
+struct CandidateStatus: Equatable {
     var mode: String
     var english: Bool
     var fullWidth: Bool
@@ -609,6 +609,7 @@ final class CandidateWindow: NSObject {
     var frame: NSRect { panel.frame }
     var isVisible: Bool { panel.isVisible }
     func updateStatus(_ status: CandidateStatus) {
+        guard self.status != status else { return }
         self.status = status
         stateStrip.update(status)
         arrange()
