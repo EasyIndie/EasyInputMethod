@@ -72,7 +72,7 @@
     "error": "",
     "keep_open_for_user": true
   },
-  "physical_highlight_acceptance": "pending user",
+  "physical_highlight_acceptance": "PASS",
   "loaded_new_host_verified": true,
   "host_probe": {
     "pids": [
@@ -95,6 +95,72 @@
       ]
     }
   },
-  "loaded_host_scope": "PID82516 holds exact installed executable; source remains ABC, not proof of client binding",
-  "make_verify": "PASS"
+  "loaded_host_scope": "PID82516 exact installed path, matching executable SHA, active development source verified after user confirmation",
+  "make_verify": "PASS",
+  "manual_acceptance": {
+    "basis": "user explicitly confirmed passed",
+    "scope": [
+      "one filled keyboard-focus candidate",
+      "hovered non-focus candidate outlined",
+      "arrow browsing and Space commit focused item"
+    ],
+    "window_id": "2221",
+    "source_commit": "ef566cd9a09f2e0353a4eb9600a88d7237235545",
+    "host": {
+      "pids": [
+        "82516"
+      ],
+      "commands": {
+        "82516": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app/Contents/MacOS/LampyrisIMKTest"
+      },
+      "source": {
+        "current": "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "enabled": [
+          "cn.jokerhub.inputmethod.Lampyris",
+          "cn.jokerhub.inputmethod.Lampyris.default",
+          "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+          "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+          "com.apple.CharacterPaletteIM",
+          "com.apple.PressAndHold",
+          "com.apple.keylayout.ABC",
+          "com.sogou.inputmethod.sogou",
+          "com.sogou.inputmethod.sogou.pinyin",
+          "com.sogou.inputmethod.sogouWB",
+          "com.sogou.inputmethod.sogouWB.wubi"
+        ]
+      },
+      "executable_sha256": "8f479eb8452397a1307f2205c8095b9da5b3c735517e367830b5d6b84a1ab242"
+    },
+    "remaining": [
+      "other native input/editing paths",
+      "real host performance",
+      "target A/B apps and release acceptance"
+    ]
+  },
+  "native_virtual_key_followup": {
+    "source_commit": "ef566cd9a09f2e0353a4eb9600a88d7237235545",
+    "driver": "existing tools/macos-probe/bin/keymod; path/window/input focus checked for each key",
+    "wubi": {
+      "space": "你",
+      "digit2": "像",
+      "backspace": "你",
+      "esc": ""
+    },
+    "pinyin_and_correction": {
+      "nihao": "你好",
+      "xi'an": "西安",
+      "shurufa": "输入法",
+      "pinyin": "拼音",
+      "huiguiceshi": "回归测试",
+      "rengongzhineng": "人工智能",
+      "typo-recovery": "你好"
+    },
+    "fixture_failure": "first word-test mapping transcription omitted y; invalid run retained; corrected by reading existing repository mapping",
+    "owned_temporary_documents_closed": true,
+    "user_manual_windows_preserved": [
+      "1902",
+      "2221"
+    ],
+    "performance_measured": false
+  }
 }
