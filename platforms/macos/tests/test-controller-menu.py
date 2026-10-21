@@ -30,6 +30,7 @@ class ControllerMenuTests(unittest.TestCase):
             shutil.copyfile(ROOT / "platforms/macos/tests/controller-menu.swift", root / "main.swift")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
                            "CLANG_MODULE_CACHE_PATH": str(root / "cache")}
+            environment.pop("LAMPYRIS_PERF_TRACE", None)
             commands = [
                 ["cargo", "build", "--release", "-p", "ime-ffi"],
                 ["clang", "-fmodules", "-fmodules-cache-path=" + str(root / "cache"),

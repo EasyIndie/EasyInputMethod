@@ -572,12 +572,16 @@ final class LampyrisInputController: IMKInputController {
         let engineStamp = PerfTrace.shared.stamp()
         switch outcome {
         case .consumed:
-            updateMarked(client, session.buffer)
-            let shown = showCandidates(client, session: session)
+            PerfTrace.shared.measure(trace, phase: .preedit) {
+                updateMarked(client, session.buffer)
+            }
+            let shown = showCandidates(client, session: session, trace: trace)
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: shown, committed: false)
             return true
         case .committed(let text):
-            commit(text, to: client)
+            PerfTrace.shared.measure(trace, phase: .commit) {
+                commit(text, to: client)
+            }
             candidateWindow?.hide()
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
             return true
@@ -627,8 +631,12 @@ final class LampyrisInputController: IMKInputController {
     }
 
     @discardableResult
-    private func showCandidates(_ client: IMKTextInput, session: ImeSession) -> Int {
-        let candidates = session.candidates(limit: candidateCount)
+    private func showCandidates(
+        _ client: IMKTextInput, session: ImeSession, trace: PerfTrace.Marks? = nil
+    ) -> Int {
+        let candidates = PerfTrace.shared.measure(trace, phase: .candidateData) {
+            session.candidates(limit: candidateCount)
+        }
         guard !candidates.isEmpty else {
             candidateWindow?.hide()
             return 0
@@ -649,13 +657,18 @@ final class LampyrisInputController: IMKInputController {
             self.candidateSelection.reset()
             self.showCandidates(client, session: session)
         }
-        window.updateStatus(candidateStatus())
-        window.update(
-            candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
-            selectedIndex: candidateSelection.index,
-            input: session.buffer, showsNavigationHint: true,
-            warning: session.variantErrorMessage)
-        window.show(at: caretRect(client))
+        PerfTrace.shared.measure(trace, phase: .status) {
+            window.updateStatus(candidateStatus())
+        }
+        PerfTrace.shared.measure(trace, phase: .content) {
+            window.update(
+                candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
+                selectedIndex: candidateSelection.index,
+                input: session.buffer, showsNavigationHint: true,
+                warning: session.variantErrorMessage)
+        }
+        let caret = PerfTrace.shared.measure(trace, phase: .caret) { caretRect(client) }
+        PerfTrace.shared.measure(trace, phase: .window) { window.show(at: caret) }
         return candidates.count
     }
 

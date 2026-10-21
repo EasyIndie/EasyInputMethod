@@ -8,6 +8,42 @@ let root = CommandLine.arguments[1]
 func require(_ condition: Bool, _ message: String) {
     if !condition { fputs("FAIL \(message)\n", stderr); exit(1) }
 }
+// Exercise the real trace writer, with no desktop events or input contents.
+let tracePath = root + "/trace.jsonl"
+let perf = PerfTrace.shared
+require(!perf.enabled && perf.begin() == nil, "trace disabled by default")
+var calls = 0
+let disabledResult = perf.measure(nil, phase: .preedit) { calls += 1; return 42 }
+require(disabledResult == 42 && calls == 1, "disabled trace preserves the operation")
+require(!FileManager.default.fileExists(atPath: tracePath), "disabled trace never writes")
+PerfTrace.configureForTest(tracePath: tracePath)
+guard let firstTrace = perf.begin(), let secondTrace = perf.begin() else {
+    fatalError("test trace enabled")
+}
+let measured = perf.measure(firstTrace, phase: .preedit) { calls += 1; return 7 }
+perf.measure(firstTrace, phase: .preedit) { calls += 1 }
+perf.measure(secondTrace, phase: .commit) { calls += 1 }
+require(measured == 7 && calls == 4, "tracing preserves calls and returned values")
+perf.finish(firstTrace, engine: perf.stamp(), candidates: 7, committed: false)
+perf.finish(secondTrace, engine: nil, candidates: 1, committed: true)
+let traceRows = try String(contentsOfFile: tracePath, encoding: .utf8).split(separator: "\n").map {
+    try JSONSerialization.jsonObject(with: Data($0.utf8)) as! [String: Any]
+}
+require(traceRows.count == 2, "one record per key")
+let firstPhases = traceRows[0]["phases"] as! [String: Double]
+let secondPhases = traceRows[1]["phases"] as! [String: Double]
+require(Set(firstPhases.keys) == ["preeditUs"] && Set(secondPhases.keys) == ["commitUs"],
+        "phases remain isolated between keys")
+require(firstPhases["preeditUs"]! >= 0 && secondPhases["commitUs"]! >= 0,
+        "nonnegative phase durations")
+require(traceRows[0]["phaseSchema"] as? Int == 1, "versioned optional phase fields")
+require(traceRows[0]["candidates"] as? Int == 7 && traceRows[1]["committed"] as? Bool == true,
+        "legacy candidate and commit fields remain compatible")
+require(traceRows[1]["engineUs"] as? Double == -1, "missing engine stamp remains compatible")
+require(Set(traceRows[0].keys) == ["engineUs", "totalUs", "candidates", "committed", "phaseSchema", "phases"],
+        "trace contains only approved timing fields")
+let tracePermissions = try FileManager.default.attributesOfItem(atPath: tracePath)[.posixPermissions] as! Int
+require(tracePermissions == 0o600, "new trace file is private")
 func label(_ mode: String) -> String {
     InputStateMenu.modes.first { $0.0 == mode }?.1 ?? ""
 }

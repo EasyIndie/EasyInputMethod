@@ -1,0 +1,16 @@
+F
+======================================================================
+FAIL: test_native_view_and_real_ffi_paging (__main__.CandidatePresentationTests.test_native_view_and_real_ffi_paging)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-candidate-presentation.py", line 41, in test_native_view_and_real_ffi_paging
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : error: input file '/Users/joker/Documents/EasyInputMethod/target/release/libime_ffi.a' was modified during the build
+error: input file '/Users/joker/Documents/EasyInputMethod/target/release/libime_ffi.a' was modified during the build
+
+
+----------------------------------------------------------------------
+Ran 1 test in 6.554s
+
+FAILED (failures=1)

@@ -1,0 +1,17 @@
+{
+  "environment": "B arm64/macOS27.0.1",
+  "scope": "未安装的分段计时工作树；离线控制器/候选回归与引擎探针",
+  "source_sha256": {
+    "platforms/macos/Sources/PerfTrace.swift": "821c8c131bc6be2503dd758d34a1357fd5d68d43f9973b1d954e2fde15e0c433",
+    "platforms/macos/Sources/InputController.swift": "0c0332c0fe14a1362f8ecdc49d2f59ace6710454a98572f672b7195c07e3cf17"
+  },
+  "validation": {
+    "controller": "PASS",
+    "candidate_first": "工具并发静态库修改失败，非产品结论",
+    "candidate_serial_retry": "PASS",
+    "strict_universal_build": "PASS",
+    "make_verify": "PASS",
+    "network_symbols_checked_artifacts": 200
+  },
+  "limits": "未采新分段签名宿主，未关闭16ms/30MB，不将离线物理足迹当作完整宿主内存。"
+}
