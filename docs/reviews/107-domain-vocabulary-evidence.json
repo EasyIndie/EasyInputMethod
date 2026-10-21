@@ -209,5 +209,16 @@
     "Original 72 holdout untouched; coverage unchanged",
     "No IMK latency/memory or native acceptance claim",
     "Ad-hoc local build not installed"
-  ]
+  ],
+  "separate_preview_fix_package": {
+    "source_commit": "3fe36b0c9ee38f869ad4ecddc0bb5e26ccf31ca7",
+    "run": 39596596605,
+    "zip_sha256": "43db556b0e9bddcf16863fea12388db43be3f3b8baa3af903bfb3df810d8d30b",
+    "executable_sha256": "11d57efb0a27932011e7af692bb08c27b5efd145f6f54a9890ba40823063fdc9",
+    "codesign": "PASS",
+    "gatekeeper": "PASS",
+    "stapler": "PASS",
+    "installed": false,
+    "includes_D16": false
+  }
 }

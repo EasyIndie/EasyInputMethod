@@ -3,9 +3,9 @@
 ## 0. 元信息
 
 - 更新：2026-10-21 / Codex；D16常用组合词工程验证完成，报告107；预览用户通过证据仍绑定a39bf0f/01bb15ed…e181cfd。
-- 当前分支`feat/mvp-domain-vocabulary`，基于5828e9d补充ADR-237/D16；make verify及严格universal构建通过，尚未安装本批词表。
+- 当前分支`feat/mvp-domain-vocabulary`，基于5828e9d补充ADR-237/D16；make verify及严格universal构建通过，尚未安装本批词表；PR #61（5edd418/eded5b0）已创建，CI待完成。
 - 用户明确授权后PR #60合入main `3fe36b0c9ee38f869ad4ecddc0bb5e26ccf31ca7`，#59关闭；旧分支和archive/preview-accepted-744bae2保留，原证据SHA不改写。
-- 固定开发包公证运行39596596605成功，源码3fe36b0（不含D16），待下载核验/换包；正式RC仍未锁定，产品3728dfc历史结果不继承。
+- 固定开发包公证运行39596596605成功，源码3fe36b0（不含D16），已下载且签名/Gatekeeper/stapler核验通过，未换包；正式RC仍未锁定，产品3728dfc历史结果不继承。
 
 ## 1. 设备与数据
 
@@ -51,7 +51,7 @@
 
 ## 4. 下一步（断点）
 
-- 当前断点：提交/推送D16独立PR；下载并核验公证运行39596596605（3fe36b0，旧数据），再按固定开发包装器换包。数据PR合并须另获明确授权，不沿用#60授权。报告107记录本地性能与工作树产物SHA。
+- 当前断点：检查PR #61的CI，审阅后另获合并授权；建议统一源码再签开发包，减少重复换包。公证运行39596596605（3fe36b0，旧数据）已下载静态核验通过但未安装；zip43db556b…0d8d30b/执行11d57efb…063fdc9。数据PR合并须另获明确授权，不沿用#60授权。报告107记录本地性能与工作树产物SHA。
 
 0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb包已安装。用户已手动切换过，但TIS仍报ABC；不要再次调用选源API或要求重复添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
 1. 三项预览补验已通过，不重复要求用户重测；按固定开发身份为ADR-231…236源码重建、签名/公证并换包；在自有TextEdit文稿验证↑↓浏览、空格提交焦点项、数字/鼠标直选、翻页/退格/Esc后焦点重置及marked text无污染。只经固定开发包装器交互，禁止直接启动LampyrisPreview.app；候选独立窗口探针仍需拆分；TIS回读ABC与手工行为矛盾，不尝试程序切源。`test-tools-presentation.py`私有剪贴板断言是独立离线套件失败，另开小任务修复，不阻塞本次候选导航原生验收。
@@ -84,5 +84,3 @@
 - 2026-10-21 / Codex（Luna）：CUA预览重试观察wq按↓组合不提交、空格提交第二项“像”。发现绕过隔离包装器后真实词库短暂新增单行；通过现有FFI精确删除，词库SHA/492字节及config SHA均回基线。更新任务卡/报告/工作流，禁止直接启动预览包。
 
 - 2026-10-21 / Codex（Luna）：复读TIS见ABC、父源disabled/模式enabled；lsof见开发包可执行路径由PID26819持有，但NSRunningApplication窗口探针不认bundle、ps受限。候选探针与HUD/外观/第二屏耦合。CUA在临时文稿观察wq+空格提交“你”，随后清空删除并确认原文稿仍在；无候选窗证据。报告/任务卡补充，工作流改进已推送，补充文档待verify/提交。
-
-- 2026-10-21 / Codex（Luna）：ADR-231实现组合态↑↓浏览当前页候选、空格确认并保持数字/鼠标直选；定向候选测试、warnings-as-errors预览构建、controller集成正常权限复跑及make verify通过。macos-offline-tests仅test-tools-presentation私有剪贴板失败；CUA预览AX超时且未发键；新签名候选未装机，原生IMK结果待验。
