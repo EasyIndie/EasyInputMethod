@@ -4,6 +4,8 @@
 
 ## 当前状态（2026-10-21 PR #58 合入及新包换装后，以本节为准）
 
+- **最新覆盖**：用户随后报告候选框显示时方向键仍会输入乱码；此前↓/空格局部通过不代表方向键整体已验。ADR-232复现并修复预览遗漏左/右等组合导航拦截，实际适配器回归修复前失败/修复后通过，完整冒烟与make verify通过；用户物理键复验及新签名包IMK验收尚待，发布阻断保持。见文末补记及T-ITER-24。
+
 - PR #58 的 `247c444` 四项门禁通过后合入，`main` 为 `288c750`；同一固定根的 arm64 公证任务39532557520成功。ZIP SHA `daa077a4…f395a0f`，执行 SHA `be7deecf…78a68318`，包内源码标记 `288c750`。签名、Gatekeeper、stapler校验通过。
 - 已在源启用期间换入不同执行SHA的新包，无移除/添加/注销。安装记录 `~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-7eurs9cz/installation.json` 显示当前源和实际启用集合前后相同；旧包留在同根 `replacement-7eurs9cz/previous.app`。这证明包已原位替换，不证明系统已装载新二进制。
 - 随后系统加载了新宿主PID26819，`lsof`确认其文本可执行路径是当前安装包，执行SHA `be7deecf…78a68318`。重跑现有自有窗口探针通过：`wq` marked range `1, 2`，空格提交“你”，marked range清除；输入源及实际启用集合恢复，生产config/词库SHA仍 `3bc1117c…` / `74f76e92…`。证据 `platforms/macos/build/installed-textedit-uy16l3pt/result.json`。Computer Use确认原先“未命名”窗口保持原样。
@@ -111,3 +113,9 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 - Computer Use重试后打开已构建的`LampyrisPreview.app`，`wq`组合按↓仍保持预编辑，随后空格提交第二项“像”并清空组合。该结果支持预览路径的候选焦点/空格映射工作；AX树和截图均未包含浮动候选面板，因此没有候选列表或高亮的直接视觉证据，也不是新签名包/系统IMK证据。
 - 该次直接启动独立预览包，绕过`make macos-dev`创建的私有数据根。预览使用真实`~/Library/Application Support/Lampyris`，主动选择曾短暂写入个人词库行`wubi / wqje / 像 / 1`。随后调用既有FFI词库删除API仅移除该行；回读个人词库SHA `74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137`、492字节，与测试前基线完全一致；config SHA `3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550`未变。预览已关闭。
 - 流程修正：禁止通过Launch Services、Finder或Computer Use应用清单直接启动构建产物`LampyrisPreview.app`；交互预览只经`make macos-dev`或明确隔离的验收包装器。已在`docs/开发工作流.md`记录此边界。实机同SHA候选窗显示、高亮、数字/鼠标选择及提交一致性仍待固定开发包验收。
+
+## 2026-10-21 用户方向键乱码反馈与预览修复
+
+- 用户实测报告候选框出现后按方向键有乱码，已确认发生在预览输入区的左/右键，上/下可以切换。新回归直接调用`PreviewInput.keyDown`，旧实现左方向键123失败，证明预览左/右导航专用字符可污染组合或文本；仅测共享导航判断函数遗漏了实际接线缺口。正式IMK控制器已有相同守卫，此处不据源码判断宣布其物理键场景通过。
+- 按ADR-232在预览↑↓浏览之后、字符解析之前调用共享组合导航守卫；7个导航键×3种字符表示均检验完整文本、组合和空格确认项。原实现正常权限运行exit1，修复后完整冒烟exit0；strict Swift构建及make verify全绿。初次沙箱执行exit134单独保留。证据目录`platforms/macos/build/acceptance-arrow-232/`，含修复diff和前后日志。
+- 先前交互预览未显示问题不构成该用户报告的反证；修复后的物理键交互、实际候选高亮及同SHA系统IMK提交仍待复验，发布阻断不关闭。

@@ -56,6 +56,10 @@ final class PreviewInput: NSTextView {
             refresh()
             return
         }
+        if session.consumesCompositionNavigation(event) {
+            refresh()
+            return
+        }
         guard let text = event.charactersIgnoringModifiers, let scalar = text.unicodeScalars.first else { return }
         if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
         if session.isComposing, scalar.value == 0xF72C || scalar.value == 0xF72D {
@@ -564,6 +568,36 @@ if CommandLine.arguments.contains("--smoke-test") {
             fputs("预览冒烟失败：预期 \(expected)，实际 \(view.string)\n", stderr); exit(1)
         }
     }
+    // Exercise the actual preview adapter, not only the shared navigation predicate.
+    for (key, functionCharacter): (UInt16, String) in [
+        (123, "\u{f702}"), (124, "\u{f703}"),
+        (125, "\u{f701}"), (126, "\u{f700}"),
+        (115, "\u{f729}"), (119, "\u{f72b}"), (117, "\u{f728}"),
+    ] {
+        for characters in [functionCharacter, "\u{1f}", ""] {
+            view.clear()
+            keys("wq")
+            let values = session.candidates(limit: 9).map(\.text)
+            guard values.count > 1,
+                let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                    modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                    characters: characters, charactersIgnoringModifiers: characters,
+                    isARepeat: false, keyCode: key) else { exit(1) }
+            view.keyDown(with: event)
+            guard session.buffer == "wq", view.string == "wq",
+                session.candidates(limit: 9).map(\.text) == values else {
+                fputs("预览方向键污染文本或组合：keyCode=\(key)\n", stderr); exit(1)
+            }
+            guard let space = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                characters: " ", charactersIgnoringModifiers: " ",
+                isARepeat: false, keyCode: 49) else { exit(1) }
+            view.keyDown(with: space)
+            check(values[key == 125 ? 1 : 0])
+            guard session.buffer.isEmpty else { exit(1) }
+        }
+    }
+    view.clear()
     keys("a")
     let aFirstPage = session.candidates(limit: 9).map(\.text)
     guard session.pageCount > 1 else { fputs("a应有多页候选。\n", stderr); exit(1) }
