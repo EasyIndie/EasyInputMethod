@@ -1,0 +1,17 @@
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+    Finished `release` profile [optimized] target(s) in 0.10s
+sessions=1 loaded_footprint_mib=28.44
+round=0 footprint=28.44
+round=10 footprint=29.02
+round=20 footprint=29.03
+round=30 footprint=29.03
+round=40 footprint=29.03
+round=50 footprint=29.03
+round=60 footprint=29.03
+round=70 footprint=29.03
+round=80 footprint=29.03
+round=90 footprint=29.03
+keys=2200 p50_ms=0.119 p95_ms=0.928 max_ms=1.108 peak_rss_mib=33.41
+steady_footprint_mib=29.03

@@ -10,8 +10,19 @@ final class PerfTrace {
 
     private var path: String?
     /// 分阶段时间点，调用方只在 enabled 时持有。
-    struct Marks {
-        let start: DispatchTime
+    enum Phase: String {
+        case preedit = "preeditUs"
+        case candidateData = "candidateDataUs"
+        case status = "statusUs"
+        case content = "contentUs"
+        case caret = "caretUs"
+        case window = "windowUs"
+        case commit = "commitUs"
+    }
+
+    final class Marks {
+        let start = DispatchTime.now()
+        fileprivate var phases: [String: Double] = [:]
     }
 
     private init() {
@@ -29,7 +40,16 @@ final class PerfTrace {
 
     func begin() -> Marks? {
         guard enabled else { return nil }
-        return Marks(start: DispatchTime.now())
+        return Marks()
+    }
+
+    /// Attribute synchronous work only when this key has an active trace.
+    func measure<T>(_ marks: Marks?, phase: Phase, _ work: () -> T) -> T {
+        guard let marks else { return work() }
+        let start = DispatchTime.now()
+        let result = work()
+        marks.phases[phase.rawValue, default: 0] += elapsedMicroseconds(from: start)
+        return result
     }
 
     /// 引擎算完候选的时间点（还没画）。
@@ -42,10 +62,18 @@ final class PerfTrace {
         guard let marks, let path else { return }
         let total = elapsedMicroseconds(from: marks.start)
         let engineMicro = engine.map { elapsedMicroseconds(from: marks.start, to: $0) } ?? -1
-        let line = String(
-            format: "{\"engineUs\":%.1f,\"totalUs\":%.1f,\"candidates\":%d,\"committed\":%@}\n",
-            engineMicro, total, candidates, committed ? "true" : "false")
-        append(line, to: path)
+        var record: [String: Any] = [
+            "engineUs": engineMicro, "totalUs": total,
+            "candidates": candidates, "committed": committed,
+        ]
+        if !marks.phases.isEmpty {
+            record["phaseSchema"] = 1
+            record["phases"] = marks.phases
+        }
+        guard var data = try? JSONSerialization.data(withJSONObject: record, options: .sortedKeys)
+        else { return }
+        data.append(0x0A)
+        append(data, to: path)
     }
 
     /// 面板类动作（设置/关于）的打开耗时。
@@ -54,7 +82,7 @@ final class PerfTrace {
         let line = String(
             format: "{\"panel\":\"%@\",\"totalUs\":%.1f}\n", panel,
             elapsedMicroseconds(from: marks.start))
-        append(line, to: path)
+        append(Data(line.utf8), to: path)
     }
 
     private func elapsedMicroseconds(from start: DispatchTime, to end: DispatchTime = DispatchTime.now())
@@ -63,14 +91,14 @@ final class PerfTrace {
         Double(end.uptimeNanoseconds - start.uptimeNanoseconds) / 1000
     }
 
-    private func append(_ line: String, to path: String) {
+    private func append(_ data: Data, to path: String) {
         let url = URL(fileURLWithPath: path)
         if let handle = try? FileHandle(forWritingTo: url) {
             defer { try? handle.close() }
             _ = try? handle.seekToEnd()
-            try? handle.write(contentsOf: Data(line.utf8))
+            try? handle.write(contentsOf: data)
         } else {
-            try? Data(line.utf8).write(to: url)
+            try? data.write(to: url)
             // 首次创建时就收紧权限，避免把性能文件留在 0644。
             try? FileManager.default.setAttributes([.posixPermissions: 0o600], ofItemAtPath: path)
         }

@@ -1,0 +1,16 @@
+合成容量词库：1978920 字节 / 10000条，无真实用户数据
+    Finished `release` profile [optimized] target(s) in 0.07s
+sessions=1 loaded_footprint_mib=29.14
+round=0 footprint=29.14
+round=10 footprint=34.16
+round=20 footprint=34.17
+round=30 footprint=34.17
+round=40 footprint=34.17
+round=50 footprint=34.17
+round=60 footprint=34.17
+round=70 footprint=34.17
+round=80 footprint=34.17
+round=90 footprint=34.17
+keys=2200 p50_ms=0.127 p95_ms=0.950 max_ms=8.955 peak_rss_mib=38.56
+steady_footprint_mib=34.17
+learn_samples=1 learn_max_ms=0.126 after_focus_out_footprint_mib=34.22
