@@ -1,0 +1,9 @@
+{
+  "source_commit": "3728dfcd28117857de65b64b57098f248848125d",
+  "target_root": "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe",
+  "arch": "arm64",
+  "installed": true,
+  "registered": true,
+  "actual_enabled": false,
+  "current_source": "com.apple.keylayout.ABC"
+}

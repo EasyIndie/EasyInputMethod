@@ -1,0 +1,44 @@
+$ codesign --verify --strict --deep /Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app
+exit=0
+$ codesign -dv --verbose=4 /Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app
+Executable=/Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app/Contents/MacOS/Lampyris
+Identifier=cn.jokerhub.inputmethod.Lampyris
+Format=app bundle with Mach-O universal (x86_64 arm64)
+CodeDirectory v=20500 size=7756 flags=0x10000(runtime) hashes=235+3 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=ce382334b198c1333f2e06af596ba97618c12244
+CandidateCDHashFull sha256=ce382334b198c1333f2e06af596ba97618c122441f58f69e4d029497e1acc160
+Hash choices=sha256
+CMSDigest=ce382334b198c1333f2e06af596ba97618c122441f58f69e4d029497e1acc160
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=2129920
+Executable Segment flags=0x1
+Page size=16384
+CDHash=ce382334b198c1333f2e06af596ba97618c12244
+Signature size=9045
+Authority=Developer ID Application: Zhizhou Wang (2N62934Y28)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Oct 21, 2026 at 08:27:36
+Notarization Ticket=stapled
+Info.plist entries=33
+TeamIdentifier=2N62934Y28
+Runtime Version=26.5.0
+Sealed Resources version=2 rules=13 files=12
+Internal requirements count=1 size=192
+Total signatures=1
+Chosen signature=1
+exit=0
+$ xcrun stapler validate /Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app
+Processing: /Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app
+The validate action worked!
+exit=0
+$ spctl --assess --type execute -vv /Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app
+/Users/joker/Documents/EasyInputMethod/packaging/out/mvp-3728dfc-formal/Lampyris-macos-acceptance-3728dfcd28117857de65b64b57098f248848125d/candidate-XjsEyz/extracted/Lampyris-0.1.0-universal/Lampyris.app: accepted
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+exit=0

@@ -1,0 +1,14 @@
+{
+  "source_commit": "3728dfcd28117857de65b64b57098f248848125d",
+  "run": 39521162723,
+  "zip_sha256": "0d29ed9a22fe8c5ae238d8b0e51675859bf608426adc446bb0157c7f37b45fd5",
+  "execution_sha256": "45c3b627b7863174811048b1a7f6070090cfbdbd6a1de4ae451c9949c583ee56",
+  "bundle_identifier": "cn.jokerhub.inputmethod.LampyrisIMKTest.dce4ae25-3705-48f5-aa29-79bc321863fe",
+  "display_name": "萤火虫隔离验收 dce4ae25",
+  "root": "/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-dce4ae25-3705-48f5-aa29-79bc321863fe",
+  "arch": "arm64",
+  "installed": true,
+  "installed_path": "/Users/joker/Library/Input Methods/LampyrisIMKTest-dce4ae25-3705-48f5-aa29-79bc321863fe.app",
+  "actual_enabled": false,
+  "selected": false
+}

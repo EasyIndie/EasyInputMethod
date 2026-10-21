@@ -1,0 +1,15 @@
+{
+  "source_commit": "3728dfcd28117857de65b64b57098f248848125d",
+  "installed_path": "/Users/joker/Library/Input Methods/LampyrisIMKTest-dce4ae25-3705-48f5-aa29-79bc321863fe.app",
+  "execution_sha256": "45c3b627b7863174811048b1a7f6070090cfbdbd6a1de4ae451c9949c583ee56",
+  "status": "INSTALLED_AND_REGISTERED_NOT_ENABLED",
+  "current": "com.apple.keylayout.ABC",
+  "signed_resources_match": true,
+  "production_sha256": {
+    "/Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+    "/Users/joker/Library/Application Support/Lampyris/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "/Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "guard_stop": "all-installed source metadata marks owned mode enabled; actual enabled list excludes it; no source selection or client keys attempted",
+  "manual_action": "System Settings add 萤火虫隔离验收 dce4ae25"
+}
