@@ -6,11 +6,14 @@ final class PreviewInput: NSTextView {
     let session: ImeSession
     let candidates = CandidateWindow()
     private var committed = ""
+    private var candidateSelection = CandidateSelectionState()
     private let previewStorage = NSTextStorage()
-    private var lastFeedback: (String, Bool, Bool, Bool, Bool)?
+    private var lastFeedback: (String, Bool, Bool, Bool, Bool, Bool)?
     var status: ((String) -> Void)?
     var stateChanged: (() -> Void)?
     var persistModeChanges = false
+    var onOpenSettings: (() -> Void)?
+    var onOpenAbout: (() -> Void)?
 
     init(session: ImeSession) {
         self.session = session
@@ -20,6 +23,9 @@ final class PreviewInput: NSTextView {
         layout.addTextContainer(container)
         super.init(frame: NSRect(x: 0, y: 0, width: 700, height: 220), textContainer: container)
         font = .systemFont(ofSize: 24)
+        textColor = .textColor
+        backgroundColor = .textBackgroundColor
+        insertionPointColor = .textColor
         isRichText = false
         textContainerInset = NSSize(width: 16, height: 16)
         setAccessibilityLabel("调试输入区")
@@ -27,25 +33,54 @@ final class PreviewInput: NSTextView {
         candidates.onSelect = { [weak self] index in
             guard let self, let text = self.session.select(index) else { return }
             self.committed += text
+            self.candidateSelection.reset()
             self.refresh()
         }
+        ConfigWatcher.shared.observe(owner: self) { [weak self] key in self?.configChanged(key) }
     }
+    deinit { ConfigWatcher.shared.clear(owner: self) }
     required init?(coder: NSCoder) { return nil }
 
     // Receive raw keys here instead of invoking the installed system input method.
     override var inputContext: NSTextInputContext? { nil }
 
-    override func keyDown(with event: NSEvent) {
-        session.markKeyWhileShift()
+    private func handleShortcut(_ event: NSEvent) -> Bool {
+        if session.matches("hotkey.open_settings", event), let onOpenSettings {
+            cancelComposition(); onOpenSettings(); return true
+        }
+        if session.matches("hotkey.open_about", event), let onOpenAbout {
+            cancelComposition(); onOpenAbout(); return true
+        }
         let shortcut = session.shortcut(event, persistMode: persistModeChanges)
         if shortcut.consumed {
+            session.markKeyWhileShift()
             refresh()
             if shortcut == .failed { status?(ImeConfig.errorMessage() ?? "设置未保存，请重试。") }
-            return
+            return true
         }
+        return false
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        handleShortcut(event) || super.performKeyEquivalent(with: event)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        session.markKeyWhileShift()
+        if handleShortcut(event) { return }
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             super.keyDown(with: event)
+            return
+        }
+        if session.isComposing, let delta = candidates.navigationDelta(for: event) {
+            _ = candidateSelection.move(delta,
+                                        count: session.candidates(limit: ImeConfig.int("candidate.count") ?? 9).count)
+            refresh()
+            return
+        }
+        if session.consumesCompositionNavigation(event) {
+            refresh()
             return
         }
         guard let text = event.charactersIgnoringModifiers, let scalar = text.unicodeScalars.first else { return }
@@ -56,11 +91,17 @@ final class PreviewInput: NSTextView {
             scalar == "," || scalar == "."
         {
             session.page(scalar == "," ? -1 : 1)
+            candidateSelection.reset()
+        } else if session.isComposing, event.keyCode == 49, candidateSelection.index > 0,
+                  let text = session.select(candidateSelection.index) {
+            committed += text
+            candidateSelection.reset()
         } else if scalar == "\r" || scalar == "\n" {
             if session.isComposing {
                 if case .committed(let raw) = session.feed(scalar.value) { committed += raw }
             } else { committed += "\n" }
         } else {
+            candidateSelection.reset()
             let input = !session.isEnglish && scalar.isASCII && scalar.properties.isAlphabetic
                 ? String(scalar).lowercased().unicodeScalars.first?.value : scalar.value
             guard let input else { return }
@@ -68,7 +109,7 @@ final class PreviewInput: NSTextView {
                 committed += text
             } else {
                 switch session.feed(input) {
-                case .committed(let value): committed += value
+                case .committed(let value): committed += value; candidateSelection.reset()
                 case .consumed: break
                 case .passThrough:
                     if scalar.value == 127 || scalar.value == 8 {
@@ -78,6 +119,7 @@ final class PreviewInput: NSTextView {
                 }
             }
         }
+        if !session.isComposing { candidateSelection.reset() }
         refresh()
     }
 
@@ -92,10 +134,12 @@ final class PreviewInput: NSTextView {
 
     func refresh() {
         stateChanged?()
-        let content = NSMutableAttributedString(string: committed, attributes: [.font: NSFont.systemFont(ofSize: 24)])
+        let content = NSMutableAttributedString(string: committed, attributes: [
+            .font: NSFont.systemFont(ofSize: 24), .foregroundColor: NSColor.textColor,
+        ])
         content.append(NSAttributedString(string: session.buffer, attributes: [
             .font: NSFont.systemFont(ofSize: 24), .underlineStyle: NSUnderlineStyle.single.rawValue,
-            .foregroundColor: NSColor.controlAccentColor,
+            .foregroundColor: NSColor.textColor, .underlineColor: NSColor.controlAccentColor,
         ]))
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
@@ -108,7 +152,7 @@ final class PreviewInput: NSTextView {
             chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")
         let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
         let feedback = (status.mode, status.english, status.fullWidth, status.traditional,
-                        status.chinesePunctuation)
+                        status.chinesePunctuation, ImeConfig.bool("candidate.show_wubi_learning"))
         if let last = lastFeedback, last != feedback {
             if session.isComposing {
                 candidates.updateStatus(status)
@@ -122,8 +166,10 @@ final class PreviewInput: NSTextView {
                     message = StateFeedback.width(status.fullWidth)
                 } else if last.3 != feedback.3 {
                     message = StateFeedback.variant(status.traditional)
-                } else {
+                } else if last.4 != feedback.4 {
                     message = StateFeedback.punctuation(status.chinesePunctuation)
+                } else {
+                    message = StateFeedback.learning(feedback.5)
                 }
                 StateHUDController.shared.show(message, caret: caret)
             }
@@ -133,8 +179,15 @@ final class PreviewInput: NSTextView {
             candidates.updateStatus(status)
             candidates.update(
                 candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
-                input: session.buffer, warning: session.variantErrorMessage)
-            candidates.onPage = { [weak self] delta in self?.session.page(delta); self?.refresh() }
+                selectedIndex: candidateSelection.index,
+                input: session.buffer, showsNavigationHint: true,
+                warning: session.variantErrorMessage)
+            candidates.onPage = { [weak self] delta in
+                guard let self else { return }
+                self.session.page(delta)
+                self.candidateSelection.reset()
+                self.refresh()
+            }
             candidates.show(at: caret)
         } else { candidates.hide() }
     }
@@ -144,6 +197,7 @@ final class PreviewInput: NSTextView {
 
     /// 无按键的配置变更：即时应用到会话与候选窗（ADR-058）。
     func configChanged(_ key: String) {
+        if let window { ImeAppearance.applyTheme(to: window) }
         session.prepare()
         if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
         if let mode = ImeConfig.string("mode"), session.mode != mode { session.setMode(mode) }
@@ -164,10 +218,13 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 780, height: 430),
             styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         window.title = isolated ? "萤火虫 · 隔离验收" : "萤火虫 · 独立调试窗口"
+        ImeAppearance.applyTheme(to: window)
         window.delegate = self
         window.isReleasedWhenClosed = false
         let input = PreviewInput(session: session)
         input.persistModeChanges = isolated
+        input.onOpenSettings = { [weak self] in self?.openSettings() }
+        input.onOpenAbout = { AboutUI.show() }
         self.input = input
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
@@ -542,6 +599,104 @@ if CommandLine.arguments.contains("--smoke-test") {
             fputs("预览冒烟失败：预期 \(expected)，实际 \(view.string)\n", stderr); exit(1)
         }
     }
+    // Exercise the actual preview adapter, not only the shared navigation predicate.
+    func shortcutState(_ key: String) -> String {
+        switch key {
+        case "mode": return session.mode
+        case "width": return String(session.isFullWidth)
+        default: return ImeConfig.string(key) ?? ""
+        }
+    }
+    for (key, character, state, cycle): (UInt16, String, String, Int) in [
+        (46, "µ", "mode", 3), (3, "ƒ", "width", 2),
+        (35, "π", "input.punctuation", 2), (17, "†", "input.chinese_variant", 2),
+        (37, "¬", "candidate.show_wubi_learning", 2),
+    ] {
+        let initial = shortcutState(state)
+        for index in 0..<cycle {
+            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
+                characters: character, charactersIgnoringModifiers: character,
+                isARepeat: false, keyCode: key), view.performKeyEquivalent(with: event),
+                view.string.isEmpty else { fputs("预览原生快捷键分发失败。\n", stderr); exit(1) }
+            if index == 0, shortcutState(state) == initial { exit(1) }
+        }
+        guard shortcutState(state) == initial else { exit(1) }
+    }
+    var panelRequests = 0
+    view.onOpenSettings = { panelRequests += 1 }
+    view.onOpenAbout = { panelRequests += 1 }
+    for (key, character): (UInt16, String) in [(43, "≤"), (0, "å")] {
+        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+            modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
+            characters: character, charactersIgnoringModifiers: character,
+            isARepeat: false, keyCode: key), view.performKeyEquivalent(with: event)
+        else { exit(1) }
+    }
+    guard panelRequests == 2, view.string.isEmpty else { exit(1) }
+    view.onOpenSettings = nil; view.onOpenAbout = nil
+    keys("wq wq")
+    var inputSnapshots: [(String, NSBitmapImageRep)] = []
+    for appearanceName in [NSAppearance.Name.aqua, .darkAqua] {
+        guard let appearance = NSAppearance(named: appearanceName) else { exit(1) }
+        view.appearance = appearance
+        var readable = false
+        appearance.performAsCurrentDrawingAppearance {
+            guard let storage = view.textStorage,
+                  let committedColor = storage.attribute(.foregroundColor, at: 0,
+                      effectiveRange: nil) as? NSColor,
+                  let composingColor = storage.attribute(.foregroundColor, at: storage.length - 1,
+                      effectiveRange: nil) as? NSColor else { return }
+            let contrasts = [committedColor, composingColor, view.insertionPointColor].map {
+                ImeAppearance.contrast($0, over: view.backgroundColor)
+            }
+            readable = contrasts.allSatisfy { $0 >= 4.5 }
+            print("预览文本对比度 \(appearanceName.rawValue)：\(contrasts)")
+            if let image = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
+                view.cacheDisplay(in: view.bounds, to: image)
+                inputSnapshots.append((appearanceName == .aqua ? "preview-input-light.png" : "preview-input-dark.png", image))
+            }
+        }
+        guard readable else { fputs("预览输入区亮暗文本/光标对比度不足。\n", stderr); exit(1) }
+    }
+    view.appearance = nil
+    view.clear()
+    for vertical in [false, true] {
+        for (key, functionCharacter): (UInt16, String) in [
+            (123, "\u{f702}"), (124, "\u{f703}"),
+            (125, "\u{f701}"), (126, "\u{f700}"),
+            (115, "\u{f729}"), (119, "\u{f72b}"), (117, "\u{f728}"),
+        ] {
+            for characters in [functionCharacter, "\u{1f}", ""] {
+                view.clear()
+                keys("wq")
+                let page = session.candidates(limit: 9)
+                let values = page.map(\.text)
+                view.candidates.update(candidates: page, showsNavigationHint: true)
+                view.candidates.layout(at: .zero,
+                    within: NSRect(x: 0, y: 0, width: vertical ? 120 : 640, height: 800))
+                guard view.candidates.isVertical == vertical else { exit(1) }
+                guard values.count > 1,
+                    let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                        modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                        characters: characters, charactersIgnoringModifiers: characters,
+                        isARepeat: false, keyCode: key) else { exit(1) }
+                view.keyDown(with: event)
+                guard session.buffer == "wq", view.string == "wq",
+                    session.candidates(limit: 9).map(\.text) == values else {
+                    fputs("预览方向键污染文本或组合：keyCode=\(key)\n", stderr); exit(1)
+                }
+                guard let space = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                    modifierFlags: [], timestamp: 0, windowNumber: 0, context: nil,
+                    characters: " ", charactersIgnoringModifiers: " ",
+                    isARepeat: false, keyCode: 49) else { exit(1) }
+                view.keyDown(with: space)
+                check(values[key == (vertical ? 125 : 124) ? 1 : 0])
+                guard session.buffer.isEmpty else { exit(1) }
+            }
+        }
+    }
+    view.clear()
     keys("a")
     let aFirstPage = session.candidates(limit: 9).map(\.text)
     guard session.pageCount > 1 else { fputs("a应有多页候选。\n", stderr); exit(1) }
@@ -636,6 +791,8 @@ if CommandLine.arguments.contains("--smoke-test") {
         do { try bytes.write(to: qaDirectory.appendingPathComponent(name), options: .withoutOverwriting) }
         catch { fputs("视觉证据保存失败：\(error)\n", stderr); exit(1) }
     }
+    guard inputSnapshots.count == 2 else { exit(1) }
+    for (name, image) in inputSnapshots { saveQA(image, name) }
     // Semantic text colors are composited over the actual painted backgrounds.
     for theme in ["light", "dark"] {
         guard ImeConfig.setString("appearance.theme", theme),

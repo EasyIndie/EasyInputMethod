@@ -126,6 +126,7 @@ final class PaddedCandidateCell: NSTextFieldCell {
 final class CandidateLabel: NSTextField {
     var onClick: (() -> Void)?
     private(set) var isHovered = false
+    private(set) var isKeyboardSelected = false
     private var hoverTrackingArea: NSTrackingArea?
 
     override init(frame frameRect: NSRect) {
@@ -180,11 +181,24 @@ final class CandidateLabel: NSTextField {
     func setHovered(_ hovered: Bool) {
         guard isHovered != hovered else { return }
         isHovered = hovered
+        paintSelection()
+    }
+
+    func setKeyboardSelected(_ selected: Bool) {
+        guard isKeyboardSelected != selected else { return }
+        isKeyboardSelected = selected
+        paintSelection()
+    }
+
+    private func paintSelection() {
         guard wantsLayer else { return }
         effectiveAppearance.performAsCurrentDrawingAppearance {
-            layer?.backgroundColor = hovered ? NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor : nil
+            let alpha: CGFloat = isHovered ? 0.30 : isKeyboardSelected ? 0.18 : 0
+            layer?.backgroundColor = alpha > 0
+                ? NSColor.selectedContentBackgroundColor.withAlphaComponent(alpha).cgColor : nil
         }
     }
+    func refreshSelectionAppearance() { paintSelection() }
 }
 
 private final class CandidatePanel: NSPanel {
@@ -225,7 +239,7 @@ final class WubiLearningView: NSView {
             clearContent()
             detailOrigin = .zero
             identity = text ?? ""
-            expanded = false
+            if text == nil { expanded = false }
             expandedCharacters.removeAll()
         }
         let result = text.flatMap(WubiLearning.lookup)
@@ -567,11 +581,28 @@ final class CandidateWindow: NSObject {
     private var renderedCount = 0
     private var pageIndex = 0
     private var pageCount = 0
+    private var selectedIndex = 0
     private var themeTimer: Timer?
     private var available = NSSize(width: 640, height: 800)
     private var input = ""
     private var hint: String?
+    private var showsNavigationHint = false
+    private(set) var isVertical = false
     private var warning: String?
+
+    var navigationHint: String { "\(isVertical ? "↑↓" : "←→")浏览 · 空格确认 · 数字直选" }
+
+    /// Use the axis of the last rendered layout, shared by preview and IMK.
+    func navigationDelta(for event: NSEvent) -> Int? {
+        guard event.type == .keyDown,
+            event.modifierFlags.intersection([.command, .control, .option]).isEmpty
+        else { return nil }
+        switch event.keyCode {
+        case isVertical ? 126 : 123: return -1
+        case isVertical ? 125 : 124: return 1
+        default: return nil
+        }
+    }
 
     var onSelect: ((Int) -> Void)?
     var onPage: ((Int) -> Void)?
@@ -591,12 +622,17 @@ final class CandidateWindow: NSObject {
     var stateStripFrameForTesting: NSRect { stateStrip.frame }
     var inputFrameForTesting: NSRect { inputLabel.frame }
     var displayedInput: String { inputLabel.stringValue }
+    var displayedHintForTesting: String { hintLabel.stringValue }
     var displayedWarning: String? { warningLabel.isHidden ? nil : warningLabel.stringValue }
     var displayedCandidateTexts: [String] { labels.prefix(renderedCount).map(\.stringValue) }
     var candidateAccessibilityLabelsForTesting: [String] { labels.prefix(renderedCount).map { $0.accessibilityLabel() ?? "" } }
     var configuredAppearanceForTesting: NSAppearance.Name? { panel.appearance?.name }
     var pageStateForTesting: (visible: Bool, previous: Bool, next: Bool, text: String) {
         (!pageLabel.isHidden, previousButton.isEnabled, nextButton.isEnabled, pageLabel.stringValue)
+    }
+    var selectedCandidateIndexForTesting: Int { selectedIndex }
+    var keyboardSelectedCandidatesForTesting: [Int] {
+        labels.prefix(renderedCount).enumerated().compactMap { $0.element.isKeyboardSelected ? $0.offset : nil }
     }
     var pageFramesForTesting: [NSRect] { [previousButton.frame, pageLabel.frame, nextButton.frame] }
     var scrollingForTesting: Bool { scrollView.hasVerticalScroller }
@@ -698,15 +734,19 @@ final class CandidateWindow: NSObject {
             panel.contentView?.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
             panel.contentView?.layer?.borderColor = ImeAppearance.candidateBorderColor(highContrast: ImeAppearance.isHighContrast(panel.effectiveAppearance)).cgColor
             for label in labels.prefix(renderedCount) where label.isHovered {
-                label.layer?.backgroundColor = NSColor.selectedContentBackgroundColor.withAlphaComponent(0.3).cgColor
+                label.refreshSelectionAppearance()
+            }
+            for label in labels.prefix(renderedCount) where !label.isHovered {
+                label.refreshSelectionAppearance()
             }
             stateStrip.paint(for: panel.effectiveAppearance)
         }
     }
 
-    private static func render(index: Int, _ candidate: ImeCandidate) -> NSAttributedString {
+    private static func render(index: Int, selected: Bool, _ candidate: ImeCandidate) -> NSAttributedString {
         let number = "\(index + 1)"
-        let ordinalFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: index == 0 ? .semibold : .regular)
+        let weight: NSFont.Weight = selected ? .semibold : .regular
+        let ordinalFont = NSFont.monospacedDigitSystemFont(ofSize: 11, weight: weight)
         let text = NSMutableAttributedString(string: number, attributes: [
             .font: ordinalFont,
             .foregroundColor: ImeAppearance.secondaryText,
@@ -714,22 +754,27 @@ final class CandidateWindow: NSObject {
         let prefixWidth = ((number + " ") as NSString).size(withAttributes: [.font: ordinalFont]).width
         text.append(NSAttributedString(string: " ", attributes: [.font: ordinalFont,
             .kern: max(0, 20 - prefixWidth), .foregroundColor: ImeAppearance.secondaryText]))
-        text.append(NSAttributedString(string: CandidateTextPresentation.display(candidate.text, font: .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)), attributes: [
-            .font: NSFont.systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular),
+        text.append(NSAttributedString(string: CandidateTextPresentation.display(candidate.text, font: .systemFont(ofSize: 17, weight: weight)), attributes: [
+            .font: NSFont.systemFont(ofSize: 17, weight: weight),
             .foregroundColor: NSColor.labelColor,
         ]))
         return text
     }
 
     func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
-                input: String = "", hint: String? = nil, warning: String? = nil) {
+                selectedIndex: Int = 0,
+                input: String = "", hint: String? = nil, showsNavigationHint: Bool = false,
+                warning: String? = nil) {
         refreshAppearance()
-        learningView.update(ImeConfig.bool("candidate.show_wubi_learning") ? candidates.first?.text : nil)
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
+        self.showsNavigationHint = !candidates.isEmpty && showsNavigationHint
         self.warning = candidates.isEmpty ? nil : warning
         self.pageCount = candidates.isEmpty ? 0 : max(1, pageCount)
         self.pageIndex = min(max(0, pageIndex), max(0, self.pageCount - 1))
+        self.selectedIndex = candidates.isEmpty ? 0 : min(max(0, selectedIndex), candidates.count - 1)
+        learningView.update(ImeConfig.bool("candidate.show_wubi_learning") && !candidates.isEmpty
+            ? candidates[self.selectedIndex].text : nil)
         inputLabel.stringValue = self.input
         inputLabel.toolTip = self.input
         inputLabel.setAccessibilityValue(self.input)
@@ -759,15 +804,17 @@ final class CandidateWindow: NSObject {
             }
             let label = labels[index]
             label.isHidden = false
-            label.font = .systemFont(ofSize: 17, weight: index == 0 ? .semibold : .regular)
-            label.attributedStringValue = Self.render(index: index, candidate)
+            let selected = index == self.selectedIndex
+            label.font = .systemFont(ofSize: 17, weight: selected ? .semibold : .regular)
+            label.attributedStringValue = Self.render(index: index, selected: selected, candidate)
             let visibleText = CandidateTextPresentation.display(candidate.text, font: label.font ?? .systemFont(ofSize: 17))
             let missing = visibleText != candidate.text
             let detail = missing ? "系统字体缺字；选择仍输入原字符" : candidate.source.label
             label.toolTip = "\(visibleText) · \(detail)"
             label.setAccessibilityElement(true)
-            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(index == 0 ? "，首选" : "")")
+            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(selected ? "，键盘焦点" : "")\(index == 0 ? "，首选" : "")")
             label.onClick = { [weak self] in self?.onSelect?(index) }
+            label.setKeyboardSelected(selected)
             label.setHovered(false)
         }
         renderedCount = candidates.count
@@ -791,6 +838,11 @@ final class CandidateWindow: NSObject {
         let widths = visible.map { ceil($0.attributedStringValue.size().width) + 2 * PaddedCandidateCell.horizontal + 2 }
         let horizontalWidth = widths.reduce(0, +) + CGFloat(max(0, renderedCount - 1)) * 14
         let vertical = horizontalWidth > innerLimit
+        isVertical = vertical
+        let displayedHint = showsNavigationHint ? navigationHint : hint
+        hintLabel.stringValue = displayedHint ?? ""
+        hintLabel.toolTip = displayedHint
+        hintLabel.setAccessibilityLabel(displayedHint)
         let pagesVisible = renderedCount > 0 && pageCount > 1
         let pageSize = pageLabel.cell?.cellSize ?? pageLabel.intrinsicContentSize
         let pageWidth = ceil(pageSize.width)
@@ -806,7 +858,7 @@ final class CandidateWindow: NSObject {
         let width = min(maxWidth, max(54, (vertical ? innerLimit : naturalWidth) + margin * 2))
         let inner = max(1, width - margin * 2)
         let headerHeight: CGFloat = headerVisible ? 26 : 0
-        let hintHeight: CGFloat = hint?.isEmpty == false ? 18 : 0
+        let hintHeight: CGFloat = displayedHint?.isEmpty == false ? 18 : 0
         let warningHeight: CGFloat = warning == nil ? 0 : 18
         // 只有真的要显示附行/警告时才保留底部 22pt 区（hint 下留 8pt 边距）；
         // 否则底部只留 10pt，避免窗口比内容“多出”一大截、整体显得上移（报告 073）。
@@ -895,6 +947,10 @@ final class CandidateWindow: NSObject {
     }
 
     var learningVisibleForTesting: Bool { !learningView.isHidden }
+    var learningDetailsExpandedForTesting: Bool { learningView.expandedForTesting }
+    var learningSummaryForTesting: String {
+        learningView.subviews.compactMap { ($0 as? NSTextField)?.stringValue }.joined(separator: " ")
+    }
     var learningActionForTesting: NSButton? { learningView.actionForTesting }
     var candidateViewportForTesting: NSSize { scrollView.frame.size }
     var candidateViewportFrameForTesting: NSRect { scrollView.frame }

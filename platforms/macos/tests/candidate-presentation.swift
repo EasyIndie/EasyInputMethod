@@ -25,6 +25,51 @@ guard !window.permitsKeyboardFocusForTesting, area.contains(window.frame),
       window.candidateFontForTesting(at: 0)?.pointSize == 17,
       window.candidateFontForTesting(at: 0) != window.candidateFontForTesting(at: 1)
 else { fail("minimal body/source accessibility/font/focus") }
+var navigation = CandidateSelectionState()
+guard navigation.move(1, count: 2) == 1,
+      navigation.move(1, count: 2) == 1,
+      navigation.move(-1, count: 2) == 0,
+      navigation.move(-1, count: 2) == 0,
+      navigation.move(1, count: 0) == nil, navigation.index == 0
+else { fail("candidate navigation bounds/reset") }
+window.update(candidates: values, selectedIndex: 1, input: "wq")
+window.layout(at: caret, within: area)
+guard window.selectedCandidateIndexForTesting == 1,
+      window.keyboardSelectedCandidatesForTesting == [1],
+      window.candidateAccessibilityLabelsForTesting[1].contains("键盘焦点")
+else { fail("keyboard focus presentation/accessibility") }
+// Reflow the same selected candidates; navigation and hints must follow rendered geometry.
+for width: CGFloat in [320, 90, 320] {
+    window.update(candidates: values, selectedIndex: 1, input: "wq", showsNavigationHint: true)
+    window.layout(at: caret, within: NSRect(x: 0, y: 0, width: width, height: 500))
+    let vertical = width == 90
+    guard window.isVertical == vertical,
+          window.selectedCandidateIndexForTesting == 1,
+          window.displayedHintForTesting.hasPrefix(vertical ? "↑↓" : "←→"),
+          let geometry = window.layoutForTesting(), geometry.labels.count == 2,
+          vertical ? geometry.labels[0].minY > geometry.labels[1].minY
+                   : geometry.labels[0].minX < geometry.labels[1].minX
+    else { fail("reflow axis/hint/focus/geometry") }
+    for key: UInt16 in [123, 124, 125, 126] {
+        for flags: NSEvent.ModifierFlags in [[], .shift, .command, .control, .option] {
+            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: flags, timestamp: 0, windowNumber: 0, context: nil,
+                characters: "\u{1f}", charactersIgnoringModifiers: "\u{1f}",
+                isARepeat: true, keyCode: key) else { fail("axis event") }
+            let expected: Int? = flags.intersection([.command, .control, .option]).isEmpty
+                ? (key == (vertical ? 126 : 123) ? -1 : key == (vertical ? 125 : 124) ? 1 : nil)
+                : nil
+            guard window.navigationDelta(for: event) == expected else { fail("layout navigation mapping") }
+        }
+    }
+}
+guard let selectedSnapshot = window.renderSnapshotForTesting(), selectedSnapshot.pixelsWide > 0 else {
+    fail("keyboard focus snapshot")
+}
+if let data = selectedSnapshot.representation(using: .png, properties: [:]) {
+    do { try data.write(to: output.appendingPathComponent("keyboard-selection.png")) }
+    catch { fail("keyboard focus snapshot output") }
+} else { fail("keyboard focus png encoding") }
 LocalAcceptanceEvidence.record("candidate.body", expected: "候选正文/来源AX正确，非key且在边界内", actual: ["labels": window.displayedCandidateTexts, "input": window.displayedInput, "keyboard_focus": window.permitsKeyboardFocusForTesting])
 var selected = -1
 window.onSelect = { selected = $0 }
@@ -52,6 +97,13 @@ guard session.pageCount == 3, window.pageStateForTesting.text == "1/3",
       window.pagePressForTesting(-1), session.pageIndex == 1, session.buffer == "ab"
 else { fail("real bounded paging without commit") }
 LocalAcceptanceEvidence.record("candidate.paging", expected: "1/3→2/3→3/3→2/3，首尾拒绝越界，保留ab组合", actual: ["label": window.pageStateForTesting.text, "page_index": session.pageIndex, "buffer": session.buffer])
+navigation.reset()
+guard navigation.move(1, count: 9) == 1,
+      let expectedFocused = session.candidates(limit: 9).dropFirst().first?.text,
+      session.select(navigation.index) == expectedFocused,
+      !session.isComposing
+else { fail("space confirmation target follows keyboard focus") }
+LocalAcceptanceEvidence.record("candidate.keyboard-confirm-target", expected: "焦点索引1确认后提交当前页显示的第2项", actual: expectedFocused)
 
 func snapshot(_ name: String) {
     guard let image = window.renderSnapshotForTesting(),

@@ -162,7 +162,11 @@ struct ConfiguredHotkey {
     func matches(_ event: NSEvent) -> Bool {
         guard kind == 2, event.modifierFlags.intersection([.control, .option, .shift, .command]) == modifiers else { return false }
         if key == 32 { return event.keyCode == 49 || event.charactersIgnoringModifiers == " " }
-        return event.charactersIgnoringModifiers?.lowercased() == equivalent
+        let characters = event.charactersIgnoringModifiers ?? ""
+        if !characters.isEmpty, characters.unicodeScalars.allSatisfy(\.isASCII) {
+            return characters.lowercased() == equivalent
+        }
+        return event.characters(byApplyingModifiers: [])?.lowercased() == equivalent
     }
 }
 

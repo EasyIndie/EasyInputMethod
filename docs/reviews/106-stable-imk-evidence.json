@@ -14,6 +14,43 @@
   "current": "com.apple.keylayout.ABC",
   "development_source_actually_enabled": true,
   "different_payload_no_logout_client_input": "NOT_RUN",
+  "post_merge_replacement": {
+    "merge_commit": "288c750e01db3d68c1284a754ae8a665ce1e6f92",
+    "pr": "https://github.com/EasyIndie/EasyInputMethod/pull/58",
+    "pr_head_ci": {
+      "check": "SUCCESS",
+      "dco": "SUCCESS",
+      "fuzz": "SUCCESS",
+      "macos": "SUCCESS"
+    },
+    "notarization_run": "https://github.com/EasyIndie/EasyInputMethod/actions/runs/39532557520",
+    "notarization_result": "SUCCESS",
+    "architecture": "arm64",
+    "zip_sha256": "daa077a4e9c1de1abf5333e3cb5b1d58b7efd2a5d1ec4d02f09a73275f395a0f",
+    "executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+    "installation_record": "~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-7eurs9cz/installation.json",
+    "previous_package_retained": true,
+    "source_and_enabled_set_unchanged": true,
+    "current_after": "com.apple.keylayout.ABC",
+    "native_input": {
+      "status": "PASS",
+      "result": "platforms/macos/build/installed-textedit-uy16l3pt/result.json",
+      "detail": "On the new executable, owned TextEdit probe verified wq marked range 1,2, space committed 你, marked range cleared, and original input source/enabled set restored. Production config/dictionary hashes unchanged.",
+      "computer_use": "TextEdit owned window observed; existing unnamed window remained unchanged",
+      "host_pid": 26819,
+      "host_executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+      "new_executable_process_confirmed": true,
+      "earlier_blocked_attempts": [
+        "platforms/macos/build/installed-textedit-vbmg41p1/result.json: TextEdit AppleEvent timed out while creating the owned document; no keys sent; state restored",
+        "platforms/macos/build/installed-textedit-a10mpikf/result.json: wrong helper interface rejected before source selection"
+      ]
+    },
+    "mode_probe": {
+      "status": "BLOCKED",
+      "result": "platforms/macos/build/installed-mode-fpvhla9z/result.json",
+      "detail": "TextEdit could not provide a uniquely identifiable new window (BLOCKED 未取得自有空白窗口); no keys sent; original source/enabled set and production data restored. No mode-switch conclusion."
+    }
+  },
   "production_sha256": {
     "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
     "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
@@ -62,5 +99,96 @@
     "actual_source_set_unchanged": true,
     "old_temp_root_exists": false,
     "reversible": true
+  },
+  "textedit_fixture_followup": {
+    "date": "2026-10-21",
+    "change": "owned-textedit.applescript now opens the uniquely named, path-verified temporary file directly; preserves the original visible-window ID guard per ADR-091/092",
+    "compile": "osacompile exit 0",
+    "make_verify": "pass (rerun with normal permissions after sandbox advisory-lock denial)",
+    "probe": {
+      "scenario": "mode",
+      "result": "BLOCKED before fixture creation or key events",
+      "preflight": "System Events AppleEvent returned -10827",
+      "evidence": "platforms/macos/build/installed-mode-current-134728/",
+      "input_source": "ABC",
+      "development_source_enabled": true,
+      "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+      "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+    },
+    "native_fixture_fix_verified": false,
+    "source_selection_followup": {
+      "result": "BLOCKED; no input source changed",
+      "helper": "source-state select-owned against the fixed development root",
+      "tis_status": -50,
+      "current": "com.apple.keylayout.ABC",
+      "development_parent_enabled": false,
+      "development_mode_enabled": true,
+      "development_mode_select_capable": true,
+      "real_config_and_dictionary_unchanged": true,
+      "temporary_unique_fixture": "closed without edits and removed"
+    }
+  },
+  "manual_computer_use_followup": {
+    "date": "2026-10-21",
+    "package_executable_sha256": "be7deecfe0a60b00e098550c1200e19ccca939228b575e29fb72ee9e78a68318",
+    "package_sha_matches_registered_alias": true,
+    "current_host_pid_independently_confirmed": false,
+    "hud_probe": "BLOCKED host not running",
+    "input_source_readback": "com.apple.keylayout.ABC (contradicts observed IME behavior; no further TIS selection attempted)",
+    "fixture": "unique /private/tmp/lampyris-manual-accept.eRPPQD/owned-fixture.txt; closed with Revert Changes and deleted; prior Untitled window retained",
+    "observations": {
+      "wubi_wq_space": "committed 你",
+      "pinyin_nihao_space": "committed 你好",
+      "repeat_nihao_escape": "no additional committed text observed",
+      "backspace_retype_nihao_space": "committed 你好",
+      "number_1_vs_space": "same committed text (你好)",
+      "mode_cycle": [
+        "mixed",
+        "wubi",
+        "pinyin",
+        "mixed"
+      ],
+      "mode_cycle_evidence": "alt+m pressed three times; isolated development config read after each; text unchanged",
+      "candidate_panel_visible": false,
+      "visual_candidate_order_verified": false,
+      "numeric_choice_matches_specific_visible_candidate_verified": false
+    },
+    "production_sha256_unchanged": {
+      "executable": "535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420",
+      "config": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+      "dictionary": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+    }
+  },
+  "preview_user_acceptance_234_236": {
+    "date": "2026-10-21",
+    "environment": "B / arm64 / macOS 27.0.1",
+    "scope": [
+      "学习区随当前候选更新并保留详情展开",
+      "默认Option字母状态快捷键及HUD",
+      "输入区亮暗文字及光标可读性"
+    ],
+    "method": "用户在隔离预览窗口手工验收后回复验收通过；不是自动逐键取证",
+    "user_statement": "验收通过",
+    "result": "PASS_USER_REPORTED_PREVIEW",
+    "implementation_commit": "a39bf0fce55135e09e7d9849f9e0f02c524496e4",
+    "checkout_commit": "56c9044",
+    "executable_sha256": "01bb15edcb58a65a5bdce1b493ce36b38895c8e806fae6620377e7e51e181cfd",
+    "bundle_id": "cn.jokerhub.lampyris.isolatedpanel.lf3r82lh",
+    "pid": 51683,
+    "private_root": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-panel-lf3r82lh",
+    "cleanup": {
+      "wrapper_exit_code": 0,
+      "message": "PASS interactive cleanup: owned process exited; real files unchanged",
+      "private_root_removed": true
+    },
+    "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137",
+    "limits": [
+      "不包含系统IMK或签名包安装升级",
+      "不扩展为全部方向键/翻页/应用兼容矩阵通过"
+    ],
+    "runtime_notes": [
+      "本轮运行日志出现IMKCFRunLoopWakeUpReliable的mach port消息及NSLayoutConstraint常量超过内部范围提示，待单独定位；用户未报告对应体验失败"
+    ]
   }
 }
