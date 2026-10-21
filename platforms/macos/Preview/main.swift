@@ -8,10 +8,12 @@ final class PreviewInput: NSTextView {
     private var committed = ""
     private var candidateSelection = CandidateSelectionState()
     private let previewStorage = NSTextStorage()
-    private var lastFeedback: (String, Bool, Bool, Bool, Bool)?
+    private var lastFeedback: (String, Bool, Bool, Bool, Bool, Bool)?
     var status: ((String) -> Void)?
     var stateChanged: (() -> Void)?
     var persistModeChanges = false
+    var onOpenSettings: (() -> Void)?
+    var onOpenAbout: (() -> Void)?
 
     init(session: ImeSession) {
         self.session = session
@@ -37,14 +39,30 @@ final class PreviewInput: NSTextView {
     // Receive raw keys here instead of invoking the installed system input method.
     override var inputContext: NSTextInputContext? { nil }
 
-    override func keyDown(with event: NSEvent) {
-        session.markKeyWhileShift()
+    private func handleShortcut(_ event: NSEvent) -> Bool {
+        if session.matches("hotkey.open_settings", event), let onOpenSettings {
+            cancelComposition(); onOpenSettings(); return true
+        }
+        if session.matches("hotkey.open_about", event), let onOpenAbout {
+            cancelComposition(); onOpenAbout(); return true
+        }
         let shortcut = session.shortcut(event, persistMode: persistModeChanges)
         if shortcut.consumed {
+            session.markKeyWhileShift()
             refresh()
             if shortcut == .failed { status?(ImeConfig.errorMessage() ?? "设置未保存，请重试。") }
-            return
+            return true
         }
+        return false
+    }
+
+    override func performKeyEquivalent(with event: NSEvent) -> Bool {
+        handleShortcut(event) || super.performKeyEquivalent(with: event)
+    }
+
+    override func keyDown(with event: NSEvent) {
+        session.markKeyWhileShift()
+        if handleShortcut(event) { return }
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             super.keyDown(with: event)
@@ -127,7 +145,7 @@ final class PreviewInput: NSTextView {
             chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")
         let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
         let feedback = (status.mode, status.english, status.fullWidth, status.traditional,
-                        status.chinesePunctuation)
+                        status.chinesePunctuation, ImeConfig.bool("candidate.show_wubi_learning"))
         if let last = lastFeedback, last != feedback {
             if session.isComposing {
                 candidates.updateStatus(status)
@@ -141,8 +159,10 @@ final class PreviewInput: NSTextView {
                     message = StateFeedback.width(status.fullWidth)
                 } else if last.3 != feedback.3 {
                     message = StateFeedback.variant(status.traditional)
-                } else {
+                } else if last.4 != feedback.4 {
                     message = StateFeedback.punctuation(status.chinesePunctuation)
+                } else {
+                    message = StateFeedback.learning(feedback.5)
                 }
                 StateHUDController.shared.show(message, caret: caret)
             }
@@ -194,6 +214,8 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         window.isReleasedWhenClosed = false
         let input = PreviewInput(session: session)
         input.persistModeChanges = isolated
+        input.onOpenSettings = { [weak self] in self?.openSettings() }
+        input.onOpenAbout = { AboutUI.show() }
         self.input = input
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
@@ -569,6 +591,41 @@ if CommandLine.arguments.contains("--smoke-test") {
         }
     }
     // Exercise the actual preview adapter, not only the shared navigation predicate.
+    func shortcutState(_ key: String) -> String {
+        switch key {
+        case "mode": return session.mode
+        case "width": return String(session.isFullWidth)
+        default: return ImeConfig.string(key) ?? ""
+        }
+    }
+    for (key, character, state, cycle): (UInt16, String, String, Int) in [
+        (46, "µ", "mode", 3), (3, "ƒ", "width", 2),
+        (35, "π", "input.punctuation", 2), (17, "†", "input.chinese_variant", 2),
+        (37, "¬", "candidate.show_wubi_learning", 2),
+    ] {
+        let initial = shortcutState(state)
+        for index in 0..<cycle {
+            guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+                modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
+                characters: character, charactersIgnoringModifiers: character,
+                isARepeat: false, keyCode: key), view.performKeyEquivalent(with: event),
+                view.string.isEmpty else { fputs("预览原生快捷键分发失败。\n", stderr); exit(1) }
+            if index == 0, shortcutState(state) == initial { exit(1) }
+        }
+        guard shortcutState(state) == initial else { exit(1) }
+    }
+    var panelRequests = 0
+    view.onOpenSettings = { panelRequests += 1 }
+    view.onOpenAbout = { panelRequests += 1 }
+    for (key, character): (UInt16, String) in [(43, "≤"), (0, "å")] {
+        guard let event = NSEvent.keyEvent(with: .keyDown, location: .zero,
+            modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
+            characters: character, charactersIgnoringModifiers: character,
+            isARepeat: false, keyCode: key), view.performKeyEquivalent(with: event)
+        else { exit(1) }
+    }
+    guard panelRequests == 2, view.string.isEmpty else { exit(1) }
+    view.onOpenSettings = nil; view.onOpenAbout = nil
     for vertical in [false, true] {
         for (key, functionCharacter): (UInt16, String) in [
             (123, "\u{f702}"), (124, "\u{f703}"),

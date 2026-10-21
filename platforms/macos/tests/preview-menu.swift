@@ -24,6 +24,11 @@ session.prepare()
 let dictionary = root.appendingPathComponent("user-dictionary.tsv")
 let dictionaryBefore = try? Data(contentsOf: dictionary)
 let adapter = PreviewInputMenu(session: session)
+guard let optionMode = NSEvent.keyEvent(with: .keyDown, location: .zero,
+    modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
+    characters: "µ", charactersIgnoringModifiers: "µ", isARepeat: false, keyCode: 46)
+else { exit(1) }
+require(ImeConfig.hotkey("hotkey.toggle_mode").matches(optionMode), "real Option character matches configured base letter")
 var cancellations = 0
 var changes = 0
 var failures: [String] = []
