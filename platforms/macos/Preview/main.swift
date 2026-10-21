@@ -23,6 +23,9 @@ final class PreviewInput: NSTextView {
         layout.addTextContainer(container)
         super.init(frame: NSRect(x: 0, y: 0, width: 700, height: 220), textContainer: container)
         font = .systemFont(ofSize: 24)
+        textColor = .textColor
+        backgroundColor = .textBackgroundColor
+        insertionPointColor = .textColor
         isRichText = false
         textContainerInset = NSSize(width: 16, height: 16)
         setAccessibilityLabel("调试输入区")
@@ -33,7 +36,9 @@ final class PreviewInput: NSTextView {
             self.candidateSelection.reset()
             self.refresh()
         }
+        ConfigWatcher.shared.observe(owner: self) { [weak self] key in self?.configChanged(key) }
     }
+    deinit { ConfigWatcher.shared.clear(owner: self) }
     required init?(coder: NSCoder) { return nil }
 
     // Receive raw keys here instead of invoking the installed system input method.
@@ -129,10 +134,12 @@ final class PreviewInput: NSTextView {
 
     func refresh() {
         stateChanged?()
-        let content = NSMutableAttributedString(string: committed, attributes: [.font: NSFont.systemFont(ofSize: 24)])
+        let content = NSMutableAttributedString(string: committed, attributes: [
+            .font: NSFont.systemFont(ofSize: 24), .foregroundColor: NSColor.textColor,
+        ])
         content.append(NSAttributedString(string: session.buffer, attributes: [
             .font: NSFont.systemFont(ofSize: 24), .underlineStyle: NSUnderlineStyle.single.rawValue,
-            .foregroundColor: NSColor.controlAccentColor,
+            .foregroundColor: NSColor.textColor, .underlineColor: NSColor.controlAccentColor,
         ]))
         textStorage?.setAttributedString(content)
         setSelectedRange(NSRange(location: content.length, length: 0))
@@ -190,6 +197,7 @@ final class PreviewInput: NSTextView {
 
     /// 无按键的配置变更：即时应用到会话与候选窗（ADR-058）。
     func configChanged(_ key: String) {
+        if let window { ImeAppearance.applyTheme(to: window) }
         session.prepare()
         if let count = ImeConfig.int("candidate.count") { session.setPageSize(count) }
         if let mode = ImeConfig.string("mode"), session.mode != mode { session.setMode(mode) }
@@ -210,6 +218,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 780, height: 430),
             styleMask: [.titled, .closable, .miniaturizable, .resizable], backing: .buffered, defer: false)
         window.title = isolated ? "萤火虫 · 隔离验收" : "萤火虫 · 独立调试窗口"
+        ImeAppearance.applyTheme(to: window)
         window.delegate = self
         window.isReleasedWhenClosed = false
         let input = PreviewInput(session: session)
@@ -626,6 +635,32 @@ if CommandLine.arguments.contains("--smoke-test") {
     }
     guard panelRequests == 2, view.string.isEmpty else { exit(1) }
     view.onOpenSettings = nil; view.onOpenAbout = nil
+    keys("wq wq")
+    var inputSnapshots: [(String, NSBitmapImageRep)] = []
+    for appearanceName in [NSAppearance.Name.aqua, .darkAqua] {
+        guard let appearance = NSAppearance(named: appearanceName) else { exit(1) }
+        view.appearance = appearance
+        var readable = false
+        appearance.performAsCurrentDrawingAppearance {
+            guard let storage = view.textStorage,
+                  let committedColor = storage.attribute(.foregroundColor, at: 0,
+                      effectiveRange: nil) as? NSColor,
+                  let composingColor = storage.attribute(.foregroundColor, at: storage.length - 1,
+                      effectiveRange: nil) as? NSColor else { return }
+            let contrasts = [committedColor, composingColor, view.insertionPointColor].map {
+                ImeAppearance.contrast($0, over: view.backgroundColor)
+            }
+            readable = contrasts.allSatisfy { $0 >= 4.5 }
+            print("预览文本对比度 \(appearanceName.rawValue)：\(contrasts)")
+            if let image = view.bitmapImageRepForCachingDisplay(in: view.bounds) {
+                view.cacheDisplay(in: view.bounds, to: image)
+                inputSnapshots.append((appearanceName == .aqua ? "preview-input-light.png" : "preview-input-dark.png", image))
+            }
+        }
+        guard readable else { fputs("预览输入区亮暗文本/光标对比度不足。\n", stderr); exit(1) }
+    }
+    view.appearance = nil
+    view.clear()
     for vertical in [false, true] {
         for (key, functionCharacter): (UInt16, String) in [
             (123, "\u{f702}"), (124, "\u{f703}"),
@@ -756,6 +791,8 @@ if CommandLine.arguments.contains("--smoke-test") {
         do { try bytes.write(to: qaDirectory.appendingPathComponent(name), options: .withoutOverwriting) }
         catch { fputs("视觉证据保存失败：\(error)\n", stderr); exit(1) }
     }
+    guard inputSnapshots.count == 2 else { exit(1) }
+    for (name, image) in inputSnapshots { saveQA(image, name) }
     // Semantic text colors are composited over the actual painted backgrounds.
     for theme in ["light", "dark"] {
         guard ImeConfig.setString("appearance.theme", theme),
