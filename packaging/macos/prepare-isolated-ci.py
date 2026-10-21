@@ -18,11 +18,14 @@ TEMP_ROOT_PARENTS = frozenset({"/private/tmp", "/tmp", "/private/var/tmp", "/var
 SUPPORTED_ARCHES = {"arm64", "x86_64", "universal"}
 
 
-def target_identity(value):
+def target_identity(value, development=False):
     target = Path(value)
     if not target.is_absolute() or ".." in target.parts or str(target) != os.path.normpath(str(target)):
         raise ValueError("目标必须是规范化的绝对路径")
-    if target.parent.as_posix() not in TEMP_ROOT_PARENTS and not TEMP_ROOT_PATTERN.match(target.parent.as_posix()):
+    if development:
+        if not re.fullmatch(r"/Users/[^/]+/Library/Application Support/LampyrisIMKDev", target.parent.as_posix()):
+            raise ValueError("开发根必须位于用户LampyrisIMKDev专用目录")
+    elif target.parent.as_posix() not in TEMP_ROOT_PARENTS and not TEMP_ROOT_PATTERN.match(target.parent.as_posix()):
         raise ValueError("目标根必须位于设备系统临时目录内")
     if not target.name.startswith("lampyris-imk-"):
         raise ValueError("目标根身份不符")
@@ -41,7 +44,8 @@ def target_arch(value):
 
 
 def main():
-    target = target_identity(os.environ["TARGET_TEST_ROOT"])
+    development = os.environ.get("IMK_DEVELOPMENT", "false") == "true"
+    target = target_identity(os.environ["TARGET_TEST_ROOT"], development)
     arch = target_arch(os.environ.get("TARGET_ARCH"))
     spec = importlib.util.spec_from_file_location("isolated", ROOT/"platforms/macos/tests/isolated-imk.py")
     isolated = importlib.util.module_from_spec(spec)
@@ -56,6 +60,17 @@ def main():
     subprocess.run([str(app/"Contents/MacOS/LampyrisIMKTest"), "--isolation-probe", "normal"], check=True, timeout=15)
     # Rebind before signing, then never execute the recipient-bound app on the runner.
     (app/"Contents/Resources/IMKTestRoot").write_text(str(target))
+    if development:
+        import plistlib
+        info_path = app/"Contents/Info.plist"
+        info = plistlib.loads(info_path.read_bytes())
+        info["LampyrisIMKDevelopment"] = True
+        info["LampyrisSourceCommit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+        label = "萤火虫开发 " + target.name.removeprefix("lampyris-imk-")[:8]
+        info["CFBundleDisplayName"] = label
+        info_path.write_bytes(plistlib.dumps(info))
+        for strings in (app/"Contents/Resources").glob("*.lproj/InfoPlist.strings"):
+            strings.write_text(strings.read_text().replace("萤火虫隔离验收 ", "萤火虫开发 "))
     destination = ROOT/"platforms/macos/build/Lampyris.app"
     if destination.exists():
         raise ValueError("目标构建目录已存在，不覆盖")

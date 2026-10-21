@@ -5,7 +5,7 @@ CARGO ?= cargo
 CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流.md §4
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-offline-tests macos-local-acceptance macos-ui-snapshots macos-clean-install macos-fast-reinstall handoff hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-ui-snapshots macos-clean-install macos-fast-reinstall handoff hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py
@@ -24,6 +24,9 @@ macos-fast-reinstall: ## 本地迭代换包（不注销；输入源已移除 + �
 
 handoff: ## 采集交接状态（只读；SCENARIO=compact|session|agent|device，PROMPT=1 出提示词骨架）
 	./scripts/handoff-status.sh $(if $(SCENARIO),--for=$(SCENARIO)) $(if $(PROMPT),--prompt)
+
+macos-imk-dev: ## 固定IMK开发身份：ACTION=init|root|install APP=<签名包> [ARGS=--stop-host]
+	python3 scripts/macos-imk-dev.py $(or $(ACTION),root) $(if $(APP),--app "$(APP)") $(ARGS)
 
 macos-dev: ## 重建并启动隔离验收窗口（私有配置/词库与正式菜单组件）
 	./platforms/macos/tests/run-panel-acceptance.sh --interactive
