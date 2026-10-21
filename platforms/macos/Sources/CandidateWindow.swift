@@ -587,6 +587,7 @@ final class CandidateWindow: NSObject {
     private var selectedIndex = 0
     private var themeTimer: Timer?
     private var available = NSSize(width: 640, height: 800)
+    private var arrangedSize: NSSize?
     private var input = ""
     private var hint: String?
     private var showsNavigationHint = false
@@ -619,6 +620,7 @@ final class CandidateWindow: NSObject {
     }
     /// 芯片数量/宽度变化后按最近一次光标与屏幕重新定位。
     func refreshLayout() {
+        arrangedSize = nil
         guard let (caret, area) = learningAnchor else { return }
         layout(at: caret, within: area)
     }
@@ -705,8 +707,7 @@ final class CandidateWindow: NSObject {
         container.addSubview(scrollView)
         container.addSubview(learningView)
         learningView.onResize = { [weak self] in
-            guard let self, let anchor = self.learningAnchor else { return }
-            self.layout(at: anchor.0, within: anchor.1)
+            self?.refreshLayout()
         }
         NSWorkspace.shared.notificationCenter.addObserver(self, selector: #selector(displayOptionsChanged),
             name: NSWorkspace.accessibilityDisplayOptionsDidChangeNotification, object: nil)
@@ -835,6 +836,7 @@ final class CandidateWindow: NSObject {
     }
 
     private func arrange() {
+        defer { arrangedSize = available }
         let margin: CGFloat = 16
         let maxWidth = max(1, min(640, available.width))
         let innerLimit = max(1, maxWidth - margin * 2)
@@ -1025,7 +1027,7 @@ final class CandidateWindow: NSObject {
     func layout(at caret: NSRect, within area: NSRect) {
         learningAnchor = (caret, area)
         available = area.size
-        arrange()
+        if arrangedSize != available { arrange() }
         let size = panel.frame.size
         let x = max(area.minX, min(caret.minX, area.maxX - size.width))
         let preferred = caret.maxY + 4

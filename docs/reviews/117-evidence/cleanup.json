@@ -1,0 +1,23 @@
+{
+  "current_source": "com.apple.keylayout.ABC",
+  "source_state_unchanged": true,
+  "stopped_exact_pid": 16934,
+  "executable_sha256": "39049c79c71acc1a1cc8485c22c37875f91f3cccde36a3653c24ae68fb69e0b7",
+  "host_exit_confirmed": true,
+  "marker_absent": true,
+  "trace_disabled": true,
+  "data_after": {
+    "private/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "private/user-dictionary.tsv": "9c31f64f737d3119b0ad123169e7eee9d14c1fa61a4373b021f4b58a62db255d",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "production_data_unchanged": true,
+  "private_config_unchanged": true,
+  "private_dictionary_changed_by_normal_learning": true,
+  "manual_windows_preserved": [
+    1902,
+    2221,
+    2372
+  ]
+}

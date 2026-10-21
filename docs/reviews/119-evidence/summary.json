@@ -1,0 +1,177 @@
+{
+  "baseline_commit": "a3853aa234422e1fc98c5d94596566dab87a284c",
+  "samples_per_run": 600,
+  "scope": "离屏真实表AppKit状态/内容/定位布局，不含客户端/IMK/合成",
+  "sha256": {
+    "phase.swift": "673788c4a7c836d112ca10de2d4ffd8fb850b9671f1815bf6b27f91afb56d07b",
+    "baseline.swift": "84bf895e408a923cffc31e53307a1a0aa2cd4ced270a45b5edca36158f505047",
+    "candidate.swift": "e1a3c32957f1b24126164dd3399a6fd3a2421a1a26b3407fe7ae208f60ba5532",
+    "baseline": "973c6223ebb40a03e16e54e8542c7ce2e2b02eb76cabd3174a245d3ef0a539a9",
+    "candidate": "85e7a977583a0f0e9af269e1161002a5cb5399d5c8bdf1b3f83073cc34885c89"
+  },
+  "runs": [
+    {
+      "variant": "baseline",
+      "round": 0,
+      "milliseconds": [
+        {
+          "max": 1.675125,
+          "p50": 8.3e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 34.36775,
+          "p50": 1.105666,
+          "p95": 1.212708
+        },
+        {
+          "max": 1.784875,
+          "p50": 0.666792,
+          "p95": 0.931458
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "round": 0,
+      "milliseconds": [
+        {
+          "max": 1.80925,
+          "p50": 8.3e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 4.566125,
+          "p50": 1.131375,
+          "p95": 1.22575
+        },
+        {
+          "max": 1.578167,
+          "p50": 0.144667,
+          "p95": 0.157541
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    },
+    {
+      "variant": "baseline",
+      "round": 1,
+      "milliseconds": [
+        {
+          "max": 1.425917,
+          "p50": 4.2e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 4.475417,
+          "p50": 1.105708,
+          "p95": 1.21725
+        },
+        {
+          "max": 4.71425,
+          "p50": 0.691125,
+          "p95": 0.922
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "round": 1,
+      "milliseconds": [
+        {
+          "max": 1.51225,
+          "p50": 8.3e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 4.40575,
+          "p50": 1.101958,
+          "p95": 1.323292
+        },
+        {
+          "max": 2.336167,
+          "p50": 0.145042,
+          "p95": 0.170541
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    },
+    {
+      "variant": "baseline",
+      "round": 2,
+      "milliseconds": [
+        {
+          "max": 1.447959,
+          "p50": 4.2e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 4.428083,
+          "p50": 1.112542,
+          "p95": 1.290167
+        },
+        {
+          "max": 2.381625,
+          "p50": 0.787125,
+          "p95": 0.93675
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    },
+    {
+      "variant": "candidate",
+      "round": 2,
+      "milliseconds": [
+        {
+          "max": 1.49625,
+          "p50": 8.3e-05,
+          "p95": 8.4e-05
+        },
+        {
+          "max": 4.456209,
+          "p50": 1.111209,
+          "p95": 1.223083
+        },
+        {
+          "max": 0.938,
+          "p50": 0.149792,
+          "p95": 0.161458
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ]
+    }
+  ],
+  "ffi_sha256": "2a3e8d03e38c61f7c5a42f903647e4f9bd907a2cf3e0ea2ca1bea3f01be9bcb2"
+}

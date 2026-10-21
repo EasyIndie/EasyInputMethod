@@ -1,0 +1,9 @@
+{
+  "source_commit": "a3853aa234422e1fc98c5d94596566dab87a284c",
+  "run": 39665549667,
+  "pr": 69,
+  "status": "SUCCESS",
+  "installed": true,
+  "native_phase_samples": 0,
+  "boundary": "仅签名公证完成、产物SHA核验及安全换包后进行实机计时；当前没有本候选PASS。"
+}

@@ -62,6 +62,21 @@ guard window.selectedCandidateIndexForTesting == 1,
       window.keyboardSelectedCandidatesForTesting == [1],
       window.candidateAccessibilityLabelsForTesting[1].contains("键盘焦点")
 else { fail("keyboard focus presentation/accessibility") }
+let anchoredSize = window.frame.size
+let anchoredGeometry = window.layoutForTesting()!
+let movedCaret = NSRect(x: 48, y: 70, width: 2, height: 20)
+window.layout(at: movedCaret, within: area)
+guard window.frame.origin != NSPoint(x: caret.minX, y: caret.maxY + 4),
+      window.frame.size == anchoredSize,
+      window.layoutForTesting()!.labels == anchoredGeometry.labels,
+      window.selectedCandidateIndexForTesting == 1,
+      area.contains(window.frame)
+else { fail("same-size caret move preserves candidate geometry and focus") }
+let shiftedArea = area.offsetBy(dx: 800, dy: 100)
+window.layout(at: movedCaret.offsetBy(dx: 800, dy: 100), within: shiftedArea)
+guard shiftedArea.contains(window.frame), window.frame.size == anchoredSize,
+      window.selectedCandidateIndexForTesting == 1
+else { fail("same-size screen-origin change repositions candidates") }
 // Reflow the same selected candidates; navigation and hints must follow rendered geometry.
 for width: CGFloat in [320, 90, 320] {
     window.update(candidates: values, selectedIndex: 1, input: "wq", showsNavigationHint: true)
