@@ -105,3 +105,9 @@ make macos-imk-dev ACTION=install APP="/绝对路径/Lampyris.app" ARGS=--stop-h
 - 未决：main公证开发包、首次发现/添加、同身份不同执行SHA的免注销换包、旧包回退、A/B真实客户端及调试器附加。仅前置通过，不把脚本/mock/直接进程测试计为以上原生通过。
 
 补充原生证据：精确路径自建宿主停止通过；ad-hoc包被Developer ID门禁拒绝、未安装。换包持有owner文件的排他锁，并发调用在修改前拒绝；失败不会移动不是本次安装产生的目标包。
+
+## 2026-10-21 预览交互复验与数据恢复
+
+- Computer Use重试后打开已构建的`LampyrisPreview.app`，`wq`组合按↓仍保持预编辑，随后空格提交第二项“像”并清空组合。该结果支持预览路径的候选焦点/空格映射工作；AX树和截图均未包含浮动候选面板，因此没有候选列表或高亮的直接视觉证据，也不是新签名包/系统IMK证据。
+- 该次直接启动独立预览包，绕过`make macos-dev`创建的私有数据根。预览使用真实`~/Library/Application Support/Lampyris`，主动选择曾短暂写入个人词库行`wubi / wqje / 像 / 1`。随后调用既有FFI词库删除API仅移除该行；回读个人词库SHA `74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137`、492字节，与测试前基线完全一致；config SHA `3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550`未变。预览已关闭。
+- 流程修正：禁止通过Launch Services、Finder或Computer Use应用清单直接启动构建产物`LampyrisPreview.app`；交互预览只经`make macos-dev`或明确隔离的验收包装器。已在`docs/开发工作流.md`记录此边界。实机同SHA候选窗显示、高亮、数字/鼠标选择及提交一致性仍待固定开发包验收。

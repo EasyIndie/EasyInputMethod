@@ -18,5 +18,6 @@ ADR-151：宿主按物理键消费组合中的四方向，保持引擎/marked te
 - 组合态上/下物理键移动当前页键盘焦点，停在页边界；候选窗高亮焦点并显示“↑↓浏览 · 空格确认 · 数字直选”。空格按焦点索引调用当前页候选选择；翻页后回首项。数字和鼠标直选，方向键不送入字符引擎/文本客户端。
 - `test-candidate-presentation.py`通过：导航边界、空列表重置、焦点高亮/AX 标签、焦点索引1确认对应当前页第二项；`dev-preview.sh --build-only` warnings-as-errors 构建通过；`test-controller-menu.py`正常权限复跑通过；`make verify`全绿。
 - `make macos-offline-tests`本轮完整运行仍以1项失败结束：`test-tools-presentation.py`在命名私有剪贴板断言“private copy”失败；将输出目录改到全新`/private/tmp`后仍可复现，作为独立离线回归问题跟进。另两项首次失败分别为 controller 进程异常退出和 Swift ModuleCache 沙箱权限；正常权限独立复跑均通过。不得将离线套件记全绿。
-- Computer Use尝试打开已构建预览时服务端超时（首次`timeoutReached`，随后`-10005`）；应用清单显示LampyrisPreview处于运行态，但AX不可读，未发任何测试键。预览构建和离屏回归不冒充真实可视交互。
-- 新包/安装包未重建或替换；候选可见性/箭头浏览/焦点高亮/空格确认的真实 IMK 原生结果未验证。正式发布阻断继续保持。
+- Computer Use重试后绑定已构建`LampyrisPreview.app`并观察：输入`wq`出现组合候选；按↓后组合仍为`wq`，未误提交；按空格后宿主文本为第二候选“像”，组合清空。确认预览路径方向导航及按焦点提交行为，但浮动候选面板不在截图/AX树中，未直接观察焦点高亮或列表。
+- 直接启动独立预览包绕过`make macos-dev`隔离包装器，导致真实个人词库短暂新增主动选择学习行`wubi / wqje / 像 / 1`。已通过既有FFI删除API仅删除此行；词库恢复测试前SHA `74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137`（492字节），config SHA `3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550`未变。开发工作流已补充禁止直接启动构建产物的隔离边界。
+- 新包/安装包未重建或替换；候选可见性、高亮、数字/鼠标直选及真实 IMK 原生结果仍未验证。正式发布阻断继续保持。
