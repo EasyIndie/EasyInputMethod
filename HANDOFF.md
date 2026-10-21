@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-21 / Codex；按用户指定OrzAppUpdater接入独立无状态检查，ADR-239/报告110；保持配置唯一、无发布参数默认关闭。
-- 当前分支`feat/website-updater-integration`基于594c8c6；独立Swift模块/构建/5项离线测试完成，未安装或连接线上feed。上游适配PR OrzGeeker/OrzAppUpdater#1，固定8d1d4b8；本仓库PR待建。
+- 当前分支`feat/website-updater-integration`基于594c8c6；独立Swift模块/构建/5项离线测试完成，未安装或连接线上feed。上游适配PR OrzGeeker/OrzAppUpdater#1，固定8d1d4b8；本仓库接入PR #64已创建，CI待完成。
 - 已装仍为594c8c6/执行5b5ad43c…990568b；用户确认候选窗/导航/模式切换。双高亮修复#63及验收记录#62在审，新修复未安装。
 - 用户手工文稿manual-108-pbtr6n6i/窗口1902保留。网站feed/公钥待提供；无下载/签名验证/安装/GUI入口/后台更新，正式RC门禁保持。
 
