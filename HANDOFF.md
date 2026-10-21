@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-21 / Codex（Luna）；用户切换后完成TextEdit手工原生补验（报告106），本轮文档更新后`make verify`全绿。
+- 更新：2026-10-21 / Codex（Luna）；报告106候选面板补验再次被桌面自动化阻塞；已改进现有开发工作流，本轮`make verify`通过。
 - 产品RC源码仍为`3728dfc`（PR #54）；正式与A/B、安装升级及五日试用未完成；main上的开发路径为固定身份私有根，未锁正式RC。
-- 当前分支`docs/106-imk-post-replacement`，HEAD `117ebe1`；本轮验收记录改动待提交，PR #59旧HEAD门禁曾全绿，本轮后CI待查。
+- 当前分支`docs/106-imk-post-replacement`，起始HEAD `8edc086`；本轮仅工作流/状态文档待提交。PR #59新HEAD CI无法在本机查询。
 - 排序915a70a、词库/整词回查8e35700、混输固定入口323b1a1；ADR-226…229，报告105。旧产品候选8eb872f的104结果不继承。
 - PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新包别名SHA `be7deecf…78a68318`匹配，历史PID26819已确认。当前手工UI观察到wq/nihao提交、Esc、退格重输、数字键与空格提交结果相同、三模式循环；候选面板未显示，当前宿主PID未独立确认。TIS仍回读ABC，输入源状态存在矛盾。旧b652包可恢复，正式包与真实配置/词库未改变。
 
@@ -15,7 +15,7 @@
 | A（来自15:55交接，非本机回读） | Intel/macOS13.7.8，生产07bbb2f，执行681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 生产萤火虫；报告103的f74aae7 pass18/blocked5，不继承到新候选 |
 | B（10-21本轮回读） | arm64/macOS27.0.1，生产17053e1，执行535d546f9de1…，Developer ID/accepted本轮正常权限回读通过；生产宿主未启动 | config3bc1117cc337…/1942字节/8显式快捷键；词库74f76e92a6ca…/492字节/29行；全程未变 | 本轮精确API与实际列表均为ABC，未切源；真实三SHA与104收尾相同 |
 | B历史隔离（报告104） | 产品源码8eb872f，arm64公证包；zip e719875d…9b71a1，执行8e8df20b…dd362a | 仅私有根，曾由ime-config将VO测试遗留pinyin恢复mixed | 报告104补验后已归档，宿主按精确路径停止；本轮代码改进未再安装或激活该身份 |
-| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | 手工UI有输入响应并完成模式循环；TIS仍回读ABC且本轮PID不可确认。候选显示未核，生产SHA不变；详情报告106 |
+| B固定开发（106） | `288c750`/arm64公证39532557520；zip `daa077a4…f395a0f`、执行`be7deecf…78a68318`；旧包在previous.app | 长期根~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05；0700/owner0600，配置/词库保留 | `source-state`仍报ABC、父禁用/模式启用；lsof见PID26819持包路径但窗口探针不认bundle、ps受限。候选可见性未核，生产SHA不变 |
 | B新隔离（105） | 3728dfc/arm64公证；zip0d29ed9a…/执行45c3b627…，标签萤火虫隔离验收 dce4ae25 | 新私有根0700+owner0600，私有mode=mixed，探针词已经FFI精确删除；真实数据未变 | 用户要求清理；实际未启用/无进程，撤销登记exit0后归档packaging/out/retired-imk-dce4ae25-20261021；原临时根登录时已清理，正式zip保留 |
 
 - 新两包完整zip/执行SHA、CI、私有根、静态信任及B四条隔离进程路径见报告105；正式universal仅验证未安装。历史两包归档证据仍见104。
@@ -32,7 +32,8 @@
 
 ## 3. 未决
 
-- 夹具探针仍被System Events -10827挡在建窗前；人工UI已观察wq/nihao、Esc、退格、数字键提交结果与空格一致及模式循环，但候选面板未见、数字键未能对照具体屏显项。TIS仍报ABC、与界面行为矛盾；本轮进程PID未独立确认。临时文件已关闭删除，生产SHA不变。
+- 夹具探针此前被System Events -10827挡在建窗前；本轮只读复核也发现`NSRunningApplication`宿主枚举与lsof路径持有不一致、ps受限。重试打开唯一TextEdit文件时Computer Use多次超时；未向文档输入，精确临时空文件已删除，但打开面板是否由UI自动化关闭未能确认。原“未命名”文稿未主动操作；生产SHA与源选择未改。
+- 候选可见性仍无新的产品结论；报告106上一轮手工输入观察保留但不扩展为排序PASS。工作流旧“每次换包注销”说明已核实过期，现更新为固定开发源/最终RC分层，待本轮验证。
 - 首次新载荷TextEdit AppleEvent超时和后续模式窗口识别失败均在发键前停止并恢复ABC/集合；不得把未运行场景算PASS，也不得关闭身份不明窗口。
 
 - PR #54的check/DCO/fuzz/macos全部通过（CI39519832333）；签名公证候选3728dfc已核；B新私有根见105-evidence/isolated-target.json。105旧隔离安装副本已按用户要求归档；正式zip保留。其原生/RC结果不继承固定开发源结果。
@@ -43,7 +44,7 @@
 ## 4. 下一步（断点）
 
 0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb包已安装。用户已手动切换过，但TIS仍报ABC；不要再次调用选源API或要求重复添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
-1. 下一步先用可见候选客户端复核候选面板及数字键所选项，再定位TIS状态矛盾/确认宿主PID；脚本自动化仍受System Events -10827阻断，不绕过预检。此前手工TextEdit结果和边界见报告106机器证据。
+1. 若TextEdit仍显示文件选择面板，用户可直接取消该面板（它指向已删除的空测试文件）；没有发生文档输入。之后在已启用的开发源下，先做只读宿主窗口采集，再于自有文档验证候选面板/数字键对应项。`source-state`当前回读ABC与先前手工UI响应矛盾，未再尝试程序切源。
 2. 若需要回退，以previous.app调用`python3 scripts/macos-imk-dev.py install --app <previous.app> --stop-host`；验证恢复后再继续。正式RC验收与开发身份结果分开安排。
 
 3. 核心体验与安装升级、宿主16ms/30MB、兼容及独立复核完成后才锁RC开始五日。词库后续另选合规领域词，不把72项保留集补入后仍称其独立保留。
@@ -58,6 +59,8 @@
 
 ## 9. 会话日志
 
+
+- 2026-10-21 / Codex（Luna）：复读TIS见ABC、父源disabled/模式enabled；lsof见开发包可执行路径由PID26819持有，但NSRunningApplication窗口探针不认bundle、ps受限。候选探针前置含System Events并与HUD/外观/第二屏耦合；本轮CUA打开面板操作超时，空测试文件已删、未发键，面板状态不确定。更新现有开发工作流，候选原生结论仍未增加。
 - 2026-10-21 / Codex（Luna）：用户切换后在唯一临时TextEdit文档手验wq/nihao、Esc、退格重输、数字1与空格提交结果相同、alt+m三模式循环；未见候选面板，PID本轮不可确认。TIS仍回读ABC；临时文档复原关闭并删除，原未命名文档保留、生产SHA不变。报告106/任务卡已更新，待verify和提交。
 
 - 2026-10-21 / Codex（Luna）：共享TextEdit夹具改为直接打开唯一临时文件；`osacompile`及`make verify`通过。模式探针在创建资源前因System Events `-10827`停止；source-state选源又因TIS `-50`失败，ABC未变。唯一临时文件已关闭删除、生产SHA不变；待用户手动选开发源后人工UI验收，报告106。
@@ -72,7 +75,3 @@
 
 
 - 2026-10-20 / Codex：用户移除补验源后实际列表及激活菜单均无隔离项；核验两包签名/执行SHA/根0700+owner0600后归档本轮安装副本和私有根，生产三SHA全同、ABC恢复、宿主停止。根副本lsregister -u返回-10814已原样记录；报告14/9，亮暗保持执行链BLOCKED。
-
-- 2026-10-20 / Codex：用户授权并重启后台后，权限页codex及Computer Use均on，但命令行录屏预检false、自有窗截图失败，Computer Use绑定隔离宿主超时。停止重复申请，亮暗保持BLOCKED；ABC/真实三SHA已恢复，隔离宿主精确停止且无socket，等待用户移除源后归档。
-
-- 2026-10-20 / Codex：继续后录屏预检和官方请求均false，未截图或发键，等待用户TCC授权。发现原外观暗色会让探针两张图均暗色，ADR-225显式亮色起点并沿用trap恢复；HUD专项7例通过，报告14/9不变。
