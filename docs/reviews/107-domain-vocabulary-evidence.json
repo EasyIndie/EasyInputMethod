@@ -1,0 +1,224 @@
+{
+  "scope": "B arm64/macOS27; release engine evaluator; working tree based on 5828e9d with ADR-237 D16 changes; not IMK acceptance",
+  "baseline_commit": "744bae2b1455f5c495859612d38e9d01706de471",
+  "summary": {
+    "baseline": {
+      "coverage": {
+        "wubi/train": {
+          "total": 292,
+          "reachable": 252,
+          "first_page": 252,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 4
+        },
+        "wubi/validation": {
+          "total": 69,
+          "reachable": 48,
+          "first_page": 48,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 2
+        },
+        "wubi/holdout": {
+          "total": 72,
+          "reachable": 29,
+          "first_page": 29,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 2
+        },
+        "wubi/domain": {
+          "total": 132,
+          "reachable": 7,
+          "first_page": 7,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 1
+        },
+        "pinyin/train": {
+          "total": 292,
+          "reachable": 255,
+          "first_page": 255,
+          "mean_key_cost_on_hits": 8.576,
+          "max_rank": 3
+        },
+        "pinyin/validation": {
+          "total": 69,
+          "reachable": 48,
+          "first_page": 48,
+          "mean_key_cost_on_hits": 7.688,
+          "max_rank": 3
+        },
+        "pinyin/holdout": {
+          "total": 72,
+          "reachable": 28,
+          "first_page": 28,
+          "mean_key_cost_on_hits": 7.786,
+          "max_rank": 3
+        },
+        "pinyin/domain": {
+          "total": 132,
+          "reachable": 8,
+          "first_page": 8,
+          "mean_key_cost_on_hits": 10.5,
+          "max_rank": 1
+        }
+      },
+      "performance": [
+        {
+          "load_ms": 61.038,
+          "loaded_process_rss_kib": 28768.0,
+          "key_p50_ms": 0.002875,
+          "key_p95_ms": 0.120917,
+          "key_max_ms": 0.192958
+        },
+        {
+          "load_ms": 60.027,
+          "loaded_process_rss_kib": 28448.0,
+          "key_p50_ms": 0.002833,
+          "key_p95_ms": 0.12075,
+          "key_max_ms": 0.195208
+        },
+        {
+          "load_ms": 60.305,
+          "loaded_process_rss_kib": 28768.0,
+          "key_p50_ms": 0.002792,
+          "key_p95_ms": 0.121583,
+          "key_max_ms": 0.19825
+        }
+      ]
+    },
+    "candidate": {
+      "coverage": {
+        "wubi/train": {
+          "total": 292,
+          "reachable": 260,
+          "first_page": 260,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 4
+        },
+        "wubi/validation": {
+          "total": 69,
+          "reachable": 52,
+          "first_page": 52,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 2
+        },
+        "wubi/holdout": {
+          "total": 72,
+          "reachable": 29,
+          "first_page": 29,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 2
+        },
+        "wubi/domain": {
+          "total": 132,
+          "reachable": 132,
+          "first_page": 132,
+          "mean_key_cost_on_hits": 5,
+          "max_rank": 6
+        },
+        "pinyin/train": {
+          "total": 292,
+          "reachable": 262,
+          "first_page": 262,
+          "mean_key_cost_on_hits": 8.702,
+          "max_rank": 3
+        },
+        "pinyin/validation": {
+          "total": 69,
+          "reachable": 52,
+          "first_page": 52,
+          "mean_key_cost_on_hits": 8.173,
+          "max_rank": 3
+        },
+        "pinyin/holdout": {
+          "total": 72,
+          "reachable": 28,
+          "first_page": 28,
+          "mean_key_cost_on_hits": 7.786,
+          "max_rank": 3
+        },
+        "pinyin/domain": {
+          "total": 132,
+          "reachable": 132,
+          "first_page": 132,
+          "mean_key_cost_on_hits": 12.985,
+          "max_rank": 1
+        }
+      },
+      "performance": [
+        {
+          "load_ms": 64.092,
+          "loaded_process_rss_kib": 28416.0,
+          "key_p50_ms": 0.002875,
+          "key_p95_ms": 0.123792,
+          "key_max_ms": 0.448292
+        },
+        {
+          "load_ms": 60.682,
+          "loaded_process_rss_kib": 28416.0,
+          "key_p50_ms": 0.002875,
+          "key_p95_ms": 0.121625,
+          "key_max_ms": 0.206584
+        },
+        {
+          "load_ms": 59.774,
+          "loaded_process_rss_kib": 27312.0,
+          "key_p50_ms": 0.002833,
+          "key_p95_ms": 0.121666,
+          "key_max_ms": 0.196875
+        }
+      ]
+    }
+  },
+  "selection": {
+    "domain_entries": 132,
+    "original_holdout": 72,
+    "natural_overlap_count": 0,
+    "remaining_independent_holdout": 72,
+    "domain_sha_frozen": "46000fd6c78629f9402f2dbbb449350be137db1a8b03ddeb9194aa9c3fdedbe6"
+  },
+  "matched_cohort": {
+    "wubi": {
+      "previously_reachable": 336,
+      "lost": 0,
+      "key_cost_increased": 0,
+      "rank_changed": 0
+    },
+    "pinyin": {
+      "previously_reachable": 339,
+      "lost": 0,
+      "key_cost_increased": 0,
+      "rank_changed": 0
+    }
+  },
+  "source_sha256": "46000fd6c78629f9402f2dbbb449350be137db1a8b03ddeb9194aa9c3fdedbe6",
+  "corpus_sha256": "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d",
+  "bundle_resources_sha256": {
+    "wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
+  },
+  "bundle_executable_sha256": "588a515ce772fbb084adb10d1561231a8fadf5fbebac21e55c09d61656bc8a38",
+  "validation": {
+    "make_verify": "PASS",
+    "generator_unit": "PASS",
+    "core_vocabulary": "PASS",
+    "strict_universal_build": "PASS",
+    "bundle_resource_match": "PASS"
+  },
+  "limitations": [
+    "Known supplemental terms are not a blind evaluation",
+    "Original 72 holdout untouched; coverage unchanged",
+    "No IMK latency/memory or native acceptance claim",
+    "Ad-hoc local build not installed"
+  ],
+  "separate_preview_fix_package": {
+    "source_commit": "3fe36b0c9ee38f869ad4ecddc0bb5e26ccf31ca7",
+    "run": 39596596605,
+    "zip_sha256": "43db556b0e9bddcf16863fea12388db43be3f3b8baa3af903bfb3df810d8d30b",
+    "executable_sha256": "11d57efb0a27932011e7af692bb08c27b5efd145f6f54a9890ba40823063fdc9",
+    "codesign": "PASS",
+    "gatekeeper": "PASS",
+    "stapler": "PASS",
+    "installed": false,
+    "includes_D16": false
+  }
+}

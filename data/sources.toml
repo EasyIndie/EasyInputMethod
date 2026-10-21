@@ -93,11 +93,11 @@ notes = "MIT（Copyright (c) 2013 Sun Junyi）；格式 `词 频次 词性`（�
 [[derived]]
 id = "pinyin-core-v2"
 path = "data/generated/pinyin-core.tsv"
-source_ids = ["D4", "D5", "D10", "D15"]
+source_ids = ["D4", "D5", "D10", "D15", "D16"]
 license = "CC-BY-SA-4.0"
-sha256 = "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3"
+sha256 = "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
 generator = "tools/prepare-pinyin-core.py"
-notes = "ADR-227；前20000条基础词加D15训练词，保留集不参与生成，原始词频不变，TSV预算800000字节"
+notes = "ADR-227/237；前20000条基础词加D15训练词+D16自编组合词，保留集不参与生成，原始词频不变，TSV预算800000字节"
 
 [[source]]
 id = "D11"
@@ -219,8 +219,21 @@ notes = "项目独立编写433项；292训练项参与已有来源选词，69探
 [[derived]]
 id = "wubi-core-v2"
 path = "data/generated/wubi86-core.tsv"
-source_ids = ["D3", "D10", "D15"]
+source_ids = ["D3", "D10", "D15", "D16"]
 license = "CC-BY-SA-4.0"
-sha256 = "511edd6237d47a83ed79237b0e9916cd65d8f926aadb747331c3f8d3f7a43561"
+sha256 = "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa"
 generator = "crates/wubi-encoder/examples/generate_core.rs"
-notes = "ADR-227；全量单字+前20000条基础词组+D15训练词；保留集不参与生成，TSV预算800000字节"
+notes = "ADR-227/237；全量单字+前20000条基础词组+D15训练词+D16自编组合词；保留集不参与生成，TSV预算800000字节"
+
+[[source]]
+id = "D16"
+name = "项目自编常用聊天工作开发组合词"
+path = "data/domain-vocabulary.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/domain-vocabulary.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "46000fd6c78629f9402f2dbbb449350be137db1a8b03ddeb9194aa9c3fdedbe6"
+used_for = ["bounded-domain-vocabulary", "known-vocabulary-regression"]
+added_at = "2026-10-21"
+notes = "ADR-237；自编132项及逐字读音，未读取保留集选词；已有权重不变，新组合权重1不代表统计频次；五笔码由现有编码器生成"

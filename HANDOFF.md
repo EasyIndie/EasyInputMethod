@@ -2,11 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-21 / Codex（GPT-6）；用户确认ADR-234…236三项预览补验通过：学习区焦点、默认Option键/HUD、亮暗可读性。绑定a39bf0f/执行01bb15ed…e181cfd；窗口正常清理、生产数据SHA未变。系统IMK/正式RC验收仍待。
-- 产品RC源码仍为`3728dfc`（PR #54）；正式与A/B、安装升级及五日试用未完成；main上的开发路径为固定身份私有根，未锁正式RC。
-- 当前分支`fix/mvp-experience-signed-history`（保留旧分支与PR #59），导航`cfa4e36`、乱码`e467809`、布局`d5858bb`、学习焦点`3f5a8ef`、快捷键`a5386ad`；输入区亮暗`a39bf0f`。PR #59 check/macos/fuzz通过，DCO因7个旧提交缺署名失败；新分支逐提交补签，代码树与744bae2完全一致，原SHA证据保留有效。
-- 排序915a70a、词库/整词回查8e35700、混输固定入口323b1a1；ADR-226…229，报告105。旧产品候选8eb872f的104结果不继承。
-- PR #58四门禁、arm64公证、包签名/Gatekeeper/stapler及文档make verify通过；新包别名SHA `be7deecf…78a68318`匹配，历史PID26819已确认。当前手工UI观察到wq/nihao提交、Esc、退格重输、数字键与空格提交结果相同、三模式循环；候选面板未显示，当前宿主PID未独立确认。TIS仍回读ABC，输入源状态存在矛盾。旧b652包可恢复，正式包与真实配置/词库未改变。
+- 更新：2026-10-21 / Codex；D16常用组合词工程验证完成，报告107；预览用户通过证据仍绑定a39bf0f/01bb15ed…e181cfd。
+- 当前分支`feat/mvp-domain-vocabulary`，基于5828e9d补充ADR-237/D16；make verify及严格universal构建通过，尚未安装本批词表；PR #61（5edd418/eded5b0）已创建，CI待完成。
+- 用户明确授权后PR #60合入main `3fe36b0c9ee38f869ad4ecddc0bb5e26ccf31ca7`，#59关闭；旧分支和archive/preview-accepted-744bae2保留，原证据SHA不改写。
+- 固定开发包公证运行39596596605成功，源码3fe36b0（不含D16），已下载且签名/Gatekeeper/stapler核验通过，未换包；正式RC仍未锁定，产品3728dfc历史结果不继承。
 
 ## 1. 设备与数据
 
@@ -22,6 +21,8 @@
 - 私有根：`/private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-3b030dda-b3f5-4424-a45c-90c5cfabfbf7`（补验后已整体归档）；原安装包 `~/Library/Input Methods/LampyrisIMKTest-3b030dda-b3f5-4424-a45c-90c5cfabfbf7.app`。
 
 ## 2. 本轮结论
+
+- ADR-237/D16：132项领域组合词两表各增125行；原433项五笔341/拼音342命中，原72保留集29/28不变。原有命中排名/成本无变化；三对引擎性能、实际打包表SHA、make verify与严格universal构建见报告107。未安装或原生验收。
 
 - ADR-230/报告106：固定开发私有根/身份、公证选项、精确换包及旧包回退已实现；PR #58合入288c750，新arm64公证包在源启用期间换入不同执行SHA；PID26819的TextEdit `wq→你`/marked/恢复历史通过。
 
@@ -50,6 +51,8 @@
 
 ## 4. 下一步（断点）
 
+- 当前断点：检查PR #61的CI，审阅后另获合并授权；建议统一源码再签开发包，减少重复换包。公证运行39596596605（3fe36b0，旧数据）已下载静态核验通过但未安装；zip43db556b…0d8d30b/执行11d57efb…063fdc9。数据PR合并须另获明确授权，不沿用#60授权。报告107记录本地性能与工作树产物SHA。
+
 0. 旧隔离dce4ae25可恢复归档；固定开发d4fcecfb包已安装。用户已手动切换过，但TIS仍报ABC；不要再次调用选源API或要求重复添加/注销。旧b652包在私有根previous.app，生产数据SHA保持。
 1. 三项预览补验已通过，不重复要求用户重测；按固定开发身份为ADR-231…236源码重建、签名/公证并换包；在自有TextEdit文稿验证↑↓浏览、空格提交焦点项、数字/鼠标直选、翻页/退格/Esc后焦点重置及marked text无污染。只经固定开发包装器交互，禁止直接启动LampyrisPreview.app；候选独立窗口探针仍需拆分；TIS回读ABC与手工行为矛盾，不尝试程序切源。`test-tools-presentation.py`私有剪贴板断言是独立离线套件失败，另开小任务修复，不阻塞本次候选导航原生验收。
 2. 若需要回退，以previous.app调用`python3 scripts/macos-imk-dev.py install --app <previous.app> --stop-host`；验证恢复后再继续。正式RC验收与开发身份结果分开安排。
@@ -66,6 +69,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-21 / Codex：用户明确授权后合并#60/关闭#59，主线3fe36b0；固定开发包公证39596596605成功。D16自编132词及生成器、真实表回归/性能对照完成，报告107；原生/同RC发布仍待。
+
 - 2026-10-21 / Codex（GPT-6）：用户回复三项预览验收通过，绑定a39bf0f/执行01bb15ed…e181cfd、身份lf3r82lh。包装器exit0、私有根删除、生产两SHA仍基线；报告106/机器证据/任务卡同步。日志常量范围提示另记待定位；系统IMK/正式RC未继承PASS。
 
 - 2026-10-21 / Codex（GPT-6）：用户确认默认Option+字母；三修复已推送3f5a8ef/a5386ad/a39bf0f，完整门禁及定向回归通过。最终隔离预览两次正常清理且真实数据SHA不变，CUA连接长时间卡住后返回Invalid app，无新增用户物理键PASS；当前窗口已关闭，停止重复自动化连接。
@@ -79,5 +84,3 @@
 - 2026-10-21 / Codex（Luna）：CUA预览重试观察wq按↓组合不提交、空格提交第二项“像”。发现绕过隔离包装器后真实词库短暂新增单行；通过现有FFI精确删除，词库SHA/492字节及config SHA均回基线。更新任务卡/报告/工作流，禁止直接启动预览包。
 
 - 2026-10-21 / Codex（Luna）：复读TIS见ABC、父源disabled/模式enabled；lsof见开发包可执行路径由PID26819持有，但NSRunningApplication窗口探针不认bundle、ps受限。候选探针与HUD/外观/第二屏耦合。CUA在临时文稿观察wq+空格提交“你”，随后清空删除并确认原文稿仍在；无候选窗证据。报告/任务卡补充，工作流改进已推送，补充文档待verify/提交。
-
-- 2026-10-21 / Codex（Luna）：ADR-231实现组合态↑↓浏览当前页候选、空格确认并保持数字/鼠标直选；定向候选测试、warnings-as-errors预览构建、controller集成正常权限复跑及make verify通过。macos-offline-tests仅test-tools-presentation私有剪贴板失败；CUA预览AX超时且未发键；新签名候选未装机，原生IMK结果待验。

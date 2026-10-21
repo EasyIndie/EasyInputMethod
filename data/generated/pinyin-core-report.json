@@ -1,16 +1,19 @@
 {
   "source_sha256": "96f310a83c26d51cd8cdc13ea99c6232824ec0cff3276ba96ef5f636b77d931f",
-  "output_sha256": "1c1ac01b273a84cd2316b750c07c8bb4064d35e0cd952e0e05be2444be9eccf3",
+  "output_sha256": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb",
   "budget_bytes": 800000,
-  "output_bytes": 432250,
-  "entries": 20067,
-  "order": "top 20000 by weight, word, pinyin plus D15 train; holdout excluded",
+  "output_bytes": 436115,
+  "entries": 20192,
+  "order": "top 20000 plus D15 train and frozen D16; new words weight 1",
   "selection_sha256": "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d",
+  "domain_sha256": "46000fd6c78629f9402f2dbbb449350be137db1a8b03ddeb9194aa9c3fdedbe6",
+  "domain_entries": 132,
   "sources": [
     "D4",
     "D5",
     "D10",
-    "D15"
+    "D15",
+    "D16"
   ],
   "license": "CC-BY-SA-4.0"
 }

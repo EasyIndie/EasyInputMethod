@@ -1,5 +1,5 @@
-# 萤火虫核心拼音词表；CC-BY-SA-4.0；ADR-031
-# 来源 D4/D5/D10（MIT）；前20000条加D15训练词，原始词频不变，详见数据许可文档。
+# 萤火虫核心拼音词表；CC-BY-SA-4.0；ADR-031/237
+# 来源D4/D5/D10/D15/D16；20k基础词+训练词+自编组合；已有权重不变，新词权重1。
 yi ge	一个	142747
 zhong guo	中国	129470
 wo men	我们	98740
@@ -20044,18 +20044,31 @@ ji suan ji ke xue	计算机科学	13
 wu bi zi xing	五笔字型	10
 duo xian cheng	多线程	10
 yuan ma	源码	10
+dan yuan ce shi	单元测试	9
+shu ju lei xing	数据类型	9
 jian ti zhong wen	简体中文	9
 fen ye	分页	7
 an zhuang cheng xu	安装程序	6
 kuai jie jian	快捷键	6
 shu ju bei fen	数据备份	6
 wu bi	五笔	5
+ce shi huan jing	测试环境	4
+diao shi xin xi	调试信息	4
+tiao shi xin xi	调试信息	4
+pei zhi wen jian	配置文件	4
 shang ping	上屏	3
+ren wu fen pei	任务分配	3
+hui yi ji yao	会议纪要	3
 quan jiao	全角	3
 ban jiao	半角	3
+chu li jie guo	处理结果	3
+pin yin shu ru	拼音输入	3
+ri cheng an pai	日程安排	3
 ce shi bao gao	测试报告	3
 ban ben kong zhi	版本控制	3
+huan jing bian liang	环境变量	3
 yong hu shou ce	用户手册	3
+shao deng yi xia	稍等一下	3
 fan ti zhong wen	繁体中文	3
 zi dong geng xin	自动更新	3
 ci ku	词库	3
@@ -20064,6 +20077,118 @@ tui ge	退格	3
 cuo wu chu li	错误处理	3
 quan wen jian suo	全文检索	2
 shu ju hui fu	数据恢复	2
+xia zhou ji hua	下周计划	1
+bu zhao ji	不着急	1
 zhong guo ke xue ji shu da xue	中国科学技术大学	1
+wu bi shu ru	五笔输入	1
+jiao fu nei rong	交付内容	1
+jiao fu shi jian	交付时间	1
+dai ma shen cha	代码审查	1
+dai ma ge shi	代码格式	1
+dai ma jian cha	代码检查	1
+dai ma bu quan	代码补全	1
+dai ma chong gou	代码重构	1
+ren wu qing dan	任务清单	1
+hui yi shi jian	会议时间	1
+hui yi yao qing	会议邀请	1
+shi yong shuo ming	使用说明	1
+yi lai geng xin	依赖更新	1
+yi lai guan li	依赖管理	1
+bao chi gou tong	保持沟通	1
+hou xuan ci zu	候选词组	1
+gong xiang wen dang	共享文档	1
+jian rong xing ce shi	兼容性测试	1
+nei cun zhan yong	内存占用	1
+nei cun xie lou	内存泄漏	1
+fen zhi guan li	分支管理	1
+ji shi fan kui	及时反馈	1
+fan kui yi jian	反馈意见	1
+ke yi de	可以的	1
+he bing chong tu	合并冲突	1
+he bing qing qiu	合并请求	1
+hou xu gen jin	后续跟进	1
+qi dong shi jian	启动时间	1
+zhou mo yu kuai	周末愉快	1
+xiang ying shi jian	响应时间	1
+hui gui ce shi	回归测试	1
+chu li jin du	处理进度	1
+fu xian bu zhou	复现步骤	1
+an zhuang sheng ji	安装升级	1
+gong zuo ji hua	工作计划	1
+bing fa kong zhi	并发控制	1
+kai fa huan jing	开发环境	1
+kai yuan xie yi	开源协议	1
+yi chang chu li	异常处理	1
+yi chang hui fu	异常恢复	1
+yi bu ren wu	异步任务	1
+xing neng you hua	性能优化	1
+xing neng ce shi	性能测试	1
+wo kan yi xia	我看一下	1
+wo zhi dao le	我知道了	1
+jie zhi shi jian	截止时间	1
+chi xu jiao fu	持续交付	1
+chi xu ji cheng	持续集成	1
+jie kou wen dang	接口文档	1
+jie kou diao yong	接口调用	1
+ti jiao ji lu	提交记录	1
+shou dao xie xie	收到谢谢	1
+shu ju ku lian jie	数据库连接	1
+shu ju jiao yan	数据校验	1
+shu ju qian yi	数据迁移	1
+wen dang lian jie	文档链接	1
+duan dian tiao shi	断点调试	1
+fang bian ma	方便吗	1
+zao dian xiu xi	早点休息	1
+shi jian an pai	时间安排	1
+ming tian jian	明天见	1
+wan dian lian xi	晚点联系	1
+you shi jian	有时间	1
+ben zhou ji hua	本周计划	1
+ben di huan jing	本地环境	1
+quan xian jian cha	权限检查	1
+quan xian guan li	权限管理	1
+gou jian chan wu	构建产物	1
+gou jian shi bai	构建失败	1
+he dui yi xia	核对一下	1
+mei wen ti	没问题	1
+zhu yi xiu xi	注意休息	1
+ce shi fu gai lv	测试覆盖率	1
+ban ben hui tui	版本回退	1
+ban ben guan li	版本管理	1
+sheng chan huan jing	生产环境	1
+yong hu fan kui	用户反馈	1
+xiang guan fu jian	相关附件	1
+que ren yi xia	确认一下	1
+li xian shi yong	离线使用	1
+shao hou hui fu	稍后回复	1
 deng yi xia	等一下	1
+xian cheng an quan	线程安全	1
+huan cun shi xiao	缓存失效	1
+huan cun qing li	缓存清理	1
+zi dong hua ce shi	自动化测试	1
+bu chong shuo ming	补充说明	1
+qing cha shou	请查收	1
+qing qiu can shu	请求参数	1
+qing que ren	请确认	1
 shei de	谁的	1
+xie xie ni	谢谢你	1
+lu shang xiao xin	路上小心	1
+shu ru ti yan	输入体验	1
+xin ku le	辛苦了	1
+fan hui jie guo	返回结果	1
+jin du tong bu	进度同步	1
+pei zhi xuan xiang	配置选项	1
+cuo wu ti shi	错误提示	1
+cuo wu ri zhi	错误日志	1
+wen ti fan kui	问题反馈	1
+wen ti ding wei	问题定位	1
+ji cheng ce shi	集成测试	1
+xu qiu bian geng	需求变更	1
+xu qiu wen dang	需求文档	1
+xu qiu ping shen	需求评审	1
+xiang mu jin du	项目进度	1
+yan shou biao zhun	验收标准	1
+yan shou jie guo	验收结果	1
+yan shou tong guo	验收通过	1
+ma fan ni	麻烦你	1
+mo ren pei zhi	默认配置	1

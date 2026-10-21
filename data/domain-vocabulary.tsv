@@ -1,0 +1,134 @@
+# 项目自编常用组合词；CC-BY-SA-4.0；D16/ADR-237。非统计语料；新词权重1仅排序占位。
+# category	text	pinyin（逐字、无调、空格分隔）
+聊天	谢谢你	xie xie ni
+聊天	没问题	mei wen ti
+聊天	没关系	mei guan xi
+聊天	不好意思	bu hao yi si
+聊天	辛苦了	xin ku le
+聊天	麻烦你	ma fan ni
+聊天	稍等一下	shao deng yi xia
+聊天	等一下	deng yi xia
+聊天	稍后回复	shao hou hui fu
+聊天	收到谢谢	shou dao xie xie
+聊天	我知道了	wo zhi dao le
+聊天	我看一下	wo kan yi xia
+聊天	方便吗	fang bian ma
+聊天	可以的	ke yi de
+聊天	不着急	bu zhao ji
+聊天	来得及	lai de ji
+聊天	有时间	you shi jian
+聊天	明天见	ming tian jian
+聊天	周末愉快	zhou mo yu kuai
+聊天	路上小心	lu shang xiao xin
+聊天	注意休息	zhu yi xiu xi
+聊天	早点休息	zao dian xiu xi
+聊天	一会儿	yi hui er
+聊天	晚点联系	wan dian lian xi
+工作	会议纪要	hui yi ji yao
+工作	会议邀请	hui yi yao qing
+工作	会议时间	hui yi shi jian
+工作	日程安排	ri cheng an pai
+工作	时间安排	shi jian an pai
+工作	工作计划	gong zuo ji hua
+工作	本周计划	ben zhou ji hua
+工作	下周计划	xia zhou ji hua
+工作	项目进度	xiang mu jin du
+工作	进度同步	jin du tong bu
+工作	需求文档	xu qiu wen dang
+工作	需求评审	xu qiu ping shen
+工作	需求变更	xu qiu bian geng
+工作	任务分配	ren wu fen pei
+工作	任务清单	ren wu qing dan
+工作	截止时间	jie zhi shi jian
+工作	交付时间	jiao fu shi jian
+工作	交付内容	jiao fu nei rong
+工作	验收标准	yan shou biao zhun
+工作	验收结果	yan shou jie guo
+工作	验收通过	yan shou tong guo
+工作	问题反馈	wen ti fan kui
+工作	反馈意见	fan kui yi jian
+工作	处理进度	chu li jin du
+工作	处理结果	chu li jie guo
+工作	确认一下	que ren yi xia
+工作	核对一下	he dui yi xia
+工作	请查收	qing cha shou
+工作	请确认	qing que ren
+工作	补充说明	bu chong shuo ming
+工作	相关附件	xiang guan fu jian
+工作	文档链接	wen dang lian jie
+工作	共享文档	gong xiang wen dang
+工作	保持沟通	bao chi gou tong
+工作	及时反馈	ji shi fan kui
+工作	后续跟进	hou xu gen jin
+开发	开发环境	kai fa huan jing
+开发	测试环境	ce shi huan jing
+开发	生产环境	sheng chan huan jing
+开发	本地环境	ben di huan jing
+开发	配置文件	pei zhi wen jian
+开发	配置选项	pei zhi xuan xiang
+开发	默认配置	mo ren pei zhi
+开发	环境变量	huan jing bian liang
+开发	依赖管理	yi lai guan li
+开发	依赖更新	yi lai geng xin
+开发	版本管理	ban ben guan li
+开发	版本控制	ban ben kong zhi
+开发	分支管理	fen zhi guan li
+开发	合并请求	he bing qing qiu
+开发	合并冲突	he bing chong tu
+开发	提交记录	ti jiao ji lu
+开发	代码审查	dai ma shen cha
+开发	代码检查	dai ma jian cha
+开发	代码格式	dai ma ge shi
+开发	代码补全	dai ma bu quan
+开发	代码重构	dai ma chong gou
+开发	单元测试	dan yuan ce shi
+开发	集成测试	ji cheng ce shi
+开发	回归测试	hui gui ce shi
+开发	自动化测试	zi dong hua ce shi
+开发	测试用例	ce shi yong li
+开发	测试覆盖率	ce shi fu gai lv
+开发	性能测试	xing neng ce shi
+开发	性能优化	xing neng you hua
+开发	内存占用	nei cun zhan yong
+开发	内存泄漏	nei cun xie lou
+开发	启动时间	qi dong shi jian
+开发	响应时间	xiang ying shi jian
+开发	错误日志	cuo wu ri zhi
+开发	异常处理	yi chang chu li
+开发	异常恢复	yi chang hui fu
+开发	错误提示	cuo wu ti shi
+开发	问题定位	wen ti ding wei
+开发	复现步骤	fu xian bu zhou
+开发	调试信息	tiao shi xin xi
+开发	断点调试	duan dian tiao shi
+开发	接口文档	jie kou wen dang
+开发	接口调用	jie kou diao yong
+开发	请求参数	qing qiu can shu
+开发	返回结果	fan hui jie guo
+开发	数据结构	shu ju jie gou
+开发	数据类型	shu ju lei xing
+开发	数据校验	shu ju jiao yan
+开发	数据迁移	shu ju qian yi
+开发	数据库连接	shu ju ku lian jie
+开发	缓存清理	huan cun qing li
+开发	缓存失效	huan cun shi xiao
+开发	异步任务	yi bu ren wu
+开发	并发控制	bing fa kong zhi
+开发	线程安全	xian cheng an quan
+开发	权限检查	quan xian jian cha
+开发	权限管理	quan xian guan li
+开发	持续集成	chi xu ji cheng
+开发	持续交付	chi xu jiao fu
+开发	构建失败	gou jian shi bai
+开发	构建产物	gou jian chan wu
+开发	安装升级	an zhuang sheng ji
+开发	版本回退	ban ben hui tui
+开发	兼容性测试	jian rong xing ce shi
+开发	用户反馈	yong hu fan kui
+开发	使用说明	shi yong shuo ming
+开发	开源协议	kai yuan xie yi
+开发	输入体验	shu ru ti yan
+开发	候选词组	hou xuan ci zu
+开发	拼音输入	pin yin shu ru
+开发	五笔输入	wu bi shu ru
+开发	离线使用	li xian shi yong

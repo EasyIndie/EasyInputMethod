@@ -1,18 +1,18 @@
 # 五笔86 内置核心码表报告（T-M1-09）
 #
 # 单字码表：data/generated/wubi86-single.tsv（全量）
-# 词组码表：data/generated/wubi86-phrases.tsv（裁剪）
+# 词组码表：data/generated/wubi86-phrases.tsv（裁剪，并补充data/domain-vocabulary.tsv）
 # 输出：data/generated/wubi86-core.tsv
 
 [trim_rule]
 single_rows = 27823（全量保留）
-phrase_rows_full = 337231
-phrase_limit = 20000（按 weight 全局降序取前 N 条，加D15训练词，等权按 code/text 升序）
-phrase_rows_kept = 20064
+phrase_rows_full = 337344（含D16新组合）
+phrase_limit = 20000（前 N 基础词+D15训练词+D16组合词；新词权重1，等权按 code/text 升序）
+phrase_rows_kept = 20189
 
 [size]
-core_rows = 47887
-core_bytes = 663799
+core_rows = 48012
+core_bytes = 666315
 budget_bytes = 800000（0.8 MB）
 within_budget = yes
 
