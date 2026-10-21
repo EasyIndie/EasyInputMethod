@@ -1,0 +1,8 @@
+{
+  "source_commit": "cf48a9e5b8766feef07d8996c4857e6aff286ced",
+  "scope": "B本机正常权限，独立离屏临时配置/命名私有剪贴板",
+  "command": "python3 platforms/macos/tests/test-tools-presentation.py",
+  "result": "PASS",
+  "seconds": 12.825,
+  "boundary": "只关闭本项当前复现阻断，不证明完整本机离线套件通过，不继承为新包实机PASS。"
+}
