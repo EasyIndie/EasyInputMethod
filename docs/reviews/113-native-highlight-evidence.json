@@ -1,0 +1,100 @@
+{
+  "source_commit": "ef566cd9a09f2e0353a4eb9600a88d7237235545",
+  "run": 39617559248,
+  "app": "/Users/joker/Documents/EasyInputMethod/packaging/out/run-39617559248/Lampyris-isolated-imk-arm64-ef566cd9a09f2e0353a4eb9600a88d7237235545/extracted/Lampyris.app",
+  "zip_sha256": "c83802d2ad634273943efdbb9ff8a44b8fd8fcdca8b5c6d34757d549f24ce960",
+  "executable_sha256": "8f479eb8452397a1307f2205c8095b9da5b3c735517e367830b5d6b84a1ab242",
+  "resources_sha256": {
+    "wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
+  },
+  "static_verification": "PASS",
+  "performance_66_included": false,
+  "updater_64_included": false,
+  "data_before": {
+    "private/config.toml": "dbd77d0cf15a933d8e55e35a87f477c6d0395d22b04b75544d700ed5f2467bd7",
+    "private/user-dictionary.tsv": "b5ac4ea4759507d4099030705f5ad07046c5f47594d520267fa6b410180271de",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "installation": {
+    "root": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+    "installed": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app",
+    "backup": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-wcggaewq/previous.app",
+    "source_commit": "ef566cd9a09f2e0353a4eb9600a88d7237235545",
+    "executable_sha256": "8f479eb8452397a1307f2205c8095b9da5b3c735517e367830b5d6b84a1ab242",
+    "before": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "after": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "source_state_unchanged": true,
+    "native_input_verified": false
+  },
+  "data_after": {
+    "private/config.toml": "dbd77d0cf15a933d8e55e35a87f477c6d0395d22b04b75544d700ed5f2467bd7",
+    "private/user-dictionary.tsv": "b5ac4ea4759507d4099030705f5ad07046c5f47594d520267fa6b410180271de",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "all_data_sha_unchanged": true,
+  "manual_window": {
+    "file": "/Users/joker/Documents/EasyInputMethod/platforms/macos/build/manual-113-cbuu_ddr/萤火虫手工验收-113.txt",
+    "window_id": "2221",
+    "returncode": 0,
+    "error": "",
+    "keep_open_for_user": true
+  },
+  "physical_highlight_acceptance": "pending user",
+  "loaded_new_host_verified": true,
+  "host_probe": {
+    "pids": [
+      "82516"
+    ],
+    "source": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    }
+  },
+  "loaded_host_scope": "PID82516 holds exact installed executable; source remains ABC, not proof of client binding",
+  "make_verify": "PASS"
+}
