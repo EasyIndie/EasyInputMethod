@@ -770,7 +770,7 @@ final class CandidateWindow: NSObject {
     func update(candidates: [ImeCandidate], pageIndex: Int = 0, pageCount: Int = 1,
                 selectedIndex: Int = 0,
                 input: String = "", hint: String? = nil, showsNavigationHint: Bool = false,
-                warning: String? = nil) {
+                warning: String? = nil, relayout: Bool = true) {
         refreshAppearance()
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
@@ -824,7 +824,21 @@ final class CandidateWindow: NSObject {
             label.setHovered(false)
         }
         renderedCount = candidates.count
-        arrange()
+        if relayout {
+            arrange()
+        } else {
+            // Only hide uses this path: revoke actions now, defer invisible geometry.
+            arrangedSize = nil
+            pageLabel.isHidden = true
+            previousButton.isHidden = true
+            nextButton.isHidden = true
+            previousButton.isEnabled = false
+            nextButton.isEnabled = false
+            inputLabel.isHidden = true
+            hintLabel.isHidden = true
+            warningLabel.isHidden = true
+            stateStrip.isHidden = true
+        }
     }
 
     @objc private func previousPage() {
@@ -1039,6 +1053,6 @@ final class CandidateWindow: NSObject {
         themeTimer?.invalidate()
         themeTimer = nil
         panel.orderOut(nil)
-        update(candidates: [])
+        update(candidates: [], relayout: false)
     }
 }

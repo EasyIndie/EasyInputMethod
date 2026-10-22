@@ -582,7 +582,9 @@ final class LampyrisInputController: IMKInputController {
             PerfTrace.shared.measure(trace, phase: .commit) {
                 commit(text, to: client)
             }
-            candidateWindow?.hide()
+            PerfTrace.shared.measure(trace, phase: .hide) {
+                candidateWindow?.hide()
+            }
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
             return true
         case .passThrough:

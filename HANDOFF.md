@@ -43,7 +43,7 @@
 ## 4. 下一步（断点）
 
 1. PR #78最终head fc65b65四CI绿，merge18fcbbf已同步main/dev，无开放PR，ADR-250/251已合入。报告128记录开发包缺版本拒绝安装及最小修复，0.1.0/build2。
-2. 130采样首轮50键/六词通过，total P95 22.124ms/max58.039ms、5键≥16ms；八项附加通过后xi'an中途失焦停止，最终mixed未验。marker已删，mode通过ime-config恢复mixed。用户ABC后精确路径/SHA守卫，仅停止PID37114并确认退出，marker不存在、缓存计时关闭；生产数据/开发配置SHA保持，收尾完成，见130-evidence/cleanup.json。下一步先测量hide空候选布局是否贡献长提交，证据充分再ADR/最小修复，不重复相同全套验收。
+2. 130采样首轮50键/六词通过，total P95 22.124ms/max58.039ms、5键≥16ms；八项附加通过后xi'an中途失焦停止，最终mixed未验。marker已删，mode通过ime-config恢复mixed。用户ABC后精确路径/SHA守卫，仅停止PID37114并确认退出，marker不存在、缓存计时关闭；生产数据/开发配置SHA保持，收尾完成，见130-evidence/cleanup.json。下一步按131/ADR-252完成本批门禁及单PR：hide离屏清空约0.40ms，不等于原生10–17ms根因；最小延后隐藏空布局、schema2新增hideUs，定向/strict双架构通过，完整离线41文件193项及verify零诊断通过，待单PR四CI收尾。已装保持build2，未换包。
 3. 127满库低负载离屏physical43.55MiB，malloc分配18.4M/碎片16M；进一步定位分配高水位，不能用早期有swap的31.36MiB冒充改善。基础与个人数据已有共享快照，不重复建缓存。原生首键67ms及最终文本门禁仍开。
 4. 更新仍默认关闭，无正式feed/key，下载验签/安全替换/回滚、App Store路径及同RC A/B/独立重建/五日待做；不创建tag/Release，不因等待实机停止独立可完成项。
 
@@ -54,6 +54,9 @@
 - 不创建tag或Release。改动走PR，make verify零诊断；不绕过main-only签名约束。
 
 ## 9. 会话日志
+
+- 2026-10-22 / Codex：131先定向测hide再ADR-252，实现隐藏后空布局延后和schema2 hideUs，旧AppKit回归失败后通过，strict双架构通过；三对hide P95减少约0.15–0.34ms，首对坏最大值保留，不解释原生长尾。build3本地未安装，完整离线41文件193项/verify零诊断通过，唯一PR收尾进行中。
+
 
 - 2026-10-22 / Codex：用户ABC后精确退出PID37114，确认marker不存在/缓存计时关闭，生产数据及开发配置SHA保持；130收尾完成，性能未达标。下一步定位候选隐藏清空布局及冷首键，不重复无归因采样。
 

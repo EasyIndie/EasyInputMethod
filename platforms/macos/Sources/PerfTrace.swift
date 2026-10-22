@@ -18,6 +18,7 @@ final class PerfTrace {
         case caret = "caretUs"
         case window = "windowUs"
         case commit = "commitUs"
+        case hide = "hideUs"
     }
 
     final class Marks {
@@ -67,7 +68,7 @@ final class PerfTrace {
             "candidates": candidates, "committed": committed,
         ]
         if !marks.phases.isEmpty {
-            record["phaseSchema"] = 1
+            record["phaseSchema"] = 2
             record["phases"] = marks.phases
         }
         guard var data = try? JSONSerialization.data(withJSONObject: record, options: .sortedKeys)

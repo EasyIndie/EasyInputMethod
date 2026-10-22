@@ -23,6 +23,7 @@ guard let firstTrace = perf.begin(), let secondTrace = perf.begin() else {
 let measured = perf.measure(firstTrace, phase: .preedit) { calls += 1; return 7 }
 perf.measure(firstTrace, phase: .preedit) { calls += 1 }
 perf.measure(secondTrace, phase: .commit) { calls += 1 }
+perf.measure(secondTrace, phase: .hide) { }
 require(measured == 7 && calls == 4, "tracing preserves calls and returned values")
 perf.finish(firstTrace, engine: perf.stamp(), candidates: 7, committed: false)
 perf.finish(secondTrace, engine: nil, candidates: 1, committed: true)
@@ -32,11 +33,11 @@ let traceRows = try String(contentsOfFile: tracePath, encoding: .utf8).split(sep
 require(traceRows.count == 2, "one record per key")
 let firstPhases = traceRows[0]["phases"] as! [String: Double]
 let secondPhases = traceRows[1]["phases"] as! [String: Double]
-require(Set(firstPhases.keys) == ["preeditUs"] && Set(secondPhases.keys) == ["commitUs"],
+require(Set(firstPhases.keys) == ["preeditUs"] && Set(secondPhases.keys) == ["commitUs", "hideUs"],
         "phases remain isolated between keys")
-require(firstPhases["preeditUs"]! >= 0 && secondPhases["commitUs"]! >= 0,
+require(firstPhases["preeditUs"]! >= 0 && secondPhases["commitUs"]! >= 0 && secondPhases["hideUs"]! >= 0,
         "nonnegative phase durations")
-require(traceRows[0]["phaseSchema"] as? Int == 1, "versioned optional phase fields")
+require(traceRows[0]["phaseSchema"] as? Int == 2, "versioned optional phase fields")
 require(traceRows[0]["candidates"] as? Int == 7 && traceRows[1]["committed"] as? Bool == true,
         "legacy candidate and commit fields remain compatible")
 require(traceRows[1]["engineUs"] as? Double == -1, "missing engine stamp remains compatible")
