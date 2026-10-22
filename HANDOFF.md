@@ -4,7 +4,7 @@
 
 - 更新：2026-10-22 / Codex；分支docs/unified-input-validation基于main 01fb016，#70/#71四CI绿后均已合并。
 - 统一包39671498990已签名公证核验安装，执行ff2e9223…196a85b；四份配置/词库SHA保持，旧a3853aa可恢复。
-- 额度恢复后回读ABC，实际宿主PID51595/执行SHA匹配，trace0条；120 marker已开启，等待用户切开发源手工wq确认。/tmp/lampyris-120-sample.sh（50键+选词/三模式）仍未运行；未自动切源。
+- 用户授权后120原生首轮50键/6词及10项纠错选词检查通过；末项混输复查无trace守卫停止。marker已删除，等待用户ABC后停止PID51595缓存计时。
 - 117原生50键采样已安全收尾，119离屏三对布局减少重复工作；不继承为120性能达标，16ms/30MB及MVP门禁保持。
 
 ## 1. 设备与数据
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | A（历史交接，未本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行；不得继承旧候选PASS | 报告103历史，不操作A |
 | B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；115收尾两SHA保持 | 生产包未替换 |
-| B固定开发 | 01fb016，公证39671498990；ZIP2408a6bd…4b583，执行ff2e9223…196a85b | 换包ABC；四SHA保持；120 marker已开启，等待用户确认 | replacement-2gqm5ixs/previous.app为a3853aa，详见120-evidence/package.json |
+| B固定开发 | 01fb016，公证39671498990；ZIP2408a6bd…4b583，执行ff2e9223…196a85b | 换包ABC；四SHA保持；120采样结束，marker已删；等待ABC后停止PID51595 | replacement-2gqm5ixs/previous.app为a3853aa，详见120-evidence/package.json |
 
 - 开发根：`~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05`；身份不变，不反复移除/添加/注销。
 - 用户手工TextEdit窗口1902、2221、2372保留，禁止关闭/清空。2372为“萤火虫性能验收-115.txt”。
@@ -42,10 +42,10 @@
 
 ## 4. 下一步（断点）
 
-1. 等待用户回复已切开发源且手工wq空格正常；回读dev-state并核实新PID精确路径与执行SHAff2e9223…196a85b，写/tmp/lampyris-120-pid后才能运行/tmp/lampyris-120-sample.sh。
-2. 脚本在唯一临时TextEdit文稿先采50键、再验数字/方向/退格/Esc/回车与三模式循环。约3分钟，已告知用户暂停切窗口；失焦/无必要trace立即停，不重试。mode-before记录初始mixed，正常三循环恢复语义配置；若中断且模式改变，待用户ABC后仅通过ime-config/CLI恢复，禁止直接覆盖配置文件。
-3. 保存起止字节与完整/部分记录，删除精确120 marker；用户切ABC后仅停止新PID并确认退出，核对生产两SHA/开发配置与私有学习变化。保留手工窗口。
-4. 据同包结果推进内存分项与首次/学习长尾、目标应用/A机；输入出口后才版本归并/升级，再锁同RC及五日。不创建tag/Release。
+1. 用户已被要求结束组合切ABC；回读dev-state确认ABC后，核对PID51595精确路径/SHA，再仅停止此PID并确认退出，保存cleanup证据与生产/私有SHA。marker已删除，配置语义已恢复mixed；不关闭手工窗口。
+2. 120首轮50键P95 10.478ms/max67.125ms，首键状态区28.518ms，预编辑/窗口各约12ms；引擎0.735ms。定位首次宿主布局，不重写引擎、不关闭16ms。输入态physical31.2M/peak41.1M需继续分项。
+3. 末项切回mixed复查本键trace无增长，停止未重试；最终文本未读。前面10项通过单列，不能伪造全矩阵PASS；vmmap与功能尾部重叠，时序影响未排除。
+4. make verify后提交推送本轮证据PR；继续目标应用/A机、内存与首次长尾。输入出口后才版本归并/升级及最终RC五日，不创建tag/Release。
 
 ## 5. 边界
 
@@ -54,6 +54,8 @@
 - 不创建tag或Release。改动走PR，make verify零诊断；不绕过main-only签名约束。
 
 ## 9. 会话日志
+
+- 2026-10-22 / Codex：120原生50键/6词正确、10项选择纠错通过；末项mixed复查trace守卫停止。P95 10.478ms/max67.125ms，首键宿主状态/布局长尾；输入态physical31.2M。marker已删，待ABC后精确停止PID51595，门禁保持。
 
 - 2026-10-22 / Codex：额度恢复，核实main仍01fb016/已装执行ff2e9223…196a85b；源ABC、PID51595、trace0，未发键。空闲vmmap8433K不代表输入态内存，已显示保留窗口；待用户切源手工确认后运行120脚本。
 

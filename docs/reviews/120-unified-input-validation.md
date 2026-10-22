@@ -1,4 +1,4 @@
-# 120 — 统一输入修复包验收（待用户开始）
+# 120 — 统一输入修复包验收（原生采样完成，待关闭宿主计时）
 
 ## 当前状态
 
@@ -6,8 +6,15 @@
 
 签名、公证、stapler、源码及打包两表SHA核验通过；换包前后ABC/源集合与生产/开发配置词库四SHA保持。旧a3853aa保留在固定根replacement-2gqm5ixs/previous.app。完整证据见[package.json](120-evidence/package.json)。
 
-仅本轮私有marker启用计时，尚未确认本包宿主接管、未采本包按键。等待用户开发源手工wq空格确认后，在独立夹具采同一输入首轮50键与三模式/数字/方向/退格/Esc/回车；每键源、路径、窗口、AX焦点与必要trace增长守卫。失焦立即停，不自动重试。计时范围仍不含前置事件分类/IMK调度/合成，不能据旧包或离屏结果关闭门禁。
+用户授权开始后，PID51595/执行SHA及开发源回读匹配，在唯一TextEdit夹具逐键守卫采样。首轮6词50键全部正确：你、你好、西安、输入法、回归测试、人工智能。数字第二项、横向右键第二项、退格、Esc、回车原码提交、五笔首项/第二项、拼音全拼/显式分隔三词检查通过。
 
+最后切回混输的复查触发“本键无trace”守卫（exit97），立即停止，未重试；最终文字未读取，不能将该项判PASS，也不能仅据缺trace判输入法故障。配置语义已回读恢复初始mixed。自有夹具已清理，用户窗口保留。功能检查期间读取vmmap，不能排除其对该部分执行时序的影响；首轮性能样本在vmmap之前完整结束。
+
+50键按nearest rank：engine P95 **1.084ms**/max1.940ms；total P95 **10.478ms**/max**67.125ms**，1键≥16ms。首键status28.518ms、preedit12.472ms、content10.646ms、window11.618ms，engine0.735ms；首次宿主布局仍需定位。窗口阶段P95=0.741ms，历史117为3.110ms，但单轮/首次状态不同，不作为受控因果对照或全场景达标。原始记录、字节边界、SHA及实际提交见[summary.json](120-evidence/summary.json)、[trace.jsonl](120-evidence/trace.jsonl)、[sample.txt](120-evidence/sample.txt)。
+
+输入态vmmap physical31.2M/peak41.1M，明显高于ABC空闲8433K；尚不等价排除mmap后的常驻指标，30MB门禁保持。见[loaded-vmmap.txt](120-evidence/loaded-vmmap.txt)。本包没有用户文字采集，trace仅固定数值。
+
+精确marker已删除；运行宿主缓存计时尚需用户切ABC后停止PID51595。
 ## 独立历史未决项复核
 
 cf48a9e工作树上正常权限复跑test-tools-presentation.py通过（12.825s），验证命名私有剪贴板复制返回/读取一致及提示。旧失败保留历史，不再列为当前可复现阻断；未变更复制代码，未归因旧失败原因，也不宣称本机完整离线套件全绿。原始日志/范围见120-evidence/tools-presentation-recheck.*，不作为新包原生PASS。

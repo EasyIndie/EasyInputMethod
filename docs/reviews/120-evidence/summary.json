@@ -1,0 +1,107 @@
+{
+  "source_commit": "01fb0164d1b52cc22e4a34a69054a71abbd45631",
+  "pid": 51595,
+  "executable_sha256": "ff2e92239911d82bdc1201ac23c81300cad3edd74d627ca0ed63deaf1196a85b",
+  "scope": "TextEdit/mixed首轮6词50键；feed至客户端/候选更新返回，不含前置分类、IMK调度、屏幕合成",
+  "quantile": "nearest rank",
+  "cohort_bytes": {
+    "start": 0,
+    "end": 12464
+  },
+  "cohort_sha256": "a1f2a4a73f6244dd82899c31ea22b0137469c8365e46e34917688376c3715031",
+  "all": {
+    "engineUs": {
+      "n": 50,
+      "p50_ms": 0.133416,
+      "p95_ms": 1.084459,
+      "max_ms": 1.9397090000000001
+    },
+    "totalUs": {
+      "n": 50,
+      "p50_ms": 6.7172089999999995,
+      "p95_ms": 10.4775,
+      "max_ms": 67.125375
+    }
+  },
+  "phases": {
+    "candidateDataUs": {
+      "n": 44,
+      "p50_ms": 0.0025,
+      "p95_ms": 0.005875,
+      "max_ms": 0.008708
+    },
+    "caretUs": {
+      "n": 42,
+      "p50_ms": 0.880583,
+      "p95_ms": 1.168125,
+      "max_ms": 3.027583
+    },
+    "commitUs": {
+      "n": 6,
+      "p50_ms": 4.665082999999999,
+      "p95_ms": 7.030417000000001,
+      "max_ms": 7.030417000000001
+    },
+    "contentUs": {
+      "n": 42,
+      "p50_ms": 2.7933339999999998,
+      "p95_ms": 6.11175,
+      "max_ms": 10.64575
+    },
+    "preeditUs": {
+      "n": 44,
+      "p50_ms": 2.3054580000000002,
+      "p95_ms": 3.1392919999999997,
+      "max_ms": 12.471834000000001
+    },
+    "statusUs": {
+      "n": 42,
+      "p50_ms": 0.006834,
+      "p95_ms": 0.011542,
+      "max_ms": 28.517792
+    },
+    "windowUs": {
+      "n": 42,
+      "p50_ms": 0.39375,
+      "p95_ms": 0.740625,
+      "max_ms": 11.617625
+    }
+  },
+  "at_or_above_16ms": 1,
+  "precohort_rows": 0,
+  "postcohort_rows": 45,
+  "actual": {
+    "mixed-escape": "",
+    "1-nihao": "你好",
+    "1-wq": "你",
+    "mixed-enter": "wq",
+    "pinyin-nihao": "你好",
+    "1-shurufa": "输入法",
+    "pinyin-shurufa": "输入法",
+    "mixed-arrow2": "像",
+    "mixed-digit2": "像",
+    "pinyin-xi'an": "西安",
+    "wubi-digit2": "像",
+    "1-huiguiceshi": "回归测试",
+    "mixed-backspace": "你",
+    "wubi-space": "你",
+    "1-xi'an": "西安",
+    "1-rengongzhineng": "人工智能"
+  },
+  "rss_kib": {
+    "rss-start-kib": 49264,
+    "rss-round-1-kib": 56832
+  },
+  "status": "首轮完成；最后混输复查本键trace守卫停止，未重试",
+  "memory": "vmmap在首轮性能采样结束后、功能检查期间读取，非性能样本同时段；physical31.2M/peak41.1M，不关闭排除mmap后的30MB门禁",
+  "worst_key": {
+    "index_zero_based": 0,
+    "total_ms": 67.125375,
+    "engine_ms": 0.734625,
+    "status_ms": 28.517792,
+    "preedit_ms": 12.471834,
+    "content_ms": 10.64575,
+    "window_ms": 11.617625
+  },
+  "limitation": "单轮、首次状态不同，不构成117受控因果对照；最后混输复查无本键trace，未读取/确认最终提交，不判产品FAIL或PASS。vmmap与功能复查部分重叠，原始记录保留。"
+}
