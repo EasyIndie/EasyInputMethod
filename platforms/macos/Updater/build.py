@@ -5,16 +5,16 @@ from pathlib import Path
 import plistlib
 import shutil
 import subprocess
-import tomllib
+import sys
+sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
+from release_version import identity
 
 ROOT = Path(__file__).resolve().parent
 parser = argparse.ArgumentParser()
 parser.add_argument('--feed-url')
 parser.add_argument('--public-key')
-parser.add_argument('--build', default='1')
 args = parser.parse_args()
-version = tomllib.loads((ROOT.parents[2] / 'Cargo.toml').read_text())['workspace']['package']['version']
-apple_version = version.split('-', 1)[0].split('+', 1)[0]
+version = identity()
 if bool(args.feed_url) != bool(args.public_key):
     parser.error('发布地址和公钥必须同时提供；不提供则构建关闭状态')
 scratch = ROOT.parent / 'build/website-updater'
@@ -30,7 +30,8 @@ binary.parent.mkdir(parents=True, exist_ok=True)
 shutil.copy2(Path(folder) / 'LampyrisUpdateCheck', binary)
 info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'CFBundleExecutable': binary.name, 'CFBundlePackageType': 'APPL',
-        'CFBundleVersion': args.build, 'CFBundleShortVersionString': apple_version,
+        'CFBundleVersion': version['build'], 'CFBundleShortVersionString': version['apple'],
+        'LampyrisSemanticVersion': version['version'],
         'LSMinimumSystemVersion': '13.0', 'LampyrisDistributionChannel': 'website'}
 if args.feed_url:
     info.update(SUFeedURL=args.feed_url, SUPublicEDKey=args.public_key)

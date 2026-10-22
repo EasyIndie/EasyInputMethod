@@ -8,6 +8,9 @@ import sys
 from pathlib import Path
 
 root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(root / "tools"))
+from release_version import identity
+version = identity()
 out = Path(sys.argv[1]).resolve()
 metadata = json.loads(subprocess.check_output(['cargo', 'metadata', '--locked', '--offline', '--format-version', '1'], cwd=root))
 packages = {p['id']: p for p in metadata['packages']}
@@ -50,7 +53,7 @@ for key in sorted(reachable, key=lambda k: refs[k]):
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(file.read_bytes())
 sbom = {'bomFormat': 'CycloneDX', 'specVersion': '1.5', 'version': 1,
-        'metadata': {'component': {'type': 'application', 'name': 'Lampyris', 'version': '0.1.0', 'bom-ref': 'Lampyris', 'licenses': [{'expression': 'GPL-3.0-or-later'}]}},
+        'metadata': {'component': {'type': 'application', 'name': 'Lampyris', 'version': version['version'], 'bom-ref': 'Lampyris', 'licenses': [{'expression': 'GPL-3.0-or-later'}]}},
         'components': components,
         'dependencies': [{'ref': 'Lampyris', 'dependsOn': [refs[entry]]}] +
         [{'ref': refs[key], 'dependsOn': sorted(refs[d] for d in nodes[key]['dependencies'])} for key in sorted(reachable, key=lambda k: refs[k])]}

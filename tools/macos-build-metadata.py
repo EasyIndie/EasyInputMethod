@@ -6,6 +6,8 @@ import re
 import subprocess
 import sys
 
+from release_version import identity
+
 KEYS = ("BuildMachineOSBuild", "DTCompiler", "DTPlatformBuild", "DTPlatformName", "DTPlatformVersion",
         "DTSDKBuild", "DTSDKName", "DTXcode", "DTXcodeBuild")
 
@@ -44,6 +46,9 @@ def main():
     args = parser.parse_args()
     try:
         original = plistlib.loads(args.source.read_bytes())
+        version = identity()
+        original.update(CFBundleShortVersionString=version["apple"],
+                        CFBundleVersion=version["build"], LampyrisSemanticVersion=version["version"])
         if args.action == "check-contract":
             actual = plistlib.loads(args.destination.read_bytes())
             if contract(original) != contract(actual):

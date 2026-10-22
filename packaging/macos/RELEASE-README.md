@@ -1,10 +1,10 @@
-# 萤火虫 macOS 0.1.0
+# 萤火虫 macOS @VERSION@
 
 默认离线的五笔/拼音混合输入法，GPL-3.0-or-later。首版拼音用于常用字词输入，支持全拼、显式音节分隔（如 xi'an）及全首字母简拼；不提供分段选词或整句语言模型。混输把同一编码分别按五笔和拼音查询合并，不支持在同一组合中任意交替两种编码。请查看 BUILD-INFO.txt 的架构、构建版本和 signed_release；false 表示仅供审核的本地候选，不能用于分发安装。
 
 ## 安装
 
-签名公证的最终包才可安装。用 Finder 解压发行 ZIP，或运行 `ditto -x -k Lampyris-0.1.0-universal.zip ./unpacked`，进入解压目录。请使用保留 Unix 执行权限的解压工具；安装器会拒绝缺少执行权限的程序。终端运行：
+签名公证的最终包才可安装。用 Finder 解压发行 ZIP，或运行 `ditto -x -k Lampyris-@VERSION@-universal.zip ./unpacked`，进入解压目录。请使用保留 Unix 执行权限的解压工具；安装器会拒绝缺少执行权限的程序。终端运行：
 
 ```sh
 ./scripts/install.sh --app ./Lampyris.app --dry-run
@@ -39,7 +39,7 @@
 
 SHA256SUMS 覆盖签名应用与附件；包旁另附 ZIP 校验和。SBOM.cdx.json 是 ime-ffi 闭包的 CycloneDX 1.5 依赖清单，原始依赖许可在 DEPENDENCY-LICENSES。数据的独立许可与来源见 DATA-SOURCES.md、data-sources.toml、DATA-LICENSES；派生核心词表按 CC-BY-SA-4.0 提供，保留出处和修改说明。
 
-本包按 GPL-3.0-or-later **不含源码**（第 6(d) 条，见 `SOURCE.txt`）：对应源码为**与本包同处发布**的 `Lampyris-0.1.0-source.tar.gz`（含本次提交全部源码、Cargo.lock、工具链声明及锁定依赖 vendor）。安装对应 Rust、Python 3 与 Command Line Tools 后，解压源码包并在其根目录运行 `cargo build --locked --offline --release -p ime-ffi`，然后 `./platforms/macos/build.sh --strict`；构建不需下载词表，已登记默认数据随源码提供。原始词表再生成步骤见源码包内 platforms/macos/README.md。
+本包按 GPL-3.0-or-later **不含源码**（第 6(d) 条，见 `SOURCE.txt`）：对应源码为**与本包同处发布**的 `Lampyris-@VERSION@-source.tar.gz`（含本次提交全部源码、Cargo.lock、工具链声明及锁定依赖 vendor）。安装对应 Rust、Python 3 与 Command Line Tools 后，解压源码包并在其根目录运行 `cargo build --locked --offline --release -p ime-ffi`，然后 `./platforms/macos/build.sh --strict`；构建不需下载词表，已登记默认数据随源码提供。原始词表再生成步骤见源码包内 platforms/macos/README.md。
 
 比较未签名可执行文件和默认数据 SHA-256；Swift/SDK/架构应与 BUILD-INFO.txt 相同。Apple 签名、公证及 ZIP 元数据不保证逐字节一致。支持目标 macOS 13+；只有已记录的实机环境经过验证，其他版本/架构不能据此推断已验收。
 

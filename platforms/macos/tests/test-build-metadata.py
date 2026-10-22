@@ -5,10 +5,12 @@ from pathlib import Path
 import plistlib
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tools"))
 spec = importlib.util.spec_from_file_location("metadata", ROOT / "tools/macos-build-metadata.py")
 metadata = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(metadata)
@@ -24,6 +26,22 @@ class BuildMetadataTests(unittest.TestCase):
         system.mkdir(parents=True)
         (self.sdk / "SDKSettings.plist").write_bytes(plistlib.dumps({"Version": "14.4", "CanonicalName": "macosx14.4"}))
         (system / "SystemVersion.plist").write_bytes(plistlib.dumps({"ProductBuildVersion": "fixture-sdk"}))
+
+    def test_version_comes_from_workspace_and_independent_build(self):
+        from release_version import identity
+        (self.root / "packaging").mkdir()
+        (self.root / "Cargo.toml").write_text('[workspace.package]\nversion = "2.3.4-rc.2+fixture"\n')
+        (self.root / "packaging/build-number").write_text("42\n")
+        self.assertEqual(identity(self.root), {"version": "2.3.4-rc.2+fixture", "apple": "2.3.4", "build": "42"})
+        for version in ("01.2.3", "1.2", "1.2.3-01", "1.2.3-"):
+            (self.root / "Cargo.toml").write_text(f'[workspace.package]\nversion = "{version}"\n')
+            with self.assertRaises(ValueError):
+                identity(self.root)
+        (self.root / "Cargo.toml").write_text('[workspace.package]\nversion = "2.3.4"\n')
+        for build in ("0", "01", "1.2.3", "10000", "-1"):
+            (self.root / "packaging/build-number").write_text(build)
+            with self.assertRaises(ValueError):
+                identity(self.root)
 
     def test_sdk_is_actual_and_clt_does_not_invent_xcode(self):
         result = metadata.metadata(self.sdk, self.root / "CommandLineTools", "fixture-host")

@@ -4,18 +4,19 @@
 set -euo pipefail
 [ "$#" -eq 1 ] || { echo "用法：$0 <本项目候选 ZIP>" >&2; exit 2; }
 ZIP="$1"
+VERSION="$(basename "${ZIP}" | sed -E 's/^Lampyris-(.+)-(universal|arm64|x86_64)\.zip$/\1/')"
 # 对应源码包与二进制同处发布（GPL-3.0 §6(d)，ADR-064）。
-SRC="$(dirname "${ZIP}")/Lampyris-0.1.0-source.tar.gz"
+SRC="$(dirname "${ZIP}")/Lampyris-${VERSION}-source.tar.gz"
 [ -f "${SRC}" ] || { echo "找不到对应源码包：${SRC}" >&2; exit 1; }
 WORK="$(mktemp -d -t lampyris-repro)"
 trap 'rm -rf "${WORK}"' EXIT
 (cd "$(dirname "${SRC}")" && shasum -a 256 -c "$(basename "${SRC}").sha256")
 tar -xzf "${SRC}" -C "${WORK}"
-SOURCE="${WORK}/Lampyris-0.1.0-source"
+SOURCE="${WORK}/Lampyris-${VERSION}-source"
 [ -d "${SOURCE}" ] || { echo "源码包结构异常" >&2; exit 1; }
 ditto -x -k "${ZIP}" "${WORK}/zip"
-PACKAGE="$(find "${WORK}/zip" -maxdepth 1 -type d -name 'Lampyris-0.1.0-*' | head -1)"
-[ -n "${PACKAGE}" ] || { echo "解包后找不到 Lampyris-0.1.0-* 候选目录" >&2; exit 1; }
+PACKAGE="$(find "${WORK}/zip" -maxdepth 1 -type d -name "Lampyris-${VERSION}-*" | head -1)"
+[ -n "${PACKAGE}" ] || { echo "解包后找不到 Lampyris-${VERSION}-* 候选目录" >&2; exit 1; }
 python3 - "${PACKAGE}" <<'PY'
 import hashlib, json, os, sys
 from pathlib import Path

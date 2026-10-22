@@ -9,7 +9,7 @@
 - 产物：`platforms/macos/build/website-updater/LampyrisUpdateCheck.app/Contents/MacOS/LampyrisUpdateCheck`。
 - 不带参数只说明关闭状态；显式`--check`才可能联网。缺少合法签名包元数据会以2退出，不创建请求。
 
-正式发布配置由构建提供：`python3 platforms/macos/Updater/build.py --feed-url <HTTPS地址> --public-key <32字节Ed25519公钥的Base64> --build <数字构建号>`。这些是签名产物元数据，不是用户偏好；不得填写示例地址冒充生产。需要Developer ID签名/公证和发布包流程接入后才能分发，目前脚本只构建、不安装、不签名。
+正式发布配置由构建提供：`python3 platforms/macos/Updater/build.py --feed-url <HTTPS地址> --public-key <32字节Ed25519公钥的Base64>`。这些是签名产物元数据，不是用户偏好；不得填写示例地址冒充生产。需要Developer ID签名/公证和发布包流程接入后才能分发，目前脚本只构建、不安装、不签名。
 
 ## 依赖与隐私
 
@@ -24,3 +24,5 @@
 下一小步：配置正式feed和密钥后，先对签名测试包实现下载验证及目标版本/架构筛选，再连接已验证的固定身份退出/换包流程；只在可恢复测试环境验收。任何用户偏好只能经ime-config新增Schema；不在本模块另存配置。
 
 本轮恢复原型源码进入main不代表启用。严格并发/边界回归纳入CI，构建显示版本由Cargo workspace.package.version派生；默认构建号1仅为未发行原型占位，不替代ADR-240全局发行构建号分配。正式feed/公钥尚未提供，不以example.test测试样例启用请求。
+
+版本由Cargo workspace派生，独立构建号只取`packaging/build-number`，与宿主共用；不再接受单独`--build`覆盖。每个新分发候选先递增构建号，同源码的双渠道及重建复用同号（ADR-249）。

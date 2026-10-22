@@ -86,8 +86,8 @@ jobs:
           cat > "${notes}" <<EOF
           Lampyris ${tag} — 默认离线的五笔/拼音混合输入法（macOS，GPL-3.0-or-later）。
 
-          - **安装**：解压 \`Lampyris-0.1.0-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
-          - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-0.1.0-source.tar.gz\`（与本页同一位置）。
+          - **安装**：解压 \`Lampyris-${tag#v}-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
+          - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-${tag#v}-source.tar.gz\`（与本页同一位置）。
           - **校验**：附件 \`.sha256\`。
           - **兼容**：universal（arm64 + x86_64），支持 macOS 13+；仅已记录环境经验证。
           EOF
