@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """Verified in-place upgrade for the production input method (ADR-259).
 
-顺序固定：**先验签，再解包/校验候选，最后才停宿主与替换**；任何一步失败都回滚到旧包。
+顺序固定：**先下载（可省略）、验签，再解包/校验候选，最后才停宿主与替换**；
+任何一步失败都回到升级前状态，下载临时目录始终清理。
 默认只做预检（dry-run）；真正写入必须显式 `--apply`，且宿主只在目标已存在时才停止。
 
 用法（真实升级，需已构建的更新程序提供验签入口）：
     python3 packaging/macos/upgrade.py \
-        --payload Lampyris-0.1.0-universal.zip \
+        --payload-url https://example.invalid/Lampyris-0.1.0-universal.zip \
         --signature <base64 Ed25519> \
         --verifier <LampyrisUpdateCheck 可执行文件> \
         --apply
+
+下载只接受 **https**；`--allow-file-url` 仅用于本地离线测试，正式发布不得使用。
 
 测试通过注入 hooks 覆盖替换/回滚逻辑，不触碰真实输入法目录。
 """
@@ -28,7 +31,11 @@ import sys
 import tempfile
 import time
 from typing import Callable
+import urllib.parse
+import urllib.request
 import uuid
+
+MAX_PAYLOAD_BYTES = 256 * 1024 * 1024
 
 BUNDLE = 'Lampyris.app'
 EXECUTABLE = 'Contents/MacOS/Lampyris'
@@ -45,6 +52,40 @@ class Hooks:
     verify_payload: Callable[[Path, str], None]
     verify_candidate: Callable[[Path], None]
     stop_host: Callable[[Path], None]
+
+
+def download(url: str, *, allow_file: bool = False, limit: int = MAX_PAYLOAD_BYTES,
+             opener: Callable[..., object] = urllib.request.urlopen) -> Path:
+    """把负载流式下载到 0700 私有目录，拒绝非 https 与超限；返回 0600 文件路径。"""
+    allowed = {'https'} | ({'file'} if allow_file else set())
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in allowed:
+        raise UpgradeError('下载地址只允许 https；拒绝：' + (parsed.scheme or '无协议'))
+    folder = Path(tempfile.mkdtemp(prefix='lampyris-download-'))
+    folder.chmod(0o700)
+    target = folder / 'payload.zip'
+    try:
+        with opener(url, timeout=30) as response:
+            final = urllib.parse.urlparse(response.geturl())
+            if final.scheme not in allowed:
+                raise UpgradeError('重定向后协议不允许：' + final.scheme)
+            written = 0
+            with target.open('wb') as stream:
+                while True:
+                    chunk = response.read(1 << 16)
+                    if not chunk:
+                        break
+                    written += len(chunk)
+                    if written > limit:
+                        raise UpgradeError('负载超过大小上限')
+                    stream.write(chunk)
+        if written == 0:
+            raise UpgradeError('负载为空')
+        target.chmod(0o600)
+        return target
+    except BaseException:
+        shutil.rmtree(folder, ignore_errors=True)
+        raise
 
 
 def sha256(path: Path) -> str:
@@ -211,7 +252,11 @@ def real_hooks(verifier: Path) -> Hooks:
 
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--payload', type=Path, required=True)
+    source = parser.add_mutually_exclusive_group(required=True)
+    source.add_argument('--payload', type=Path)
+    source.add_argument('--payload-url')
+    parser.add_argument('--allow-file-url', action='store_true',
+                        help='仅本地离线测试：允许 file:// 负载地址')
     parser.add_argument('--signature', required=True)
     parser.add_argument('--verifier', type=Path, help='已签名的 LampyrisUpdateCheck 可执行文件')
     parser.add_argument('--domain', type=Path, default=Path.home() / 'Library/Input Methods')
@@ -229,12 +274,20 @@ def main(argv=None) -> int:
         verify_candidate=lambda app: None,
         stop_host=lambda executable: None,
     )
+    downloaded = None
     try:
-        receipt = install(args.payload, args.signature, args.domain, args.support, hooks,
+        payload = args.payload
+        if args.payload_url is not None:
+            payload = download(args.payload_url, allow_file=args.allow_file_url)
+            downloaded = payload.parent
+        receipt = install(payload, args.signature, args.domain, args.support, hooks,
                           dry_run=not args.apply)
     except (UpgradeError, OSError, subprocess.CalledProcessError) as error:
         print('BLOCKED：' + str(error), file=sys.stderr)
         return 3
+    finally:
+        if downloaded is not None:
+            shutil.rmtree(downloaded, ignore_errors=True)
     print(json.dumps(receipt, ensure_ascii=False, indent=2))
     return 0
 
