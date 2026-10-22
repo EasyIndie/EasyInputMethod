@@ -140,7 +140,7 @@ def replace_package(app, root, home, helper, stop=False):
     if os.path.lexists(target):
         previous = verify_app(target, root)
         for key in set(previous) | set(info):
-            if key in ('CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit'):
+            if key in ('CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit', 'LampyrisSemanticVersion'):
                 continue
             if previous.get(key) != info.get(key):
                 raise ValueError('输入源声明变化，不能复用已登记身份：' + key)

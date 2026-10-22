@@ -64,7 +64,7 @@ class DevelopmentTests(unittest.TestCase):
             import shutil
             self.assertEqual(args[:2], ('/usr/bin/ditto', source))
             shutil.copytree(args[1], args[2])
-        with patch.object(dev, 'verify_app', return_value=info), patch.object(dev, 'state', return_value=state), patch.object(dev, 'idle'), patch.object(dev, 'run', side_effect=copy):
+        with patch.object(dev, 'verify_app', side_effect=lambda app, root: info if app == target else {**info, 'LampyrisSemanticVersion': '0.1.0'}), patch.object(dev, 'state', return_value=state), patch.object(dev, 'idle'), patch.object(dev, 'run', side_effect=copy):
             dev.install(source, self.root, self.home, 'helper')
         evidence = json.loads(next(self.root.glob('replacement-*/installation.json')).read_text())
         self.assertTrue(evidence['source_state_unchanged'])
