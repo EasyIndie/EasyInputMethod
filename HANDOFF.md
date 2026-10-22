@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`0f913492b9a0e27ab32bba95462cfcf4291e1625`（#80已合并，开放PR 0）。本轮在dev新增ADR-255内存修复与报告134，随同批dev→main唯一PR收尾，不新建分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`01c85f32b9b029fdab2979328554e2edd4ea468d`（#81四CI绿后merge，含ADR-255；开放PR 0）。dev已快进同步，本轮无遗留分支。
 - build4已作为固定开发包装机：0.1.0/build4，执行`49a49a2a7f47de895e282754a66e35c8d90403c723a7ce471b95a7de25d4a3ef`，隔离公证run39770165333，ZIP`b3b38bb4ac664305164b8bedbdd454e403d0bcfd0ae13328604717aa011380d2`；旧build2备份`replacement-p57rjckg/previous.app`。
 - 134原生（schema2）：100键，首轮50键total p95 **10.770ms**/max37.299ms（仅冷首键≥16ms），暖态p95 10.620ms，engine p95 1.114ms，hideUs p50/p95 0.849/1.222ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）实际读回通过。
 - 内存：宿主采样后physical37.8M/峰40.3M、malloc活跃17.4M/碎片12.0M/换出18.7M，冷启动8.9M → **30MB未关闭**。ADR-255单遍紧凑加载把四表离线峰值24.4–25.4M降到15.8M（活跃10.9M不变），原生复验待下一签名包。
@@ -39,10 +39,9 @@
 
 ## 4. 下一步
 
-1. 本批一次性`dev → main`PR（ADR-255代码+ADR+报告134+HANDOFF），跟进当前head四CI直至merge，merge后dev普通快进同步；不squash/rebase/强推。
-2. 从新main（含ADR-255）构建**build5**固定开发签名包：静态核验ZIP/版本/架构/签名/公证/数据SHA；保留配置/词库/旧包。
-3. 换包后先写marker再启动宿主，只请用户切开发源一次；集中复测宿主稳态内存（碎片/换出/physical）、冷首键与mixed剩余项；逐键焦点守卫，失焦立即停止。
-4. 采样后删marker、恢复mode，用户ABC后按精确路径/SHA退出宿主；随后推进更新闭环与商店可行性，再锁同RC完整矩阵与五日。不创建tag/Release。
+1. 从新main`01c85f3`（含ADR-255）构建**build5**固定开发签名包：静态核验ZIP/版本/架构/签名/公证/数据SHA；保留配置/词库/旧包。
+2. 换包后先写marker再启动宿主，只请用户切开发源一次；集中复测宿主稳态内存（碎片/换出/physical）、冷首键与mixed剩余项；逐键焦点守卫，失焦立即停止。
+3. 采样后删marker、恢复mode，用户ABC后按精确路径/SHA退出宿主；随后推进更新闭环与商店可行性，再锁同RC完整矩阵与五日。不创建tag/Release。
 
 ## 5. 边界
 
@@ -51,6 +50,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：#81（ADR-255+报告134）head 83cc263 check/dco/fuzz/macos 四CI全绿，merge `01c85f3`，dev普通快进同步、PR 0；build4仍为已装开发包，下一步从新main构建build5复测宿主内存。
 
 - 2026-10-22 / pi：从main 0f91349构建并核验build4固定开发签名包（run39770165333），ABC换包保留旧包/数据；marker先行、用户只切一次源，schema2 100键完成（首轮p95 10.770ms，hideUs p95 1.222ms），六词+八项附加含xi'an通过；宿主physical37.8M/峰40.3M、碎片12.0M→ADR-255单遍紧凑加载离线峰值24.4–25.4M→15.8M；verify/离线/strict通过，收尾ABC、marker删除、宿主退出，生产数据与开发config不变。
 
