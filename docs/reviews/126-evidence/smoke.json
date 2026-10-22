@@ -1,0 +1,15 @@
+{
+  "no_arguments": {
+    "exit": 0,
+    "stdout": "网站更新检查默认关闭。主动检查请使用 --check；发布配置缺失时不会联网。\n"
+  },
+  "check_missing_configuration": {
+    "exit": 2,
+    "stderr": "更新检查未启用：网站渠道、正式HTTPS地址、公钥或构建号尚未配置。未发送请求。\n"
+  },
+  "apple_version": "0.1.0",
+  "metadata_version_source": "Cargo workspace.package.version",
+  "feed_and_key_absent": true,
+  "sparkle_framework_absent": true,
+  "real_feed_requested": false
+}

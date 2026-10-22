@@ -44,7 +44,7 @@ Signed-off-by: Your Name <you@example.com>
 
 ## 4. 分支与 PR
 
-- `main` 受保护；所有改动走 PR。
+- 固定`dev`为唯一活动迭代分支，不按任务创建feature/fix/docs分支；`main`受保护，必要合入统一走`dev → main`，合并后同步并继续复用dev（ADR-248）。
 - PR 必须填写 `.github/PULL_REQUEST_TEMPLATE.md`，包含：改了什么、为什么、如何验证、是否触及铁律。
 - CI 必须全绿才能合并；检查必须对应当前head，创建者负责跟进到合并或明确关闭。
 - 一项完整改动的实现、测试、文档与证据在同一PR收拢，不为每次试验/交接另开PR；默认一次推进一个待合并PR，暂缓项记录恢复点后关闭。具体执行以[开发工作流§1.1](docs/开发工作流.md#11-迭代与pr收尾adr-246)为准。
