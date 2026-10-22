@@ -1,0 +1,23 @@
+make verify exit=0
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests wubi_encoder
+
+running 1 test
+test crates/wubi-encoder/src/lib.rs - encode_phrase (line 338) ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.52s
+
+advisories ok, bans ok, licenses ok, sources ok
+✅ make verify 全部通过（编码阶段）
+./scripts/verify-no-network.sh
+▶ 1/2 源码级检查：核心 crate 依赖
+  ✅ ime-core
+  ✅ ime-table
+  ✅ ime-pinyin
+  ✅ ime-dict
+  ✅ ime-config
+▶ 2/2 产物级检查：符号表
+  已检查 200 个产物。
+✅ 隐私断言通过：未发现网络依赖或网络符号。

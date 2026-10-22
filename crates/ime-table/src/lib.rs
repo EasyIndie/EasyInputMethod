@@ -149,9 +149,10 @@ impl Table {
                 _ => grouped.push((code, list)),
             }
         }
-        let mut table = Self::from_rows(grouped);
-        table.finalize();
-        Ok(table)
+        for (_, entries) in &mut grouped {
+            entries.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
+        }
+        Ok(Self::from_rows(grouped))
     }
 
     /// 构建完成后调用一次：组内按权重降序，组间按 code 字典序。
@@ -624,6 +625,74 @@ mod tests {
         assert_eq!(entries.len(), 1);
         assert_eq!(entries[0].text, "你");
         assert_eq!(entries[0].weight, 234587);
+    }
+
+    #[test]
+    fn from_tsv_preserves_group_order_ties_duplicates_and_negative_weights() {
+        let mut table = Table::from_tsv(
+            "\u{feff}# mixed ordering\n\
+             b\t乙\t-2\n\
+             a\t乙\t4\n\
+             b\t甲\t5\n\
+             a\t甲\t4\n\
+             a\t乙\t4\n\
+             a\t丙\t-1\n",
+        )
+        .unwrap();
+        let expected = vec![
+            (
+                "a".to_string(),
+                Entry {
+                    text: "乙".into(),
+                    weight: 4,
+                },
+            ),
+            (
+                "a".to_string(),
+                Entry {
+                    text: "乙".into(),
+                    weight: 4,
+                },
+            ),
+            (
+                "a".to_string(),
+                Entry {
+                    text: "甲".into(),
+                    weight: 4,
+                },
+            ),
+            (
+                "a".to_string(),
+                Entry {
+                    text: "丙".into(),
+                    weight: -1,
+                },
+            ),
+            (
+                "b".to_string(),
+                Entry {
+                    text: "甲".into(),
+                    weight: 5,
+                },
+            ),
+            (
+                "b".to_string(),
+                Entry {
+                    text: "乙".into(),
+                    weight: -2,
+                },
+            ),
+        ];
+        assert_eq!(table.prefix("", 100), expected);
+        assert_eq!(
+            table.exact("a").unwrap(),
+            expected[..4]
+                .iter()
+                .map(|(_, e)| e.clone())
+                .collect::<Vec<_>>()
+        );
+        table.finalize();
+        assert_eq!(table.prefix("", 100), expected);
     }
 
     #[test]

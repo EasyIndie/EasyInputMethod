@@ -1,0 +1,33 @@
+   Compiling ime-table v0.1.0 (/Users/joker/Documents/EasyInputMethod/crates/ime-table)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.65s
+     Running unittests src/lib.rs (target/debug/deps/ime_table-e27b2c01aeaaa04d)
+
+running 19 tests
+test learning::tests::verified_examples_cover_every_recognition_key_and_basic_strokes ... ok
+test learning::tests::roots_and_recognition_are_distinct_and_reconstruct_code ... ok
+test learning::tests::phrases_use_full_codes_and_preserve_every_character ... ok
+test learning::tests::feedback_characters_have_verified_roots_without_invented_suffixes ... ok
+test learning::tests::missing_data_and_oversized_queries_are_explicit ... ok
+test tests::adversarial_corpus_is_handled_without_panicking ... ok
+test tests::configured_wildcard_and_auto_commit_change_behavior ... ok
+test tests::exact_returns_weight_sorted_entries ... ok
+test tests::from_tsv_parses_normal_lines_and_skips_comments_and_blanks ... ok
+test tests::from_tsv_preserves_group_order_ties_duplicates_and_negative_weights ... ok
+test tests::from_tsv_rejects_empty_code_or_text ... ok
+test tests::from_tsv_rejects_invalid_weight ... ok
+test tests::from_tsv_rejects_missing_column ... ok
+test tests::convert_matches_full_scan_reference ... ok
+test tests::prefix_returns_matches_in_code_order_with_limit ... ok
+test learning::tests::primary_index_is_sorted_complete_and_queryable ... ok
+test learning::tests::generated_teaching_types_preserve_uncertainty_and_publication_boundaries ... ok
+test learning::tests::embedded_codes_match_every_primary_entry ... ok
+test tests::bounded_top_k_preserves_best_candidates_for_prefix_and_wildcard ... ok
+
+test result: ok. 19 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+   Doc-tests ime_table
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

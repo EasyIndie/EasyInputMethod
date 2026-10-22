@@ -1,0 +1,156 @@
+{
+  "main": "aa01fd093411486a40d5e028ded09f256978a01d",
+  "bundle": "packaging/out/branch-consolidation-20261022/before-cleanup.bundle",
+  "bundle_sha256": "a9bcdd29c7356369491da82a32c083f6d8f53bc52244f07cc2763dcf45a202f5",
+  "remote_delete_pending": [
+    {
+      "name": "docs/106-imk-post-replacement",
+      "sha": "744bae2b1455f5c495859612d38e9d01706de471",
+      "pr": 59,
+      "reason": "补丁已由#60等价合入"
+    },
+    {
+      "name": "docs/108-unified-development-candidate",
+      "sha": "b79b6f194c2a83f7af4b45af0fecd7dfb2df9563",
+      "pr": 62,
+      "reason": "独有证据已归档至#73"
+    },
+    {
+      "name": "docs/iteration-pr-discipline",
+      "sha": "651903411a41b9add58a288711e4f7f33966656a",
+      "pr": 74,
+      "reason": "PR已合并"
+    },
+    {
+      "name": "docs/mvp-input-rc-evidence",
+      "sha": "38b7cbae0ef96e9135f6ebe5fbd06968bd34a3cb",
+      "pr": 55,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "docs/native-highlight-acceptance",
+      "sha": "3e69c210a169aff931987895a9a95cdec7c763b8",
+      "pr": 67,
+      "reason": "独有证据已归档至#73"
+    },
+    {
+      "name": "docs/native-performance-validation",
+      "sha": "52243799f9e8cc166a7808af96b17d06c2117a8e",
+      "pr": 68,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "docs/native-stage-validation",
+      "sha": "4ea495ff1f11fcddb4942fdee3a85d74385dfbc0",
+      "pr": null,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "docs/semver-mvp-release-plan",
+      "sha": "6a2adb4500ddf3e911dc8e5f3e4ff58f4c1d535c",
+      "pr": 65,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "docs/stable-imk-dev-evidence",
+      "sha": "8c5c6cbbaa4329bb4cc58741f322a88ae7c84ec3",
+      "pr": 57,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "docs/unified-input-validation",
+      "sha": "13207aad9f4eef5d1fdd013da3946d8e9306875e",
+      "pr": 72,
+      "reason": "PR已合并"
+    },
+    {
+      "name": "feat/mvp-domain-vocabulary",
+      "sha": "2acf6c2db06d52abdce69719672fd526580ad440",
+      "pr": 61,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "feat/stable-imk-development",
+      "sha": "59ee5336504bdf28ed3f562d8f7cfaef708bb70c",
+      "pr": 56,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "fix/candidate-hover-focus",
+      "sha": "71df481c12d5c6977dc2f18b347d057ab4592425",
+      "pr": 63,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "fix/candidate-status-layout",
+      "sha": "3fe6d6feaddcea4d600372739b5dcf98155415c8",
+      "pr": 73,
+      "reason": "PR已合并"
+    },
+    {
+      "name": "fix/mvp-candidate-stability",
+      "sha": "413511146ad03238344d7c445aa09f3707a06f20",
+      "pr": 54,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "fix/mvp-experience-signed-history",
+      "sha": "5828e9de5ed8f1a99331c79dfac4bc5f044b1b68",
+      "pr": 60,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "fix/retry-dictionary-flush",
+      "sha": "d7a0d1cbe82b5b63c66be8049cc6f0f00f724a24",
+      "pr": 70,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "perf/attribute-native-key-stages",
+      "sha": "670ec5f5023783eac611c0e9c2a447087faefc72",
+      "pr": 69,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "perf/reuse-candidate-layout",
+      "sha": "cf48a9e5b8766feef07d8996c4857e6aff286ced",
+      "pr": 71,
+      "reason": "main祖先提交"
+    },
+    {
+      "name": "perf/skip-unchanged-candidate-status",
+      "sha": "48b8d5beb371eee72a196de76310930400ce8706",
+      "pr": 66,
+      "reason": "main祖先提交"
+    }
+  ],
+  "local_delete_pending": [
+    "archive/preview-accepted-744bae2",
+    "docs/106-imk-post-replacement",
+    "docs/108-unified-development-candidate",
+    "docs/iteration-pr-discipline",
+    "docs/mvp-input-rc-evidence",
+    "docs/native-highlight-acceptance",
+    "docs/native-performance-validation",
+    "docs/native-stage-validation",
+    "docs/semver-mvp-release-plan",
+    "docs/stable-imk-dev-evidence",
+    "docs/unified-input-validation",
+    "feat/mvp-domain-vocabulary",
+    "feat/stable-imk-development",
+    "fix/candidate-hover-focus",
+    "fix/candidate-status-layout",
+    "fix/mvp-candidate-stability",
+    "fix/mvp-experience-signed-history",
+    "fix/retry-dictionary-flush",
+    "perf/attribute-native-key-stages",
+    "perf/reuse-candidate-layout",
+    "perf/skip-unchanged-candidate-status"
+  ],
+  "status": "审批拒绝后尚未执行删除；等待对精确范围授权",
+  "retained": [
+    "main",
+    "feat/website-updater-integration",
+    "perf/table-load-allocation（当前MVP工作分支）"
+  ]
+}
