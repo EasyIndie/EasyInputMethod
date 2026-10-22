@@ -33,3 +33,7 @@
 - shell语法与git diff --check通过。当前仅本地ad-hoc产物，不作用户包，不创建tag/Release。
 
 下一步先完成本批dev→main唯一PR的CI/合入收尾，再用明确main签名包补原生性能/末项文本；不重复已验收且未受影响的预览场景。更新功能仍保持默认关闭，下载验签/安全替换/恢复尚待，不因版本治理完成而跳过输入门禁。
+
+## 真实归档补验
+
+ca15f49审核归档5,180,663字节，validate-release --review通过；从配对源码离线双架构重建，去签名可执行及三个默认表逐字节一致（日志/两份归档SHA见127-evidence/package.json、package.txt、repro.txt）。这是同机自动重建，不冒充第三方独立核验。实际产物未安装、无正式签名；本批PR #77精确head的CI另行回读。

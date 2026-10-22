@@ -1,0 +1,36 @@
+▶ 1/5 构建各架构 staticlib + Swift 宿主：arm64 x86_64
+   • arm64
+    Finished `release` profile [optimized] target(s) in 0.02s
+   • x86_64
+    Finished `release` profile [optimized] target(s) in 0.02s
+▶ 2/5 重置 bundle 目录
+▶ 3/5 复制数据文件（缺失的给出复现提示）
+   ✅ wubi86-core.tsv
+   ✅ pinyin-chars.tsv
+   ✅ pinyin-core.tsv
+   ✅ variant-s2t.tsv
+▶ 4/5 合成可执行文件（lipo）
+   架构：x86_64 arm64
+▶ 5/5 校验 Info.plist + ad-hoc 签名
+/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app/Contents/Info.plist: OK
+/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app: replacing existing signature
+   ✅ ad-hoc 签名完成
+
+✅ 构建完成：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/Lampyris.app
+   此 ad-hoc 构建仅供开发验证；日常运行 make macos-preview。
+   分发签名/公证及可信安装流程见 packaging/README.md。
+swift-driver version: 1.168.6    Vendoring arc-swap v1.9.2 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/arc-swap-1.9.2) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/arc-swap
+   Vendoring equivalent v1.0.2 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/equivalent-1.0.2) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/equivalent
+   Vendoring hashbrown v0.17.1 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/hashbrown-0.17.1) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/hashbrown
+   Vendoring indexmap v2.14.2 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/indexmap-2.14.2) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/indexmap
+   Vendoring memchr v2.8.3 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/memchr-2.8.3) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/memchr
+   Vendoring rustversion v1.0.23 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/rustversion-1.0.23) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/rustversion
+   Vendoring toml_datetime v0.6.11 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_datetime-0.6.11) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/toml_datetime
+   Vendoring toml_edit v0.22.27 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_edit-0.22.27) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/toml_edit
+   Vendoring toml_write v0.1.2 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/toml_write-0.1.2) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/toml_write
+   Vendoring winnow v0.7.15 (/Users/joker/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/winnow-0.7.15) to /Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/source-tar/Lampyris-0.1.0-source/vendor/winnow
+To use vendored sources, add this to your .cargo/config.toml for this project:
+
+本地候选包：/Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/Lampyris-0.1.0-universal.zip（5180663 字节，signed_release=false）
+对应源码包：/Users/joker/Documents/EasyInputMethod/packaging/out/candidate-PyT92i/Lampyris-0.1.0-source.tar.gz（与二进制同处发布，GPL §6(d)）
+仅供审核；尚未签名/公证，不可对外发布或安装。

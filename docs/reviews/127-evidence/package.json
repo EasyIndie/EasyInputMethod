@@ -1,0 +1,18 @@
+{
+  "source_commit": "ca15f49f97a559d7f33f8f3c93dba1b482ea9499",
+  "scope": "local review only; not installed or signed distribution",
+  "version": "0.1.0",
+  "build": "1",
+  "archive_validation": "PASS --review",
+  "rebuild": "PASS local offline: unsigned executable bytes and three default data files identical; not independent third-party verification",
+  "assets": {
+    "Lampyris-0.1.0-universal.zip": {
+      "sha256": "4f30640e0701d97a4eaaa2d0b573191e3a89fb4176f338bc1c547e414f9533e9",
+      "bytes": 5180663
+    },
+    "Lampyris-0.1.0-source.tar.gz": {
+      "sha256": "ca643b666254de8eedb33d071e393af30f5dfec2e9720378971e8c643a9f3fc9",
+      "bytes": 29231314
+    }
+  }
+}
