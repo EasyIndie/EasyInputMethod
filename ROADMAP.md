@@ -2,6 +2,8 @@
 
 > 2026-10-22 当前状态以 HANDOFF.md 为准：正在收口首版输入体验与可靠性；版本/升级后置，同RC的A/B与五工作日门禁尚未关闭。历史包的PASS不能继承到新候选。
 
+- [x] 2026-10-22 更新负载 Ed25519 验签与商店口径（ADR-256/257，报告 137）：`PayloadVerifier` 用 CryptoKit 校验 32 字节公钥 + 64 字节签名，新增 `--verify-payload` 显式入口（缺公钥退出 2、不联网）；7 项 XCTest 与严格 release 构建通过，仍不下载/不安装；App Store 口径确定为「沙盒 + 去自更新 + 渠道 PASS 不互继承」，待不发布沙盒构建实测
+- [x] 2026-10-22 冷首键定位与宿主内存复测（报告 136）：离屏插桩显示渲染代码稳态 1.10ms/首次 5.73ms，原生 content 4.15/15.5ms 差额在可见窗口 AppKit 布局；试做微优化无收益已回退；build5 宿主在 swap 4.14GB 下 29.9→34.8M，30MB 仍未关闭
 - [x] 2026-10-22 build5 原生复验 ADR-255（报告 135）：main `299d8f8`/0.1.0/build5 固定开发签名包（run 39775362738，执行 `aef8b7cc…`），六词+八项附加含 xi'an 全通过；首轮 50 键 p95 11.569ms、暖态 10.726ms、附加 0 次 ≥16ms；宿主 physical **29.5M**/峰 29.9M、malloc 碎片 12.0M→5.7M、换出 14.6M，首次落到 30MB 线下但系统 swap 高压力，只记候选证据，未宣布门禁关闭
 - [x] 2026-10-22 build4 原生验证与词典加载内存收敛（报告 134，ADR-255）：main `0f91349`/0.1.0/build4 固定开发签名包（run 39770165333，执行 `49a49a2a…`）实机；schema2 首轮 50 键 p95 10.770ms/max 37.299ms、暖态 p95 10.620ms、hideUs p95 1.222ms，六词+八项附加（含 xi'an/mixed Enter/Esc/五笔）通过；宿主 physical 37.8M/峰 40.3M，malloc 活跃 17.4M/碎片 12.0M，ADR-255 单遍紧凑加载后离线四表峰值 24.4–25.4M→15.8M；16ms 仅单候选样本记录、30MB 未关闭，原生复验待下一签名包
 - [x] 2026-10-19 IT-03 机器可校验报告（`docs/reviews/101-acceptance-a-07bbb2f.json`）：schema 2、候选身份绑定执行 SHA/commit/双架构/Developer ID；`check` = pass 6 / blocked 17（exit 3），每项 PASS 附证据、BLOCKED 附原因
