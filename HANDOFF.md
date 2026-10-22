@@ -2,11 +2,11 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`01c85f32b9b029fdab2979328554e2edd4ea468d`（#81四CI绿后merge，含ADR-255；开放PR 0）。dev已快进同步，本轮无遗留分支。
-- build4已作为固定开发包装机：0.1.0/build4，执行`49a49a2a7f47de895e282754a66e35c8d90403c723a7ce471b95a7de25d4a3ef`，隔离公证run39770165333，ZIP`b3b38bb4ac664305164b8bedbdd454e403d0bcfd0ae13328604717aa011380d2`；旧build2备份`replacement-p57rjckg/previous.app`。
-- 134原生（schema2）：100键，首轮50键total p95 **10.770ms**/max37.299ms（仅冷首键≥16ms），暖态p95 10.620ms，engine p95 1.114ms，hideUs p50/p95 0.849/1.222ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）实际读回通过。
-- 内存：宿主采样后physical37.8M/峰40.3M、malloc活跃17.4M/碎片12.0M/换出18.7M，冷启动8.9M → **30MB未关闭**。ADR-255单遍紧凑加载把四表离线峰值24.4–25.4M降到15.8M（活跃10.9M不变），原生复验待下一签名包。
-- 收尾：ABC、marker删除、精确宿主退出；生产两SHA与开发config未变，开发私有词库正常学习到`8b7084e4…`（14行）。`make verify`/`make macos-offline-tests`/strict universal全绿零诊断。
+- 更新：2026-10-22 / pi；固定dev，main代码`299d8f815605d7ff5ecd82c3217a1e5203035a19`（#81 ADR-255、#82 构建号递增均已四CI绿合并，开放PR 0）。本轮新增报告135与交接更新，随同批dev→main唯一PR收尾，不新建分支。
+- build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
+- 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
+- 内存：宿主physical **29.5M**/峰**29.9M**、malloc活跃17.2M/碎片**5.7M(25%)**/换出14.6M（build4：37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据，**不宣布门禁干净关闭**。
+- 收尾：ABC、marker删除、精确宿主退出；生产两SHA与开发config未变，开发私有词库正常学习到`0ccce15f…`（14行）。
 
 ## 1. 设备与数据
 
@@ -14,7 +14,7 @@
 |---|---|---|---|
 | A（历史，本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 报告103，不操作A |
 | B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；全程只读 | 生产包未替换 |
-| B固定开发 | 0f91349/0.1.0/**build4**，执行`49a49a2a…`，公证39770165333；ZIP`b3b38bb4…` | 当前ABC，开发宿主0个，marker不存在；dev config`3bc1117c…`，私有词库14行/`8b7084e4…` | `replacement-p57rjckg/previous.app`=build2；134证据在`platforms/macos/build/acceptance-134/` |
+| B固定开发 | 299d8f8/0.1.0/**build5**，执行`aef8b7cc…`，公证39775362738；ZIP`b6f9536a…` | 当前ABC，开发宿主0个，marker不存在；dev config`3bc1117c…`，私有词库14行/`0ccce15f…` | `replacement-r__fdgwk/previous.app`=build4（build2=replacement-p57rjckg）；135证据在`platforms/macos/build/acceptance-135/` |
 
 - 固定开发根：`~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05`；身份不变，不反复移除/添加/注销。
 - 手工文稿“萤火虫性能验收-115.txt”历史窗口2372保留；本轮未操作，禁止清空。
@@ -24,24 +24,25 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
-| 134 build4原生 | 静态核验（版本/commit/身份/root/arm64/Team2N62934Y28/spctl/stapler/数据SHA）后安装，换包保留旧包、输入源集合不变；schema2分段与冷首键见报告134 |
+| 135 build5原生 | ADR-255后复验：功能无回归、p95 11.569ms、附加0次≥16ms；宿主physical29.5M/峰29.9M、碎片5.7M、换出14.6M，见报告135 |
+| 134 build4原生 | 静态核验后安装，换包保留旧包、输入源集合不变；schema2 100键首轮p95 10.770ms、hideUs p95 1.222ms，见报告134 |
 | ADR-255加载内存 | `from_tsv`单遍偏移构建+拼音/简繁去逐行临时分配；离线四表峰值24.4–25.4M→15.8M，frag/换出如实记录；verify/193离线/strict双架构通过 |
 | 133/132 | #80最终e17abfc四CI绿merge0f91349；小bounds与同尺寸原生设置修复已入main，build4实机stderr未见约束提示复现路径 |
 | #79历史 | 9f7f68f四CI绿merge b618972，隐藏计时schema2入main |
 
 ## 3. 未决
 
-- 30MB门禁：宿主37.8M/峰40.3M为ADR-255**修复前**数据；需下一签名包复测主机稳态（含碎片与换出分类），不忽略swap、不用RSS替代。
-- 16ms门禁：本候选单样本p95达标但仍按单候选记录；冷首键37.3ms（content15.7ms、status7.4ms）仍在，暖态无≥16ms样本；不提前预热掩盖。
+- 30MB门禁：build5已到physical29.5M/峰29.9M，但系统swap高压力、进程换出14.6M；需在低压力环境复测同一候选（含碎片/换出分类）后才谈关闭，不忽略swap、不用RSS替代。
+- 16ms门禁：build5单轮p95 11.569ms、附加0次≥16ms，仍按单候选记录；冷首键42.7ms（content15.5/window9.6/preedit7.8ms）仍在，不提前预热掩盖。
 - 同最终RC三模式/重启/显示与数字提交、完整客户端矩阵（浏览器/VSCode/终端/微信安全草稿）未跑；更新闭环（feed/key、真实下载验签、回滚、App Store可行性）与D16扩词覆盖有限。
 - A/B、安装升级/异常恢复/卸载、VoiceOver/多屏/真实睡眠、独立第三方重建、五工作日未完成；权限/设备缺口不冒充PASS。
 - 交接辅助脚本`--prompt`骨架仍有旧main直推/最近ZIP误标示例，只用其采集表。
 
 ## 4. 下一步
 
-1. 从新main`01c85f3`（含ADR-255）构建**build5**固定开发签名包：静态核验ZIP/版本/架构/签名/公证/数据SHA；保留配置/词库/旧包。
-2. 换包后先写marker再启动宿主，只请用户切开发源一次；集中复测宿主稳态内存（碎片/换出/physical）、冷首键与mixed剩余项；逐键焦点守卫，失焦立即停止。
-3. 采样后删marker、恢复mode，用户ABC后按精确路径/SHA退出宿主；随后推进更新闭环与商店可行性，再锁同RC完整矩阵与五日。不创建tag/Release。
+1. 本批（报告135+文档）一次性`dev → main`PR，四CI绿后merge并快进dev。
+2. build5已在装；下一步在系统压力较低时补一次同候选宿主内存复测（physical/peak/碎片/换出分类），再决定30MB口径是否可关闭。
+3. 之后推进更新闭环与商店可行性，再锁同RC做三模式/重启/客户端矩阵与五日；冷首键优化单独立项（先定位首次内容/窗口排版）。不创建tag/Release。
 
 ## 5. 边界
 
@@ -50,6 +51,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：build号递增PR #82（4→5）四CI绿merge `299d8f8`；从该main构建并核验build5（run39775362738），用户只切一次源完成schema2 95键与八项附加（含xi'an），宿主physical29.5M/峰29.9M、碎片5.7M、换出14.6M；收尾ABC、marker删除、宿主退出，生产数据/开发config未变，私有词库正常学习。
 
 - 2026-10-22 / pi：#81（ADR-255+报告134）head 83cc263 check/dco/fuzz/macos 四CI全绿，merge `01c85f3`，dev普通快进同步、PR 0；build4仍为已装开发包，下一步从新main构建build5复测宿主内存。
 
