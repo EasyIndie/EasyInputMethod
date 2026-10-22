@@ -1,0 +1,9 @@
+{
+  "pid": 51595,
+  "executable_sha256": "ff2e92239911d82bdc1201ac23c81300cad3edd74d627ca0ed63deaf1196a85b",
+  "source": "com.apple.keylayout.ABC",
+  "trace_rows": 0,
+  "physical_footprint_raw": "8433K",
+  "peak_raw": "8865K",
+  "scope": "采样前、当前ABC时的空闲宿主；不证明此前会话初始化状态，不关闭输入态/满库内存门禁。"
+}
