@@ -162,7 +162,7 @@ make verify     # = fmt-check + lint + test + deny + verify-no-network
 | Rust edition | 2021；MSRV 见 `rust-toolchain.toml` |
 | 文档 | 设计文档放 `docs/`，**中文**；代码内文档注释用英文 `///` |
 | 提交 | Conventional Commits：`feat:` / `fix:` / `docs:` / `refactor:` / `test:` / `chore:` |
-| 分支 | 固定`dev`为唯一活动迭代分支；不按任务开分支；`main`保护，合入走`dev → main` PR，合并后复用dev（ADR-248） |
+| 分支 | 固定`dev`为唯一活动迭代分支；不按任务开分支；`main`保护，合入走`dev → main` PR，使用merge commit保留祖先，合并后dev快进同步并复用，禁squash/rebase合并（ADR-248/250） |
 
 ---
 

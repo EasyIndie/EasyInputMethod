@@ -74,6 +74,9 @@ class IsolatedIMKTests(unittest.TestCase):
             modes = {old + ".default": {"TISInputSourceID": old + ".default"}}
             info = {"CFBundleIdentifier": old, "tsInputModeListKey": modes,
                     "ComponentInputModeDict": {"tsInputModeListKey": modes}}
+            (repository / "Cargo.toml").write_text('[workspace.package]\nversion = "2.3.4-rc.2+fixture"\n')
+            (repository / "packaging").mkdir()
+            (repository / "packaging/build-number").write_text("42\n")
             (repository / "platforms/macos/Info.plist").write_bytes(plistlib.dumps(info))
             for name in ("wubi86-core.tsv", "pinyin-chars.tsv", "pinyin-core.tsv", "variant-s2t.tsv"):
                 (repository / "data/generated" / name).write_bytes(b"fixture")
@@ -81,6 +84,9 @@ class IsolatedIMKTests(unittest.TestCase):
             with patch.object(isolated, "ROOT", repository):
                 app = isolated.bundle(self.root)
             actual = plistlib.loads((app / "Contents/Info.plist").read_bytes())
+            self.assertEqual(actual["CFBundleShortVersionString"], "2.3.4")
+            self.assertEqual(actual["CFBundleVersion"], "42")
+            self.assertEqual(actual["LampyrisSemanticVersion"], "2.3.4-rc.2+fixture")
             identity = actual["CFBundleIdentifier"]
             self.assertTrue(identity.startswith(isolated.IDENTITY))
             self.assertIn(".inputmethod.", identity)

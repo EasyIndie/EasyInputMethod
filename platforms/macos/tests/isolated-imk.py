@@ -10,6 +10,9 @@ import tempfile
 import uuid
 
 ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tools"))
+from release_version import identity as release_identity
+
 IDENTITY = "cn.jokerhub.inputmethod.LampyrisIMKTest."
 TRIPLES = {"arm64": "aarch64-apple-darwin", "x86_64": "x86_64-apple-darwin"}
 DEPLOYMENT_TARGET = "13.0"
@@ -68,6 +71,9 @@ def bundle(root):
     binding.chmod(0o600)
     identity = IDENTITY + root.name.removeprefix("lampyris-imk-")
     info = plistlib.loads((ROOT / "platforms/macos/Info.plist").read_bytes())
+    version = release_identity(ROOT)
+    info.update(CFBundleShortVersionString=version["apple"], CFBundleVersion=version["build"],
+                LampyrisSemanticVersion=version["version"])
     old = info["CFBundleIdentifier"]
 
     def replace(value):
