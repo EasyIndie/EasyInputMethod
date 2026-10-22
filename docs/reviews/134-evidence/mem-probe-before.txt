@@ -1,0 +1,7 @@
+== before (git HEAD code) 2026-10-22T11:46:55Z
+run1 fp=         16.0M peak=  24.8M 
+     TOTAL                              37.2M      3984K      3952K      11.3M     118820      10.9M      4324K     28%      14
+run2 fp=         16.1M peak=  25.4M 
+     TOTAL                              41.2M      2896K      2896K      12.4M     118820      10.9M      4420K     29%      15
+run3 fp=         15.0M peak=  24.4M 
+     TOTAL                              45.2M      7408K      5968K      8432K     118820      10.9M      3220K     23%      16

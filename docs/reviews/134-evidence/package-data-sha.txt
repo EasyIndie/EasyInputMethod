@@ -1,0 +1,4 @@
+1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa  packaging/out/run-39770165333/Lampyris-isolated-imk-arm64-0f913492b9a0e27ab32bba95462cfcf4291e1625/extracted/Lampyris.app/Contents/Resources/wubi86-core.tsv
+c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb  packaging/out/run-39770165333/Lampyris-isolated-imk-arm64-0f913492b9a0e27ab32bba95462cfcf4291e1625/extracted/Lampyris.app/Contents/Resources/pinyin-core.tsv
+70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12  packaging/out/run-39770165333/Lampyris-isolated-imk-arm64-0f913492b9a0e27ab32bba95462cfcf4291e1625/extracted/Lampyris.app/Contents/Resources/pinyin-chars.tsv
+68c94a2c795efc757b1b5f4331d16497cc4d713417deec762a02b3c192fe90f6  packaging/out/run-39770165333/Lampyris-isolated-imk-arm64-0f913492b9a0e27ab32bba95462cfcf4291e1625/extracted/Lampyris.app/Contents/Resources/variant-s2t.tsv

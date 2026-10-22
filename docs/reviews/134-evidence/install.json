@@ -1,0 +1,42 @@
+{
+  "root": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+  "installed": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app",
+  "backup": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-p57rjckg/previous.app",
+  "source_commit": "0f913492b9a0e27ab32bba95462cfcf4291e1625",
+  "executable_sha256": "49a49a2a7f47de895e282754a66e35c8d90403c723a7ce471b95a7de25d4a3ef",
+  "before": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "after": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "source_state_unchanged": true,
+  "native_input_verified": false
+}
+仅包级换包完成。首次手动添加可能需要注销；已有源请验证新PID/执行SHA及真实输入，尚不能计为免注销验收通过。

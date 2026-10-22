@@ -17,3 +17,7 @@ B arm64/macOS27.0.1，三次全新进程，每次60次真实候选更新/显示/
 本轮证明该复现路径的运行时缺陷已修复，不宣称覆盖所有AppKit提示或已装build2。可见运行仍有一次orderOut最大51.617ms，未关闭原生16ms/30MB，不把消除提示冒充性能达标。133实验只复核警告，不作控制前后性能结论。
 
 完整macOS离线41文件193项、严格双架构及make verify通过；工具链零诊断、200个产物隐私检查通过。下一候选仍0.1.0/build4（与132同一未分发批次），两个独立小提交经同一固定dev→main PR收尾；不追加本轮用户换包/测试，无tag/Release。
+
+## 当前合入状态
+
+两个独立小提交5363ff8/e17abfc已由同批PR #80承接，最终head e17abfcef280f2b18594de8a9a3c588019ba9bc6的check/macos/fuzz/dco全SUCCESS（CI39766790199/DCO39766790221），merge提交0f913492b9a0e27ab32bba95462cfcf4291e1625。main/dev代码同步，开放PR0；0.1.0/build4未安装。133-evidence/state.json记录当前ABC/普通开发宿主50615、无计时marker、已装执行SHA仍build2，生产数据及开发配置保持。下一步统一签名候选再集中原生确认，不继承旧候选PASS。
