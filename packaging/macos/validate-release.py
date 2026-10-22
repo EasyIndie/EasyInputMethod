@@ -1,6 +1,7 @@
 """Validate paired release assets without extracting or executing archive content."""
 import argparse
 import hashlib
+import json
 from pathlib import Path, PurePosixPath
 import posixpath
 import plistlib
@@ -8,6 +9,7 @@ import re
 import struct
 import sys
 import tarfile
+import tomllib
 import zipfile
 
 
@@ -93,12 +95,16 @@ def validate(directory, tag, commit, review=False):
                 "缺少默认输入数据")
         require(not any(name.startswith("SOURCE/") for name in files), "二进制包不应包含源码目录")
         info = plistlib.loads(files[app + "Info.plist"])
-        require(info.get("CFBundleShortVersionString") == version and info.get("CFBundleVersion") == version,
-                "包内版本与tag不符")
+        require(info.get("CFBundleShortVersionString") == version
+                and info.get("LampyrisSemanticVersion") == version, "包内版本与tag不符")
+        build = info.get("CFBundleVersion")
+        require(isinstance(build, str) and re.fullmatch(r"[1-9][0-9]{0,3}", build), "无效独立构建号")
+        require(json.loads(files["SBOM.cdx.json"])["metadata"]["component"]["version"] == version,
+                "SBOM版本不符")
         require(info.get("CFBundleIdentifier") == "cn.jokerhub.inputmethod.Lampyris", "bundle身份不符")
         require(files[app + "Resources/SOURCE-COMMIT"].decode().strip() == commit, "应用源码提交不符")
         metadata = files["BUILD-INFO.txt"].decode().splitlines()
-        for expected in ("commit=" + commit, "architecture=universal", ("signed_release=false" if review else "signed_release=true")):
+        for expected in ("commit=" + commit, "version=" + version, "build=" + build, "architecture=universal", ("signed_release=false" if review else "signed_release=true")):
             key = expected.split("=", 1)[0] + "="
             require([line for line in metadata if line.startswith(key)] == [expected], "构建元信息不符：" + key)
         arches = [line for line in metadata if line.startswith("lipo_archs=")]
@@ -125,9 +131,13 @@ def validate(directory, tag, commit, review=False):
             require(not any(name.startswith(member.name + "/") for name in names), "源码链接下不得有额外成员")
             require(not any(target.startswith(link.name + "/") for link in links), "源码链接目标不得穿越其他链接")
         source_files = {member.name for member in members if member.isfile()}
-        required = ("SOURCE-COMMIT", "Cargo.lock", "Cargo.toml", "LICENSE", ".cargo/config.toml", "platforms/macos/build.sh")
+        required = ("SOURCE-COMMIT", "Cargo.lock", "Cargo.toml", "LICENSE", ".cargo/config.toml", "platforms/macos/build.sh", "packaging/build-number", "tools/release_version.py")
         require(all(root + name in source_files for name in required), "对应源码或离线构建材料不全")
         require(any(name.startswith(root + "vendor/") for name in source_files), "缺少锁定依赖源码")
+        source_version = tomllib.loads(archive.extractfile(root + "Cargo.toml").read().decode())["workspace"]["package"]["version"]
+        require(source_version == version, "对应源码版本不符")
+        require(archive.extractfile(root + "packaging/build-number").read().decode().strip() == build,
+                "对应源码构建号不符")
         stream = archive.extractfile(root + "SOURCE-COMMIT")
         require(stream.read().decode().strip() == commit, "对应源码提交不符")
     return assets + sidecars

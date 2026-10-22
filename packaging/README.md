@@ -26,3 +26,9 @@ make verify                            # 完整审计通过后保存提交
 ### 发布附件门禁（ADR-112）
 
 Release演练和正式发布在相同分支前运行`python3 packaging/macos/validate-release.py dist v0.1.0 <40位提交>`。只有四个核验附件会进入上传列表；校验外部/内部摘要、版本/提交、实际双架构和对应离线源码。工具不解压执行候选；Developer ID与公证仍在macOS核验。当前只完成合成回归及本机Mach-O检查，最终签名附件和dry_run尚未运行。
+
+## 版本与构建号（ADR-240/249）
+
+`Cargo.toml`的workspace.package.version是唯一产品SemVer来源；`packaging/build-number`是独立、受Git审阅的全局构建序号（1…9999）。准备分发不同源码候选时先递增序号；同候选的双架构、网站与商店及离线重建复用同号。禁止按渠道自行编号，正式发布前须核对历史分发号没有倒退或重复用于不同候选。开发构建不自动改号。
+
+宿主及独立更新程序的Info.plist由工具写入X.Y.Z显示版本、整数构建号及完整`LampyrisSemanticVersion`。包名、对应源码名、说明和SBOM派生同一SemVer；最终tag仅接受稳定vX.Y.Z。发布校验独立比较产品版本和构建号，并核对源码输入，不再要求两者相等。`tools/release_version.py version|apple|build`可只读查看。此项只解决元数据一致，不能代替App Store准入、升级安全及最终RC验收。

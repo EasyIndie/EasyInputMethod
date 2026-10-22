@@ -7,6 +7,8 @@ SIGNED=false
 case "${1:-}" in '') ;; --signed) SIGNED=true ;; *) echo "用法：$0 [--signed]" >&2; exit 2 ;; esac
 [ -z "$(git status --porcelain)" ] || { echo "请先提交已验证的修改，确保源码与包一致" >&2; exit 1; }
 COMMIT="$(git rev-parse HEAD)"
+VERSION="$(python3 tools/release_version.py version)"
+BUILD_NUMBER="$(python3 tools/release_version.py build)"
 OUT="${ROOT}/packaging/out"
 mkdir -p "${OUT}"
 WORK="$(mktemp -d "${OUT}/candidate-XXXXXX")"
@@ -31,11 +33,15 @@ case " ${APP_ARCHS} " in
   *" x86_64 "*) ARCH="x86_64" ;;
   *) ARCH="${APP_ARCHS// /-}" ;;
 esac
-STAGE="${WORK}/Lampyris-0.1.0-${ARCH}"
+STAGE="${WORK}/Lampyris-${VERSION}-${ARCH}"
 mkdir -p "${STAGE}/scripts"
 ditto "${APP}" "${STAGE}/Lampyris.app"
 cp LICENSE "${STAGE}/LICENSE"
-cp packaging/macos/RELEASE-README.md "${STAGE}/README.md"
+python3 - "${VERSION}" "${STAGE}/README.md" <<'PY'
+import sys
+from pathlib import Path
+Path(sys.argv[2]).write_text(Path("packaging/macos/RELEASE-README.md").read_text().replace("@VERSION@", sys.argv[1]))
+PY
 cp platforms/macos/install.sh platforms/macos/uninstall.sh "${STAGE}/scripts/"
 cp -R packaging/licenses "${STAGE}/DATA-LICENSES"
 cp docs/数据来源与许可.md "${STAGE}/DATA-SOURCES.md"
@@ -43,23 +49,24 @@ cp data/sources.toml "${STAGE}/data-sources.toml"
 cargo tree --locked --offline -p ime-ffi > "${STAGE}/cargo-tree.txt"
 {
   printf 'commit=%s\narchitecture=%s\nlipo_archs=%s\nsigned_release=%s\n' "${COMMIT}" "${ARCH}" "${APP_ARCHS}" "${SIGNED}"
+  printf 'version=%s\nbuild=%s\n' "${VERSION}" "${BUILD_NUMBER}"
   rustc --version
   swiftc --version
   xcrun --show-sdk-version
   sw_vers
 } > "${STAGE}/BUILD-INFO.txt"
 # GPL-3.0-or-later §6(d)：二进制包不含源码，改为在同一发布位置提供对应源码（ADR-064）。
-cat > "${STAGE}/SOURCE.txt" <<'TXT'
+cat > "${STAGE}/SOURCE.txt" <<TXT
 本安装包按 GPL-3.0-or-later 分发，但**不含源码**（第 6(d) 条）。
 
 Corresponding Source（对应源码）：
-  1) 与本包发布在同一位置的 Lampyris-0.1.0-source.tar.gz；
+  1) 与本包发布在同一位置的 Lampyris-${VERSION}-source.tar.gz；
   2) 公开仓库对应版本：https://github.com/EasyIndie/EasyInputMethod （该 tag 的源码与构建脚本）
 若本包被转发到其它位置，转发者须在旁注明等价的源码获取地址；
 源码与本包一样免费可得，构建方式见源码包内 platforms/macos/README.md。
 TXT
 python3 packaging/macos/manifest.py "${STAGE}"
-ZIP="${WORK}/Lampyris-0.1.0-${ARCH}.zip"
+ZIP="${WORK}/Lampyris-${VERSION}-${ARCH}.zip"
 ditto -c -k --norsrc --noextattr --keepParent "${STAGE}" "${ZIP}"
 BYTES="$(stat -f %z "${ZIP}")"
 [ "${BYTES}" -le 15000000 ] || { echo "包超过 15MB：${BYTES}" >&2; exit 1; }
@@ -67,7 +74,7 @@ BYTES="$(stat -f %z "${ZIP}")"
 
 # ── 对应源码包（与二进制同处发布；GPL §6(d)）─────────────
 SOURCE_STAGE="${WORK}/source-tar"
-SOURCE_ROOT="${SOURCE_STAGE}/Lampyris-0.1.0-source"
+SOURCE_ROOT="${SOURCE_STAGE}/Lampyris-${VERSION}-source"
 mkdir -p "${SOURCE_ROOT}"
 # Include locked dependency source; third parties can build without registry access.
 git archive HEAD | tar -x -C "${SOURCE_ROOT}"
@@ -83,8 +90,8 @@ p = Path(sys.argv[1])
 s = p.read_text().splitlines()
 p.write_text('\n'.join('directory = "vendor"' if line.startswith('directory = ') else line for line in s) + '\n')
 PY
-SOURCE_TAR="${WORK}/Lampyris-0.1.0-source.tar.gz"
-COPYFILE_DISABLE=1 tar -czf "${SOURCE_TAR}" -C "${SOURCE_STAGE}" "Lampyris-0.1.0-source"
+SOURCE_TAR="${WORK}/Lampyris-${VERSION}-source.tar.gz"
+COPYFILE_DISABLE=1 tar -czf "${SOURCE_TAR}" -C "${SOURCE_STAGE}" "Lampyris-${VERSION}-source"
 (cd "${WORK}" && shasum -a 256 "$(basename "${SOURCE_TAR}")" > "$(basename "${SOURCE_TAR}").sha256")
 
 echo "本地候选包：${ZIP}（${BYTES} 字节，signed_release=${SIGNED}）"

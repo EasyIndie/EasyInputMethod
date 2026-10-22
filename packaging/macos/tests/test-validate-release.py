@@ -2,6 +2,7 @@
 import hashlib
 import importlib.util
 import io
+import json
 from pathlib import Path
 import plistlib
 import struct
@@ -28,15 +29,17 @@ class ReleaseValidationTests(unittest.TestCase):
         executable = header + b"\xcf\xfa\xed\xfe" + struct.pack("<I", 0x01000007)
         executable += b"\xcf\xfa\xed\xfe" + struct.pack("<I", 0x0100000C)
         self.files = {
-            APP + "Info.plist": plistlib.dumps({"CFBundleShortVersionString": "0.1.0", "CFBundleVersion": "0.1.0",
+            APP + "Info.plist": plistlib.dumps({"CFBundleShortVersionString": "0.1.0", "CFBundleVersion": "17", "LampyrisSemanticVersion": "0.1.0",
                 "CFBundleIdentifier": "cn.jokerhub.inputmethod.Lampyris"}),
             APP + "Resources/SOURCE-COMMIT": COMMIT.encode(),
             APP + "MacOS/Lampyris": executable,
-            "BUILD-INFO.txt": (f"commit={COMMIT}\narchitecture=universal\nlipo_archs=arm64 x86_64\nsigned_release=true\n").encode(),
-            "LICENSE": b"synthetic", "SOURCE.txt": b"synthetic", "SBOM.cdx.json": b"{}", "DATA-SOURCES.md": b"synthetic",
+            "BUILD-INFO.txt": (f"commit={COMMIT}\nversion=0.1.0\nbuild=17\narchitecture=universal\nlipo_archs=arm64 x86_64\nsigned_release=true\n").encode(),
+            "LICENSE": b"synthetic", "SOURCE.txt": b"synthetic", "SBOM.cdx.json": json.dumps({"metadata": {"component": {"version": "0.1.0"}}}).encode(), "DATA-SOURCES.md": b"synthetic",
         }
         self.source_links = {}
         self.source_commit = COMMIT
+        self.source_build = "17"
+        self.source_version = "0.1.0"
         for name in ("wubi86-core.tsv", "pinyin-chars.tsv", "pinyin-core.tsv", "variant-s2t.tsv"):
             self.files[APP + "Resources/" + name] = b"synthetic data"
         self.binary = self.root / "Lampyris-0.1.0-universal.zip"
@@ -54,8 +57,12 @@ class ReleaseValidationTests(unittest.TestCase):
                 package.writestr(entry, data)
         with tarfile.open(self.source, "w:gz") as package:
             for name in ("SOURCE-COMMIT", "Cargo.lock", "Cargo.toml", "LICENSE", ".cargo/config.toml",
-                         "platforms/macos/build.sh", "vendor/fixture/lib.rs"):
+                         "platforms/macos/build.sh", "vendor/fixture/lib.rs", "packaging/build-number", "tools/release_version.py"):
                 data = self.source_commit.encode() if name == "SOURCE-COMMIT" else b"synthetic"
+                if name == "Cargo.toml":
+                    data = f'[workspace.package]\nversion = "{self.source_version}"\n'.encode()
+                if name == "packaging/build-number":
+                    data = self.source_build.encode()
                 entry = tarfile.TarInfo("Lampyris-0.1.0-source/" + name)
                 entry.size = len(data)
                 package.addfile(entry, io.BytesIO(data))
@@ -103,12 +110,45 @@ class ReleaseValidationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "源码提交"):
             self.check()
 
-    def test_bundle_version_must_match_tag(self):
+    def test_bundle_build_must_be_independent_positive_integer(self):
         info = plistlib.loads(self.files[APP + "Info.plist"])
         info["CFBundleVersion"] = "0.0.9"
         self.files[APP + "Info.plist"] = plistlib.dumps(info)
         self.write()
+        with self.assertRaisesRegex(ValueError, "构建号"):
+            self.check()
+
+    def test_display_version_must_match_tag(self):
+        info = plistlib.loads(self.files[APP + "Info.plist"])
+        info["CFBundleShortVersionString"] = "0.2.0"
+        self.files[APP + "Info.plist"] = plistlib.dumps(info)
+        self.write()
         with self.assertRaisesRegex(ValueError, "版本"):
+            self.check()
+
+    def test_valid_but_mismatched_build_is_rejected(self):
+        info = plistlib.loads(self.files[APP + "Info.plist"])
+        info["CFBundleVersion"] = "18"
+        self.files[APP + "Info.plist"] = plistlib.dumps(info)
+        self.write()
+        with self.assertRaisesRegex(ValueError, "元信息"):
+            self.check()
+
+    def test_source_build_and_version_must_match_binary(self):
+        self.source_build = "18"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "构建号"):
+            self.check()
+        self.source_build = "17"
+        self.source_version = "0.2.0"
+        self.write()
+        with self.assertRaisesRegex(ValueError, "源码版本"):
+            self.check()
+
+    def test_sbom_version_must_match_binary(self):
+        self.files["SBOM.cdx.json"] = json.dumps({"metadata": {"component": {"version": "0.0.9"}}}).encode()
+        self.write()
+        with self.assertRaisesRegex(ValueError, "SBOM版本"):
             self.check()
 
     def test_unsigned_candidate_cannot_publish(self):
