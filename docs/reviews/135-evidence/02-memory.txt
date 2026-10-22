@@ -1,0 +1,21 @@
+== build5 host memory 2026-10-22T12:17:05Z pid=82125
+-- sample 1
+physical:         29.5M
+peak:  29.9M
+malloc:
+TOTAL                                       57.2M      11.0M      11.0M      11.8M     155044      17.2M      5736K     25%      75
+Writable regions: Total=136.1M written=25.6M(19%) resident=12.2M(9%) swapped_out=13.5M(10%) unallocated=110.4M(81%)
+-- sample 2
+physical:         29.5M
+peak:  29.9M
+malloc:
+TOTAL                                       57.2M       9.9M       9.9M      12.9M     155044      17.2M      5736K     25%      75
+Writable regions: Total=136.1M written=25.6M(19%) resident=11.1M(8%) swapped_out=14.6M(11%) unallocated=110.4M(81%)
+-- sample 3
+physical:         29.5M
+peak:  29.9M
+malloc:
+TOTAL                                       57.2M       9.9M       9.9M      12.9M     155044      17.2M      5736K     25%      75
+Writable regions: Total=136.1M written=25.6M(19%) resident=11.1M(8%) swapped_out=14.6M(11%) unallocated=110.4M(81%)
+-- rss  45072
+-- swapusage total = 5120.00M  used = 3923.19M  free = 1196.81M  (encrypted)
