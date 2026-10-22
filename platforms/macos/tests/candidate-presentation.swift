@@ -10,6 +10,22 @@ application.setActivationPolicy(.prohibited)
 let root = URL(fileURLWithPath: CommandLine.arguments[1])
 let output = URL(fileURLWithPath: CommandLine.arguments[2])
 guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK else { fail("private config") }
+let paddedCell = PaddedCandidateCell(textCell: "")
+for width: CGFloat in [0, 1, 11, 12, 64] {
+    for height: CGFloat in [0, 1, 3, 4, 26] {
+        let bounds = NSRect(x: 7, y: 11, width: width, height: height)
+        let drawing = paddedCell.drawingRect(forBounds: bounds)
+        guard [drawing.minX, drawing.minY, drawing.width, drawing.height].allSatisfy(\.isFinite),
+              drawing.width >= 0, drawing.height >= 0,
+              drawing.minX >= bounds.minX, drawing.maxX <= bounds.maxX,
+              drawing.minY >= bounds.minY, drawing.maxY <= bounds.maxY
+        else { fail("padding must remain finite inside small bounds") }
+    }
+}
+guard paddedCell.drawingRect(forBounds: .null) == .zero else { fail("invalid padding bounds") }
+guard paddedCell.drawingRect(forBounds: NSRect(x: 7, y: 11, width: 64, height: 26))
+        == NSRect(x: 13, y: 13, width: 52, height: 22)
+else { fail("normal candidate padding unchanged") }
 let window = CandidateWindow()
 let caret = NSRect(x: 16, y: 20, width: 2, height: 20)
 let area = NSRect(x: 0, y: 0, width: 320, height: 300)
@@ -64,6 +80,14 @@ guard window.selectedCandidateIndexForTesting == 1,
 else { fail("keyboard focus presentation/accessibility") }
 let anchoredSize = window.frame.size
 let anchoredGeometry = window.layoutForTesting()!
+let sameSizeFrame = window.frame
+window.update(candidates: values, selectedIndex: 1, input: "wq")
+window.layout(at: caret, within: area)
+guard window.frame == sameSizeFrame,
+      window.layoutForTesting()!.labels == anchoredGeometry.labels,
+      window.selectedCandidateIndexForTesting == 1,
+      window.displayedCandidateTexts.count == values.count
+else { fail("same-size refresh preserves geometry and selection") }
 let movedCaret = NSRect(x: 48, y: 70, width: 2, height: 20)
 window.layout(at: movedCaret, within: area)
 guard window.frame.origin != NSPoint(x: caret.minX, y: caret.maxY + 4),

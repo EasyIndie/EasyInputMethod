@@ -25,3 +25,7 @@ feed普通提交分支新增hideUs测量整个隐藏调用，phaseSchema从1升2
 原始数据与源码SHA：131-evidence/paired-summary.json、paired-*.txt；可复查探针phase.swift及运行器paired.py。运行器仅生成临时拷贝和私有配置，不安装、不切源、不发键。
 
 严格双架构宿主构建通过（仅ad-hoc开发验证，未安装）；完整macOS离线41文件193项通过（131-evidence/offline-summary.json），make verify完整通过、零诊断，200个产物隐私检查通过。构建号按候选策略递增3，产品版本仍0.1.0，已装仍build2。输入排序、词库和升级模块不在本次实现范围；核心16ms/30MB与同RC完整功能/安装升级/独立核验/五日门禁未关闭。
+
+## 合入收尾
+
+PR #79最终head9f7f68f9c16c473d81e5c7ddb42da5b31c37ff25四CI全部SUCCESS，CI39761881212/DCO39761881354；merge提交b6189724e08e92ab58a3c7e4bb8c9c5f123f05de，固定dev普通快进同步，开放PR0。包含128–130独有验收/交接证据归并。当前ABC、无开发宿主，仍安装build2；未为这次小额离屏收益再次换包或要求用户复验。

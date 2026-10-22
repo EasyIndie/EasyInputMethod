@@ -1,0 +1,13 @@
+{
+  "code_baseline": "5363ff8",
+  "environment": "B arm64/macOS27.0.1",
+  "visible_fresh_processes": 3,
+  "samples_per_process": 60,
+  "all_stderr_empty": true,
+  "source_sha256": "b3534faa8f2aee3593e8f1642e8f5abbe6a978e504ee7a86d39257709beac779",
+  "stderr_sha256": {
+    "visible-1.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "visible-0.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "visible-2.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

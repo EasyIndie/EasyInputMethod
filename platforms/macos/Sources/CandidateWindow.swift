@@ -118,7 +118,11 @@ final class PaddedCandidateCell: NSTextFieldCell {
     static let horizontal: CGFloat = 6
     static let vertical: CGFloat = 2
     override func drawingRect(forBounds rect: NSRect) -> NSRect {
-        rect.insetBy(dx: Self.horizontal, dy: Self.vertical)
+        guard rect.origin.x.isFinite, rect.origin.y.isFinite,
+              rect.width.isFinite, rect.height.isFinite,
+              rect.width >= 0, rect.height >= 0 else { return .zero }
+        return rect.insetBy(dx: min(Self.horizontal, rect.width / 2),
+                            dy: min(Self.vertical, rect.height / 2))
     }
 }
 
@@ -913,7 +917,10 @@ final class CandidateWindow: NSObject {
         }
         let bodyHeight = min(maxBody, naturalHeight)
         let total = max(32, min(available.height, bodyHeight + extraHeight))
-        panel.setContentSize(NSSize(width: width, height: total))
+        let contentSize = NSSize(width: width, height: total)
+        if panel.contentView?.bounds.size != contentSize {
+            panel.setContentSize(contentSize)
+        }
         let top = total - 8
         inputLabel.isHidden = !headerVisible
         pageLabel.isHidden = !pagesVisible

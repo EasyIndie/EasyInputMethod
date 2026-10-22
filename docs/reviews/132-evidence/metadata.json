@@ -1,0 +1,18 @@
+{
+  "baseline_commit": "b6189724e08e92ab58a3c7e4bb8c9c5f123f05de",
+  "environment": "B arm64/macOS27.0.1",
+  "load_during_investigation": [
+    5.16,
+    4.35,
+    3.35
+  ],
+  "instrumentation": "temporary CandidateWindow copies; visible nonactivating panel; no IMK client, no keyboard events",
+  "profile_is_not_latency_comparison": true,
+  "profile_trace_rows": 600,
+  "sha256": {
+    "target/release/libime_ffi.a": "d62b60805f78da86f2c256b7eb78426acea7107d9870b1e0310607825aaedfca",
+    "data/generated/wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "data/generated/pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb",
+    "platforms/macos/Sources/CandidateWindow.swift": "edc12f336f4bfcc3b0ab6361891f7e6d9a21f6cff195939839559b46beb51b0b"
+  }
+}

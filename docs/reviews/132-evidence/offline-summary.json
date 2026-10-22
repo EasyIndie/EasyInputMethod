@@ -1,0 +1,335 @@
+{
+  "passed": true,
+  "files": 41,
+  "tests": 193,
+  "results": [
+    {
+      "file": "platforms/macos/tests/test-acceptance-results.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.188,
+      "tests": 10,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/00-test-acceptance-results.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-appearance-contract.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 9.388,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/01-test-appearance-contract.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-build-metadata.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.506,
+      "tests": 5,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/02-test-build-metadata.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-candidate-presentation.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 7.219,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/03-test-candidate-presentation.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-composition-navigation.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 7.849,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/04-test-composition-navigation.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-controller-menu.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 12.326,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/05-test-controller-menu.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-fixture-guard.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 1.365,
+      "tests": 5,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/06-test-fixture-guard.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-formal-profile-guard.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.189,
+      "tests": 9,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/07-test-formal-profile-guard.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-guarded-ax.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 2.732,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/08-test-guarded-ax.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-input-menu.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 6.253,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/09-test-input-menu.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-install.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.511,
+      "tests": 5,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/10-test-install.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-accessibility-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.078,
+      "tests": 4,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/11-test-installed-accessibility-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-chrome-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.133,
+      "tests": 8,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/12-test-installed-chrome-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-hud-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.078,
+      "tests": 7,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/13-test-installed-hud-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-ime-features-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.13,
+      "tests": 8,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/14-test-installed-ime-features-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-perf-matrix-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.132,
+      "tests": 8,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/15-test-installed-perf-matrix-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-perf-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.131,
+      "tests": 5,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/16-test-installed-perf-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-safari-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.13,
+      "tests": 8,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/17-test-installed-safari-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-sleep-wake-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.13,
+      "tests": 4,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/18-test-installed-sleep-wake-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-terminal-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.078,
+      "tests": 2,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/19-test-installed-terminal-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-textedit-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 4.703,
+      "tests": 9,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/20-test-installed-textedit-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-installed-vscode-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.674,
+      "tests": 9,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/21-test-installed-vscode-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-isolated-imk.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.182,
+      "tests": 6,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/22-test-isolated-imk.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-isolated-source-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.132,
+      "tests": 6,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/23-test-isolated-source-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-local-acceptance.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.51,
+      "tests": 10,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/24-test-local-acceptance.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-offline-reporting.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.13,
+      "tests": 2,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/25-test-offline-reporting.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-owned-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 1.163,
+      "tests": 4,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/26-test-owned-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-owned-resources.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 2.515,
+      "tests": 9,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/27-test-owned-resources.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-panel-gate.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.187,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/28-test-panel-gate.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-physical-source-probe.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.14,
+      "tests": 3,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/29-test-physical-source-probe.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-prepare-imk-acceptance.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.127,
+      "tests": 3,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/30-test-prepare-imk-acceptance.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-preview-menu.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 9.185,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/31-test-preview-menu.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-settings-presentation.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 9.836,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/32-test-settings-presentation.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-terminal-input-sink.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 1.481,
+      "tests": 4,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/33-test-terminal-input-sink.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-terminal-ownership.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.078,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/34-test-terminal-ownership.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-tools-presentation.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 9.369,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/35-test-tools-presentation.log"
+    },
+    {
+      "file": "platforms/macos/tests/test-wubi-learning.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 11.111,
+      "tests": 1,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/36-test-wubi-learning.log"
+    },
+    {
+      "file": "packaging/macos/tests/test-ci-sign.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 2.014,
+      "tests": null,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/37-test-ci-sign.log"
+    },
+    {
+      "file": "packaging/macos/tests/test-imk-dev.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.239,
+      "tests": 9,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/38-test-imk-dev.log"
+    },
+    {
+      "file": "packaging/macos/tests/test-isolated-ci.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.077,
+      "tests": 4,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/39-test-isolated-ci.log"
+    },
+    {
+      "file": "packaging/macos/tests/test-validate-release.py",
+      "status": "PASS",
+      "exit": 0,
+      "seconds": 0.136,
+      "tests": 15,
+      "log": "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-offline-tests-7kq7d4ap/40-test-validate-release.log"
+    }
+  ]
+}
