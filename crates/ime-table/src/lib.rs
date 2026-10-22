@@ -55,6 +55,19 @@ struct Group {
     entry_end: u32,
 }
 
+/// 构建期的行索引：code/text 已写入连续缓冲，这里只保留偏移与权重。
+///
+/// 单遍解析用它替代每行 `String`+`Vec<Entry>` 中间表，避免加载期大量
+/// 临时小分配造成分配器碎片（ADR-255）。
+#[derive(Debug, Clone, Copy)]
+struct RawEntry {
+    code_start: u32,
+    code_len: u32,
+    text_start: u32,
+    text_len: u32,
+    weight: i32,
+}
+
 /// 紧凑候选：指向 [`Table::texts`] 的区间 + 权重。
 #[derive(Debug, Clone, Copy)]
 struct Packed {
@@ -110,20 +123,25 @@ impl Table {
     /// - weight 必须可解析为 `i32`，否则 [`TsvError::InvalidWeight`]；
     /// - 同码多候选全部保留，构建完成后组内按 `weight` 降序（等权按 text 升序）。
     pub fn from_tsv(input: &str) -> Result<Table, TsvError> {
-        let mut rows: Vec<(String, Vec<Entry>)> = Vec::new();
-        for (idx, raw) in input.lines().enumerate() {
+        // 单遍解析：不再为每行构造 String/Vec<Entry> 中间表（ADR-255）。
+        let mut codes = String::with_capacity(input.len() / 4);
+        let mut texts = String::with_capacity(input.len() / 2);
+        let mut raw: Vec<RawEntry> = Vec::new();
+        for (idx, raw_line) in input.lines().enumerate() {
             let line_no = idx + 1;
-            let line = raw.trim_start_matches('\u{feff}').trim();
+            let line = raw_line.trim_start_matches('\u{feff}').trim();
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
-            let fields: Vec<&str> = line.split('\t').collect();
-            if fields.len() != 3 {
+            let mut fields = line.split('\t');
+            let (Some(code), Some(text), Some(weight_str), None) =
+                (fields.next(), fields.next(), fields.next(), fields.next())
+            else {
                 return Err(TsvError::MissingColumn { line: line_no });
-            }
-            let code = fields[0].trim();
-            let text = fields[1].trim();
-            let weight_str = fields[2].trim();
+            };
+            let code = code.trim();
+            let text = text.trim();
+            let weight_str = weight_str.trim();
             if code.is_empty() || text.is_empty() {
                 return Err(TsvError::MissingColumn { line: line_no });
             }
@@ -133,26 +151,66 @@ impl Table {
                     line: line_no,
                     value: weight_str.to_string(),
                 })?;
-            rows.push((
-                code.to_string(),
-                vec![Entry {
-                    text: text.to_string(),
-                    weight,
-                }],
-            ));
+            let code_start = codes.len() as u32;
+            codes.push_str(code);
+            let text_start = texts.len() as u32;
+            texts.push_str(text);
+            raw.push(RawEntry {
+                code_start,
+                code_len: code.len() as u32,
+                text_start,
+                text_len: text.len() as u32,
+                weight,
+            });
         }
-        rows.sort_by(|a, b| a.0.cmp(&b.0));
-        let mut grouped: Vec<(String, Vec<Entry>)> = Vec::new();
-        for (code, list) in rows {
-            match grouped.last_mut() {
-                Some((last, entries)) if *last == code => entries.extend(list),
-                _ => grouped.push((code, list)),
+        let code_of = |entry: &RawEntry| {
+            &codes[entry.code_start as usize..(entry.code_start + entry.code_len) as usize]
+        };
+        let text_of = |entry: &RawEntry| {
+            &texts[entry.text_start as usize..(entry.text_start + entry.text_len) as usize]
+        };
+        raw.sort_by(|a, b| code_of(a).cmp(code_of(b)));
+        let mut groups: Vec<Group> = Vec::new();
+        let mut entries: Vec<Packed> = Vec::with_capacity(raw.len());
+        let mut i = 0;
+        while i < raw.len() {
+            let code = code_of(&raw[i]);
+            let mut end = i + 1;
+            while end < raw.len() && code_of(&raw[end]) == code {
+                end += 1;
             }
+            let run = &mut raw[i..end];
+            run.sort_by(|a, b| {
+                b.weight
+                    .cmp(&a.weight)
+                    .then_with(|| text_of(a).cmp(text_of(b)))
+            });
+            let first = run[0];
+            let entry_start = entries.len() as u32;
+            entries.extend(run.iter().map(|entry| Packed {
+                text_start: entry.text_start,
+                text_len: entry.text_len,
+                weight: entry.weight,
+            }));
+            groups.push(Group {
+                code_start: first.code_start,
+                code_len: first.code_len,
+                entry_start,
+                entry_end: entries.len() as u32,
+            });
+            i = end;
         }
-        for (_, entries) in &mut grouped {
-            entries.sort_by(|a, b| b.weight.cmp(&a.weight).then_with(|| a.text.cmp(&b.text)));
-        }
-        Ok(Self::from_rows(grouped))
+        drop(raw);
+        codes.shrink_to_fit();
+        texts.shrink_to_fit();
+        entries.shrink_to_fit();
+        groups.shrink_to_fit();
+        Ok(Self {
+            codes: codes.into_boxed_str(),
+            texts: texts.into_boxed_str(),
+            groups,
+            entries,
+        })
     }
 
     /// 构建完成后调用一次：组内按权重降序，组间按 code 字典序。

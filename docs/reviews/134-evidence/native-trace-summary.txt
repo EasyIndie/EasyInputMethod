@@ -1,0 +1,18 @@
+total rows 100 schema {2}
+round1 total: n=50 p50=6.881ms p95=10.770ms max=37.299ms
+round1 engine: n=50 p50=0.132ms p95=1.114ms max=1.326ms
+round1 warm(2..50) total: n=49 p50=6.431ms p95=10.620ms max=11.685ms
+round1 keys>=16ms 1
+extras total: n=50 p50=7.841ms p95=11.154ms max=16.900ms
+extras engine: n=50 p50=0.367ms p95=1.114ms max=1.139ms
+extras keys>=16ms 1
+commit total: n=16 p50=4.850ms p95=8.876ms max=8.876ms
+preeditUs: n=84 p50=2.288ms p95=2.906ms max=6.723ms
+candidateDataUs: n=84 p50=0.004ms p95=0.006ms max=0.008ms
+statusUs: n=79 p50=0.006ms p95=0.717ms max=7.362ms
+contentUs: n=79 p50=4.271ms p95=7.079ms max=15.678ms
+caretUs: n=79 p50=0.899ms p95=1.228ms max=2.903ms
+windowUs: n=79 p50=0.388ms p95=0.838ms max=3.800ms
+commitUs: n=16 p50=2.723ms p95=7.016ms max=7.016ms
+hideUs: n=16 p50=0.849ms p95=1.222ms max=1.222ms
+first key {"candidates": 7, "committed": false, "engineUs": 721.125, "phaseSchema": 2, "phases": {"candidateDataUs": 5.625, "caretUs": 2903.042, "contentUs": 15678.291, "preeditUs": 6722.75, "statusUs": 7362.375, "windowUs": 3799.791}, "totalUs": 37298.791}

@@ -2,6 +2,7 @@
 
 > 2026-10-22 当前状态以 HANDOFF.md 为准：正在收口首版输入体验与可靠性；版本/升级后置，同RC的A/B与五工作日门禁尚未关闭。历史包的PASS不能继承到新候选。
 
+- [x] 2026-10-22 build4 原生验证与词典加载内存收敛（报告 134，ADR-255）：main `0f91349`/0.1.0/build4 固定开发签名包（run 39770165333，执行 `49a49a2a…`）实机；schema2 首轮 50 键 p95 10.770ms/max 37.299ms、暖态 p95 10.620ms、hideUs p95 1.222ms，六词+八项附加（含 xi'an/mixed Enter/Esc/五笔）通过；宿主 physical 37.8M/峰 40.3M，malloc 活跃 17.4M/碎片 12.0M，ADR-255 单遍紧凑加载后离线四表峰值 24.4–25.4M→15.8M；16ms 仅单候选样本记录、30MB 未关闭，原生复验待下一签名包
 - [x] 2026-10-19 IT-03 机器可校验报告（`docs/reviews/101-acceptance-a-07bbb2f.json`）：schema 2、候选身份绑定执行 SHA/commit/双架构/Developer ID；`check` = pass 6 / blocked 17（exit 3），每项 PASS 附证据、BLOCKED 附原因
 - [x] 2026-10-19 独有包安装后添加 — **BLOCKED（本机缺 Developer ID）**：ad-hoc 签名 + `spctl rejected` + 本机 0 个签名身份 → 系统设置「＋」列表看不到；非重启问题；已清理临时包与私有根（报告 100 追加）
 - [x] 2026-10-19 独有身份包注册（报告 100）：软链 `lsregister -10811` BLOCKED（副作用已清理），**实体包 PASS**（2 个自有身份，清理后用户源集合不变）；顺带修 `source-state.swift` Swift 5.8 兼容与 `LAMPYRIS_IMK_TEST_OPT`

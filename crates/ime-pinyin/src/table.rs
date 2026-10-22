@@ -87,13 +87,15 @@ impl TablePinyinBackend {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
-            let fields: Vec<&str> = line.split('\t').collect();
-            if fields.len() != 3 {
+            let mut fields = line.split('\t');
+            let (Some(syllable), Some(ch_field), Some(weight_str), None) =
+                (fields.next(), fields.next(), fields.next(), fields.next())
+            else {
                 return Err(TsvError::MissingColumn { line: line_no });
-            }
-            let syllable = fields[0].trim();
-            let ch_field = fields[1].trim();
-            let weight_str = fields[2].trim();
+            };
+            let syllable = syllable.trim();
+            let ch_field = ch_field.trim();
+            let weight_str = weight_str.trim();
             if syllable.is_empty() || ch_field.is_empty() || weight_str.is_empty() {
                 return Err(TsvError::MissingColumn { line: line_no });
             }
@@ -120,12 +122,18 @@ impl TablePinyinBackend {
                     value: weight_str.to_string(),
                 })?;
 
-            backend
-                .chars
-                .entry(syllable.to_string())
-                .or_default()
-                .push((ch, weight));
-            backend.syllables.insert(syllable.to_string());
+            // 先查后插：命中的音节不分配临时 String（ADR-255）。
+            match backend.chars.get_mut(syllable) {
+                Some(list) => list.push((ch, weight)),
+                None => {
+                    backend
+                        .chars
+                        .insert(syllable.to_string(), vec![(ch, weight)]);
+                }
+            }
+            if !backend.syllables.contains(syllable) {
+                backend.syllables.insert(syllable.to_string());
+            }
             backend.char_pinyin.entry(ch).or_insert_with(|| {
                 readings
                     .entry(syllable)
@@ -140,22 +148,42 @@ impl TablePinyinBackend {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
-            let fields: Vec<&str> = line.split('\t').collect();
-            if fields.len() != 3 {
+            let mut fields = line.split('\t');
+            let (Some(pinyin), Some(word), Some(weight_str), None) =
+                (fields.next(), fields.next(), fields.next(), fields.next())
+            else {
                 return Err(TsvError::MissingColumn { line: line_no });
-            }
-            let pinyin = fields[0].trim();
-            let word = fields[1].trim();
-            let weight_str = fields[2].trim();
+            };
+            let pinyin = pinyin.trim();
+            let word = word.trim();
+            let weight_str = weight_str.trim();
             if pinyin.is_empty() || word.is_empty() || weight_str.is_empty() {
                 return Err(TsvError::MissingColumn { line: line_no });
             }
-            let syllables: Vec<&str> = pinyin.split(' ').filter(|s| !s.is_empty()).collect();
-            if syllables.is_empty()
-                || syllables
-                    .iter()
-                    .any(|s| !s.bytes().all(|b| b.is_ascii_lowercase()))
-            {
+            // 一次扫描同时得到归一化拼音与简拼键，不建每行音节 Vec（ADR-255）。
+            let mut pinyin_joined = String::new();
+            let mut initials = String::new();
+            let mut syllable_count = 0usize;
+            for syllable in pinyin.split(' ') {
+                if syllable.is_empty() {
+                    continue;
+                }
+                if !syllable.bytes().all(|b| b.is_ascii_lowercase()) {
+                    return Err(TsvError::InvalidSyllable {
+                        line: line_no,
+                        value: pinyin.to_string(),
+                    });
+                }
+                if syllable_count > 0 {
+                    pinyin_joined.push(' ');
+                }
+                pinyin_joined.push_str(syllable);
+                if let Some(first) = syllable.chars().next() {
+                    initials.push(first);
+                }
+                syllable_count += 1;
+            }
+            if syllable_count == 0 {
                 return Err(TsvError::InvalidSyllable {
                     line: line_no,
                     value: pinyin.to_string(),
@@ -168,25 +196,29 @@ impl TablePinyinBackend {
                     value: weight_str.to_string(),
                 })?;
 
-            let pinyin_joined = syllables.join(" ");
             let word: Arc<str> = Arc::from(word);
-            backend
-                .words
-                .entry(pinyin_joined.clone())
-                .or_default()
-                .push((word.clone(), weight));
-            backend
-                .initials
-                .entry(initials_of(&syllables))
-                .or_default()
-                .push((word.clone(), weight));
-            for s in syllables {
-                backend.syllables.insert(s.to_string());
+            match backend.words.get_mut(&pinyin_joined) {
+                Some(list) => list.push((word.clone(), weight)),
+                None => {
+                    backend
+                        .words
+                        .insert(pinyin_joined.clone(), vec![(word.clone(), weight)]);
+                }
             }
-            backend
-                .word_pinyin
-                .entry(word)
-                .or_insert_with(|| pinyin_joined.clone());
+            match backend.initials.get_mut(&initials) {
+                Some(list) => list.push((word.clone(), weight)),
+                None => {
+                    backend
+                        .initials
+                        .insert(initials, vec![(word.clone(), weight)]);
+                }
+            }
+            for syllable in pinyin_joined.split(' ') {
+                if !backend.syllables.contains(syllable) {
+                    backend.syllables.insert(syllable.to_string());
+                }
+            }
+            backend.word_pinyin.entry(word).or_insert(pinyin_joined);
         }
 
         backend.finalize();
@@ -228,11 +260,6 @@ impl TablePinyinBackend {
     pub fn word_count(&self) -> usize {
         self.words.values().map(Vec::len).sum()
     }
-}
-
-/// 由空格分隔音节列表计算首字母串（简拼键）。
-fn initials_of(syllables: &[&str]) -> String {
-    syllables.iter().filter_map(|s| s.chars().next()).collect()
 }
 
 impl PinyinBackend for TablePinyinBackend {

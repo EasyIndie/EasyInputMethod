@@ -1,0 +1,11 @@
+== final 2026-10-22T11:36:53Z
+dev_exec 49a49a2a7f47de895e282754a66e35c8d90403c723a7ce471b95a7de25d4a3ef  /Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app/Contents/MacOS/LampyrisIMKTest
+dev_version 0.1.0/build4
+prod_exec 535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+prod_config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/Lampyris/config.toml
+prod_dict 74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+dev_config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/config.toml
+dev_dict 8b7084e4acaee41e9c0e043568dc48c62da549b9dcf402cefac904b642c89228  /Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/user-dictionary.tsv
+dev_dict_lines       14
+marker absent
+hosts none

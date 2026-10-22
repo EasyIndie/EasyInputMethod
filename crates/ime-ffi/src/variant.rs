@@ -12,37 +12,45 @@ pub struct VariantMap {
     max_len: usize,
 }
 
+/// 解析一行简繁映射；空行/注释/恒等映射返回 `None`。
+fn variant_entry(line: &str) -> Result<Option<(&str, &str)>, &'static str> {
+    let line = line.trim();
+    if line.is_empty() || line.starts_with('#') {
+        return Ok(None);
+    }
+    let Some((key, value)) = line.split_once('\t') else {
+        return Err("简繁映射缺列");
+    };
+    let (key, value) = (key.trim(), value.trim());
+    if key.is_empty() || value.is_empty() || value.contains('\t') {
+        return Err("简繁映射列无效");
+    }
+    if key == value {
+        return Ok(None);
+    }
+    Ok(Some((key, value)))
+}
+
 impl VariantMap {
     /// 解析 `simplified\ttraditional` TSV（忽略空行与 `#` 注释）。
     pub fn from_tsv(text: &str) -> Result<Self, &'static str> {
-        let mut entries: HashMap<String, String> = HashMap::new();
+        // 两遍扫描：先求最长 key，再直接写入分桶，避免全量 HashMap 的中间副本（ADR-255）。
         let mut max_len = 0usize;
         for raw in text.lines() {
-            let line = raw.trim();
-            if line.is_empty() || line.starts_with('#') {
-                continue;
+            if let Some((key, _)) = variant_entry(raw)? {
+                max_len = max_len.max(key.chars().count());
             }
-            let Some((key, value)) = line.split_once('\t') else {
-                return Err("简繁映射缺列");
-            };
-            let (key, value) = (key.trim(), value.trim());
-            if key.is_empty() || value.is_empty() || value.contains('\t') {
-                return Err("简繁映射列无效");
-            }
-            if key == value {
-                continue;
-            }
-            max_len = max_len.max(key.chars().count());
-            entries.insert(key.to_string(), value.to_string());
-        }
-        let mut buckets: Vec<HashMap<String, String>> =
-            (0..max_len).map(|_| HashMap::new()).collect();
-        for (key, value) in entries {
-            let len = key.chars().count();
-            buckets[len - 1].insert(key, value);
         }
         if max_len == 0 {
             return Err("简繁映射无有效数据");
+        }
+        let mut buckets: Vec<HashMap<String, String>> =
+            (0..max_len).map(|_| HashMap::new()).collect();
+        for raw in text.lines() {
+            if let Some((key, value)) = variant_entry(raw)? {
+                let len = key.chars().count();
+                buckets[len - 1].insert(key.to_string(), value.to_string());
+            }
         }
         Ok(Self { buckets, max_len })
     }
