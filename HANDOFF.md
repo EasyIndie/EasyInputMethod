@@ -2,61 +2,57 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / Codex；固定dev，main代码`0f913492b9a0e27ab32bba95462cfcf4291e1625`（#80四CI绿已合并），main/dev代码已同步、开放PR0；跨代理交接已准备，采集时dev@0ca1019比main多1个纯记录提交，本次交接提交也随下批必要改动承接；最终交接SHA用git log -1读取。
-- 132/133：同尺寸跳过原生尺寸设置；修复cell零/小bounds生成无效矩形。两独立提交均verify零诊断、193离线/strict双架构通过，三次可见复核stderr空；版本0.1.0/build4，未安装。
-- B已装仍18fcbbf/build2/执行dc000b6d…ce7cd6；本轮未换包/发键/启用计时，最新ABC/PID50615（普通宿主，未停止；开发词库14行/c96801b7…）、marker不存在，生产数据和开发配置SHA保持。
-- 原生130的P95 22.124ms/max58.039ms仍是旧build2证据；132内容P95改善伴随hide最大值回退，冷status29ms未复现，不能关闭16ms/30MB/最终RC。
+- 更新：2026-10-22 / pi；固定dev，main代码`0f913492b9a0e27ab32bba95462cfcf4291e1625`（#80已合并，开放PR 0）。本轮在dev新增ADR-255内存修复与报告134，随同批dev→main唯一PR收尾，不新建分支。
+- build4已作为固定开发包装机：0.1.0/build4，执行`49a49a2a7f47de895e282754a66e35c8d90403c723a7ce471b95a7de25d4a3ef`，隔离公证run39770165333，ZIP`b3b38bb4ac664305164b8bedbdd454e403d0bcfd0ae13328604717aa011380d2`；旧build2备份`replacement-p57rjckg/previous.app`。
+- 134原生（schema2）：100键，首轮50键total p95 **10.770ms**/max37.299ms（仅冷首键≥16ms），暖态p95 10.620ms，engine p95 1.114ms，hideUs p50/p95 0.849/1.222ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）实际读回通过。
+- 内存：宿主采样后physical37.8M/峰40.3M、malloc活跃17.4M/碎片12.0M/换出18.7M，冷启动8.9M → **30MB未关闭**。ADR-255单遍紧凑加载把四表离线峰值24.4–25.4M降到15.8M（活跃10.9M不变），原生复验待下一签名包。
+- 收尾：ABC、marker删除、精确宿主退出；生产两SHA与开发config未变，开发私有词库正常学习到`8b7084e4…`（14行）。`make verify`/`make macos-offline-tests`/strict universal全绿零诊断。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包/执行SHA | 数据及输入源 | 恢复点 |
 |---|---|---|---|
-| A（历史，未本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行；不继承旧候选PASS | 报告103，不操作A |
-| B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；本轮只读回读保持 | 生产包未替换 |
-| B固定开发 | 18fcbbf/build2，公证39728402241；ZIP30e4691b…fae7a5，执行dc000b6d…ce7cd6 | 当前ABC/PID50615，未停止；marker不存在，133收尾生产两SHA/开发配置保持，私有词库14行/c96801b7…，可正常学习 | replacement-yu8hn1jy/previous.app为01fb016；128安装/130收尾JSON |
+| A（历史，本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行 | 报告103，不操作A |
+| B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；全程只读 | 生产包未替换 |
+| B固定开发 | 0f91349/0.1.0/**build4**，执行`49a49a2a…`，公证39770165333；ZIP`b3b38bb4…` | 当前ABC，开发宿主0个，marker不存在；dev config`3bc1117c…`，私有词库14行/`8b7084e4…` | `replacement-p57rjckg/previous.app`=build2；134证据在`platforms/macos/build/acceptance-134/` |
 
 - 固定开发根：`~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05`；身份不变，不反复移除/添加/注销。
-- 手工文稿“萤火虫性能验收-115.txt”历史窗口2372保留；本轮未操作或重新枚举手工窗口，禁止清空。
+- 手工文稿“萤火虫性能验收-115.txt”历史窗口2372保留；本轮未操作，禁止清空。
+- 计时 marker 契约：固定根`perf-trace.enabled`（0600，内容=trace绝对路径），必须在启动宿主前写入；本轮trace=`platforms/macos/build/acceptance-134/perf-134/trace.jsonl`（目录0700、文件0600）。
 
 ## 2. 最近完成
 
 | 范围 | 当前结果/证据 |
 |---|---|
-| 版本治理/开发包修复 | #77/#78已合入；Cargo版本+受审阅构建号唯一派生，缺版本开发包39719374289拒绝安装；build2已安全安装，128 |
-| 130原生 | 六词与八项附加实际读回；后续xi'an中途失焦即停、未重试；marker删/mode恢复mixed，用户ABC后精确退出37114，配置数据保持 |
-| 131/ADR-252 | hide仍同步清内容/回调/AX/分页，仅延后隐藏空布局；三对离屏hide P95减约0.15–0.34ms，首对最大值回退保留。schema2 hideUs补计时，未装新包 |
-| #80收尾 | 最终e17abfc的check/macos/fuzz/dco全SUCCESS，CI39766790199/DCO39766790221；merge0f91349，同步dev、PR0，132/133 |
-| #79历史 | 最终9f7f68f的check/macos/fuzz/dco全部SUCCESS，CI39761881212/DCO39761881354；merge b618972，dev普通快进同步；PR0 |
+| 134 build4原生 | 静态核验（版本/commit/身份/root/arm64/Team2N62934Y28/spctl/stapler/数据SHA）后安装，换包保留旧包、输入源集合不变；schema2分段与冷首键见报告134 |
+| ADR-255加载内存 | `from_tsv`单遍偏移构建+拼音/简繁去逐行临时分配；离线四表峰值24.4–25.4M→15.8M，frag/换出如实记录；verify/193离线/strict双架构通过 |
+| 133/132 | #80最终e17abfc四CI绿merge0f91349；小bounds与同尺寸原生设置修复已入main，build4实机stderr未见约束提示复现路径 |
+| #79历史 | 9f7f68f四CI绿merge b618972，隐藏计时schema2入main |
 
 ## 3. 未决
 
-- 交接辅助脚本的--prompt骨架仍有旧main直推/最近ZIP误标待装示例；仅用其采集表，执行使用专用提示词，后续辅助修正不阻塞build4准备。
-
-- IT-12：首键status29ms/预编辑与内容长尾；130两次提交尚有10–17ms阶段未覆盖。131离屏clear仅约0.4ms，不能据此认定原生根因；schema2需在后续统一包补实机。132可见窗口栈确认系统同步等待；cold status仅1.3–2.6ms未复现29ms；133已修复复现路径的约束提示，但可见隐藏仍有>16ms长尾。
-- 内存：127满库低负载离屏physical43.55MiB、malloc碎片16M；128满库五会话22000键无持续增长趋势，但无同期swap分类；130原生physical31.1M/峰37.4M、malloc换出19.4M。30MB门禁未关闭，不忽略swap或用RSS替代。
-- 130最后拼音xi'an/输入法及最终mixed未跑完；同最终RC三模式/重启/显示与数字提交、完整客户端矩阵仍待。已通过预览UI不重开。
-- 更新原型#76已合入、独立模块默认关闭且不随输入宿主分发；仍缺正式feed/key、下载及真实包验签、安全替换/回滚和App Store可行性，不算升级闭环完成。
-- D16合规扩词已入main；72条保留集五笔29/拼音28命中，覆盖仍有限。基础与用户词库已有共享快照，不重复建缓存或清库掩盖问题。
-- 最终同RC的A/B、安装升级/异常恢复/卸载、浏览器/VSCode/终端/微信安全草稿、VoiceOver/多屏/真实睡眠、独立第三方重建及五工作日未完成。权限/设备缺口不冒充产品FAIL；历史Chrome外部问题不能归因本项目或宣称兼容。
+- 30MB门禁：宿主37.8M/峰40.3M为ADR-255**修复前**数据；需下一签名包复测主机稳态（含碎片与换出分类），不忽略swap、不用RSS替代。
+- 16ms门禁：本候选单样本p95达标但仍按单候选记录；冷首键37.3ms（content15.7ms、status7.4ms）仍在，暖态无≥16ms样本；不提前预热掩盖。
+- 同最终RC三模式/重启/显示与数字提交、完整客户端矩阵（浏览器/VSCode/终端/微信安全草稿）未跑；更新闭环（feed/key、真实下载验签、回滚、App Store可行性）与D16扩词覆盖有限。
+- A/B、安装升级/异常恢复/卸载、VoiceOver/多屏/真实睡眠、独立第三方重建、五工作日未完成；权限/设备缺口不冒充PASS。
+- 交接辅助脚本`--prompt`骨架仍有旧main直推/最近ZIP误标示例，只用其采集表。
 
 ## 4. 下一步
 
-- 可直接交给接替代理的提示词：[2026-10-22跨代理提示词](docs/交接提示词-2026-10-22-agent.md)，含完整双SHA/配置摘要、精确构建命令和安全计时顺序。
-- 当前没有后台采样/代理继续操作；当前固定开发build4签名构建尚未触发，没有待安装的build4固定开发包。
-
-1. #80已处理完，代码main0f91349/0.1.0/build4。132同尺寸原生设置保护5363ff8和133小bounds修复e17abfc已合入；当前纯收尾记录留dev随下批必要改动承接，不单开文档PR。
-2. 下一步从明确main构建统一固定开发签名包build4，静态核验来源/版本/架构/签名/公证/ZIP/执行/数据SHA；这次候选汇总#79/80必要修复，再集中补原生schema2隐藏/冷首键与最终mixed。先不混用旧build2或本地ad-hoc结果；不要采纳已否定的动画策略。
-3. 后续必要输入修复收齐后从明确main统一签名出包；核对ZIP/执行/数据SHA，ABC换包保留备份。**先准备marker再启动宿主**，然后只请用户切开发源一次；独立文稿逐键焦点守卫，失焦立即停止，不抢焦点重试。
-4. 采样后删marker，恢复mode；用户ABC后精确路径/SHA退出本轮宿主关闭缓存计时。不要使用旧run39719374289缺版本包。
-5. 输入/性能收口后推进更新闭环、App Store可行性，再锁同RC做A/B及五日；不创建tag/Release。
+1. 本批一次性`dev → main`PR（ADR-255代码+ADR+报告134+HANDOFF），跟进当前head四CI直至merge，merge后dev普通快进同步；不squash/rebase/强推。
+2. 从新main（含ADR-255）构建**build5**固定开发签名包：静态核验ZIP/版本/架构/签名/公证/数据SHA；保留配置/词库/旧包。
+3. 换包后先写marker再启动宿主，只请用户切开发源一次；集中复测宿主稳态内存（碎片/换出/physical）、冷首键与mixed剩余项；逐键焦点守卫，失焦立即停止。
+4. 采样后删marker、恢复mode，用户ABC后按精确路径/SHA退出宿主；随后推进更新闭环与商店可行性，再锁同RC完整矩阵与五日。不创建tag/Release。
 
 ## 5. 边界
 
-- 核心默认离线、零遥测、配置只由ime-config写；不改真实学习数据、UserDefaults或HIToolbox，不清用户词库。
+- 核心默认离线、零遥测，配置只由ime-config写；不改真实学习数据、UserDefaults或HIToolbox，不清用户词库。
 - 不自动切源、注销或重启；发键仅自有夹具逐键保护，不向真实聊天发键，保留手工文稿与旧包恢复路径。
-- 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；不强推/创建任务分支。make verify零诊断，不绕main-only签名。
+- 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：从main 0f91349构建并核验build4固定开发签名包（run39770165333），ABC换包保留旧包/数据；marker先行、用户只切一次源，schema2 100键完成（首轮p95 10.770ms，hideUs p95 1.222ms），六词+八项附加含xi'an通过；宿主physical37.8M/峰40.3M、碎片12.0M→ADR-255单遍紧凑加载离线峰值24.4–25.4M→15.8M；verify/离线/strict通过，收尾ABC、marker删除、宿主退出，生产数据与开发config不变。
 
 - 2026-10-22 / Codex：用户要求额度耗尽前跨代理交接；只读重采dev@0ca1019/main0f91349、PR0、ABC/PID50615/无marker，补完整已装双SHA及下一步签名构建/计时顺序，写专用提示词并校正模板旧main直推示例。不触发新构建/换包/采样；交接make verify完整通过、零诊断。
 
@@ -65,11 +61,3 @@
 - 2026-10-22 / Codex：132尺寸保护验证后保存5363ff8。LLDB定位可见约束提示到PaddedCandidateCell零/小bounds内缩；ADR-254先写，新回归旧版失败/修复后通过，三次可见复查stderr全空（133），完整门禁待完成；两个小提交同批PR，未装包/发键。
 
 - 2026-10-22 / Codex：132可见窗口测量+精确子进程采样确认窗口系统同步；ADR-253只加同尺寸setContentSize保护，三对内容P95降15–24%但hide最大值均回退。动画反序失败未采纳，冷29ms未复现；定向回归通过，完整门禁/PR待收尾，未碰已装包/源/真实文稿。
-
-- 2026-10-22 / Codex：131定向确认隐藏清空约0.4ms，ADR-252最小延后隐藏空布局、schema2新增hideUs；旧回归失败后通过，三对收益及坏最大值保留，完整verify/193离线/双架构通过。#79四CI绿merge b618972，同步main/dev、PR0；未装包/发键，ABC无开发宿主。
-
-- 2026-10-22 / Codex：130用户ABC后精确退出37114，marker不存在、缓存计时关闭，生产数据及开发配置SHA保持；原生50键P95 22.124ms仍超标，八项附加通过后失焦，余项未验。
-
-- 2026-10-22 / Codex：用户切build2，129四词提交通过后失焦即停，130改为启动前准备计时。未自动抢焦点重试、未操作真实文稿。
-
-- 2026-10-22 / Codex：#78四CI绿merge18fcbbf，build2公证39728402241核验/ABC换包通过，四SHA保持；满库五会话22000键未见持续增长，非原生/无swap分类不关闭指标，128。
