@@ -3,6 +3,7 @@
 > 2026-10-22 当前状态以 HANDOFF.md 为准：正在收口首版输入体验与可靠性；版本/升级后置，同RC的A/B与五工作日门禁尚未关闭。历史包的PASS不能继承到新候选。
 
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
+- [x] 2026-10-22 appcast 解析与版本选择（ADR-262，报告 142）：`feed.py` 与 Swift 更新程序同一套规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD/ENTITY、64 字节签名、build 点分比较）；`upgrade.py` 支持 `--feed-file/--feed-url`，无更新直接 `up-to-date` 退出 0 不下载。11 项 feed + 16 项升级离线回归全 PASS；真实 feed/公钥与 HTTPS 演练仍未做
 - [x] 2026-10-22 更新负载 HTTPS 下载器（ADR-261，报告 141）：`--payload-url` 只接受 https、0700/0600 私有临时文件、256MB 上限、重定向协议复查、结束即清理；顺序仍是下载→验签→替换，验签前不进入安装。7 项离线回归（含 http/ftp/file 拒绝、超限、重定向降级、空负载）全 PASS；真实 feed/公钥与 HTTPS 演练仍未做
 - [x] 2026-10-22 App Store 沙盒原型（ADR-260，报告 140）：`build.sh --sandbox` 产出不安装的 `LampyrisSandbox.app`（app-sandbox + mach-register 例外，无网络权限）；沙盒探针证明配置/学习数据只落容器、真实 Application Support 未写入；2 项离线回归纳入自动发现。结论条件性 go，MAS 签名/安装注册/审核仍待真实商店构建验证
 - [x] 2026-10-22 已验签的原地升级与回滚（ADR-259，报告 139）：`packaging/macos/upgrade.py` 固定「验签→解包→候选校验→停精确宿主→备份→原子替换→落地复验→回滚」，默认 dry-run、`--apply` 必须带已签名验签器，成功写 0600 receipt（前后执行 SHA/备份路径）；8 项离线回归全 PASS 并进自动发现。仍无下载器/真实 feed/公钥与实机升级演练

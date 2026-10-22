@@ -31,3 +31,5 @@
 2026-10-22 ADR-260/报告140：`build.sh --sandbox`产出不安装的LampyrisSandbox.app（app-sandbox+mach-register例外，无网络权限）；沙盒探针验证`ime_config_init/set/get`只落容器、真实Application Support未被写入；Info.plist连接名=CFBundleIdentifier+_Connection、entitlements无网络权限纳入2项离线回归。条件性go；MAS Distribution签名/安装位置与输入源注册/审核仍需真实商店构建验证。
 
 2026-10-22 ADR-261/报告141：`upgrade.py`增加`--payload-url`（仅https，file://需显式测试开关），流式0700/0600临时文件、256MB上限、重定向协议复查、结束即清理；顺序下载→验签→解包→校验→停宿主→替换。新增7项离线回归，升级相关共15项全PASS。仍无正式feed/公钥、无真实HTTPS演练、无UI提示。
+
+2026-10-22 ADR-262/报告142：`feed.py`实现与Swift更新程序一致的appcast解析/版本选择（https-only、1MiB、1000项、深度16、拒绝DTD/ENTITY、64字节签名、build点分比较）；`upgrade.py`接入`--feed-file/--feed-url/--current-build`，无更新直接up-to-date退出0不下载。11项feed回归+16项升级回归全PASS。仍无真实feed/公钥、HTTPS演练与架构/渠道筛选。

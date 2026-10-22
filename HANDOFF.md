@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`fed5936`（#89 沙盒原型）（#81…#89 均四CI绿后merge：ADR-255/256/257/258/259/260、构建号与报告135/138/139/140；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`f4a9906`（#89 沙盒原型）（#81…#90 均四CI绿后merge：ADR-255/256/257/258/259/260/261、构建号与报告135/138/139/140/141；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：宿主physical **29.5M**/峰**29.9M**、malloc活跃17.2M/碎片**5.7M(25%)**/换出14.6M（build4：37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据，**不宣布门禁干净关闭**。
@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 142 appcast | ADR-262 `feed.py` 与 Swift 同规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD、64 字节签名、build 点分比较）；`upgrade.py` 接 `--feed-file/--feed-url`，无更新 `up-to-date` 退出 0；11+16 项离线回归；真实 feed/公钥/HTTPS 未做 |
 | 141 下载器 | ADR-261 `--payload-url` 仅 https、私有临时文件、256MB 上限、重定向复查、结束清理；顺序下载→验签→替换；7 项离线回归，升级相关共 15 项；真实 feed/公钥/HTTPS 演练未做 |
 | 140 沙盒原型 | ADR-260 `build.sh --sandbox` 产出不安装的 LampyrisSandbox.app；探针证明配置/学习数据只落容器、真实 Application Support 未写；连接名/entitlements 纳入 2 项离线回归；条件性 go，MAS 签名/安装注册/审核未验 |
 | 139 升级路径 | ADR-259 `upgrade.py`：验签→解包→候选校验→停精确宿主→备份→原子替换→落地复验→回滚，dry-run 默认；8 项离线回归进自动发现，仍无下载器/真实 feed |
@@ -47,7 +48,7 @@
 
 1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
 2. 30MB：换低压力时机（无 Xcode 构建、swap 回落）按同一固定时点协议复测 build6，再判断能否关闭；冷首键已归因为一次性成本，不再优化。
-3. 更新闭环下一步：正式 feed/公钥 + appcast 解析/版本选择 + 真实 HTTPS 演练，再用真实签名包跑 `upgrade.py --apply`（含失败回滚与 UI 提示）。
+3. 更新闭环下一步：正式 feed/公钥 + 真实 HTTPS 演练，再用真实签名包跑 `upgrade.py --apply`（含失败回滚与 UI 提示）；架构/渠道筛选与灰度策略另议。
 4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
 4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
 
@@ -58,6 +59,10 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-262 appcast 解析/版本选择落地并与 Swift 规则对齐；`upgrade.py` 支持 feed 入口（无更新不下载）；11+16 项离线回归通过；未联网、未动已装 build6。
+
+- 2026-10-22 / pi：#90（ADR-261 下载器+7 项回归）四CI绿（dco 卡住后重跑）merge `f4a9906`，dev快进同步、PR 0。
 
 - 2026-10-22 / pi：ADR-261 下载器落地（https-only、私有临时文件、256MB 上限、重定向复查、结束清理），顺序仍下载→验签→替换；7 项离线回归通过（升级相关共 15 项）；未请求真实 feed/未联网。
 
