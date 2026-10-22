@@ -4,12 +4,14 @@
 # 纯命令行构建（本机无 Xcode 亦可）：
 #   cargo 构建 ime-ffi staticlib → swiftc 编译 Swift 宿主 → 拼装 .app bundle。
 #
-# 用法：./platforms/macos/build.sh [--strict] [--universal]
+# 用法：./platforms/macos/build.sh [--strict] [--universal] [--sandbox]
 #   --strict     发布构建：缺少正式数据文件即失败
 #   --universal  同时构建 arm64 + x86_64，lipo 成通用可执行文件
 #                （需先：rustup target add aarch64-apple-darwin x86_64-apple-darwin）
+#   --sandbox    额外产出一份开启 App Sandbox 的本地原型 LampyrisSandbox.app
+#                （ADR-260，仅供商店可行性验证；不安装、不分发）
 #
-# 产物：platforms/macos/build/Lampyris.app
+# 产物：platforms/macos/build/Lampyris.app（--sandbox 时另有 LampyrisSandbox.app）
 #
 # ⚠️ 必须是 .app：macOS 13 的 LaunchServices 无法扫描 .inputmethod（实测 -10811）。
 # ⚠️ bundle 名与 CFBundleName 用 ASCII（Lampyris）；中文显示名由 InfoPlist.strings 提供。
@@ -26,11 +28,13 @@ INCLUDE_DIR="${ROOT}/crates/ime-ffi/include"
 GENERATED="${ROOT}/data/generated"
 STRICT=false
 UNIVERSAL=false
+SANDBOX=false
 for arg in "$@"; do
   case "${arg}" in
     --strict) STRICT=true ;;
     --universal) UNIVERSAL=true ;;
-    *) echo "用法：$0 [--strict] [--universal]" >&2; exit 2 ;;
+    --sandbox) SANDBOX=true ;;
+    *) echo "用法：$0 [--strict] [--universal] [--sandbox]" >&2; exit 2 ;;
   esac
 done
 HOST_ARCH="$(uname -m)"
@@ -151,6 +155,13 @@ plutil -lint "${APP_DIR}/Contents/Info.plist"
 if command -v codesign >/dev/null 2>&1; then
   codesign --force --deep --sign - "${APP_DIR}" >/dev/null
   echo "   ✅ ad-hoc 签名完成"
+  if ${SANDBOX}; then
+    SANDBOX_APP="${BUILD_DIR}/LampyrisSandbox.app"
+    rm -rf "${SANDBOX_APP}"
+    ditto "${APP_DIR}" "${SANDBOX_APP}"
+    codesign --force --deep --sign - --entitlements "${SCRIPT_DIR}/Lampyris-sandbox.entitlements" "${SANDBOX_APP}" >/dev/null
+    echo "   ✅ 沙盒原型：${SANDBOX_APP}（entitlements：app-sandbox + mach-register 例外）"
+  fi
 else
   echo "   ⚠️  未找到 codesign，跳过签名（装载时可能被 Gatekeeper 拦截）"
 fi

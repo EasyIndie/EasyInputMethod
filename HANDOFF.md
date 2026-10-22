@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 140 沙盒原型 | ADR-260 `build.sh --sandbox` 产出不安装的 LampyrisSandbox.app；探针证明配置/学习数据只落容器、真实 Application Support 未写；连接名/entitlements 纳入 2 项离线回归；条件性 go，MAS 签名/安装注册/审核未验 |
 | 139 升级路径 | ADR-259 `upgrade.py`：验签→解包→候选校验→停精确宿主→备份→原子替换→落地复验→回滚，dry-run 默认；8 项离线回归进自动发现，仍无下载器/真实 feed |
 | 136/137 定位与验签 | 冷首键差额定位到AppKit可见布局（未改代码）；更新程序新增Ed25519负载验签与`--verify-payload`，仍默认关闭；商店口径ADR-257 |
 | 135 build5原生 | ADR-255后复验：功能无回归、p95 11.569ms、附加0次≥16ms；宿主physical29.5M/峰29.9M、碎片5.7M、换出14.6M，见报告135 |
@@ -45,7 +46,8 @@
 
 1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
 2. 30MB：换低压力时机（无 Xcode 构建、swap 回落）按同一固定时点协议复测 build6，再判断能否关闭；冷首键已归因为一次性成本，不再优化。
-3. 更新闭环下一步：实现下载器（先验签再写盘）与正式 feed/公钥，再用真实签名包演练 `upgrade.py --apply`（含失败回滚）；App Store 先做不发布沙盒构建验证配置根/输入源/学习数据。
+3. 更新闭环下一步：实现下载器（先验签再写盘）与正式 feed/公钥，再用真实签名包演练 `upgrade.py --apply`（含失败回滚）。
+4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
 4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
 
 ## 5. 边界
@@ -55,6 +57,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-260 沙盒原型落地：`build.sh --sandbox`、entitlements、沙盒配置探针与 2 项离线回归；实测沙盒宿主正常启动、容器创建、真实 Application Support 未写、无 deny 日志；未安装/未注册输入源，已装 build6 与生产数据未动。
 
 - 2026-10-22 / pi：#88（ADR-259 upgrade.py+8 项离线回归）四CI全绿 merge `8fe146c`，dev快进同步、PR 0。
 
