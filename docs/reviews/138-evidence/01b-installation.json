@@ -1,0 +1,41 @@
+{
+  "root": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+  "installed": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app",
+  "backup": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-aygw7un1/previous.app",
+  "source_commit": "2b34d0f31552f192e08dda304aff1b131fdad30d",
+  "executable_sha256": "21f5b05b5b7690c49b130e188b402a90b5225db4af1edd07982fa8213470c186",
+  "before": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "after": {
+    "current": "com.apple.keylayout.ABC",
+    "enabled": [
+      "cn.jokerhub.inputmethod.Lampyris",
+      "cn.jokerhub.inputmethod.Lampyris.default",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+      "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+      "com.apple.CharacterPaletteIM",
+      "com.apple.PressAndHold",
+      "com.apple.keylayout.ABC",
+      "com.sogou.inputmethod.sogou",
+      "com.sogou.inputmethod.sogou.pinyin",
+      "com.sogou.inputmethod.sogouWB",
+      "com.sogou.inputmethod.sogouWB.wubi"
+    ]
+  },
+  "source_state_unchanged": true,
+  "native_input_verified": false
+}

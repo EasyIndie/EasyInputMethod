@@ -1,0 +1,8 @@
+== 13-memory-settled 2026-10-22T13:41:48Z
+swapusage total = 5120.00M  used = 4071.25M  free = 1048.75M  (encrypted)
+loadavg { 2.45 3.90 5.41 }
+physical:         33.7M
+peak:  34.5M
+malloc:
+TOTAL                                       57.2M      13.8M      13.8M      13.5M     157822      17.1M      10.1M     38%      64
+Writable regions: Total=138.0M written=30.0M(22%) resident=15.2M(11%) swapped_out=14.9M(11%) unallocated=108.0M(78%)

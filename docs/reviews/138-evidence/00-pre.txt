@@ -1,0 +1,11 @@
+== pre 2026-10-22T13:33:25Z
+new_zip 6b964216a584a9df3c7598579ecc519a426aa962561e734cfcf41be50ec3d00e
+dev_exec_before aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a  /Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app/Contents/MacOS/LampyrisIMKTest
+dev_build_before 5
+prod_exec 535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+prod_config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/Lampyris/config.toml
+prod_dict 74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+dev_config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/config.toml
+dev_dict 4c1a6566f23099ddbe61e4d0e1c8e27e07305f7077697e91dc4db68eb548a83a  /Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/user-dictionary.tsv
+marker /Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/perf-trace.enabled
+hosts 93258

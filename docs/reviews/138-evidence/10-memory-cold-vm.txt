@@ -1,0 +1,8 @@
+== 10-memory-cold-vm 2026-10-22T13:41:13Z
+swapusage total = 5120.00M  used = 4071.25M  free = 1048.75M  (encrypted)
+loadavg { 2.41 4.07 5.53 }
+physical:         30.0M
+peak:  30.0M
+malloc:
+TOTAL                                       53.2M      7728K      7728K      16.4M     152316      15.0M      9214K     38%      59
+Writable regions: Total=132.8M written=26.5M(20%) resident=9041K(7%) swapped_out=17.8M(13%) unallocated=106.2M(80%)
