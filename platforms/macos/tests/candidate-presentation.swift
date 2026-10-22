@@ -249,6 +249,34 @@ LocalAcceptanceEvidence.record("candidate.status",
     expected: "两字状态芯片 5 枚（学习区不占芯片）右对齐到翻页左侧且同中心线",
     actual: ["chips": chipTexts, "gap": pagerFrame.minX - stripFrame.maxX,
              "center_delta": abs(stripFrame.midY - pagerFrame.midY)])
+// Batched status/content refresh must retain the standalone layout contract.
+let batchedWindow = CandidateWindow()
+let referenceWindow = CandidateWindow()
+for (index, mode) in ["mixed", "wubi", "pinyin", "mixed"].enumerated() {
+    let status = CandidateStatus(mode: mode, english: index % 2 == 1,
+        fullWidth: index % 2 == 0, traditional: index == 2,
+        chinesePunctuation: index != 1)
+    let selected = index % values.count
+    referenceWindow.updateStatus(status)
+    batchedWindow.updateStatus(status, relayout: false)
+    for target in [referenceWindow, batchedWindow] {
+        target.update(candidates: values, pageIndex: index, pageCount: 30,
+            selectedIndex: selected, input: "tr", showsNavigationHint: true)
+        target.layout(at: caret, within: NSRect(x: 0, y: 0, width: 1000, height: 400))
+    }
+    guard batchedWindow.frame == referenceWindow.frame,
+          batchedWindow.stateStripFrameForTesting == referenceWindow.stateStripFrameForTesting,
+          batchedWindow.inputFrameForTesting == referenceWindow.inputFrameForTesting,
+          batchedWindow.stateChipsForTesting == referenceWindow.stateChipsForTesting,
+          batchedWindow.displayedCandidateTexts == referenceWindow.displayedCandidateTexts,
+          batchedWindow.selectedCandidateIndexForTesting == selected,
+          batchedWindow.pageStateForTesting.text == referenceWindow.pageStateForTesting.text
+    else { fail("batched status/content layout differs") }
+}
+LocalAcceptanceEvidence.record("candidate.batched-status",
+    expected: "连续状态/候选刷新与默认逐次刷新几何、焦点及分页相同",
+    actual: ["chips": batchedWindow.stateChipsForTesting,
+             "selected": batchedWindow.selectedCandidateIndexForTesting])
 // HUD 主题：同一文案在亮/暗下背景亮度必须不同（报告 080 的暗色不生效回归）。
 func backgroundLuminance(_ rep: NSBitmapImageRep?) -> CGFloat? {
     guard let rep, let color = rep.colorAt(x: 4, y: rep.pixelsHigh / 2)?.usingColorSpace(.sRGB) else { return nil }

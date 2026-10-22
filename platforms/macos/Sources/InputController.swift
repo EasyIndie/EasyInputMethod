@@ -658,7 +658,7 @@ final class LampyrisInputController: IMKInputController {
             self.showCandidates(client, session: session)
         }
         PerfTrace.shared.measure(trace, phase: .status) {
-            window.updateStatus(candidateStatus())
+            window.updateStatus(candidateStatus(), relayout: false)
         }
         PerfTrace.shared.measure(trace, phase: .content) {
             window.update(

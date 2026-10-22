@@ -1,0 +1,14 @@
+F
+======================================================================
+FAIL: test_real_imk_dispatch_and_reactivation (__main__.ControllerMenuTests.test_real_imk_dispatch_and_reactivation)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-controller-menu.py", line 52, in test_real_imk_dispatch_and_reactivation
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: -6 != 0 : 
+
+----------------------------------------------------------------------
+Ran 1 test in 12.072s
+
+FAILED (failures=1)
