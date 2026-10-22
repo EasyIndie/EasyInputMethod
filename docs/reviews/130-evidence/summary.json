@@ -1,0 +1,44 @@
+{
+  "complete_first_round_keys": 50,
+  "total": {
+    "p95_ms": 22.124208,
+    "max_ms": 58.03925
+  },
+  "engine": {
+    "p95_ms": 2.439791,
+    "max_ms": 2.647834
+  },
+  "keys_ge_16ms": 5,
+  "first_key": {
+    "candidates": 7,
+    "committed": false,
+    "engineUs": 1709.834,
+    "phases": {
+      "candidateDataUs": 5.541,
+      "caretUs": 3653.166,
+      "contentUs": 8708.791,
+      "preeditUs": 10050.167,
+      "statusUs": 29372.166,
+      "windowUs": 4431
+    },
+    "phaseSchema": 1,
+    "totalUs": 58039.25
+  },
+  "partial_trace_rows": 30,
+  "actual": {
+    "mixed-escape": "",
+    "1-nihao": "你好",
+    "1-wq": "你",
+    "mixed-enter": "wq",
+    "pinyin-nihao": "你好",
+    "1-shurufa": "输入法",
+    "mixed-arrow2": "像",
+    "mixed-digit2": "像",
+    "wubi-digit2": "像",
+    "1-huiguiceshi": "回归测试",
+    "mixed-backspace": "你",
+    "wubi-space": "你",
+    "1-xi'an": "西安",
+    "1-rengongzhineng": "人工智能"
+  }
+}

@@ -43,7 +43,7 @@
 ## 4. 下一步（断点）
 
 1. PR #78最终head fc65b65四CI绿，merge18fcbbf已同步main/dev，无开放PR，ADR-250/251已合入。报告128记录开发包缺版本拒绝安装及最小修复，0.1.0/build2。
-2. 39728402241签名开发包核验及ABC原位换包通过，四份数据与源集合保持；用户已切开发源；PID19826/SHA匹配，129四词提交通过后读回失焦停止、无重试。用户已切ABC，旧PID19826精确退出；trace已在启动前预置，新PID37114，当前ABC，等待用户切开发源。临时脚本/private/tmp/lampyris-130-sample.sh、PID文件/private/tmp/lampyris-130-pid、证据platforms/macos/build/acceptance-130；切源确认后运行脚本补采，发键失焦即停。本轮结束须删私有根perf-trace.enabled，并在ABC安全退出精确PID关闭缓存计时。不要用旧run39719374289缺版本包。
+2. 130采样首轮50键/六词通过，total P95 22.124ms/max58.039ms、5键≥16ms；八项附加通过后xi'an中途失焦停止，最终mixed未验。marker已删，mode通过ime-config恢复mixed。已请求用户ABC后核对源及精确路径/SHA，仅停止PID37114关闭缓存计时，核对生产数据及开发配置，完成收尾；原始证据130-evidence。
 3. 127满库低负载离屏physical43.55MiB，malloc分配18.4M/碎片16M；进一步定位分配高水位，不能用早期有swap的31.36MiB冒充改善。基础与个人数据已有共享快照，不重复建缓存。原生首键67ms及最终文本门禁仍开。
 4. 更新仍默认关闭，无正式feed/key，下载验签/安全替换/回滚、App Store路径及同RC A/B/独立重建/五日待做；不创建tag/Release，不因等待实机停止独立可完成项。
 
@@ -54,6 +54,9 @@
 - 不创建tag或Release。改动走PR，make verify零诊断；不绕过main-only签名约束。
 
 ## 9. 会话日志
+
+- 2026-10-22 / Codex：130用户切源后50键/六词及八项附加通过，P95 22.124ms/max58.039ms仍超16ms；xi'an中途失焦即停，余项未验。marker删/mode恢复mixed，等ABC精确停37114关闭计时；长提交有10–17ms未归因，hide空候选布局仅为待测假设。
+
 
 - 2026-10-22 / Codex：用户ABC已核对；私有计时标记预置后精确退出19826，新宿主37114启动，当前ABC等切开发源。130脚本与证据路径见§4；make verify零诊断通过，结束需删除marker并ABC停止精确宿主关闭缓存计时。
 
