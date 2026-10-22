@@ -79,3 +79,5 @@
 2026-10-22 报告134：统一main 0f91349/build4固定开发签名包（run 39770165333）实机。schema2 100键四表全加载，首轮50键p95 10.770ms/max37.299ms（仅冷首键≥16ms），暖态p95 10.620ms、engine p95 1.114ms；hideUs p50 0.849/p95 1.222ms，130的10–17ms未归因段已被分段解释。六词+八项附加（含xi'an、mixed Enter/Esc、五笔）实际读回通过。宿主采样后physical37.8M/峰40.3M、malloc活跃17.4M/碎片12.0M(41%)/换出18.7M，冷启动8.9M；30MB未关闭。ADR-255单遍紧凑加载把离线四表峰值24.4–25.4M降到15.8M（活跃10.9M不变），原生复验待下一签名包。16ms门禁按单候选样本记录，不提前关闭最终RC。
 
 2026-10-22 报告135：含ADR-255的main 299d8f8/build5固定开发签名包（run 39775362738）原生复验。首轮50键p95 11.569ms/max42.663ms（仅冷首键）、暖态p95 10.726ms、附加45键0次≥16ms、engine p95 1.122ms；六词+八项附加含xi'an通过，加载器无行为回归。宿主physical29.5M/峰29.9M、malloc活跃17.2M/碎片5.7M(25%)/换出14.6M（build4为37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据；16ms/30MB仍未干净关闭，需同最终RC低压力复测。
+
+2026-10-22 ADR-258：候选内容分段计时schema3（state/measure/set/layout，默认nil零开销，关闭不改变渲染）；controller-menu与candidate-presentation回归同步，phaseSchema升3。make verify/41项离线/strict双架构通过；原生build6单次换源待做，届时同时复测30MB固定时点与冷首键归因。

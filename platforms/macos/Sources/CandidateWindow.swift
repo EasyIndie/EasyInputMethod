@@ -6,6 +6,14 @@
 import Cocoa
 import CoreText
 
+/// 候选内容分段（ADR-258，计时 schema3）。默认不启用，启用时由调用方注入计时闭包。
+enum CandidatePhase: String {
+    case state
+    case measure
+    case set
+    case layout
+}
+
 /// Readable display only; candidate identity and commit text remain in ImeSession.
 enum CandidateTextPresentation {
     private static var cache: [String: Bool] = [:]
@@ -584,6 +592,17 @@ final class CandidateWindow: NSObject {
     private let nextButton = CandidatePageButton()
     private let scrollView = NSScrollView()
     private let document = CandidateDocument()
+    /// 分段计时闭包；nil 时零开销（ADR-258）。
+    var phaseTiming: ((CandidatePhase, () -> Void) -> Void)?
+
+    private func timed(_ phase: CandidatePhase, _ body: () -> Void) {
+        if let phaseTiming {
+            phaseTiming(phase, body)
+        } else {
+            body()
+        }
+    }
+
     private var labels: [CandidateLabel] = []
     private var renderedCount = 0
     private var pageIndex = 0
@@ -776,6 +795,7 @@ final class CandidateWindow: NSObject {
                 input: String = "", hint: String? = nil, showsNavigationHint: Bool = false,
                 warning: String? = nil, relayout: Bool = true) {
         refreshAppearance()
+        timed(.state) {
         self.input = candidates.isEmpty ? "" : input
         self.hint = candidates.isEmpty ? nil : hint
         self.showsNavigationHint = !candidates.isEmpty && showsNavigationHint
@@ -801,6 +821,7 @@ final class CandidateWindow: NSObject {
             label.setAccessibilityElement(false)
             label.isHidden = true
         }
+        }
         for (index, candidate) in candidates.enumerated() {
             if index == labels.count {
                 let label = CandidateLabel(labelWithString: "")
@@ -815,21 +836,27 @@ final class CandidateWindow: NSObject {
             let label = labels[index]
             label.isHidden = false
             let selected = index == self.selectedIndex
-            label.font = .systemFont(ofSize: 17, weight: selected ? .semibold : .regular)
-            label.attributedStringValue = Self.render(index: index, selected: selected, candidate)
-            let visibleText = CandidateTextPresentation.display(candidate.text, font: label.font ?? .systemFont(ofSize: 17))
-            let missing = visibleText != candidate.text
-            let detail = missing ? "系统字体缺字；选择仍输入原字符" : candidate.source.label
-            label.toolTip = "\(visibleText) · \(detail)"
-            label.setAccessibilityElement(true)
-            label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(selected ? "，键盘焦点" : "")\(index == 0 ? "，首选" : "")")
-            label.onClick = { [weak self] in self?.onSelect?(index) }
-            label.setKeyboardSelected(selected)
-            label.setHovered(false)
+            var visibleText = ""
+            var missing = false
+            timed(.measure) {
+                label.font = .systemFont(ofSize: 17, weight: selected ? .semibold : .regular)
+                label.attributedStringValue = Self.render(index: index, selected: selected, candidate)
+                visibleText = CandidateTextPresentation.display(candidate.text, font: label.font ?? .systemFont(ofSize: 17))
+                missing = visibleText != candidate.text
+            }
+            timed(.set) {
+                let detail = missing ? "系统字体缺字；选择仍输入原字符" : candidate.source.label
+                label.toolTip = "\(visibleText) · \(detail)"
+                label.setAccessibilityElement(true)
+                label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(selected ? "，键盘焦点" : "")\(index == 0 ? "，首选" : "")")
+                label.onClick = { [weak self] in self?.onSelect?(index) }
+                label.setKeyboardSelected(selected)
+                label.setHovered(false)
+            }
         }
         renderedCount = candidates.count
         if relayout {
-            arrange()
+            timed(.layout) { arrange() }
         } else {
             // Only hide uses this path: revoke actions now, defer invisible geometry.
             arrangedSize = nil

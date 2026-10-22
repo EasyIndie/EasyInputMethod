@@ -663,11 +663,23 @@ final class LampyrisInputController: IMKInputController {
             window.updateStatus(candidateStatus(), relayout: false)
         }
         PerfTrace.shared.measure(trace, phase: .content) {
+            // schema3：把内容阶段拆成状态/测量/设置/布局，默认关闭时零开销（ADR-258）。
+            window.phaseTiming = { phase, body in
+                let mapped: PerfTrace.Phase
+                switch phase {
+                case .state: mapped = .contentState
+                case .measure: mapped = .contentMeasure
+                case .set: mapped = .contentSet
+                case .layout: mapped = .contentLayout
+                }
+                PerfTrace.shared.measure(trace, phase: mapped, body)
+            }
             window.update(
                 candidates: candidates, pageIndex: session.pageIndex, pageCount: session.pageCount,
                 selectedIndex: candidateSelection.index,
                 input: session.buffer, showsNavigationHint: true,
                 warning: session.variantErrorMessage)
+            window.phaseTiming = nil
         }
         let caret = PerfTrace.shared.measure(trace, phase: .caret) { caretRect(client) }
         PerfTrace.shared.measure(trace, phase: .window) { window.show(at: caret) }

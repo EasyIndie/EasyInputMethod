@@ -37,7 +37,19 @@ require(Set(firstPhases.keys) == ["preeditUs"] && Set(secondPhases.keys) == ["co
         "phases remain isolated between keys")
 require(firstPhases["preeditUs"]! >= 0 && secondPhases["commitUs"]! >= 0 && secondPhases["hideUs"]! >= 0,
         "nonnegative phase durations")
-require(traceRows[0]["phaseSchema"] as? Int == 2, "versioned optional phase fields")
+require(traceRows[0]["phaseSchema"] as? Int == 3, "versioned optional phase fields")
+// ADR-258：schema3 只增加 content 子阶段键，其他记录形态不变。
+let contentKeys: Set<String> = ["contentStateUs", "contentMeasureUs", "contentSetUs", "contentLayoutUs"]
+let contentTrace = perf.begin()!
+for phase in [PerfTrace.Phase.contentState, .contentMeasure, .contentSet, .contentLayout] {
+    perf.measure(contentTrace, phase: phase) { }
+}
+perf.finish(contentTrace, engine: nil, candidates: 3, committed: false)
+let contentRows = try String(contentsOfFile: tracePath, encoding: .utf8).split(separator: "\n").map {
+    try JSONSerialization.jsonObject(with: Data($0.utf8)) as! [String: Any]
+}
+let contentPhases = contentRows.last!["phases"] as! [String: Double]
+require(Set(contentPhases.keys) == contentKeys, "schema3 content phases are named exactly")
 require(traceRows[0]["candidates"] as? Int == 7 && traceRows[1]["committed"] as? Bool == true,
         "legacy candidate and commit fields remain compatible")
 require(traceRows[1]["engineUs"] as? Double == -1, "missing engine stamp remains compatible")

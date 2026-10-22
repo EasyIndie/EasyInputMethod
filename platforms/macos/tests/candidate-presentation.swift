@@ -400,4 +400,22 @@ LocalAcceptanceEvidence.record("paths.support-dir-override",
     actual: ["default": defaultSupport?.path ?? "nil", "override": overrideSupport?.path ?? "nil",
              "relative": relativeIgnored?.path ?? "nil"])
 
-print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD")
+// ADR-258：schema3 分段计时钩子必须覆盖 state/measure/set/layout，且卸载钩子后行为不变。
+var seenPhases: Set<String> = []
+window.phaseTiming = { phase, body in
+    seenPhases.insert(phase.rawValue)
+    body()
+}
+window.update(candidates: values, input: "wq", showsNavigationHint: true)
+window.phaseTiming = nil
+guard seenPhases == ["state", "measure", "set", "layout"] else {
+    fail("content phase timing must cover all four sections: \(seenPhases)")
+}
+guard window.displayedCandidateTexts == ["1 你", "2 尼"] else { fail("timed update must keep candidates") }
+window.update(candidates: values, input: "wq", showsNavigationHint: true)
+guard window.displayedCandidateTexts == ["1 你", "2 尼"] else { fail("untimed update must keep candidates") }
+LocalAcceptanceEvidence.record("candidate.content-phases",
+    expected: "schema3 分段覆盖 state/measure/set/layout，卸载计时后结果不变",
+    actual: ["phases": seenPhases.sorted()])
+
+print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD, content phases")
