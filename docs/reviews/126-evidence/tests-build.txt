@@ -1,0 +1,69 @@
+python3 platforms/macos/Updater/verify-vendor.py
+更新库来源/许可/镜像测试摘要一致
+./scripts/check-clean.sh    swift test --package-path platforms/macos/Updater --scratch-path platforms/macos/build/updater-tests -Xswiftc -warnings-as-errors -Xswiftc -strict-concurrency=complete
+Building for debugging...
+[Pre-planning 1 / 153]
+[Planning deferred tasks]
+[6 / 15] OrzAppUpdaterCoreTests-product
+[8 / 17] OrzAppUpdaterCoreTests-product
+[14 / 16] OrzAppUpdaterCoreTests-product
+Build complete! (1.84秒)
+Test Suite 'All tests' started at 2026-10-22 10:42:55.911.
+Test Suite 'WebsiteUpdateCheckTests.xctest' started at 2026-10-22 10:42:55.912.
+Test Suite 'ReleaseConfigurationTests' started at 2026-10-22 10:42:55.912.
+Test Case '-[WebsiteUpdateCheckTests.ReleaseConfigurationTests testOnlyFullyConfiguredWebsiteBuildMayCheck]' started.
+Test Case '-[WebsiteUpdateCheckTests.ReleaseConfigurationTests testOnlyFullyConfiguredWebsiteBuildMayCheck]' passed (0.001 seconds).
+Test Suite 'ReleaseConfigurationTests' passed at 2026-10-22 10:42:55.914.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'WebsiteUpdateCheckTests.xctest' passed at 2026-10-22 10:42:55.914.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.001) seconds
+Test Suite 'All tests' passed at 2026-10-22 10:42:55.914.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.001 (0.003) seconds
+Test Suite 'All tests' started at 2026-10-22 10:42:56.023.
+Test Suite 'OrzAppUpdaterCoreTests.xctest' started at 2026-10-22 10:42:56.024.
+Test Suite 'FeedBoundsTests' started at 2026-10-22 10:42:56.024.
+Test Case '-[OrzAppUpdaterCoreTests.FeedBoundsTests testDepthItemAndEnclosureBounds]' started.
+Test Case '-[OrzAppUpdaterCoreTests.FeedBoundsTests testDepthItemAndEnclosureBounds]' passed (0.018 seconds).
+Test Case '-[OrzAppUpdaterCoreTests.FeedBoundsTests testMalformedSignatureLengthAndBuildAreRejected]' started.
+Test Case '-[OrzAppUpdaterCoreTests.FeedBoundsTests testMalformedSignatureLengthAndBuildAreRejected]' passed (0.000 seconds).
+Test Suite 'FeedBoundsTests' passed at 2026-10-22 10:42:56.043.
+	 Executed 2 tests, with 0 failures (0 unexpected) in 0.018 (0.019) seconds
+Test Suite 'SendabilityTests' started at 2026-10-22 10:42:56.043.
+Test Case '-[OrzAppUpdaterCoreTests.SendabilityTests testImmutableMetadataCanCrossConcurrencyBoundary]' started.
+Test Case '-[OrzAppUpdaterCoreTests.SendabilityTests testImmutableMetadataCanCrossConcurrencyBoundary]' passed (0.000 seconds).
+Test Suite 'SendabilityTests' passed at 2026-10-22 10:42:56.043.
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.000 (0.000) seconds
+Test Suite 'UpdateCheckTests' started at 2026-10-22 10:42:56.043.
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testInvalidAddressesKeysAndBuildsRejected]' started.
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testInvalidAddressesKeysAndBuildsRejected]' passed (0.000 seconds).
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testNumericVersionOrderingAndNoDowngrade]' started.
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testNumericVersionOrderingAndNoDowngrade]' passed (0.000 seconds).
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testRedirectsStayOnHTTPSOriginWithoutStartingRequests]' started.
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testRedirectsStayOnHTTPSOriginWithoutStartingRequests]' passed (0.005 seconds).
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testUntrustedFeedRejected]' started.
+Test Case '-[OrzAppUpdaterCoreTests.UpdateCheckTests testUntrustedFeedRejected]' passed (0.000 seconds).
+Test Suite 'UpdateCheckTests' passed at 2026-10-22 10:42:56.050.
+	 Executed 4 tests, with 0 failures (0 unexpected) in 0.006 (0.007) seconds
+Test Suite 'OrzAppUpdaterCoreTests.xctest' passed at 2026-10-22 10:42:56.050.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.025 (0.026) seconds
+Test Suite 'All tests' passed at 2026-10-22 10:42:56.050.
+	 Executed 7 tests, with 0 failures (0 unexpected) in 0.025 (0.027) seconds
+􀟈  Test run started.
+􀄵  Testing Library Version: 2084
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.
+􀟈  Test run started.
+􀄵  Testing Library Version: 2084
+􀄵  Target Platform: arm64e-apple-macos14.0
+􁁛  Test run with 0 tests in 0 suites passed after 0.001 seconds.
+./scripts/check-clean.sh    python3 platforms/macos/Updater/build.py
+Building for production...
+[Planning deferred tasks]
+[1 / 1]
+[2 / 6] OrzAppUpdaterCore
+[3 / 7] OrzAppUpdaterCore
+[9 / 10] LampyrisUpdateCheck-product
+[13 / 15] LampyrisUpdateCheck-product
+[14 / 15] LampyrisUpdateCheck-product
+Build complete! (2.30秒)
+仅构建独立检查程序，未安装/启动/联网：/Users/joker/Documents/EasyInputMethod/platforms/macos/build/website-updater/LampyrisUpdateCheck.app

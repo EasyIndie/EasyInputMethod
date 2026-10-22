@@ -168,6 +168,9 @@ jobs:
         if: steps.changes.outputs.code == 'true'
         run: |
           make macos-offline-tests
+      - name: Verify isolated updater source and offline safety
+        if: steps.changes.outputs.code == 'true'
+        run: make macos-updater-tests macos-updater-build
       - name: Prepare and reproduce local release candidate
         if: steps.changes.outputs.code == 'true'
         run: |

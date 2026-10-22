@@ -1,0 +1,44 @@
+{
+  "base_commit": "594c8c6c03fdfe77ed03e74575ffeb83e02c1ff7",
+  "upstream": {
+    "repository": "https://github.com/OrzGeeker/OrzAppUpdater",
+    "base_revision": "b23e0c414d788460e0b30f12727d3f019c7f8d45",
+    "adapted_revision": "8d1d4b852dcf645af8f39a84cc81b6466c8e2c3d",
+    "license": "Apache-2.0",
+    "files": {
+      "Vendor/OrzAppUpdaterCore/UpdateCheck.swift": "d93749bc6dc3b12479b9b0a4b008e7e569658113cb3f0a7b27df0d07a3286882",
+      "Vendor/ORZ-LICENSE": "be5ce4447cce4d5584e901a5b46381eef3f161e8368b776d37af3c60cba99aca",
+      "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d"
+    },
+    "pull_request": "https://github.com/OrzGeeker/OrzAppUpdater/pull/1"
+  },
+  "scope": "B arm64/macOS27; independent default-disabled website checker only",
+  "tests": {
+    "OrzAppUpdaterCoreTests": 4,
+    "WebsiteUpdateCheckTests": 1,
+    "failures": 0,
+    "warnings_as_errors": true
+  },
+  "release_build": "PASS",
+  "executable_sha256": "aed43ba8e95c233f6ad746e758285bf9c71c563df0f846673fa0ec48d219789f",
+  "smoke": [
+    {
+      "arguments": [],
+      "exit": 0,
+      "output": "网站更新检查默认关闭。主动检查请使用 --check；发布配置缺失时不会联网。\n"
+    },
+    {
+      "arguments": [
+        "--check"
+      ],
+      "exit": 2,
+      "output": "更新检查未启用：网站渠道、正式HTTPS地址、公钥或构建号尚未配置。未发送请求。\n"
+    }
+  ],
+  "production_config_sha256": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+  "production_dictionary_sha256": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137",
+  "live_feed_requests": false,
+  "installed": false,
+  "payload_verification_or_installation": false,
+  "make_verify": "PASS, 200 original products scanned; independent checker excluded from core target by design"
+}

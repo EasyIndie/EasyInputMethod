@@ -1,0 +1,20 @@
+{
+  "repository": "https://github.com/OrzGeeker/OrzAppUpdater",
+  "base_revision": "b23e0c414d788460e0b30f12727d3f019c7f8d45",
+  "adapted_revision": "8d1d4b852dcf645af8f39a84cc81b6466c8e2c3d",
+  "license": "Apache-2.0",
+  "files": {
+    "Vendor/OrzAppUpdaterCore/UpdateCheck.swift": "c9508f0aff86003630bb4fe8ac723028abd611f3211569190e2ac29ed7f38447",
+    "Vendor/ORZ-LICENSE": "be5ce4447cce4d5584e901a5b46381eef3f161e8368b776d37af3c60cba99aca",
+    "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d"
+  },
+  "pull_request": "https://github.com/OrzGeeker/OrzAppUpdater/pull/1",
+  "upstream_files": {
+    "Vendor/OrzAppUpdaterCore/UpdateCheck.swift": "d93749bc6dc3b12479b9b0a4b008e7e569658113cb3f0a7b27df0d07a3286882",
+    "Vendor/ORZ-LICENSE": "be5ce4447cce4d5584e901a5b46381eef3f161e8368b776d37af3c60cba99aca",
+    "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d"
+  },
+  "local_patches": [
+    "Add checked Sendable conformance to immutable UpdateRelease and UpdateCheckConfiguration for strict concurrency; no unchecked conformance or networking change."
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "revision": "8d1d4b852dcf645af8f39a84cc81b6466c8e2c3d",
+  "results": [
+    {
+      "path": "Sources/OrzAppUpdaterCore/UpdateCheck.swift",
+      "sha256": "d93749bc6dc3b12479b9b0a4b008e7e569658113cb3f0a7b27df0d07a3286882",
+      "verified": true
+    },
+    {
+      "path": "LICENSE",
+      "sha256": "be5ce4447cce4d5584e901a5b46381eef3f161e8368b776d37af3c60cba99aca",
+      "verified": true
+    },
+    {
+      "path": "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift",
+      "sha256": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d",
+      "verified": true
+    }
+  ]
+}

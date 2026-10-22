@@ -104,3 +104,11 @@ fuzz: check-workspace ## 解析器 fuzz（需 nightly + cargo-fuzz；FUZZ_SECOND
 
 clean: ## 清理构建产物
 	$(CARGO) clean || true
+
+.PHONY: macos-updater-tests macos-updater-build
+macos-updater-tests: ## 独立更新检查离线安全/严格并发回归（不请求feed）
+	python3 platforms/macos/Updater/verify-vendor.py
+	$(CLEAN) swift test --package-path platforms/macos/Updater --scratch-path platforms/macos/build/updater-tests -Xswiftc -warnings-as-errors -Xswiftc -strict-concurrency=complete
+
+macos-updater-build: ## 构建默认关闭的独立更新检查程序（不安装、不联网）
+	$(CLEAN) python3 platforms/macos/Updater/build.py

@@ -1,0 +1,17 @@
+{
+  "source_commit": "083857a65eefc6c9ea1036f35d300b58fa9a2204",
+  "run": 39711487287,
+  "app": "/Users/joker/Documents/EasyInputMethod/packaging/out/run-39711487287/Lampyris-isolated-imk-arm64-083857a65eefc6c9ea1036f35d300b58fa9a2204/extracted/Lampyris.app",
+  "zip_sha256": "34e9910e896f2b7bc232a88e5a96165250f6fd18fa359aa27a03137682268b57",
+  "executable_sha256": "b261895411be26672dc88e8873aa080acb76f8b6bf1741c0c6631e680d0e61b0",
+  "resources_sha256": {
+    "wubi86-core.tsv": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+    "pinyin-chars.tsv": "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12",
+    "pinyin-core.tsv": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb",
+    "variant-s2t.tsv": "68c94a2c795efc757b1b5f4331d16497cc4d713417deec762a02b3c192fe90f6"
+  },
+  "static_verification": "PASS: codesign/developerID/teamID/spctl/stapler/architecture/root/source/data",
+  "installed": false,
+  "native_input_verified": false,
+  "updater_included": false
+}

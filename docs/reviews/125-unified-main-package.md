@@ -1,0 +1,7 @@
+# 125 — main统一签名开发包
+
+源码083857a65eefc6c9ea1036f35d300b58fa9a2204，公证运行39711487287成功；包含已合并ADR-245候选布局与ADR-247加载优化。ZIP SHA34e9910e896f2b7bc232a88e5a96165250f6fd18fa359aa27a03137682268b57，执行SHAb261895411be26672dc88e8873aa080acb76f8b6bf1741c0c6631e680d0e61b0。
+
+复用macos-imk-dev.verify_app核验来源/Developer ID及Team ID、codesign、Gatekeeper、stapler、arm64架构、固定开发根绑定及四份词表SHA均PASS。完整值见125-evidence/package.json。未安装、未启动，不继承旧候选原生PASS；已装仍01fb016/执行ff2e9223…196a85b，无需用户切源或重测。
+
+本轮用户随后要求升级原型也进入main，原型将在固定dev独立评审验证；本包没有Updater组件，原型也不随默认输入法包分发，不混淆“源码已收拢”与“自动升级可用”。最终签名包/目标设备/客户端/升级恢复及五日门禁仍未关闭，无tag/Release。

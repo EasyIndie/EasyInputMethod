@@ -2,7 +2,13 @@
   "main": "aa01fd093411486a40d5e028ded09f256978a01d",
   "bundle": "packaging/out/branch-consolidation-20261022/before-cleanup.bundle",
   "bundle_sha256": "a9bcdd29c7356369491da82a32c083f6d8f53bc52244f07cc2763dcf45a202f5",
-  "remote_delete_pending": [
+  "status": "用户明确授权后完成20远端/21本地历史分支删除，逐项SHA与bundle核验通过",
+  "retained": [
+    "main",
+    "dev（唯一活动工作分支，由已合并perf/table-load-allocation重命名）",
+    "feat/website-updater-integration（只读恢复点，待原型进入main后删除）"
+  ],
+  "remote_deleted": [
     {
       "name": "docs/106-imk-post-replacement",
       "sha": "744bae2b1455f5c495859612d38e9d01706de471",
@@ -124,7 +130,7 @@
       "reason": "main祖先提交"
     }
   ],
-  "local_delete_pending": [
+  "local_deleted": [
     "archive/preview-accepted-744bae2",
     "docs/106-imk-post-replacement",
     "docs/108-unified-development-candidate",
@@ -147,10 +153,9 @@
     "perf/reuse-candidate-layout",
     "perf/skip-unchanged-candidate-status"
   ],
-  "status": "审批拒绝后尚未执行删除；等待对精确范围授权",
-  "retained": [
-    "main",
-    "feat/website-updater-integration",
-    "perf/table-load-allocation（当前MVP工作分支）"
-  ]
+  "cleanup_main": "083857a65eefc6c9ea1036f35d300b58fa9a2204",
+  "before_dev_unification_bundle": {
+    "path": "packaging/out/branch-consolidation-20261022/before-dev-unification.bundle",
+    "sha256": "48f86f4b6de1834469afa93579c271fdc86acef4b6e5c9de2a2b31b3fd06ac4b"
+  }
 }
