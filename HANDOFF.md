@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / Codex；固定dev，main代码基线`b6189724e08e92ab58a3c7e4bb8c9c5f123f05de`（#79已合并），main/dev已快进同步，无开放PR；本次收尾文档随下批必要改动承接。
-- ADR-252/131：隐藏后的空布局延后、phaseSchema2增加hideUs；本地verify零诊断、41文件193离线项、strict双架构及最终head9f7f68f四CI通过；版本0.1.0/build3，尚未安装。
-- B已装仍18fcbbf/build2/执行dc000b6d…ce7cd6；本轮未换包、未发键。最新只读回读ABC、无开发宿主；130缓存计时已关闭，marker不存在。
-- 原生130：50键/六词及八项附加通过，total P95 22.124ms/max58.039ms，16ms/30MB及最终RC门禁仍开；131离屏收益不代替原生。
+- 更新：2026-10-22 / Codex；固定dev，main代码`0f913492b9a0e27ab32bba95462cfcf4291e1625`（#80四CI绿已合并），main/dev代码已同步、开放PR0；本次纯收尾记录随下批必要改动承接。
+- 132/133：同尺寸跳过原生尺寸设置；修复cell零/小bounds生成无效矩形。两独立提交均verify零诊断、193离线/strict双架构通过，三次可见复核stderr空；版本0.1.0/build4，未安装。
+- B已装仍18fcbbf/build2/执行dc000b6d…ce7cd6；本轮未换包/发键/启用计时，最新ABC/PID50615（普通宿主，未停止）、marker不存在，生产数据和开发配置SHA保持。
+- 原生130的P95 22.124ms/max58.039ms仍是旧build2证据；132内容P95改善伴随hide最大值回退，冷status29ms未复现，不能关闭16ms/30MB/最终RC。
 
 ## 1. 设备与数据
 
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | A（历史，未本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行；不继承旧候选PASS | 报告103，不操作A |
 | B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；本轮只读回读保持 | 生产包未替换 |
-| B固定开发 | 18fcbbf/build2，公证39728402241；ZIP30e4691b…fae7a5，执行dc000b6d…ce7cd6 | 当前ABC/无宿主；130收尾确认marker不存在、生产两SHA与开发配置保持，私有词库正常学习 | replacement-yu8hn1jy/previous.app为01fb016；128安装/130收尾JSON |
+| B固定开发 | 18fcbbf/build2，公证39728402241；ZIP30e4691b…fae7a5，执行dc000b6d…ce7cd6 | 当前ABC/PID50615，未停止；marker不存在，133收尾生产两SHA/开发配置保持，私有词库可正常学习 | replacement-yu8hn1jy/previous.app为01fb016；128安装/130收尾JSON |
 
 - 固定开发根：`~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05`；身份不变，不反复移除/添加/注销。
 - 手工文稿“萤火虫性能验收-115.txt”历史窗口2372保留；本轮未操作或重新枚举手工窗口，禁止清空。
@@ -25,11 +25,12 @@
 | 版本治理/开发包修复 | #77/#78已合入；Cargo版本+受审阅构建号唯一派生，缺版本开发包39719374289拒绝安装；build2已安全安装，128 |
 | 130原生 | 六词与八项附加实际读回；后续xi'an中途失焦即停、未重试；marker删/mode恢复mixed，用户ABC后精确退出37114，配置数据保持 |
 | 131/ADR-252 | hide仍同步清内容/回调/AX/分页，仅延后隐藏空布局；三对离屏hide P95减约0.15–0.34ms，首对最大值回退保留。schema2 hideUs补计时，未装新包 |
-| #79收尾 | 最终9f7f68f的check/macos/fuzz/dco全部SUCCESS，CI39761881212/DCO39761881354；merge b618972，dev普通快进同步；PR0 |
+| #80收尾 | 最终e17abfc的check/macos/fuzz/dco全SUCCESS，CI39766790199/DCO39766790221；merge0f91349，同步dev、PR0，132/133 |
+| #79历史 | 最终9f7f68f的check/macos/fuzz/dco全部SUCCESS，CI39761881212/DCO39761881354；merge b618972，dev普通快进同步；PR0 |
 
 ## 3. 未决
 
-- IT-12：首键status29ms/预编辑与内容长尾；130两次提交尚有10–17ms阶段未覆盖。131离屏clear仅约0.4ms，不能据此认定原生根因；schema2需在后续统一包补实机。
+- IT-12：首键status29ms/预编辑与内容长尾；130两次提交尚有10–17ms阶段未覆盖。131离屏clear仅约0.4ms，不能据此认定原生根因；schema2需在后续统一包补实机。132可见窗口栈确认系统同步等待；cold status仅1.3–2.6ms未复现29ms；133已修复复现路径的约束提示，但可见隐藏仍有>16ms长尾。
 - 内存：127满库低负载离屏physical43.55MiB、malloc碎片16M；128满库五会话22000键无持续增长趋势，但无同期swap分类；130原生physical31.1M/峰37.4M、malloc换出19.4M。30MB门禁未关闭，不忽略swap或用RSS替代。
 - 130最后拼音xi'an/输入法及最终mixed未跑完；同最终RC三模式/重启/显示与数字提交、完整客户端矩阵仍待。已通过预览UI不重开。
 - 更新原型#76已合入、独立模块默认关闭且不随输入宿主分发；仍缺正式feed/key、下载及真实包验签、安全替换/回滚和App Store可行性，不算升级闭环完成。
@@ -38,8 +39,8 @@
 
 ## 4. 下一步
 
-1. #79已处理完，代码main b618972/0.1.0/build3；当前收尾证据提交保存在dev，随下批必要改动合入，不单开文档PR。已装仍build2，不为0.3ms离屏收益立即要求换包。
-2. 132/ADR-253已定向定位：可见orderOut与setContentSize存在窗口系统同步等待；182次尺寸设置130次相同。只加同尺寸原生设置保护（build4），临时三对内容P95降15–24%，hide最大值回退，冷status29ms未复现；动画假设反序失败未采纳。定向/193离线/双架构/verify零工具诊断通过；132尺寸保护已保存5363ff8；133/ADR-254修复cell零/小bounds内缩无效矩形，新增回归旧版失败/新版通过，三次可见进程stderr全空；该小步193离线/严格双架构及完整verify零诊断通过，待同批唯一PR四CI收尾，不换已装build2。
+1. #80已处理完，代码main0f91349/0.1.0/build4。132同尺寸原生设置保护5363ff8和133小bounds修复e17abfc已合入；当前纯收尾记录留dev随下批必要改动承接，不单开文档PR。
+2. 下一步从明确main构建统一固定开发签名包build4，静态核验来源/版本/架构/签名/公证/ZIP/执行/数据SHA；这次候选汇总#79/80必要修复，再集中补原生schema2隐藏/冷首键与最终mixed。先不混用旧build2或本地ad-hoc结果；不要采纳已否定的动画策略。
 3. 后续必要输入修复收齐后从明确main统一签名出包；核对ZIP/执行/数据SHA，ABC换包保留备份。**先准备marker再启动宿主**，然后只请用户切开发源一次；独立文稿逐键焦点守卫，失焦立即停止，不抢焦点重试。
 4. 采样后删marker，恢复mode；用户ABC后精确路径/SHA退出本轮宿主关闭缓存计时。不要使用旧run39719374289缺版本包。
 5. 输入/性能收口后推进更新闭环、App Store可行性，再锁同RC做A/B及五日；不创建tag/Release。
@@ -51,6 +52,9 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；不强推/创建任务分支。make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / Codex：132调用栈+实际频次后加同尺寸原生设置保护；133另修cell小bounds无效矩形，旧回归失败后通过、三个可见进程stderr空。两步193离线/双架构/verify通过，#80最终e17abfc四CI绿merge0f91349、dev同步/PR0；已装build2保持，ABC/PID50615/无marker、数据配置SHA保持。
+
 
 - 2026-10-22 / Codex：132尺寸保护验证后保存5363ff8。LLDB定位可见约束提示到PaddedCandidateCell零/小bounds内缩；ADR-254先写，新回归旧版失败/修复后通过，三次可见复查stderr全空（133），完整门禁待完成；两个小提交同批PR，未装包/发键。
 

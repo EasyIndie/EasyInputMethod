@@ -34,4 +34,8 @@ B arm64/macOS27.0.1，main b618972代码，复用真实数据/组件临时拷贝
 
 ## 可见实验暴露的运行时问题
 
-基线与修复副本均产生NSLayoutConstraint常量过大提示，不能称可见运行时零警告。独立进程符号断点+视图树确认：CandidateLabel内部NSTextFieldSimpleLabel被设置为无效/巨大坐标；PaddedCandidateCell对初始零/小bounds直接inset可能生成null矩形。该几何边界另写ADR并补回归后修复；当前尺寸保护不冒充解决它。约束断点会改变执行环境，相关日志不纳入性能统计。
+基线与修复副本均产生NSLayoutConstraint常量过大提示，不能称可见运行时零警告。独立进程符号断点+视图树确认：CandidateLabel内部NSTextFieldSimpleLabel被设置为无效/巨大坐标；PaddedCandidateCell对初始零/小bounds直接inset可能生成null矩形。该几何边界已另写ADR-254并在报告133修复，旧回归失败后通过，三次可见复查stderr为空；尺寸保护本身不冒充解决它。约束断点会改变执行环境，相关日志不纳入性能统计。
+
+## 当前合入状态
+
+两个独立小提交5363ff8/e17abfc已由同批PR #80承接，最终head e17abfcef280f2b18594de8a9a3c588019ba9bc6的check/macos/fuzz/dco全SUCCESS（CI39766790199/DCO39766790221），merge提交0f913492b9a0e27ab32bba95462cfcf4291e1625。main/dev代码同步，开放PR0；0.1.0/build4未安装。133-evidence/state.json记录当前ABC/普通开发宿主50615、无计时marker、已装执行SHA仍build2，生产数据及开发配置保持。下一步统一签名候选再集中原生确认，不继承旧候选PASS。
