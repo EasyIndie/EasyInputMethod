@@ -161,5 +161,69 @@ class UpgradeTests(unittest.TestCase):
         self.assertNotIn('stop', self.state.events)
 
 
+
+
+class DownloadTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = Path(tempfile.mkdtemp(prefix='lampyris-download-test-'))
+        self.addCleanup(shutil.rmtree, self.temporary, True)
+
+    def payload(self, data=b'payload-bytes'):
+        path = self.temporary / 'payload.zip'
+        path.write_bytes(data)
+        return path
+
+    def test_rejects_non_https(self):
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download('http://example.invalid/payload.zip')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download('ftp://example.invalid/payload.zip')
+
+    def test_rejects_file_without_opt_in(self):
+        source = self.payload()
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download(source.as_uri())
+
+    def test_copies_file_payload_to_private_directory(self):
+        source = self.payload(b'zip-bytes')
+        target = upgrade.download(source.as_uri(), allow_file=True)
+        try:
+            self.assertEqual(target.read_bytes(), b'zip-bytes')
+            self.assertEqual(target.stat().st_mode & 0o777, 0o600)
+            self.assertEqual(target.parent.stat().st_mode & 0o777, 0o700)
+        finally:
+            shutil.rmtree(target.parent, ignore_errors=True)
+
+    def test_enforces_size_limit(self):
+        source = self.payload(b'0123456789')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download(source.as_uri(), allow_file=True, limit=4)
+
+    def test_rejects_redirect_to_disallowed_scheme(self):
+        class Response:
+            def geturl(self):
+                return 'http://example.invalid/payload.zip'
+            def read(self, _):
+                return b''
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download('https://example.invalid/payload.zip', opener=lambda *a, **k: Response())
+
+    def test_rejects_empty_payload(self):
+        source = self.payload(b'')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.download(source.as_uri(), allow_file=True)
+
+    def test_cli_blocks_file_url_without_flag(self):
+        source = self.payload()
+        code = upgrade.main(['--payload-url', source.as_uri(), '--signature', 'sig',
+                             '--domain', str(self.temporary / 'Input Methods'),
+                             '--support', str(self.temporary / 'Support')])
+        self.assertEqual(code, 3)
+
+
 if __name__ == '__main__':
     unittest.main()

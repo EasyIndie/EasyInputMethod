@@ -29,3 +29,5 @@
 2026-10-22 ADR-259/报告139：新增`packaging/macos/upgrade.py`——验签→解包→候选校验→停精确宿主→备份→原子替换→落地复验→回滚→0600 receipt；默认dry-run，`--apply`必须带已签名验签器。8项离线回归（替换/回滚/验签失败/停宿主失败/dry-run/符号链接/缺bundle）通过并进macos-offline-tests自动发现。仍无下载器、真实feed/公钥与实机升级演练，升级闭环不宣称完成。
 
 2026-10-22 ADR-260/报告140：`build.sh --sandbox`产出不安装的LampyrisSandbox.app（app-sandbox+mach-register例外，无网络权限）；沙盒探针验证`ime_config_init/set/get`只落容器、真实Application Support未被写入；Info.plist连接名=CFBundleIdentifier+_Connection、entitlements无网络权限纳入2项离线回归。条件性go；MAS Distribution签名/安装位置与输入源注册/审核仍需真实商店构建验证。
+
+2026-10-22 ADR-261/报告141：`upgrade.py`增加`--payload-url`（仅https，file://需显式测试开关），流式0700/0600临时文件、256MB上限、重定向协议复查、结束即清理；顺序下载→验签→解包→校验→停宿主→替换。新增7项离线回归，升级相关共15项全PASS。仍无正式feed/公钥、无真实HTTPS演练、无UI提示。
