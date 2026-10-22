@@ -1,0 +1,165 @@
+#!/usr/bin/env python3
+"""离线回归：升级顺序（验签→解包→校验→停宿主→替换→回滚），不触碰真实安装目录。"""
+import importlib.util
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
+
+ROOT = Path(__file__).resolve().parents[3]
+spec = importlib.util.spec_from_file_location('upgrade', ROOT / 'packaging/macos/upgrade.py')
+upgrade = importlib.util.module_from_spec(spec)
+sys.modules['upgrade'] = upgrade
+spec.loader.exec_module(upgrade)
+
+
+def make_app(parent: Path, marker: str) -> Path:
+    app = parent / upgrade.BUNDLE
+    executable = app / upgrade.EXECUTABLE
+    executable.parent.mkdir(parents=True)
+    executable.write_text(marker)
+    executable.chmod(0o755)
+    return app
+
+
+def make_payload(app: Path, destination: Path) -> Path:
+    result = subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(app), str(destination)],
+                            capture_output=True, text=True)
+    if result.returncode != 0:
+        raise RuntimeError(result.stderr)
+    return destination
+
+
+class Hooks:
+    def __init__(self):
+        self.events = []
+        self.fail_payload = False
+        self.fail_stop = False
+        self.fail_after_swap = False
+        self.candidate_calls = 0
+
+    def verify_payload(self, payload, signature):
+        self.events.append('payload')
+        if self.fail_payload:
+            raise upgrade.UpgradeError('bad signature')
+
+    def verify_candidate(self, app):
+        self.candidate_calls += 1
+        self.events.append('candidate')
+        if self.fail_after_swap and self.candidate_calls >= 2:
+            raise upgrade.UpgradeError('post-swap check failed')
+        if not (app / upgrade.EXECUTABLE).is_file():
+            raise upgrade.UpgradeError('missing executable')
+
+    def stop_host(self, executable):
+        self.events.append('stop')
+        if self.fail_stop:
+            raise upgrade.UpgradeError('host still running')
+
+    def hooks(self):
+        return upgrade.Hooks(self.verify_payload, self.verify_candidate, self.stop_host)
+
+
+class UpgradeTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = Path(tempfile.mkdtemp(prefix='lampyris-upgrade-test-'))
+        self.addCleanup(shutil.rmtree, self.temporary, True)
+        self.domain = self.temporary / 'Input Methods'
+        self.domain.mkdir()
+        self.support = self.temporary / 'Support'
+        self.build = self.temporary / 'build'
+        self.build.mkdir()
+        new_app = make_app(self.build / 'new', 'new-binary')
+        self.payload = make_payload(new_app, self.temporary / 'payload.zip')
+        self.state = Hooks()
+
+    def test_fresh_install_places_bundle_and_writes_private_receipt(self):
+        receipt = upgrade.install(self.payload, 'sig', self.domain, self.support,
+                                  self.state.hooks(), dry_run=False)
+        installed = self.domain / upgrade.BUNDLE
+        self.assertEqual((installed / upgrade.EXECUTABLE).read_text(), 'new-binary')
+        self.assertIsNone(receipt['previous'])
+        self.assertEqual(receipt['result'], 'installed')
+        self.assertEqual(self.state.events, ['payload', 'candidate', 'candidate'])
+        receipts = list((self.support / 'receipts').glob('*.json'))
+        self.assertEqual(len(receipts), 1)
+        self.assertEqual(receipts[0].stat().st_mode & 0o777, 0o600)
+        self.assertEqual(json.loads(receipts[0].read_text())['payload_sha256'], upgrade.sha256(self.payload))
+
+    def test_upgrade_keeps_previous_bundle_and_stops_host(self):
+        destination = self.domain / upgrade.BUNDLE
+        old = make_app(self.domain, 'old-binary')
+        self.assertEqual(destination, old)
+        receipt = upgrade.install(self.payload, 'sig', self.domain, self.support,
+                                  self.state.hooks(), dry_run=False)
+        self.assertEqual((destination / upgrade.EXECUTABLE).read_text(), 'new-binary')
+        self.assertEqual(self.state.events, ['payload', 'candidate', 'stop', 'candidate'])
+        backup = Path(receipt['previous'])
+        self.assertEqual((backup / upgrade.EXECUTABLE).read_text(), 'old-binary')
+
+    def test_rollback_restores_previous_bundle_after_post_swap_failure(self):
+        destination = self.domain / upgrade.BUNDLE
+        make_app(self.domain, 'old-binary')
+        self.state.fail_after_swap = True
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(self.payload, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+        self.assertEqual((destination / upgrade.EXECUTABLE).read_text(), 'old-binary')
+
+    def test_signature_failure_touches_nothing(self):
+        destination = self.domain / upgrade.BUNDLE
+        make_app(self.domain, 'old-binary')
+        self.state.fail_payload = True
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(self.payload, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+        self.assertEqual((destination / upgrade.EXECUTABLE).read_text(), 'old-binary')
+        self.assertNotIn('stop', self.state.events)
+        self.assertFalse(self.support.exists())
+
+    def test_stop_host_failure_keeps_previous_bundle(self):
+        destination = self.domain / upgrade.BUNDLE
+        make_app(self.domain, 'old-binary')
+        self.state.fail_stop = True
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(self.payload, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+        self.assertEqual((destination / upgrade.EXECUTABLE).read_text(), 'old-binary')
+
+    def test_dry_run_does_not_stop_or_replace(self):
+        destination = self.domain / upgrade.BUNDLE
+        make_app(self.domain, 'old-binary')
+        receipt = upgrade.install(self.payload, 'sig', self.domain, self.support,
+                                  self.state.hooks(), dry_run=True)
+        self.assertEqual(receipt['result'], 'dry-run')
+        self.assertEqual((destination / upgrade.EXECUTABLE).read_text(), 'old-binary')
+        self.assertNotIn('stop', self.state.events)
+
+    def test_symlink_destination_is_rejected(self):
+        other = self.temporary / 'other'
+        other.mkdir()
+        make_app(other, 'elsewhere').rename(self.temporary / 'elsewhere.app')
+        (self.domain / upgrade.BUNDLE).symlink_to(self.temporary / 'elsewhere.app')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(self.payload, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+
+    def test_payload_without_bundle_is_rejected(self):
+        broken = self.temporary / 'plain.zip'
+        source = self.temporary / 'plain'
+        source.mkdir()
+        (source / 'readme.txt').write_text('x')
+        subprocess.run(['/usr/bin/ditto', '-c', '-k', '--keepParent', str(source), str(broken)],
+                       check=True)
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(broken, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+        self.assertNotIn('stop', self.state.events)
+
+
+if __name__ == '__main__':
+    unittest.main()

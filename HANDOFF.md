@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`95ef68b14efb6d95d76f0f0afe3bb2c6db70c2f9`（#81 ADR-255、#82 构建号、#83 报告135、#84 ADR-256/257 均四CI绿后merge；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`050f434`（#81 ADR-255、#82/#86 构建号、#83 报告135、#84 ADR-256/257、#85 schema3、#87 报告138 均四CI绿后merge；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：宿主physical **29.5M**/峰**29.9M**、malloc活跃17.2M/碎片**5.7M(25%)**/换出14.6M（build4：37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据，**不宣布门禁干净关闭**。
@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 139 升级路径 | ADR-259 `upgrade.py`：验签→解包→候选校验→停精确宿主→备份→原子替换→落地复验→回滚，dry-run 默认；8 项离线回归进自动发现，仍无下载器/真实 feed |
 | 136/137 定位与验签 | 冷首键差额定位到AppKit可见布局（未改代码）；更新程序新增Ed25519负载验签与`--verify-payload`，仍默认关闭；商店口径ADR-257 |
 | 135 build5原生 | ADR-255后复验：功能无回归、p95 11.569ms、附加0次≥16ms；宿主physical29.5M/峰29.9M、碎片5.7M、换出14.6M，见报告135 |
 | 134 build4原生 | 静态核验后安装，换包保留旧包、输入源集合不变；schema2 100键首轮p95 10.770ms、hideUs p95 1.222ms，见报告134 |
@@ -44,7 +45,7 @@
 
 1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
 2. 30MB：换低压力时机（无 Xcode 构建、swap 回落）按同一固定时点协议复测 build6，再判断能否关闭；冷首键已归因为一次性成本，不再优化。
-3. 更新闭环下一步：正式feed/公钥与下载器（下载后先验签再谈替换），再实现停宿主/原子替换/回滚；App Store先做不发布沙盒构建验证配置根/输入源/学习数据。
+3. 更新闭环下一步：实现下载器（先验签再写盘）与正式 feed/公钥，再用真实签名包演练 `upgrade.py --apply`（含失败回滚）；App Store 先做不发布沙盒构建验证配置根/输入源/学习数据。
 4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
 
 ## 5. 边界
@@ -54,6 +55,10 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-259 落地 `packaging/macos/upgrade.py` 与 8 项离线回归（替换/回滚/验签失败/停宿主失败/dry-run/符号链接/缺 bundle），默认 dry-run；未执行真实安装、未请求 feed；build6 与生产数据未动。
+
+- 2026-10-22 / pi：#87（报告138+ADR-258证据）四CI全绿 merge `050f434`，dev快进同步、PR 0；build6 仍为已装开发包。
 
 - 2026-10-22 / pi：ADR-258/schema3 经 #85 合并、build号6经 #86 合并（main `2b34d0f`）；构建核验 build6 后一次换源完成 47 条 schema3 采样：冷首键 content 18.347=layout9.043+measure6.302，稳态2.87ms，p95 10.56ms；内存30.0→33.6M未关闭；收尾ABC、marker删除、精确退出，生产数据/开发config未变。
 

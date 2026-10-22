@@ -1,0 +1,243 @@
+#!/usr/bin/env python3
+"""Verified in-place upgrade for the production input method (ADR-259).
+
+顺序固定：**先验签，再解包/校验候选，最后才停宿主与替换**；任何一步失败都回滚到旧包。
+默认只做预检（dry-run）；真正写入必须显式 `--apply`，且宿主只在目标已存在时才停止。
+
+用法（真实升级，需已构建的更新程序提供验签入口）：
+    python3 packaging/macos/upgrade.py \
+        --payload Lampyris-0.1.0-universal.zip \
+        --signature <base64 Ed25519> \
+        --verifier <LampyrisUpdateCheck 可执行文件> \
+        --apply
+
+测试通过注入 hooks 覆盖替换/回滚逻辑，不触碰真实输入法目录。
+"""
+from __future__ import annotations
+
+import argparse
+import dataclasses
+import hashlib
+import json
+import os
+from pathlib import Path
+import shutil
+import signal
+import subprocess
+import sys
+import tempfile
+import time
+from typing import Callable
+import uuid
+
+BUNDLE = 'Lampyris.app'
+EXECUTABLE = 'Contents/MacOS/Lampyris'
+IDENTITY = 'cn.jokerhub.inputmethod.Lampyris'
+
+
+class UpgradeError(RuntimeError):
+    """升级前置条件或校验失败；发生时磁盘保持升级前状态或已回滚。"""
+
+
+@dataclasses.dataclass(frozen=True)
+class Hooks:
+    """可注入的外部检查，测试用桩替换，生产用真实实现。"""
+    verify_payload: Callable[[Path, str], None]
+    verify_candidate: Callable[[Path], None]
+    stop_host: Callable[[Path], None]
+
+
+def sha256(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open('rb') as stream:
+        for chunk in iter(lambda: stream.read(1 << 20), b''):
+            digest.update(chunk)
+    return digest.hexdigest()
+
+
+def _private(path: Path, directory: bool = False) -> None:
+    stat = path.lstat()
+    if path.is_symlink() or stat.st_uid != os.geteuid():
+        raise UpgradeError('升级资源归属或链接不符：' + str(path))
+    if directory and not path.is_dir():
+        raise UpgradeError('升级资源不是目录：' + str(path))
+    if not directory and not path.is_file():
+        raise UpgradeError('升级资源不是普通文件：' + str(path))
+
+
+def _extract(payload: Path, staging: Path) -> Path:
+    staging.mkdir(mode=0o700)
+    subprocess.run(['/usr/bin/ditto', '-x', '-k', str(payload), str(staging)], check=True)
+    candidate = staging / BUNDLE
+    if candidate.is_symlink() or not candidate.is_dir():
+        raise UpgradeError('负载解包后缺少 ' + BUNDLE)
+    return candidate
+
+
+def _swap(candidate: Path, destination: Path, backup: Path) -> Path | None:
+    """把已安装包移到备份位，再原子放入候选；返回备份路径（不存在旧包时为 None）。"""
+    previous = None
+    if os.path.lexists(destination):
+        if destination.is_symlink():
+            raise UpgradeError('拒绝替换符号链接目标')
+        backup.mkdir(mode=0o700, parents=False)
+        previous = backup / BUNDLE
+        destination.rename(previous)
+    try:
+        candidate.rename(destination)
+    except OSError as error:
+        if previous is not None and not os.path.lexists(destination):
+            previous.rename(destination)
+        raise UpgradeError('替换失败，已恢复旧包：' + str(error)) from error
+    return previous
+
+
+def install(payload: Path, signature: str, domain: Path, support: Path,
+            hooks: Hooks, dry_run: bool = True) -> dict:
+    for path in (payload,):
+        _private(path)
+    if domain.is_symlink() or support.is_symlink():
+        raise UpgradeError('安装目录不得为符号链接')
+    destination = domain / BUNDLE
+    if os.path.lexists(destination) and destination.is_symlink():
+        raise UpgradeError('已安装包是符号链接，拒绝升级')
+    work = support / f'upgrade-{time.strftime("%Y%m%dT%H%M%S")}-{uuid.uuid4().hex[:8]}'
+    staging = work / 'staging'
+    backup = work / 'backup'
+    receipt = {
+        'payload_sha256': sha256(payload),
+        'signature': signature.strip(),
+        'installed': str(destination),
+        'previous': None,
+        'dry_run': dry_run,
+    }
+    # 1) 先验签：签名不通过时不解包、不碰已安装目录。
+    hooks.verify_payload(payload, signature)
+    support.mkdir(mode=0o700, parents=True, exist_ok=True)
+    work.mkdir(mode=0o700)
+    candidate = _extract(payload, staging)
+    # 2) 候选自身必须通过身份/签名/Gatekeeper 校验，才允许停宿主。
+    hooks.verify_candidate(candidate)
+    receipt['candidate_executable_sha256'] = sha256(candidate / EXECUTABLE)
+    if dry_run:
+        shutil.rmtree(work, ignore_errors=True)
+        receipt['result'] = 'dry-run'
+        return receipt
+    previous = None
+    try:
+        if os.path.lexists(destination):
+            hooks.stop_host(destination / EXECUTABLE)
+        previous = _swap(candidate, destination, backup)
+        receipt['previous'] = str(previous) if previous else None
+        # 3) 落地后的包必须再次通过同一校验，否则回滚。
+        hooks.verify_candidate(destination)
+    except Exception as error:
+        _rollback(destination, previous, work)
+        raise UpgradeError('升级失败，已回滚：' + str(error)) from error
+    receipt['result'] = 'installed'
+    receipt['installed_executable_sha256'] = sha256(destination / EXECUTABLE)
+    _write_receipt(support, receipt)
+    shutil.rmtree(staging, ignore_errors=True)
+    return receipt
+
+
+def _rollback(destination: Path, previous: Path | None, work: Path) -> None:
+    if os.path.lexists(destination) and previous is not None and previous.exists():
+        rejected = work / 'rejected.app'
+        try:
+            destination.rename(rejected)
+        except OSError:
+            pass
+        if not os.path.lexists(destination):
+            previous.rename(destination)
+
+
+def _write_receipt(support: Path, receipt: dict) -> None:
+    receipts = support / 'receipts'
+    receipts.mkdir(mode=0o700, exist_ok=True)
+    path = receipts / f'{time.strftime("%Y%m%dT%H%M%S")}-{uuid.uuid4().hex[:8]}.json'
+    path.write_text(json.dumps(receipt, ensure_ascii=False, indent=2) + '\n')
+    path.chmod(0o600)
+
+
+def real_hooks(verifier: Path) -> Hooks:
+    def verify_payload(payload: Path, signature: str) -> None:
+        result = subprocess.run([str(verifier), '--verify-payload', str(payload), signature],
+                                capture_output=True, text=True)
+        if result.returncode != 0:
+            raise UpgradeError('负载签名无效；未解包、未安装')
+
+    def verify_candidate(app: Path) -> None:
+        executable = app / EXECUTABLE
+        if executable.is_symlink() or not executable.is_file() or not os.access(executable, os.X_OK):
+            raise UpgradeError('候选缺少可执行文件')
+        identity = subprocess.run(
+            ['/usr/libexec/PlistBuddy', '-c', 'Print :CFBundleIdentifier', str(app / 'Contents/Info.plist')],
+            capture_output=True, text=True)
+        if identity.stdout.strip() != IDENTITY:
+            raise UpgradeError('候选标识不符：' + identity.stdout.strip())
+        subprocess.run(['/usr/bin/codesign', '--verify', '--strict', '--deep', str(app)], check=True)
+        details = subprocess.run(['/usr/bin/codesign', '-dv', '--verbose=4', str(app)],
+                                 capture_output=True, text=True).stderr
+        if 'Authority=Developer ID Application:' not in details or 'runtime' not in details:
+            raise UpgradeError('候选缺少 Developer ID 或 hardened runtime')
+        subprocess.run(['/usr/bin/xcrun', 'stapler', 'validate', str(app)], check=True,
+                       capture_output=True)
+        subprocess.run(['/usr/sbin/spctl', '--assess', '--type', 'execute', str(app)], check=True,
+                       capture_output=True)
+
+    def stop_host(executable: Path) -> None:
+        holders = subprocess.run(['/usr/sbin/lsof', '-t', str(executable)],
+                                 capture_output=True, text=True)
+        pids = {int(value) for value in holders.stdout.split()} if holders.returncode == 0 else set()
+        for pid in sorted(pids):
+            command = subprocess.run(['/bin/ps', '-p', str(pid), '-o', 'comm='],
+                                     capture_output=True, text=True).stdout.strip()
+            if command != str(executable):
+                raise UpgradeError('包被非精确宿主使用，拒绝终止：' + command)
+            os.kill(pid, signal.SIGTERM)
+        deadline = time.monotonic() + 5
+        while True:
+            remaining = subprocess.run(['/usr/sbin/lsof', '-t', str(executable)],
+                                       capture_output=True, text=True)
+            if remaining.returncode != 0 or not remaining.stdout.strip():
+                return
+            if time.monotonic() >= deadline:
+                raise UpgradeError('宿主未退出；未替换')
+            time.sleep(0.1)
+
+    return Hooks(verify_payload, verify_candidate, stop_host)
+
+
+def main(argv=None) -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--payload', type=Path, required=True)
+    parser.add_argument('--signature', required=True)
+    parser.add_argument('--verifier', type=Path, help='已签名的 LampyrisUpdateCheck 可执行文件')
+    parser.add_argument('--domain', type=Path, default=Path.home() / 'Library/Input Methods')
+    parser.add_argument('--support', type=Path,
+                        default=Path.home() / 'Library/Application Support/Lampyris/updates')
+    parser.add_argument('--apply', action='store_true', help='真正停宿主并替换；缺省只做预检')
+    args = parser.parse_args(argv)
+    if args.apply and args.verifier is None:
+        parser.error('--apply 需要 --verifier 提供验签')
+    verifier = args.verifier
+    if verifier is not None and not (verifier.is_file() and os.access(verifier, os.X_OK)):
+        parser.error('--verifier 不是可执行文件')
+    hooks = real_hooks(verifier) if verifier is not None else Hooks(
+        verify_payload=lambda payload, signature: (_ for _ in ()).throw(UpgradeError('未提供验签器')),
+        verify_candidate=lambda app: None,
+        stop_host=lambda executable: None,
+    )
+    try:
+        receipt = install(args.payload, args.signature, args.domain, args.support, hooks,
+                          dry_run=not args.apply)
+    except (UpgradeError, OSError, subprocess.CalledProcessError) as error:
+        print('BLOCKED：' + str(error), file=sys.stderr)
+        return 3
+    print(json.dumps(receipt, ensure_ascii=False, indent=2))
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
