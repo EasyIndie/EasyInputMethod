@@ -17,7 +17,7 @@ b317590的固定开发签名构建39719374289成功，但静态核验发现其pl
 - 修改前：隔离包回归因缺少CFBundleShortVersionString失败；旧包到有SemVer字段的新包换包回归因声明变化失败。
 - 修改后：隔离包6项、固定开发换包9项、隔离CI4项全部通过；临时workspace使用2.3.4-rc.2+fixture/build42，避免仅对当前版本写死。
 - 既有拒绝身份变化、当前开发源占用、错误PID、最终校验失败恢复、旧包及数据保留回归继续通过。
-- 完整make verify通过、零诊断，隐私检查200个产物；日志/tmp/lampyris-mvp-128-verify.txt。后续PR/签名包结果以本报告后续记录为准；本地模拟换包不等同真实IMK升级通过。
+- 完整make verify通过、零诊断，隐私检查200个产物；日志/tmp/lampyris-mvp-128-verify.txt。macOS离线全套通过，结构化摘要见128-evidence/offline-summary.json。后续PR/签名包结果以本报告后续记录为准；本地模拟换包不等同真实IMK升级通过。
 
 ## 待完成
 
