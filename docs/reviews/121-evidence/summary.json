@@ -1,0 +1,215 @@
+{
+  "baseline_commit": "01fb0164d1b52cc22e4a34a69054a71abbd45631",
+  "scope": "真实表离屏，交替mixed/wubi状态刷新后同输入候选/定位；不显示窗口、不发按键；非120原生对照",
+  "probe_base": "docs/reviews/112-evidence/phase.swift",
+  "probe_changes": "enumerated输入；step奇数wubi状态；candidate调用增加relayout:false；保留各阶段首值与status+content逐样本合计P95（索引569）",
+  "sha256": {
+    "ffi": "e5b49ec783bc3531fcd75afc729de5e5d67ba1f4ea39090b8b87d908e927fb53",
+    "baseline_source": "e1a3c32957f1b24126164dd3399a6fd3a2421a1a26b3407fe7ae208f60ba5532",
+    "baseline_exe": "5c872ff0b50faface8773c71192984f157edd4716cd122545b4fe63e3ecd8879",
+    "baseline_probe": "1830ebde47f9c83568f72c9cd60423f25d26ca0d33e546226b74df06e6c7bf05",
+    "candidate_source": "e5c7e6724dcbf53b4a8634de64cc800d31482404da32605e212dc92e3fb83980",
+    "candidate_exe": "386c0d4ecbff4f510a31aaf0070f5cc03da612ee3d78481a1bed92d12172a3eb",
+    "candidate_probe": "cf296b0acb62ce2ef3e28c95d2bc7db9bdd5486514b05e75e624b17e07e8fd55"
+  },
+  "runs": [
+    {
+      "variant": "baseline",
+      "round": 0,
+      "first_ms": [
+        1.241333,
+        4.261458,
+        0.622834
+      ],
+      "milliseconds": [
+        {
+          "max": 1.241333,
+          "p50": 0.676958,
+          "p95": 0.711333
+        },
+        {
+          "max": 4.261458,
+          "p50": 0.996875,
+          "p95": 1.061917
+        },
+        {
+          "max": 0.622834,
+          "p50": 0.006459,
+          "p95": 0.006959
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 1.759291
+    },
+    {
+      "variant": "candidate",
+      "round": 0,
+      "first_ms": [
+        1.142542,
+        4.046166,
+        0.627584
+      ],
+      "milliseconds": [
+        {
+          "max": 3.488208,
+          "p50": 0.151625,
+          "p95": 0.558416
+        },
+        {
+          "max": 10.483375,
+          "p50": 1.002,
+          "p95": 2.270042
+        },
+        {
+          "max": 0.627584,
+          "p50": 0.006584,
+          "p95": 0.021417
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 3.012167
+    },
+    {
+      "variant": "baseline",
+      "round": 1,
+      "first_ms": [
+        1.190291,
+        4.08525,
+        0.626625
+      ],
+      "milliseconds": [
+        {
+          "max": 1.190291,
+          "p50": 0.678083,
+          "p95": 0.70575
+        },
+        {
+          "max": 4.08525,
+          "p50": 0.994875,
+          "p95": 1.051417
+        },
+        {
+          "max": 0.626625,
+          "p50": 0.006417,
+          "p95": 0.006792
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 1.743583
+    },
+    {
+      "variant": "candidate",
+      "round": 1,
+      "first_ms": [
+        1.148667,
+        4.206583,
+        0.71225
+      ],
+      "milliseconds": [
+        {
+          "max": 1.148667,
+          "p50": 0.146959,
+          "p95": 0.153375
+        },
+        {
+          "max": 4.206583,
+          "p50": 0.993209,
+          "p95": 1.053333
+        },
+        {
+          "max": 0.71225,
+          "p50": 0.0065,
+          "p95": 0.006958
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 1.202917
+    },
+    {
+      "variant": "baseline",
+      "round": 2,
+      "first_ms": [
+        1.178375,
+        4.06225,
+        0.631791
+      ],
+      "milliseconds": [
+        {
+          "max": 1.178375,
+          "p50": 0.676959,
+          "p95": 0.706417
+        },
+        {
+          "max": 4.06225,
+          "p50": 0.99375,
+          "p95": 1.0505
+        },
+        {
+          "max": 0.631791,
+          "p50": 0.006458,
+          "p95": 0.006791
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 1.742041
+    },
+    {
+      "variant": "candidate",
+      "round": 2,
+      "first_ms": [
+        1.146041,
+        4.048709,
+        0.627625
+      ],
+      "milliseconds": [
+        {
+          "max": 1.146041,
+          "p50": 0.147458,
+          "p95": 0.153709
+        },
+        {
+          "max": 4.048709,
+          "p50": 0.98975,
+          "p95": 1.050041
+        },
+        {
+          "max": 0.627625,
+          "p50": 0.006541,
+          "p95": 0.007
+        }
+      ],
+      "samples": 600,
+      "stage_names": [
+        "status",
+        "candidate_update",
+        "position_layout"
+      ],
+      "sum_p95_ms": 1.200583
+    }
+  ]
+}

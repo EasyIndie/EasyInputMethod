@@ -612,11 +612,12 @@ final class CandidateWindow: NSObject {
     var onPage: ((Int) -> Void)?
     var frame: NSRect { panel.frame }
     var isVisible: Bool { panel.isVisible }
-    func updateStatus(_ status: CandidateStatus) {
+    /// A following candidate update can complete the shared layout in the same call stack.
+    func updateStatus(_ status: CandidateStatus, relayout: Bool = true) {
         guard self.status != status else { return }
         self.status = status
         stateStrip.update(status)
-        arrange()
+        if relayout { arrange() }
     }
     /// 芯片数量/宽度变化后按最近一次光标与屏幕重新定位。
     func refreshLayout() {
