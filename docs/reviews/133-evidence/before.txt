@@ -1,0 +1,15 @@
+F
+======================================================================
+FAIL: test_native_view_and_real_ffi_paging (__main__.CandidatePresentationTests.test_native_view_and_real_ffi_paging)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/joker/Documents/EasyInputMethod/platforms/macos/tests/test-candidate-presentation.py", line 41, in test_native_view_and_real_ffi_paging
+    self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0 : FAIL: padding must remain finite inside small bounds
+
+
+----------------------------------------------------------------------
+Ran 1 test in 8.455s
+
+FAILED (failures=1)
