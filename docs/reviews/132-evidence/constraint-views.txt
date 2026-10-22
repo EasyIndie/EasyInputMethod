@@ -1,0 +1,116 @@
+(lldb) target create "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-ocdspaez/probe"
+Current executable set to '/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-ocdspaez/probe' (arm64).
+(lldb) settings set -- target.run-args  "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-ocdspaez/config.toml"
+(lldb) breakpoint set --name _NSLayoutConstraintNumberExceedsLimit
+Breakpoint 1: where = CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit, address = 0x000000018b7cee6c
+(lldb) run
+2026-10-22 18:48:23.773687+0800 probe[55673:3043601] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.774375+0800 probe[55673:3043634] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.774397+0800 probe[55673:3043634] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.774330+0800 probe[55673:3043601] [Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.774868+0800 probe[55673:3043639] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.774895+0800 probe[55673:3043639] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.775332+0800 probe[55673:3043639] [Connection] Will NOT re-try to establish the connection
+2026-10-22 18:48:23.775410+0800 probe[55673:3043634] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:23.775440+0800 probe[55673:3043634] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:48:25.008180+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.008463+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.008472+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.008479+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+STRIP 0.079042 2.451875
+2026-10-22 18:48:25.023211+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023234+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023248+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023257+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.023299+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023315+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023324+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023336+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.023375+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023385+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023393+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023399+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.023431+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023440+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023447+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023453+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.023487+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023501+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023509+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023516+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.023545+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:48:25.023554+0800 probe[55673:3043555] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:48:25.023561+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:48:25.023568+0800 probe[55673:3043555] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:48:25.039635+0800 probe[55673:3043555] [WindowTab] Cannot index window tabs due to missing main bundle identifier
+Process 55673 launched: '/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-ocdspaez/probe' (arm64)
+Process 55673 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+       frame #0: 0x0000000192a02e6c CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit
+CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit:
+->  0x192a02e6c <+0>:  pacibsp 
+    0x192a02e70 <+4>:  sub    sp, sp, #0x30
+    0x192a02e74 <+8>:  stp    x20, x19, [sp, #0x10]
+    0x192a02e78 <+12>: stp    x29, x30, [sp, #0x20]
+Target 0: (probe) stopped.
+(lldb) bt 8
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+   * frame #0: 0x0000000192a02e6c CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit
+     frame #1: 0x0000000192a15c60 CoreAutoLayout`-[NSLayoutConstraint _setSymbolicConstant:constant:symbolicConstantMultiplier:] + 212
+     frame #2: 0x0000000192a15eac CoreAutoLayout`-[NSLayoutConstraint setConstant:] + 84
+     frame #3: 0x0000000192a070e0 CoreAutoLayout`+[NSAutoresizingMaskLayoutConstraint constraintWithItem:attribute:relatedBy:toItem:attribute:multiplier:constant:] + 260
+     frame #4: 0x0000000192a06868 CoreAutoLayout`+[NSAutoresizingMaskLayoutConstraint constraintsWithAutoresizingMask:subitem:frame:superitem:bounds:] + 248
+     frame #5: 0x000000018ce6eb38 AppKit`-[NSView(NSConstraintBasedLayoutInternal) _constraintsEquivalentToAutoresizingMask] + 132
+     frame #6: 0x000000018ce6db8c AppKit`-[NSView(NSConstraintBasedLayoutInternal) _updateAutoresizingConstraints] + 172
+     frame #7: 0x000000018c1bcd88 AppKit`-[NSView updateConstraints] + 64
+(lldb) expression -l swift -- import AppKit
+(lldb) expression -l swift -- { () -> Void in func walk(_ v: NSView, _ d: Int) { print(String(repeating: " ", count: d), String(describing: type(of: v)), v.frame, v.bounds); for c in v.subviews { walk(c, d+1) } }; for w in NSApplication.shared.windows { print("WINDOW", w.frame); if let v = w.contentView { walk(v, 0) } } }()
+WINDOW (20.0, 84.0, 504.0, 98.0)
+ NSView (0.0, 0.0, 504.0, 98.0) (0.0, 0.0, 504.0, 98.0)
+  NSTextField (16.0, 67.0, 289.0, 20.0) (0.0, 0.0, 289.0, 20.0)
+   NSTextFieldSimpleLabel (0.0, 0.0, 368.0, 20.0) (0.0, 0.0, 368.0, 20.0)
+  NSTextField (452.0, 71.0, 8.0, 15.0) (0.0, 0.0, 8.0, 15.0)
+   NSTextFieldSimpleLabel (0.0, 0.0, 8.0, 15.0) (0.0, 0.0, 8.0, 15.0)
+  NSTextField (16.0, 8.0, 472.0, 18.0) (0.0, 0.0, 472.0, 18.0)
+   NSTextFieldSimpleLabel (0.0, 0.0, 368.0, 0.0) (0.0, 0.0, 368.0, 0.0)
+  NSTextField (16.0, 26.0, 472.0, 0.0) (0.0, 0.0, 472.0, 0.0)
+   NSTextFieldSimpleLabel (0.0, 0.0, 368.0, 0.0) (0.0, 0.0, 368.0, 0.0)
+  CandidateStateStrip (305.0, 69.0, 175.0, 16.0) (0.0, 0.0, 175.0, 16.0)
+   NSTextField (0.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+   NSTextField (39.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+   NSTextField (78.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+   NSTextField (117.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 36.0, 16.0) (0.0, 0.0, 36.0, 16.0)
+   NSTextField (156.0, 0.0, 19.0, 16.0) (0.0, 0.0, 19.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 19.0, 16.0) (0.0, 0.0, 19.0, 16.0)
+   NSTextField (0.0, 0.0, 4.0, 16.0) (0.0, 0.0, 4.0, 16.0)
+    NSTextFieldSimpleLabel (0.0, 0.0, 4.0, 16.0) (0.0, 0.0, 4.0, 16.0)
+  CandidatePageButton (424.0, 66.5, 24.0, 24.0) (0.0, 0.0, 24.0, 24.0)
+   NSButtonImageView (7.0, 5.5, 10.0, 13.0) (0.0, 0.0, 10.0, 13.0)
+  CandidatePageButton (464.0, 66.5, 24.0, 24.0) (0.0, 0.0, 24.0, 24.0)
+   NSButtonImageView (7.0, 5.5, 10.0, 13.0) (0.0, 0.0, 10.0, 13.0)
+  NSScrollView (16.0, 36.0, 472.0, 26.0) (0.0, 0.0, 472.0, 26.0)
+   NSClipView (0.0, 0.0, 472.0, 26.0) (0.0, 0.0, 472.0, 26.0)
+    CandidateDocument (0.0, 0.0, 472.0, 26.0) (0.0, 0.0, 472.0, 26.0)
+     CandidateLabel (0.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (6.0, 2.0, 356.0, 22.0) (0.0, 0.0, 356.0, 22.0)
+     CandidateLabel (67.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+     CandidateLabel (134.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+     CandidateLabel (201.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+     CandidateLabel (268.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+     CandidateLabel (335.0, 0.0, 53.0, 26.0) (0.0, 0.0, 53.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+     CandidateLabel (402.0, 0.0, 70.0, 26.0) (0.0, 0.0, 70.0, 26.0)
+      NSTextFieldSimpleLabel (17592186044416.0, 17592186044416.0, 0.0, 0.0) (0.0, 0.0, 0.0, 0.0)
+  WubiLearningView (16.0, 26.0, 472.0, 0.0) (0.0, 0.0, 472.0, 0.0)
+(Void) $R0 = {}
+(lldb) quit
+  Evaluated this expression after applying Fix-It(s):
+    import AppKit

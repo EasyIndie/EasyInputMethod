@@ -1,0 +1,309 @@
+{
+  "scope": "visible nonactivating temporary panel; fresh process each run; not IMK/client dispatch",
+  "source_sha256": {
+    "default": "0b3ba6fefac211c59382bdb6d0a2c515f7d3808b94bf73c84c46799eb9cd7728",
+    "none": "66277da0798d15b97fce1b403bd0c84d8ff8dbedaf16957194464cea1aab59d3"
+  },
+  "runs": [
+    {
+      "variant": "default",
+      "round": 0,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 14.057542,
+        "max_ms": 24.199333,
+        "first_ms": 24.199333
+      },
+      "clear": {
+        "p95_ms": 0.627917,
+        "max_ms": 0.713041,
+        "first_ms": 0.31
+      },
+      "hide": {
+        "p95_ms": 14.341042,
+        "max_ms": 24.509332999999998,
+        "first_ms": 24.509332999999998
+      },
+      "layout": {
+        "first_ms": [
+          1.33775,
+          4.745167,
+          0.847
+        ],
+        "milliseconds": [
+          {
+            "max": 1.33775,
+            "p50": 0.000875,
+            "p95": 0.001875
+          },
+          {
+            "max": 13.188958,
+            "p50": 2.032708,
+            "p95": 11.440167
+          },
+          {
+            "max": 11.050583,
+            "p50": 0.767958,
+            "p95": 9.474125
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "variant": "none",
+      "round": 0,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 10.404458,
+        "max_ms": 13.896958,
+        "first_ms": 10.404458
+      },
+      "clear": {
+        "p95_ms": 0.61625,
+        "max_ms": 0.71925,
+        "first_ms": 0.235333
+      },
+      "hide": {
+        "p95_ms": 10.639791,
+        "max_ms": 13.993542000000001,
+        "first_ms": 10.639791
+      },
+      "layout": {
+        "first_ms": [
+          1.440875,
+          4.630416,
+          1.005792
+        ],
+        "milliseconds": [
+          {
+            "max": 1.440875,
+            "p50": 0.000916,
+            "p95": 0.002542
+          },
+          {
+            "max": 13.575333,
+            "p50": 1.999417,
+            "p95": 11.486917
+          },
+          {
+            "max": 15.98925,
+            "p50": 0.725917,
+            "p95": 8.79225
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "variant": "default",
+      "round": 1,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 13.127042,
+        "max_ms": 16.068375,
+        "first_ms": 10.122709
+      },
+      "clear": {
+        "p95_ms": 0.719083,
+        "max_ms": 0.756209,
+        "first_ms": 0.19825
+      },
+      "hide": {
+        "p95_ms": 13.308791999999999,
+        "max_ms": 16.247291999999998,
+        "first_ms": 10.320959
+      },
+      "layout": {
+        "first_ms": [
+          1.308333,
+          4.399125,
+          0.72525
+        ],
+        "milliseconds": [
+          {
+            "max": 1.308333,
+            "p50": 0.000833,
+            "p95": 0.001833
+          },
+          {
+            "max": 13.1705,
+            "p50": 2.053209,
+            "p95": 11.210417
+          },
+          {
+            "max": 10.736667,
+            "p50": 0.814,
+            "p95": 9.370917
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "variant": "none",
+      "round": 1,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 12.855292,
+        "max_ms": 18.066917,
+        "first_ms": 9.841959
+      },
+      "clear": {
+        "p95_ms": 0.562375,
+        "max_ms": 0.743916,
+        "first_ms": 0.217
+      },
+      "hide": {
+        "p95_ms": 13.179292,
+        "max_ms": 18.251834,
+        "first_ms": 10.058959
+      },
+      "layout": {
+        "first_ms": [
+          1.501083,
+          5.026,
+          0.780083
+        ],
+        "milliseconds": [
+          {
+            "max": 1.501083,
+            "p50": 0.000834,
+            "p95": 0.001833
+          },
+          {
+            "max": 13.120792,
+            "p50": 1.994709,
+            "p95": 8.673959
+          },
+          {
+            "max": 10.383083,
+            "p50": 0.780083,
+            "p95": 7.889292
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "variant": "default",
+      "round": 2,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 13.996833,
+        "max_ms": 16.336833,
+        "first_ms": 8.8985
+      },
+      "clear": {
+        "p95_ms": 0.287583,
+        "max_ms": 0.309625,
+        "first_ms": 0.199541
+      },
+      "hide": {
+        "p95_ms": 14.22625,
+        "max_ms": 16.613916999999997,
+        "first_ms": 9.098041
+      },
+      "layout": {
+        "first_ms": [
+          1.573042,
+          5.171125,
+          0.955791
+        ],
+        "milliseconds": [
+          {
+            "max": 1.573042,
+            "p50": 0.000875,
+            "p95": 0.001584
+          },
+          {
+            "max": 12.696542,
+            "p50": 2.023958,
+            "p95": 11.043375
+          },
+          {
+            "max": 11.034333,
+            "p50": 0.742042,
+            "p95": 1.210125
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    },
+    {
+      "variant": "none",
+      "round": 2,
+      "samples": 60,
+      "orderOut": {
+        "p95_ms": 9.83025,
+        "max_ms": 18.308,
+        "first_ms": 7.590875
+      },
+      "clear": {
+        "p95_ms": 0.304583,
+        "max_ms": 0.456542,
+        "first_ms": 0.232458
+      },
+      "hide": {
+        "p95_ms": 10.074084,
+        "max_ms": 18.522083,
+        "first_ms": 7.823333
+      },
+      "layout": {
+        "first_ms": [
+          1.52875,
+          5.341166,
+          0.796917
+        ],
+        "milliseconds": [
+          {
+            "max": 1.52875,
+            "p50": 0.000791,
+            "p95": 0.002125
+          },
+          {
+            "max": 17.800458,
+            "p50": 2.02925,
+            "p95": 10.593
+          },
+          {
+            "max": 13.453167,
+            "p50": 0.738334,
+            "p95": 2.469209
+          }
+        ],
+        "samples": 60,
+        "stage_names": [
+          "status",
+          "candidate_update",
+          "position_layout"
+        ]
+      }
+    }
+  ]
+}

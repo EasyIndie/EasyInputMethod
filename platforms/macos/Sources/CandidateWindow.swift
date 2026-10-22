@@ -913,7 +913,10 @@ final class CandidateWindow: NSObject {
         }
         let bodyHeight = min(maxBody, naturalHeight)
         let total = max(32, min(available.height, bodyHeight + extraHeight))
-        panel.setContentSize(NSSize(width: width, height: total))
+        let contentSize = NSSize(width: width, height: total)
+        if panel.contentView?.bounds.size != contentSize {
+            panel.setContentSize(contentSize)
+        }
         let top = total - 8
         inputLabel.isHidden = !headerVisible
         pageLabel.isHidden = !pagesVisible

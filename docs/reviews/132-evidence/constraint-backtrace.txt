@@ -1,0 +1,88 @@
+(lldb) target create "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-5x6fb1k7/probe"
+Current executable set to '/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-5x6fb1k7/probe' (arm64).
+(lldb) settings set -- target.run-args  "/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-5x6fb1k7/config.toml"
+(lldb) breakpoint set --name _NSLayoutConstraintNumberExceedsLimit
+Breakpoint 1: where = CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit, address = 0x000000018b7cee6c
+(lldb) run
+2026-10-22 18:47:08.337762+0800 probe[55569:3042479] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.337447+0800 probe[55569:3042478] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.337892+0800 probe[55569:3042479] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.338140+0800 probe[55569:3042526] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.338154+0800 probe[55569:3042526] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.337941+0800 probe[55569:3042478] [Application] Error registering app with intents framework: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.338632+0800 probe[55569:3042478] [Connection] Will NOT re-try to establish the connection
+2026-10-22 18:47:08.338664+0800 probe[55569:3042516] [Connection] Unable to get synchronousRemoteObjectProxy, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:08.338686+0800 probe[55569:3042516] [Connection] Unable to re-register with Process Instance Registry, error: Error Domain=NSCocoaErrorDomain Code=4097 "connection to service named com.apple.linkd.autoShortcut" UserInfo={NSDebugDescription=connection to service named com.apple.linkd.autoShortcut}
+2026-10-22 18:47:09.646987+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.647230+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.647239+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.647246+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+STRIP 0.072125 1.812375
+2026-10-22 18:47:09.661398+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661426+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661441+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661451+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.661497+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661514+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661525+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661539+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.661576+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661585+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661594+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661600+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.661632+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661641+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661649+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661656+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.661690+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661705+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661713+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661719+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.661748+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is infinity.
+2026-10-22 18:47:09.661757+0800 probe[55569:3042439] [AppKit] Invalid view geometry: x is too large.
+2026-10-22 18:47:09.661764+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is infinity.
+2026-10-22 18:47:09.661771+0800 probe[55569:3042439] [AppKit] Invalid view geometry: y is too large.
+2026-10-22 18:47:09.670852+0800 probe[55569:3042439] [WindowTab] Cannot index window tabs due to missing main bundle identifier
+Process 55569 launched: '/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-132-5x6fb1k7/probe' (arm64)
+Process 55569 stopped
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+       frame #0: 0x0000000192a02e6c CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit
+CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit:
+->  0x192a02e6c <+0>:  pacibsp 
+    0x192a02e70 <+4>:  sub    sp, sp, #0x30
+    0x192a02e74 <+8>:  stp    x20, x19, [sp, #0x10]
+    0x192a02e78 <+12>: stp    x29, x30, [sp, #0x20]
+Target 0: (probe) stopped.
+(lldb) bt 30
+* thread #1, queue = 'com.apple.main-thread', stop reason = breakpoint 1.1
+   * frame #0: 0x0000000192a02e6c CoreAutoLayout`_NSLayoutConstraintNumberExceedsLimit
+     frame #1: 0x0000000192a15c60 CoreAutoLayout`-[NSLayoutConstraint _setSymbolicConstant:constant:symbolicConstantMultiplier:] + 212
+     frame #2: 0x0000000192a15eac CoreAutoLayout`-[NSLayoutConstraint setConstant:] + 84
+     frame #3: 0x0000000192a070e0 CoreAutoLayout`+[NSAutoresizingMaskLayoutConstraint constraintWithItem:attribute:relatedBy:toItem:attribute:multiplier:constant:] + 260
+     frame #4: 0x0000000192a06868 CoreAutoLayout`+[NSAutoresizingMaskLayoutConstraint constraintsWithAutoresizingMask:subitem:frame:superitem:bounds:] + 248
+     frame #5: 0x000000018ce6eb38 AppKit`-[NSView(NSConstraintBasedLayoutInternal) _constraintsEquivalentToAutoresizingMask] + 132
+     frame #6: 0x000000018ce6db8c AppKit`-[NSView(NSConstraintBasedLayoutInternal) _updateAutoresizingConstraints] + 172
+     frame #7: 0x000000018c1bcd88 AppKit`-[NSView updateConstraints] + 64
+     frame #8: 0x000000018d14c228 AppKit`___lldb_unnamed_symbol_185f1820c + 28
+     frame #9: 0x000000018d14c250 AppKit`___lldb_unnamed_symbol_185f18234 + 28
+     frame #10: 0x000000018d1fc708 AppKit`___lldb_unnamed_symbol_185fc817c + 1420
+     frame #11: 0x000000018d1fcd04 AppKit`___lldb_unnamed_symbol_185fc8ce8 + 28
+     frame #12: 0x000000018cb6c100 AppKit`___NSViewUpdateConstraints_block_invoke + 104
+     frame #13: 0x000000018c179b5c AppKit`NSPerformVisuallyAtomicChange + 128
+     frame #14: 0x000000018c1bcd3c AppKit`_NSViewUpdateConstraints + 96
+     frame #15: 0x000000018c1bca3c AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 824
+     frame #16: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #17: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #18: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #19: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #20: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #21: 0x000000018c1bc884 AppKit`-[NSView _updateConstraintsForSubtreeIfNeededCollectingViewsWithInvalidBaselines:] + 384
+     frame #22: 0x000000018cb6085c AppKit`__45-[NSView updateConstraintsForSubtreeIfNeeded]_block_invoke_2 + 52
+     frame #23: 0x000000018c1bc560 AppKit`__45-[NSView updateConstraintsForSubtreeIfNeeded]_block_invoke + 224
+     frame #24: 0x000000018c179b5c AppKit`NSPerformVisuallyAtomicChange + 128
+     frame #25: 0x000000018c1bc474 AppKit`-[NSView updateConstraintsForSubtreeIfNeeded] + 96
+     frame #26: 0x000000018ce78be0 AppKit`-[NSWindow(NSConstraintBasedLayoutInternal) updateConstraintsIfNeeded] + 176
+     frame #27: 0x000000018c1dd35c AppKit`__NSWindowGetDisplayCycleObserverForUpdateConstraints_block_invoke + 364
+     frame #28: 0x000000018c1dd1d8 AppKit`NSDisplayCycleObserverInvoke + 152
+     frame #29: 0x000000018c1dce64 AppKit`NSDisplayCycleFlush + 656
+(lldb) quit

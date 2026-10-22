@@ -64,6 +64,14 @@ guard window.selectedCandidateIndexForTesting == 1,
 else { fail("keyboard focus presentation/accessibility") }
 let anchoredSize = window.frame.size
 let anchoredGeometry = window.layoutForTesting()!
+let sameSizeFrame = window.frame
+window.update(candidates: values, selectedIndex: 1, input: "wq")
+window.layout(at: caret, within: area)
+guard window.frame == sameSizeFrame,
+      window.layoutForTesting()!.labels == anchoredGeometry.labels,
+      window.selectedCandidateIndexForTesting == 1,
+      window.displayedCandidateTexts.count == values.count
+else { fail("same-size refresh preserves geometry and selection") }
 let movedCaret = NSRect(x: 48, y: 70, width: 2, height: 20)
 window.layout(at: movedCaret, within: area)
 guard window.frame.origin != NSPoint(x: caret.minX, y: caret.maxY + 4),
