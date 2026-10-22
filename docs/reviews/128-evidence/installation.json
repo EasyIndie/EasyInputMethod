@@ -1,0 +1,56 @@
+{
+  "data_before": {
+    "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/user-dictionary.tsv": "2c5ea890b24a2e4b69e25f7a3810870d9163c24c4858731f771e0d237369581c",
+    "/Users/joker/Library/Application Support/Lampyris/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "/Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "data_after": {
+    "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/user-dictionary.tsv": "2c5ea890b24a2e4b69e25f7a3810870d9163c24c4858731f771e0d237369581c",
+    "/Users/joker/Library/Application Support/Lampyris/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "/Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "unchanged": true,
+  "installation": {
+    "root": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+    "installed": "/Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app",
+    "backup": "/Users/joker/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05/replacement-yu8hn1jy/previous.app",
+    "source_commit": "18fcbbfdc64147eed557b1783d665e1314198f69",
+    "executable_sha256": "dc000b6dff48707c18c9ee33052a52260084c795d5856b628eccaaa20cce7cd6",
+    "before": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "after": {
+      "current": "com.apple.keylayout.ABC",
+      "enabled": [
+        "cn.jokerhub.inputmethod.Lampyris",
+        "cn.jokerhub.inputmethod.Lampyris.default",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05",
+        "cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default",
+        "com.apple.CharacterPaletteIM",
+        "com.apple.PressAndHold",
+        "com.apple.keylayout.ABC",
+        "com.sogou.inputmethod.sogou",
+        "com.sogou.inputmethod.sogou.pinyin",
+        "com.sogou.inputmethod.sogouWB",
+        "com.sogou.inputmethod.sogouWB.wubi"
+      ]
+    },
+    "source_state_unchanged": true,
+    "native_input_verified": false
+  }
+}

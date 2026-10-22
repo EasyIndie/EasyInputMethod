@@ -1,0 +1,17 @@
+合成容量词库：1978920 字节 / 10000条，无真实用户数据
+    Finished `release` profile [optimized] target(s) in 0.10s
+window_activation_ms=130.549
+slow_key round=22 input=kwwl scalar=107 ms=18.153
+round=100 footprint_mib=29.58
+round=200 footprint_mib=29.74
+round=300 footprint_mib=29.77
+round=400 footprint_mib=29.77
+round=500 footprint_mib=29.70
+round=600 footprint_mib=30.11
+round=700 footprint_mib=29.80
+round=800 footprint_mib=29.84
+round=900 footprint_mib=29.78
+round=1000 footprint_mib=29.80
+keys_at_or_above_16ms=1
+keys=22000 cold_ms=11.870 warm_p95_ms=6.410 warm_max_ms=18.153 footprint_mib=29.89
+privacy_sample=passed: no IP sockets observed in isolated probe

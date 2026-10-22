@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / Codex；固定dev，main/dev代码基线b317590（#77已合并），仅main/dev、开放PR0；ADR-250流程规范在dev保存，verify零诊断通过，待下一批必要MVP改动合入。
+- 更新：2026-10-22 / Codex；固定dev，main/dev代码基线18fcbbf（#78四CI绿已合并），仅main/dev、开放PR0；ADR-250规范已合入。
 - 本轮ADR-249版本治理本地完成；verify零诊断、41文件193离线回归、strict universal/默认关闭更新程序构建通过。ca15f49/e509d47的PR #77四CI通过并merge合入b317590，main/dev快进同步；127真实审核归档与重建通过。
-- 已装仍01fb016/执行ff2e9223…196a85b；083857a签名包已核验未安装。本轮本地ad-hoc未安装，真实数据未动。
+- B开发已装18fcbbf/0.1.0/build2，执行dc000b6d…ce7cd6；39728402241公证通过，ABC与四份配置词库SHA保持，等待用户切开发源补原生。
 - IT-12顺序满库五会话复测2200键P95 4.537ms/physical43.55MiB；非IMK、内存高水位待定位，16ms/30MB与同RC门禁不关闭。
 
 ## 1. 设备与数据
@@ -13,7 +13,7 @@
 |---|---|---|---|
 | A（历史交接，未本轮回读） | Intel/macOS13.7.8，生产07bbb2f/681fb1c8… | config809e2cae…，词库2ee1a469…/217行；不得继承旧候选PASS | 报告103历史，不操作A |
 | B生产 | arm64/macOS27.0.1，17053e1/535d546f… | config3bc1117c…，词库74f76e92…/29行；115收尾两SHA保持 | 生产包未替换 |
-| B固定开发 | 01fb016，公证39671498990；ZIP2408a6bd…4b583，执行ff2e9223…196a85b | 换包ABC；四SHA保持；120收尾完成：ABC、PID51595退出、计时关闭；开发词库正常学习变化 | replacement-2gqm5ixs/previous.app为a3853aa，详见120-evidence/package.json |
+| B固定开发 | 18fcbbf/build2，公证39728402241；ZIP30e4691b…fae7a5，执行dc000b6d…ce7cd6 | 换包ABC；四SHA保持；120收尾完成：ABC、PID51595退出、计时关闭；开发词库正常学习变化 | replacement-yu8hn1jy/previous.app为01fb016，详见128-evidence/installation.json |
 
 - 开发根：`~/Library/Application Support/LampyrisIMKDev/lampyris-imk-d4fcecfb-af99-4b9a-a590-55fa99e16f05`；身份不变，不反复移除/添加/注销。
 - 本次只读回读TextEdit窗口2372仍在，为“萤火虫性能验收-115.txt”；1902/2221已不在列表，本次未关闭任何手工文稿，禁止清空。
@@ -42,8 +42,8 @@
 
 ## 4. 下一步（断点）
 
-1. PR #77已合入b317590、四CI全绿，main/dev已同步，无开放PR。用户新指派GitHub流程选择：ADR-250固定dev小批次集成/merge commit/反馈与验收分开，规范提交随下一批相关必要MVP实现合入，不另开碎片PR。
-2. 真实归档源码/APP/SBOM/独立build及同机离线重建已通过（127）；main b317590签名固定开发包39719374289成功但缺三项版本字段，拒绝安装；ADR-251修复隔离包版本派生及旧包到新SemVer字段换包兼容，0.1.0/build2，见128。完整验证后同批PR合入main再重建，不安装缺版本包。
+1. PR #78最终head fc65b65四CI绿，merge18fcbbf已同步main/dev，无开放PR，ADR-250/251已合入。报告128记录开发包缺版本拒绝安装及最小修复，0.1.0/build2。
+2. 39728402241签名开发包核验及ABC原位换包通过，四份数据与源集合保持；等待用户切“萤火虫开发d4fcecfb”，再精确核对PID/执行dc000b6d…ce7cd6，补原生性能和120末项mixed文本。不要用旧run39719374289缺版本包。
 3. 127满库低负载离屏physical43.55MiB，malloc分配18.4M/碎片16M；进一步定位分配高水位，不能用早期有swap的31.36MiB冒充改善。基础与个人数据已有共享快照，不重复建缓存。原生首键67ms及最终文本门禁仍开。
 4. 更新仍默认关闭，无正式feed/key，下载验签/安全替换/回滚、App Store路径及同RC A/B/独立重建/五日待做；不创建tag/Release，不因等待实机停止独立可完成项。
 
@@ -54,6 +54,9 @@
 - 不创建tag或Release。改动走PR，make verify零诊断；不绕过main-only签名约束。
 
 ## 9. 会话日志
+
+- 2026-10-22 / Codex：#78最终head fc65b65四CI绿合入18fcbbf并同步dev；build2公证39728402241核验/ABC换包通过，四数据SHA保持，旧01fb016备份，等切开发源补原生。满库五会话22000键无持续增长趋势，非原生/无swap分类不关闭指标；见128。
+
 
 - 2026-10-22 / Codex：继续MVP，39719374289签名包核验发现开发路径遗漏版本字段，未安装。ADR-251先写后修复派生与安装器兼容，两项旧回归失败后通过，19项定向通过；build2完整verify零诊断通过/唯一PR收尾，报告128。
 
