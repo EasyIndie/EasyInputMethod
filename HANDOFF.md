@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`95ef68b14efb6d95d76f0f0afe3bb2c6db70c2f9`（#81 ADR-255、#82 构建号、#83 报告135、#84 ADR-256/257 均四CI绿后merge；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`050f434`（#81 ADR-255、#82/#86 构建号、#83 报告135、#84 ADR-256/257、#85 schema3、#87 报告138 均四CI绿后merge；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：宿主physical **29.5M**/峰**29.9M**、malloc活跃17.2M/碎片**5.7M(25%)**/换出14.6M（build4：37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据，**不宣布门禁干净关闭**。
@@ -54,6 +54,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：#87（报告138+ADR-258证据）四CI全绿 merge `050f434`，dev快进同步、PR 0；build6 仍为已装开发包。
 
 - 2026-10-22 / pi：ADR-258/schema3 经 #85 合并、build号6经 #86 合并（main `2b34d0f`）；构建核验 build6 后一次换源完成 47 条 schema3 采样：冷首键 content 18.347=layout9.043+measure6.302，稳态2.87ms，p95 10.56ms；内存30.0→33.6M未关闭；收尾ABC、marker删除、精确退出，生产数据/开发config未变。
 
