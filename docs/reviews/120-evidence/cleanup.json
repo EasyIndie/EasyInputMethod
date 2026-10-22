@@ -1,0 +1,21 @@
+{
+  "current_source": "com.apple.keylayout.ABC",
+  "stopped_exact_pid": 51595,
+  "executable_sha256": "ff2e92239911d82bdc1201ac23c81300cad3edd74d627ca0ed63deaf1196a85b",
+  "host_exit_confirmed": true,
+  "marker_absent": true,
+  "trace_disabled": true,
+  "data_after": {
+    "private/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "private/user-dictionary.tsv": "2c5ea890b24a2e4b69e25f7a3810870d9163c24c4858731f771e0d237369581c",
+    "production/config.toml": "3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550",
+    "production/user-dictionary.tsv": "74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137"
+  },
+  "production_data_unchanged": true,
+  "private_config_unchanged": true,
+  "private_dictionary_changed_by_normal_learning": true,
+  "manual_windows_observed": [
+    2372
+  ],
+  "manual_windows_note": "本次仅只读枚举，无关闭操作；1902/2221不在当前窗口列表，不能声称三窗均仍打开。2372保留。"
+}
