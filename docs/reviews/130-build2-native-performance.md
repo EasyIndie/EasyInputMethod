@@ -21,3 +21,5 @@ B arm64/macOS27.0.1，固定开发main18fcbbf/0.1.0/build2，执行dc000b6dff487
 证据：130-evidence/summary.json（实际文本与统计）、trace.jsonl（50完整+30部分）、sample.txt、memory.txt。
 
 提交前make verify完整通过、零诊断，200个产物隐私检查通过。
+
+用户切ABC后精确核对执行SHA与PID37114路径，发送SIGTERM并确认退出；marker不存在、缓存计时关闭，生产数据及开发配置SHA保持，见130-evidence/cleanup.json。本轮收尾完成，性能及未完成的功能门禁保持。
