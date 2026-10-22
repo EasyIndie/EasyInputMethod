@@ -1,0 +1,112 @@
+{
+  "baseline_commit": "18fcbbfdc64147eed557b1783d665e1314198f69",
+  "scope": "offscreen real tables, 600 hide samples per run, no IMK dispatch/client/orderOut of visible panel",
+  "source_sha256": {
+    "baseline": "e5c7e6724dcbf53b4a8634de64cc800d31482404da32605e212dc92e3fb83980",
+    "candidate": "3c5fa34da9f04f1c570eb4dba479ef223524b7717e3fa63aef0c3fb211ff29ed"
+  },
+  "runs": [
+    {
+      "variant": "baseline",
+      "round": 0,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.017958,
+        "max_ms": 0.06625
+      },
+      "clear": {
+        "p95_ms": 0.4025,
+        "max_ms": 0.492375
+      },
+      "total_hide": {
+        "p95_ms": 0.416666,
+        "max_ms": 0.526458
+      }
+    },
+    {
+      "variant": "candidate",
+      "round": 0,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.058167,
+        "max_ms": 1.495792
+      },
+      "clear": {
+        "p95_ms": 0.213292,
+        "max_ms": 1.853584
+      },
+      "total_hide": {
+        "p95_ms": 0.264083,
+        "max_ms": 2.020459
+      }
+    },
+    {
+      "variant": "baseline",
+      "round": 1,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.018458,
+        "max_ms": 0.07275
+      },
+      "clear": {
+        "p95_ms": 0.404875,
+        "max_ms": 0.506959
+      },
+      "total_hide": {
+        "p95_ms": 0.419917,
+        "max_ms": 0.5715840000000001
+      }
+    },
+    {
+      "variant": "candidate",
+      "round": 1,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.017792,
+        "max_ms": 0.065417
+      },
+      "clear": {
+        "p95_ms": 0.065708,
+        "max_ms": 0.134542
+      },
+      "total_hide": {
+        "p95_ms": 0.082459,
+        "max_ms": 0.174042
+      }
+    },
+    {
+      "variant": "baseline",
+      "round": 2,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.017958,
+        "max_ms": 0.06525
+      },
+      "clear": {
+        "p95_ms": 0.400334,
+        "max_ms": 4.51975
+      },
+      "total_hide": {
+        "p95_ms": 0.416167,
+        "max_ms": 4.534041
+      }
+    },
+    {
+      "variant": "candidate",
+      "round": 2,
+      "samples": 600,
+      "orderOut": {
+        "p95_ms": 0.017708,
+        "max_ms": 0.064959
+      },
+      "clear": {
+        "p95_ms": 0.065125,
+        "max_ms": 0.103667
+      },
+      "total_hide": {
+        "p95_ms": 0.082084,
+        "max_ms": 0.15712500000000001
+      }
+    }
+  ]
+}

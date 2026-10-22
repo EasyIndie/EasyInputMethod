@@ -1,0 +1,112 @@
+sent
+sent
+sent
+CLEARED
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+round 1 PASS
+sent
+sent
+sent
+CLEARED
+mixed-digit2 PASS
+sent
+sent
+sent
+sent
+CLEARED
+mixed-arrow2 PASS
+sent
+sent
+sent
+sent
+sent
+CLEARED
+mixed-backspace PASS
+sent
+sent
+sent
+CLEARED
+mixed-escape PASS
+sent
+sent
+sent
+CLEARED
+mixed-enter PASS
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+wubi-space PASS
+sent
+sent
+sent
+CLEARED
+wubi-digit2 PASS
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+sent
+CLEARED
+pinyin-nihao PASS
+sent
+sent
+226:240: execution error: BLOCKED 应用失焦 (-2700)

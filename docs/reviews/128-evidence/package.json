@@ -1,0 +1,8 @@
+{
+  "source_commit": "18fcbbfdc64147eed557b1783d665e1314198f69",
+  "version": "0.1.0",
+  "build": "2",
+  "zip_sha256": "30e4691b6fd8de9fd5f78c1562fd7b4261c5f5f3aea693a80b0954b619fae7a5",
+  "exe_sha256": "dc000b6dff48707c18c9ee33052a52260084c795d5856b628eccaaa20cce7cd6",
+  "app": "/Users/joker/Documents/EasyInputMethod/packaging/out/run-39728402241/Lampyris-isolated-imk-arm64-18fcbbfdc64147eed557b1783d665e1314198f69/extracted/Lampyris.app"
+}

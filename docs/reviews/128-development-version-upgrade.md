@@ -22,3 +22,15 @@ b317590的固定开发签名构建39719374289成功，但静态核验发现其pl
 ## 待完成
 
 合入main后重建build2，核验版本/来源/架构/签名/公证、ZIP/执行/数据SHA，再在ABC状态下保留备份换包。集中补原生性能和最终mixed文本；16ms/30MB、升级程序闭环及最终同RC发布门禁仍未关闭。不创建tag/Release。
+
+## 当前合入与装包结果
+
+PR #78最终head fc65b65四CI全部SUCCESS（CI39721994430，DCO39721994432），merge合入main `18fcbbfdc64147eed557b1783d665e1314198f69`，固定dev快进同步，无开放PR。此前ADR-250流程规范一并合入。
+
+同源生产审核包39719076526（b317590/build1）静态核验三项版本完整；ZIP SHA `a8668e1d89e871504a9b2c6a91d6cdc7ff1b8a0dff2692f3bef5e3efbfa7f39d`，未安装。它不等同开发包，也不能继承其原生验收。
+
+main18fcbbf固定开发公证构建39728402241成功，版本0.1.0/build2、源码及架构绑定、Developer ID/项目Team、Gatekeeper、stapler通过，安装器已在ABC状态下原位换包。ZIP/执行SHA见[package.json](128-evidence/package.json)，四份配置词库SHA保持，启用源集合与ABC保持，旧包在replacement-yu8hn1jy/previous.app，完整结果见[installation.json](128-evidence/installation.json)。未自动切源；此时只完成包级升级，实际新宿主输入尚待用户切开发源。
+
+## 满库长程内存补充（非原生IMK）
+
+18fcbbf工作树，B arm64/macOS27.0.1，开始load averages3.27/3.38/3.20；复用run-render-perf.sh --max-user-dictionary --stress，合成10000条/1978920字节个人词库、五会话、1000轮/22000键。第100…1000轮phys_footprint在29.58…30.11MiB波动，结束29.89MiB；未见随轮数持续增长，但没有swap/分配分类同期取证，不能用此替代127高水位或关闭30MB门禁。冷键11.870ms、暖P95 6.410ms、最大18.153ms、1键≥16ms；无IMK客户端/状态完整链路，不关闭原生16ms。探针末次lsof未见IP socket，不等同覆盖全部宿主生命周期。原始输出见[render-stress.txt](128-evidence/render-stress.txt)。

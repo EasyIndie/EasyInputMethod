@@ -221,7 +221,11 @@ window.onSelect = { index in
     selected = index
 }
 guard window.accessiblePressForTesting(at: 1), selected == 1 else { fail("rare glyph real FFI selection") }
+let frameBeforeHide = window.frame
 window.hide()
+guard window.frame == frameBeforeHide else { fail("hidden clear must defer resizing") }
+window.hide()
+guard window.frame == frameBeforeHide else { fail("repeated hide must defer resizing") }
 selected = -1
 guard !window.accessiblePressForTesting(at: 0), !window.pagePressForTesting(1),
       selected == -1, window.displayedInput.isEmpty, !window.pageStateForTesting.visible
