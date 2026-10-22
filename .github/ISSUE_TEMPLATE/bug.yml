@@ -24,7 +24,7 @@ body:
     id: env
     attributes:
       label: 环境
-      description: 系统 / 版本 / 输入模式（mixed·wubi·pinyin）
+      description: 产品版本/build、安装来源、系统/架构、目标应用版本及输入模式（mixed·wubi·pinyin）；不清楚的字段可写未知
       placeholder: macOS 15.0, v0.1.0, mode=mixed
     validations:
       required: true
@@ -32,6 +32,7 @@ body:
     id: logs
     attributes:
       label: 日志 / 截图
+      description: 只附可公开的最小样例与诊断信息，不附真实聊天或完整个人词库。
   - type: markdown
     attributes:
       value: |
