@@ -12,4 +12,13 @@ enum WebsiteReleaseConfiguration {
         }
         return try UpdateCheckConfiguration(feedURL: feed, publicKey: key, currentBuild: build)
     }
+
+    /// 只读取网站渠道公钥；验签路径不需要 feed 或构建号，也不联网。
+    static func publicKey(_ info: [String: Any]) throws -> String {
+        guard info["LampyrisDistributionChannel"] as? String == "website",
+              let key = info["SUPublicEDKey"] as? String else {
+            throw UpdateCheckError.invalidConfiguration
+        }
+        return key
+    }
 }
