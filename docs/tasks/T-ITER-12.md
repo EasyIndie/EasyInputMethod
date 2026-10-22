@@ -81,3 +81,5 @@
 2026-10-22 报告135：含ADR-255的main 299d8f8/build5固定开发签名包（run 39775362738）原生复验。首轮50键p95 11.569ms/max42.663ms（仅冷首键）、暖态p95 10.726ms、附加45键0次≥16ms、engine p95 1.122ms；六词+八项附加含xi'an通过，加载器无行为回归。宿主physical29.5M/峰29.9M、malloc活跃17.2M/碎片5.7M(25%)/换出14.6M（build4为37.8/40.3、17.4/12.0/18.7），首次落到30MB线下，但系统swap已用3.9GB，只记候选证据；16ms/30MB仍未干净关闭，需同最终RC低压力复测。
 
 2026-10-22 ADR-258：候选内容分段计时schema3（state/measure/set/layout，默认nil零开销，关闭不改变渲染）；controller-menu与candidate-presentation回归同步，phaseSchema升3。make verify/41项离线/strict双架构通过；原生build6单次换源待做，届时同时复测30MB固定时点与冷首键归因。
+
+2026-10-22 报告138：build6（main 2b34d0f，run 39787338801，执行21f5b05b…）schema3实机。冷首键total42.657ms，content18.347=layout9.043（首次窗口尺寸同步）+measure6.302（首次文本测量）+set0.124+state0.050；稳态content2.87（layout1.91/measure0.75）。首轮p95 10.56ms、暖态9.97ms，除冷首键无≥16ms；六词含xi'an通过，config不变。内存固定时点30.0→32.6→33.7→33.6M（峰34.5，swap4.07GB），30MB仍未关闭。结论：冷首键为一次性首次成本，不做预热掩盖。

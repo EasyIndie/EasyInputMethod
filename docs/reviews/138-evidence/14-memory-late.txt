@@ -1,0 +1,8 @@
+== 14-memory-late 2026-10-22T13:41:57Z
+swapusage total = 5120.00M  used = 4071.25M  free = 1048.75M  (encrypted)
+loadavg { 2.54 3.87 5.38 }
+physical:         33.6M
+peak:  34.5M
+malloc:
+TOTAL                                       57.2M      13.2M      13.2M      14.0M     156888      17.0M      10.2M     38%      64
+Writable regions: Total=136.4M written=29.8M(22%) resident=14.5M(11%) swapped_out=15.4M(11%) unallocated=106.5M(78%)
