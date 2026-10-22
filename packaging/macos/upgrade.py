@@ -20,7 +20,10 @@ from __future__ import annotations
 
 import argparse
 import dataclasses
+import functools
 import hashlib
+import importlib.util
+import plistlib
 import json
 import os
 from pathlib import Path
@@ -36,6 +39,39 @@ import urllib.request
 import uuid
 
 MAX_PAYLOAD_BYTES = 256 * 1024 * 1024
+
+
+@functools.lru_cache(maxsize=1)
+def appcast_module():
+    path = Path(__file__).with_name('feed.py')
+    spec = importlib.util.spec_from_file_location('lampyris_feed', path)
+    module = importlib.util.module_from_spec(spec)
+    sys.modules['lampyris_feed'] = module
+    spec.loader.exec_module(module)
+    return module
+
+
+def installed_build(domain: Path) -> str | None:
+    info = domain / BUNDLE / 'Contents/Info.plist'
+    try:
+        return str(plistlib.loads(info.read_bytes()).get('CFBundleVersion'))
+    except (OSError, plistlib.InvalidFileException, ValueError):
+        return None
+
+
+def fetch_feed(url: str, *, allow_file: bool = False) -> bytes:
+    allowed = {'https'} | ({'file'} if allow_file else set())
+    parsed = urllib.parse.urlparse(url)
+    if parsed.scheme not in allowed:
+        raise UpgradeError('feed 地址只允许 https；拒绝：' + (parsed.scheme or '无协议'))
+    with urllib.request.urlopen(url, timeout=30) as response:
+        final = urllib.parse.urlparse(response.geturl())
+        if final.scheme not in allowed:
+            raise UpgradeError('feed 重定向后协议不允许：' + final.scheme)
+        data = response.read(1024 * 1024 + 1)
+    if len(data) > 1024 * 1024:
+        raise UpgradeError('feed 超过大小上限')
+    return data
 
 BUNDLE = 'Lampyris.app'
 EXECUTABLE = 'Contents/MacOS/Lampyris'
@@ -255,9 +291,12 @@ def main(argv=None) -> int:
     source = parser.add_mutually_exclusive_group(required=True)
     source.add_argument('--payload', type=Path)
     source.add_argument('--payload-url')
+    source.add_argument('--feed-file', type=Path, help='本地 appcast（离线/演练）')
+    source.add_argument('--feed-url', help='https appcast；发现更新后自动下载负载')
+    parser.add_argument('--current-build', help='缺省从已安装 Info.plist 读取')
     parser.add_argument('--allow-file-url', action='store_true',
-                        help='仅本地离线测试：允许 file:// 负载地址')
-    parser.add_argument('--signature', required=True)
+                        help='仅本地离线测试：允许 file:// 负载/feed 地址')
+    parser.add_argument('--signature', help='显式负载签名；用 feed 时可省略')
     parser.add_argument('--verifier', type=Path, help='已签名的 LampyrisUpdateCheck 可执行文件')
     parser.add_argument('--domain', type=Path, default=Path.home() / 'Library/Input Methods')
     parser.add_argument('--support', type=Path,
@@ -277,10 +316,32 @@ def main(argv=None) -> int:
     downloaded = None
     try:
         payload = args.payload
-        if args.payload_url is not None:
+        signature = args.signature
+        if args.feed_file is not None or args.feed_url is not None:
+            if args.feed_file is not None:
+                data = args.feed_file.read_bytes()
+            else:
+                data = fetch_feed(args.feed_url, allow_file=args.allow_file_url)
+            current = args.current_build or installed_build(args.domain)
+            if current is None:
+                raise UpgradeError('无法确定已安装构建号；请提供 --current-build')
+            appcast = appcast_module()
+            release = appcast.newest_release(
+                appcast.parse_appcast(data, allow_file=args.allow_file_url), current)
+            if release is None:
+                print(json.dumps({'result': 'up-to-date', 'current': current}, ensure_ascii=False))
+                return 0
+            payload = download(release.download_url, allow_file=args.allow_file_url)
+            downloaded = payload.parent
+            signature = release.signature
+            print(json.dumps({'selected_build': release.build, 'current': current}, ensure_ascii=False),
+                  file=sys.stderr)
+        elif args.payload_url is not None:
             payload = download(args.payload_url, allow_file=args.allow_file_url)
             downloaded = payload.parent
-        receipt = install(payload, args.signature, args.domain, args.support, hooks,
+        if signature is None:
+            parser.error('缺少 --signature（或用 feed 提供）')
+        receipt = install(payload, signature, args.domain, args.support, hooks,
                           dry_run=not args.apply)
     except (UpgradeError, OSError, subprocess.CalledProcessError) as error:
         print('BLOCKED：' + str(error), file=sys.stderr)

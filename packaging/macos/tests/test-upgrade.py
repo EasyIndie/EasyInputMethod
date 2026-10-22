@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """离线回归：升级顺序（验签→解包→校验→停宿主→替换→回滚），不触碰真实安装目录。"""
+import base64
 import importlib.util
 import json
 import os
@@ -216,6 +217,19 @@ class DownloadTests(unittest.TestCase):
         source = self.payload(b'')
         with self.assertRaises(upgrade.UpgradeError):
             upgrade.download(source.as_uri(), allow_file=True)
+
+    def test_cli_reports_up_to_date_without_download(self):
+        feed_file = self.temporary / 'appcast.xml'
+        feed_file.write_text(
+            '<?xml version="1.0"?><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">'
+            '<channel><item><enclosure '
+            'url="https://example.invalid/Lampyris.zip" length="10" '
+            'sparkle:version="5" sparkle:edSignature="' + base64.b64encode(bytes(64)).decode()
+            + '"/></item></channel></rss>')
+        code = upgrade.main(['--feed-file', str(feed_file), '--current-build', '6',
+                             '--domain', str(self.temporary / 'Input Methods'),
+                             '--support', str(self.temporary / 'Support')])
+        self.assertEqual(code, 0)
 
     def test_cli_blocks_file_url_without_flag(self):
         source = self.payload()
