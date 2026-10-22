@@ -1,0 +1,8 @@
+== sandbox build 2026-10-22T16:23:36Z
+app platforms/macos/build/LampyrisSandbox.app
+Identifier=cn.jokerhub.inputmethod.Lampyris
+Signature=adhoc
+TeamIdentifier=not set
+--- entitlements
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "https://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>com.apple.security.app-sandbox</key><true/><key>com.apple.security.temporary-exception.mach-register.global-name</key><string>cn.jokerhub.inputmethod.Lampyris_Connection</string></dict></plist>
+

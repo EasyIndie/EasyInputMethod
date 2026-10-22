@@ -1,0 +1,19 @@
+== launch 2026-10-22T16:23:41Z
+pid 49552
+49552   00:05 /Users/joker/Documents/EasyInputMethod/platforms/macos/build/LampyrisSandbox.app/Contents/MacOS/Lampyris
+--- container
+total 64
+drwx------@    4 joker  staff    128 Oct 23 00:21 .
+drwx------  1117 joker  staff  35744 Oct 23 00:23 ..
+-rw-------     1 joker  staff  29580 Oct 23 00:21 .com.apple.containermanagerd.metadata.plist
+drwx------    12 joker  staff    384 Oct 23 00:21 Data
+--- container support
+total 0
+drwxr-xr-x@ 2 joker  staff   64 Oct 23 00:21 .
+drwx------  6 joker  staff  192 Oct 23 00:21 ..
+--- real support mtime
+drwxr-xr-x  5 joker  staff  160 Oct 21 15:45 /Users/joker/Library/Application Support/Lampyris
+--- sandbox denials (last 2m)
+Timestamp                       Thread     Type        Activity             PID    TTL  
+2026-10-23 00:21:50.687300+0800 0x37447e   Activity    0xb0ecb0             48967  0    Lampyris: (libsystem_secinit.dylib) AppSandbox
+2026-10-23 00:23:36.775738+0800 0x3755a9   Activity    0xb118d0             49552  0    Lampyris: (libsystem_secinit.dylib) AppSandbox
