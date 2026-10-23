@@ -5,6 +5,7 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [x] 2026-10-23 v0.1.4 发布（报告 163）：build12 含 Shift HUD 与进度条修复；本机生产升级到 0.1.4/build12（build11 备份），更新程序 0.1.4 已装；Pages 指向 0.1.4。Shift HUD/进度条待用户复验
 - [x] 2026-10-23 验收修复：Shift 切换 HUD + 更新进度条（ADR-277，报告 162）：键盘 Shift 路径补 `showStateFeedback`；更新窗口进度条仅在下载阶段显示；0.1.4/build12 待发并实机复验
 - [x] 2026-10-23 v0.1.3 发布（报告 161）：主包 build11 内含签名 helper（先签 helper 再签 app），安装自动注册/启用、卸载自动切 ABC/禁用；本机用 ZIP 内 install.sh 覆盖生产成功（0.1.3/build11，配置/词库不变、未抢源）；Pages 已更新为 0.1.3 命令
 - [x] 2026-10-23 简化安装/卸载（ADR-276，报告 160）：随 app 签名 `LampyrisTIS` helper；安装后自动注册+启用（选中仍需用户一次），卸载自动切 ABC+禁用后再移除；脚本回退与两条卸载回归通过；0.1.3/build11 待发
