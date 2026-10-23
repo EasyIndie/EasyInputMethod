@@ -165,6 +165,10 @@ final class LampyrisInputController: IMKInputController {
         stateMenu = menu
         refreshStateMenu()
         menu.addItem(NSMenuItem.separator())
+        let update = NSMenuItem(
+            title: "检查更新…", action: #selector(checkForUpdates), keyEquivalent: "")
+        update.target = self
+        menu.addItem(update)
         let settings = NSMenuItem(
             title: "设置", action: #selector(showSettings), keyEquivalent: "")
         settings.target = self
@@ -196,6 +200,10 @@ final class LampyrisInputController: IMKInputController {
         return menu
     }
 
+    @objc private func checkForUpdates() {
+        UpdateEntry.open()
+    }
+
     private var stateMenu: NSMenu?
 
     private func inputMenuState() -> InputMenuState {
@@ -216,7 +224,7 @@ final class LampyrisInputController: IMKInputController {
             }
         }
         if menu.items.count >= 8 {
-            for (item, key) in [(menu.items[6], "hotkey.open_settings"), (menu.items[7], "hotkey.open_about")] {
+            for (item, key) in [(menu.items[7], "hotkey.open_settings"), (menu.items[8], "hotkey.open_about")] {
                 item.keyEquivalent = ""
                 item.keyEquivalentModifierMask = []
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))

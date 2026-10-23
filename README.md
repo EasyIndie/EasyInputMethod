@@ -17,6 +17,7 @@
 
 ## 更新与可复验（v0.1.0 起）
 
+- 入口：输入法菜单 → **检查更新…**（已装独立更新程序则打开其窗口，否则打开 Releases 页面；宿主本身不联网）。
 - 默认更新源：`https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml`
   （设置 → 更新 → 更新来源 可改成自建 https 地址；留空即用官方源）。
 - **更新包必须由项目 Ed25519 私钥签名**；公钥是公开值，随源码提交在

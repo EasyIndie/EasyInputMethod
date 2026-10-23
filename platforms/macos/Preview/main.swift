@@ -259,6 +259,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             menu.onChange = { [weak self] in self?.input?.refresh() }
             menu.onFailure = { [weak input] message in input?.status?(message) }
             menu.onClose = { [weak self] in self?.restoreInputFocus() }
+            menu.onCheckUpdates = { UpdateEntry.open() }
             menu.onSettings = { [weak self] in self?.openSettings() }
             menu.onAbout = { AboutUI.show() }
             previewMenu = menu
