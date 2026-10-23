@@ -213,6 +213,48 @@ class DownloadTests(unittest.TestCase):
         with self.assertRaises(upgrade.UpgradeError):
             upgrade.download('https://example.invalid/payload.zip', opener=lambda *a, **k: Response())
 
+    def test_allows_redirect_to_github_asset_host(self):
+        class Response:
+            def geturl(self):
+                return 'https://release-assets.githubusercontent.com/github-production/x'
+            def read(self, _):
+                return b''
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+        class Stream:
+            def __init__(self):
+                self.sent = False
+            def read(self, _):
+                if self.sent:
+                    return b''
+                self.sent = True
+                return b'payload'
+        class GithubResponse(Response):
+            def read(self, _):
+                return Stream().read(_)
+        # 只验证协议/主机策略：模拟一个空负载会失败，但失败原因不能是主机
+        with self.assertRaises(upgrade.UpgradeError) as caught:
+            upgrade.download('https://github.com/o/r/releases/download/v1/a.zip',
+                             opener=lambda *a, **k: GithubResponse())
+        self.assertNotIn('未允许的主机', str(caught.exception))
+
+    def test_rejects_redirect_to_unlisted_host(self):
+        class Response:
+            def geturl(self):
+                return 'https://evil.example/payload.zip'
+            def read(self, _):
+                return b''
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+        with self.assertRaises(upgrade.UpgradeError) as caught:
+            upgrade.download('https://github.com/o/r/releases/download/v1/a.zip',
+                             opener=lambda *a, **k: Response())
+        self.assertIn('未允许的主机', str(caught.exception))
+
     def test_rejects_empty_payload(self):
         source = self.payload(b'')
         with self.assertRaises(upgrade.UpgradeError):

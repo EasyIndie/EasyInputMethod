@@ -14,6 +14,8 @@ pub enum ValueType {
     Enum { values: &'static [&'static str] },
     /// 自由字符串。
     String,
+    /// 字符串，但只接受空值或 https URL（无凭据、无 fragment）。
+    Url,
 }
 
 /// 变更后需要即时生效的组件（供设置界面分组与后续 C ABI 使用）。
@@ -23,6 +25,7 @@ pub enum Scope {
     CandidateWindow,
     Appearance,
     Hotkey,
+    Update,
 }
 
 /// 单个选项的元数据。
@@ -225,6 +228,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         title_zh: "输出字形",
         doc_zh: "选择简体或繁体输出；快捷键切换会保存此偏好",
         scope: Scope::Engine,
+    },
+    OptionSpec {
+        key: "update.feed_url",
+        value_type: ValueType::Url,
+        enum_labels_zh: &[],
+        default: "\"\"",
+        title_zh: "更新来源",
+        doc_zh: "留空使用官方 GitHub 发布源；也可填自建 https appcast 地址。只由独立更新程序读取，输入法与核心不联网。",
+        scope: Scope::Update,
     },
 ];
 

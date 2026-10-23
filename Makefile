@@ -108,7 +108,9 @@ clean: ## 清理构建产物
 .PHONY: macos-updater-tests macos-updater-build
 macos-updater-tests: ## 独立更新检查离线安全/严格并发回归（不请求feed）
 	python3 platforms/macos/Updater/verify-vendor.py
+	cargo build --locked --release -p ime-ffi
 	$(CLEAN) swift test --package-path platforms/macos/Updater --scratch-path platforms/macos/build/updater-tests -Xswiftc -warnings-as-errors -Xswiftc -strict-concurrency=complete
 
 macos-updater-build: ## 构建默认关闭的独立更新检查程序（不安装、不联网）
+	cargo build --locked --release -p ime-ffi
 	$(CLEAN) python3 platforms/macos/Updater/build.py

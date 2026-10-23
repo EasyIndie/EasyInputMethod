@@ -33,3 +33,5 @@
 2026-10-22 ADR-261/报告141：`upgrade.py`增加`--payload-url`（仅https，file://需显式测试开关），流式0700/0600临时文件、256MB上限、重定向协议复查、结束即清理；顺序下载→验签→解包→校验→停宿主→替换。新增7项离线回归，升级相关共15项全PASS。仍无正式feed/公钥、无真实HTTPS演练、无UI提示。
 
 2026-10-22 ADR-262/报告142：`feed.py`实现与Swift更新程序一致的appcast解析/版本选择（https-only、1MiB、1000项、深度16、拒绝DTD/ENTITY、64字节签名、build点分比较）；`upgrade.py`接入`--feed-file/--feed-url/--current-build`，无更新直接up-to-date退出0不下载。11项feed回归+16项升级回归全PASS。仍无真实feed/公钥、HTTPS演练与架构/渠道筛选。
+
+2026-10-22 ADR-264/报告145：新增`update.feed_url`（Url类型：空或https、拒绝凭据/fragment），设置自动新增「更新」分区（5分区/20项）；默认feed=GitHub Releases，公钥固定签名包不可被用户替换；更新程序链接ime-config读取来源；GitHub资产主机重定向允许列表（Swift/Python同步）。config 17项、settings、updater FeedSource、upgrade 18项回归通过。仍无真实密钥/feed/HTTPS演练与Actions流水线。
