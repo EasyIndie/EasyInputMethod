@@ -14,7 +14,14 @@ cleanup() {
   if [ -d "${WORK}" ]; then rm -rf "${WORK}"; fi
 }
 if [ "${1:-}" = --cleanup ]; then cleanup; exit 0; fi
-[ "$#" -eq 0 ] || { echo "用法：$0 [--cleanup]" >&2; exit 2; }
+APP="${ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/platforms/macos/build/Lampyris.app"
+if [ "${1:-}" = --app ]; then
+  [ "$#" -eq 2 ] || { echo "用法：$0 [--cleanup] [--app <path.app>]" >&2; exit 2; }
+  APP="$2"
+elif [ "$#" -ne 0 ]; then
+  echo "用法：$0 [--cleanup] [--app <path.app>]" >&2; exit 2
+fi
+[ -d "${APP}" ] || { echo "待签名 app 不存在：${APP}" >&2; exit 1; }
 ASC_API_KEY_P8="${ASC_API_KEY_P8:-${ASC_API_KEY_P8_BASE64:-}}"
 MISSING=()
 for name in MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_SIGNING_IDENTITY ASC_API_KEY_P8 ASC_API_KEY_ID ASC_API_ISSUER_ID; do
@@ -50,8 +57,6 @@ security list-keychains -d user -s "${KEYCHAIN}" "${ORIGINAL_KEYCHAINS[@]}"
 security find-identity -p codesigning "${KEYCHAIN}"
 IDENTITY_HASH="$(security find-identity -v -p codesigning "${KEYCHAIN}" | awk -F '"' -v name="${MACOS_SIGNING_IDENTITY}" '$2 == name {split($1, fields, /[[:space:]]+/); for (i in fields) if (fields[i] ~ /^[0-9A-Fa-f]+$/ && length(fields[i]) == 40) print fields[i]}')"
 [[ "${IDENTITY_HASH}" =~ ^[0-9A-Fa-f]{40}$ ]] || { echo "找不到唯一有效签名身份，请检查证书名称/有效性" >&2; exit 1; }
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
-APP="${ROOT}/platforms/macos/build/Lampyris.app"
 codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${APP}"
 codesign --verify --strict "${APP}"
 ditto -c -k --keepParent "${APP}" "${WORK}/notarization.zip"

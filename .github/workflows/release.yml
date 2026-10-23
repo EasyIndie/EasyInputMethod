@@ -97,6 +97,27 @@ jobs:
       - name: Build updater with the committed public key
         run: python3 platforms/macos/Updater/build.py
 
+      - name: Sign and notarize the updater app
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+        run: bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app
+
+      - name: Package the updater app as a release asset
+        run: |
+          set -euo pipefail
+          version="$(python3 tools/release_version.py version)"
+          mkdir -p packaging/out/release
+          name="LampyrisUpdateCheck-${version}.zip"
+          ditto -c -k --keepParent platforms/macos/build/website-updater/LampyrisUpdateCheck.app \
+            "packaging/out/release/${name}"
+          shasum -a 256 "packaging/out/release/${name}" > "packaging/out/release/${name}.sha256"
+          printf '%s\n' "packaging/out/release/${name}" "packaging/out/release/${name}.sha256" >> release-assets.txt
+
       - name: Generate signed appcast for the published ZIP
         env:
           UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
