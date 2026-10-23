@@ -34,6 +34,10 @@
   ul { padding-left: 1.2rem; }
   code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em;
          background: rgba(127,127,127,.16); padding: .1em .35em; border-radius: 4px; }
+  pre { background: rgba(127,127,127,.12); padding: .9rem 1rem; border-radius: 8px; overflow-x: auto; }
+  pre code { background: none; padding: 0; }
+  table { width: 100%; border-collapse: collapse; margin: .75rem 0 1rem; font-size: .95rem; }
+  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(127,127,127,.25); }
   footer { margin-top: 3rem; font-size: .85rem; opacity: .6; }
 </style>
 </head>
@@ -49,11 +53,37 @@
   </div>
 
   <h2>安装（macOS 13+，universal）</h2>
+  <p>在终端粘贴执行（安装到当前用户，<strong>不需要 sudo</strong>）：</p>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.2-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
   <ul>
-    <li>从 Release 下载 <code>Lampyris-0.1.0-universal.zip</code>，用 Finder 或 <code>ditto -x -k</code> 解压（保留执行权限）。</li>
-    <li>见包内 <code>README.md</code> 运行安装脚本；注销/重新登录。</li>
-    <li>「系统设置 → 键盘 → 文字输入」添加「萤火虫 / Lampyris」。</li>
-    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.0-source.tar.gz</code>。</li>
+    <li>安装器会校验 Developer ID 签名、hardened runtime 与公证；校验失败会拒绝安装。</li>
+    <li>完成后注销/重新登录，在「系统设置 → 键盘 → 文字输入」添加「萤火虫 / Lampyris」。</li>
+    <li>同版本重复执行无操作；<strong>已有不同版本需先卸载</strong>（见下）。</li>
+    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.2-source.tar.gz</code>。</li>
+  </ul>
+
+  <h2>卸载</h2>
+  <p>先切到 ABC，在「系统设置 → 键盘 → 文字输入」移除萤火虫，<strong>注销并重新登录</strong>确保宿主退出；然后再运行：</p>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.2-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
+  <ul>
+    <li>默认卸载会备份旧应用，<strong>保留</strong> <code>~/Library/Application Support/Lampyris/</code> 下的配置与个人词库。</li>
+    <li>彻底清除用户数据请由你自己删除该目录（安装器不提供静默清库参数）。</li>
+  </ul>
+
+  <h2>支持的平台与架构</h2>
+  <table>
+    <thead><tr><th>平台</th><th>状态</th><th>架构</th><th>最低系统</th></tr></thead>
+    <tbody>
+      <tr><td>macOS</td><td>✅ 可用</td><td>Universal：arm64（Apple Silicon）+ x86_64（Intel）</td><td>macOS 13 Ventura</td></tr>
+      <tr><td>Windows</td><td>计划中</td><td>—</td><td>—</td></tr>
+      <tr><td>Linux</td><td>计划中</td><td>—</td><td>—</td></tr>
+      <tr><td>Android / iOS</td><td>计划中</td><td>—</td><td>—</td></tr>
+    </tbody>
+  </table>
+  <ul>
+    <li>macOS 发行包为 Developer ID 签名并公证；暂无 Mac App Store 版本。</li>
+    <li>输入法本身零网络；更新检查需手动点击菜单「检查更新…」或按 <code>⌥G</code>（可在设置中改键）。</li>
+    <li>升级：目前没有后台自动升级，请下载新包并按上面的卸载/安装流程操作（保留配置与词库）。</li>
   </ul>
 
   <h2>特性</h2>
