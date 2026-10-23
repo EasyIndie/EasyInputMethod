@@ -5,6 +5,7 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [x] 2026-10-22 独立源码重建（报告 150）：从 tag `v0.1.0`（`26e3c07`）干净克隆构建 universal 成功并启动；4 份数据表与 Release **逐字节一致**、版本/构建号一致；可执行因 ad-hoc vs Developer ID 签名与工具链差异**未逐字节复现**，如实记录不作 bit-reproducible 声明
 - [x] 2026-10-22 更新源多镜像回退（ADR-270，报告 149）：新增 `update.feed_mirrors`（UrlList ≤8、https、去重保序），更新程序「主源→镜像」顺序回退、成功即停；安装器 `--feed-urls` 同步并放行同主机直链。18 项配置 + 14 项更新程序 + 24 项安装器回归通过；未在真实大陆网络验证
 - [x] 2026-10-22 生产安装升级演练（ADR-269，报告 148）：v0.1.0（build 6，universal，`5709716c…`）经真实 GitHub feed 下载→验签→`--apply` 安装成功；回滚到旧包→再升级演练通过；配置/词库 SHA 未变，新宿主可启动。修复「只终止精确二进制持有者」（lsd 持有不再阻断）
 - [x] 2026-10-22 更新公钥入库（ADR-266，报告 147）：`packaging/macos/update-public-key.txt` 作为公开信任锚入库，构建/工作流默认读取（不再依赖变量/Secret）；私钥仍只在 Secret 且回归会扫描追踪文件；本地用该公钥构建的更新程序已复验 `v0.1.0` 真实签名（篡改被拒）。真实 `upgrade.py --apply` 待用户确认
