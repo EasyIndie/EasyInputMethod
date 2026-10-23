@@ -77,6 +77,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-23 / pi：GitHub Pages 更新并部署（PR #118，Pages run 39944750053）：一键安装/卸载命令 + 平台架构表 + ⌥G 说明；https://easyindie.github.io/EasyInputMethod/
+
 - 2026-10-23 / pi：v0.1.2 发布（run 39938190051），更新程序改静态链接并在本机验证启动；生产升级 build10、更新程序装 ~/Applications；配置/词库新基线已记录。
 
 - 2026-10-23 / pi：定位 v0.1.1 更新程序启动崩溃（动态链接 CI 绝对路径 dylib），改静态链接；新增检查更新快捷键 alt+g；版本升 0.1.2/build10，待发布。
