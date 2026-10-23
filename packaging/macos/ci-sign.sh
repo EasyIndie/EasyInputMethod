@@ -15,13 +15,24 @@ cleanup() {
 }
 if [ "${1:-}" = --cleanup ]; then cleanup; exit 0; fi
 APP="${ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/platforms/macos/build/Lampyris.app"
-if [ "${1:-}" = --app ]; then
-  [ "$#" -eq 2 ] || { echo "用法：$0 [--cleanup] [--app <path.app>]" >&2; exit 2; }
-  APP="$2"
-elif [ "$#" -ne 0 ]; then
-  echo "用法：$0 [--cleanup] [--app <path.app>]" >&2; exit 2
+INSTALLER=""
+DMG=""
+SIGN_ONLY=0
+while [ "$#" -gt 0 ]; do
+  case "$1" in
+    --app) [ "$#" -ge 2 ] || exit 2; APP="$2"; shift 2 ;;
+    --installer) [ "$#" -ge 2 ] || exit 2; INSTALLER="$2"; shift 2 ;;
+    --dmg) [ "$#" -ge 2 ] || exit 2; DMG="$2"; shift 2 ;;
+    --sign-only) SIGN_ONLY=1; shift ;;
+    *) echo "用法：$0 [--cleanup] [--app <path.app>] [--installer <path.app>] [--sign-only] [--dmg <path.dmg>]" >&2; exit 2 ;;
+  esac
+done
+if [ -n "${DMG}" ]; then
+  [ -f "${DMG}" ] && [ ! -L "${DMG}" ] || { echo "待签名 DMG 不存在：${DMG}" >&2; exit 1; }
+else
+  [ -d "${APP}" ] || { echo "待签名 app 不存在：${APP}" >&2; exit 1; }
+  [ -z "${INSTALLER}" ] || [ -d "${INSTALLER}" ] || { echo "安装器 app 不存在：${INSTALLER}" >&2; exit 1; }
 fi
-[ -d "${APP}" ] || { echo "待签名 app 不存在：${APP}" >&2; exit 1; }
 ASC_API_KEY_P8="${ASC_API_KEY_P8:-${ASC_API_KEY_P8_BASE64:-}}"
 MISSING=()
 for name in MACOS_CERTIFICATE_P12_BASE64 MACOS_CERTIFICATE_PASSWORD MACOS_SIGNING_IDENTITY ASC_API_KEY_P8 ASC_API_KEY_ID ASC_API_ISSUER_ID; do
@@ -57,13 +68,27 @@ security list-keychains -d user -s "${KEYCHAIN}" "${ORIGINAL_KEYCHAINS[@]}"
 security find-identity -p codesigning "${KEYCHAIN}"
 IDENTITY_HASH="$(security find-identity -v -p codesigning "${KEYCHAIN}" | awk -F '"' -v name="${MACOS_SIGNING_IDENTITY}" '$2 == name {split($1, fields, /[[:space:]]+/); for (i in fields) if (fields[i] ~ /^[0-9A-Fa-f]+$/ && length(fields[i]) == 40) print fields[i]}')"
 [[ "${IDENTITY_HASH}" =~ ^[0-9A-Fa-f]{40}$ ]] || { echo "找不到唯一有效签名身份，请检查证书名称/有效性" >&2; exit 1; }
-# 先签嵌套 helper，再签外层 app；反过来会破坏外层签名封印。
-if [ -x "${APP}/Contents/Helpers/LampyrisTIS" ]; then
-  codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" \
-    "${APP}/Contents/Helpers/LampyrisTIS"
+sign_app() {
+  local app="$1"
+  if [ -x "${app}/Contents/Helpers/LampyrisTIS" ]; then
+    codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" \
+      "${app}/Contents/Helpers/LampyrisTIS"
+  fi
+  codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${app}"
+  codesign --verify --deep --strict "${app}"
+}
+if [ -n "${DMG}" ]; then
+  codesign --force --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${DMG}"
+  xcrun notarytool submit "${DMG}" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m
+  xcrun stapler staple "${DMG}"
+  xcrun stapler validate "${DMG}"
+  spctl --assess --type open --context context:primary-signature --verbose=2 "${DMG}"
+  exit 0
 fi
-codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${APP}"
-codesign --verify --deep --strict "${APP}"
+# 先签嵌套 helper，再签外层 app；反过来会破坏外层签名封印。
+sign_app "${APP}"
+if [ -n "${INSTALLER}" ]; then sign_app "${INSTALLER}"; fi
+if [ "${SIGN_ONLY}" -eq 1 ]; then exit 0; fi
 ditto -c -k --keepParent "${APP}" "${WORK}/notarization.zip"
 xcrun notarytool submit "${WORK}/notarization.zip" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m
 xcrun stapler staple "${APP}"

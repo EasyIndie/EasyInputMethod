@@ -24,7 +24,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     func show() {
         let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 320),
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
-        panel.title = "萤火虫更新"
+        panel.title = "更新"
         panel.isReleasedWhenClosed = false
         panel.delegate = self
         let content = NSView()
@@ -123,7 +123,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     private var versionText: String {
         let version = info["CFBundleShortVersionString"] as? String ?? "?"
         let build = info["CFBundleVersion"] as? String ?? "?"
-        return "v\(version)（build \(build)）"
+        return "\(version) · 构建 \(build)"
     }
 
     private func setBusy(_ busy: Bool) {
@@ -181,7 +181,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 self.release = release
                 self.feeds = [source]
                 setBusy(false)
-                status.stringValue = "发现新版本 build \(release.build)"
+                status.stringValue = "发现新版本 · 构建 \(release.build)"
                 detail.stringValue = String(format: "下载大小约 %.1f MB，来源 %@；下载后会先验签，再询问是否安装。",
                                             Double(release.length) / 1_048_576.0,
                                             source.host ?? "未知")
@@ -216,7 +216,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                     return fail("负载签名无效，未安装。")
                 }
                 let alert = NSAlert()
-                alert.messageText = "安装 build \(release.build)？"
+                alert.messageText = "安装构建 \(release.build)？"
                 alert.informativeText = "将替换当前输入法（会短暂停止宿主），旧版本自动备份；失败会回滚。"
                 alert.addButton(withTitle: "安装")
                 alert.addButton(withTitle: "取消")
@@ -234,7 +234,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                     domain: domain, support: support,
                     environment: DefaultInstallEnvironment.make())
                 setBusy(false)
-                status.stringValue = "已安装 build \(release.build)"
+                status.stringValue = "已安装构建 \(release.build)"
                 detail.stringValue = "旧版本备份：\(receipt.previous ?? "无")"
             } catch {
                 fail("安装失败：\(error.localizedDescription)")

@@ -65,5 +65,14 @@ esac
         env=dict(env, ASC_API_KEY_P8=pem), capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert not (root / "lampyris-signing").exists()
+    installer = root / "Installer.app"
+    installer.mkdir()
+    dmg = root / "Fixture.dmg"
+    dmg.write_bytes(b"fixture")
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--installer", str(installer), "--sign-only"],
+        env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    result = subprocess.run(["bash", str(SCRIPT), "--dmg", str(dmg)], env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
     subprocess.run(["bash", str(SCRIPT), "--cleanup"], env=env, check=True)
-print("签名脚本模拟验证通过：缺失配置、成功、失败及清理；未访问真实凭据或Apple")
+print("签名脚本模拟验证通过：缺失配置、成功、失败、DMG/安装器模式及清理；未访问真实凭据或Apple")

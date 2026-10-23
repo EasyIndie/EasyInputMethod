@@ -26,7 +26,7 @@ jobs:
   publish:
     # 需要 macOS 构建更新程序并用同一公钥自校验签名。
     runs-on: macos-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
@@ -119,6 +119,28 @@ jobs:
           shasum -a 256 "packaging/out/release/${name}" > "packaging/out/release/${name}.sha256"
           printf '%s\n' "packaging/out/release/${name}" "packaging/out/release/${name}.sha256" >> release-assets.txt
 
+      - name: Build and sign the DMG installer
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          python3 platforms/macos/Installer/build.py
+          installer="platforms/macos/build/installer/LampyrisInstaller.app"
+          bash packaging/macos/ci-sign.sh --app "$installer" --sign-only
+          app="$(find dist -type d -name Lampyris.app | head -1)"
+          test -n "$app"
+          version="$(python3 tools/release_version.py version)"
+          dmg="packaging/out/release/Lampyris-${version}-universal.dmg"
+          bash packaging/macos/make-dmg.sh --app "$app" --installer "$installer" --out "$dmg"
+          shasum -a 256 "$dmg" > "$dmg.sha256"
+          bash packaging/macos/ci-sign.sh --dmg "$dmg"
+          printf '%s\n' "$dmg" "$dmg.sha256" >> release-assets.txt
+
       - name: Generate signed appcast for the published ZIP
         env:
           UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
@@ -169,7 +191,8 @@ jobs:
           cat > "${notes}" <<EOF
           Lampyris ${tag} — 默认离线的五笔/拼音混合输入法（macOS，GPL-3.0-or-later）。
 
-          - **安装**：解压 \`Lampyris-${tag#v}-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
+          - **安装（图形界面）**：打开 \`Lampyris-${tag#v}-universal.dmg\`，双击「安装萤火虫」，按提示完成；无需终端。
+          - **安装（命令行）**：解压 \`Lampyris-${tag#v}-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
           - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-${tag#v}-source.tar.gz\`（与本页同一位置）。
           - **校验**：附件 \`.sha256\`。
           - **更新源**：\`appcast.xml\`（Ed25519 签名，客户端默认从本页 latest 获取）。
