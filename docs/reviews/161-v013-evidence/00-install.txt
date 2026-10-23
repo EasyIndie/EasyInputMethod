@@ -1,0 +1,11 @@
+== v0.1.3 install 2026-10-23T11:53:49Z
+exec d489dd795ef92e3fc7c00693250b00bd11360fd361f80827d5aaa9091ef1a828  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+arch x86_64 arm64
+version 0.1.3 build=11
+helper /Users/joker/Library/Input Methods/Lampyris.app/Contents/Helpers/LampyrisTIS
+codesign-ok
+The validate action worked!
+config 809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict f3e2eef38e0863f8f06b837e9c7ed9783aa9a7c1881affc80870515b956a9be5  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv lines=      69
+backup_exec 37decc06bc1822b37ec2e30b75dc243de546d423cdc03f8e04e48229aaaafa62  /Users/joker/Library/Application Support/Lampyris/updates/build11-backup/Lampyris.app/Contents/MacOS/Lampyris
+source com.sogou.inputmethod.sogou.pinyin
