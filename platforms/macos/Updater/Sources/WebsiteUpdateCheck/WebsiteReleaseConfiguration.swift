@@ -17,13 +17,22 @@ enum WebsiteReleaseConfiguration {
     {
         guard info["LampyrisDistributionChannel"] as? String == "website",
               let key = info["SUPublicEDKey"] as? String,
-              let build = info["CFBundleVersion"] as? String,
+              let build = currentBuild(info),
               !feeds.isEmpty else {
             throw UpdateCheckError.invalidConfiguration
         }
         return try feeds.map {
             try UpdateCheckConfiguration(feedURL: $0, publicKey: key, currentBuild: build)
         }
+    }
+
+    /// 仅测试用：用环境变量覆盖“当前构建号”，便于演练“有新版本”的完整流程。
+    static func currentBuild(_ info: [String: Any]) -> String? {
+        if let override = ProcessInfo.processInfo.environment["LAMPYRIS_UPDATE_CURRENT_BUILD"],
+           !override.isEmpty {
+            return override
+        }
+        return info["CFBundleVersion"] as? String
     }
 
     static func bundledFeed(_ info: [String: Any]) -> URL? {
