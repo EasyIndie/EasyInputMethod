@@ -1,0 +1,7 @@
+== v0.1.4 install 2026-10-23T12:32:16Z
+exec 17d2a3dc5e327775a15203ecb58c8cba5dbdf90daf8dd79bc6faafa125a353d8  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+version 0.1.4 build=12
+config 809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict ceb7bf3c4b4a3a8ab5667be96bc3a6d3934b367b710498f05caf1741560b23b3  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+backup_exec d489dd795ef92e3fc7c00693250b00bd11360fd361f80827d5aaa9091ef1a828  /Users/joker/Library/Application Support/Lampyris/updates/build12-backup/Lampyris.app/Contents/MacOS/Lampyris
+source com.apple.keylayout.ABC
