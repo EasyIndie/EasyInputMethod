@@ -53,11 +53,12 @@
 
 ## 4. 下一步
 
-1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
-2. 30MB：等满足前置条件（loadavg1<8、swap used<2G、无 Xcode 构建）后按固定时点协议复测 build6；仅能自动切回 ABC，进入开发源仍需用户手动一次。143 轮因 loadavg 54/swap 6.1G 判为无效，不作证据。
-3. 更新闭环下一步：配置真实 Ed25519 密钥（Variable 公钥、Secret 私钥），打首个 tag 走 `release.yml` 真实验证一次；然后用真实包做 HTTPS 下载→验签→`upgrade.py --apply` 演练（含回滚）；再做下载确认/进度 UI 与镜像回退。
-4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
-4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
+1. 更新闭环已打通（feed/公钥入库/下载/验签/替换回滚/多镜像/生产升级演练）。剩余可选项：区域镜像搭建（用户后续）、下载确认与进度 UI、多公钥/密钥 ID 轮换（ADR-267）。
+2. 最终 RC：从当前 main（含 v0.1.0 之后修复：公钥入库、镜像、精确停宿主）构建新候选（build7），锁同一候选后完成
+   三模式/重启/显示与数字提交、客户端矩阵（Safari/Chrome/VSCode/Terminal/微信安全草稿）、VoiceOver/多屏/真实睡眠、
+   A/B、安装升级异常恢复卸载、五工作日观察；30MB 与 16ms 在 RC 上按既有协议复测后再正式关闭。
+3. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需 Apple Distribution 证书 + 描述文件，实测 MAS 安装位置与输入源注册。
+4. 冷首键为一次性成本（layout 9ms + measure 6.3ms），不再优化；不创建未经授权的 tag/Release。
 
 ## 5. 边界
 
