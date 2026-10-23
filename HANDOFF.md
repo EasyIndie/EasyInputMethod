@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`9be2f3e`（#89 沙盒原型）（#81…#92 均四CI绿后merge：ADR-255…262、构建号与报告135/138/139/140/141/142/143；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`a7079b0`（#89 沙盒原型）（#81…#93 均四CI绿后merge：ADR-255…263、构建号与报告135/138/139/140/141/142/143/144；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：build6 三轮新宿主按 ADR-263 口径（稳态 physical + 私有已提交同时 ≤30MiB）**3/3 满足**：physical 28.0–28.8M、私有 24.6–25.3M；高水位 peak 29.6–31.9M 单列不计。最终 RC 需同协议复测后才关闭 30MB。
@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 145 更新来源 | ADR-264：`update.feed_url`（空/https，拒绝凭据/fragment）默认空=GitHub Releases feed；设置新增「更新」分区；公钥固定签名包；更新程序经 ime-config 读取；GitHub 资产主机重定向允许列表；密钥生成/Actions 步骤见 `docs/更新发布流程.md`。尚未配真实密钥与 feed |
 | 142 appcast | ADR-262 `feed.py` 与 Swift 同规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD、64 字节签名、build 点分比较）；`upgrade.py` 接 `--feed-file/--feed-url`，无更新 `up-to-date` 退出 0；11+16 项离线回归；真实 feed/公钥/HTTPS 未做 |
 | 141 下载器 | ADR-261 `--payload-url` 仅 https、私有临时文件、256MB 上限、重定向复查、结束清理；顺序下载→验签→替换；7 项离线回归，升级相关共 15 项；真实 feed/公钥/HTTPS 演练未做 |
 | 140 沙盒原型 | ADR-260 `build.sh --sandbox` 产出不安装的 LampyrisSandbox.app；探针证明配置/学习数据只落容器、真实 Application Support 未写；连接名/entitlements 纳入 2 项离线回归；条件性 go，MAS 签名/安装注册/审核未验 |
@@ -48,7 +49,7 @@
 
 1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
 2. 30MB：等满足前置条件（loadavg1<8、swap used<2G、无 Xcode 构建）后按固定时点协议复测 build6；仅能自动切回 ABC，进入开发源仍需用户手动一次。143 轮因 loadavg 54/swap 6.1G 判为无效，不作证据。
-3. 更新闭环下一步：正式 feed/公钥 + 真实 HTTPS 演练，再用真实签名包跑 `upgrade.py --apply`（含失败回滚与 UI 提示）；架构/渠道筛选与灰度策略另议。
+3. 更新闭环下一步：配置真实 Ed25519 密钥（公钥进构建元数据、私钥进 Actions secret）+ GitHub Release 流水线，做一次真实 HTTPS 下载→验签→`upgrade.py --apply` 演练（含回滚）；再做下载确认/进度 UI 与镜像回退。
 4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
 4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
 
@@ -59,6 +60,10 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-264 更新来源可配置落地：`update.feed_url`（空/https）默认 GitHub Releases、设置新增「更新」分区、公钥固定、更新程序经 ime-config 读取、GitHub 重定向允许列表；密钥生成与 Actions 发版步骤写入 `docs/更新发布流程.md`；config/settings/updater/upgrade 回归通过，未接真实密钥。
+
+- 2026-10-22 / pi：#93（ADR-263 内存口径+build6 三轮判定）四CI绿 merge `a7079b0`，dev快进同步、PR 0。
 
 - 2026-10-22 / pi：B 项完成：按 ADR-263 口径（稳态 physical + 私有已提交同时≤30MiB）三轮新宿主回测，build6 3/3 满足（physical 28.0–28.8M、私有 24.6–25.3M），p95 10.81–12.00ms；高水位 29.6–31.9M 单列；收尾 ABC 自动还原、marker 删除、宿主精确退出，生产数据未变。
 

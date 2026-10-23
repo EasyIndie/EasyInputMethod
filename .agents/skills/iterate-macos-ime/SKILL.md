@@ -45,7 +45,7 @@ tools/macos-probe/bin/tissrc select cn.jokerhub.inputmethod.Lampyris.default
 | 动作 | 能否自动化 | 说明 |
 |---|---|---|
 | 查看已启用源 / 当前源 | ✅ | `tools/macos-probe/bin/tissrc list` |
-| 选中某个已启用源 | ✅ 且可脚本化 | `tools/macos-probe/bin/selsrc <id>`（打印 `select <id> <rc>` 与切换后 `current`；上一轮已用它自动切回 ABC）。切换后必须回读确认，采样结束切回 ABC；首次添加/移除仍需手工 |
+| 选中某个已启用源 | ⚠️ 仅能切回 ABC | `tools/macos-probe/bin/selsrc <id>` 选 ABC 生效；选第三方开发源返回 0 但系统 `current` 不变（父源 -50），**进入开发源仍需用户手动**。切回后必须回读确认 |
 | **首次添加**第三方输入法 | ❌ | `TISEnableInputSource` 返回 0 但源不出现在启用列表、宿主不启动；必须在「系统设置 → 键盘 → 文字输入」里加 |
 | 停用/移除 | ❌ | 实测 `TISDisableInputSource` 同样返回 0 但源仍在启用列表、宿主不退出（报告 095c）；只能在系统设置里移除 |
 

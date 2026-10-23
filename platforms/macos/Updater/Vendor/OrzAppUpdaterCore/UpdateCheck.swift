@@ -97,13 +97,20 @@ private final class FeedParser: NSObject, XMLParserDelegate {
 }
 
 final class RedirectGuard: NSObject, URLSessionTaskDelegate {
+    /// GitHub Releases 会把下载重定向到资产主机；只允许这些主机，且必须仍是 https。
+    static let allowedRedirectHosts: Set<String> = [
+        "github.com", "objects.githubusercontent.com",
+        "release-assets.githubusercontent.com", "raw.githubusercontent.com",
+    ]
     let origin: URL
     init(origin: URL) { self.origin = origin }
     func urlSession(_ session: URLSession, task: URLSessionTask,
                     willPerformHTTPRedirection response: HTTPURLResponse, newRequest request: URLRequest,
                     completionHandler: @escaping (URLRequest?) -> Void) {
+        let host = request.url?.host?.lowercased()
         guard let next = request.url, UpdateCheckConfiguration.secureURL(next),
-              next.host?.lowercased() == origin.host?.lowercased(),
+              host == origin.host?.lowercased()
+                || (host.map(Self.allowedRedirectHosts.contains) ?? false),
               (next.port ?? 443) == (origin.port ?? 443)
         else { completionHandler(nil); return }
         completionHandler(request)

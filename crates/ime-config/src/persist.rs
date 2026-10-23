@@ -320,6 +320,12 @@ fn scalar_from_value(spec: &schema::OptionSpec, value: &Value) -> Result<ConfigV
                 .as_str()
                 .ok_or_else(|| ConfigError::invalid_value(spec.key, "期望字符串"))?,
         ),
+        ValueType::Url => crate::config::url_value(
+            spec,
+            value
+                .as_str()
+                .ok_or_else(|| ConfigError::invalid_value(spec.key, "期望字符串"))?,
+        ),
     }
 }
 

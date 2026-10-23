@@ -39,6 +39,11 @@ import urllib.request
 import uuid
 
 MAX_PAYLOAD_BYTES = 256 * 1024 * 1024
+# GitHub Releases 会把下载重定向到资产主机；只允许这些主机（仍是 https）。
+ALLOWED_REDIRECT_HOSTS = {
+    'github.com', 'objects.githubusercontent.com',
+    'release-assets.githubusercontent.com', 'raw.githubusercontent.com',
+}
 
 
 @functools.lru_cache(maxsize=1)
@@ -68,6 +73,8 @@ def fetch_feed(url: str, *, allow_file: bool = False) -> bytes:
         final = urllib.parse.urlparse(response.geturl())
         if final.scheme not in allowed:
             raise UpgradeError('feed 重定向后协议不允许：' + final.scheme)
+        if final.hostname and final.hostname.lower() not in ALLOWED_REDIRECT_HOSTS:
+            raise UpgradeError('feed 重定向到未允许的主机：' + final.hostname)
         data = response.read(1024 * 1024 + 1)
     if len(data) > 1024 * 1024:
         raise UpgradeError('feed 超过大小上限')
@@ -105,6 +112,8 @@ def download(url: str, *, allow_file: bool = False, limit: int = MAX_PAYLOAD_BYT
             final = urllib.parse.urlparse(response.geturl())
             if final.scheme not in allowed:
                 raise UpgradeError('重定向后协议不允许：' + final.scheme)
+            if final.hostname and final.hostname.lower() not in ALLOWED_REDIRECT_HOSTS:
+                raise UpgradeError('重定向到未允许的主机：' + final.hostname)
             written = 0
             with target.open('wb') as stream:
                 while True:

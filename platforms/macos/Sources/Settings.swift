@@ -25,7 +25,7 @@ struct SettingsOption {
     let kind: Kind
 
     /// scope 显示名（与 FFI 的 `scope` 数值约定一致）。
-    static let scopeTitles = ["输入引擎", "候选窗", "外观", "快捷键"]
+    static let scopeTitles = ["输入引擎", "候选窗", "外观", "快捷键", "更新"]
 
     /// Hide implementation comparison notes while preserving schema-defined guidance.
     var userHelp: String {
@@ -324,13 +324,14 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
 
     /// 分区。新增分区 = 加一个 case + 一个 builder（保持可扩展、菜单不再膨胀）。
     private enum Section: Int, CaseIterable {
-        case input, candidates, shortcuts, dictionary
+        case input, candidates, shortcuts, dictionary, updates
         var title: String {
             switch self {
             case .input: return "输入"
             case .candidates: return "候选"
             case .shortcuts: return "快捷键"
             case .dictionary: return "词库"
+            case .updates: return "更新"
             }
         }
         var symbol: String {
@@ -339,6 +340,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
             case .candidates: return "text.bubble"
             case .shortcuts: return "command"
             case .dictionary: return "character.book.closed"
+            case .updates: return "arrow.triangle.2.circlepath"
             }
         }
         var identifier: NSToolbarItem.Identifier { .init("lampyris.settings.\(rawValue)") }
@@ -605,6 +607,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
             buildSettingsSection(scopes: [1, 2]),
             buildSettingsSection(scopes: [3]),
             buildDictionarySection(),
+            buildSettingsSection(scopes: [4]),
         ]
 
         let content = panel.contentView!
@@ -637,6 +640,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         if scopes == [0] {
             groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width"]),
                 ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
+        } else if scopes == [4] {
+            groups = [("更新来源", ["update.feed_url"])]
         } else if scopes.contains(3) {
             groups = [("快捷键", ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
                 "hotkey.toggle_punctuation", "hotkey.toggle_variant",

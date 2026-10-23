@@ -902,8 +902,8 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     // 设置面板（ADR-070）：Schema 驱动、界面零硬编码。
     let settingsOptions = SettingsSchema.options()
-    guard settingsOptions.count == 19 else {
-        fputs("设置项数量应为 19，实际 \(settingsOptions.count)。\n", stderr); exit(1)
+    guard settingsOptions.count == 20 else {
+        fputs("设置项数量应为 20，实际 \(settingsOptions.count)。\n", stderr); exit(1)
     }
     guard settingsOptions.allSatisfy({ !$0.title.isEmpty && !$0.doc.isEmpty }) else {
         fputs("设置项缺标题或说明。\n", stderr); exit(1)
@@ -943,9 +943,9 @@ if CommandLine.arguments.contains("--smoke-test") {
         SettingsPanel.shared.minimumContentSize.width >= 520,
         SettingsPanel.shared.minimumContentSize.height >= 440
     else { fputs("设置分组或窗口约束不符。\n", stderr); exit(1) }
-    // 面板（ADR-077/080）：设置/词库 两个分区。
-    guard SettingsPanel.shared.sectionCount == 4 else {
-        fputs("设置面板分区数应为 4，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
+    // 面板（ADR-077/080/264）：输入/候选/快捷键/词库/更新。
+    guard SettingsPanel.shared.sectionCount == 5 else {
+        fputs("设置面板分区数应为 5，实际 \(SettingsPanel.shared.sectionCount)。\n", stderr); exit(1)
     }
     guard AboutUI.text().contains("GPL-3.0") else {
         fputs("版本信息缺失。\n", stderr); exit(1)

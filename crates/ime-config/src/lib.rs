@@ -733,8 +733,45 @@ mod tests {
     }
 
     #[test]
+    fn update_feed_url_accepts_empty_or_https_only() {
+        let tmp = TempFile::new("update-feed");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        assert!(store.set("update.feed_url", "\"\"").is_ok());
+        assert_eq!(
+            store.get("update.feed_url"),
+            Some(ConfigValue::String(String::new()))
+        );
+        let custom = "https://updates.example.com/appcast.xml";
+        assert!(store
+            .set("update.feed_url", &format!("\"{custom}\""))
+            .is_ok());
+        assert_eq!(
+            store.get("update.feed_url"),
+            Some(ConfigValue::String(custom.to_string()))
+        );
+        for invalid in [
+            "http://updates.example.com/a.xml",
+            "https://user:pw@example.com/a.xml",
+            "https://example.com/a.xml#frag",
+            "not-a-url",
+            "https://",
+        ] {
+            assert!(
+                store
+                    .set("update.feed_url", &format!("\"{invalid}\""))
+                    .is_err(),
+                "{invalid}"
+            );
+        }
+        assert_eq!(
+            store.get("update.feed_url"),
+            Some(ConfigValue::String(custom.to_string()))
+        );
+    }
+
+    #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 19);
+        assert_eq!(schema().len(), 20);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -758,6 +795,7 @@ mod tests {
                 "input.punctuation",
                 "input.full_width",
                 "input.chinese_variant",
+                "update.feed_url",
             ]
         );
     }

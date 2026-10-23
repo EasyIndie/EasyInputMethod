@@ -4,7 +4,7 @@
   "adapted_revision": "8d1d4b852dcf645af8f39a84cc81b6466c8e2c3d",
   "license": "Apache-2.0",
   "files": {
-    "Vendor/OrzAppUpdaterCore/UpdateCheck.swift": "c9508f0aff86003630bb4fe8ac723028abd611f3211569190e2ac29ed7f38447",
+    "Vendor/OrzAppUpdaterCore/UpdateCheck.swift": "d0e336c67950e8d09fe91b29049e79d2f95a406a1bd666b4d7297b1cd1c6099e",
     "Vendor/ORZ-LICENSE": "be5ce4447cce4d5584e901a5b46381eef3f161e8368b776d37af3c60cba99aca",
     "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d"
   },
@@ -15,6 +15,7 @@
     "Tests/OrzAppUpdaterCoreTests/UpdateCheckTests.swift": "b46b1d1ac21a4fa65408f9f4333c98770e0b7569cd5ed94ff3d51763e6a4582d"
   },
   "local_patches": [
-    "Add checked Sendable conformance to immutable UpdateRelease and UpdateCheckConfiguration for strict concurrency; no unchecked conformance or networking change."
+    "Add checked Sendable conformance to immutable UpdateRelease and UpdateCheckConfiguration for strict concurrency; no unchecked conformance or networking change.",
+    "Allow GitHub Releases asset redirects (github.com/objects.githubusercontent.com/release-assets.githubusercontent.com/raw.githubusercontent.com over https) while rejecting other hosts; verification logic unchanged."
   ]
 }

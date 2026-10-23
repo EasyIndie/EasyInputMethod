@@ -118,6 +118,7 @@ pub(crate) fn parse_literal(spec: &OptionSpec, raw: &str) -> Result<ConfigValue,
             }
         }
         ValueType::String => string_value(spec, &unquote(raw)),
+        ValueType::Url => url_value(spec, &unquote(raw)),
     }
 }
 
@@ -131,12 +132,37 @@ fn unquote(raw: &str) -> String {
     }
 }
 
+/// 空值或 https URL；拒绝凭据与 fragment，避免把更新源写进日志或误导用户。
+pub(crate) fn url_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, ConfigError> {
+    if value.is_empty() {
+        return Ok(ConfigValue::String(String::new()));
+    }
+    let valid = value.starts_with("https://")
+        && !value.contains(char::is_whitespace)
+        && !value.contains('@')
+        && !value.contains('#')
+        && value["https://".len()..]
+            .split('/')
+            .next()
+            .is_some_and(|host| !host.is_empty());
+    if valid {
+        Ok(ConfigValue::String(value.to_owned()))
+    } else {
+        Err(ConfigError::invalid_value(
+            spec.key,
+            "期望空值或 https URL（不含凭据/fragment）",
+        ))
+    }
+}
+
 /// Validate and normalize string values from both setters and file loads.
 pub(crate) fn string_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, ConfigError> {
     if spec.scope == schema::Scope::Hotkey {
         Ok(ConfigValue::String(
             crate::Hotkey::parse(spec.key, value)?.canonical(),
         ))
+    } else if spec.value_type == ValueType::Url {
+        url_value(spec, value)
     } else {
         Ok(ConfigValue::String(value.to_owned()))
     }
