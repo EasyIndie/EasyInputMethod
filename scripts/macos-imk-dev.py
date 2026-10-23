@@ -128,6 +128,24 @@ def install(app, root, home, helper, stop=False):
         return replace_package(app, root, home, helper, stop)
 
 
+MUTABLE_METADATA = {
+    'CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit', 'LampyrisSemanticVersion',
+    'CFBundleDisplayName', 'tsInputMethodIconFileKey', 'tsInputModeMenuIconFileKey',
+    'tsInputModePaletteIconFileKey', 'tsInputModeAlternateMenuIconFileKey',
+}
+
+
+def comparable(info):
+    """去掉可演进的显示名/图标/版本字段（含嵌套），其余声明必须逐项一致。"""
+    def walk(value):
+        if isinstance(value, dict):
+            return {key: walk(item) for key, item in value.items() if key not in MUTABLE_METADATA}
+        if isinstance(value, list):
+            return [walk(item) for item in value]
+        return value
+    return walk(info)
+
+
 def replace_package(app, root, home, helper, stop=False):
     info = verify_app(app, root)
     target = home / ('Library/Input Methods/LampyrisIMKTest-' + root.name.removeprefix('lampyris-imk-') + '.app')
@@ -139,14 +157,9 @@ def replace_package(app, root, home, helper, stop=False):
     previous = None
     if os.path.lexists(target):
         previous = verify_app(target, root)
-        for key in set(previous) | set(info):
-            # 显示名/图标属于可演进的构建元数据（ADR-272）；身份/服务声明仍须一致。
-            if key in ('CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit',
-                       'LampyrisSemanticVersion', 'CFBundleDisplayName',
-                       'tsInputMethodIconFileKey', 'tsInputModeMenuIconFileKey',
-                       'tsInputModePaletteIconFileKey', 'tsInputModeAlternateMenuIconFileKey'):
-                continue
-            if previous.get(key) != info.get(key):
+        old, new = comparable(previous), comparable(info)
+        for key in set(old) | set(new):
+            if old.get(key) != new.get(key):
                 raise ValueError('输入源声明变化，不能复用已登记身份：' + key)
         idle(target, stop)
     # Staging and backups are outside Input Methods to avoid extra discoverable copies.

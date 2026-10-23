@@ -1,0 +1,16 @@
+== dev build7 naming 2026-10-23T06:56:13Z
+display 萤火虫 开发版
+build 7
+icon LampyrisDevTemplate.png
+exec 4d1ee6e8783c6c65b1b28fd8176b8ee6295e386e1f9c7fd23f44debfcce78ded  /Users/joker/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app/Contents/MacOS/LampyrisIMKTest
+--- zh strings
+"CFBundleName" = "萤火虫 开发版";
+"CFBundleDisplayName" = "萤火虫 开发版";
+"cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default" = "萤火虫 开发版";
+--- en strings
+"CFBundleName" = "Lampyris Dev";
+"CFBundleDisplayName" = "Lampyris Dev";
+"cn.jokerhub.inputmethod.LampyrisIMKTest.d4fcecfb-af99-4b9a-a590-55fa99e16f05.default" = "Lampyris Dev";
+--- production unchanged
+萤火虫
+5709716c4071333f5a94cc041026fd0a7f29f97569a83cddb266039e3d900426  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
