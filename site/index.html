@@ -54,17 +54,17 @@
 
   <h2>安装（macOS 13+，universal）</h2>
   <p>在终端粘贴执行（安装到当前用户，<strong>不需要 sudo</strong>）：</p>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.6-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.7-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
   <ul>
     <li>安装器会校验 Developer ID 签名、hardened runtime 与公证；校验失败会拒绝安装。</li>
     <li>安装后<strong>自动注册输入源</strong>；用 <code>⌃Space</code> 或输入法菜单选中「萤火虫」即可（若菜单里还没出现，重启登录一次）。</li>
     <li>同版本重复执行无操作；<strong>已有不同版本需先卸载</strong>（见下）。</li>
-    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.6-source.tar.gz</code>。</li>
+    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.7-source.tar.gz</code>。</li>
   </ul>
 
   <h2>卸载</h2>
   <p>直接运行下面的命令：安装包内的卸载脚本会切回 ABC、禁用并移除输入源：</p>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.6-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.7-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
   <ul>
     <li>默认卸载会备份旧应用，<strong>保留</strong> <code>~/Library/Application Support/Lampyris/</code> 下的配置与个人词库。</li>
     <li>如果宿主仍在运行，先注销一次再执行；旧输入源条目会在下次登录后消失。</li>
