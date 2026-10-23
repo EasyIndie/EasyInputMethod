@@ -52,7 +52,7 @@ jobs:
           tag="${{ steps.meta.outputs.tag }}"
           signers=packaging/git-allowed-signers
           if [ ! -f "$signers" ]; then
-            echo "::warning::签名 tag 校验尚未启用（缺少 $signers）；提交允许的签名者公钥后自动生效。"
+            echo "::warning::签名 tag 校验尚未启用（缺少 ${signers}）；提交允许的签名者公钥后自动生效。"
             exit 0
           fi
           git config gpg.format ssh
