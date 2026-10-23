@@ -51,8 +51,19 @@ if ${DRY}; then
   exit 0
 fi
 
-if pgrep -x Lampyris >/dev/null; then echo "请切换为 ABC，在系统设置移除萤火虫，然后注销使宿主退出" >&2; exit 1; fi
-${REMOVED} || { echo "先移除输入源，确认后传入 --input-source-removed" >&2; exit 1; }
+HELPER="${APP}/Contents/Helpers/LampyrisTIS"
+AUTO_REMOVED=false
+if [ -x "${HELPER}" ]; then
+  "${HELPER}" switch-abc >/dev/null 2>&1 || true
+  if "${HELPER}" disable "${IDENTIFIER}" >/dev/null 2>&1; then
+    AUTO_REMOVED=true
+    sleep 1
+  fi
+fi
+if pgrep -x Lampyris >/dev/null; then echo "宿主仍在运行；请注销后重试，或手动移除输入源" >&2; exit 1; fi
+if ! ${REMOVED}; then
+  ${AUTO_REMOVED} || { echo "先移除输入源，确认后传入 --input-source-removed" >&2; exit 1; }
+fi
 if [ "${DOMAIN}" = '/Library/Input Methods' ] && [ "$(id -u)" != 0 ]; then echo "系统域卸载需要管理员运行" >&2; exit 1; fi
 mkdir -p "${BACKUP}"
 TARGET="$(mktemp -d "${BACKUP}/bundle.XXXXXX")"

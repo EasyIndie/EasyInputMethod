@@ -91,6 +91,32 @@ class UninstallerFreshStart(unittest.TestCase):
             self.assertTrue((support / 'config.toml').exists())
             self.assertTrue((support / 'user-dictionary.tsv').exists())
 
+    def add_helper(self, bundle, exit_code=0):
+        helper = bundle / 'Contents/Helpers/LampyrisTIS'
+        helper.parent.mkdir(parents=True)
+        helper.write_text('#!/bin/sh\nexit %d\n' % exit_code)
+        helper.chmod(0o755)
+
+    def test_uninstall_disables_source_via_helper_without_flag(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = pathlib.Path(directory)
+            home, bundle, support, stub = self.fixture(work)
+            self.add_helper(bundle)
+            result = self.run_uninstall(home, stub)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            self.assertFalse(bundle.exists())
+            self.assertTrue((support / 'config.toml').exists())
+
+    def test_uninstall_still_requires_flag_when_helper_fails(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = pathlib.Path(directory)
+            home, bundle, support, stub = self.fixture(work)
+            self.add_helper(bundle, exit_code=1)
+            result = self.run_uninstall(home, stub)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('先移除输入源', result.stderr)
+            self.assertTrue(bundle.exists())
+
     def test_purge_moves_bundle_and_data_aside(self):
         with tempfile.TemporaryDirectory() as directory:
             work = pathlib.Path(directory)

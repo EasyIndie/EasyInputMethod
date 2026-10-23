@@ -96,6 +96,12 @@ build_arch() {
       -framework InputMethodKit \
       -framework CoreFoundation \
       -o "${EXE_DIR}/Lampyris-${arch}"
+    swiftc -O -warnings-as-errors \
+      -target "${arch}-apple-macosx13.0" \
+      -module-cache-path "${BUILD_DIR}/tmp/module-cache-${arch}" \
+      platforms/macos/tools/tis-source.swift \
+      -framework Carbon \
+      -o "${EXE_DIR}/LampyrisTIS-${arch}"
   )
 }
 for arch in "${ARCHES[@]}"; do build_arch "${arch}"; done
@@ -149,6 +155,14 @@ else
   lipo -create "${exe_inputs[@]}" -output "${APP_DIR}/Contents/MacOS/${EXECUTABLE}"
 fi
 printf '   架构：%s\n' "$(lipo -archs "${APP_DIR}/Contents/MacOS/${EXECUTABLE}")"
+mkdir -p "${APP_DIR}/Contents/Helpers"
+if [ "${#ARCHES[@]}" -eq 1 ]; then
+  cp "${EXE_DIR}/LampyrisTIS-${ARCHES[0]}" "${APP_DIR}/Contents/Helpers/LampyrisTIS"
+else
+  lipo -create "${EXE_DIR}"/LampyrisTIS-* -output "${APP_DIR}/Contents/Helpers/LampyrisTIS"
+fi
+chmod +x "${APP_DIR}/Contents/Helpers/LampyrisTIS"
+printf '   输入源 helper：%s\n' "$(lipo -archs "${APP_DIR}/Contents/Helpers/LampyrisTIS")"
 
 echo "▶ 5/5 校验 Info.plist + ad-hoc 签名"
 plutil -lint "${APP_DIR}/Contents/Info.plist"
