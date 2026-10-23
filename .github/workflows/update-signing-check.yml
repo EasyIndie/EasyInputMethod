@@ -1,0 +1,64 @@
+name: Update Signing Check
+# 手动触发：只验证「公钥 + 私钥 + 更新程序验签」链路，不创建 tag/Release、不上传任何资产。
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: update-signing-check
+  cancel-in-progress: false
+jobs:
+  check:
+    runs-on: macos-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+      - name: Build updater with pinned public key
+        env:
+          UPDATE_PUBLIC_KEY_VAR: ${{ vars.LAMPYRIS_UPDATE_PUBLIC_KEY }}
+          UPDATE_PUBLIC_KEY_SECRET: ${{ secrets.LAMPYRIS_UPDATE_PUBLIC_KEY }}
+        run: |
+          UPDATE_PUBLIC_KEY="${UPDATE_PUBLIC_KEY_VAR:-${UPDATE_PUBLIC_KEY_SECRET}}"
+          test -n "$UPDATE_PUBLIC_KEY"
+          python3 platforms/macos/Updater/build.py --public-key "$UPDATE_PUBLIC_KEY"
+      - name: Sign and verify a throwaway payload
+        env:
+          UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$UPDATE_PRIVATE_KEY"
+          work="${RUNNER_TEMP}/lampyris-signing-check"
+          mkdir -p "$work"
+          key="$work/key.pem"
+          umask 077
+          printf '%s' "$UPDATE_PRIVATE_KEY" > "$key"
+          trap 'rm -rf "$work"' EXIT
+          printf 'lampyris signing self-check\n' > "$work/payload.bin"
+          ditto -c -k --keepParent "$work/payload.bin" "$work/payload.zip"
+          openssl_bin="$(command -v openssl)"
+          if brew --prefix openssl@3 >/dev/null 2>&1; then
+            openssl_bin="$(brew --prefix openssl@3)/bin/openssl"
+          fi
+          OPENSSL_BIN="$openssl_bin" python3 packaging/macos/release-appcast.py \
+            --zip "$work/payload.zip" --build 1 --short-version 0.0.0 \
+            --url "https://example.invalid/payload.zip" --private-key "$key" \
+            --out "$work/appcast.xml" > "$work/summary.json"
+          signature="$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["signature"])' "$work/summary.json")"
+          verifier=platforms/macos/build/website-updater/LampyrisUpdateCheck.app/Contents/MacOS/LampyrisUpdateCheck
+          "$verifier" --verify-payload "$work/payload.zip" "$signature"
+          printf 'x' >> "$work/payload.zip"
+          if "$verifier" --verify-payload "$work/payload.zip" "$signature" >/dev/null 2>&1; then
+            echo "篡改后的负载仍通过验签，私钥/公钥不匹配或验签被绕过" >&2
+            exit 1
+          fi
+          echo "✅ 签名链路自检通过：公钥与私钥匹配，篡改负载被拒绝（未创建 tag/Release）。"
