@@ -31,6 +31,34 @@ enum FeedSource {
         return configured
     }
 
+    /// 读取备用镜像（逗号/空白分隔，最多 8 个，去重保序；非法项忽略）。
+    static func configuredMirrors(configPath: String? = nil) -> [URL] {
+        let path = configPath ?? Self.configPath()
+        guard ime_config_init(path) == IME_OK,
+              let raw = "update.feed_mirrors".withCString({ ime_config_get($0) })
+        else { return [] }
+        var seen = Set<String>()
+        var mirrors: [URL] = []
+        for part in String(cString: raw).split(whereSeparator: { $0 == "," || $0.isWhitespace }) {
+            let value = String(part)
+            guard mirrors.count < 8, seen.insert(value).inserted,
+                  let url = URL(string: value), secure(url) else { continue }
+            mirrors.append(url)
+        }
+        return mirrors
+    }
+
+    /// 依次尝试的来源：主源（配置/签名默认）→ 镜像；去重后最多 9 个。
+    static func effectiveFeeds(configured: URL?, mirrors: [URL], bundled: URL) -> [URL] {
+        var feeds: [URL] = []
+        var seen = Set<String>()
+        for candidate in [effectiveFeed(configured: configured, bundled: bundled)] + mirrors {
+            guard secure(candidate), seen.insert(candidate.absoluteString).inserted else { continue }
+            feeds.append(candidate)
+        }
+        return Array(feeds.prefix(9))
+    }
+
     static func secure(_ url: URL) -> Bool {
         url.scheme?.lowercased() == "https" && !(url.host ?? "").isEmpty
             && url.user == nil && url.password == nil && url.fragment == nil

@@ -16,6 +16,8 @@ pub enum ValueType {
     String,
     /// 字符串，但只接受空值或 https URL（无凭据、无 fragment）。
     Url,
+    /// 逗号/换行分隔的 https URL 列表（按顺序回退；空值=不使用镜像）。
+    UrlList,
 }
 
 /// 变更后需要即时生效的组件（供设置界面分组与后续 C ABI 使用）。
@@ -236,6 +238,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         default: "\"\"",
         title_zh: "更新来源",
         doc_zh: "留空使用官方 GitHub 发布源；也可填自建 https appcast 地址。只由独立更新程序读取，输入法与核心不联网。",
+        scope: Scope::Update,
+    },
+    OptionSpec {
+        key: "update.feed_mirrors",
+        value_type: ValueType::UrlList,
+        enum_labels_zh: &[],
+        default: "\"\"",
+        title_zh: "更新镜像",
+        doc_zh: "按顺序尝试的备用 appcast 地址（逗号或换行分隔，最多 8 个 https）；默认源不可达时自动回退。只由独立更新程序读取。",
         scope: Scope::Update,
     },
 ];

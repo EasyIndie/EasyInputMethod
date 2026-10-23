@@ -1,0 +1,38 @@
+# ═══ 萤火虫输入法 · 配置 ═══
+# 改完保存即时生效，不用重启
+# 以 # 开头的都是说明
+
+mode = "mixed"  # 五笔优先，想不起编码时用拼音兜底。
+[wubi]
+auto_commit = true  # 打满四码且唯一时直接上屏
+z_key = "wildcard"  # 万能键可代替想不起的五笔编码；也可关闭
+
+[pinyin]
+fuzzy = false  # 支持 zh/z、ch/c、sh/s、n/l 的基础模糊音
+
+[candidate]
+count = 7  # 每页候选数（3–9）
+page_with_comma = true  # 组合态下用 , / . 翻页（对齐搜狗/微信）
+show_wubi_learning = false  # 按需显示当前候选的完整五笔码与已核验拆字；不随输入模式自动开关
+
+[appearance]
+theme = "auto"  # 跟随系统外观，或固定使用浅色、深色主题
+
+[hotkey]
+toggle_wubi_learning = "alt+l"  # 切换同一学习区显示偏好，不提交当前组合；默认 alt+l（Option 前缀表示「开关」），留空 = 关闭
+toggle_mode = "alt+m"  # 循环切换 混合 → 五笔 → 拼音；默认 alt+m（Option = 可选项），留空 = 关闭
+toggle_english = "shift"  # shift = 单独按 Shift（对齐搜狗/微信） | 组合键如 ctrl+alt+e | none = 关闭
+toggle_width = "alt+f"  # 组合键如 alt+f（默认，F = Full-width；⌥Space 与 ChatGPT 等应用冲突） | none = 关闭
+toggle_punctuation = "alt+p"  # 组合键如 alt+p（默认，P = 标点；⌥. 会让出 ≥ 符号） | none = 关闭
+toggle_variant = "alt+t"  # 组合键如 alt+t（默认，T = 繁体） | none = 关闭
+open_settings = "alt+,"  # 组合键如 alt+,（默认，与其它状态键统一 Option 前缀） | none = 关闭；与菜单项的快捷键提示同源
+open_about = "alt+a"  # 组合键如 alt+a（默认，A = About） | none = 关闭；与菜单项的快捷键提示同源
+
+[input]
+punctuation = "chinese"  # 选择中文或英文标点；快捷键切换会保存此偏好
+full_width = false  # 全角 ASCII（全/半角快捷键可临时切换）
+chinese_variant = "simplified"  # 选择简体或繁体输出；快捷键切换会保存此偏好
+
+[update]
+feed_url = ""  # 留空使用官方 GitHub 发布源；也可填自建 https appcast 地址。只由独立更新程序读取，输入法与核心不联网。
+feed_mirrors = ""  # 按顺序尝试的备用 appcast 地址（逗号或换行分隔，最多 8 个 https）；默认源不可达时自动回退。只由独立更新程序读取。

@@ -56,6 +56,22 @@ def appcast_module():
     return module
 
 
+def select_release(sources, current: str, *, allow_file: bool = False):
+    """按顺序尝试 (url, 本地路径|null) 来源；返回 release 或 None（无更新）。全部失败抛错。"""
+    appcast = appcast_module()
+    failures = 0
+    for source, path in sources:
+        try:
+            data = path.read_bytes() if path is not None else fetch_feed(source, allow_file=allow_file)
+            release = appcast.newest_release(
+                appcast.parse_appcast(data, allow_file=allow_file), current)
+        except (UpgradeError, OSError, ValueError):
+            failures += 1
+            continue
+        return release
+    raise UpgradeError(f'所有更新来源均不可用（已尝试 {failures} 个）')
+
+
 def installed_build(domain: Path) -> str | None:
     info = domain / BUNDLE / 'Contents/Info.plist'
     try:
@@ -73,7 +89,9 @@ def fetch_feed(url: str, *, allow_file: bool = False) -> bytes:
         final = urllib.parse.urlparse(response.geturl())
         if final.scheme not in allowed:
             raise UpgradeError('feed 重定向后协议不允许：' + final.scheme)
-        if final.hostname and final.hostname.lower() not in ALLOWED_REDIRECT_HOSTS:
+        origin_host = (parsed.hostname or '').lower()
+        final_host = (final.hostname or '').lower()
+        if final_host and final_host != origin_host and final_host not in ALLOWED_REDIRECT_HOSTS:
             raise UpgradeError('feed 重定向到未允许的主机：' + final.hostname)
         data = response.read(1024 * 1024 + 1)
     if len(data) > 1024 * 1024:
@@ -112,7 +130,10 @@ def download(url: str, *, allow_file: bool = False, limit: int = MAX_PAYLOAD_BYT
             final = urllib.parse.urlparse(response.geturl())
             if final.scheme not in allowed:
                 raise UpgradeError('重定向后协议不允许：' + final.scheme)
-            if final.hostname and final.hostname.lower() not in ALLOWED_REDIRECT_HOSTS:
+            origin_host = (parsed.hostname or '').lower()
+            final_host = (final.hostname or '').lower()
+            # 同主机（自建镜像直链）或 GitHub 资产主机才允许；其余跨主机跳转拒绝。
+            if final_host and final_host != origin_host and final_host not in ALLOWED_REDIRECT_HOSTS:
                 raise UpgradeError('重定向到未允许的主机：' + final.hostname)
             written = 0
             with target.open('wb') as stream:
@@ -324,6 +345,7 @@ def main(argv=None) -> int:
     source.add_argument('--payload-url')
     source.add_argument('--feed-file', type=Path, help='本地 appcast（离线/演练）')
     source.add_argument('--feed-url', help='https appcast；发现更新后自动下载负载')
+    source.add_argument('--feed-urls', help='逗号/空白分隔的 appcast 列表，按顺序回退')
     parser.add_argument('--current-build', help='缺省从已安装 Info.plist 读取')
     parser.add_argument('--allow-file-url', action='store_true',
                         help='仅本地离线测试：允许 file:// 负载/feed 地址')
@@ -348,17 +370,20 @@ def main(argv=None) -> int:
     try:
         payload = args.payload
         signature = args.signature
-        if args.feed_file is not None or args.feed_url is not None:
-            if args.feed_file is not None:
-                data = args.feed_file.read_bytes()
-            else:
-                data = fetch_feed(args.feed_url, allow_file=args.allow_file_url)
+        if args.feed_file is not None or args.feed_url is not None or args.feed_urls is not None:
             current = args.current_build or installed_build(args.domain)
             if current is None:
                 raise UpgradeError('无法确定已安装构建号；请提供 --current-build')
-            appcast = appcast_module()
-            release = appcast.newest_release(
-                appcast.parse_appcast(data, allow_file=args.allow_file_url), current)
+            sources = []
+            if args.feed_file is not None:
+                sources = [('file', args.feed_file)]
+            else:
+                raw = args.feed_urls or args.feed_url or ''
+                urls = [u for u in raw.replace(',', ' ').split() if u]
+                sources = [(url, None) for url in urls]
+            if not sources:
+                raise UpgradeError('没有可用的更新来源')
+            release = select_release(sources, current, allow_file=args.allow_file_url)
             if release is None:
                 print(json.dumps({'result': 'up-to-date', 'current': current}, ensure_ascii=False))
                 return 0

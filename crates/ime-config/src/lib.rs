@@ -770,8 +770,50 @@ mod tests {
     }
 
     #[test]
+    fn update_feed_mirrors_are_ordered_https_and_bounded() {
+        let tmp = TempFile::new("update-mirrors");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        assert!(store.set("update.feed_mirrors", "\"\"").is_ok());
+        assert_eq!(
+            store.get("update.feed_mirrors"),
+            Some(ConfigValue::String(String::new()))
+        );
+        let list = "https://a.example/appcast.xml, https://b.example/appcast.xml";
+        assert!(store
+            .set("update.feed_mirrors", &format!("\"{list}\""))
+            .is_ok());
+        assert_eq!(
+            store.get("update.feed_mirrors"),
+            Some(ConfigValue::String(
+                "https://a.example/appcast.xml,https://b.example/appcast.xml".into()
+            ))
+        );
+        for invalid in [
+            "http://a.example/x.xml",
+            "https://u:p@a.example/x.xml",
+            "not-a-url",
+            "https://a.example/x.xml#f",
+            "https://",
+        ] {
+            assert!(
+                store
+                    .set("update.feed_mirrors", &format!("\"{invalid}\""))
+                    .is_err(),
+                "{invalid}"
+            );
+        }
+        let nine = (1..=9)
+            .map(|i| format!("https://m{i}.example/a.xml"))
+            .collect::<Vec<_>>()
+            .join(",");
+        assert!(store
+            .set("update.feed_mirrors", &format!("\"{nine}\""))
+            .is_err());
+    }
+
+    #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 20);
+        assert_eq!(schema().len(), 21);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -796,6 +838,7 @@ mod tests {
                 "input.full_width",
                 "input.chinese_variant",
                 "update.feed_url",
+                "update.feed_mirrors",
             ]
         );
     }
