@@ -77,6 +77,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-23 / pi：v0.1.6/build14 发布，更新程序 universal；Intel `pro` 与本机均升级，`pro` 上更新程序 `--ui` 启动正常（报告 168）。
+
 - 2026-10-23 / pi：修复更新程序仅 arm64 导致 Intel 无法打开（ADR-279）：build.py 双架构 + lipo 断言，Release 加 Rust targets；0.1.6/build14 待发并装到 `pro` 复验。
 
 - 2026-10-23 / pi：`ssh pro` 第二台设备升级到 0.1.5/build13（旧 0.1.2/build10 备份），配置/词库不变，更新程序 0.1.5 已装（报告 166）。
