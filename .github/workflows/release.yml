@@ -114,12 +114,7 @@ jobs:
             --zip "$zip" --build "$build" --short-version "$version" \
             --url "$url" --private-key "$key" --out appcast.xml \
             | tee appcast.json
-          python3 - <<'PYAPPCAST'
-import json
-from pathlib import Path
-summary = json.loads(Path('appcast.json').read_text())
-Path('signature.b64').write_text(summary['signature'])
-PYAPPCAST
+          python3 -c 'import json; from pathlib import Path; Path("signature.b64").write_text(json.loads(Path("appcast.json").read_text())["signature"])'
           verifier=platforms/macos/build/website-updater/LampyrisUpdateCheck.app/Contents/MacOS/LampyrisUpdateCheck
           "$verifier" --verify-payload "$zip" "$(cat signature.b64)"
           rm -f signature.b64 appcast.json
