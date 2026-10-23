@@ -10,13 +10,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "tools"))
 from release_version import identity
 
 ROOT = Path(__file__).resolve().parent
+REPO_ROOT = Path(__file__).resolve().parents[3]
+PINNED_PUBLIC_KEY = REPO_ROOT / 'packaging/macos/update-public-key.txt'
 parser = argparse.ArgumentParser()
 parser.add_argument('--feed-url')
-parser.add_argument('--public-key')
+parser.add_argument('--public-key', help='覆盖：默认读取仓库内 packaging/macos/update-public-key.txt')
 args = parser.parse_args()
 version = identity()
-if args.feed_url and not args.public_key:
-    parser.error('提供发布地址时也必须提供公钥；两者都不提供则构建为默认关闭状态')
+if not args.public_key and not PINNED_PUBLIC_KEY.is_file():
+    parser.error('缺少入库公钥 packaging/macos/update-public-key.txt')
 scratch = ROOT.parent / 'build/website-updater'
 # ime-config 是配置唯一来源，更新程序链接它的静态库读取 update.feed_url。
 subprocess.run(['cargo', 'build', '--locked', '--release', '-p', 'ime-ffi'],
@@ -40,9 +42,12 @@ info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'LampyrisSemanticVersion': version['version'],
         'LSMinimumSystemVersion': '13.0', 'LampyrisDistributionChannel': 'website'}
 DEFAULT_FEED = 'https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml'
-if args.public_key:
-    # 公钥必须来自签名构建元数据；地址缺省用 GitHub 发布源，用户可在设置里覆盖。
-    info.update(SUFeedURL=args.feed_url or DEFAULT_FEED, SUPublicEDKey=args.public_key)
+# 公钥是公开值：默认取自仓库文件（可审计、可离线复验），不依赖 CI 变量/Secret。
+public_key = args.public_key or PINNED_PUBLIC_KEY.read_text().strip()
+import base64
+if len(base64.b64decode(public_key, validate=True)) != 32:
+    parser.error('公钥必须是 32 字节 Base64（Ed25519 原始公钥）')
+info.update(SUFeedURL=args.feed_url or DEFAULT_FEED, SUPublicEDKey=public_key)
 (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
 resources = contents / 'Resources'
 resources.mkdir(exist_ok=True)
