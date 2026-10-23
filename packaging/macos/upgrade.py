@@ -154,10 +154,16 @@ def _private(path: Path, directory: bool = False) -> None:
 def _extract(payload: Path, staging: Path) -> Path:
     staging.mkdir(mode=0o700)
     subprocess.run(['/usr/bin/ditto', '-x', '-k', str(payload), str(staging)], check=True)
-    candidate = staging / BUNDLE
-    if candidate.is_symlink() or not candidate.is_dir():
-        raise UpgradeError('负载解包后缺少 ' + BUNDLE)
-    return candidate
+    # 正式发行 ZIP 顶层是一个发布目录（含 README/SBOM 等），Lampyris.app 在下一层；
+    # 也兼容直接把 .app 放在 ZIP 根部的负载。要求候选唯一。
+    direct = staging / BUNDLE
+    if direct.is_dir() and not direct.is_symlink():
+        return direct
+    matches = [path for path in staging.glob('*/') if (path / BUNDLE).is_dir()
+               and not (path / BUNDLE).is_symlink()]
+    if len(matches) != 1:
+        raise UpgradeError('负载解包后缺少唯一的 ' + BUNDLE)
+    return matches[0] / BUNDLE
 
 
 def _swap(candidate: Path, destination: Path, backup: Path) -> Path | None:

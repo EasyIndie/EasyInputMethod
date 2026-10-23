@@ -149,6 +149,26 @@ class UpgradeTests(unittest.TestCase):
             upgrade.install(self.payload, 'sig', self.domain, self.support,
                             self.state.hooks(), dry_run=False)
 
+    def test_payload_with_release_wrapper_directory_is_supported(self):
+        wrapper = self.build / 'Lampyris-0.1.0-universal'
+        wrapper.mkdir()
+        make_app(wrapper, 'new-binary').rename(wrapper / upgrade.BUNDLE)
+        (wrapper / 'README.md').write_text('release notes')
+        payload = make_payload(wrapper, self.temporary / 'wrapped.zip')
+        upgrade.install(payload, 'sig', self.domain, self.support,
+                        self.state.hooks(), dry_run=False)
+        self.assertEqual((self.domain / upgrade.BUNDLE / upgrade.EXECUTABLE).read_text(), 'new-binary')
+
+    def test_payload_with_two_wrappers_is_rejected(self):
+        for name in ['one', 'two']:
+            wrapper = self.build / name
+            wrapper.mkdir()
+            make_app(wrapper, name).rename(wrapper / upgrade.BUNDLE)
+        payload = make_payload(self.build, self.temporary / 'ambiguous.zip')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.install(payload, 'sig', self.domain, self.support,
+                            self.state.hooks(), dry_run=False)
+
     def test_payload_without_bundle_is_rejected(self):
         broken = self.temporary / 'plain.zip'
         source = self.temporary / 'plain'
