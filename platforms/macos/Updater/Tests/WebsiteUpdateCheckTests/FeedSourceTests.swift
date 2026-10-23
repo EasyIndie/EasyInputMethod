@@ -69,6 +69,14 @@ final class FeedSourceTests: XCTestCase {
         setConfig("update.feed_mirrors", "")
     }
 
+    func testCurrentBuildOverrideOnlyAppliesWhenSet() throws {
+        let info: [String: Any] = ["CFBundleVersion": "6"]
+        XCTAssertEqual(WebsiteReleaseConfiguration.currentBuild(info), "6")
+        setenv("LAMPYRIS_UPDATE_CURRENT_BUILD", "5", 1)
+        defer { unsetenv("LAMPYRIS_UPDATE_CURRENT_BUILD") }
+        XCTAssertEqual(WebsiteReleaseConfiguration.currentBuild(info), "5")
+    }
+
     func testConfigFileValueIsReadThroughImeConfig() throws {
         let custom = "https://updates.example.com/appcast.xml"
         setConfig("update.feed_url", custom)

@@ -11,6 +11,7 @@ enum DefaultInstallEnvironment {
             let identity = run("/usr/libexec/PlistBuddy",
                                ["-c", "Print :CFBundleIdentifier",
                                 app.appendingPathComponent("Contents/Info.plist").path])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
             guard identity == UpdateInstaller.identity else {
                 throw InstallError.candidateInvalid("标识不符：\(identity)")
             }

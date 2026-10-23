@@ -2,8 +2,8 @@ import CryptoKit
 import Foundation
 
 /// 升级安装的失败原因；任何失败都应保持/恢复到升级前状态。
-public enum InstallError: Error, Equatable {
-    case payloadMissing
+public enum InstallError: LocalizedError, Equatable {
+    case payloadMissing(String)
     case payloadEmpty
     case missingBundle
     case ambiguousBundle
@@ -12,6 +12,20 @@ public enum InstallError: Error, Equatable {
     case hostStopFailed(String)
     case replaceFailed(String)
     case receiptFailed(String)
+
+    public var errorDescription: String? {
+        switch self {
+        case .payloadMissing(let detail): return "负载不可用：" + detail
+        case .payloadEmpty: return "负载为空"
+        case .missingBundle: return "负载中缺少 Lampyris.app"
+        case .ambiguousBundle: return "负载中有多个候选 Lampyris.app"
+        case .symlinkRejected: return "安装位置是符号链接，拒绝替换"
+        case .candidateInvalid(let detail): return "候选校验失败：" + detail
+        case .hostStopFailed(let detail): return "停止宿主失败：" + detail
+        case .replaceFailed(let detail): return "替换失败：" + detail
+        case .receiptFailed(let detail): return "写入升级记录失败：" + detail
+        }
+    }
 }
 
 /// 可注入的外部动作（测试用桩替换）。
@@ -47,7 +61,7 @@ public enum UpdateInstaller {
                                environment: InstallEnvironment,
                                dryRun: Bool = false) throws -> InstallReceipt {
         guard FileManager.default.fileExists(atPath: payload.path) else {
-            throw InstallError.payloadMissing
+            throw InstallError.payloadMissing("负载不存在：\(payload.path)")
         }
         guard let size = try? payload.resourceValues(forKeys: [.fileSizeKey]).fileSize, size > 0 else {
             throw InstallError.payloadEmpty
@@ -178,7 +192,7 @@ public enum UpdateInstaller {
 
     static func sha256(_ url: URL) throws -> String {
         guard let data = try? Data(contentsOf: url, options: .mappedIfSafe) else {
-            throw InstallError.payloadMissing
+            throw InstallError.payloadMissing("无法读取：\(url.path)")
         }
         return PayloadVerifier.sha256Hex(data)
     }

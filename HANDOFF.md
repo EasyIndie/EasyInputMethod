@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 152 UI全流程 | 真实GitHub feed：检查→下载→验签→确认→安装通过（同版本重装），生产仍v0.1.0/build6、配置/词库不变、ABC还原；修复标识trim误判与错误可读性；跨版本/镜像回退UI未验 |
 | 151 更新UI | ADR-271：`--ui` 窗口（检查→下载进度→验签→确认→安装→结果）；Swift `UpdateInstaller` 与 `upgrade.py` 语义一致；`UpdateDownloader` https-only/白名单/256MB。22 项测试+UI 冒烟；未真实网络点完流程 |
 | 150 独立重建 | 从 tag `v0.1.0` 干净克隆构建 universal 成功并启动；4 份数据表与 Release 逐字节一致、版本/构建号一致；可执行 SHA 因签名/工具链不同未复现（不宣称 bit-reproducible） |
 | 149 镜像回退 | ADR-270：`update.feed_mirrors`（UrlList ≤8、https、去重保序）；更新程序「主源→镜像」回退、成功即停；`upgrade.py --feed-urls` 同步并放行同主机直链；文档 `docs/更新源与镜像.md`。未在真实大陆网络验证 |
@@ -68,6 +69,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：更新UI真实全流程演练通过（报告152），修复标识trim与错误信息；生产包/配置/词库未变，ABC还原。
 
 - 2026-10-22 / pi：#106（ADR-271 更新UI+Swift安装器）四CI绿 merge `a11dcad`；dev快进同步、PR 0。
 

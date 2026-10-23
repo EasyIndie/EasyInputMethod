@@ -47,3 +47,5 @@
 2026-10-22 ADR-270/报告149：大陆GitHub访问容错。新增update.feed_mirrors（UrlList≤8、https、去重保序），更新程序主源→镜像顺序回退、成功即停；upgrade.py新增--feed-urls并按同主机直链放行。文档`docs/更新源与镜像.md`含镜像搭建/要求/验证。18+14+24项回归通过；未在真实大陆网络验证，未发新Release。
 
 2026-10-22 ADR-271/报告151：更新UI与Swift安装器。`--ui`窗口：检查(主源→镜像)→下载进度→验签→确认→安装→结果；UpdateInstaller与upgrade.py语义一致（精确停宿主/备份/原子替换/回滚/0600 receipt）；UpdateDownloader https-only+GitHub资产白名单+256MB上限。22项更新程序测试通过，UI启动冒烟通过；未在真实网络点完整流程。
+
+2026-10-22 报告152：更新UI真实全流程通过（同版本重装）：GitHub主源检查→5.2MB下载→验签→确认→安装；修复PlistBuddy标识带换行导致误判（trim）并给InstallError加LocalizedError；新增仅测试用LAMPYRIS_UPDATE_CURRENT_BUILD。配置3bc1117c…/词库74f76e92…不变，ABC还原，receipt 0600。跨版本与镜像回退UI未验。
