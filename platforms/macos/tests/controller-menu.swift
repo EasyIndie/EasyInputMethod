@@ -68,11 +68,12 @@ guard let server = IMKServer(name: "cn.jokerhub.lampyris.probe." + UUID().uuidSt
 }
 // IMK may request its menu before this controller has a text session.
 let coldMenu = controller.menu()!
-require(coldMenu.items.count == 8, "five rows plus separator, settings and about")
+require(coldMenu.items.count == 9, "five rows plus separator, update, settings and about")
 require(coldMenu.items.prefix(5).allSatisfy { $0.submenu == nil }, "no nested menus")
 require(coldMenu.items[1...4].allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
-require(coldMenu.items[6].keyEquivalent == "," && coldMenu.items[6].keyEquivalentModifierMask == [.option], "settings shortcut in menu")
-require(coldMenu.items[7].keyEquivalent == "a" && coldMenu.items[7].keyEquivalentModifierMask == [.option], "about shortcut in menu")
+require(coldMenu.items[6].title == "检查更新…" && coldMenu.items[6].keyEquivalent.isEmpty, "update entry present without shortcut")
+require(coldMenu.items[7].keyEquivalent == "," && coldMenu.items[7].keyEquivalentModifierMask == [.option], "settings shortcut in menu")
+require(coldMenu.items[8].keyEquivalent == "a" && coldMenu.items[8].keyEquivalentModifierMask == [.option], "about shortcut in menu")
 require(coldMenu.items[0].isEnabled, "mode row enabled before activation")
 require(coldMenu.items[0].tag == 1, "mode row carries the cycle command")
 require(LampyrisProbeDispatchMenuCommand(server, controller, coldMenu.items[0], 501), "cold row dispatches through the service boundary")

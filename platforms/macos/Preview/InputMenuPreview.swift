@@ -8,6 +8,7 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     var onChange: (() -> Void)?
     var onFailure: ((String) -> Void)?
     var onClose: (() -> Void)?
+    var onCheckUpdates: (() -> Void)?
     var onSettings: (() -> Void)?
     var onAbout: (() -> Void)?
     lazy var menu: NSMenu = makeMenu()
@@ -32,7 +33,8 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
         let result = InputStateMenu.make(state: state, target: self)
         result.delegate = self
         result.addItem(.separator())
-        for (title, action) in [("设置", #selector(showSettings(_:))), ("关于", #selector(showAbout(_:)))] {
+        for (title, action) in [("检查更新…", #selector(checkUpdates(_:))),
+                                ("设置", #selector(showSettings(_:))), ("关于", #selector(showAbout(_:)))] {
             let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
             item.target = self
             result.addItem(item)
@@ -41,8 +43,8 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     }
 
     func refresh() {
-        if menu.items.count >= 8 {
-            for (item, key) in [(menu.items[6], "hotkey.open_settings"), (menu.items[7], "hotkey.open_about")] {
+        if menu.items.count >= 9 {
+            for (item, key) in [(menu.items[7], "hotkey.open_settings"), (menu.items[8], "hotkey.open_about")] {
                 item.keyEquivalent = ""
                 item.keyEquivalentModifierMask = []
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
@@ -74,6 +76,8 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
         onChange?()
         if key == "*error", let message = ImeConfig.errorMessage() { onFailure?(message) }
     }
+
+    @objc private func checkUpdates(_ sender: Any?) { onCheckUpdates?() }
 
     private func changed(_ success: Bool = true) {
         refresh()

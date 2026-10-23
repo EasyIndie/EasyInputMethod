@@ -11,6 +11,29 @@ struct InputMenuState {
     let enabled: Bool
 }
 
+/// 更新入口：优先启动独立更新程序，否则打开 Release 页面。宿主本身不联网。
+enum UpdateEntry {
+    static let releasePage = URL(string: "https://github.com/EasyIndie/EasyInputMethod/releases/latest")!
+    static let updaterBundleID = "cn.jokerhub.Lampyris.WebsiteUpdateCheck"
+
+    static func updaterURL() -> URL? {
+        let home = FileManager.default.homeDirectoryForCurrentUser
+        let candidates = [home.appendingPathComponent("Applications/Lampyris Update.app"),
+                          URL(fileURLWithPath: "/Applications/Lampyris Update.app")]
+        return candidates.first { Bundle(url: $0)?.bundleIdentifier == updaterBundleID }
+    }
+
+    static func open() {
+        if let app = updaterURL() {
+            let configuration = NSWorkspace.OpenConfiguration()
+            configuration.arguments = ["--ui"]
+            NSWorkspace.shared.openApplication(at: app, configuration: configuration)
+        } else {
+            NSWorkspace.shared.open(releasePage)
+        }
+    }
+}
+
 /// Public AppKit menu contract; callbacks also accept IMK command dictionaries.
 enum InputStateMenu {
     enum Command: Int {
