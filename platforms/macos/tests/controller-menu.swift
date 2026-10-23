@@ -71,7 +71,8 @@ let coldMenu = controller.menu()!
 require(coldMenu.items.count == 9, "five rows plus separator, update, settings and about")
 require(coldMenu.items.prefix(5).allSatisfy { $0.submenu == nil }, "no nested menus")
 require(coldMenu.items[1...4].allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
-require(coldMenu.items[6].title == "检查更新…" && coldMenu.items[6].keyEquivalent.isEmpty, "update entry present without shortcut")
+require(coldMenu.items[6].title == "检查更新…" && coldMenu.items[6].keyEquivalent == "g"
+    && coldMenu.items[6].keyEquivalentModifierMask == [.option], "update entry shows configured shortcut")
 require(coldMenu.items[7].keyEquivalent == "," && coldMenu.items[7].keyEquivalentModifierMask == [.option], "settings shortcut in menu")
 require(coldMenu.items[8].keyEquivalent == "a" && coldMenu.items[8].keyEquivalentModifierMask == [.option], "about shortcut in menu")
 require(coldMenu.items[0].isEnabled, "mode row enabled before activation")

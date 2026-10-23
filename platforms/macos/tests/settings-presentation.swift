@@ -11,7 +11,7 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 21,
+guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 22,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
@@ -19,7 +19,7 @@ panel.selectSectionForTesting(0)
 guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
 panel.selectSectionForTesting(1)
 guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "appearance.theme", "candidate.show_wubi_learning"] else { fail("candidate design group order") }
-LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有21项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
+LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有22项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
 guard let countOption = options.first(where: { $0.key == "candidate.count" }) else { fail("count schema") }
 let numberRow = SettingRow(option: countOption)
 numberRow.reload()
@@ -115,7 +115,7 @@ LocalAcceptanceEvidence.record("settings.dictionary-session", expected: "绑定�
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 21, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 22, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
 LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，19项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

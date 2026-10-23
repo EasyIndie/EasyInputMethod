@@ -192,6 +192,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Hotkey,
     },
     OptionSpec {
+        key: "hotkey.open_update",
+        value_type: ValueType::String,
+        enum_labels_zh: &[],
+        default: "\"alt+g\"",
+        title_zh: "检查更新",
+        doc_zh: "组合键如 alt+g（默认，G = GitHub 更新源） | none = 关闭；与菜单项「检查更新…」的快捷键提示同源",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
         key: "hotkey.open_about",
         value_type: ValueType::String,
         enum_labels_zh: &[],

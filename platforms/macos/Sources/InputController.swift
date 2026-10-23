@@ -224,7 +224,9 @@ final class LampyrisInputController: IMKInputController {
             }
         }
         if menu.items.count >= 8 {
-            for (item, key) in [(menu.items[7], "hotkey.open_settings"), (menu.items[8], "hotkey.open_about")] {
+            for (item, key) in [(menu.items[6], "hotkey.open_update"),
+                                (menu.items[7], "hotkey.open_settings"),
+                                (menu.items[8], "hotkey.open_about")] {
                 item.keyEquivalent = ""
                 item.keyEquivalentModifierMask = []
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
@@ -495,6 +497,10 @@ final class LampyrisInputController: IMKInputController {
         }
         if session.matches("hotkey.open_settings", event) {
             showSettings()
+            return true
+        }
+        if session.matches("hotkey.open_update", event) {
+            UpdateEntry.open()
             return true
         }
         if session.matches("hotkey.open_about", event) {

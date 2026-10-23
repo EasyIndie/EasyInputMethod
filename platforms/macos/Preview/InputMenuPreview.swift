@@ -44,7 +44,9 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
 
     func refresh() {
         if menu.items.count >= 9 {
-            for (item, key) in [(menu.items[7], "hotkey.open_settings"), (menu.items[8], "hotkey.open_about")] {
+            for (item, key) in [(menu.items[6], "hotkey.open_update"),
+                                (menu.items[7], "hotkey.open_settings"),
+                                (menu.items[8], "hotkey.open_about")] {
                 item.keyEquivalent = ""
                 item.keyEquivalentModifierMask = []
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
