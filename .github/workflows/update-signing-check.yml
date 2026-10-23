@@ -32,7 +32,7 @@ jobs:
           MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
           ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
           ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
-          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         run: |
           set +e
           ls -ld platforms/macos/build/website-updater/LampyrisUpdateCheck.app
