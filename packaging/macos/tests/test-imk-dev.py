@@ -103,6 +103,24 @@ class DevelopmentTests(unittest.TestCase):
                 dev.install(self.home / 'candidate.app', self.root, self.home, 'helper', True)
             idle.assert_not_called()
 
+    def test_display_name_and_icon_evolution_is_allowed(self):
+        target = self.home / ('Library/Input Methods/LampyrisIMKTest-' + self.root.name.removeprefix('lampyris-imk-') + '.app')
+        target.mkdir()
+        old = {'CFBundleIdentifier': self.identity, 'CFBundleDisplayName': '萤火虫开发 d4fcecfb',
+               'tsInputMethodIconFileKey': 'LampyrisTemplate.png'}
+        new = {'CFBundleIdentifier': self.identity, 'CFBundleDisplayName': '萤火虫 开发版',
+               'tsInputMethodIconFileKey': 'LampyrisDevTemplate.png'}
+        def copy(*args):
+            import shutil
+            shutil.copytree(args[1], args[2])
+        candidate = self.home / 'candidate.app'
+        (candidate / 'Contents/MacOS').mkdir(parents=True)
+        (candidate / 'Contents/MacOS/LampyrisIMKTest').write_bytes(b'new')
+        with (patch.object(dev, 'verify_app', side_effect=[new, old, new, old]),
+              patch.object(dev, 'state', return_value={'current': 'ABC', 'enabled': ['ABC']}),
+              patch.object(dev, 'idle'), patch.object(dev, 'run', side_effect=copy)):
+            dev.install(self.home / 'candidate.app', self.root, self.home, 'helper', True)
+
     def test_concurrent_installer_is_rejected_before_mutation(self):
         with (self.root / 'owner').open() as marker:
             dev.fcntl.flock(marker, dev.fcntl.LOCK_EX | dev.fcntl.LOCK_NB)

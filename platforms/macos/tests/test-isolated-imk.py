@@ -73,6 +73,7 @@ class IsolatedIMKTests(unittest.TestCase):
             old = "cn.jokerhub.inputmethod.Lampyris"
             modes = {old + ".default": {"TISInputSourceID": old + ".default"}}
             info = {"CFBundleIdentifier": old, "tsInputModeListKey": modes,
+                    "tsInputMethodIconFileKey": "LampyrisTemplate.png",
                     "ComponentInputModeDict": {"tsInputModeListKey": modes}}
             (repository / "Cargo.toml").write_text('[workspace.package]\nversion = "2.3.4-rc.2+fixture"\n')
             (repository / "packaging").mkdir()
@@ -96,10 +97,11 @@ class IsolatedIMKTests(unittest.TestCase):
             self.assertIn(identity + ".default", actual["tsInputModeListKey"])
             self.assertIn(identity + ".default", actual["ComponentInputModeDict"]["tsInputModeListKey"])
             self.assertEqual(actual["InputMethodConnectionName"], identity + "_Connection")
-            for language in ("en", "zh-Hans"):
+            self.assertEqual(actual["CFBundleDisplayName"], "萤火虫 开发版")
+            self.assertEqual(actual["tsInputMethodIconFileKey"], "LampyrisDevTemplate.png")
+            for language, label in (("en", "Lampyris Dev"), ("zh-Hans", "萤火虫 开发版")):
                 names = (app / "Contents/Resources" / (language + ".lproj") / "InfoPlist.strings").read_text()
-                self.assertIn('"' + identity + '.default"', names)
-                self.assertIn(actual["CFBundleDisplayName"], names)
+                self.assertIn('"' + identity + '.default" = "' + label + '";', names)
                 self.assertNotIn(old + '.default', names)
             self.assertFalse((app / "Contents/Resources/wubi86-core.tsv").is_symlink())
             binding = app / "Contents/Resources/IMKTestRoot"

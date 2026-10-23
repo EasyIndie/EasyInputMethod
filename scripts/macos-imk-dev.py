@@ -140,7 +140,11 @@ def replace_package(app, root, home, helper, stop=False):
     if os.path.lexists(target):
         previous = verify_app(target, root)
         for key in set(previous) | set(info):
-            if key in ('CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit', 'LampyrisSemanticVersion'):
+            # 显示名/图标属于可演进的构建元数据（ADR-272）；身份/服务声明仍须一致。
+            if key in ('CFBundleVersion', 'CFBundleShortVersionString', 'LampyrisSourceCommit',
+                       'LampyrisSemanticVersion', 'CFBundleDisplayName',
+                       'tsInputMethodIconFileKey', 'tsInputModeMenuIconFileKey',
+                       'tsInputModePaletteIconFileKey', 'tsInputModeAlternateMenuIconFileKey'):
                 continue
             if previous.get(key) != info.get(key):
                 raise ValueError('输入源声明变化，不能复用已登记身份：' + key)
