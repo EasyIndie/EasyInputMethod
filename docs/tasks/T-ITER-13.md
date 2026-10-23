@@ -43,3 +43,5 @@
 2026-10-22 ADR-268：签名tag校验延后（设备不稳定）：release.yml保留git tag -v，仅在packaging/git-allowed-signers存在时强制；缺失时warning并继续。README/发布文档标记待启用；更新包Ed25519验签始终强制。
 
 2026-10-22 报告148/ADR-269：生产升级演练完成。旧17053e1→v0.1.0 build6（universal，5709716c…），GitHub feed下载+验签+--apply成功；回滚到旧包再升级通过；配置3bc1117c…/词库74f76e92…(29行)不变，新宿主启动正常。首次重试因lsd持有被拒并自动回滚，改为只终止精确二进制持有者（系统服务持有只记录）。
+
+2026-10-22 ADR-270/报告149：大陆GitHub访问容错。新增update.feed_mirrors（UrlList≤8、https、去重保序），更新程序主源→镜像顺序回退、成功即停；upgrade.py新增--feed-urls并按同主机直链放行。文档`docs/更新源与镜像.md`含镜像搭建/要求/验证。18+14+24项回归通过；未在真实大陆网络验证，未发新Release。

@@ -348,6 +348,7 @@ fn build_schema() -> SchemaLayout {
             ValueType::String => (3, 0, 0, vec![0]),
             // Url 沿用文本控件：设置界面用普通输入框，校验在 ime-config 内完成。
             ValueType::Url => (3, 0, 0, vec![0]),
+            ValueType::UrlList => (3, 0, 0, vec![0]),
         };
         // enum 显示名（与 enum_values 一一对应）；非枚举为空列表（单个 NUL）。
         let mut enum_labels: Vec<u8> = Vec::new();
@@ -462,7 +463,7 @@ mod tests {
     #[test]
     fn schema_layout_matches_v1() {
         let layout = build_schema();
-        assert_eq!(layout.view.len, 20);
+        assert_eq!(layout.view.len, 21);
         let first = layout._options[0];
         // SAFETY：指针由 build_schema 的 CString/Vec 持有，测试期间有效。
         unsafe {

@@ -245,6 +245,21 @@ class DownloadTests(unittest.TestCase):
         with self.assertRaises(upgrade.UpgradeError):
             upgrade.download('https://example.invalid/payload.zip', opener=lambda *a, **k: Response())
 
+    def test_same_host_mirror_download_is_allowed(self):
+        class Response:
+            def geturl(self):
+                return 'https://cn.example.com/payload.zip'
+            def read(self, _):
+                return b''
+            def __enter__(self):
+                return self
+            def __exit__(self, *args):
+                return False
+        with self.assertRaises(upgrade.UpgradeError) as caught:
+            upgrade.download('https://cn.example.com/payload.zip',
+                             opener=lambda *a, **k: Response())
+        self.assertNotIn('未允许的主机', str(caught.exception))
+
     def test_allows_redirect_to_github_asset_host(self):
         class Response:
             def geturl(self):
@@ -291,6 +306,33 @@ class DownloadTests(unittest.TestCase):
         source = self.payload(b'')
         with self.assertRaises(upgrade.UpgradeError):
             upgrade.download(source.as_uri(), allow_file=True)
+
+    def test_select_release_skips_unreachable_sources(self):
+        good = self.temporary / 'good.xml'
+        good.write_bytes(
+            b'<?xml version="1.0"?><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">'
+            b'<channel><item><enclosure url="https://example.invalid/a.zip" length="10" '
+            b'sparkle:version="7" sparkle:edSignature="' + base64.b64encode(bytes(64)) + b'"/></item>'
+            b'</channel></rss>')
+        missing = self.temporary / 'missing.xml'
+        release = upgrade.select_release([('file', missing), ('file', good)], '6')
+        self.assertIsNotNone(release)
+        self.assertEqual(release.build, '7')
+        with self.assertRaises(upgrade.UpgradeError):
+            upgrade.select_release([('file', missing)], '6')
+
+    def test_feed_list_falls_back_to_next_source(self):
+        good = self.temporary / 'good.xml'
+        good.write_bytes(
+            b'<?xml version="1.0"?><rss xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">'
+            b'<channel><item><enclosure url="https://example.invalid/a.zip" length="10" '
+            b'sparkle:version="7" sparkle:edSignature="' + base64.b64encode(bytes(64)) + b'"/></item>'
+            b'</channel></rss>')
+        code = upgrade.main(['--feed-file', str(good), '--current-build', '6',
+                             '--domain', str(self.temporary / 'Input Methods'),
+                             '--support', str(self.temporary / 'Support')])
+        # 本地 file feed 不是 https 负载，会在下载阶段被拒绝（exit 3），但已成功选出 build 7。
+        self.assertEqual(code, 3)
 
     def test_cli_reports_up_to_date_without_download(self):
         feed_file = self.temporary / 'appcast.xml'

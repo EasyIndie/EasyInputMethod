@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 149 镜像回退 | ADR-270：`update.feed_mirrors`（UrlList ≤8、https、去重保序）；更新程序「主源→镜像」回退、成功即停；`upgrade.py --feed-urls` 同步并放行同主机直链；文档 `docs/更新源与镜像.md`。未在真实大陆网络验证 |
 | 148 生产升级演练 | v0.1.0（build6，universal，`5709716c…`）真实安装：GitHub feed→验签→`--apply` 成功；回滚旧包→再升级通过；配置 `3bc1117c…`/词库 `74f76e92…`（29 行）不变；修复 lsd 持有误判（ADR-269） |
 | 147 公钥入库 | ADR-266：公钥提交在 `packaging/macos/update-public-key.txt`，构建/工作流默认读取（不再需要变量/Secret）；私钥仅 Secret 且有「追踪文件无 PEM」回归；已用该公钥复验 v0.1.0 真实签名通过/篡改拒绝 |
 | 146 发版自动化 | ADR-265 `release-appcast.py`（离线签名+自检+appcast，5 项回归）与 `release.yml`（tag v*：验证→构建→签名公证→appcast→gh release create，always 清理）；真实 tag/密钥未配置，未实际发版 |
@@ -64,6 +65,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-270 多镜像回退落地（配置/更新程序/安装器/文档），18+14+24 项回归通过；未在真实大陆网络验证。
 
 - 2026-10-22 / pi：#103（ADR-269 精确停宿主+报告148）四CI绿 merge `c3532d3`；dev快进同步、PR 0。
 

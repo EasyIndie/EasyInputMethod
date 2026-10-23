@@ -119,6 +119,7 @@ pub(crate) fn parse_literal(spec: &OptionSpec, raw: &str) -> Result<ConfigValue,
         }
         ValueType::String => string_value(spec, &unquote(raw)),
         ValueType::Url => url_value(spec, &unquote(raw)),
+        ValueType::UrlList => url_list_value(spec, &unquote(raw)),
     }
 }
 
@@ -155,12 +156,33 @@ pub(crate) fn url_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, C
     }
 }
 
+/// 空值，或逗号/空白/换行分隔的 https 列表；去重、保持顺序、最多 8 个。
+pub(crate) fn url_list_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, ConfigError> {
+    let entries: Vec<&str> = value
+        .split(|c: char| c == ',' || c.is_whitespace())
+        .filter(|entry| !entry.is_empty())
+        .collect();
+    if entries.len() > 8 {
+        return Err(ConfigError::invalid_value(spec.key, "镜像最多 8 个"));
+    }
+    let mut seen: Vec<&str> = Vec::new();
+    for entry in entries {
+        url_value(spec, entry)?;
+        if !seen.contains(&entry) {
+            seen.push(entry);
+        }
+    }
+    Ok(ConfigValue::String(seen.join(",")))
+}
+
 /// Validate and normalize string values from both setters and file loads.
 pub(crate) fn string_value(spec: &OptionSpec, value: &str) -> Result<ConfigValue, ConfigError> {
     if spec.scope == schema::Scope::Hotkey {
         Ok(ConfigValue::String(
             crate::Hotkey::parse(spec.key, value)?.canonical(),
         ))
+    } else if spec.value_type == ValueType::UrlList {
+        url_list_value(spec, value)
     } else if spec.value_type == ValueType::Url {
         url_value(spec, value)
     } else {
