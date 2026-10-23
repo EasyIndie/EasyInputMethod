@@ -93,6 +93,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
 
       - name: Build updater with the committed public key
         run: python3 platforms/macos/Updater/build.py
