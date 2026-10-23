@@ -66,11 +66,7 @@ def main():
         info = plistlib.loads(info_path.read_bytes())
         info["LampyrisIMKDevelopment"] = True
         info["LampyrisSourceCommit"] = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-        label = "萤火虫开发 " + target.name.removeprefix("lampyris-imk-")[:8]
-        info["CFBundleDisplayName"] = label
         info_path.write_bytes(plistlib.dumps(info))
-        for strings in (app/"Contents/Resources").glob("*.lproj/InfoPlist.strings"):
-            strings.write_text(strings.read_text().replace("萤火虫隔离验收 ", "萤火虫开发 "))
     destination = ROOT/"platforms/macos/build/Lampyris.app"
     if destination.exists():
         raise ValueError("目标构建目录已存在，不覆盖")

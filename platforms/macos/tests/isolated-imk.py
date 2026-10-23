@@ -14,6 +14,8 @@ sys.path.insert(0, str(ROOT / "tools"))
 from release_version import identity as release_identity
 
 IDENTITY = "cn.jokerhub.inputmethod.LampyrisIMKTest."
+DEVELOPMENT_LABEL = {"zh-Hans": "萤火虫 开发版", "en": "Lampyris Dev"}
+DEVELOPMENT_ICON = "LampyrisDevTemplate.png"
 TRIPLES = {"arm64": "aarch64-apple-darwin", "x86_64": "x86_64-apple-darwin"}
 DEPLOYMENT_TARGET = "13.0"
 
@@ -87,13 +89,24 @@ def bundle(root):
 
     info = replace(info)
     info.update(CFBundleExecutable="LampyrisIMKTest", CFBundleName="LampyrisIMKTest",
-                CFBundleDisplayName="萤火虫隔离验收 " + root.name.removeprefix("lampyris-imk-")[:8], InputMethodConnectionName=identity + "_Connection")
+                CFBundleDisplayName=DEVELOPMENT_LABEL["zh-Hans"],
+                InputMethodConnectionName=identity + "_Connection")
+    # 开发版图标带角标，菜单里与正式版一眼区分。
+    def swap_icon(value):
+        if isinstance(value, dict):
+            return {key: swap_icon(item) for key, item in value.items()}
+        if isinstance(value, list):
+            return [swap_icon(item) for item in value]
+        if value == "LampyrisTemplate.png":
+            return DEVELOPMENT_ICON
+        return value
+    info = swap_icon(info)
     validate_identity(info, identity)
     (app / "Contents/Info.plist").write_bytes(plistlib.dumps(info))
-    label = info["CFBundleDisplayName"]
     for language in ("en", "zh-Hans"):
         localized = resources / (language + ".lproj")
         localized.mkdir()
+        label = DEVELOPMENT_LABEL[language]
         (localized / "InfoPlist.strings").write_text(
             '"CFBundleName" = "' + label + '";\n'
             '"CFBundleDisplayName" = "' + label + '";\n'

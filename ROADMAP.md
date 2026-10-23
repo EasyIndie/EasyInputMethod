@@ -5,6 +5,7 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [x] 2026-10-22 固定开发版名称与图标（ADR-272，报告 153）：开发版固定为「萤火虫 开发版」/「Lampyris Dev」，菜单图标加右上角点角标；换包允许显示名/图标键演进（身份/连接名/开发根仍严格一致）。隔离包 6 项、开发安装器 10 项、CI 打包 4 项回归通过；待 build7 开发包实机观察
 - [x] 2026-10-22 更新 UI 真实全流程（报告 152）：真实 GitHub feed 下检查→下载→验签→确认→安装→结果全部通过（同版本重装）；修复候选标识未 trim 导致误判、`InstallError` 增加可读描述；配置/词库未变、输入源还原 ABC、receipt 0600。跨版本升级与镜像回退 UI 未验
 - [x] 2026-10-22 更新界面与 Swift 安装器（ADR-271，报告 151）：`--ui` 窗口支持检查（主源→镜像）→下载进度→验签→确认→安装/失败提示；Swift 安装器与 `upgrade.py` 语义一致（精确停宿主/备份/替换/回滚/0600 receipt），下载器 https-only + 白名单 + 256MB 上限。22 项更新程序测试 + UI 冒烟通过；未在真实网络点完整流程
 - [x] 2026-10-22 独立源码重建（报告 150）：从 tag `v0.1.0`（`26e3c07`）干净克隆构建 universal 成功并启动；4 份数据表与 Release **逐字节一致**、版本/构建号一致；可执行因 ad-hoc vs Developer ID 签名与工具链差异**未逐字节复现**，如实记录不作 bit-reproducible 声明

@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 153 开发版命名 | ADR-272：开发版固定「萤火虫 开发版」/「Lampyris Dev」，图标加角标；换包允许显示名/图标键演进（身份/连接名/根不变）；隔离包/开发安装器/CI 回归通过；待 build7 实机确认 |
 | 152 UI全流程 | 真实GitHub feed：检查→下载→验签→确认→安装通过（同版本重装），生产仍v0.1.0/build6、配置/词库不变、ABC还原；修复标识trim误判与错误可读性；跨版本/镜像回退UI未验 |
 | 151 更新UI | ADR-271：`--ui` 窗口（检查→下载进度→验签→确认→安装→结果）；Swift `UpdateInstaller` 与 `upgrade.py` 语义一致；`UpdateDownloader` https-only/白名单/256MB。22 项测试+UI 冒烟；未真实网络点完流程 |
 | 150 独立重建 | 从 tag `v0.1.0` 干净克隆构建 universal 成功并启动；4 份数据表与 Release 逐字节一致、版本/构建号一致；可执行 SHA 因签名/工具链不同未复现（不宣称 bit-reproducible） |
@@ -69,6 +70,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-272 固定开发版名称/图标（去 UUID 前缀 + 角标图标），换包元数据允许显示名/图标演进；回归通过，待 build7 实机观察。
 
 - 2026-10-22 / pi：#107（报告152 UI全流程）四CI绿 merge `840a9f1`；dev快进同步、PR 0。
 
