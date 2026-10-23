@@ -5,6 +5,8 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [x] 2026-10-23 简化安装/卸载（ADR-276，报告 160）：随 app 签名 `LampyrisTIS` helper；安装后自动注册+启用（选中仍需用户一次），卸载自动切 ABC+禁用后再移除；脚本回退与两条卸载回归通过；0.1.3/build11 待发
+- [x] 2026-10-23 GitHub Pages 更新（PR #118）：首页新增 macOS 一键安装/卸载命令（0.1.2 universal，用户域免 sudo；卸载含切 ABC/移除源/重登前置），新增「支持的平台与架构」表（macOS 13+ universal 可用，Windows/Linux/Android/iOS 计划中）与 ⌥G 更新说明；Pages run 39944750053 部署成功
 - [x] 2026-10-23 v0.1.2 发布（报告 159）：主包 build10 + **静态链接的更新程序**（修复 v0.1.1 启动崩溃）+ appcast version 10；v0.1.1 坏更新程序资产已移除；本机生产升级到 0.1.2/build10（build8 备份），更新程序装到 `~/Applications`；配置/词库因新 Schema 与学习变化，已记录新基线。⌥G/菜单实测待用户
 - [x] 2026-10-22 检查更新快捷键与更新程序静态链接（ADR-275，报告 158）：`hotkey.open_update`（默认 alt+g，菜单同源）；更新程序改为静态链接 `libime_ffi.a`（修复 v0.1.1 启动崩溃）；查找优先 LaunchServices。配置/设置/菜单/预览回归通过；v0.1.2 待发
 - [x] 2026-10-22 v0.1.1 发布（报告 157）：Release 含主包（build9）、源码、sha256、appcast（version 9）与**已签名/公证的更新程序** `LampyrisUpdateCheck-0.1.1.zip`；更新程序已装到 `~/Applications`，公钥与仓库一致。菜单点击与跨版本升级交互待用户实测

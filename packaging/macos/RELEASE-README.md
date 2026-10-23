@@ -11,7 +11,7 @@
 ./scripts/install.sh --app ./Lampyris.app
 ```
 
-注销/重新登录，在系统设置 → 键盘 → 文字输入添加萤火虫。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Lampyris.app --system`。同版本重复执行无操作，不同版本先卸载。不要关闭 Gatekeeper；验证失败请停止安装。
+安装器会调用包内 helper 自动注册并启用输入源；用 ⌃Space 或输入法菜单选中萤火虫即可（若未出现，重启登录一次）。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Lampyris.app --system`。同版本重复执行无操作，不同版本先卸载。不要关闭 Gatekeeper；验证失败请停止安装。
 
 ## 从旧版升级（保留配置和个人词库）
 
@@ -26,7 +26,7 @@
 
 ## 卸载
 
-先切换 ABC，在系统设置移除萤火虫，注销/重新登录确保宿主退出，再运行：
+直接运行（脚本会切回 ABC 并禁用输入源）：
 
 ```sh
 ./scripts/uninstall.sh --dry-run

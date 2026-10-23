@@ -45,4 +45,15 @@ ditto "${APP}" "${STAGE}/Lampyris.app"
 codesign --verify --strict "${STAGE}/Lampyris.app"
 mv -n "${STAGE}/Lampyris.app" "${DEST}"
 [ ! -e "${STAGE}/Lampyris.app" ] || { echo "目标安装路径已被占用，未覆盖" >&2; exit 1; }
-echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
+HELPER="${DEST}/Contents/Helpers/LampyrisTIS"
+if [ -x "${HELPER}" ]; then
+  "${HELPER}" register "${DEST}" >/dev/null 2>&1 || true
+  if "${HELPER}" enable "${IDENTIFIER}" >/dev/null 2>&1; then
+    echo "安装完成，已自动注册到输入源。"
+    echo "现在用 ⌃Space 或输入法菜单选中「萤火虫」即可；若菜单里还没出现，重启登录一次。"
+  else
+    echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
+  fi
+else
+  echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
+fi
