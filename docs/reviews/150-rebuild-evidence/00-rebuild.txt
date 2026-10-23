@@ -1,0 +1,15 @@
+== independent rebuild from tag v0.1.0 (26e3c07) 2026-10-23T05:21:18Z
+clone=/Users/joker/Documents/EasyInputMethod/../lampyris-rebuild (temp)
+toolchain: rustc 1.98.1 (48a229cea 2026-09-01)
+xcode: Xcode 27.0 Build version 27A266a 
+macos: 27.0.1
+local_exec e59c05be4503cd4e9be35e02f1cac5e185af09b94e4451f9b90ac313787e1c1f  /private/tmp/lampyris-rebuild/platforms/macos/build/Lampyris.app/Contents/MacOS/Lampyris
+release_exec 5709716c4071333f5a94cc041026fd0a7f29f97569a83cddb266039e3d900426
+local_arch x86_64 arm64
+--- data (local vs release) ---
+wubi86-core.tsv 1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa
+pinyin-chars.tsv 70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12
+pinyin-core.tsv c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb
+variant-s2t.tsv 68c94a2c795efc757b1b5f4331d16497cc4d713417deec762a02b3c192fe90f6
+--- build result ---
+app_launches=yes (PID 95727, stopped)
