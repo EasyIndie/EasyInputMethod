@@ -1,0 +1,11 @@
+== build8 RC artifact 2026-10-23T08:36:33Z
+run 39924589316 commit 45db5a2
+zip_sha256 b0513b567fbce916bb68a6ee0e57d22eb2bd867267e754d5b6a15e7e0f0b779f
+exec 3c9c199f586f1bcd023f365922da98dbcb3fbeee75553e6941d01737839d6a52
+version 0.1.0 build=8
+arch x86_64 arm64
+notarized=yes stapler=yes spctl=accepted
+checkForUpdates_selector_present=2
+--- pre-install backup
+backup_exec 5709716c4071333f5a94cc041026fd0a7f29f97569a83cddb266039e3d900426
+backup_path /Users/joker/Library/Application Support/Lampyris/updates/rc-build8-backup/Lampyris.app

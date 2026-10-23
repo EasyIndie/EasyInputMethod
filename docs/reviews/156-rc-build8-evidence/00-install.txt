@@ -1,0 +1,11 @@
+== rc build8 install 2026-10-23T08:36:21Z
+exec 3c9c199f586f1bcd023f365922da98dbcb3fbeee75553e6941d01737839d6a52  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+arch x86_64 arm64
+version 0.1.0 build=8
+codesign-ok
+The validate action worked!
+source=Notarized Developer ID
+origin=Developer ID Application: Zhizhou Wang (2N62934Y28)
+config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict 74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+backup_exec 5709716c4071333f5a94cc041026fd0a7f29f97569a83cddb266039e3d900426  /Users/joker/Library/Application Support/Lampyris/updates/rc-build8-backup/Lampyris.app/Contents/MacOS/Lampyris
