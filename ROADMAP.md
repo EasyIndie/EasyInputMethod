@@ -5,7 +5,8 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
-- [x] 2026-10-23 更新程序图标与窗口美化（ADR-280，报告 169）：0.1.7/build15 待发并装到两台设备
+- [x] 2026-10-23 v0.1.7 发布（报告 170）：更新程序含官方 Icon、Dock 正常；窗口重做；两台设备均升级 build15，旧包备份，配置保留
+：0.1.7/build15 待发并装到两台设备
 - [x] 2026-10-23 v0.1.6 发布（报告 168）：通用更新程序（x86_64+arm64）修复 Intel 无法打开；`pro` 与本机升级到 build14，旧包备份，配置/词库保留
 - [x] 2026-10-23 更新程序 universal 修复（ADR-279，报告 167）：0.1.5 仅 arm64 导致 Intel 报“不支持此应用程序”；0.1.6/build14 重建并含双架构
 - [x] 2026-10-23 通过 `ssh pro` 将第二台设备（macOS 13.7.8 / x86_64）升级到 0.1.5/build13，配置与词库保留（报告 166）
