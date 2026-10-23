@@ -1,0 +1,10 @@
+== build10 RC install 2026-10-23T10:21:32Z
+exec 37decc06bc1822b37ec2e30b75dc243de546d423cdc03f8e04e48229aaaafa62  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+arch x86_64 arm64
+version 0.1.2 build=10
+codesign-ok
+The validate action worked!
+config 809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict f3e2eef38e0863f8f06b837e9c7ed9783aa9a7c1881affc80870515b956a9be5  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+backup_exec 3c9c199f586f1bcd023f365922da98dbcb3fbeee75553e6941d01737839d6a52  /Users/joker/Library/Application Support/Lampyris/updates/rc-build10-backup/Lampyris.app/Contents/MacOS/Lampyris
+hotkey_open_update alt+g (default)
