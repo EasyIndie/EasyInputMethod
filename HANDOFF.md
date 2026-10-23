@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 146 发版自动化 | ADR-265 `release-appcast.py`（离线签名+自检+appcast，5 项回归）与 `release.yml`（tag v*：验证→构建→签名公证→appcast→gh release create，always 清理）；真实 tag/密钥未配置，未实际发版 |
 | 145 更新来源 | ADR-264：`update.feed_url`（空/https，拒绝凭据/fragment）默认空=GitHub Releases feed；设置新增「更新」分区；公钥固定签名包；更新程序经 ime-config 读取；GitHub 资产主机重定向允许列表；密钥生成/Actions 步骤见 `docs/更新发布流程.md`。尚未配真实密钥与 feed |
 | 142 appcast | ADR-262 `feed.py` 与 Swift 同规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD、64 字节签名、build 点分比较）；`upgrade.py` 接 `--feed-file/--feed-url`，无更新 `up-to-date` 退出 0；11+16 项离线回归；真实 feed/公钥/HTTPS 未做 |
 | 141 下载器 | ADR-261 `--payload-url` 仅 https、私有临时文件、256MB 上限、重定向复查、结束清理；顺序下载→验签→替换；7 项离线回归，升级相关共 15 项；真实 feed/公钥/HTTPS 演练未做 |
@@ -49,7 +50,7 @@
 
 1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
 2. 30MB：等满足前置条件（loadavg1<8、swap used<2G、无 Xcode 构建）后按固定时点协议复测 build6；仅能自动切回 ABC，进入开发源仍需用户手动一次。143 轮因 loadavg 54/swap 6.1G 判为无效，不作证据。
-3. 更新闭环下一步：配置真实 Ed25519 密钥（公钥进构建元数据、私钥进 Actions secret）+ GitHub Release 流水线，做一次真实 HTTPS 下载→验签→`upgrade.py --apply` 演练（含回滚）；再做下载确认/进度 UI 与镜像回退。
+3. 更新闭环下一步：配置真实 Ed25519 密钥（Variable 公钥、Secret 私钥），打首个 tag 走 `release.yml` 真实验证一次；然后用真实包做 HTTPS 下载→验签→`upgrade.py --apply` 演练（含回滚）；再做下载确认/进度 UI 与镜像回退。
 4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
 4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
 
@@ -60,6 +61,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-265 发版自动化落地：`release-appcast.py`（Ed25519 签名+自检+appcast，5 项离线回归）与 `release.yml`（tag 校验/构建/公证/公钥构建/发布/清理）；未配置真实密钥、未打 tag、未联网。
 
 - 2026-10-22 / pi：#94（ADR-264 更新源可配置+GitHub 默认）四CI绿 merge `1c8c32e`；dev快进同步、PR 0。
 

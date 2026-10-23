@@ -24,7 +24,8 @@ concurrency:
 
 jobs:
   publish:
-    runs-on: ubuntu-latest
+    # 需要 macOS 构建更新程序并用同一公钥自校验签名。
+    runs-on: macos-latest
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
@@ -69,6 +70,59 @@ jobs:
           python3 packaging/macos/validate-release.py dist "$RELEASE_TAG" "$RELEASE_COMMIT" --assets-only > release-assets.txt
           cat release-assets.txt
 
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+
+      - name: Build updater with pinned public key
+        env:
+          UPDATE_PUBLIC_KEY: ${{ vars.LAMPYRIS_UPDATE_PUBLIC_KEY }}
+        run: |
+          test -n "$UPDATE_PUBLIC_KEY"
+          python3 platforms/macos/Updater/build.py --public-key "$UPDATE_PUBLIC_KEY"
+
+      - name: Generate signed appcast for the published ZIP
+        env:
+          UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          test -n "$UPDATE_PRIVATE_KEY"
+          tag="${{ steps.meta.outputs.tag }}"
+          version="${tag#v}"
+          zip="$(grep -E '\.zip$' release-assets.txt | head -1)"
+          test -n "$zip" && test -f "$zip"
+          build="$(python3 tools/release_version.py build)"
+          key="${RUNNER_TEMP}/lampyris-update-key.pem"
+          umask 077
+          printf '%s' "$UPDATE_PRIVATE_KEY" > "$key"
+          trap 'rm -f "$key"' EXIT
+          openssl_bin="$(command -v openssl)"
+          if brew --prefix openssl@3 >/dev/null 2>&1; then
+            openssl_bin="$(brew --prefix openssl@3)/bin/openssl"
+          fi
+          url="https://github.com/${GITHUB_REPOSITORY}/releases/download/${tag}/$(basename "$zip")"
+          OPENSSL_BIN="$openssl_bin" python3 packaging/macos/release-appcast.py \
+            --zip "$zip" --build "$build" --short-version "$version" \
+            --url "$url" --private-key "$key" --out appcast.xml \
+            | tee appcast.json
+          python3 - <<'PYAPPCAST'
+import json
+from pathlib import Path
+summary = json.loads(Path('appcast.json').read_text())
+Path('signature.b64').write_text(summary['signature'])
+PYAPPCAST
+          verifier=platforms/macos/build/website-updater/LampyrisUpdateCheck.app/Contents/MacOS/LampyrisUpdateCheck
+          "$verifier" --verify-payload "$zip" "$(cat signature.b64)"
+          rm -f signature.b64 appcast.json
+          printf '%s\n' "appcast.xml" >> release-assets.txt
+
       - name: Create the GitHub Release (binary + corresponding source, same page)
         env:
           GH_TOKEN: ${{ github.token }}
@@ -82,6 +136,8 @@ jobs:
             || { echo "缺少对应源码包，拒绝发布（GPL §6(d)）" >&2; exit 1; }
           printf '%s\n' "${assets[@]}" | grep -q '\.zip$' \
             || { echo "缺少二进制包。" >&2; exit 1; }
+          printf '%s\n' "${assets[@]}" | grep -q 'appcast.xml$' \
+            || { echo "缺少更新 appcast。" >&2; exit 1; }
           notes="$(mktemp)"
           cat > "${notes}" <<EOF
           Lampyris ${tag} — 默认离线的五笔/拼音混合输入法（macOS，GPL-3.0-or-later）。
@@ -89,6 +145,7 @@ jobs:
           - **安装**：解压 \`Lampyris-${tag#v}-universal.zip\`，见包内 \`README.md\`；注销后在「系统设置 → 键盘 → 文字输入」添加。
           - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-${tag#v}-source.tar.gz\`（与本页同一位置）。
           - **校验**：附件 \`.sha256\`。
+          - **更新源**：\`appcast.xml\`（Ed25519 签名，客户端默认从本页 latest 获取）。
           - **兼容**：universal（arm64 + x86_64），支持 macOS 13+；仅已记录环境经验证。
           EOF
           if [ "${{ inputs.dry_run }}" = "true" ]; then
