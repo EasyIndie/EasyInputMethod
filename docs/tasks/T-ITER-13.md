@@ -51,3 +51,5 @@
 2026-10-22 报告152：更新UI真实全流程通过（同版本重装）：GitHub主源检查→5.2MB下载→验签→确认→安装；修复PlistBuddy标识带换行导致误判（trim）并给InstallError加LocalizedError；新增仅测试用LAMPYRIS_UPDATE_CURRENT_BUILD。配置3bc1117c…/词库74f76e92…不变，ABC还原，receipt 0600。跨版本与镜像回退UI未验。
 
 2026-10-22 ADR-273/报告154：输入法菜单新增「检查更新…」（无快捷键）：已装独立更新程序则--ui启动，否则打开Releases页面；宿主仍零网络。控制器/预览菜单9项回归与冒烟通过。更新程序尚未随Release分发（需单独签名公证），生产v0.1.0不含该入口，待build8。
+
+2026-10-22 ADR-274/报告155：更新程序随Release分发。ci-sign.sh支持--app单独签名/公证；release.yml新增更新程序签名、打包zip+sha256并上传；菜单优先启动已安装更新程序。签名脚本四路径回归与YAML通过；尚未打新tag，Release暂无该资产。

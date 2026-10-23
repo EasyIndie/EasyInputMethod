@@ -18,6 +18,8 @@ with tempfile.TemporaryDirectory(prefix="lampyris-ci-sign-test-") as directory:
     result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
     assert result.returncode == 1 and "缺少 CI 配置" in result.stderr
     assert not (root / "lampyris-signing").exists()
+    app = root / "Fixture.app"
+    app.mkdir()
     binary = root / "bin"
     binary.mkdir()
     fake = '''#!/usr/bin/env bash
@@ -49,12 +51,12 @@ esac
         ASC_API_KEY_P8_BASE64=fixture, ASC_API_KEY_ID="fixture", ASC_API_ISSUER_ID="fixture",
     )
     for failure, expected in (("0", 0), ("1", 77)):
-        result = subprocess.run(["bash", str(SCRIPT)],
+        result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)],
             env=dict(env, MOCK_NOTARY_FAIL=failure), capture_output=True, text=True)
         assert result.returncode == expected, result.stderr
         assert not (root / "lampyris-signing").exists()
         assert (root / "search-list.log").read_text().splitlines()[-1] == "list-keychains -d user -s /fixture/login.keychain-db"
-    result = subprocess.run(["bash", str(SCRIPT)],
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)],
         env=dict(env, MOCK_NO_IDENTITY="1"), capture_output=True, text=True)
     assert result.returncode == 1 and "找不到唯一有效签名身份" in result.stderr
     assert not (root / "lampyris-signing").exists()
