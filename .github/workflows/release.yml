@@ -126,7 +126,8 @@ jobs:
         run: |
           set -euo pipefail
           tag="${{ steps.meta.outputs.tag }}"
-          mapfile -t assets < release-assets.txt
+          assets=()
+          while IFS= read -r line; do assets+=("$line"); done < release-assets.txt
           printf '%s\n' "${assets[@]}"
           # GPL-3.0 §6(d)：二进制与对应源码必须同页发布。
           printf '%s\n' "${assets[@]}" | grep -q 'source.tar.gz$' \
