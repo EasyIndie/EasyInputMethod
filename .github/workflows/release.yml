@@ -46,6 +46,16 @@ jobs:
           echo "tag=${tag}" >> "$GITHUB_OUTPUT"
           echo "sha=${sha}" >> "$GITHUB_OUTPUT"
 
+      - name: Verify signed tag
+        run: |
+          set -euo pipefail
+          tag="${{ steps.meta.outputs.tag }}"
+          signers=packaging/git-allowed-signers
+          test -f "$signers" || { echo "缺少 $signers：请提交允许的签名者公钥" >&2; exit 1; }
+          git config gpg.format ssh
+          git config gpg.ssh.allowedSignersFile "$signers"
+          git tag -v "$tag"
+
       - name: Fetch the signed/notarized acceptance package for this commit
         env:
           GH_TOKEN: ${{ github.token }}
