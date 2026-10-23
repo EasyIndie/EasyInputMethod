@@ -251,7 +251,10 @@ final class AboutPanel: NSObject, NSWindowDelegate {
         }
         label("萤火虫", y: 107, size: 22, strong: true)
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String
-        label("\(version ?? "版本信息不可用") · 开源中文输入法", y: 148, size: 12)
+        let build = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as? String
+        let versionText = [version, build.map { "构建 \($0)" }]
+            .compactMap { $0 }.joined(separator: " · ")
+        label("\(versionText.isEmpty ? "版本信息不可用" : versionText) · 开源中文输入法", y: 148, size: 12)
         label("五笔优先，拼音兜底。默认离线。", y: 187, size: 13)
         let copy = NSButton(title: "复制诊断", target: self, action: #selector(copyDiagnostics(_:)))
         copy.bezelStyle = .rounded
