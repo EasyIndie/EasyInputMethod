@@ -52,8 +52,10 @@ for slice_path in slices:
     slice_path.unlink()
 info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'CFBundleExecutable': binary.name, 'CFBundlePackageType': 'APPL',
+        'CFBundleName': 'Lampyris Update', 'CFBundleDisplayName': '萤火虫更新',
         'CFBundleVersion': version['build'], 'CFBundleShortVersionString': version['apple'],
-        'LampyrisSemanticVersion': version['version'],
+        'LampyrisSemanticVersion': version['version'], 'CFBundleIconFile': 'AppIcon',
+        'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '13.0', 'LampyrisDistributionChannel': 'website'}
 DEFAULT_FEED = 'https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml'
 # 公钥是公开值：默认取自仓库文件（可审计、可离线复验），不依赖 CI 变量/Secret。
@@ -67,4 +69,8 @@ resources = contents / 'Resources'
 resources.mkdir(exist_ok=True)
 for name in ('ORZ-LICENSE', 'PROVENANCE.json'):
     shutil.copy2(ROOT / 'Vendor' / name, resources / name)
+icon = root / 'assets/icons/yinghuo-official-app.icns'
+if not icon.is_file():
+    parser.error('缺少应用图标 assets/icons/yinghuo-official-app.icns')
+shutil.copy2(icon, resources / 'AppIcon.icns')
 print('仅构建独立检查程序，未安装/启动/联网：' + str(app))

@@ -22,47 +22,100 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         .appendingPathComponent("Library/Application Support/Lampyris/updates") }
 
     func show() {
-        let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 460, height: 220),
+        let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 320),
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
         panel.title = "萤火虫更新"
-        panel.center()
+        panel.isReleasedWhenClosed = false
         panel.delegate = self
         let content = NSView()
         panel.contentView = content
 
+        let iconView = NSImageView()
+        iconView.image = NSImage(named: "AppIcon") ?? NSApp.applicationIconImage
+        iconView.imageScaling = .scaleProportionallyUpOrDown
+        iconView.setAccessibilityLabel("萤火虫图标")
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+        iconView.widthAnchor.constraint(equalToConstant: 58).isActive = true
+        iconView.heightAnchor.constraint(equalToConstant: 58).isActive = true
+
+        let title = NSTextField(labelWithString: "萤火虫")
+        title.font = .systemFont(ofSize: 21, weight: .semibold)
+        let version = NSTextField(labelWithString: "当前版本 \(versionText)")
+        version.font = .systemFont(ofSize: 12)
+        version.textColor = .secondaryLabelColor
+        let titleStack = NSStackView(views: [title, version])
+        titleStack.orientation = .vertical
+        titleStack.alignment = .leading
+        titleStack.spacing = 3
+
+        let header = NSStackView(views: [iconView, titleStack])
+        header.orientation = .horizontal
+        header.alignment = .centerY
+        header.spacing = 14
+
+        let separator = NSBox()
+        separator.boxType = .separator
+        separator.translatesAutoresizingMaskIntoConstraints = false
+        separator.heightAnchor.constraint(equalToConstant: 1).isActive = true
+
         status.font = .systemFont(ofSize: 15, weight: .semibold)
+        status.lineBreakMode = .byTruncatingTail
+        status.stringValue = "准备就绪"
         detail.font = .systemFont(ofSize: 12)
         detail.textColor = .secondaryLabelColor
+        detail.stringValue = "默认使用 GitHub 发布源；可在设置 → 更新里配置镜像。"
+
         progress.style = .bar
         progress.isIndeterminate = false
         progress.minValue = 0
         progress.maxValue = 1
         progress.doubleValue = 0
         progress.isHidden = true
+        progress.translatesAutoresizingMaskIntoConstraints = false
+        progress.heightAnchor.constraint(equalToConstant: 8).isActive = true
+
+        checkButton.bezelStyle = .rounded
+        checkButton.controlSize = .large
         checkButton.target = self
         checkButton.action = #selector(checkTapped)
+        installButton.bezelStyle = .rounded
+        installButton.controlSize = .large
+        installButton.bezelColor = .controlAccentColor
+        installButton.keyEquivalent = "\r"
         installButton.target = self
         installButton.action = #selector(installTapped)
         installButton.isEnabled = false
+        let spacer = NSView()
+        spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
+        let buttons = NSStackView(views: [spacer, checkButton, installButton])
+        buttons.orientation = .horizontal
+        buttons.alignment = .centerY
+        buttons.spacing = 10
 
-        let stack = NSStackView(views: [status, detail, progress, NSStackView(views: [checkButton, installButton])])
+        let footer = NSTextField(labelWithString: "安装前会用内置公钥验证更新包；输入法核心始终离线。")
+        footer.font = .systemFont(ofSize: 11)
+        footer.textColor = .tertiaryLabelColor
+
+        let stack = NSStackView(views: [header, separator, status, detail, progress, buttons, footer])
         stack.orientation = .vertical
         stack.alignment = .leading
         stack.spacing = 12
-        stack.edgeInsets = NSEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        stack.edgeInsets = NSEdgeInsets(top: 22, left: 24, bottom: 20, right: 24)
+        stack.translatesAutoresizingMaskIntoConstraints = true
+        stack.frame = NSRect(x: 0, y: 0, width: 520, height: 262)
         content.addSubview(stack)
         NSLayoutConstraint.activate([
-            stack.leadingAnchor.constraint(equalTo: content.leadingAnchor),
-            stack.trailingAnchor.constraint(equalTo: content.trailingAnchor),
-            stack.topAnchor.constraint(equalTo: content.topAnchor),
-            stack.bottomAnchor.constraint(equalTo: content.bottomAnchor),
-            progress.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -40),
-            detail.widthAnchor.constraint(equalTo: progress.widthAnchor),
+            separator.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -48),
+            detail.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -48),
+            progress.widthAnchor.constraint(equalTo: detail.widthAnchor),
+            buttons.widthAnchor.constraint(equalTo: detail.widthAnchor),
+            footer.widthAnchor.constraint(equalTo: detail.widthAnchor),
         ])
+        panel.setContentSize(NSSize(width: 520, height: 262))
+        stack.layoutSubtreeIfNeeded()
+        panel.center()
+
         window = panel
-        status.stringValue = "当前版本 \(versionText)"
-        detail.stringValue = "默认使用 GitHub 发布源；可在设置 → 更新里配置镜像。"
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -198,6 +251,10 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
 @MainActor
 final class UpdateAppDelegate: NSObject, NSApplicationDelegate {
     private let controller = UpdateWindowController()
-    func applicationDidFinishLaunching(_ notification: Notification) { controller.show() }
+    func applicationDidFinishLaunching(_ notification: Notification) {
+        NSApp.setActivationPolicy(.regular)
+        if let icon = NSImage(named: "AppIcon") { NSApp.applicationIconImage = icon }
+        controller.show()
+    }
     func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool { true }
 }
