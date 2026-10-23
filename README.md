@@ -43,7 +43,8 @@
     -in Lampyris-0.1.0-universal.zip -sigfile sig.bin
   ```
 
-- 发版 tag 必须**签名**（详见 [更新发布流程](docs/更新发布流程.md)）；Release 工作流会校验 tag 签名。
+- 签名 tag 校验**待启用**：提交 `packaging/git-allowed-signers`（允许的 SSH/GPG 签名者）后，Release 工作流会强制 `git tag -v`；详见 [更新发布流程](docs/更新发布流程.md)。
+- 多项目密钥统一保管见 [密钥与凭据管理](docs/密钥与凭据管理.md)。
 
 ## 名字
 

@@ -25,10 +25,13 @@ class UpdatePublicKeyTests(unittest.TestCase):
         self.assertIn(KEY.read_text().strip(), readme)
         self.assertIn(hashlib.sha256(raw).hexdigest(), readme)
 
-    def test_release_requires_signed_tag(self):
+    def test_signed_tag_check_is_optional_until_enabled(self):
         text = (ROOT / '.github/workflows/release.yml').read_text()
         self.assertIn('packaging/git-allowed-signers', text)
         self.assertIn('git tag -v', text)
+        # 设备稳定前不阻塞发版：文件不存在时只警告，存在时才强制校验。
+        self.assertIn('if [ ! -f "$signers" ]', text)
+        self.assertIn('::warning::签名 tag 校验尚未启用', text)
 
     def test_build_script_defaults_to_committed_key(self):
         source = BUILD.read_text()
