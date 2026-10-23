@@ -33,10 +33,12 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         status.font = .systemFont(ofSize: 15, weight: .semibold)
         detail.font = .systemFont(ofSize: 12)
         detail.textColor = .secondaryLabelColor
+        progress.style = .bar
         progress.isIndeterminate = false
         progress.minValue = 0
         progress.maxValue = 1
         progress.doubleValue = 0
+        progress.isHidden = true
         checkButton.target = self
         checkButton.action = #selector(checkTapped)
         installButton.target = self
@@ -75,9 +77,11 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         running = busy
         checkButton.isEnabled = !busy
         installButton.isEnabled = !busy && release != nil
-        progress.isIndeterminate = busy && release == nil
-        if busy && release == nil { progress.startAnimation(nil) }
-        if !busy { progress.stopAnimation(nil) }
+        if !busy {
+            progress.stopAnimation(nil)
+            progress.isIndeterminate = false
+            progress.isHidden = true
+        }
     }
 
     private func fail(_ message: String) {
@@ -140,6 +144,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         setBusy(true)
         status.stringValue = "正在下载…"
         progress.isIndeterminate = false
+        progress.isHidden = false
         progress.doubleValue = 0
         Task { @MainActor in
             do {
@@ -168,6 +173,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                     return
                 }
                 status.stringValue = "正在安装…"
+                progress.doubleValue = 1
                 progress.isIndeterminate = true
                 progress.startAnimation(nil)
                 let receipt = try UpdateInstaller.install(

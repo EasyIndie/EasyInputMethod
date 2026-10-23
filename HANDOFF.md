@@ -77,6 +77,8 @@
 
 ## 9. 会话日志
 
+- 2026-10-23 / pi：验收反馈修复（ADR-277）：Shift 切换中英补 HUD；更新窗口进度条仅在下载阶段显示；版本升 0.1.4/build12 待发。
+
 - 2026-10-23 / pi：v0.1.3 发布（build11，含 LampyrisTIS helper）；修复签名顺序后验收/公证通过；本机用 ZIP 内 install.sh 覆盖生产成功且未抢源，配置/词库不变；Pages 更新。
 
 - 2026-10-23 / pi：ADR-276 简化安装/卸载：随包签名 helper（register/enable/disable/switch-abc），安装自动注册、卸载自动禁用；版本升 0.1.3/build11 待发。

@@ -474,6 +474,8 @@ final class LampyrisInputController: IMKInputController {
             {
                 if let client = activeClient ?? (sender as? IMKTextInput) { clearMarked(client) }
                 candidateWindow?.hide()
+                // 键盘单独 Shift 与菜单/快捷键走同一提示：候选窗已隐藏，这里应弹 HUD。
+                showStateFeedback(StateFeedback.language(session.isEnglish))
             }
             return false
         }
