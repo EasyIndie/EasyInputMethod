@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 157 v0.1.1 | Release `v0.1.1`：主包 build9 + 源码 + sha256 + appcast（version 9）+ **签名/公证的更新程序** `LampyrisUpdateCheck-0.1.1.zip`；更新程序已装 `~/Applications`，公钥一致。生产仍 build8；菜单点击与跨版本升级待实测 |
 | 156 RC build8 | 0.1.0/build8（`3c9c199f…`，universal、公证，main 45db5a2）已安装到生产身份，含「检查更新…」入口；build6 备份在 `updates/rc-build8-backup`；配置/词库未变。带更新程序的 Release 需 v0.1.1+新 tag，完整 RC 矩阵未开始 |
 | 155 更新程序分发 | ADR-274：`ci-sign.sh --app` 支持单独签名/公证；Release 将附 `LampyrisUpdateCheck-<version>.zip`+sha256；菜单优先启动已安装更新程序。脚本回归通过；待打新 tag 才有该资产 |
 | 154 更新入口 | ADR-273：输入法菜单新增「检查更新…」；已装更新程序则 `--ui`，否则打开 Releases 页面；宿主零网络（仅 LaunchServices）。控制器/预览 9 项回归+冒烟通过；更新程序随包分发待后续，生产 v0.1.0 尚无此入口 |
@@ -73,6 +74,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-23 / pi：v0.1.1 发布成功（run 39933564550），含已签名/公证的更新程序资产；修了两处流水线问题（bash 变量花括号、ASC issuer secret 名）；更新程序已装到 ~/Applications。
 
 - 2026-10-22 / pi：build8 RC（run 39924589316）核验并安装到生产身份（build6 备份保留），含检查更新入口；配置/词库未变；待 v0.1.1 Release 与完整矩阵。
 

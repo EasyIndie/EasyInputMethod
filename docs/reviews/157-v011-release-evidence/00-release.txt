@@ -1,0 +1,9 @@
+== v0.1.1 release 2026-10-23T09:43:04Z
+run 39933564550 success
+assets: zip/source/sha256/appcast + LampyrisUpdateCheck-0.1.1.zip
+appcast sparkle:version=9 length=5230874
+updater_bundle cn.jokerhub.Lampyris.WebsiteUpdateCheck build=9
+updater_key IM+EfMnSZxxbrVFN8Wd8AD/RR4/FSUSzNzKostv40fw=
+updater_sig codesign=ok stapler=ok spctl=Notarized
+updater_installed /Users/joker/Applications/Lampyris Update.app
+production_build 8 exec 3c9c199f
