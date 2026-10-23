@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 148 生产升级演练 | v0.1.0（build6，universal，`5709716c…`）真实安装：GitHub feed→验签→`--apply` 成功；回滚旧包→再升级通过；配置 `3bc1117c…`/词库 `74f76e92…`（29 行）不变；修复 lsd 持有误判（ADR-269） |
 | 147 公钥入库 | ADR-266：公钥提交在 `packaging/macos/update-public-key.txt`，构建/工作流默认读取（不再需要变量/Secret）；私钥仅 Secret 且有「追踪文件无 PEM」回归；已用该公钥复验 v0.1.0 真实签名通过/篡改拒绝 |
 | 146 发版自动化 | ADR-265 `release-appcast.py`（离线签名+自检+appcast，5 项回归）与 `release.yml`（tag v*：验证→构建→签名公证→appcast→gh release create，always 清理）；真实 tag/密钥未配置，未实际发版 |
 | 145 更新来源 | ADR-264：`update.feed_url`（空/https，拒绝凭据/fragment）默认空=GitHub Releases feed；设置新增「更新」分区；公钥固定签名包；更新程序经 ime-config 读取；GitHub 资产主机重定向允许列表；密钥生成/Actions 步骤见 `docs/更新发布流程.md`。尚未配真实密钥与 feed |
@@ -63,6 +64,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：生产升级演练完成（v0.1.0/build6/universal），含回滚→再升级；修复 `lsd` 持有导致的误拒（ADR-269），配置/词库未变，新宿主启动正常。
 
 - 2026-10-22 / pi：#102（ADR-268 签名 tag 延后启用）四CI绿 merge `0e04f0a`；dev快进同步、PR 0。
 

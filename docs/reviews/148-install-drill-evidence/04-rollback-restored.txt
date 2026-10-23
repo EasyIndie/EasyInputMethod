@@ -1,0 +1,4 @@
+== manual rollback 2026-10-23T04:44:05Z
+restored_exec 535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+restored_build 0.1.0
+codesign-ok

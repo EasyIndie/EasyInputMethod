@@ -1,0 +1,11 @@
+== pre 2026-10-23T04:43:26Z
+boot { sec = 1792548077, usec = 118901 } Wed Oct 21 10:01:17 2026
+prod_exec 535d546f9de10541498e123dbb99fde078d37ebe1f2291dc52da8b008a7b1420  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+prod_version 0.1.0 build=0.1.0
+prod_config 3bc1117cc3379a4c6a100bc6d2cf3ddd3bfa37a25739437a32087a87935c7550  /Users/joker/Library/Application Support/Lampyris/config.toml
+prod_dict 74f76e92a6cab0eb312d73a4eec575e8d17a9d919a47630bbde0a2f827da7137  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+/bin/bash: /Users/joker/Library/Application Support/Lampyris/user-dictionary.tstv: No such file or directory
+prod_dict_lines       29
+hosts 83790 dev=45259
+source com.apple.keylayout.ABC
+backups        0
