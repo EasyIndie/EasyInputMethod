@@ -21,9 +21,12 @@ scratch = ROOT.parent / 'build/website-updater'
 # ime-config 是配置唯一来源，更新程序链接它的静态库读取 update.feed_url。
 subprocess.run(['cargo', 'build', '--locked', '--release', '-p', 'ime-ffi'],
                cwd=ROOT.parents[2], check=True)
+root = ROOT.parents[2]
 command = ['swift', 'build', '--package-path', str(ROOT), '--scratch-path', str(scratch),
            '-c', 'release', '-Xswiftc', '-warnings-as-errors',
-           '-Xswiftc', '-strict-concurrency=complete']
+           '-Xswiftc', '-strict-concurrency=complete',
+           '-Xswiftc', '-I' + str(root / 'crates/ime-ffi/include'),
+           '-Xlinker', '-L' + str(root / 'target/release'), '-Xlinker', '-lime_ffi']
 subprocess.run(command, check=True)
 folder = subprocess.check_output(command + ['--show-bin-path'], text=True).strip()
 app = scratch / 'LampyrisUpdateCheck.app'
