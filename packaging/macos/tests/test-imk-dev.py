@@ -107,9 +107,13 @@ class DevelopmentTests(unittest.TestCase):
         target = self.home / ('Library/Input Methods/LampyrisIMKTest-' + self.root.name.removeprefix('lampyris-imk-') + '.app')
         target.mkdir()
         old = {'CFBundleIdentifier': self.identity, 'CFBundleDisplayName': '萤火虫开发 d4fcecfb',
-               'tsInputMethodIconFileKey': 'LampyrisTemplate.png'}
+               'tsInputMethodIconFileKey': 'LampyrisTemplate.png',
+               'ComponentInputModeDict': {'tsInputModeListKey': {'x.default': {
+                   'tsInputModeMenuIconFileKey': 'LampyrisTemplate.png'}}}}
         new = {'CFBundleIdentifier': self.identity, 'CFBundleDisplayName': '萤火虫 开发版',
-               'tsInputMethodIconFileKey': 'LampyrisDevTemplate.png'}
+               'tsInputMethodIconFileKey': 'LampyrisDevTemplate.png',
+               'ComponentInputModeDict': {'tsInputModeListKey': {'x.default': {
+                   'tsInputModeMenuIconFileKey': 'LampyrisDevTemplate.png'}}}}
         def copy(*args):
             import shutil
             shutil.copytree(args[1], args[2])
