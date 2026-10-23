@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`1f5d99c`（#89 沙盒原型）（#81…#104 均四CI绿后merge：ADR-255…270、报告135…149；v0.1.0 已安装为生产包；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`1e45d7b`（#89 沙盒原型）（#81…#105 均四CI绿后merge：ADR-255…270、报告135…150；v0.1.0 已安装为生产包；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：build6 三轮新宿主按 ADR-263 口径（稳态 physical + 私有已提交同时 ≤30MiB）**3/3 满足**：physical 28.0–28.8M、私有 24.6–25.3M；高水位 peak 29.6–31.9M 单列不计。最终 RC 需同协议复测后才关闭 30MB。
@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 151 更新UI | ADR-271：`--ui` 窗口（检查→下载进度→验签→确认→安装→结果）；Swift `UpdateInstaller` 与 `upgrade.py` 语义一致；`UpdateDownloader` https-only/白名单/256MB。22 项测试+UI 冒烟；未真实网络点完流程 |
 | 150 独立重建 | 从 tag `v0.1.0` 干净克隆构建 universal 成功并启动；4 份数据表与 Release 逐字节一致、版本/构建号一致；可执行 SHA 因签名/工具链不同未复现（不宣称 bit-reproducible） |
 | 149 镜像回退 | ADR-270：`update.feed_mirrors`（UrlList ≤8、https、去重保序）；更新程序「主源→镜像」回退、成功即停；`upgrade.py --feed-urls` 同步并放行同主机直链；文档 `docs/更新源与镜像.md`。未在真实大陆网络验证 |
 | 148 生产升级演练 | v0.1.0（build6，universal，`5709716c…`）真实安装：GitHub feed→验签→`--apply` 成功；回滚旧包→再升级通过；配置 `3bc1117c…`/词库 `74f76e92…`（29 行）不变；修复 lsd 持有误判（ADR-269） |
@@ -53,11 +54,12 @@
 
 ## 4. 下一步
 
-1. 本批（报告136/137+ADR-256/257+更新程序验签）一次性`dev → main`PR，四CI绿后merge并快进dev。
-2. 30MB：等满足前置条件（loadavg1<8、swap used<2G、无 Xcode 构建）后按固定时点协议复测 build6；仅能自动切回 ABC，进入开发源仍需用户手动一次。143 轮因 loadavg 54/swap 6.1G 判为无效，不作证据。
-3. 更新闭环下一步：配置真实 Ed25519 密钥（Variable 公钥、Secret 私钥），打首个 tag 走 `release.yml` 真实验证一次；然后用真实包做 HTTPS 下载→验签→`upgrade.py --apply` 演练（含回滚）；再做下载确认/进度 UI 与镜像回退。
-4. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需要真实 Distribution 签名 + MAS 安装位置与输入源注册实测，再决定是否投入商店工程。
-4. 之后锁同RC做三模式/重启/客户端矩阵与五日。不创建tag/Release。
+1. 更新闭环已打通（feed/公钥入库/下载/验签/替换回滚/多镜像/生产升级演练）。剩余可选项：区域镜像搭建（用户后续）、下载确认与进度 UI、多公钥/密钥 ID 轮换（ADR-267）。
+2. 最终 RC：从当前 main（含 v0.1.0 之后修复：公钥入库、镜像、精确停宿主）构建新候选（build7），锁同一候选后完成
+   三模式/重启/显示与数字提交、客户端矩阵（Safari/Chrome/VSCode/Terminal/微信安全草稿）、VoiceOver/多屏/真实睡眠、
+   A/B、安装升级异常恢复卸载、五工作日观察；30MB 与 16ms 在 RC 上按既有协议复测后再正式关闭。
+3. App Store：沙盒原型已验证配置根/零网络/连接名；下一步需 Apple Distribution 证书 + 描述文件，实测 MAS 安装位置与输入源注册。
+4. 冷首键为一次性成本（layout 9ms + measure 6.3ms），不再优化；不创建未经授权的 tag/Release。
 
 ## 5. 边界
 
@@ -66,6 +68,10 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-271 更新 UI 落地（`--ui` 窗口 + Swift 安装器/下载器），22 项更新程序测试通过、窗口冒烟正常；未发 Release、未动生产包。
+
+- 2026-10-22 / pi：#105（报告150 独立重建）四CI绿 merge `1e45d7b`；dev快进同步、PR 0。
 
 - 2026-10-22 / pi：独立重建验证（报告150）：tag v0.1.0 干净克隆构建成功、数据/版本一致、可启动；二进制因签名与工具链差异未逐字节复现，如实记录。
 

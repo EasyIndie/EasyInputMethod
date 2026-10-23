@@ -1,3 +1,4 @@
+import AppKit
 import Foundation
 import OrzAppUpdaterCore
 
@@ -26,6 +27,14 @@ struct WebsiteUpdateCheck {
                 FileHandle.standardError.write(Data("签名参数无效；不安装。\n".utf8))
                 exit(1)
             }
+            return
+        }
+        if arguments == ["--ui"] {
+            let app = NSApplication.shared
+            let delegate = UpdateAppDelegate()
+            app.delegate = delegate
+            app.setActivationPolicy(.regular)
+            app.run()
             return
         }
         guard arguments == ["--check"] else {
