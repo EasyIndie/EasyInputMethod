@@ -39,3 +39,5 @@
 2026-10-22 ADR-265/报告146：新增`release-appcast.py`（ZIP长度/SHA→OpenSSL Ed25519签名→自检→Sparkle兼容appcast，拒绝非https/空包/非法build/缺钥）与`.github/workflows/release.yml`（tag v*：verify/离线回归/通用构建/签名公证/公钥构建更新程序/appcast自检/gh release create/always清理，tag须等于Cargo版本）。5项离线回归通过；真实tag、公钥变量与私钥secret未配置，未实际发版。
 
 2026-10-22 ADR-266/报告147：Ed25519公钥入库`packaging/macos/update-public-key.txt`（32字节Base64），Updater/build.py默认读取并校验，release/self-check工作流不再用变量/Secret读取公钥；私钥仅Secret并有「追踪文件无PEM」回归。用该公钥构建的更新程序复验v0.1.0真实ZIP+appcast签名通过、篡改被拒。真实安装`--apply`待用户确认。
+
+2026-10-22 ADR-268：签名tag校验延后（设备不稳定）：release.yml保留git tag -v，仅在packaging/git-allowed-signers存在时强制；缺失时warning并继续。README/发布文档标记待启用；更新包Ed25519验签始终强制。
