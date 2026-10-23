@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-22 / pi；固定dev，main代码`a11dcad`（#89 沙盒原型）（#81…#106 均四CI绿后merge：ADR-255…271、报告135…151；v0.1.0 已安装为生产包；开放PR 0）。dev已快进同步，无遗留分支。
+- 更新：2026-10-22 / pi；固定dev，main代码`840a9f1`（#89 沙盒原型）（#81…#107 均四CI绿后merge：ADR-255…271、报告135…152；v0.1.0 已安装为生产包；开放PR 0）。dev已快进同步，无遗留分支。
 - build5已作为固定开发包装机：0.1.0/build5，main`299d8f8`，执行`aef8b7cc4e81f6ed3aa141ce03463b39eacc0696e5791a735412cbd4b649a68a`，隔离公证run39775362738，ZIP`b6f9536ace0f7c7ba1b61b217136789d2ea813c54f4be904dc745a54376dc763`；旧build4备份`replacement-r__fdgwk/previous.app`（build2更早备份仍在`replacement-p57rjckg`）。
 - 135原生（build5，schema2）：首轮50键p95 **11.569ms**/max42.663ms（唯一≥16ms为冷首键），暖态p95 10.726ms/max12.587ms，附加45键p95 10.303ms/**0次≥16ms**，engine p95 1.122ms；六词+八项附加（含xi'an、mixed Enter/Esc、五笔）通过，加载器无行为回归。
 - 内存：build6 三轮新宿主按 ADR-263 口径（稳态 physical + 私有已提交同时 ≤30MiB）**3/3 满足**：physical 28.0–28.8M、私有 24.6–25.3M；高水位 peak 29.6–31.9M 单列不计。最终 RC 需同协议复测后才关闭 30MB。
@@ -69,6 +69,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：#107（报告152 UI全流程）四CI绿 merge `840a9f1`；dev快进同步、PR 0。
 
 - 2026-10-22 / pi：更新UI真实全流程演练通过（报告152），修复标识trim与错误信息；生产包/配置/词库未变，ABC还原。
 
