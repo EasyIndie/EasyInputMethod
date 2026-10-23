@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 151 更新UI | ADR-271：`--ui` 窗口（检查→下载进度→验签→确认→安装→结果）；Swift `UpdateInstaller` 与 `upgrade.py` 语义一致；`UpdateDownloader` https-only/白名单/256MB。22 项测试+UI 冒烟；未真实网络点完流程 |
 | 150 独立重建 | 从 tag `v0.1.0` 干净克隆构建 universal 成功并启动；4 份数据表与 Release 逐字节一致、版本/构建号一致；可执行 SHA 因签名/工具链不同未复现（不宣称 bit-reproducible） |
 | 149 镜像回退 | ADR-270：`update.feed_mirrors`（UrlList ≤8、https、去重保序）；更新程序「主源→镜像」回退、成功即停；`upgrade.py --feed-urls` 同步并放行同主机直链；文档 `docs/更新源与镜像.md`。未在真实大陆网络验证 |
 | 148 生产升级演练 | v0.1.0（build6，universal，`5709716c…`）真实安装：GitHub feed→验签→`--apply` 成功；回滚旧包→再升级通过；配置 `3bc1117c…`/词库 `74f76e92…`（29 行）不变；修复 lsd 持有误判（ADR-269） |
@@ -67,6 +68,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：ADR-271 更新 UI 落地（`--ui` 窗口 + Swift 安装器/下载器），22 项更新程序测试通过、窗口冒烟正常；未发 Release、未动生产包。
 
 - 2026-10-22 / pi：#105（报告150 独立重建）四CI绿 merge `1e45d7b`；dev快进同步、PR 0。
 

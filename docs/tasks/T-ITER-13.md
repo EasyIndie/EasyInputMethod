@@ -45,3 +45,5 @@
 2026-10-22 报告148/ADR-269：生产升级演练完成。旧17053e1→v0.1.0 build6（universal，5709716c…），GitHub feed下载+验签+--apply成功；回滚到旧包再升级通过；配置3bc1117c…/词库74f76e92…(29行)不变，新宿主启动正常。首次重试因lsd持有被拒并自动回滚，改为只终止精确二进制持有者（系统服务持有只记录）。
 
 2026-10-22 ADR-270/报告149：大陆GitHub访问容错。新增update.feed_mirrors（UrlList≤8、https、去重保序），更新程序主源→镜像顺序回退、成功即停；upgrade.py新增--feed-urls并按同主机直链放行。文档`docs/更新源与镜像.md`含镜像搭建/要求/验证。18+14+24项回归通过；未在真实大陆网络验证，未发新Release。
+
+2026-10-22 ADR-271/报告151：更新UI与Swift安装器。`--ui`窗口：检查(主源→镜像)→下载进度→验签→确认→安装→结果；UpdateInstaller与upgrade.py语义一致（精确停宿主/备份/原子替换/回滚/0600 receipt）；UpdateDownloader https-only+GitHub资产白名单+256MB上限。22项更新程序测试通过，UI启动冒烟通过；未在真实网络点完整流程。
