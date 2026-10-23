@@ -83,3 +83,5 @@
 2026-10-22 ADR-258：候选内容分段计时schema3（state/measure/set/layout，默认nil零开销，关闭不改变渲染）；controller-menu与candidate-presentation回归同步，phaseSchema升3。make verify/41项离线/strict双架构通过；原生build6单次换源待做，届时同时复测30MB固定时点与冷首键归因。
 
 2026-10-22 报告138：build6（main 2b34d0f，run 39787338801，执行21f5b05b…）schema3实机。冷首键total42.657ms，content18.347=layout9.043（首次窗口尺寸同步）+measure6.302（首次文本测量）+set0.124+state0.050；稳态content2.87（layout1.91/measure0.75）。首轮p95 10.56ms、暖态9.97ms，除冷首键无≥16ms；六词含xi'an通过，config不变。内存固定时点30.0→32.6→33.7→33.6M（峰34.5，swap4.07GB），30MB仍未关闭。结论：冷首键为一次性首次成本，不做预热掩盖。
+
+2026-10-22 报告144/ADR-263：30MB口径定为「稳态physical + 私有已提交(resident+swapped)同时≤30MiB」，peak单列不计。build6新宿主三轮：physical28.0–28.8M、私有24.6–25.3M（3/3满足），peak29.6–31.9M；trace p95 10.81–12.00ms，冷首键每轮1次≥16ms。环境load2.2–6.2/swap5.1G。最终RC需同协议复测后关闭。
