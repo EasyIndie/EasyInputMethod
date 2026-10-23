@@ -25,6 +25,33 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
       - name: Build updater with the committed public key
         run: python3 platforms/macos/Updater/build.py
+      - name: Sign and notarize the updater app (diagnostic)
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_API_ISSUER_ID }}
+        run: |
+          set +e
+          ls -ld platforms/macos/build/website-updater/LampyrisUpdateCheck.app
+          bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app > /tmp/ci-sign.log 2>&1
+          status=$?
+          cat /tmp/ci-sign.log
+          echo "ci-sign exit=${status}"
+          if [ "${status}" -ne 0 ]; then
+            cp /tmp/ci-sign.log packaging/updater-sign.log
+          fi
+          exit "${status}"
+
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: updater-sign-log
+          path: packaging/updater-sign.log
+          if-no-files-found: ignore
+
       - name: Sign and verify a throwaway payload
         env:
           UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
