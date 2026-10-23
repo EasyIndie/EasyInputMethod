@@ -38,7 +38,8 @@ adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
 require(menu.delegate === adapter && menu.items.count == 9, "real shared flat menu")
-require(menu.items[6].title == "检查更新…", "update entry shown before settings")
+require(menu.items[6].title == "检查更新…" && menu.items[6].keyEquivalent == "g"
+    && menu.items[6].keyEquivalentModifierMask == [.option], "update entry shown with shortcut")
 require(menu.items[7].keyEquivalent == "," && menu.items[7].keyEquivalentModifierMask == [.option], "settings shortcut shown")
 require(menu.items[8].keyEquivalent == "a" && menu.items[8].keyEquivalentModifierMask == [.option], "about shortcut shown")
 let parent = menu.items[0]

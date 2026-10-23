@@ -28,7 +28,7 @@ command = ['swift', 'build', '--package-path', str(ROOT), '--scratch-path', str(
            '-c', 'release', '-Xswiftc', '-warnings-as-errors',
            '-Xswiftc', '-strict-concurrency=complete',
            '-Xswiftc', '-I' + str(root / 'crates/ime-ffi/include'),
-           '-Xlinker', '-L' + str(root / 'target/release'), '-Xlinker', '-lime_ffi']
+           '-Xlinker', str(root / 'target/release/libime_ffi.a')]
 subprocess.run(command, check=True)
 folder = subprocess.check_output(command + ['--show-bin-path'], text=True).strip()
 app = scratch / 'LampyrisUpdateCheck.app'

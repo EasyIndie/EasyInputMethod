@@ -5,6 +5,7 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [x] 2026-10-22 检查更新快捷键与更新程序静态链接（ADR-275，报告 158）：`hotkey.open_update`（默认 alt+g，菜单同源）；更新程序改为静态链接 `libime_ffi.a`（修复 v0.1.1 启动崩溃）；查找优先 LaunchServices。配置/设置/菜单/预览回归通过；v0.1.2 待发
 - [x] 2026-10-22 v0.1.1 发布（报告 157）：Release 含主包（build9）、源码、sha256、appcast（version 9）与**已签名/公证的更新程序** `LampyrisUpdateCheck-0.1.1.zip`；更新程序已装到 `~/Applications`，公钥与仓库一致。菜单点击与跨版本升级交互待用户实测
 - [x] 2026-10-22 RC build8 候选（报告 156）：main `45db5a2` → 0.1.0/build8（`3c9c199f…`，universal、公证）；已安装到生产身份并保留 build6 备份；配置/词库不变；含 `checkForUpdates` 入口。带更新程序的 v0.1.1 Release 与完整 RC 矩阵仍未做
 - [x] 2026-10-22 更新程序随 Release 分发（ADR-274，报告 155）：`ci-sign.sh --app` 支持单独签名/公证；Release 增加 `LampyrisUpdateCheck-<version>.zip` + sha256；菜单优先启动已安装更新程序。签名脚本回归与 YAML 通过；首个带更新程序的 Release 待打 tag

@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 158 快捷键+静态链接 | ADR-275：`hotkey.open_update`（默认 alt+g，菜单同源）；更新程序改静态链接 `libime_ffi.a`（修复 v0.1.1 启动崩溃）；优先 LaunchServices 查找。版本/构建号 bump 到 0.1.2/build10；v0.1.2 待发，v0.1.1 更新程序资产计划移除 |
 | 157 v0.1.1 | Release `v0.1.1`：主包 build9 + 源码 + sha256 + appcast（version 9）+ **签名/公证的更新程序** `LampyrisUpdateCheck-0.1.1.zip`；更新程序已装 `~/Applications`，公钥一致。生产仍 build8；菜单点击与跨版本升级待实测 |
 | 156 RC build8 | 0.1.0/build8（`3c9c199f…`，universal、公证，main 45db5a2）已安装到生产身份，含「检查更新…」入口；build6 备份在 `updates/rc-build8-backup`；配置/词库未变。带更新程序的 Release 需 v0.1.1+新 tag，完整 RC 矩阵未开始 |
 | 155 更新程序分发 | ADR-274：`ci-sign.sh --app` 支持单独签名/公证；Release 将附 `LampyrisUpdateCheck-<version>.zip`+sha256；菜单优先启动已安装更新程序。脚本回归通过；待打新 tag 才有该资产 |
@@ -74,6 +75,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-23 / pi：定位 v0.1.1 更新程序启动崩溃（动态链接 CI 绝对路径 dylib），改静态链接；新增检查更新快捷键 alt+g；版本升 0.1.2/build10，待发布。
 
 - 2026-10-23 / pi：v0.1.1 发布成功（run 39933564550），含已签名/公证的更新程序资产；修了两处流水线问题（bash 变量花括号、ASC issuer secret 名）；更新程序已装到 ~/Applications。
 
