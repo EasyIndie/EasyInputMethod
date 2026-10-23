@@ -26,6 +26,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 159 v0.1.2 | Release `v0.1.2`（build10，appcast version 10）含**静态链接更新程序**；v0.1.1 坏更新程序资产已删；本机生产升级到 0.1.2/build10（build8 备份），更新程序装 `~/Applications`。配置/词库变为 `809e2cae…`/`f3e2eef…`（69 行，新 Schema+学习）。⌥G/菜单实测待用户 |
 | 158 快捷键+静态链接 | ADR-275：`hotkey.open_update`（默认 alt+g，菜单同源）；更新程序改静态链接 `libime_ffi.a`（修复 v0.1.1 启动崩溃）；优先 LaunchServices 查找。版本/构建号 bump 到 0.1.2/build10；v0.1.2 待发，v0.1.1 更新程序资产计划移除 |
 | 157 v0.1.1 | Release `v0.1.1`：主包 build9 + 源码 + sha256 + appcast（version 9）+ **签名/公证的更新程序** `LampyrisUpdateCheck-0.1.1.zip`；更新程序已装 `~/Applications`，公钥一致。生产仍 build8；菜单点击与跨版本升级待实测 |
 | 156 RC build8 | 0.1.0/build8（`3c9c199f…`，universal、公证，main 45db5a2）已安装到生产身份，含「检查更新…」入口；build6 备份在 `updates/rc-build8-backup`；配置/词库未变。带更新程序的 Release 需 v0.1.1+新 tag，完整 RC 矩阵未开始 |
@@ -75,6 +76,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-23 / pi：v0.1.2 发布（run 39938190051），更新程序改静态链接并在本机验证启动；生产升级 build10、更新程序装 ~/Applications；配置/词库新基线已记录。
 
 - 2026-10-23 / pi：定位 v0.1.1 更新程序启动崩溃（动态链接 CI 绝对路径 dylib），改静态链接；新增检查更新快捷键 alt+g；版本升 0.1.2/build10，待发布。
 

@@ -1,0 +1,10 @@
+== v0.1.2 release + build10 install 2026-10-23T10:21:43Z
+release run 39938190051 success
+assets main zip 5231027 + source + sha256 + appcast(version 10) + updater 470128
+updater_otool no-dynamic-ime; stapler ok; build=10
+v0.1.1 bad updater assets removed
+installed exec 37decc06bc1822b37ec2e30b75dc243de546d423cdc03f8e04e48229aaaafa62
+installed 0.1.2 build=10 universal
+backup build8 3c9c199f
+config 809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict f3e2eef38e0863f8f06b837e9c7ed9783aa9a7c1881affc80870515b956a9be5  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv lines=      69
