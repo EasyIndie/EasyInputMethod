@@ -1,0 +1,6 @@
+== v0.1.5 install 2026-10-23T13:33:43Z
+exec 8d530aa87d884d7de534e11c76ff3acbd9ea130d10b2b5349adbd8dad5616ec6  /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+version 0.1.5 build=13
+config 809e2cae7d21c627163dad60a47c1bf3a3f737c2091adb0184b2dfb909b353d5  /Users/joker/Library/Application Support/Lampyris/config.toml
+dict 8bdfc50a29636b80915ab662228011111cdb85b26e482eecc9c02c7635215de0  /Users/joker/Library/Application Support/Lampyris/user-dictionary.tsv
+backup_exec 17d2a3dc5e327775a15203ecb58c8cba5dbdf90daf8dd79bc6faafa125a353d8  /Users/joker/Library/Application Support/Lampyris/updates/build13-backup/Lampyris.app/Contents/MacOS/Lampyris
