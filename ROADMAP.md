@@ -4,6 +4,7 @@
 
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
+- [x] 2026-10-22 发版自动化（ADR-265，报告 146）：`release-appcast.py` 离线签名并自检、生成 Sparkle 兼容 appcast（拒绝非 https/空包/缺钥）；`release.yml` 在 tag `v*` 校验版本一致性→验证/离线回归/通用构建/签名公证→用仓库变量公钥构建更新程序→生成 appcast 并自检→`gh release create`；5 项离线回归通过。真实 tag 发版与密钥仍未配置
 - [x] 2026-10-22 更新来源可配置（ADR-264，报告 145）：新增 `update.feed_url`（空或 https，拒绝凭据/fragment），设置自动出现「更新」分区；默认 GitHub Releases feed，公钥固定签名包；更新程序经 ime-config 读取来源；GitHub 资产主机重定向允许列表（Swift/Python 同步）；密钥生成与 Actions 发版步骤见 `docs/更新发布流程.md`。仍无真实密钥/feed/HTTPS 演练
 - [x] 2026-10-22 appcast 解析与版本选择（ADR-262，报告 142）：`feed.py` 与 Swift 更新程序同一套规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD/ENTITY、64 字节签名、build 点分比较）；`upgrade.py` 支持 `--feed-file/--feed-url`，无更新直接 `up-to-date` 退出 0 不下载。11 项 feed + 16 项升级离线回归全 PASS；真实 feed/公钥与 HTTPS 演练仍未做
 - [x] 2026-10-22 更新负载 HTTPS 下载器（ADR-261，报告 141）：`--payload-url` 只接受 https、0700/0600 私有临时文件、256MB 上限、重定向协议复查、结束即清理；顺序仍是下载→验签→替换，验签前不进入安装。7 项离线回归（含 http/ftp/file 拒绝、超限、重定向降级、空负载）全 PASS；真实 feed/公钥与 HTTPS 演练仍未做
