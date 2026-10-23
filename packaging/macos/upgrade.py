@@ -252,6 +252,14 @@ def _write_receipt(support: Path, receipt: dict) -> None:
     path.chmod(0o600)
 
 
+def host_holders(executable: Path, holders: list[tuple[int, str]]) -> tuple[list[int], list[int]]:
+    """区分真正的宿主与系统服务（LaunchServices/Spotlight 等）的临时持有。"""
+    target = str(executable)
+    exact = [pid for pid, command in holders if command == target]
+    ignored = [pid for pid, command in holders if command != target]
+    return exact, ignored
+
+
 def real_hooks(verifier: Path) -> Hooks:
     def verify_payload(payload: Path, signature: str) -> None:
         result = subprocess.run([str(verifier), '--verify-payload', str(payload), signature],
@@ -279,20 +287,28 @@ def real_hooks(verifier: Path) -> Hooks:
                        capture_output=True)
 
     def stop_host(executable: Path) -> None:
-        holders = subprocess.run(['/usr/sbin/lsof', '-t', str(executable)],
-                                 capture_output=True, text=True)
-        pids = {int(value) for value in holders.stdout.split()} if holders.returncode == 0 else set()
+        def current_holders() -> list[tuple[int, str]]:
+            listing = subprocess.run(['/usr/sbin/lsof', '-t', str(executable)],
+                                     capture_output=True, text=True)
+            if listing.returncode != 0:
+                return []
+            rows = []
+            for value in listing.stdout.split():
+                pid = int(value)
+                command = subprocess.run(['/bin/ps', '-p', str(pid), '-o', 'comm='],
+                                         capture_output=True, text=True).stdout.strip()
+                rows.append((pid, command))
+            return rows
+
+        pids, ignored = host_holders(executable, current_holders())
+        if ignored:
+            print(json.dumps({'ignored_holders': ignored}), file=sys.stderr)
         for pid in sorted(pids):
-            command = subprocess.run(['/bin/ps', '-p', str(pid), '-o', 'comm='],
-                                     capture_output=True, text=True).stdout.strip()
-            if command != str(executable):
-                raise UpgradeError('包被非精确宿主使用，拒绝终止：' + command)
             os.kill(pid, signal.SIGTERM)
         deadline = time.monotonic() + 5
         while True:
-            remaining = subprocess.run(['/usr/sbin/lsof', '-t', str(executable)],
-                                       capture_output=True, text=True)
-            if remaining.returncode != 0 or not remaining.stdout.strip():
+            remaining, _ = host_holders(executable, current_holders())
+            if not remaining:
                 return
             if time.monotonic() >= deadline:
                 raise UpgradeError('宿主未退出；未替换')

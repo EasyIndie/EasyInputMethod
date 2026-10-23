@@ -184,6 +184,18 @@ class UpgradeTests(unittest.TestCase):
 
 
 
+class HolderTests(unittest.TestCase):
+    def test_only_exact_binary_holders_are_stopped(self):
+        executable = Path('/Applications/Lampyris.app/Contents/MacOS/Lampyris')
+        exact, ignored = upgrade.host_holders(executable, [
+            (10, str(executable)),
+            (11, '/usr/libexec/lsd'),
+            (12, '/sbin/launchd'),
+        ])
+        self.assertEqual(exact, [10])
+        self.assertEqual(ignored, [11, 12])
+
+
 class DownloadTests(unittest.TestCase):
     def setUp(self):
         self.temporary = Path(tempfile.mkdtemp(prefix='lampyris-download-test-'))

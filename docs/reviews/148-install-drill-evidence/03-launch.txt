@@ -1,0 +1,4 @@
+== launch 2026-10-23T04:43:58Z
+pid=85532
+85532   00:05 /Users/joker/Library/Input Methods/Lampyris.app/Contents/MacOS/Lampyris
+Timestamp                       Thread     Type        Activity             PID    TTL  

@@ -41,3 +41,5 @@
 2026-10-22 ADR-266/报告147：Ed25519公钥入库`packaging/macos/update-public-key.txt`（32字节Base64），Updater/build.py默认读取并校验，release/self-check工作流不再用变量/Secret读取公钥；私钥仅Secret并有「追踪文件无PEM」回归。用该公钥构建的更新程序复验v0.1.0真实ZIP+appcast签名通过、篡改被拒。真实安装`--apply`待用户确认。
 
 2026-10-22 ADR-268：签名tag校验延后（设备不稳定）：release.yml保留git tag -v，仅在packaging/git-allowed-signers存在时强制；缺失时warning并继续。README/发布文档标记待启用；更新包Ed25519验签始终强制。
+
+2026-10-22 报告148/ADR-269：生产升级演练完成。旧17053e1→v0.1.0 build6（universal，5709716c…），GitHub feed下载+验签+--apply成功；回滚到旧包再升级通过；配置3bc1117c…/词库74f76e92…(29行)不变，新宿主启动正常。首次重试因lsd持有被拒并自动回滚，改为只终止精确二进制持有者（系统服务持有只记录）。
