@@ -25,6 +25,7 @@
 
 | 范围 | 当前结果/证据 |
 |---|---|
+| 147 公钥入库 | ADR-266：公钥提交在 `packaging/macos/update-public-key.txt`，构建/工作流默认读取（不再需要变量/Secret）；私钥仅 Secret 且有「追踪文件无 PEM」回归；已用该公钥复验 v0.1.0 真实签名通过/篡改拒绝 |
 | 146 发版自动化 | ADR-265 `release-appcast.py`（离线签名+自检+appcast，5 项回归）与 `release.yml`（tag v*：验证→构建→签名公证→appcast→gh release create，always 清理）；真实 tag/密钥未配置，未实际发版 |
 | 145 更新来源 | ADR-264：`update.feed_url`（空/https，拒绝凭据/fragment）默认空=GitHub Releases feed；设置新增「更新」分区；公钥固定签名包；更新程序经 ime-config 读取；GitHub 资产主机重定向允许列表；密钥生成/Actions 步骤见 `docs/更新发布流程.md`。尚未配真实密钥与 feed |
 | 142 appcast | ADR-262 `feed.py` 与 Swift 同规则（https-only、1MiB/1000 项/深度 16、拒绝 DTD、64 字节签名、build 点分比较）；`upgrade.py` 接 `--feed-file/--feed-url`，无更新 `up-to-date` 退出 0；11+16 项离线回归；真实 feed/公钥/HTTPS 未做 |
@@ -61,6 +62,8 @@
 - 固定dev→main单PR、merge commit保留祖先、四CI当前head绿后处理完；make verify零诊断，不绕main-only签名。
 
 ## 9. 会话日志
+
+- 2026-10-22 / pi：首个 `v0.1.0` Release 已发布（appcast 518B、ZIP 5.2MB，`sparkle:version=6`），修了 YAML heredoc、bash3.2 mapfile、发布 ZIP 包装目录三个真实问题；ADR-266 公钥入库并用它复验真实签名；真实 `--apply` 待用户确认。
 
 - 2026-10-23 / pi：#96（公钥支持 Variable/Secret + 签名自检工作流）四CI绿 merge `a38f816`；待配置私钥 secret 后手动触发 Update Signing Check。
 

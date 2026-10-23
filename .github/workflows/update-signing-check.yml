@@ -23,14 +23,8 @@ jobs:
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
-      - name: Build updater with pinned public key
-        env:
-          UPDATE_PUBLIC_KEY_VAR: ${{ vars.LAMPYRIS_UPDATE_PUBLIC_KEY }}
-          UPDATE_PUBLIC_KEY_SECRET: ${{ secrets.LAMPYRIS_UPDATE_PUBLIC_KEY }}
-        run: |
-          UPDATE_PUBLIC_KEY="${UPDATE_PUBLIC_KEY_VAR:-${UPDATE_PUBLIC_KEY_SECRET}}"
-          test -n "$UPDATE_PUBLIC_KEY"
-          python3 platforms/macos/Updater/build.py --public-key "$UPDATE_PUBLIC_KEY"
+      - name: Build updater with the committed public key
+        run: python3 platforms/macos/Updater/build.py
       - name: Sign and verify a throwaway payload
         env:
           UPDATE_PRIVATE_KEY: ${{ secrets.LAMPYRIS_UPDATE_PRIVATE_KEY }}
