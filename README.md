@@ -15,6 +15,36 @@
 - **开源可审计**：核心 `forbid(unsafe_code)`；码表可复现生成。
 - **许可证**：GPL-3.0-or-later（防止被闭源包装成劣币）。
 
+## 更新与可复验（v0.1.0 起）
+
+- 默认更新源：`https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml`
+  （设置 → 更新 → 更新来源 可改成自建 https 地址；留空即用官方源）。
+- **更新包必须由项目 Ed25519 私钥签名**；公钥是公开值，随源码提交在
+  [`packaging/macos/update-public-key.txt`](packaging/macos/update-public-key.txt)，
+  同样写入签名包 `SUPublicEDKey`。改更新源**不需要**任何账号/凭据，但换的源必须发布**同一把私钥**签出的包，
+  否则验签失败、不会安装。
+- 公钥（Base64，32 字节）与指纹（SHA-256，原始字节）：
+
+  ```
+  IM+EfMnSZxxbrVFN8Wd8AD/RR4/FSUSzNzKostv40fw=
+  0fdcb0db6178a54d5c966dee3ef9903f7f33fb0df865689b8b847c4667051c7d
+  ```
+
+- 独立复验（不依赖服务器信任）：
+
+  ```sh
+  # 仓库公钥 → Ed25519 SPKI DER → PEM
+  { printf '\x30\x2a\x30\x05\x06\x03\x2b\x65\x70\x03\x21\x00'; \
+    python3 -c 'import base64,sys;sys.stdout.buffer.write(base64.b64decode(open("packaging/macos/update-public-key.txt").read()))'; } > pub.der
+  openssl pkey -pubin -inform DER -in pub.der -out pub.pem
+
+  # 从 Release 下载 appcast.xml，取出 sparkle:edSignature 解码为 sig.bin 后：
+  openssl pkeyutl -verify -rawin -pubin -inkey pub.pem \
+    -in Lampyris-0.1.0-universal.zip -sigfile sig.bin
+  ```
+
+- 发版 tag 必须**签名**（详见 [更新发布流程](docs/更新发布流程.md)）；Release 工作流会校验 tag 签名。
+
 ## 名字
 
 **萤火虫** —— 小、自带微光（不依赖云端）、安静不打扰。

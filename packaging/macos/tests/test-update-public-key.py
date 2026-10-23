@@ -18,6 +18,18 @@ class UpdatePublicKeyTests(unittest.TestCase):
         raw = base64.b64decode(KEY.read_text().strip(), validate=True)
         self.assertEqual(len(raw), 32)
 
+    def test_readme_records_key_and_fingerprint(self):
+        import hashlib
+        raw = base64.b64decode(KEY.read_text().strip(), validate=True)
+        readme = (ROOT / 'README.md').read_text()
+        self.assertIn(KEY.read_text().strip(), readme)
+        self.assertIn(hashlib.sha256(raw).hexdigest(), readme)
+
+    def test_release_requires_signed_tag(self):
+        text = (ROOT / '.github/workflows/release.yml').read_text()
+        self.assertIn('packaging/git-allowed-signers', text)
+        self.assertIn('git tag -v', text)
+
     def test_build_script_defaults_to_committed_key(self):
         source = BUILD.read_text()
         self.assertIn('update-public-key.txt', source)
