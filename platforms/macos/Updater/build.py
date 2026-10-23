@@ -20,22 +20,36 @@ version = identity()
 if not args.public_key and not PINNED_PUBLIC_KEY.is_file():
     parser.error('缺少入库公钥 packaging/macos/update-public-key.txt')
 scratch = ROOT.parent / 'build/website-updater'
+# 更新程序必须通用：Intel 机器打开 arm64-only 包会被系统拒绝（报告 167）。
 # ime-config 是配置唯一来源，更新程序链接它的静态库读取 update.feed_url。
-subprocess.run(['cargo', 'build', '--locked', '--release', '-p', 'ime-ffi'],
-               cwd=ROOT.parents[2], check=True)
 root = ROOT.parents[2]
-command = ['swift', 'build', '--package-path', str(ROOT), '--scratch-path', str(scratch),
-           '-c', 'release', '-Xswiftc', '-warnings-as-errors',
-           '-Xswiftc', '-strict-concurrency=complete',
-           '-Xswiftc', '-I' + str(root / 'crates/ime-ffi/include'),
-           '-Xlinker', str(root / 'target/release/libime_ffi.a')]
-subprocess.run(command, check=True)
-folder = subprocess.check_output(command + ['--show-bin-path'], text=True).strip()
+architectures = [('arm64', 'aarch64-apple-darwin'), ('x86_64', 'x86_64-apple-darwin')]
+slices = []
+for arch, triple in architectures:
+    subprocess.run(['cargo', 'build', '--locked', '--release', '--target', triple, '-p', 'ime-ffi'],
+                   cwd=root, check=True)
+    build_dir = scratch / arch
+    command = ['swift', 'build', '--package-path', str(ROOT), '--scratch-path', str(build_dir),
+               '--triple', f'{arch}-apple-macosx13.0',
+               '-c', 'release', '-Xswiftc', '-warnings-as-errors',
+               '-Xswiftc', '-strict-concurrency=complete',
+               '-Xswiftc', '-I' + str(root / 'crates/ime-ffi/include'),
+               '-Xlinker', str(root / 'target' / triple / 'release/libime_ffi.a')]
+    subprocess.run(command, check=True)
+    folder = subprocess.check_output(command + ['--show-bin-path'], text=True).strip()
+    slice_path = scratch / f'LampyrisUpdateCheck-{arch}'
+    shutil.copy2(Path(folder) / 'LampyrisUpdateCheck', slice_path)
+    slices.append(slice_path)
 app = scratch / 'LampyrisUpdateCheck.app'
 contents = app / 'Contents'
 binary = contents / 'MacOS/LampyrisUpdateCheck'
 binary.parent.mkdir(parents=True, exist_ok=True)
-shutil.copy2(Path(folder) / 'LampyrisUpdateCheck', binary)
+subprocess.run(['lipo', '-create', *map(str, slices), '-output', str(binary)], check=True)
+archs = subprocess.check_output(['lipo', '-archs', str(binary)], text=True).split()
+if set(archs) != {'arm64', 'x86_64'}:
+    parser.error(f'更新程序不是通用二进制：{archs}')
+for slice_path in slices:
+    slice_path.unlink()
 info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'CFBundleExecutable': binary.name, 'CFBundlePackageType': 'APPL',
         'CFBundleVersion': version['build'], 'CFBundleShortVersionString': version['apple'],
