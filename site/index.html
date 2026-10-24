@@ -47,7 +47,7 @@
   <p class="tag">默认离线的中文输入法 · 五笔优先，拼音兜底 · GPL-3.0-or-later</p>
 
   <div class="buttons">
-    <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.11-universal.dmg">下载 DMG（图形安装）</a>
+    <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.dmg">下载 DMG（图形安装）</a>
     <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest">下载最新版</a>
     <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases">全部版本 / 对应源码</a>
     <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod">源码仓库</a>
@@ -56,18 +56,18 @@
   <h2>安装（macOS 13+，universal）</h2>
   <h3>图形安装（推荐）</h3>
   <ol>
-    <li>打开 <code>Lampyris-0.1.11-universal.dmg</code>，双击「安装萤火虫」。</li>
+    <li>打开 <code>Lampyris-0.1.12-universal.dmg</code>，双击「安装萤火虫」。</li>
     <li>点「安装」；安装器会保留配置与个人词库，并自动备份旧版本。</li>
     <li>按 <code>⌃Space</code>，或在输入法菜单中选择「萤火虫」。</li>
   </ol>
   <h3>命令行安装（备选）</h3>
   <p>在终端粘贴执行（安装到当前用户，<strong>不需要 sudo</strong>）：</p>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.11-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
   <ul>
     <li>安装器会校验 Developer ID 签名、hardened runtime 与公证；校验失败会拒绝安装。</li>
     <li>安装后<strong>自动注册输入源</strong>；用 <code>⌃Space</code> 或输入法菜单选中「萤火虫」即可（若菜单里还没出现，重启登录一次）。</li>
     <li>同版本重复执行无操作；<strong>已有不同版本需先卸载</strong>（见下）。</li>
-    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.11-source.tar.gz</code>。</li>
+    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.12-source.tar.gz</code>。</li>
   </ul>
 
   <h2>卸载</h2>
@@ -80,7 +80,7 @@
   </ul>
   <p>两种方式都会切回 ABC、禁用输入源并退出宿主；完成后请注销并重新登录一次，清空输入法菜单中的残留项。</p>
   <h3>命令行卸载（备选）</h3>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.11-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
+  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
   <ul>
     <li>默认保留配置与词库；彻底清理可加 <code>--purge-data</code>（数据会移到 <code>uninstalled/</code> 备份，而不是直接删除）。</li>
     <li>如果宿主仍在运行，先注销一次再执行；旧输入源条目会在下次登录后消失。</li>
