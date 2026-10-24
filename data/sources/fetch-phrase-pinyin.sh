@@ -15,7 +15,8 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 DEST="$ROOT/data/sources"
 
 # D4: mozillazg/phrase-pinyin-data（MIT, Copyright (c) 2017 mozillazg）
-D4_URL="https://raw.githubusercontent.com/mozillazg/phrase-pinyin-data/master/pinyin.txt"
+# v0.19.0 的不可变提交；与登记的原始 SHA-256 一致，不跟随 master 漂移。
+D4_URL="https://raw.githubusercontent.com/mozillazg/phrase-pinyin-data/cee0ed6e6e4898580cafd2bd5e3723e20b214aa0/pinyin.txt"
 D4_SHA="dcc769607c220b312fea3e71cb63421298b4b891b1f7356a95ab58f2c96fff81"
 D4_OUT="phrase-pinyin-data-pinyin.txt"
 

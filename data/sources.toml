@@ -36,7 +36,7 @@ notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA �
 id = "D4"
 name = "中文词组表（mozillazg/phrase-pinyin-data）"
 path = "data/sources/phrase-pinyin-data-pinyin.txt"
-url = "https://github.com/mozillazg/phrase-pinyin-data/blob/master/pinyin.txt"
+url = "https://github.com/mozillazg/phrase-pinyin-data/blob/cee0ed6e6e4898580cafd2bd5e3723e20b214aa0/pinyin.txt"
 upstream = "mozillazg/phrase-pinyin-data"
 license = "MIT"
 risk = "low"
@@ -44,7 +44,7 @@ sha256 = "dcc769607c220b312fea3e71cb63421298b4b891b1f7356a95ab58f2c96fff81"
 used_for = ["wubi86-phrase-code-generation", "pinyin-reading-evidence"]
 fetch_script = "data/sources/fetch-phrase-pinyin.sh"
 added_at = "2026-10-08"
-notes = "版本 0.19.0；格式 `词: 拼音`，仅取第一列中文词（含非汉字者跳过）；文件下载获取，不入库"
+notes = "版本 0.19.0（固定提交 cee0ed6e6e48，源 SHA 不变）；格式 `词: 拼音`，仅取第一列中文词（含非汉字者跳过）；文件下载获取，不入库"
 
 [[source]]
 id = "D5"
