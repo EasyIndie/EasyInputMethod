@@ -33,6 +33,15 @@ class UpdaterIsolationTests(unittest.TestCase):
         self.assertIn('attributes[.type] as? FileAttributeType == .typeDirectory', text)
         self.assertIn('content == canonical.lastPathComponent', text)
 
+    def test_headless_drill_entry_is_test_only(self):
+        text = (ROOT / 'platforms/macos/Updater/Sources/WebsiteUpdateCheck/WebsiteUpdateCheck.swift').read_text()
+        self.assertIn('--drill-run', text)
+        self.assertIn('location.isolated else', text)
+        self.assertIn('drill 只允许隔离测试构建运行；未发送请求。', text)
+        self.assertIn('temp_after_cancel=', text)
+        self.assertIn('temp_after_install=', text)
+        self.assertIn('result=rejected', text)
+
     def test_window_never_falls_back_to_production_when_binding_is_invalid(self):
         text = WINDOW.read_text()
         self.assertIn('guard location != nil else', text)
