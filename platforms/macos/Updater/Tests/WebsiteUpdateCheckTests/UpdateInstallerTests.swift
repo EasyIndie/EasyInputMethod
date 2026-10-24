@@ -201,6 +201,23 @@ final class UpdateInstallerTests: XCTestCase {
         XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
     }
 
+    func testMissingTargetDirectoryIsRejectedBeforeStoppingHost() throws {
+        let missing = folder.appendingPathComponent("No Input Methods")
+        let payload = try makePayload(folder)
+        let stopped = Flag()
+        let env = environment(stop: { _ in stopped.set() })
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: missing, support: support, environment: env)) { error in
+            guard case InstallError.domainMissing(let path) = error else {
+                return XCTFail("unexpected error: \(error)")
+            }
+            XCTAssertEqual(path, missing.path)
+        }
+        XCTAssertFalse(stopped.isSet)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: support.path))
+    }
+
     func testFreshInstallPlacesBundleAndWritesReceipt() throws {
         let payload = try makePayload(folder)
         let receipt = try UpdateInstaller.install(

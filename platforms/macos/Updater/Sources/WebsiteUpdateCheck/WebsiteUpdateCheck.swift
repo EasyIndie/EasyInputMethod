@@ -95,6 +95,15 @@ extension WebsiteUpdateCheck {
             return
         }
         switch mode {
+        case "rollback":
+            do {
+                let (restored, folder) = try await drillRollback(release: release, key: key, location: location)
+                print("restored_exec=\(restored)")
+                print("temp_after_install=\(FileManager.default.fileExists(atPath: folder.path))")
+                print("result=rolled-back")
+            } catch {
+                drillFail("回滚演练失败：\(error.localizedDescription)")
+            }
         case "cancel", "tamper":
             let (folder, verified) = await drillVerifyOnly(mode: mode, release: release, key: key)
             print("signature=\(verified ? "valid" : "invalid")")
@@ -204,4 +213,65 @@ extension WebsiteUpdateCheck {
         payload = nil
         return (receipt, folder)
     }
+}
+
+extension WebsiteUpdateCheck {
+    /// Final state of the install slot plus whether the leftover work directory is gone.
+    static func drillInstallState(location: InstallLocation) -> (exec: String, workDirs: Int) {
+        let installed = location.domain.appendingPathComponent(location.target.bundleName)
+        let exec = installed.appendingPathComponent(location.target.executablePath)
+        let sha = (try? UpdateInstaller.sha256(exec)) ?? "missing"
+        let entries = (try? FileManager.default.contentsOfDirectory(atPath: location.support.path)) ?? []
+        let workDirs = entries.filter { $0.hasPrefix("upgrade-") }.count + entries.filter { $0 == "staging" }.count
+        return (sha, workDirs)
+    }
+
+    /// Injects a failure after the candidate is placed, to prove the real rollback path restores the old bundle.
+    static func drillRollback(release: UpdateRelease, key: String, location: InstallLocation)
+        async throws -> (String, URL)
+    {
+        let before = drillInstallState(location: location)
+        print("before_exec=\(before.exec) work_dirs=\(before.workDirs)")
+        let downloader = UpdateDownloader()
+        var payload: DownloadedPayload? = try await downloader.download(release.downloadURL) { _, _ in }
+        guard let downloaded = payload else { throw InstallError.payloadMissing("下载失败") }
+        let folder = downloaded.url.deletingLastPathComponent()
+        let signature = release.signature.base64EncodedString()
+        let verifier = try PayloadVerifier(publicKeyBase64: key)
+        guard try verifier.verify(fileAt: downloaded.url, signatureBase64: signature) else {
+            throw InstallError.candidateInvalid("负载签名无效")
+        }
+        let base = DefaultInstallEnvironment.make(target: location.target)
+        let counter = DrillCounter()
+        let environment = InstallEnvironment(validateCandidate: { app in
+            try base.validateCandidate(app)
+            // Second call happens after the bundle is moved into place.
+            if counter.increment() >= 2 {
+                throw InstallError.candidateInvalid("drill 注入：落地后校验失败")
+            }
+        }, stopHost: base.stopHost)
+        defer { payload = nil }
+        do {
+            _ = try UpdateInstaller.install(
+                payload: downloaded.url, signature: signature, publicKeyBase64: key,
+                domain: location.domain, support: location.support,
+                environment: environment, target: location.target)
+        } catch {
+            let after = drillInstallState(location: location)
+            print("after_exec=\(after.exec) work_dirs=\(after.workDirs)")
+            print("injected_error=\(error.localizedDescription)")
+            guard after.exec == before.exec, after.workDirs == before.workDirs else {
+                throw InstallError.replaceFailed("回滚未恢复到演练前状态")
+            }
+            payload = nil
+            return (after.exec, folder)
+        }
+        throw InstallError.replaceFailed("演练本应失败却安装成功")
+    }
+}
+
+final class DrillCounter: @unchecked Sendable {
+    private let lock = NSLock()
+    private var value = 0
+    func increment() -> Int { lock.lock(); defer { lock.unlock() }; value += 1; return value }
 }

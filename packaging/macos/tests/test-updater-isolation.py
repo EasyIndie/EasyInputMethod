@@ -41,6 +41,9 @@ class UpdaterIsolationTests(unittest.TestCase):
         self.assertIn('location.isolated else', text)
         self.assertIn('drill 只允许隔离测试构建运行；未发送请求。', text)
         self.assertIn('temp_after_release=', text)
+        self.assertIn('case "rollback":', text)
+        self.assertIn('drill 注入：落地后校验失败', text)
+        self.assertIn('回滚未恢复到演练前状态', text)
         self.assertIn('temp_after_install=', text)
         self.assertIn('"cancelled" : "rejected"', text)
         # The payload must be released before the cleanup assertion, or the drill proves nothing.
