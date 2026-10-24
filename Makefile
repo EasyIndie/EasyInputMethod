@@ -115,5 +115,6 @@ macos-updater-build: ## 构建默认关闭的独立更新检查程序（不安�
 	cargo build --locked --release -p ime-ffi
 	$(CLEAN) python3 platforms/macos/Updater/build.py
 
-macos-installer-build: ## 构建 DMG 图形安装器（不安装、不联网）
+macos-installer-build: ## 构建 DMG 图形安装器/卸载器（不安装、不联网）
 	$(CLEAN) python3 platforms/macos/Installer/build.py
+	$(CLEAN) python3 platforms/macos/Uninstaller/build.py
