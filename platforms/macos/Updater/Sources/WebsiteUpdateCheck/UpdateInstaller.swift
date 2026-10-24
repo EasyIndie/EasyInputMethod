@@ -50,15 +50,45 @@ public struct InstallReceipt: Sendable, Equatable {
     public let dryRun: Bool
 }
 
+/// Candidate identity and executable are bound together for every install operation.
+public struct InstallTarget: Sendable {
+    let bundleName: String
+    let executablePath: String
+    let identity: String
+
+    public static let production = InstallTarget(
+        bundleName: "Lampyris.app", executablePath: "Contents/MacOS/Lampyris",
+        identity: "cn.jokerhub.inputmethod.Lampyris")
+
+    /// Only the UUID-bound IMK test identity may use the isolated target shape.
+    static func isolated(identity: String) throws -> InstallTarget {
+        let prefix = "cn.jokerhub.inputmethod.LampyrisIMKTest."
+        guard identity.hasPrefix(prefix),
+              let uuid = UUID(uuidString: String(identity.dropFirst(prefix.count))),
+              identity == prefix + uuid.uuidString.lowercased() else {
+            throw InstallError.candidateInvalid("隔离输入法标识不符")
+        }
+        return InstallTarget(bundleName: "LampyrisIMKTest.app",
+                             executablePath: "Contents/MacOS/LampyrisIMKTest", identity: identity)
+    }
+
+    private init(bundleName: String, executablePath: String, identity: String) {
+        self.bundleName = bundleName
+        self.executablePath = executablePath
+        self.identity = identity
+    }
+}
+
 /// 已验签的原地升级（Swift 版，与 packaging/macos/upgrade.py 语义一致）。
 public enum UpdateInstaller {
-    public static let bundleName = "Lampyris.app"
-    public static let executablePath = "Contents/MacOS/Lampyris"
-    public static let identity = "cn.jokerhub.inputmethod.Lampyris"
+    public static let bundleName = InstallTarget.production.bundleName
+    public static let executablePath = InstallTarget.production.executablePath
+    public static let identity = InstallTarget.production.identity
 
     public static func install(payload: URL, signature: String, publicKeyBase64: String,
                                domain: URL, support: URL,
                                environment: InstallEnvironment,
+                               target: InstallTarget = .production,
                                dryRun: Bool = false) throws -> InstallReceipt {
         guard FileManager.default.fileExists(atPath: payload.path) else {
             throw InstallError.payloadMissing("负载不存在：\(payload.path)")
@@ -70,7 +100,7 @@ public enum UpdateInstaller {
         guard try verifier.verify(fileAt: payload, signatureBase64: signature) else {
             throw InstallError.candidateInvalid("负载签名无效")
         }
-        let destination = domain.appendingPathComponent(bundleName)
+        let destination = domain.appendingPathComponent(target.bundleName)
         if isSymlink(destination) { throw InstallError.symlinkRejected }
         let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
         let work = support.appendingPathComponent("upgrade-\(stamp)-\(UUID().uuidString.prefix(8))")
@@ -83,9 +113,9 @@ public enum UpdateInstaller {
                                                 attributes: [.posixPermissions: 0o700])
         try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true,
                                                 attributes: [.posixPermissions: 0o700])
-        let candidate = try extract(payload: payload, staging: staging)
+        let candidate = try extract(payload: payload, staging: staging, bundleName: target.bundleName)
         try environment.validateCandidate(candidate)
-        let candidateExec = candidate.appendingPathComponent(executablePath)
+        let candidateExec = candidate.appendingPathComponent(target.executablePath)
         let receiptBase = InstallReceipt(
             payloadSHA256: try sha256(payload), signature: signature,
             installed: destination.path, previous: nil,
@@ -96,17 +126,17 @@ public enum UpdateInstaller {
         var placed = false
         do {
             if FileManager.default.fileExists(atPath: destination.path) {
-                try environment.stopHost(destination.appendingPathComponent(executablePath))
+                try environment.stopHost(destination.appendingPathComponent(target.executablePath))
                 try FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: false,
                                                         attributes: [.posixPermissions: 0o700])
-                let backup = backupDir.appendingPathComponent(bundleName)
+                let backup = backupDir.appendingPathComponent(target.bundleName)
                 try FileManager.default.moveItem(at: destination, to: backup)
                 previous = backup
             }
             try FileManager.default.moveItem(at: candidate, to: destination)
             placed = true
             try environment.validateCandidate(destination)
-            let installedExec = destination.appendingPathComponent(executablePath)
+            let installedExec = destination.appendingPathComponent(target.executablePath)
             let receipt = InstallReceipt(
                 payloadSHA256: receiptBase.payloadSHA256, signature: signature,
                 installed: destination.path, previous: previous?.path,
@@ -127,7 +157,7 @@ public enum UpdateInstaller {
         }
     }
 
-    static func extract(payload: URL, staging: URL) throws -> URL {
+    static func extract(payload: URL, staging: URL, bundleName: String = UpdateInstaller.bundleName) throws -> URL {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
         process.arguments = ["-x", "-k", payload.path, staging.path]

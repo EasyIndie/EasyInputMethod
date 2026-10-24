@@ -1,19 +1,23 @@
 import Foundation
 
-/// 生产环境的候选校验与宿主停止：与 packaging/macos/upgrade.py 的守卫一致。
+/// Developer ID candidate validation and exact executable stop for the selected target.
 enum DefaultInstallEnvironment {
-    static func make() -> InstallEnvironment {
+    static func make(target: InstallTarget = .production) -> InstallEnvironment {
         InstallEnvironment(validateCandidate: { app in
-            let executable = app.appendingPathComponent(UpdateInstaller.executablePath)
+            let executable = app.appendingPathComponent(target.executablePath)
             guard FileManager.default.isExecutableFile(atPath: executable.path) else {
                 throw InstallError.candidateInvalid("缺少可执行文件")
             }
-            let identity = run("/usr/libexec/PlistBuddy",
-                               ["-c", "Print :CFBundleIdentifier",
-                                app.appendingPathComponent("Contents/Info.plist").path])
+            let plist = app.appendingPathComponent("Contents/Info.plist").path
+            let identity = run("/usr/libexec/PlistBuddy", ["-c", "Print :CFBundleIdentifier", plist])
                 .trimmingCharacters(in: .whitespacesAndNewlines)
-            guard identity == UpdateInstaller.identity else {
+            guard identity == target.identity else {
                 throw InstallError.candidateInvalid("标识不符：\(identity)")
+            }
+            let executableName = run("/usr/libexec/PlistBuddy", ["-c", "Print :CFBundleExecutable", plist])
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+            guard executableName == executable.lastPathComponent else {
+                throw InstallError.candidateInvalid("可执行文件身份不符：\(executableName)")
             }
             try require("/usr/bin/codesign", ["--verify", "--strict", "--deep", app.path])
             let details = run("/usr/bin/codesign", ["-dv", "--verbose=4", app.path], stderr: true)
