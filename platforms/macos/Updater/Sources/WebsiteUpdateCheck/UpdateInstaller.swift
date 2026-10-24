@@ -5,6 +5,7 @@ import Foundation
 public enum InstallError: LocalizedError, Equatable {
     case payloadMissing(String)
     case payloadEmpty
+    case domainMissing(String)
     case missingBundle
     case ambiguousBundle
     case symlinkRejected
@@ -17,6 +18,7 @@ public enum InstallError: LocalizedError, Equatable {
         switch self {
         case .payloadMissing(let detail): return "负载不可用：" + detail
         case .payloadEmpty: return "负载为空"
+        case .domainMissing(let path): return "安装目标目录不存在：" + path
         case .missingBundle: return "负载中缺少 Lampyris.app"
         case .ambiguousBundle: return "负载中有多个候选 Lampyris.app"
         case .symlinkRejected: return "安装位置是符号链接，拒绝替换"
@@ -100,6 +102,9 @@ public enum UpdateInstaller {
         guard try verifier.verify(fileAt: payload, signatureBase64: signature) else {
             throw InstallError.candidateInvalid("负载签名无效")
         }
+        // The updater runs on an installed system, so the target directory must already exist;
+        // refusing here keeps a broken install from being masked (ADR-289).
+        guard isDirectory(domain) else { throw InstallError.domainMissing(domain.path) }
         let destination = domain.appendingPathComponent(target.bundleName)
         if isSymlink(destination) { throw InstallError.symlinkRejected }
         let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")

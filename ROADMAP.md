@@ -11,8 +11,14 @@
 - [x] 2026-10-24 隔离更新程序构建入口（ADR-288，报告182）：`build.py` 新增 `--isolated-root/--isolated-identity/--test-build`，三项齐全才产出 `...WebsiteUpdateCheckTest.<UUID>`；本地实测隔离 Info.plist/构建号 901/私有根绑定正确，生产构建仍 build20 且无隔离键；4 项结构回归 PASS。未签名/未安装。
 - [x] 2026-10-24 drill 工作流与签名链演练（ADR-288，报告182）：main-only `Isolated Update Drill` 生成临时密钥隔离更新程序 + 公证隔离载荷 + appcast，artifact 7 天；publish 作业合并 `site/drill/` 部署 Pages；本地临时密钥演练 `--verify-payload` 通过；4 项结构回归 PASS。
 - [~] 2026-10-24 drill 实跑（报告182）：run `40110592061` 通过并在 `https://input.jokerhub.cn/drill/` 发布，载荷/更新程序双 SHA、公证与身份绑定静态核对完成；SSH 会话无窗口服务器，UI 点击需图形会话人工执行。
-- [ ] 2026-10-24 隔离更新原生复验（进行中，报告182）：run `40112916703` 已发布 build 903 测试 feed 与 902 更新程序；本机 `--drill-run`/`--check` 因代理 fake-IP（`input.jokerhub.cn → 198.18.0.92`）报 -1005，`--resolve` 真实 Pages IP 与 github.com 均正常，属环境网络问题；待解决域名路由后执行 install/cancel/tamper 与图形会话人工点击。
-- [ ] 2026-10-24 drill 收尾：验证完毕后普通 Pages 部署下线 `/drill/`，删除私有根与测试更新程序，并回读生产包/配置/词库/输入源未变。
+- [x] 2026-10-24 隔离更新真实网络复验（报告183）：代理规则修正后，run `40139366666`（载荷 905/更新程序 904）实测 `cancel`→清理、`tamper`→拒绝且清理、`install`→备份+替换+receipt(0600)+落地验签与公证复核全 PASS；生产执行 SHA/config 前后不变，本轮未留临时下载目录。
+- [x] 2026-10-25 隔离更新 UI 安装（报告183）：用户在图形会话点击更新窗口，显示「已安装构建 905」；新增 receipt/备份与落地 SHA 复核一致，无残留进程与临时目录。UI「取消」按钮未单独取证。
+- [x] 2026-10-25 drill 下线与清理（报告183）：普通 Pages 部署后 `/drill/` 404、首页与 DMG 正常；私有根整体删除；生产执行 SHA/config 未变。
+- [x] 2026-10-25 清理旧会话遗留隔离输入法（报告183）：父源 `disable` 生效后 `tissrc list` 无 `IMKTest` 条目，专用 PID 1311 停止、bundle 删除；生产宿主/执行 SHA/config 未变。
+- [x] 2026-10-25 目标目录缺失语义（ADR-289）：安装器在停宿主前以 `domainMissing` 显式失败、不建目录；新增 XCTest；drill 以既有安装为前置。
+- [~] 2026-10-25 原生回滚演练（报告184）：隔离构建新增 `--drill-run rollback`，在真实公证载荷上于落地后注入校验失败，断言旧包执行 SHA 与 work 目录恢复、无 receipt 新增；待新 drill 构建实测。
+- [ ] 2026-10-25 UI 取消按钮取证：需图形会话点击一次「取消」，回读状态文案、无 receipt/无安装变化、无临时目录残留。
+
 - [ ] 2026-10-24 更新链路受影响原生复验：先取得与合并 main 对应、独立签名的更新程序及 ZIP/执行 SHA，再在非生产身份和私有数据根下检查下载成功/失败/取消与备份/回滚/临时目录清理；**不拿仅含宿主的同 build20 候选代替**，不动当前正式生产包。
 - [x] 2026-10-24 宿主网络导入工程归因（ADR-285/报告178）：隔离链接实验定位为 Rust staticlib 带入未引用代码；`build.sh` 加 `-dead_strip` 与逐架构产物导入门禁，本地 strict universal 两片不再导入 socket/connect，控制器类保留，离线回归通过。尚未由新公证包/原生路径验证，不继承给 main `56c2457` 旧包。
 - [x] 2026-10-24 ADR-285 的**签名产物静态**复验（报告179）：PR #143 四 CI 绿合入 main `612020d`，run `40096030727` 签名/公证与源码重建成功；universal ZIP/源码/执行三 SHA 绑定，双架构 `nm -u` 无已知网络导入且控制器类保留。未安装、仍 build20、不含独立更新程序，不关闭动态门禁。
