@@ -15,11 +15,57 @@ PINNED_PUBLIC_KEY = REPO_ROOT / 'packaging/macos/update-public-key.txt'
 parser = argparse.ArgumentParser()
 parser.add_argument('--feed-url')
 parser.add_argument('--public-key', help='覆盖：默认读取仓库内 packaging/macos/update-public-key.txt')
+parser.add_argument('--output', help='输出目录（默认 build/website-updater）')
+# ADR-288：仅用于隔离 drill 的测试构建，必须三项齐全，且只会写私有根。
+parser.add_argument('--isolated-root', help='测试用私有根（必须已存在、0700、带 owner 标记）')
+parser.add_argument('--isolated-identity', help='测试用隔离身份 cn.jokerhub.inputmethod.LampyrisIMKTest.<UUID>')
+parser.add_argument('--test-build', help='测试构建号（必须高于当前生产构建）')
 args = parser.parse_args()
+ISOLATED_IDENTITY_PREFIX = 'cn.jokerhub.inputmethod.LampyrisIMKTest.'
+TEST_UPDATER_PREFIX = 'cn.jokerhub.Lampyris.WebsiteUpdateCheckTest.'
+ROOT_PREFIX = 'lampyris-imk-'
+
+
+def isolated_uuid(value):
+    import uuid
+    if not value.startswith(ISOLATED_IDENTITY_PREFIX):
+        parser.error('隔离身份必须以 ' + ISOLATED_IDENTITY_PREFIX + ' 开头')
+    suffix = value.removeprefix(ISOLATED_IDENTITY_PREFIX)
+    if str(uuid.UUID(suffix)) != suffix:
+        parser.error('隔离身份 UUID 必须是规范小写形式')
+    return suffix
+
+
+def isolated_root(value, suffix):
+    import os
+    root = Path(value)
+    home = Path.home()
+    if not root.is_absolute() or str(root) != os.path.normpath(str(root)):
+        parser.error('隔离根必须是规范化的绝对路径')
+    if root.name != ROOT_PREFIX + suffix:
+        parser.error('隔离根目录名必须与隔离身份 UUID 一致')
+    import re
+    parents = {'/private/tmp', '/tmp', '/private/var/tmp', '/var/tmp',
+               str(home / 'Library/Application Support/LampyrisIMKDev')}
+    private_t = re.fullmatch(r'/(?:private/)?var/folders/(?:[^/]+/)+T', root.parent.as_posix())
+    if root.parent.as_posix() not in parents and not private_t:
+        parser.error('隔离根必须位于设备私有临时目录或 LampyrisIMKDev 开发根内')
+    info = root.lstat()
+    if root.is_symlink() or not root.is_dir():
+        parser.error('隔离根必须是非符号链接目录')
+    if info.st_uid != os.geteuid() or info.st_mode & 0o077:
+        parser.error('隔离根必须为当前用户所有且权限不宽于 0700')
+    marker = root / 'owner'
+    marker_info = marker.lstat()
+    if marker.is_symlink() or not marker.is_file() or marker_info.st_uid != os.geteuid():
+        parser.error('隔离根缺少由当前用户拥有的 owner 标记')
+    if marker_info.st_mode & 0o077 or marker.read_text() != root.name:
+        parser.error('owner 标记权限或内容不符')
+    return root
 version = identity()
 if not args.public_key and not PINNED_PUBLIC_KEY.is_file():
     parser.error('缺少入库公钥 packaging/macos/update-public-key.txt')
-scratch = ROOT.parent / 'build/website-updater'
+scratch = Path(args.output).resolve() if args.output else ROOT.parent / 'build/website-updater'
 # 更新程序必须通用：Intel 机器打开 arm64-only 包会被系统拒绝（报告 167）。
 # ime-config 是配置唯一来源，更新程序链接它的静态库读取 update.feed_url。
 root = ROOT.parents[2]
@@ -57,6 +103,21 @@ info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'LampyrisSemanticVersion': version['version'], 'CFBundleIconFile': 'AppIcon',
         'NSHighResolutionCapable': True,
         'LSMinimumSystemVersion': '13.0', 'LampyrisDistributionChannel': 'website'}
+isolated = any((args.isolated_root, args.isolated_identity, args.test_build))
+if isolated:
+    if not all((args.isolated_root, args.isolated_identity, args.test_build)):
+        parser.error('隔离构建必须同时给出 --isolated-root、--isolated-identity 与 --test-build')
+    suffix = isolated_uuid(args.isolated_identity)
+    isolated_root(args.isolated_root, suffix)
+    if not args.test_build.isdigit() or int(args.test_build) <= int(version['build']):
+        parser.error('测试构建号必须是高于当前生产构建的正整数')
+    info.update(CFBundleIdentifier=TEST_UPDATER_PREFIX + suffix,
+                LampyrisTestOnly=True,
+                LampyrisIsolatedRoot=str(Path(args.isolated_root)),
+                LampyrisIsolatedIdentity=args.isolated_identity,
+                CFBundleVersion=args.test_build,
+                CFBundleName='Lampyris Update Test',
+                CFBundleDisplayName='萤火虫 更新（测试）')
 DEFAULT_FEED = 'https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml'
 # 公钥是公开值：默认取自仓库文件（可审计、可离线复验），不依赖 CI 变量/Secret。
 public_key = args.public_key or PINNED_PUBLIC_KEY.read_text().strip()
@@ -64,10 +125,11 @@ import base64
 if len(base64.b64decode(public_key, validate=True)) != 32:
     parser.error('公钥必须是 32 字节 Base64（Ed25519 原始公钥）')
 info.update(SUFeedURL=args.feed_url or DEFAULT_FEED, SUPublicEDKey=public_key)
-# 发行用更新程序永远不得带上隔离安装绑定；测试构建由单独的脚本产出。
-for forbidden in ('LampyrisTestOnly', 'LampyrisIsolatedRoot', 'LampyrisIsolatedIdentity'):
-    if forbidden in info:
-        parser.error('生产更新程序不得包含隔离绑定：' + forbidden)
+# 发行用更新程序永远不得带上隔离安装绑定；测试构建必须显式请求。
+if not isolated:
+    for forbidden in ('LampyrisTestOnly', 'LampyrisIsolatedRoot', 'LampyrisIsolatedIdentity'):
+        if forbidden in info:
+            parser.error('生产更新程序不得包含隔离绑定：' + forbidden)
 (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
 resources = contents / 'Resources'
 resources.mkdir(exist_ok=True)
@@ -77,4 +139,4 @@ icon = root / 'assets/icons/yinghuo-official-app.icns'
 if not icon.is_file():
     parser.error('缺少应用图标 assets/icons/yinghuo-official-app.icns')
 shutil.copy2(icon, resources / 'AppIcon.icns')
-print('仅构建独立检查程序，未安装/启动/联网：' + str(app))
+print(('仅构建隔离测试检查程序，未安装/启动/联网：' if isolated else '仅构建独立检查程序，未安装/启动/联网：') + str(app))
