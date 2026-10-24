@@ -1,5 +1,16 @@
 import Foundation
 
+/// 下载结果持有私有临时目录；验签、取消或安装结束后释放即清理。
+public final class DownloadedPayload: @unchecked Sendable {
+    public let url: URL
+
+    init(url: URL) { self.url = url }
+
+    deinit {
+        try? FileManager.default.removeItem(at: url.deletingLastPathComponent())
+    }
+}
+
 /// 流式下载更新负载：https + GitHub 资产重定向白名单，大小上限，0600 私有临时文件。
 public final class UpdateDownloader: NSObject, URLSessionDownloadDelegate, @unchecked Sendable {
     public enum DownloadError: Error { case insecureURL, oversized, empty, failed }
@@ -28,7 +39,7 @@ public final class UpdateDownloader: NSObject, URLSessionDownloadDelegate, @unch
     }
 
     public func download(_ url: URL, progress handler: @escaping @Sendable (Int64, Int64) -> Void)
-        async throws -> URL
+        async throws -> DownloadedPayload
     {
         guard Self.secure(url) else { throw DownloadError.insecureURL }
         let folder = FileManager.default.temporaryDirectory
@@ -44,9 +55,15 @@ public final class UpdateDownloader: NSObject, URLSessionDownloadDelegate, @unch
         let session = URLSession(configuration: configuration, delegate: self, delegateQueue: nil)
         setSession(session)
         defer { session.invalidateAndCancel() }
-        return try await withCheckedThrowingContinuation { continuation in
-            setContinuation(continuation)
-            session.downloadTask(with: url).resume()
+        do {
+            let file = try await withCheckedThrowingContinuation { continuation in
+                setContinuation(continuation)
+                session.downloadTask(with: url).resume()
+            }
+            return DownloadedPayload(url: file)
+        } catch {
+            try? FileManager.default.removeItem(at: folder)
+            throw error
         }
     }
 

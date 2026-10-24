@@ -212,7 +212,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 status.stringValue = "正在验证签名…"
                 let signature = release.signature.base64EncodedString()
                 let verifier = try PayloadVerifier(publicKeyBase64: key)
-                guard try verifier.verify(fileAt: payload, signatureBase64: signature) else {
+                guard try verifier.verify(fileAt: payload.url, signatureBase64: signature) else {
                     return fail("负载签名无效，未安装。")
                 }
                 let alert = NSAlert()
@@ -230,7 +230,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 progress.isIndeterminate = true
                 progress.startAnimation(nil)
                 let receipt = try UpdateInstaller.install(
-                    payload: payload, signature: signature, publicKeyBase64: key,
+                    payload: payload.url, signature: signature, publicKeyBase64: key,
                     domain: domain, support: support,
                     environment: DefaultInstallEnvironment.make())
                 setBusy(false)
