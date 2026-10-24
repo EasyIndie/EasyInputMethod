@@ -22,6 +22,8 @@ class UpdaterIsolationTests(unittest.TestCase):
             self.assertIn("'" + flag + "'", text)
         self.assertIn('parser.error(\'隔离构建必须同时给出 --isolated-root、--isolated-identity 与 --test-build\')', text)
         self.assertIn("parser.error('测试构建号必须是高于当前生产构建的正整数')", text)
+        self.assertIn("'--current-build'", text)
+        self.assertIn("parser.error('更新程序构建号必须是低于测试载荷构建号的正整数')", text)
         self.assertIn("parser.error('隔离根必须位于设备私有临时目录或 LampyrisIMKDev 开发根内')", text)
         self.assertIn("marker.read_text() != root.name", text)
 
