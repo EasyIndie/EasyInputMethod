@@ -9,6 +9,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   check:
+    if: github.ref == 'refs/heads/main'
     runs-on: macos-latest
     timeout-minutes: 30
     steps:
@@ -22,6 +23,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
       - name: Build updater with the committed public key
         run: python3 platforms/macos/Updater/build.py
@@ -85,3 +87,25 @@ jobs:
             exit 1
           fi
           echo "✅ 签名链路自检通过：公钥与私钥匹配，篡改负载被拒绝（未创建 tag/Release）。"
+      - name: Package signed updater for diagnostic verification only
+        run: |
+          set -euo pipefail
+          app=platforms/macos/build/website-updater/LampyrisUpdateCheck.app
+          work=packaging/out/update-signing-check
+          mkdir -p "$work"
+          test "$(lipo -archs "$app/Contents/MacOS/LampyrisUpdateCheck" | tr ' ' '\n' | sort | tr '\n' ' ')" = "arm64 x86_64 "
+          codesign --verify --strict --deep "$app"
+          xcrun stapler validate "$app"
+          spctl --assess --type execute "$app"
+          printf '%s\n' "$GITHUB_SHA" > "$work/SOURCE-COMMIT.txt"
+          ditto -c -k --keepParent "$app" "$work/LampyrisUpdateCheck-diagnostic.zip"
+          (cd "$work" && shasum -a 256 LampyrisUpdateCheck-diagnostic.zip > LampyrisUpdateCheck-diagnostic.zip.sha256)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: Lampyris-updater-diagnostic-${{ github.sha }}
+          path: |
+            packaging/out/update-signing-check/LampyrisUpdateCheck-diagnostic.zip
+            packaging/out/update-signing-check/LampyrisUpdateCheck-diagnostic.zip.sha256
+            packaging/out/update-signing-check/SOURCE-COMMIT.txt
+          if-no-files-found: error
+          retention-days: 7
