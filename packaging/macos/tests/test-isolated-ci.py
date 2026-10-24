@@ -12,7 +12,8 @@ class TargetTests(unittest.TestCase):
         for value in [f"/private/var/folders/test/T/lampyris-imk-{UUID}",
                       f"/private/var/folders/x7/hhbm75rn6vz_37yjj5rsq9yc0000gn/T/lampyris-imk-{UUID}",
                       f"/private/tmp/lampyris-imk-{UUID}",
-                      f"/var/tmp/lampyris-imk-{UUID}"]:
+                      f"/var/tmp/lampyris-imk-{UUID}",
+                      f"/var/folders/x7/hhbm75rn6vz_37yjj5rsq9yc0000gn/T/lampyris-imk-{UUID}"]:
             with self.subTest(value=value):
                 self.assertEqual(str(prepare.target_identity(value)), value)
     def test_real_data_relative_traversal_and_bad_uuid_refused(self):

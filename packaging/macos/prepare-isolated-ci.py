@@ -13,7 +13,8 @@ ROOT = Path(__file__).resolve().parents[2]
 #   - macOS 每用户的私有临时目录：/private/var/folders/<A>/<B>/T/
 #   - 系统公用临时目录：/private/tmp、/tmp、/private/var/tmp、/var/tmp
 # 其余绝对路径（尤其真实 Lampyris 数据目录、用户文档、/Applications）一律拒绝。
-TEMP_ROOT_PATTERN = re.compile(r"^/private/var/folders/(?:[^/]+/)+T$")
+# macOS 上 /var 与 /private/var 是同一目录的两种写法（firmlink）；设备 TMPDIR 可能是 /var 形式。
+TEMP_ROOT_PATTERN = re.compile(r"^/(?:private/)?var/folders/(?:[^/]+/)+T$")
 TEMP_ROOT_PARENTS = frozenset({"/private/tmp", "/tmp", "/private/var/tmp", "/var/tmp"})
 SUPPORTED_ARCHES = {"arm64", "x86_64", "universal"}
 
