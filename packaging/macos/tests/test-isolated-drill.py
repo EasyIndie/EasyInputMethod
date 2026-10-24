@@ -27,6 +27,7 @@ class IsolatedUpdateDrillTests(unittest.TestCase):
     def test_payload_is_notarized_and_feed_is_the_pages_subpath(self):
         self.assertIn('bash packaging/macos/ci-sign.sh\n', self.text)
         self.assertIn('base="https://input.jokerhub.cn/${DRILL_PATH}"', self.text)
+        self.assertIn('ditto platforms/macos/build/Lampyris.app "${RUNNER_TEMP}/LampyrisIMKTest.app"', self.text)
         self.assertIn('site/${DRILL_PATH}', self.text)
         self.assertIn('drill|drill-*)', self.text)
         for forbidden in ('gh release create', 'git tag', 'github.io', '/etc/hosts'):
