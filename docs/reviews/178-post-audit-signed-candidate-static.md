@@ -23,7 +23,12 @@
 
 - 对精确已装 PID 78677（路径属于旧已装 `Lampyris.app`）执行一次 `lsof -nP -a -p 78677 -i`，输出为空：只是一时点旧进程快照，**不是新候选动态零外联**，也不能代替长时抓包。
 - 在候选宿主可执行文件的 arm64 和 x86_64 两片上用 `nm -u` 均发现 `_connect`、`_getaddrinfo`、`_recvfrom`、`_sendto`、`_socket`、`_socketpair` 导入；旧已装包 arm64 也有同一组。宿主源码搜索未发现直接调用网络 API，但存在符号不能当作“产物无网络符号”PASS，也不表示实际建立了连接。静态归因（例如链接的 Rust 标准库或系统组件）、最终包动态检查仍待；不擅自为去除符号更改架构/链接协议。
-- `make verify-no-network` 只扫描本地 `target/` 中被枚举的产物及已知依赖名，没有扫描这个签名 `.app`，因此其 PASS 不覆盖上述候选符号。若要求发布产物零符号，需先明确对 macOS 宿主的可执行门禁及处理方案；不能靠白名单忽略或直接宣称零网络能力。
+- `make verify-no-network` 只扫描本地 `target/` 中被枚举的产物及已知依赖名，没有扫描这个签名 `.app`，因此其 PASS 不覆盖上述候选符号。本报告核验的旧签名产物因此不能被追认零网络导入；后续门禁与处理方案见 ADR-285，不能靠白名单忽略或直接宣称零网络能力。
+
+## 后续隔离归因与工程修复（ADR-285，未包含在本报告所核验的旧签名候选内）
+
+- 将同一 Swift+Rust staticlib 链接分为三组：纯 Swift 无上述导入，加入 `ime_config_schema()` FFI 调用后出现六个导入，给同一链接加 `-dead_strip` 后消失（实验文件仅在忽略目录 `platforms/macos/build/acceptance-178-review/link-probe/`）。这定位为静态链接携带未引用代码的工程问题，不证明过去产物实际联过网，也不证明系统框架将来不使用网络。
+- ADR-285 先记录决策，再让 `build.sh --strict --universal` 用 `-dead_strip`，逐架构检查最终宿主导入；本机 arm64/x86_64 均无上述网络导入，`LampyrisInputController` ObjC 类符号仍保留，ad-hoc 严格签名及全部离线回归通过。此构建只在本地**未安装**，不是新的公证候选；真实 IMK 装载与同包动态零外联仍待验证。
 
 ## 下一步 / 判定
 
