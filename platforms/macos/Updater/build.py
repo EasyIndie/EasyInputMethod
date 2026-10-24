@@ -19,7 +19,8 @@ parser.add_argument('--output', help='输出目录（默认 build/website-update
 # ADR-288：仅用于隔离 drill 的测试构建，必须三项齐全，且只会写私有根。
 parser.add_argument('--isolated-root', help='测试用私有根（必须已存在、0700、带 owner 标记）')
 parser.add_argument('--isolated-identity', help='测试用隔离身份 cn.jokerhub.inputmethod.LampyrisIMKTest.<UUID>')
-parser.add_argument('--test-build', help='测试构建号（必须高于当前生产构建）')
+parser.add_argument('--test-build', help='测试载荷构建号（必须高于当前生产构建）')
+parser.add_argument('--current-build', help='隔离更新程序自身构建号（默认 test-build - 1，必须低于 test-build）')
 args = parser.parse_args()
 ISOLATED_IDENTITY_PREFIX = 'cn.jokerhub.inputmethod.LampyrisIMKTest.'
 TEST_UPDATER_PREFIX = 'cn.jokerhub.Lampyris.WebsiteUpdateCheckTest.'
@@ -114,11 +115,14 @@ if isolated:
     isolated_root(args.isolated_root, suffix)
     if not args.test_build.isdigit() or int(args.test_build) <= int(version['build']):
         parser.error('测试构建号必须是高于当前生产构建的正整数')
+    current_build = args.current_build or str(int(args.test_build) - 1)
+    if not current_build.isdigit() or not 0 < int(current_build) < int(args.test_build):
+        parser.error('更新程序构建号必须是低于测试载荷构建号的正整数')
     info.update(CFBundleIdentifier=TEST_UPDATER_PREFIX + suffix,
                 LampyrisTestOnly=True,
                 LampyrisIsolatedRoot=str(Path(args.isolated_root)),
                 LampyrisIsolatedIdentity=args.isolated_identity,
-                CFBundleVersion=args.test_build,
+                CFBundleVersion=current_build,
                 CFBundleName='Lampyris Update Test',
                 CFBundleDisplayName='萤火虫 更新（测试）')
 DEFAULT_FEED = 'https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml'

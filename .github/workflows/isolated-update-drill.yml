@@ -96,7 +96,8 @@ jobs:
           public_key="$(openssl pkey -in "${RUNNER_TEMP}/drill-key.pem" -pubout -outform DER | tail -c 32 | base64)"
           python3 platforms/macos/Updater/build.py \
             --isolated-root "${root}" --isolated-identity "${identity}" \
-            --test-build "${TEST_BUILD}" --feed-url "${base}/appcast.xml" \
+            --test-build "${TEST_BUILD}" --current-build "$((TEST_BUILD - 1))" \
+            --feed-url "${base}/appcast.xml" \
             --public-key "${public_key}" --output "${RUNNER_TEMP}/drill-updater"
           ditto -c -k --keepParent "${RUNNER_TEMP}/drill-updater/LampyrisUpdateCheck.app" \
             "${drill}/LampyrisUpdateCheckTest-${TEST_BUILD}.zip"
