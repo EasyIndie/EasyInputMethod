@@ -14,12 +14,22 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     private var release: UpdateRelease?
     private var feeds: [URL] = []
     private var running = false
+    private let location: InstallLocation?
+    private let locationError: String?
+
+    override init() {
+        do {
+            let resolved = try InstallLocation.resolve(info: Bundle.main.infoDictionary ?? [:])
+            location = resolved
+            locationError = nil
+        } catch {
+            location = nil
+            locationError = error.localizedDescription
+        }
+        super.init()
+    }
 
     private var info: [String: Any] { Bundle.main.infoDictionary ?? [:] }
-    private var domain: URL { FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Input Methods") }
-    private var support: URL { FileManager.default.homeDirectoryForCurrentUser
-        .appendingPathComponent("Library/Application Support/Lampyris/updates") }
 
     func show() {
         let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 320),
@@ -116,6 +126,12 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         panel.center()
 
         window = panel
+        if let locationError {
+            setBusy(false)
+            status.stringValue = "更新已停用"
+            detail.stringValue = locationError
+            checkButton.isEnabled = false
+        }
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
     }
@@ -145,6 +161,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
 
     @objc private func checkTapped() {
         guard !running else { return }
+        guard location != nil else { return fail(locationError ?? "更新安装位置无效") }
         release = nil
         setBusy(true)
         status.stringValue = "正在检查更新…"
@@ -192,7 +209,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     }
 
     @objc private func installTapped() {
-        guard let release, !running else { return }
+        guard let release, !running, let location else { return }
         guard let key = info["SUPublicEDKey"] as? String else { return fail("缺少公钥") }
         setBusy(true)
         status.stringValue = "正在下载…"
@@ -229,10 +246,10 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 progress.doubleValue = 1
                 progress.isIndeterminate = true
                 progress.startAnimation(nil)
-                let target = InstallTarget.production
+                let target = location.target
                 let receipt = try UpdateInstaller.install(
                     payload: payload.url, signature: signature, publicKeyBase64: key,
-                    domain: domain, support: support,
+                    domain: location.domain, support: location.support,
                     environment: DefaultInstallEnvironment.make(target: target), target: target)
                 setBusy(false)
                 status.stringValue = "已安装构建 \(release.build)"
