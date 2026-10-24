@@ -42,3 +42,13 @@
 - 本地演练（未联网、未签名、未安装）：用临时 Ed25519 密钥构建隔离更新程序并生成 appcast，再以 `--verify-payload` 用该 ZIP 与 appcast 内签名验证，输出「负载签名验证通过；尚未安装。」退出 0；私钥演练后即删。
 
 仍未执行：真实 CI run、Pages 发布与下线、本机原生下载/取消/失败/成功/回滚。生产包、配置、词库、输入源未动。
+
+## 追加：首次 drill run 结果与本机执行限制
+
+- run `40109683347`（main `97e5927`）build 失败于 `prepare-isolated-ci.py`：设备 `TMPDIR` 是 `/var/folders/…/T` 写法，脚本只认 `/private/var/…`。修复合入 #149（main `ce1c5a1`）：临时根正则与运行时允许父目录同时接受两种写法，新增 Python/Swift 回归。
+- run `40110592061`（main `ce1c5a1`）build + publish 均 success：
+  - feed `https://input.jokerhub.cn/drill/appcast.xml` 返回 200，载荷 `https://input.jokerhub.cn/drill/LampyrisIMKTest-901-arm64.zip`（长度 3900964 与 appcast 一致，本地 SHA 校验通过）；
+  - 载荷宿主 `cn.jokerhub.inputmethod.LampyrisIMKTest.ac71cd44-…`、可执行 `LampyrisIMKTest`、绑定根等于声明的私有根、`codesign --strict --deep` 通过、`stapler validate` 通过、`spctl` = Notarized Developer ID；
+  - 更新程序 `cn.jokerhub.Lampyris.WebsiteUpdateCheckTest.ac71cd44-…`、build 901、Developer ID 签名（runtime）、ZIP SHA 校验通过。
+- **本机执行限制（如实记录）**：当前会话是 SSH `Background` 会话（`launchctl managername = Background`、`SSH_CONNECTION` 存在）。从中启动的任何 GUI 程序都没有窗口服务器连接（`lsappinfo` 显示 `!cgsConnection`），AX 枚举所有应用窗口均为 0，`screencapture` 报 “could not create image from display”。因此**无法**在该会话里点击更新窗口，也不能用截图/AX 伪造 UI 证据。
+- 补充实现（同批）：隔离构建新增 `--drill-run install|cancel|tamper` 无 UI 驱动，走同一套真实 feed → 下载 → 验签 → `DefaultInstallEnvironment` 公证校验 → 安装/回执/临时目录清理路径；非隔离构建一律拒绝（`location.isolated` 守卫）。UI 按钮点击与取消确认仍须在图形会话中由人工执行。
