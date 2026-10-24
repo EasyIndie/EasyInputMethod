@@ -87,6 +87,16 @@ final class InstallLocationTests: XCTestCase {
                        root.resolvingSymlinksInPath().appendingPathComponent("Input Methods"))
     }
 
+    func testPrivateTempRootAcceptsBothVarSpellings() throws {
+        let uuid = UUID()
+        let root = try makeRoot(uuid: uuid)
+        var info = isolatedInfo(root: root, uuid: uuid)
+        info["LampyrisIsolatedRoot"] = "/private" + root.path
+        let location = try InstallLocation.resolve(info: info)
+        XCTAssertTrue(location.isolated)
+        XCTAssertEqual(location.domain.lastPathComponent, "Input Methods")
+    }
+
     func testMissingBindingOrMismatchedIdentityIsRejected() throws {
         let uuid = UUID()
         let root = try makeRoot(uuid: uuid)

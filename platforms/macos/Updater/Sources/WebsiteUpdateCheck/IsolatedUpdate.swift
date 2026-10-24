@@ -49,7 +49,9 @@ struct InstallLocation: Sendable {
     @discardableResult
     static func validateRoot(_ root: URL, uuid: String, home: URL, temporary: URL) throws -> URL {
         let manager = FileManager.default
-        guard root.path.hasPrefix("/"), root.path == (root.path as NSString).standardizingPath,
+        // NSString.standardizingPath rewrites /private/var to /var, so check components instead.
+        guard root.path.hasPrefix("/"), !root.path.contains("//"),
+              !root.path.split(separator: "/").contains(".."),
               let own = try? manager.attributesOfItem(atPath: root.path),
               own[.type] as? FileAttributeType == .typeDirectory else {
             throw InstallError.candidateInvalid("隔离根路径不符或为符号链接")
@@ -88,14 +90,17 @@ struct InstallLocation: Sendable {
     private static func allowedParents(home: URL, temporary: URL) -> Set<String> {
         var parents: Set<String> = ["/private/tmp", "/tmp", "/private/var/tmp", "/var/tmp"]
         parents.insert(home.appendingPathComponent("Library/Application Support/LampyrisIMKDev").path)
-        // APFS firmlinks may keep /var spelled as /var, so accept both spellings of the private T dir.
+        // /var and /private/var are the same directory (firmlink); accept both spellings.
         for candidate in [temporary, temporary.resolvingSymlinksInPath()] {
             let path = candidate.path
-            guard candidate.lastPathComponent == "T",
-                  path.hasPrefix("/private/var/folders/") || path.hasPrefix("/var/folders/") else {
-                continue
+            guard candidate.lastPathComponent == "T" else { continue }
+            if path.hasPrefix("/private/var/folders/") {
+                parents.insert(path)
+                parents.insert(String(path.dropFirst("/private".count)))
+            } else if path.hasPrefix("/var/folders/") {
+                parents.insert(path)
+                parents.insert("/private" + path)
             }
-            parents.insert(path)
         }
         return parents
     }
