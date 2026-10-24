@@ -53,3 +53,15 @@
 - 原生回滚（落地后校验失败）只由 XCTest 覆盖，未在 drill 中注入。
 - `/drill/` 仍在线（测试构建 905 + 更新程序 904），验收完成后需用普通 `Pages` 工作流重新部署下线，并删除私有根与测试更新程序。
 - 上述结果只覆盖独立更新程序路径；输入宿主 IMK 行为、长期动态零外联与最终 RC 矩阵另计。
+
+## 追加：清理旧会话遗留的隔离测试输入法（2026-10-25 06:52Z）
+
+- 发现：`~/Library/Input Methods/LampyrisIMKTest-d4fcecfb-af99-4b9a-a590-55fa99e16f05.app`（2026-10-23 14:53 创建）仍在运行（PID 1311，启动于 10-23 15:32），且其输入源仍处于启用状态：
+  `tissrc list` 同时列出 `…LampyrisIMKTest.d4fcecfb-….default` 与其父源；当前实际使用的是生产源 `cn.jokerhub.inputmethod.Lampyris.default`。
+- 处理：
+  1. `tissrc disable <子源 ID>` 返回 `rc=0` 但仍是 `enabled=true`（沿用既有结论：子模式无法直接停用）；
+  2. 改为 `tissrc disable <父源 ID>` → `enabled=false`，重新列出后 `IMKTest` 条目**不再出现**；
+  3. 对进程中精确匹配该 bundle 可执行文件的 PID 1311 发 `SIGTERM`，2 秒后确认已退出；
+  4. 删除该 bundle 目录。
+- 复核：`tissrc list` 中无任何 `IMKTest` 条目；当前源仍是生产 `Lampyris.default`；生产宿主 PID 78677 与执行 SHA `c09c2d11…` 未变；`config.toml` 仍为 `3bc1117c…`；无 `lampyris-imk-*` 私有根残留。
+- 未操作：生产 `Lampyris.app`、用户其它输入法（搜狗等）与系统输入源配置未改动；若系统菜单仍显示旧的开发版条目，注销后即消失。
