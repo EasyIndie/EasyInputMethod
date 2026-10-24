@@ -12,6 +12,19 @@ final class DownloadPolicyTests: XCTestCase {
         XCTAssertFalse(UpdateDownloader.secure(URL(string: "https://u:p@example.com/a.zip")!))
     }
 
+    func testDownloadedPayloadRemovesPrivateDirectoryWhenReleased() throws {
+        let folder = FileManager.default.temporaryDirectory
+            .appendingPathComponent("lampyris-download-\(UUID().uuidString)")
+        try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: false)
+        let file = folder.appendingPathComponent("payload.zip")
+        try Data("payload".utf8).write(to: file)
+        var payload: DownloadedPayload? = DownloadedPayload(url: file)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: file.path))
+        payload = nil
+        XCTAssertNil(payload)
+        XCTAssertFalse(FileManager.default.fileExists(atPath: folder.path))
+    }
+
     func testRedirectPolicyAllowsMirrorsAndGithubAssets() {
         let origin = URL(string: "https://cn.example.com/a.zip")!
         XCTAssertTrue(UpdateDownloader.allowsRedirect(from: origin, to: URL(string: "https://cn.example.com/b.zip")!))
@@ -143,6 +156,52 @@ final class UpdateInstallerTests: XCTestCase {
             domain: domain, support: support, environment: env))
         let installed = domain.appendingPathComponent(UpdateInstaller.bundleName)
         XCTAssertEqual(try String(contentsOf: installed.appendingPathComponent(UpdateInstaller.executablePath), encoding: .utf8), "old")
+    }
+
+    func testFreshInstallPostValidationFailureRemovesNewBundle() throws {
+        let payload = try makePayload(folder)
+        let calls = Flag()
+        let env = environment(validate: { _ in
+            if calls.increment() >= 2 { throw InstallError.candidateInvalid("post") }
+        })
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support, environment: env))
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: domain.appendingPathComponent(UpdateInstaller.bundleName).path))
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
+    }
+
+    func testFreshInstallReceiptFailureRemovesNewBundle() throws {
+        try FileManager.default.createDirectory(at: support, withIntermediateDirectories: true)
+        try Data().write(to: support.appendingPathComponent("receipts"))
+        let payload = try makePayload(folder)
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support, environment: environment()))
+        XCTAssertFalse(FileManager.default.fileExists(
+            atPath: domain.appendingPathComponent(UpdateInstaller.bundleName).path))
+    }
+
+    func testPreflightFailureCleansStaging() throws {
+        let payload = try makePayload(folder)
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support,
+            environment: environment(validate: { _ in throw InstallError.candidateInvalid("pre") })))
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
+    }
+
+    func testInvalidArchiveCleansStagingWithoutStoppingHost() throws {
+        let payload = folder.appendingPathComponent("invalid.zip")
+        try Data("not a zip".utf8).write(to: payload)
+        let stopped = Flag()
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support,
+            environment: environment(stop: { _ in stopped.set() })))
+        XCTAssertFalse(stopped.isSet)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
     }
 
     func testRejectsBadSignatureAndLeavesInstallUntouched() throws {

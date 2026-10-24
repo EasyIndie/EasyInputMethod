@@ -70,7 +70,7 @@ bootstrap: ## 安装开发依赖（版本固定，见 MVP 审计 SEC-07）
 	cargo install cargo-deny --version 0.20.2 --locked
 	cargo install cargo-fuzz --version 0.13.2 --locked
 
-verify-no-network: ## 断言核心产物与依赖不含网络能力
+verify-no-network: ## 静态扫描已知网络依赖/符号（不代替最终包动态外联核验）
 	./scripts/verify-no-network.sh
 
 usage-report: ## 汇总用量/成本（纯本地，不花 token）

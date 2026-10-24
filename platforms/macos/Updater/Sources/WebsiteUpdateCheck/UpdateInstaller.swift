@@ -76,6 +76,9 @@ public enum UpdateInstaller {
         let work = support.appendingPathComponent("upgrade-\(stamp)-\(UUID().uuidString.prefix(8))")
         let staging = work.appendingPathComponent("staging")
         let backupDir = work.appendingPathComponent("backup")
+        // Only a successful upgrade keeps work/backup; all preflight and rolled-back failures clean it.
+        var keepBackup = false
+        defer { if !keepBackup { try? FileManager.default.removeItem(at: work) } }
         try FileManager.default.createDirectory(at: support, withIntermediateDirectories: true,
                                                 attributes: [.posixPermissions: 0o700])
         try FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true,
@@ -88,35 +91,21 @@ public enum UpdateInstaller {
             installed: destination.path, previous: nil,
             candidateExecutableSHA256: try sha256(candidateExec),
             installedExecutableSHA256: "", dryRun: dryRun)
-        if dryRun {
-            try? FileManager.default.removeItem(at: work)
-            return receiptBase
-        }
+        if dryRun { return receiptBase }
         var previous: URL?
+        var placed = false
         do {
             if FileManager.default.fileExists(atPath: destination.path) {
                 try environment.stopHost(destination.appendingPathComponent(executablePath))
-            }
-            if FileManager.default.fileExists(atPath: destination.path) {
                 try FileManager.default.createDirectory(at: backupDir, withIntermediateDirectories: false,
                                                         attributes: [.posixPermissions: 0o700])
-                previous = backupDir.appendingPathComponent(bundleName)
-                try FileManager.default.moveItem(at: destination, to: previous!)
+                let backup = backupDir.appendingPathComponent(bundleName)
+                try FileManager.default.moveItem(at: destination, to: backup)
+                previous = backup
             }
-            do {
-                try FileManager.default.moveItem(at: candidate, to: destination)
-            } catch {
-                if let previous, !FileManager.default.fileExists(atPath: destination.path) {
-                    try? FileManager.default.moveItem(at: previous, to: destination)
-                }
-                throw InstallError.replaceFailed(error.localizedDescription)
-            }
-            do {
-                try environment.validateCandidate(destination)
-            } catch {
-                rollback(destination: destination, previous: previous, work: work)
-                throw InstallError.candidateInvalid("落地复验失败：\(error.localizedDescription)")
-            }
+            try FileManager.default.moveItem(at: candidate, to: destination)
+            placed = true
+            try environment.validateCandidate(destination)
             let installedExec = destination.appendingPathComponent(executablePath)
             let receipt = InstallReceipt(
                 payloadSHA256: receiptBase.payloadSHA256, signature: signature,
@@ -125,12 +114,16 @@ public enum UpdateInstaller {
                 installedExecutableSHA256: try sha256(installedExec), dryRun: false)
             try writeReceipt(receipt, support: support)
             try? FileManager.default.removeItem(at: staging)
+            keepBackup = previous != nil
             return receipt
-        } catch let error as InstallError {
-            throw error
         } catch {
-            rollback(destination: destination, previous: previous, work: work)
-            throw InstallError.replaceFailed(error.localizedDescription)
+            do {
+                try rollback(destination: destination, previous: previous, placed: placed)
+            } catch {
+                keepBackup = true // Keep the backup and rejected bundle for manual recovery.
+                throw InstallError.replaceFailed("自动回滚失败，备份位于 \(work.path)：\(error.localizedDescription)")
+            }
+            throw error
         }
     }
 
@@ -151,14 +144,10 @@ public enum UpdateInstaller {
         return wrapped[0].appendingPathComponent(bundleName)
     }
 
-    static func rollback(destination: URL, previous: URL?, work: URL) {
-        guard let previous, FileManager.default.fileExists(atPath: previous.path) else { return }
-        let rejected = work.appendingPathComponent("rejected.app")
-        if FileManager.default.fileExists(atPath: destination.path) {
-            try? FileManager.default.moveItem(at: destination, to: rejected)
-        }
-        if !FileManager.default.fileExists(atPath: destination.path) {
-            try? FileManager.default.moveItem(at: previous, to: destination)
+    static func rollback(destination: URL, previous: URL?, placed: Bool) throws {
+        if placed { try FileManager.default.removeItem(at: destination) }
+        if let previous {
+            try FileManager.default.moveItem(at: previous, to: destination)
         }
     }
 
