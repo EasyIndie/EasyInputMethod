@@ -69,8 +69,8 @@ esac
     installer.mkdir()
     dmg = root / "Fixture.dmg"
     dmg.write_bytes(b"fixture")
-    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--installer", str(installer), "--sign-only"],
-        env=env, capture_output=True, text=True)
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--installer", str(installer),
+        "--uninstaller", str(installer), "--sign-only"], env=env, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     result = subprocess.run(["bash", str(SCRIPT), "--dmg", str(dmg)], env=env, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr

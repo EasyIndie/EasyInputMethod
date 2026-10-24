@@ -84,7 +84,7 @@ private enum UninstallEngine {
         } else {
             let userFiles = ["config.toml", "user-dictionary.tsv"]
             if let children = try? fileManager.contentsOfDirectory(
-                at: support, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+                at: support, includingPropertiesForKeys: nil, options: [])
             {
                 for child in children where !userFiles.contains(child.lastPathComponent) {
                     remove(child)
@@ -187,6 +187,13 @@ private final class UninstallerWindowController: NSObject, NSWindowDelegate {
     private var finished = false
     private var removeAll = false
 
+    private var versionText: String {
+        let info = Bundle.main.infoDictionary ?? [:]
+        let version = info["CFBundleShortVersionString"] as? String ?? "?"
+        let build = info["CFBundleVersion"] as? String ?? "?"
+        return "\(version) · 构建 \(build)"
+    }
+
     func show() {
         let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 540, height: 330),
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
@@ -205,7 +212,7 @@ private final class UninstallerWindowController: NSObject, NSWindowDelegate {
 
         let title = NSTextField(labelWithString: "萤火虫")
         title.font = .systemFont(ofSize: 21, weight: .semibold)
-        let version = NSTextField(labelWithString: "卸载工具")
+        let version = NSTextField(labelWithString: "版本 \(versionText)")
         version.font = .systemFont(ofSize: 12)
         version.textColor = .secondaryLabelColor
         let titleStack = NSStackView(views: [title, version])
