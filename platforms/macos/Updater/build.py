@@ -64,6 +64,10 @@ import base64
 if len(base64.b64decode(public_key, validate=True)) != 32:
     parser.error('公钥必须是 32 字节 Base64（Ed25519 原始公钥）')
 info.update(SUFeedURL=args.feed_url or DEFAULT_FEED, SUPublicEDKey=public_key)
+# 发行用更新程序永远不得带上隔离安装绑定；测试构建由单独的脚本产出。
+for forbidden in ('LampyrisTestOnly', 'LampyrisIsolatedRoot', 'LampyrisIsolatedIdentity'):
+    if forbidden in info:
+        parser.error('生产更新程序不得包含隔离绑定：' + forbidden)
 (contents / 'Info.plist').write_bytes(plistlib.dumps(info))
 resources = contents / 'Resources'
 resources.mkdir(exist_ok=True)
