@@ -5,6 +5,7 @@
 - [x] 2026-10-22 build6 稳态内存判定（ADR-263，报告 144）：定义 30MB 口径为「稳态 physical + 私有已提交（resident+swapped）同时 ≤30MiB」，高水位 peak 单列不计入；三轮新宿主回测 physical 28.0–28.8M、私有 24.6–25.3M（3/3 满足），p95 10.81–12.00ms；最终 RC 仍需同协议复测
 - [x] 2026-10-22 候选内容分段计时 schema3（ADR-258，报告 138）：`CandidateWindow` 增加默认关闭的 state/measure/set/layout 钩子，`phaseSchema` 升 3，controller-menu/候选展示回归更新；pod 已通过 verify/41 项离线/strict 双架构，build6 实机已归因：冷首键 content 18.35ms = layout 9.04（首次尺寸同步）+ measure 6.30（首次测量）+ 0.17；稳态 content 2.87ms，p95 10.56ms；配套 30MB 固定时点复测 30.0–34.5M 仍未关闭
 - [x] 2026-10-22 签名 tag 校验延后（ADR-268）：Release 工作流保留 `git tag -v`，但仅在 `packaging/git-allowed-signers` 存在时强制，缺失时只警告；README/发布文档标记待启用。更新包 Ed25519 验签不受影响
+- [ ] 2026-10-24 App Store 搜索框首次输入偶发卡顿调研（报告 177）：公开资料无可核实同款；本机无崩溃/Secure Input，65 秒无 Lampyris 输入事件；待 ABC/Lampyris A/B、sample 与精确时间，暂不归因/不改代码
 - [x] 2026-10-24 发布渠道定为仅网站/DMG（ADR-284，报告 176）：不排期/不提交/不宣传 Mac App Store；沙盒原型仅作研究；竞品调研确认主流 macOS 中文输入法均走官网 DMG/GitHub
 - [x] 2026-10-24 产品页视觉规范入库（ADR-283）：后续平台页沿用 tokens/结构，保持极简与 DMG 主路径
 - [x] 2026-10-24 Pages 产品页改版（报告 175）：仅保留 DMG 安装，展示 6 项特点，亮暗双色、极简结构
