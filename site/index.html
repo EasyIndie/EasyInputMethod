@@ -52,6 +52,13 @@
   }
   a { color: var(--accent); text-decoration: none; }
   a:hover { color: var(--accent-strong); }
+  a:focus-visible, .btn:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn { transition: none; }
+  }
   .wrap { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
 
   .nav {
