@@ -52,3 +52,10 @@
   - 更新程序 `cn.jokerhub.Lampyris.WebsiteUpdateCheckTest.ac71cd44-…`、build 901、Developer ID 签名（runtime）、ZIP SHA 校验通过。
 - **本机执行限制（如实记录）**：当前会话是 SSH `Background` 会话（`launchctl managername = Background`、`SSH_CONNECTION` 存在）。从中启动的任何 GUI 程序都没有窗口服务器连接（`lsappinfo` 显示 `!cgsConnection`），AX 枚举所有应用窗口均为 0，`screencapture` 报 “could not create image from display”。因此**无法**在该会话里点击更新窗口，也不能用截图/AX 伪造 UI 证据。
 - 补充实现（同批）：隔离构建新增 `--drill-run install|cancel|tamper` 无 UI 驱动，走同一套真实 feed → 下载 → 验签 → `DefaultInstallEnvironment` 公证校验 → 安装/回执/临时目录清理路径；非隔离构建一律拒绝（`location.isolated` 守卫）。UI 按钮点击与取消确认仍须在图形会话中由人工执行。
+
+## 追加：drill 发布成功，但本机网络被 fake-IP 代理拦截
+
+- drill run `40112916703`（main `94d2b29`，test_build 903 / 更新程序 build 902）build + publish 均 success；`https://input.jokerhub.cn/drill/appcast.xml` 返回 200，声明 `LampyrisIMKTest-903-arm64.zip` 与 `sparkle:version=903`；站点首页仍 200 且 DMG 链接未变。产物 SHA 双校验通过，更新程序 build 902、执行 SHA `5b845f9b…`，载荷 SHA `53fc9c31…`。
+- 执行 `--drill-run cancel` 与 `--check` 均失败：`NSURLErrorDomain -1005 The network connection was lost`。
+- 定位（非产品缺陷）：本机 DNS 把 `input.jokerhub.cn` 解析到 `198.18.0.92`（VPN/代理 fake-IP 段），IPv4 直连失败；`curl --resolve input.jokerhub.cn:443:185.199.108.153` 与 `curl -6` 均 200，说明真实 GitHub Pages 路径与证书正常。同一个 `URLSession` 访问 `https://github.com/`、`https://raw.githubusercontent.com/…` 均为 200，说明是代理对 `*.jokerhub.cn` 的路由/解析规则导致，而不是更新程序网络策略问题（下载器/更新检查代码路径未改动）。
+- 因此 drill 的**真实网络执行**需要先解决该域名在代理里的解析/路由（用户侧一行规则），或改用代理可达的托管方式；在此之前不把它记为 PASS，也不改系统 DNS/hosts/代理配置。
