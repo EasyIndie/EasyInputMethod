@@ -92,6 +92,7 @@ build_arch() {
       -I "crates/ime-ffi/include" \
       platforms/macos/Sources/*.swift \
       -Xlinker "${lib_dir}/libime_ffi.a" \
+      -Xlinker -dead_strip \
       -framework AppKit \
       -framework InputMethodKit \
       -framework CoreFoundation \
@@ -163,6 +164,21 @@ else
 fi
 chmod +x "${APP_DIR}/Contents/Helpers/LampyrisTIS"
 printf '   输入源 helper：%s\n' "$(lipo -archs "${APP_DIR}/Contents/Helpers/LampyrisTIS")"
+
+# The Rust staticlib contains unused std::net code. Reject network imports in the
+# linked host (not just target/ intermediates); check both slices before signing.
+for arch in "${ARCHES[@]}"; do
+  if ! imports="$(nm -u -arch "${arch}" "${APP_DIR}/Contents/MacOS/${EXECUTABLE}")"; then
+    echo "❌ 无法核验 ${arch} 宿主的网络导入" >&2
+    exit 1
+  fi
+  forbidden="$(printf '%s\n' "${imports}" | grep -E '(^|[[:space:]])_(socket|socketpair|connect|getaddrinfo|gethostbyname|getnameinfo|sendto|recvfrom|inet_addr|inet_pton|SSL_connect|curl_easy)$' || true)"
+  if [ -n "${forbidden}" ]; then
+    echo "❌ ${arch} 输入宿主含网络导入：${forbidden}" >&2
+    exit 1
+  fi
+done
+echo "   ✅ 宿主逐架构网络导入检查通过"
 
 echo "▶ 5/5 校验 Info.plist + ad-hoc 签名"
 plutil -lint "${APP_DIR}/Contents/Info.plist"
