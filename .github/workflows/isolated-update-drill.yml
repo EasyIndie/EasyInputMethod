@@ -90,7 +90,9 @@ jobs:
           payload="LampyrisIMKTest-${TEST_BUILD}-${TARGET_ARCH}.zip"
           drill="${RUNNER_TEMP}/drill"
           mkdir -p "${drill}"
-          ditto -c -k --keepParent platforms/macos/build/Lampyris.app "${drill}/${payload}"
+          # 安装器按隔离目标名定位 bundle；签名在目录重命名后仍有效（codesign 不绑定路径）。
+          ditto platforms/macos/build/Lampyris.app "${RUNNER_TEMP}/LampyrisIMKTest.app"
+          ditto -c -k --keepParent "${RUNNER_TEMP}/LampyrisIMKTest.app" "${drill}/${payload}"
           (cd "${drill}" && shasum -a 256 "${payload}" > "${payload}.sha256")
           openssl genpkey -algorithm ED25519 -out "${RUNNER_TEMP}/drill-key.pem"
           public_key="$(openssl pkey -in "${RUNNER_TEMP}/drill-key.pem" -pubout -outform DER | tail -c 32 | base64)"
