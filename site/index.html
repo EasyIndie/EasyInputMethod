@@ -4,118 +4,412 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>萤火虫 Lampyris — 默认离线的中文输入法</title>
-<meta name="description" content="萤火虫（Lampyris）：跨平台、开源可审计、默认离线的中文输入法。五笔优先、拼音兜底。">
+<meta name="description" content="萤火虫（Lampyris）：五笔优先、拼音兜底，默认离线、零遥测、开源可审计的 macOS 中文输入法。">
 <style>
-  :root { color-scheme: light dark; }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; padding: 3rem 1.25rem 5rem;
-    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", sans-serif;
-    color: #1c1c1e; background: #fafafa;
+  :root {
+    color-scheme: light dark;
+    --bg: #f6faf8;
+    --surface: #ffffff;
+    --surface-soft: #eef7f3;
+    --text: #10231d;
+    --muted: #5c7169;
+    --line: #dce9e3;
+    --accent: #0b6b52;
+    --accent-strong: #08543f;
+    --accent-soft: #e2f3ec;
+    --warm: #c58a1c;
+    --glow: rgba(60, 179, 137, .18);
+    --shadow: 0 10px 30px rgba(16, 35, 29, .06);
   }
-  @media (prefers-color-scheme: dark) { body { color: #e8e8ea; background: #17181a; } }
-  main { max-width: 44rem; margin: 0 auto; }
-  h1 { font-size: 2rem; margin: 0 0 .25rem; }
-  h1 small { font-size: 1rem; font-weight: 400; opacity: .6; margin-left: .5rem; }
-  .tag { opacity: .75; margin: 0 0 2rem; }
-  h2 { font-size: 1.1rem; margin: 2.25rem 0 .5rem; }
-  a { color: #0a7d5a; }
-  @media (prefers-color-scheme: dark) { a { color: #4ec9a0; } }
-  .buttons { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0; }
-  .btn {
-    display: inline-block; padding: .6rem 1.1rem; border-radius: 8px; text-decoration: none;
-    border: 1px solid #0a7d5a; color: #0a7d5a; font-weight: 600;
-  }
-  .btn.primary { background: #0a7d5a; color: #fff; }
   @media (prefers-color-scheme: dark) {
-    .btn { border-color: #4ec9a0; color: #4ec9a0; }
-    .btn.primary { background: #4ec9a0; color: #10231d; }
+    :root {
+      --bg: #0c1411;
+      --surface: #111d18;
+      --surface-soft: #16251f;
+      --text: #eef7f2;
+      --muted: #9db3aa;
+      --line: #24362e;
+      --accent: #62d3ab;
+      --accent-strong: #8ce4c3;
+      --accent-soft: #17332a;
+      --warm: #edc16b;
+      --glow: rgba(46, 160, 122, .16);
+      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
+    }
   }
-  ul { padding-left: 1.2rem; }
-  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em;
-         background: rgba(127,127,127,.16); padding: .1em .35em; border-radius: 4px; }
-  pre { background: rgba(127,127,127,.12); padding: .9rem 1rem; border-radius: 8px; overflow-x: auto; }
-  pre code { background: none; padding: 0; }
-  table { width: 100%; border-collapse: collapse; margin: .75rem 0 1rem; font-size: .95rem; }
-  th, td { text-align: left; padding: .45rem .6rem; border-bottom: 1px solid rgba(127,127,127,.25); }
-  footer { margin-top: 3rem; font-size: .85rem; opacity: .6; }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 620px at 50% -180px, var(--glow), transparent 72%),
+      var(--bg);
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-strong); }
+  .wrap { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding: 22px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 650; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; box-shadow: var(--shadow); }
+  .brand small { color: var(--muted); font-weight: 500; }
+  .nav-links { display: flex; align-items: center; gap: 22px; font-size: 14px; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--accent); }
+
+  .hero {
+    display: grid; grid-template-columns: 1fr 300px; gap: 64px;
+    align-items: center; padding: 72px 0 84px;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin: 0 0 18px; padding: 5px 12px; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--surface);
+    color: var(--muted); font-size: 13px; letter-spacing: .02em;
+  }
+  .eyebrow::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  h1 {
+    margin: 0; font-size: clamp(40px, 6vw, 60px); line-height: 1.16;
+    letter-spacing: -.035em; font-weight: 720;
+  }
+  h1 em { color: var(--accent); font-style: normal; }
+  .lead {
+    max-width: 34em; margin: 22px 0 0; color: var(--muted);
+    font-size: 18px; line-height: 1.75;
+  }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 30px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 46px; padding: 0 20px; border-radius: 11px;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); font-size: 15px; font-weight: 600;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .btn.primary {
+    border-color: var(--accent); background: var(--accent); color: #fff;
+    box-shadow: 0 8px 20px rgba(11, 107, 82, .18);
+  }
+  .btn.primary:hover { background: var(--accent-strong); color: #fff; }
+  .btn small { font-weight: 500; opacity: .8; }
+  .trust { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+  .trust span { display: inline-flex; align-items: center; gap: 6px; }
+  .trust span::before { content: "✓"; color: var(--accent); font-weight: 700; }
+
+  .app-icon {
+    width: 100%; max-width: 260px; aspect-ratio: 1;
+    border-radius: 58px; display: block; margin-left: auto;
+    box-shadow: 0 30px 70px rgba(11, 60, 46, .22);
+  }
+
+  .section { padding: 24px 0 78px; }
+  .section-head { max-width: 640px; margin-bottom: 28px; }
+  .section-label {
+    margin: 0 0 10px; color: var(--accent); font-size: 13px;
+    font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  }
+  h2 { margin: 0; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -.025em; line-height: 1.3; }
+  .section-head p { margin: 12px 0 0; color: var(--muted); }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .feature {
+    padding: 22px; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .feature svg { width: 22px; height: 22px; color: var(--accent); }
+  .feature h3 { margin: 14px 0 6px; font-size: 16px; letter-spacing: -.01em; }
+  .feature p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+  .install {
+    display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start;
+    padding: 30px; border: 1px solid var(--line); border-radius: 22px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .steps { display: grid; gap: 22px; margin: 0; padding: 0; list-style: none; }
+  .step { display: grid; grid-template-columns: 38px 1fr; gap: 14px; }
+  .step-num {
+    display: grid; place-items: center; width: 38px; height: 38px;
+    border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+    font-size: 13px; font-weight: 700;
+  }
+  .step h3 { margin: 0 0 3px; font-size: 16px; }
+  .step p { margin: 0; color: var(--muted); font-size: 14px; }
+  .step code {
+    padding: .12em .4em; border-radius: 5px; background: var(--surface-soft);
+    font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text);
+  }
+  .side {
+    padding: 22px; border-radius: 16px; background: var(--surface-soft);
+    border: 1px solid var(--line);
+  }
+  .side h3 { margin: 0 0 12px; font-size: 15px; }
+  .side ul { margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .side li { display: flex; gap: 9px; color: var(--muted); font-size: 14px; }
+  .side li::before { content: "·"; color: var(--accent); font-weight: 700; }
+  .side .btn { width: 100%; }
+  .side .meta { margin: 10px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+
+  .uninstall-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .choice {
+    padding: 24px; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .choice h3 { margin: 0 0 8px; font-size: 16px; }
+  .choice p { margin: 0; color: var(--muted); font-size: 14px; }
+  .choice .tag {
+    display: inline-block; margin-bottom: 12px; padding: 3px 9px;
+    border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 650;
+  }
+  .choice.warn .tag { background: rgba(197, 138, 28, .12); color: var(--warn); }
+  .note { margin: 16px 0 0; color: var(--muted); font-size: 13px; }
+
+  .platform {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 20px 24px; border: 1px solid var(--line);
+    border-radius: 16px; background: var(--surface);
+  }
+  .platform strong { font-size: 15px; }
+  .platform p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px;
+    color: var(--muted); font-size: 12px; background: var(--surface-soft);
+  }
+  .pill.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+  .closing {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 22px; padding: 34px; border-radius: 22px;
+    border: 1px solid var(--line); background: var(--surface-soft);
+  }
+  .closing h2 { font-size: 24px; }
+  .closing p { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 46em; }
+
+  footer {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 36px 0 46px; color: var(--muted); font-size: 13px;
+  }
+  footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 0 64px; }
+    .app-icon { max-width: 150px; margin: 0; border-radius: 34px; }
+    .features { grid-template-columns: 1fr 1fr; }
+    .install { grid-template-columns: 1fr; padding: 22px; }
+    .uninstall-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; }
+    .hero { padding-top: 34px; }
+    .lead { font-size: 16px; }
+    .actions .btn { width: 100%; }
+  }
 </style>
 </head>
 <body>
-<main>
-  <h1>萤火虫 <small>Lampyris</small></h1>
-  <p class="tag">默认离线的中文输入法 · 五笔优先，拼音兜底 · GPL-3.0-or-later</p>
+<div class="wrap">
+  <header class="nav">
+    <a class="brand" href="#">
+      <img src="assets/lampyris-icon.png" alt="">
+      <span>萤火虫 <small>Lampyris</small></span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="#features">特性</a>
+      <a href="#install">安装</a>
+      <a href="#uninstall">卸载</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod">源码</a>
+    </nav>
+  </header>
 
-  <div class="buttons">
-    <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.dmg">下载 DMG（图形安装）</a>
-    <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest">下载最新版</a>
-    <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases">全部版本 / 对应源码</a>
-    <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod">源码仓库</a>
-  </div>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">macOS 中文输入法 · 默认离线</p>
+        <h1>五笔优先，<br>想不起码时<em>拼音兜底</em>。</h1>
+        <p class="lead">
+          萤火虫把中文输入做小、做干净：不登录、不联网、不打扰。
+          熟悉的五笔手感，加上随时可用的拼音候选。
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.dmg">
+            下载 DMG <small>macOS 13+ · Universal</small>
+          </a>
+          <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest">查看版本与源码</a>
+        </div>
+        <div class="trust">
+          <span>Developer ID 签名与公证</span>
+          <span>GPL-3.0-or-later</span>
+          <span>无需账号，无需管理员密码</span>
+        </div>
+      </div>
+      <img class="app-icon" src="assets/lampyris-icon.png" alt="萤火虫应用图标">
+    </section>
 
-  <h2>安装（macOS 13+，universal）</h2>
-  <h3>图形安装（推荐）</h3>
-  <ol>
-    <li>打开 <code>Lampyris-0.1.12-universal.dmg</code>，双击「安装萤火虫」。</li>
-    <li>点「安装」；安装器会保留配置与个人词库，并自动备份旧版本。</li>
-    <li>按 <code>⌃Space</code>，或在输入法菜单中选择「萤火虫」。</li>
-  </ol>
-  <h3>命令行安装（备选）</h3>
-  <p>在终端粘贴执行（安装到当前用户，<strong>不需要 sudo</strong>）：</p>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name install.sh | head -1)" --app "$(find /tmp/lampyris -maxdepth 3 -name Lampyris.app -type d | head -1)"</code></pre>
-  <ul>
-    <li>安装器会校验 Developer ID 签名、hardened runtime 与公证；校验失败会拒绝安装。</li>
-    <li>安装后<strong>自动注册输入源</strong>；用 <code>⌃Space</code> 或输入法菜单选中「萤火虫」即可（若菜单里还没出现，重启登录一次）。</li>
-    <li>同版本重复执行无操作；<strong>已有不同版本需先卸载</strong>（见下）。</li>
-    <li>对应源码（GPL-3.0 §6(d)）在同一 Release 页：<code>Lampyris-0.1.12-source.tar.gz</code>。</li>
-  </ul>
+    <section class="section" id="features">
+      <div class="section-head">
+        <p class="section-label">Why Lampyris</p>
+        <h2>为中文输入做减法</h2>
+        <p>保留真正影响打字的部分，去掉不需要的账号、云服务和打扰。</p>
+      </div>
+      <div class="features">
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="3" y="6" width="18" height="12" rx="3"/><path d="M7 10h.01M10.5 10h.01M14 10h.01M17.5 10h.01M8 14h8"/>
+          </svg>
+          <h3>五笔优先，拼音兜底</h3>
+          <p>会五笔就用五笔；一时想不起编码，直接输入拼音，候选自动出现，不必切换模式。</p>
+        </article>
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6l7-3z"/><path d="M9 12l2 2 4-4"/>
+          </svg>
+          <h3>默认离线，零遥测</h3>
+          <p>输入法内核不联网、不统计、不上报。检查更新需要你手动打开独立更新程序。</p>
+        </article>
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M8 8l-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>
+          </svg>
+          <h3>开源，可被验证</h3>
+          <p>从引擎到宿主全部开源，GPL-3.0-or-later；二进制与对应源码在同一个 Release 页面发布。</p>
+        </article>
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <ellipse cx="12" cy="6.5" rx="7" ry="3"/><path d="M5 6.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/><path d="M5 11.5v5c0 1.7 3.1 3 7 3s7-1.3 7-3v-5"/>
+          </svg>
+          <h3>数据留在本机</h3>
+          <p>配置只有一份 config.toml，个人词库存为本地 TSV；可以导出、导入，也可以随时删除。</p>
+        </article>
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M4 17c4-1 6-4 7-8 1 4 3 7 7 8"/><path d="M12 3v4M9.5 5L12 7l2.5-2"/><path d="M5 21h14"/>
+          </svg>
+          <h3>轻量而直接</h3>
+          <p>核心码表约 0.5 MB，安装包不到 10 MB；候选、状态提示和设置面板都保持原生、克制。</p>
+        </article>
+        <article class="feature">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <rect x="4" y="4" width="16" height="16" rx="4"/><path d="M8 12h8M12 8v8"/>
+          </svg>
+          <h3>为 macOS 原生打造</h3>
+          <p>Apple Silicon 与 Intel 通用包，支持 macOS 13+；安装与卸载由 DMG 中的小工具完成，更新在输入法菜单中手动检查。</p>
+        </article>
+      </div>
+    </section>
 
-  <h2>卸载</h2>
-  <h3>图形卸载（推荐）</h3>
-  <p>打开 DMG，双击「卸载萤火虫」，选择一种方式：</p>
-  <ul>
-    <li><strong>保留配置与词库</strong>（默认，适合重装）：只保留
-      <code>config.toml</code> 与 <code>user-dictionary.tsv</code>；删除应用、更新程序、更新备份、安装回执、缓存、偏好设置和诊断日志。</li>
-    <li><strong>彻底清理全部数据</strong>：连同配置、个人词库和整个数据目录一起删除，无法恢复。</li>
-  </ul>
-  <p>两种方式都会切回 ABC、禁用输入源并退出宿主；完成后请注销并重新登录一次，清空输入法菜单中的残留项。</p>
-  <h3>命令行卸载（备选）</h3>
-  <pre><code>curl -fsSL -o /tmp/lampyris.zip https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.zip && rm -rf /tmp/lampyris && ditto -x -k /tmp/lampyris.zip /tmp/lampyris && "$(find /tmp/lampyris -maxdepth 3 -name uninstall.sh | head -1)" --input-source-removed</code></pre>
-  <ul>
-    <li>默认保留配置与词库；彻底清理可加 <code>--purge-data</code>（数据会移到 <code>uninstalled/</code> 备份，而不是直接删除）。</li>
-    <li>如果宿主仍在运行，先注销一次再执行；旧输入源条目会在下次登录后消失。</li>
-  </ul>
+    <section class="section" id="install">
+      <div class="section-head">
+        <p class="section-label">Install</p>
+        <h2>三步开始使用</h2>
+        <p>不需要终端，也不需要管理员密码。</p>
+      </div>
+      <div class="install">
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">01</span>
+            <div>
+              <h3>打开 DMG，双击「安装萤火虫」</h3>
+              <p>挂载后直接运行安装器；系统要求 macOS 13 Ventura 或更高。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num">02</span>
+            <div>
+              <h3>点「安装」</h3>
+              <p>安装器会校验签名、备份旧版本，并写入当前用户目录；已有配置和词库会保留。</p>
+            </div>
+          </li>
+          <li class="step">
+            <span class="step-num">03</span>
+            <div>
+              <h3>选择「萤火虫」</h3>
+              <p>按 <code>⌃Space</code>，或从输入法菜单中选择。首次使用需要手动选择一次输入源。</p>
+            </div>
+          </li>
+        </ol>
+        <aside class="side">
+          <h3>DMG 里有什么</h3>
+          <ul>
+            <li>安装萤火虫</li>
+            <li>卸载萤火虫</li>
+            <li>安装与卸载说明</li>
+            <li>Lampyris 应用本体</li>
+          </ul>
+          <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/Lampyris-0.1.12-universal.dmg">下载 DMG</a>
+          <p class="meta">v0.1.12 · 约 9.5 MB<br>Universal · 已签名与公证</p>
+        </aside>
+      </div>
+    </section>
 
-  <h2>支持的平台与架构</h2>
-  <table>
-    <thead><tr><th>平台</th><th>状态</th><th>架构</th><th>最低系统</th></tr></thead>
-    <tbody>
-      <tr><td>macOS</td><td>✅ 可用</td><td>Universal：arm64（Apple Silicon）+ x86_64（Intel）</td><td>macOS 13 Ventura</td></tr>
-      <tr><td>Windows</td><td>计划中</td><td>—</td><td>—</td></tr>
-      <tr><td>Linux</td><td>计划中</td><td>—</td><td>—</td></tr>
-      <tr><td>Android / iOS</td><td>计划中</td><td>—</td><td>—</td></tr>
-    </tbody>
-  </table>
-  <ul>
-    <li>macOS 发行包为 Developer ID 签名并公证；暂无 Mac App Store 版本。</li>
-    <li>输入法本身零网络；更新检查需手动点击菜单「检查更新…」或按 <code>⌥G</code>（可在设置中改键）。</li>
-    <li>升级：在输入法菜单点「检查更新…」或按 <code>⌥G</code>；也可下载新的 DMG 覆盖安装（保留配置与词库）。</li>
-  </ul>
+    <section class="section" id="uninstall">
+      <div class="section-head">
+        <p class="section-label">Uninstall</p>
+        <h2>卸载也保持干净</h2>
+        <p>DMG 中的「卸载萤火虫」提供两种方式，按你的需要选择。</p>
+      </div>
+      <div class="uninstall-grid">
+        <article class="choice">
+          <span class="tag">适合重装</span>
+          <h3>保留配置与词库</h3>
+          <p>移除应用、更新程序、更新备份、缓存和偏好设置；只保留 config.toml 与个人词库，重新安装后继续使用。</p>
+        </article>
+        <article class="choice warn">
+          <span class="tag">不可恢复</span>
+          <h3>彻底清理全部数据</h3>
+          <p>连同配置、个人词库、备份与缓存一起删除，并检查是否还有残留。适合不再使用或转交设备。</p>
+        </article>
+      </div>
+      <p class="note">卸载完成后注销并重新登录一次，让输入法菜单移除系统登记的残留项。</p>
+    </section>
 
-  <h2>特性</h2>
-  <ul>
-    <li>默认<strong>混输</strong>：五笔能打则快，空码自动出拼音候选。</li>
-    <li>零网络、零遥测、无账号、无广告、无云同步。</li>
-    <li>配置唯一（<code>config.toml</code>）且改动即时生效；用户词库本地、可导出/导入。</li>
-    <li>轻量：核心码表约 0.5&nbsp;MB，安装包 &lt; 15&nbsp;MB。</li>
-  </ul>
+    <section class="section">
+      <div class="platform">
+        <div>
+          <strong>macOS 13+ · Universal</strong>
+          <p>Apple Silicon 与 Intel 共用同一个安装包。</p>
+        </div>
+        <div class="pills" aria-label="平台支持状态">
+          <span class="pill on">macOS 可用</span>
+          <span class="pill">Windows 计划中</span>
+          <span class="pill">Linux 计划中</span>
+          <span class="pill">Android / iOS 计划中</span>
+        </div>
+      </div>
+    </section>
 
-  <h2>故障与恢复</h2>
-  <p>配置写坏、词库残留锁、数据文件缺失等，见仓库文档 <a href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/故障恢复.md">故障恢复</a>。</p>
+    <section class="section">
+      <div class="closing">
+        <div>
+          <h2>开源，才能被验证。</h2>
+          <p>萤火虫相信输入法应该安静、透明、可审计。源码、构建材料与每个版本的二进制一起公开。</p>
+        </div>
+        <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod">浏览 GitHub 仓库 →</a>
+      </div>
+    </section>
+  </main>
 
   <footer>
-    本页不加载任何第三方资源、不收集数据。项目以 GPL-3.0-or-later 发布；「萤火虫 / Lampyris」名称与图标保留权利。
+    <span>© 2026 萤火虫 / Lampyris · GPL-3.0-or-later</span>
+    <nav>
+      <a href="https://github.com/EasyIndie/EasyInputMethod/releases/latest">发布记录</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/故障恢复.md">故障恢复</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod">源码</a>
+    </nav>
+    <span>本页不加载第三方资源，不收集数据。</span>
   </footer>
-</main>
+</div>
 </body>
 </html>
