@@ -2,15 +2,15 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-25 / pi；ADR-288 drill 已实跑并发布 `https://input.jokerhub.cn/drill/`（run `40112916703`，build 903 载荷 / 902 更新程序），本机 `--drill-run` 被代理 fake-IP 拦截（-1005）。main `94d2b29`，dev 同步；**生产包未换、未装测试包、未切源**。
+- 更新：2026-10-25 / pi；隔离更新真实网络复验完成（报告183）：run `40139366666` 载荷 905 / 更新程序 904，`cancel`/`tamper`/`install` 全部 PASS，生产侧未变。main `60d0713`，dev 同步；**仅剩 UI 点击与 drill 下线**。
 - 正式渠道仅网站/DMG（ADR-284）；最近发布记录 v0.1.12/build20（报告174）。本轮只改源码、测试、文档；**未安装/切源/发键/写真实用户数据**。
 - #142 更新可靠性修复入 main；ADR-285 在 #143 入 main 后，签名公证 run `40096030727` 的两架构最终宿主网络导入均无命中且 IMK 控制器类保留；源码重建通过。**这仅为签名静态 PASS**，新包未运行，动态外联/更新程序/最终 RC 均未验。
 
-## 1. 设备与数据（2026-10-25 00:45 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 06:45 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| 本机 B，arm64/macOS 27.0.1 | 生产 v0.1.12/build20，Developer ID / Gatekeeper accepted；执行 SHA `c09c2d11749dea9a4347930972817e5262e682c971653f0618c420e7ad9e77a3` | config SHA `3bc1117cc337…`（显式 8 个 hotkey；mode=mixed）；词库 429 行 / `ab781bcec590…`（23:14 采集瞬间，用户持续输入，禁止还原或假设恒定；本轮未操作）；宿主 PID 78677（采集瞬间）；脚本未解析出输入源，**未知**，禁止推断为 ABC | 本轮无安装/切源；已装包维持原样 |
+| 本机 B，arm64/macOS 27.0.1 | 生产 v0.1.12/build20，Developer ID / Gatekeeper accepted；执行 SHA `c09c2d11749dea9a4347930972817e5262e682c971653f0618c420e7ad9e77a3` | config SHA `3bc1117cc337…`（显式 8 个 hotkey；mode=mixed）；词库 465 行 / `394ee74c4e48…`（06:45 采集瞬间，用户持续输入，禁止还原或假设恒定；本轮未操作）；宿主 PID 78677（采集瞬间）；脚本未解析出输入源，**未知**，禁止推断为 ABC | 本轮无安装/切源；已装包维持原样 |
 | Intel `pro`（历史记录，未远程重采） | 报告174称已升级 v0.1.12/build20，**本轮不把历史证据视为当前 SHA** | config/词库与源当前值未知 | 执行前独立重采 |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
@@ -26,20 +26,24 @@
 | ADR-287 / #145 / main `37323e9` | 安装目标契约（生产固定 + UUID 隔离身份）；生产 UI 显式选择生产目标，离线私有目录安装/回滚不碰生产哨兵。updater 33+7、build/verify 与 head 四 CI PASS；离线第一轮因真实词库用户并发变化导致旧快照测试失败，顺序重跑 PASS。未签名/安装隔离程序。 |
 | ADR-287 第二阶段 / #146 / 报告181 | 隔离构建需三字段（TestOnly/UUID 身份/私有根）且根为属主 0700、带 owner 标记、非符号链接、位于私有 T 或开发根，否则停用更新且不回退生产；`build.py` 拒写隔离键。updater 38+7、生产 Info.plist 无隔离键、3 项结构回归、离线/verify 与 head 四 CI PASS，main `d1e39b2`；未签名/未装包。 |
 | ADR-288 / #148 / #149 / #151 / 报告182 | drill feed 定案项目 Pages 子路径；main-only `Isolated Update Drill` 用临时 Ed25519 密钥生成隔离更新程序（build = 载荷-1）、公证隔离载荷与 appcast，artifact 合并部署 `/drill/`；`--drill-run install|cancel|tamper` 仅供隔离构建。run `40112167780`/`40112916703` build+publish success；本地结构/updater 39+7/verify PASS。 |
+| ADR-288 实测 / #152 #153 / 报告183 | drill 真实网络：`--drill-run cancel`（清理 false）、`tamper`（拒绝+清理）、`install` 两轮（备份/替换/receipt 0600/落地验签公证）全 PASS；修复 drill 引用别名与载荷包名不一致。生产执行 SHA/config 前后一致，未留临时目录。 |
 
 ## 3. 未决
 
 - 报告180 签名宿主与独立更新程序绑定旧 main `73d468b`、build20，未安装。ADR-287 两阶段已入 main `d1e39b2`，但**没有新测试构建号、签名公证的隔离更新程序与隔离载荷，也没有受控 HTTPS 签名测试 feed**，不得用 build20 诊断程序点击安装。更新 UI 成功/失败/取消、回滚及宿主动态零外联均未原生验。
-- **本机执行被环境阻断**：drill feed 已在 `https://input.jokerhub.cn/drill/` 上线（build 903 载荷、902 更新程序、双 SHA/公证已核），但本机解析该域名得到代理 fake-IP `198.18.0.92`，`--check`/`--drill-run` 均报 `NSURLErrorDomain -1005`；`curl --resolve` 真实 Pages IP 与 `github.com`/`raw.githubusercontent.com` 均 200，属代理域名路由问题，不是产品网络策略。另外本会话是 SSH `Background` 会话，GUI 程序无窗口服务器连接（`!cgsConnection`）、AX 窗口为 0、`screencapture` 被拒，**无法点击更新窗口**。
+- 代理修正后网络已通（`--drill-run` 全部通过）。**仍是 SSH `Background` 会话**：GUI 程序无窗口服务器连接（`!cgsConnection`）、AX 窗口为 0、`screencapture` 被拒，更新窗口的点击必须由用户在图形会话执行。
+- 已知限制（非阻断）：私有根没有 `Input Methods` 子目录时，首次安装会失败（生产该目录恒存在）；是否让安装器自建目录需 ADR。
 - App Store 搜索框首次输入偶发卡顿（报告177）：A/B、sample 与精确时间待取证，暂不归因。
 - 最终 RC 同包：真实三模式与目标客户端/辅助功能/多屏/睡眠/A-B、p95<16ms、稳态≤30MiB、升级异常与卸载、独立第三方重建/零外联及五工作日试用；历史包 PASS 不继承。
 - ADR-285 的最终宿主静态导入门禁已由 main `612020d` 新公证包两架构核实；`make verify-no-network` 自身仍不扫描签名 `.app`，`build.sh` 单独检查。旧宿主单时点 lsof 为空不关闭新候选的动态零外联门禁。
 
 ## 4. 下一步
 
-1. **待用户处理（阻塞）**：让本机代理对 `input.jokerhub.cn` 走真实解析（或经代理路由），使 `URLSession` 能取到 drill feed；也可在无该代理的网络执行。解决后运行 `$R/updater/LampyrisUpdateCheckTest.app/Contents/MacOS/LampyrisUpdateCheck --drill-run cancel|tamper|install`（安装仅写私有根）。
-2. UI 取消/安装点击需在图形会话由人工执行（本会话 SSH 无窗口）；执行前后回读生产包执行 SHA、config、词库、输入源。
-3. 完成后：普通 `Pages` 工作流重新部署下线 `/drill/`，删除私有根与测试更新程序；最终 RC 产品矩阵、动态零外联、五日试用仍待。
+1. **待用户在图形会话执行 UI 复验**（唯一阻塞项）：在桌面终端运行
+   `open -n /private/var/folders/z0/1h35x82j7d767_fm_x3tvdsh0000gn/T/lampyris-imk-ac71cd44-8862-4e9c-ac83-49bb51a9ed74/updater/LampyrisUpdateCheck.app --args --ui`
+   然后点「检查更新」→「下载并安装」→ 先「取消」一次，再点一次并「安装」；窗口应显示「发现新版本 · 构建 905」与「已安装构建 905」。若窗口不出现，直接记 BLOCKED。
+2. UI 复验后：普通 `Pages` 工作流重新部署下线 `/drill/`；删除私有根（含测试更新程序、测试安装与 updates 目录）；回读生产执行 SHA `c09c2d11…`、config、词库、输入源。
+3. 原生回滚仍仅 XCTest 覆盖；最终 RC 产品矩阵、宿主动态零外联、五日试用仍待。
 
 ## 5. 边界
 
@@ -48,7 +52,7 @@
 
 ## 9. 会话日志（最近）
 
-- 2026-10-25 / pi：ADR-288 drill 上线（run `40112916703`，build 903/902，双 SHA 与公证核对）；本机 `--check`/`--drill-run` 因代理 fake-IP `198.18.0.92` 报 -1005，`--resolve` 真实 IP 正常；SSH 会话无窗口服务器，UI 点击需人工。生产包/配置/词库/源未动，drill 目录待下线。
+- 2026-10-25 / pi：代理修正后完成真实网络 drill（报告183）：cancel/tamper/install 与备份、receipt、落地验签全 PASS，临时目录零残留；生产执行 SHA/config 不变。剩 UI 点击（需图形会话）与 `/drill/` 下线、私有根清理。
 - 2026-10-24 / pi：#146 head `39de72a` 四 CI PASS merge `d1e39b2`，固定 dev 同步，开放 PR 0。
 - 2026-10-24 / pi：ADR-287 第二阶段落地：`IsolatedUpdate.swift` 解析三字段隔离绑定并校验根属主/权限/owner/符号链接/允许父目录，失败停用更新不回退；`build.py` 拒写隔离键。updater 38+7、生产 Info.plist 无隔离键、3 项结构回归、离线/verify PASS；未签名/未装包。
 - 2026-10-24 / pi：#145 head `0b01926` 四 CI PASS merge `37323e9`，固定 dev 快进同步，开放 PR 0；main CI `40103642643` / 自动公证 `40103642650` success，未下载/安装新包。生产旧包/配置保留，隔离签名安装门禁仍 BLOCKED。
