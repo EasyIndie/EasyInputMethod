@@ -99,6 +99,7 @@ jobs:
         run: |
           python3 platforms/macos/Updater/build.py
           python3 platforms/macos/Installer/build.py
+          python3 platforms/macos/Uninstaller/build.py
 
       - name: Sign and notarize the updater app
         env:
@@ -108,7 +109,7 @@ jobs:
           ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
           ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
           ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        run: bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app --installer platforms/macos/build/installer/LampyrisInstaller.app
+        run: bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app --installer platforms/macos/build/installer/LampyrisInstaller.app --uninstaller platforms/macos/build/uninstaller/LampyrisUninstaller.app
 
       - name: Package the updater app as a release asset
         run: |
@@ -139,7 +140,7 @@ jobs:
           test -n "$app"
           version="$(python3 tools/release_version.py version)"
           dmg="packaging/out/release/Lampyris-${version}-universal.dmg"
-          bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --out "$dmg"
+          bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --uninstaller platforms/macos/build/uninstaller/LampyrisUninstaller.app --out "$dmg"
           bash packaging/macos/ci-sign.sh --dmg "$dmg"
           # 签名/公证会改写 DMG，摘要必须在其后生成；条目使用文件名便于直接比对。
           ( cd "$(dirname "$dmg")" && shasum -a 256 "$(basename "$dmg")" ) > "$dmg.sha256"
