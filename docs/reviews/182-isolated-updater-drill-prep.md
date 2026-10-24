@@ -32,3 +32,13 @@
 2. Pages 合并发布任务与 `site/` 不受影响的验证，以及 drill 后的下线流程。
 3. 本机原生执行：检查 → 下载（经 `input.jokerhub.cn`）→ 验签 → 取消/失败/成功/回滚，并回读生产包/配置/词库/输入源未变。
 4. 该 drill 只覆盖独立更新程序路径；宿主 IMK 行为、长期动态零外联与最终 RC 矩阵仍另计。
+
+## 追加：drill 工作流与本地签名链演练（同日）
+
+- 新增 `.github/workflows/isolated-update-drill.yml`：main-only 手动触发，输入接收设备私有根、架构、测试构建号与 Pages 子路径。
+  - build 作业：`make verify` + 隔离 IMK 回归 → 生成并**签名/公证/装订**隔离宿主 → 用临时 Ed25519 公钥构建隔离更新程序 → 载荷 ZIP 与 `appcast.xml`（`release-appcast.py`）→ artifact 保留 7 天 → 删除临时私钥、清理签名材料。
+  - publish 作业：校验子路径只能是 `drill`/`drill-*`，把 artifact 合并到 `site/<drill>/` 后经 Pages 部署（与 `pages.yml` 共用 `pages` 并发组），测试二进制不进入 git 历史。
+- 新增 `packaging/macos/tests/test-isolated-drill.py` 4 项结构回归（main-only、无生产密钥、临时密钥生成与删除、公证/子路径/无 tag-Release）。
+- 本地演练（未联网、未签名、未安装）：用临时 Ed25519 密钥构建隔离更新程序并生成 appcast，再以 `--verify-payload` 用该 ZIP 与 appcast 内签名验证，输出「负载签名验证通过；尚未安装。」退出 0；私钥演练后即删。
+
+仍未执行：真实 CI run、Pages 发布与下线、本机原生下载/取消/失败/成功/回滚。生产包、配置、词库、输入源未动。

@@ -9,7 +9,8 @@
 - [x] 2026-10-24 隔离更新绑定第二阶段（ADR-287，报告181）：测试构建须带 `LampyrisTestOnly`+UUID 身份+已拥有私有根才改安装域；符号链接/权限/owner 标记/根外路径一律拒绝且不回退生产；`build.py` 拒写隔离键。updater 38+7 项、生产构建 Info.plist 无隔离键、新增 3 项结构回归、离线/verify PASS；**未出新构建号/未签名/未安装**。
 - [x] 2026-10-24 drill 测试 feed 定为项目 Pages 子路径（ADR-288）：`https://input.jokerhub.cn/drill/`（HTTPS/LE 证书实测 200，`easyindie.github.io` 301 到 http 禁用）；artifact 合并部署、临时 Ed25519 密钥、测试构建号，用后普通 Pages 部署下线。
 - [x] 2026-10-24 隔离更新程序构建入口（ADR-288，报告182）：`build.py` 新增 `--isolated-root/--isolated-identity/--test-build`，三项齐全才产出 `...WebsiteUpdateCheckTest.<UUID>`；本地实测隔离 Info.plist/构建号 901/私有根绑定正确，生产构建仍 build20 且无隔离键；4 项结构回归 PASS。未签名/未安装。
-- [ ] 2026-10-24 隔离更新通道后续：main-only drill 工作流（临时密钥签名+公证隔离载荷/appcast）与 Pages 合并发布任务；随后按 skill 做原生取消/失败/成功/回滚复验并下线 `/drill/`。
+- [x] 2026-10-24 drill 工作流与签名链演练（ADR-288，报告182）：main-only `Isolated Update Drill` 生成临时密钥隔离更新程序 + 公证隔离载荷 + appcast，artifact 7 天；publish 作业合并 `site/drill/` 部署 Pages；本地临时密钥演练 `--verify-payload` 通过；4 项结构回归 PASS。
+- [ ] 2026-10-24 隔离更新通道后续：在已合并 main 上实跑 drill 并发布 `/drill/`，随后按 skill 做原生取消/失败/成功/回滚复验，回读生产包/配置/词库/输入源，最后普通 Pages 部署下线并清理私有根。
 - [ ] 2026-10-24 更新链路受影响原生复验：先取得与合并 main 对应、独立签名的更新程序及 ZIP/执行 SHA，再在非生产身份和私有数据根下检查下载成功/失败/取消与备份/回滚/临时目录清理；**不拿仅含宿主的同 build20 候选代替**，不动当前正式生产包。
 - [x] 2026-10-24 宿主网络导入工程归因（ADR-285/报告178）：隔离链接实验定位为 Rust staticlib 带入未引用代码；`build.sh` 加 `-dead_strip` 与逐架构产物导入门禁，本地 strict universal 两片不再导入 socket/connect，控制器类保留，离线回归通过。尚未由新公证包/原生路径验证，不继承给 main `56c2457` 旧包。
 - [x] 2026-10-24 ADR-285 的**签名产物静态**复验（报告179）：PR #143 四 CI 绿合入 main `612020d`，run `40096030727` 签名/公证与源码重建成功；universal ZIP/源码/执行三 SHA 绑定，双架构 `nm -u` 无已知网络导入且控制器类保留。未安装、仍 build20、不含独立更新程序，不关闭动态门禁。
