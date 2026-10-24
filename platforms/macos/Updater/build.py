@@ -37,31 +37,34 @@ def isolated_uuid(value):
 
 
 def isolated_root(value, suffix):
+    """Validate the declared drill root; ownership is re-checked at runtime on the receiving device."""
     import os
+    import re
     root = Path(value)
-    home = Path.home()
     if not root.is_absolute() or str(root) != os.path.normpath(str(root)):
         parser.error('隔离根必须是规范化的绝对路径')
     if root.name != ROOT_PREFIX + suffix:
         parser.error('隔离根目录名必须与隔离身份 UUID 一致')
-    import re
-    parents = {'/private/tmp', '/tmp', '/private/var/tmp', '/var/tmp',
-               str(home / 'Library/Application Support/LampyrisIMKDev')}
-    private_t = re.fullmatch(r'/(?:private/)?var/folders/(?:[^/]+/)+T', root.parent.as_posix())
-    if root.parent.as_posix() not in parents and not private_t:
+    parent = root.parent.as_posix()
+    private_t = re.fullmatch(r'/(?:private/)?var/folders/(?:[^/]+/)+T', parent)
+    development = re.fullmatch(r'/Users/[^/]+/Library/Application Support/LampyrisIMKDev', parent)
+    if not private_t and not development:
         parser.error('隔离根必须位于设备私有临时目录或 LampyrisIMKDev 开发根内')
-    info = root.lstat()
-    if root.is_symlink() or not root.is_dir():
-        parser.error('隔离根必须是非符号链接目录')
-    if info.st_uid != os.geteuid() or info.st_mode & 0o077:
-        parser.error('隔离根必须为当前用户所有且权限不宽于 0700')
-    marker = root / 'owner'
-    marker_info = marker.lstat()
-    if marker.is_symlink() or not marker.is_file() or marker_info.st_uid != os.geteuid():
-        parser.error('隔离根缺少由当前用户拥有的 owner 标记')
-    if marker_info.st_mode & 0o077 or marker.read_text() != root.name:
-        parser.error('owner 标记权限或内容不符')
+    if root.exists() or root.is_symlink():
+        # 本机演练：提前套用运行时会执行的归属/权限检查；CI 绑定的是接收设备路径，只做形状校验。
+        info = root.lstat()
+        if root.is_symlink() or not root.is_dir():
+            parser.error('隔离根必须是非符号链接目录')
+        if info.st_uid != os.geteuid() or info.st_mode & 0o077:
+            parser.error('隔离根必须为当前用户所有且权限不宽于 0700')
+        marker = root / 'owner'
+        if marker.is_symlink() or not marker.is_file() or marker.stat().st_uid != os.geteuid():
+            parser.error('隔离根缺少由当前用户拥有的 owner 标记')
+        if marker.stat().st_mode & 0o077 or marker.read_text() != root.name:
+            parser.error('owner 标记权限或内容不符')
     return root
+
+
 version = identity()
 if not args.public_key and not PINNED_PUBLIC_KEY.is_file():
     parser.error('缺少入库公钥 packaging/macos/update-public-key.txt')

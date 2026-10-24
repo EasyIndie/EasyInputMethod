@@ -1,0 +1,181 @@
+name: Isolated Update Drill
+
+# ADR-288: test-only drill artifacts and a temporary public feed on the project Pages
+# subpath. Never creates tags/releases and never touches the production update key.
+on:
+  workflow_dispatch:
+    inputs:
+      target_root:
+        description: Owned private root on the receiving device (temporary T dir or LampyrisIMKDev root)
+        required: true
+        type: string
+      arch:
+        description: Payload architecture
+        required: true
+        default: arm64
+        type: choice
+        options:
+          - arm64
+          - x86_64
+          - universal
+      test_build:
+        description: Test build number (must exceed the current production build)
+        required: true
+        default: '901'
+        type: string
+      drill_path:
+        description: Pages subpath that hosts the drill feed
+        required: true
+        default: drill
+        type: string
+permissions:
+  contents: read
+concurrency:
+  group: isolated-update-drill
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: macos-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Read pinned toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+          components: rustfmt, clippy
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6
+      - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850
+        with:
+          tool: cargo-deny
+      - name: Verify and build owned drill host
+        env:
+          TARGET_TEST_ROOT: ${{ inputs.target_root }}
+          TARGET_ARCH: ${{ inputs.arch }}
+          IMK_DEVELOPMENT: 'false'
+        run: |
+          make verify
+          PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/test-isolated-imk.py
+          PYTHONDONTWRITEBYTECODE=1 python3 packaging/macos/tests/test-isolated-ci.py
+          python3 packaging/macos/prepare-isolated-ci.py
+          make verify-no-network
+      - name: Sign and notarize drill host
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        run: bash packaging/macos/ci-sign.sh
+      - name: Build isolated updater and drill feed
+        env:
+          TARGET_TEST_ROOT: ${{ inputs.target_root }}
+          TARGET_ARCH: ${{ inputs.arch }}
+          TEST_BUILD: ${{ inputs.test_build }}
+          DRILL_PATH: ${{ inputs.drill_path }}
+        run: |
+          set -euo pipefail
+          root="$(cat packaging/out/isolated-imk/TARGET-ROOT.txt)"
+          uuid="${root##*/lampyris-imk-}"
+          identity="cn.jokerhub.inputmethod.LampyrisIMKTest.${uuid}"
+          base="https://input.jokerhub.cn/${DRILL_PATH}"
+          payload="LampyrisIMKTest-${TEST_BUILD}-${TARGET_ARCH}.zip"
+          drill="${RUNNER_TEMP}/drill"
+          mkdir -p "${drill}"
+          ditto -c -k --keepParent platforms/macos/build/Lampyris.app "${drill}/${payload}"
+          (cd "${drill}" && shasum -a 256 "${payload}" > "${payload}.sha256")
+          openssl genpkey -algorithm ED25519 -out "${RUNNER_TEMP}/drill-key.pem"
+          public_key="$(openssl pkey -in "${RUNNER_TEMP}/drill-key.pem" -pubout -outform DER | tail -c 32 | base64)"
+          python3 platforms/macos/Updater/build.py \
+            --isolated-root "${root}" --isolated-identity "${identity}" \
+            --test-build "${TEST_BUILD}" --feed-url "${base}/appcast.xml" \
+            --public-key "${public_key}" --output "${RUNNER_TEMP}/drill-updater"
+          ditto -c -k --keepParent "${RUNNER_TEMP}/drill-updater/LampyrisUpdateCheck.app" \
+            "${drill}/LampyrisUpdateCheckTest-${TEST_BUILD}.zip"
+          (cd "${drill}" && shasum -a 256 "LampyrisUpdateCheckTest-${TEST_BUILD}.zip" \
+            > "LampyrisUpdateCheckTest-${TEST_BUILD}.zip.sha256")
+          python3 packaging/macos/release-appcast.py \
+            --zip "${drill}/${payload}" --build "${TEST_BUILD}" \
+            --short-version "$(python3 tools/release_version.py version)" \
+            --url "${base}/${payload}" --private-key "${RUNNER_TEMP}/drill-key.pem" \
+            --out "${drill}/appcast.xml"
+          printf '%s\n' "$(git rev-parse HEAD)" > "${drill}/SOURCE-COMMIT.txt"
+          printf '%s\n' "${root}" > "${drill}/TARGET-ROOT.txt"
+          printf '%s\n' "${public_key}" > "${drill}/DRILL-PUBLIC-KEY.txt"
+          printf 'channel=isolated-drill\nbuild=%s\nidentity=%s\nfeed=%s\n' \
+            "${TEST_BUILD}" "${identity}" "${base}/appcast.xml" > "${drill}/DRILL.txt"
+      - name: Sign the drill updater without notarizing it
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        run: |
+          # 更新程序自身不参与验签链，签名仅用于来源核验；载荷已单独公证。
+          bash packaging/macos/ci-sign.sh --app "${RUNNER_TEMP}/drill-updater/LampyrisUpdateCheck.app" --sign-only
+          ditto -c -k --keepParent "${RUNNER_TEMP}/drill-updater/LampyrisUpdateCheck.app" \
+            "${RUNNER_TEMP}/drill/LampyrisUpdateCheckTest-${{ inputs.test_build }}.zip"
+          (cd "${RUNNER_TEMP}/drill" && shasum -a 256 "LampyrisUpdateCheckTest-${{ inputs.test_build }}.zip" \
+            > "LampyrisUpdateCheckTest-${{ inputs.test_build }}.zip.sha256")
+      - name: Drop the ephemeral signing key
+        if: always()
+        run: rm -f "${RUNNER_TEMP}/drill-key.pem"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: lampyris-update-drill-${{ inputs.test_build }}-${{ inputs.arch }}-${{ github.sha }}
+          path: ${{ runner.temp }}/drill/*
+          if-no-files-found: error
+          retention-days: 7
+      - name: Remove signing material
+        if: always()
+        run: bash packaging/macos/ci-sign.sh --cleanup
+  publish:
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      actions: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Merge the drill artifact into the site
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DRILL_PATH: ${{ inputs.drill_path }}
+          ARTIFACT: lampyris-update-drill-${{ inputs.test_build }}-${{ inputs.arch }}-${{ github.sha }}
+        run: |
+          set -euo pipefail
+          test -f site/index.html
+          case "${DRILL_PATH}" in
+            drill|drill-*) ;;
+            *) echo 'drill_path must be "drill" or start with "drill-"' >&2; exit 1 ;;
+          esac
+          gh run download "${GITHUB_RUN_ID}" --name "${ARTIFACT}" --dir "site/${DRILL_PATH}"
+          test -f "site/${DRILL_PATH}/appcast.xml"
+          test -f "site/${DRILL_PATH}/SOURCE-COMMIT.txt"
+          test -f site/index.html
+          printf 'drill published at https://input.jokerhub.cn/%s/appcast.xml\n' "${DRILL_PATH}"
+      - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b
+      - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa
+        with:
+          path: site
+      - id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e
