@@ -37,6 +37,7 @@ jobs:
       - name: Verify all offline macOS and packaging regressions
         run: |
           make macos-offline-tests
+          python3 platforms/macos/Installer/build.py
       - name: Sign and notarize with team API key
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
