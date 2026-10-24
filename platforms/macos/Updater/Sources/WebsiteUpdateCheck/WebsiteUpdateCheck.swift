@@ -87,15 +87,43 @@ extension WebsiteUpdateCheck {
     /// Exercises the real feed/download/verify/install path without any UI, for isolated drill use only.
     static func runDrill(mode: String) async {
         let info = Bundle.main.infoDictionary ?? [:]
-        func fail(_ message: String) -> Never {
-            FileHandle.standardError.write(Data((message + "\n").utf8))
-            exit(1)
-        }
         guard let location = try? InstallLocation.resolve(info: info), location.isolated else {
-            fail("drill 只允许隔离测试构建运行；未发送请求。")
+            drillFail("drill 只允许隔离测试构建运行；未发送请求。")
         }
+        guard let release = await drillRelease(info: info, location: location),
+              let key = info["SUPublicEDKey"] as? String else {
+            return
+        }
+        switch mode {
+        case "cancel", "tamper":
+            let (folder, verified) = await drillVerifyOnly(mode: mode, release: release, key: key)
+            print("signature=\(verified ? "valid" : "invalid")")
+            // DownloadedPayload was released before this line, so a surviving directory is a leak.
+            print("temp_after_release=\(FileManager.default.fileExists(atPath: folder.path))")
+            print("result=\(verified ? "cancelled" : "rejected")")
+        case "install":
+            do {
+                let (receipt, folder) = try await drillInstall(release: release, key: key, location: location)
+                print("installed_exec=\(receipt.installedExecutableSHA256)")
+                print("previous=\(receipt.previous ?? "none")")
+                print("temp_after_install=\(FileManager.default.fileExists(atPath: folder.path))")
+                print("result=installed")
+            } catch {
+                drillFail("安装失败：\(error.localizedDescription)")
+            }
+        default:
+            drillFail("未知 drill 模式：\(mode)")
+        }
+    }
+
+    static func drillFail(_ message: String) -> Never {
+        FileHandle.standardError.write(Data((message + "\n").utf8))
+        exit(1)
+    }
+
+    static func drillRelease(info: [String: Any], location: InstallLocation) async -> UpdateRelease? {
         guard let bundled = WebsiteReleaseConfiguration.bundledFeed(info) else {
-            fail("缺少签名包内的更新源。")
+            drillFail("缺少签名包内的更新源。")
         }
         let feeds = FeedSource.effectiveFeeds(configured: FeedSource.configuredFeed(),
                                               mirrors: [], bundled: bundled)
@@ -103,7 +131,7 @@ extension WebsiteUpdateCheck {
         do {
             configurations = try WebsiteReleaseConfiguration.configurations(info, feeds: feeds)
         } catch {
-            fail("更新配置不完整。")
+            drillFail("更新配置不完整。")
         }
         print("feed=\(configurations[0].feedURL.absoluteString)")
         print("target=\(location.target.identity) domain=\(location.domain.path)")
@@ -111,77 +139,69 @@ extension WebsiteUpdateCheck {
         do {
             release = try await OrzAppUpdateCheck.check(configurations[0])
         } catch {
-            fail("检查更新失败：\(error.localizedDescription)")
+            drillFail("检查更新失败：\(error.localizedDescription)")
         }
         guard let release else {
             print("result=up-to-date")
-            return
+            return nil
         }
         print("release_build=\(release.build) length=\(release.length)")
-        guard let key = info["SUPublicEDKey"] as? String else {
-            fail("缺少公钥。")
-        }
+        return release
+    }
+
+    static func drillVerifyOnly(mode: String, release: UpdateRelease, key: String)
+        async -> (URL, Bool)
+    {
         let downloader = UpdateDownloader()
-        var payload: DownloadedPayload?
+        let folder: URL
+        let verified: Bool
         do {
-            payload = try await downloader.download(release.downloadURL) { _, _ in }
-        } catch {
-            fail("下载失败：\(error.localizedDescription)")
-        }
-        guard let downloaded = payload else { fail("下载失败：无负载") }
-        let folder = downloaded.url.deletingLastPathComponent()
-        let manager = FileManager.default
-        print("download_private=\(manager.fileExists(atPath: folder.path))")
-        let signature = release.signature.base64EncodedString()
-        let verifier: PayloadVerifier
-        do {
-            verifier = try PayloadVerifier(publicKeyBase64: key)
-        } catch {
-            fail("公钥无效。")
-        }
-        if mode == "tamper" {
-            if let handle = try? FileHandle(forWritingTo: downloaded.url) {
+            var payload: DownloadedPayload? = try await downloader.download(release.downloadURL) { _, _ in }
+            guard let downloaded = payload else { drillFail("下载失败：无负载") }
+            folder = downloaded.url.deletingLastPathComponent()
+            print("download_private=\(FileManager.default.fileExists(atPath: folder.path))")
+            if mode == "tamper", let handle = try? FileHandle(forWritingTo: downloaded.url) {
                 handle.seekToEndOfFile()
                 handle.write(Data([0x00]))
                 try? handle.close()
             }
-        }
-        let verified: Bool
-        do {
-            verified = try verifier.verify(fileAt: downloaded.url, signatureBase64: signature)
+            let verifier: PayloadVerifier
+            do {
+                verifier = try PayloadVerifier(publicKeyBase64: key)
+                verified = try verifier.verify(fileAt: downloaded.url,
+                                               signatureBase64: release.signature.base64EncodedString())
+            } catch {
+                drillFail("验签异常：\(error.localizedDescription)")
+            }
+            payload = nil
         } catch {
-            fail("验签异常：\(error.localizedDescription)")
+            drillFail("下载失败：\(error.localizedDescription)")
         }
+        return (folder, verified)
+    }
+
+    static func drillInstall(release: UpdateRelease, key: String, location: InstallLocation)
+        async throws -> (InstallReceipt, URL)
+    {
+        let downloader = UpdateDownloader()
+        var payload: DownloadedPayload? = try await downloader.download(release.downloadURL) { _, _ in }
+        guard let downloaded = payload else { throw InstallError.payloadMissing("下载失败") }
+        let folder = downloaded.url.deletingLastPathComponent()
+        print("download_private=\(FileManager.default.fileExists(atPath: folder.path))")
+        let signature = release.signature.base64EncodedString()
+        let verifier = try PayloadVerifier(publicKeyBase64: key)
+        let verified = try verifier.verify(fileAt: downloaded.url, signatureBase64: signature)
         print("signature=\(verified ? "valid" : "invalid")")
-        if !verified {
+        guard verified else {
             payload = nil
-            print("temp_after_release=\(manager.fileExists(atPath: folder.path))")
-            print("result=rejected")
-            return
+            throw InstallError.candidateInvalid("负载签名无效")
         }
-        if mode == "cancel" {
-            payload = nil
-            print("temp_after_cancel=\(manager.fileExists(atPath: folder.path))")
-            print("result=cancelled")
-            return
-        }
-        guard mode == "install" else {
-            payload = nil
-            fail("未知 drill 模式：\(mode)")
-        }
-        do {
-            let receipt = try UpdateInstaller.install(
-                payload: downloaded.url, signature: signature, publicKeyBase64: key,
-                domain: location.domain, support: location.support,
-                environment: DefaultInstallEnvironment.make(target: location.target),
-                target: location.target)
-            print("installed_exec=\(receipt.installedExecutableSHA256)")
-            print("previous=\(receipt.previous ?? "none")")
-            print("result=installed")
-        } catch {
-            fail("安装失败：\(error.localizedDescription)")
-        }
+        let receipt = try UpdateInstaller.install(
+            payload: downloaded.url, signature: signature, publicKeyBase64: key,
+            domain: location.domain, support: location.support,
+            environment: DefaultInstallEnvironment.make(target: location.target),
+            target: location.target)
         payload = nil
-        print("temp_after_install=\(manager.fileExists(atPath: folder.path))")
+        return (receipt, folder)
     }
 }

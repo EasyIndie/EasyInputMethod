@@ -2,11 +2,11 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-24 / pi；ADR-287 第二阶段 PR #146 精确 head `39de72a` 四 CI PASS，merge commit `d1e39b2` 入 main，固定 dev 已快进推送；主线 post-merge CI/自动公证在执行。**未出新构建号/未签名/未装包/未切源**。
+- 更新：2026-10-25 / pi；ADR-288 drill 已实跑并发布 `https://input.jokerhub.cn/drill/`（run `40112916703`，build 903 载荷 / 902 更新程序），本机 `--drill-run` 被代理 fake-IP 拦截（-1005）。main `94d2b29`，dev 同步；**生产包未换、未装测试包、未切源**。
 - 正式渠道仅网站/DMG（ADR-284）；最近发布记录 v0.1.12/build20（报告174）。本轮只改源码、测试、文档；**未安装/切源/发键/写真实用户数据**。
 - #142 更新可靠性修复入 main；ADR-285 在 #143 入 main 后，签名公证 run `40096030727` 的两架构最终宿主网络导入均无命中且 IMK 控制器类保留；源码重建通过。**这仅为签名静态 PASS**，新包未运行，动态外联/更新程序/最终 RC 均未验。
 
-## 1. 设备与数据（2026-10-24 23:14 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 00:45 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
@@ -25,20 +25,21 @@
 | ADR-286 / #144 / 报告180 | main `73d468b` 手动诊断 run `40098104120` 成功，签名独立更新程序 ZIP/执行/SOURCE-COMMIT SHA、双架构/公证/Gatekeeper/公钥 PASS；临时负载签名与篡改拒绝 CI PASS。本地无参默认关闭、非法签名拒绝；未运行 UI/下载/安装。 |
 | ADR-287 / #145 / main `37323e9` | 安装目标契约（生产固定 + UUID 隔离身份）；生产 UI 显式选择生产目标，离线私有目录安装/回滚不碰生产哨兵。updater 33+7、build/verify 与 head 四 CI PASS；离线第一轮因真实词库用户并发变化导致旧快照测试失败，顺序重跑 PASS。未签名/安装隔离程序。 |
 | ADR-287 第二阶段 / #146 / 报告181 | 隔离构建需三字段（TestOnly/UUID 身份/私有根）且根为属主 0700、带 owner 标记、非符号链接、位于私有 T 或开发根，否则停用更新且不回退生产；`build.py` 拒写隔离键。updater 38+7、生产 Info.plist 无隔离键、3 项结构回归、离线/verify 与 head 四 CI PASS，main `d1e39b2`；未签名/未装包。 |
+| ADR-288 / #148 / #149 / #151 / 报告182 | drill feed 定案项目 Pages 子路径；main-only `Isolated Update Drill` 用临时 Ed25519 密钥生成隔离更新程序（build = 载荷-1）、公证隔离载荷与 appcast，artifact 合并部署 `/drill/`；`--drill-run install|cancel|tamper` 仅供隔离构建。run `40112167780`/`40112916703` build+publish success；本地结构/updater 39+7/verify PASS。 |
 
 ## 3. 未决
 
 - 报告180 签名宿主与独立更新程序绑定旧 main `73d468b`、build20，未安装。ADR-287 两阶段已入 main `d1e39b2`，但**没有新测试构建号、签名公证的隔离更新程序与隔离载荷，也没有受控 HTTPS 签名测试 feed**，不得用 build20 诊断程序点击安装。更新 UI 成功/失败/取消、回滚及宿主动态零外联均未原生验。
-- **需要用户决策（阻塞下一批）**：隔离更新 drill 的 HTTPS 签名测试 feed 从哪里提供。候选：(a) 项目 gh-pages 子路径存放测试 appcast+隔离 ZIP（公开、可由现有域名提供，但测试包对公众可见，验后需下线）；(b) 仅 CI 内跑（在 runner 上传本地 TLS 可信任的测试端点，不对外暴露，但 runner 不能替代本机原生 UI/权限）；(c) 本机受控 TLS（需新增临时信任链/证书，属于系统信任变更，需明确授权）。未选定前只能做离线守卫与结构验证。
+- **本机执行被环境阻断**：drill feed 已在 `https://input.jokerhub.cn/drill/` 上线（build 903 载荷、902 更新程序、双 SHA/公证已核），但本机解析该域名得到代理 fake-IP `198.18.0.92`，`--check`/`--drill-run` 均报 `NSURLErrorDomain -1005`；`curl --resolve` 真实 Pages IP 与 `github.com`/`raw.githubusercontent.com` 均 200，属代理域名路由问题，不是产品网络策略。另外本会话是 SSH `Background` 会话，GUI 程序无窗口服务器连接（`!cgsConnection`）、AX 窗口为 0、`screencapture` 被拒，**无法点击更新窗口**。
 - App Store 搜索框首次输入偶发卡顿（报告177）：A/B、sample 与精确时间待取证，暂不归因。
 - 最终 RC 同包：真实三模式与目标客户端/辅助功能/多屏/睡眠/A-B、p95<16ms、稳态≤30MiB、升级异常与卸载、独立第三方重建/零外联及五工作日试用；历史包 PASS 不继承。
 - ADR-285 的最终宿主静态导入门禁已由 main `612020d` 新公证包两架构核实；`make verify-no-network` 自身仍不扫描签名 `.app`，`build.sh` 单独检查。旧宿主单时点 lsof 为空不关闭新候选的动态零外联门禁。
 
 ## 4. 下一步
 
-1. 报告181 已随 #146 入 main `d1e39b2`，固定 dev 同步；回读 post-merge CI/公证实际结果（不得把自动宿主附件当独立更新器）。
-2. **待用户选择**隔离测试 feed 提供方式（见§3 三项）；选定后先写 ADR，再做隔离更新程序/隔离载荷的新测试构建号与签名公证流程，并新增 CI 任务（main-only、不建 tag/Release）。不可用环境变量重定向正式签名更新器或修改系统信任库。
-3. 仅在同 main 源码签名宿主+隔离更新器/受控 HTTPS 签名载荷就绪后，按 iterate-macos-ime skill 执行原生取消/失败/成功/回滚，先后回读生产包/源/config/词库；最终 RC 产品矩阵、动态零外联、五日试用仍待。
+1. **待用户处理（阻塞）**：让本机代理对 `input.jokerhub.cn` 走真实解析（或经代理路由），使 `URLSession` 能取到 drill feed；也可在无该代理的网络执行。解决后运行 `$R/updater/LampyrisUpdateCheckTest.app/Contents/MacOS/LampyrisUpdateCheck --drill-run cancel|tamper|install`（安装仅写私有根）。
+2. UI 取消/安装点击需在图形会话由人工执行（本会话 SSH 无窗口）；执行前后回读生产包执行 SHA、config、词库、输入源。
+3. 完成后：普通 `Pages` 工作流重新部署下线 `/drill/`，删除私有根与测试更新程序；最终 RC 产品矩阵、动态零外联、五日试用仍待。
 
 ## 5. 边界
 
@@ -47,7 +48,8 @@
 
 ## 9. 会话日志（最近）
 
-- 2026-10-24 / pi：#146 head `39de72a` 四 CI PASS merge `d1e39b2`，固定 dev 同步，开放 PR 0；post-merge CI/公证待回读。隔离测试 feed 提供方式待用户决策，未出包/未安装。
+- 2026-10-25 / pi：ADR-288 drill 上线（run `40112916703`，build 903/902，双 SHA 与公证核对）；本机 `--check`/`--drill-run` 因代理 fake-IP `198.18.0.92` 报 -1005，`--resolve` 真实 IP 正常；SSH 会话无窗口服务器，UI 点击需人工。生产包/配置/词库/源未动，drill 目录待下线。
+- 2026-10-24 / pi：#146 head `39de72a` 四 CI PASS merge `d1e39b2`，固定 dev 同步，开放 PR 0。
 - 2026-10-24 / pi：ADR-287 第二阶段落地：`IsolatedUpdate.swift` 解析三字段隔离绑定并校验根属主/权限/owner/符号链接/允许父目录，失败停用更新不回退；`build.py` 拒写隔离键。updater 38+7、生产 Info.plist 无隔离键、3 项结构回归、离线/verify PASS；未签名/未装包。
 - 2026-10-24 / pi：#145 head `0b01926` 四 CI PASS merge `37323e9`，固定 dev 快进同步，开放 PR 0；main CI `40103642643` / 自动公证 `40103642650` success，未下载/安装新包。生产旧包/配置保留，隔离签名安装门禁仍 BLOCKED。
 - 2026-10-24 / pi：先记 ADR-287，仅让安装/验证共用生产或 UUID 隔离目标契约；生产 UI 保持旧目标，私有域测试新包/旧包/生产哨兵与失败回滚。updater 33+7、build、离线顺序重跑、verify PASS；第一次旧 preview 测试遭用户写词库并发干扰，未改真实数据。隔离签名包/HTTPS feed 未具备，不安装。
