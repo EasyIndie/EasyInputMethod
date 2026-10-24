@@ -28,6 +28,7 @@
 | ADR-288 / #148 / #149 / #151 / 报告182 | drill feed 定案项目 Pages 子路径；main-only `Isolated Update Drill` 用临时 Ed25519 密钥生成隔离更新程序（build = 载荷-1）、公证隔离载荷与 appcast，artifact 合并部署 `/drill/`；`--drill-run install|cancel|tamper` 仅供隔离构建。run `40112167780`/`40112916703` build+publish success；本地结构/updater 39+7/verify PASS。 |
 | ADR-288 实测 / #152 #153 / 报告183 | drill 真实网络：`--drill-run cancel`（清理 false）、`tamper`（拒绝+清理）、`install` 两轮（备份/替换/receipt 0600/落地验签公证）全 PASS；修复 drill 引用别名与载荷包名不一致。生产执行 SHA/config 前后一致，未留临时目录。 |
 | 报告183 UI/收尾 | 用户图形会话点击更新窗口显示「已安装构建 905」，新增 receipt/备份与落地 SHA 一致；`Pages` run `40140062574` 后 `/drill/` 404、首页 200；私有根整体删除；生产执行 SHA/config 未变。UI「取消」按钮未单独取证。 |
+| 遗留清理（报告183） | 旧隔离测试源 `…IMKTest.d4fcecfb-….default` 仍启用；子源 disable 无效，改停父源后条目消失；PID 1311 精确 SIGTERM 并删除 bundle。生产源/宿主/执行 SHA/config 未变，输入源列表无 IMKTest。 |
 
 ## 3. 未决
 
@@ -40,7 +41,7 @@
 
 ## 4. 下一步
 
-1. 报告183 文档归档在固定 dev（`cdb6058` 之后的新提交），不为纯归档单开 PR，随下一批相关改动承接。
+1. 报告183 文档归档在固定 dev（`25b167a`），不为纯归档单开 PR，随下一批相关改动承接。
 2. 遗留小项：更新窗口「取消」按钮的 UI 取证、原生回滚注入（目前仅 XCTest）、以及「目标目录缺失时是否由安装器创建」的 ADR 评估。
 3. 大项未动：最终 RC 产品矩阵（三模式/客户端/辅助功能/多屏/睡眠）、宿主动态零外联、五日试用；历史包 PASS 不继承。
 
@@ -51,7 +52,7 @@
 
 ## 9. 会话日志（最近）
 
-- 2026-10-25 / pi：drill 收尾（报告183）：用户在图形会话完成 UI 安装（「已安装构建 905」），receipt/备份/SHA 与无残留进程一致；`/drill/` 已 404、私有根已删、生产侧未变。遗留 UI 取消取证与原生回滚注入。
+- 2026-10-25 / pi：drill 收尾（报告183）：UI 安装成功、`/drill/` 已 404、私有根已删；另清理旧会话遗留隔离输入法（停父源 → 条目消失、PID 1311 停止、bundle 删除），生产侧未变。遗留 UI 取消取证与原生回滚注入。
 - 2026-10-24 / pi：#146 head `39de72a` 四 CI PASS merge `d1e39b2`，固定 dev 同步，开放 PR 0。
 - 2026-10-24 / pi：ADR-287 第二阶段落地：`IsolatedUpdate.swift` 解析三字段隔离绑定并校验根属主/权限/owner/符号链接/允许父目录，失败停用更新不回退；`build.py` 拒写隔离键。updater 38+7、生产 Info.plist 无隔离键、3 项结构回归、离线/verify PASS；未签名/未装包。
 - 2026-10-24 / pi：#145 head `0b01926` 四 CI PASS merge `37323e9`，固定 dev 快进同步，开放 PR 0；main CI `40103642643` / 自动公证 `40103642650` success，未下载/安装新包。生产旧包/配置保留，隔离签名安装门禁仍 BLOCKED。
