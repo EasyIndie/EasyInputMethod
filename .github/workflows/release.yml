@@ -95,8 +95,10 @@ jobs:
           toolchain: ${{ steps.rust.outputs.channel }}
           targets: aarch64-apple-darwin, x86_64-apple-darwin
 
-      - name: Build updater with the committed public key
-        run: python3 platforms/macos/Updater/build.py
+      - name: Build updater and DMG installer
+        run: |
+          python3 platforms/macos/Updater/build.py
+          python3 platforms/macos/Installer/build.py
 
       - name: Sign and notarize the updater app
         env:
@@ -106,7 +108,7 @@ jobs:
           ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
           ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
           ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        run: bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app
+        run: bash packaging/macos/ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app --installer platforms/macos/build/installer/LampyrisInstaller.app
 
       - name: Package the updater app as a release asset
         run: |
@@ -129,14 +131,15 @@ jobs:
           ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         run: |
           set -euo pipefail
-          python3 platforms/macos/Installer/build.py
-          installer="platforms/macos/build/installer/LampyrisInstaller.app"
-          bash packaging/macos/ci-sign.sh --app "$installer" --sign-only
-          app="$(find dist -type d -name Lampyris.app | head -1)"
+          zip="$(grep -E 'Lampyris-.*-universal\.zip$' release-assets.txt | head -1)"
+          test -f "$zip"
+          work="$(mktemp -d)"
+          ditto -x -k "$zip" "$work"
+          app="$(find "$work" -type d -name Lampyris.app | head -1)"
           test -n "$app"
           version="$(python3 tools/release_version.py version)"
           dmg="packaging/out/release/Lampyris-${version}-universal.dmg"
-          bash packaging/macos/make-dmg.sh --app "$app" --installer "$installer" --out "$dmg"
+          bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --out "$dmg"
           shasum -a 256 "$dmg" > "$dmg.sha256"
           bash packaging/macos/ci-sign.sh --dmg "$dmg"
           printf '%s\n' "$dmg" "$dmg.sha256" >> release-assets.txt

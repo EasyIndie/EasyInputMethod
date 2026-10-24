@@ -74,7 +74,12 @@ sign_app() {
     codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" \
       "${app}/Contents/Helpers/LampyrisTIS"
   fi
-  codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${app}"
+  local attempt=1
+  while ! codesign --force --options runtime --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${app}"; do
+    [ "${attempt}" -ge 3 ] && return 1
+    attempt=$((attempt + 1))
+    sleep 5
+  done
   codesign --verify --deep --strict "${app}"
 }
 if [ -n "${DMG}" ]; then
