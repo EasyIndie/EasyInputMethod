@@ -141,8 +141,8 @@ jobs:
           dmg="packaging/out/release/Lampyris-${version}-universal.dmg"
           bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --out "$dmg"
           bash packaging/macos/ci-sign.sh --dmg "$dmg"
-          # 签名/公证会改写 DMG，摘要必须在其后生成。
-          shasum -a 256 "$dmg" > "$dmg.sha256"
+          # 签名/公证会改写 DMG，摘要必须在其后生成；条目使用文件名便于直接比对。
+          ( cd "$(dirname "$dmg")" && shasum -a 256 "$(basename "$dmg")" ) > "$dmg.sha256"
           printf '%s\n' "$dmg" "$dmg.sha256" >> release-assets.txt
 
       - name: Generate signed appcast for the published ZIP
