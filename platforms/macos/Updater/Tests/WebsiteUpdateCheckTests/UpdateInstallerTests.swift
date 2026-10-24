@@ -67,9 +67,10 @@ final class UpdateInstallerTests: XCTestCase {
         try? FileManager.default.removeItem(at: folder)
     }
 
-    private func makeApp(_ parent: URL, marker: String) throws -> URL {
-        let app = parent.appendingPathComponent(UpdateInstaller.bundleName)
-        let executable = app.appendingPathComponent(UpdateInstaller.executablePath)
+    private func makeApp(_ parent: URL, marker: String,
+                         target: InstallTarget = .production) throws -> URL {
+        let app = parent.appendingPathComponent(target.bundleName)
+        let executable = app.appendingPathComponent(target.executablePath)
         try FileManager.default.createDirectory(at: executable.deletingLastPathComponent(),
                                                 withIntermediateDirectories: true)
         try marker.write(to: executable, atomically: true, encoding: .utf8)
@@ -77,17 +78,18 @@ final class UpdateInstallerTests: XCTestCase {
         return app
     }
 
-    private func makePayload(_ parent: URL, wrapped: Bool = false) throws -> URL {
+    private func makePayload(_ parent: URL, wrapped: Bool = false,
+                             target: InstallTarget = .production) throws -> URL {
         let build = folder.appendingPathComponent("build-\(UUID().uuidString)")
         try FileManager.default.createDirectory(at: build, withIntermediateDirectories: true)
         let app: URL
         if wrapped {
             let wrapper = build.appendingPathComponent("Lampyris-0.0.1-universal")
             try FileManager.default.createDirectory(at: wrapper, withIntermediateDirectories: true)
-            app = try makeApp(wrapper, marker: "new")
+            app = try makeApp(wrapper, marker: "new", target: target)
             try "notes".write(to: wrapper.appendingPathComponent("README.md"), atomically: true, encoding: .utf8)
         } else {
-            app = try makeApp(build, marker: "new")
+            app = try makeApp(build, marker: "new", target: target)
         }
         let zip = folder.appendingPathComponent("payload-\(UUID().uuidString).zip")
         let process = Process()
@@ -107,6 +109,96 @@ final class UpdateInstallerTests: XCTestCase {
     private func environment(validate: @escaping @Sendable (URL) throws -> Void = { _ in },
                              stop: @escaping @Sendable (URL) throws -> Void = { _ in }) -> InstallEnvironment {
         InstallEnvironment(validateCandidate: validate, stopHost: stop)
+    }
+
+    func testIsolatedTargetRejectsProductionAndInvalidUUID() {
+        for identity in ["cn.jokerhub.inputmethod.Lampyris",
+                         "cn.jokerhub.inputmethod.LampyrisIMKTest.not-a-uuid",
+                         "cn.jokerhub.inputmethod.LampyrisIMKTest.00000000-0000-0000-0000-000000000000.extra"] {
+            XCTAssertThrowsError(try InstallTarget.isolated(identity: identity))
+        }
+        XCTAssertEqual(InstallTarget.production.bundleName, "Lampyris.app")
+        XCTAssertEqual(InstallTarget.production.executablePath, "Contents/MacOS/Lampyris")
+        XCTAssertEqual(InstallTarget.production.identity, "cn.jokerhub.inputmethod.Lampyris")
+    }
+
+    func testIsolatedEnvironmentRejectsExecutableMismatchBeforeSigningCheck() throws {
+        let target = try InstallTarget.isolated(identity:
+            "cn.jokerhub.inputmethod.LampyrisIMKTest.00000000-0000-0000-0000-000000000004")
+        let app = try makeApp(folder, marker: "isolated", target: target)
+        let info = ["CFBundleIdentifier": target.identity, "CFBundleExecutable": "Lampyris"]
+        let data = try PropertyListSerialization.data(fromPropertyList: info, format: .xml, options: 0)
+        try data.write(to: app.appendingPathComponent("Contents/Info.plist"))
+        XCTAssertThrowsError(try DefaultInstallEnvironment.make(target: target).validateCandidate(app)) { error in
+            guard case InstallError.candidateInvalid(let reason) = error else {
+                return XCTFail("unexpected error: \(error)")
+            }
+            XCTAssertTrue(reason.contains("可执行文件身份不符"))
+        }
+    }
+
+    func testIsolatedTargetInstallsAndBacksUpOnlyTestBundle() throws {
+        let target = try InstallTarget.isolated(identity:
+            "cn.jokerhub.inputmethod.LampyrisIMKTest.00000000-0000-0000-0000-000000000001")
+        let production = try makeApp(domain, marker: "production")
+        let original = try makeApp(domain, marker: "old", target: target)
+        let payload = try makePayload(folder, target: target)
+        let stopped = Flag()
+        let receipt = try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support,
+            environment: environment(stop: { executable in
+                XCTAssertTrue(executable.path.hasSuffix("/LampyrisIMKTest.app/Contents/MacOS/LampyrisIMKTest"))
+                stopped.set()
+            }), target: target)
+        XCTAssertTrue(stopped.isSet)
+        XCTAssertEqual(receipt.installed, original.path)
+        XCTAssertEqual(try String(contentsOf: original.appendingPathComponent(target.executablePath),
+                                  encoding: .utf8), "new")
+        let previous = try XCTUnwrap(receipt.previous)
+        XCTAssertEqual(try String(contentsOf: URL(fileURLWithPath: previous)
+            .appendingPathComponent(target.executablePath), encoding: .utf8), "old")
+        XCTAssertEqual(try String(contentsOf: production.appendingPathComponent(UpdateInstaller.executablePath),
+                                  encoding: .utf8), "production")
+    }
+
+    func testIsolatedTargetRejectsProductionBundleWithoutTouchingEitherInstall() throws {
+        let target = try InstallTarget.isolated(identity:
+            "cn.jokerhub.inputmethod.LampyrisIMKTest.00000000-0000-0000-0000-000000000002")
+        let production = try makeApp(domain, marker: "production")
+        let isolated = try makeApp(domain, marker: "isolated", target: target)
+        let payload = try makePayload(folder)
+        let stopped = Flag()
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support,
+            environment: environment(stop: { _ in stopped.set() }), target: target))
+        XCTAssertFalse(stopped.isSet)
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
+        XCTAssertEqual(try String(contentsOf: production.appendingPathComponent(UpdateInstaller.executablePath),
+                                  encoding: .utf8), "production")
+        XCTAssertEqual(try String(contentsOf: isolated.appendingPathComponent(target.executablePath),
+                                  encoding: .utf8), "isolated")
+    }
+
+    func testIsolatedTargetPostValidationFailureRestoresTestBundle() throws {
+        let target = try InstallTarget.isolated(identity:
+            "cn.jokerhub.inputmethod.LampyrisIMKTest.00000000-0000-0000-0000-000000000003")
+        let production = try makeApp(domain, marker: "production")
+        let isolated = try makeApp(domain, marker: "old", target: target)
+        let payload = try makePayload(folder, target: target)
+        let calls = Flag()
+        XCTAssertThrowsError(try UpdateInstaller.install(
+            payload: payload, signature: try signature(payload), publicKeyBase64: publicKey,
+            domain: domain, support: support,
+            environment: environment(validate: { _ in
+                if calls.increment() >= 2 { throw InstallError.candidateInvalid("post") }
+            }), target: target))
+        XCTAssertEqual(try String(contentsOf: isolated.appendingPathComponent(target.executablePath),
+                                  encoding: .utf8), "old")
+        XCTAssertEqual(try String(contentsOf: production.appendingPathComponent(UpdateInstaller.executablePath),
+                                  encoding: .utf8), "production")
+        XCTAssertEqual(try FileManager.default.contentsOfDirectory(atPath: support.path), [])
     }
 
     func testFreshInstallPlacesBundleAndWritesReceipt() throws {

@@ -229,10 +229,11 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 progress.doubleValue = 1
                 progress.isIndeterminate = true
                 progress.startAnimation(nil)
+                let target = InstallTarget.production
                 let receipt = try UpdateInstaller.install(
                     payload: payload.url, signature: signature, publicKeyBase64: key,
                     domain: domain, support: support,
-                    environment: DefaultInstallEnvironment.make())
+                    environment: DefaultInstallEnvironment.make(target: target), target: target)
                 setBusy(false)
                 status.stringValue = "已安装构建 \(release.build)"
                 detail.stringValue = "旧版本备份：\(receipt.previous ?? "无")"
