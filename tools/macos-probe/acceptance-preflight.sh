@@ -23,7 +23,11 @@ front=$(osascript -e 'tell application "System Events" to name of first applicat
 [ -n "$front" ] && check gui_session ok "" || check gui_session fail "无图形会话（无法取前台应用）"
 [ -x "$BIN/imetype" ] && check probe_built ok "" || check probe_built fail "探针未构建"
 if [ -x "$BIN/imetype" ] && [ ! -x "$BIN/axfocus" ]; then check ax_probe fail "缺少 axfocus"; fi
-[ -d /tmp/lampyris-imetype.app ] || { [ -x "$BIN/imetype" ] && "$PROBE/build-imetype-app.sh" >/dev/null 2>&1; }
+# 报告199：只在目录缺失时重建会留下旧二进制（改完 imetype 后仍跑旧的），所以二进制更新时也重建。
+STALE=0
+[ -d /tmp/lampyris-imetype.app ] || STALE=1
+[ -x "$BIN/imetype" ] && [ /tmp/lampyris-imetype.app/Contents/MacOS/imetype -ot "$BIN/imetype" ] && STALE=1
+[ "$STALE" = 1 ] && [ -x "$BIN/imetype" ] && "$PROBE/build-imetype-app.sh" >/dev/null 2>&1
 [ -d /tmp/lampyris-imetype.app ] && check test_app ok "" || check test_app fail "测试 App 未生成"
 
 detail="${detail%,}"
