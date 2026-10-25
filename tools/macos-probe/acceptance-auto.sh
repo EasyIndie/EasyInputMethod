@@ -57,11 +57,17 @@ assert_text "⌥M 模式循环"     'opt+m;opt+m;opt+m;wq ' 'unicode:'
 
 # 3. 客户端矩阵
 if KEYS='wq nihao .' OUT="$OUT/clients" "$PROBE/client-matrix.sh" > "$OUT/clients.log" 2>&1; then
-    ok=0
+    ok=0; attempted=0; skipped=0
     for f in "$OUT"/clients/*.json; do
+        if grep -q 'SKIP' "$f"; then skipped=$((skipped + 1)); continue; fi
+        attempted=$((attempted + 1))
         grep -q '你好。' "$f" && ok=$((ok + 1))
     done
-    if [ "$ok" -ge 5 ]; then report "客户端矩阵" "PASS ($ok/5)"; else report "客户端矩阵" "FAIL ($ok/5)"; FAILED=1; fi
+    if [ "$attempted" -ge 4 ] && [ "$ok" -eq "$attempted" ]; then
+        report "客户端矩阵" "PASS ($ok/$attempted，跳过 $skipped)"
+    else
+        report "客户端矩阵" "FAIL ($ok/$attempted，跳过 $skipped)"; FAILED=1
+    fi
 else
     report "客户端矩阵" "FAIL (见 $OUT/clients.log)"; FAILED=1
 fi

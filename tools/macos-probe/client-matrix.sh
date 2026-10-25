@@ -11,6 +11,12 @@ OUT="${OUT:-/tmp/lampyris-client-matrix}"
 mkdir -p "$OUT"
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo "BLOCKED 无法选中输入源 $SOURCE"; exit 1; }
 
+has_app() {
+    [ -d "/Applications/$1.app" ] || [ -d "/System/Applications/$1.app" ] && return 0
+    for candidate in /Applications/"$1"*.app; do [ -d "$candidate" ] && return 0; done
+    return 1
+}
+
 front_name() { osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null; }
 front_pid() { osascript -e 'tell application "System Events" to unix id of first application process whose frontmost is true' 2>/dev/null; }
 
@@ -68,6 +74,13 @@ if type_into ghostty; then
 fi
 
 echo "== Xcode"
+if ! has_app Xcode; then
+    echo '{"file":"SKIP 未安装 Xcode"}' | tee "$OUT/xcode.json"
+    echo "== restore"
+    "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null
+    "$BIN/tissrc" list | grep '^current'
+    exit 0
+fi
 XFILE="$OUT/xcode.txt"
 printf '' > "$XFILE"
 open -a "/Applications/Xcode-27.0.0.app" "$XFILE" >/dev/null 2>&1
