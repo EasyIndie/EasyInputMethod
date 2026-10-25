@@ -60,6 +60,16 @@ case "$PERF" in
     *) report "性能/网络" "FAIL $(printf '%s' "$PERF" | head -c 160)"; FAILED=1 ;;
 esac
 
+# 4b. 久用（可选）：SOAK_MINUTES>0 时追加
+SOAK_MINUTES="${SOAK_MINUTES:-0}"
+if [ "$SOAK_MINUTES" -gt 0 ]; then
+    SOAK=$(MINUTES="$SOAK_MINUTES" OUT="$OUT/soak" "$PROBE/soak-session.sh" 2>/dev/null | tail -1)
+    case "$SOAK" in
+        *'"result": "PASS"'*) report "久用/持久化" "PASS $(printf '%s' "$SOAK" | head -c 160)" ;;
+        *) report "久用/持久化" "FAIL $(printf '%s' "$SOAK" | head -c 160)"; FAILED=1 ;;
+    esac
+fi
+
 # 5. 还原
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 final_mode=$(field mode)

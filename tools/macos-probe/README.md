@@ -29,6 +29,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
 | `imetype --keys <串> --self-post` | 自投递模式：把 `NSEvent` 交给自己的窗口，逐键测「投递→文本变化」，输出 `latency_ms` 与 `latencies_ms`（报告191） |
 | `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`） |
+| `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
 | `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它 |
 | `type-session.sh '<按键串>' [--settle N]` | 一条命令跑完「起测试窗口 → 等前台 → 激活 → 投递 → 回读上屏文本」，输出 JSON（报告190） |
 
@@ -53,6 +54,8 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 **普通字符用默认 `postToPid` 即可；修饰键热键必须加 `--hid`**，否则绕过 IME 热键层。**单按 Shift 类热键要用 `shiftc`（真正的 flagsChanged）**，用 `keyDown(56)` 不会触发。
 
 **测量延迟不要轮询字符串**：在主线程 `RunLoop` 里反复读 `textView.string` 会把 p95 从 ~8ms 抬到 ~33ms（测自己）。用 `NSText.didChangeNotification` 记时间戳。
+
+**内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 
 跑矩阵前先确认 `mode=mixed`：`opt+m` 是持久化开关，停在五笔模式会让「拼音兜底」看起来像坏了。
 
