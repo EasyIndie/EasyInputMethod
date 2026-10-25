@@ -62,7 +62,7 @@ esac
     assert result.returncode == 1 and "找不到唯一有效签名身份" in result.stderr
     assert not (root / "lampyris-signing").exists()
     pem = "-----BEGIN PRIVATE KEY-----\nfixture\n-----END PRIVATE KEY-----"
-    result = subprocess.run(["bash", str(SCRIPT)],
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)],
         env=dict(env, ASC_API_KEY_P8=pem), capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     assert not (root / "lampyris-signing").exists()
