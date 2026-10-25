@@ -17,6 +17,17 @@ report() { printf '%-24s %s\n' "$1" "$2"; }
 # 谓词：exact:/endswith:/contains:/ascii:/unicode:
 check() { python3 -c 'import sys;kind,_,value=sys.argv[1].partition(":");got=sys.argv[2];f={"exact":lambda:got==value,"endswith":lambda:got.endswith(value),"contains":lambda:value in got,"ascii":lambda:got==value and got.isascii(),"unicode":lambda:bool(got) and any(ord(c)>0x7E for c in got)};sys.exit(0 if f[kind]() else 1)' "$1" "$2"; }
 
+run_text() { "$PROBE/type-session.sh" "$1" --settle 8 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null; }
+
+# 中英状态不在 config 里，只能探测：打 `wq ` 出中文说明是中文态，出裸 ascii 说明是英文态，再按一次 Shift 还原。
+ensure_cn() {
+    for _ in 1 2 3; do
+        if check 'unicode:' "$(run_text 'wq ')"; then return 0; fi
+        "$PROBE/type-session.sh" 'shiftc' --settle 6 >/dev/null 2>&1
+    done
+    return 1
+}
+
 assert_text() { # name keys predicate
     got=$("$PROBE/type-session.sh" "$2" --settle 8 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null)
     if check "$3" "$got"; then report "$1" "PASS ($got)"; else report "$1" "FAIL (got '$got' want '$3')"; FAILED=1; fi
@@ -34,7 +45,9 @@ report "前置 mode=mixed" "OK"
 
 # 2. 热键与上屏
 assert_text "混输+标点"       'wq nihao .'            'endswith:你好。'
+ensure_cn && report "前置 中文态" "OK" || { report "前置 中文态" "FAIL"; FAILED=1; }
 assert_text "Shift 切英文"    'shiftc;abc'            'ascii:abc'
+ensure_cn && report "还原中文态" "OK" || { report "还原中文态" "FAIL"; FAILED=1; }
 assert_text "Shift 切回中文"  'shiftc;shiftc;wq '     'unicode:'
 assert_text "⌥P 标点切换"     'opt+p;.;opt+p;.'       'exact:.。'
 assert_text "⌥F 全角切换"     'opt+f;12;opt+f;12'     'exact:１２12'
