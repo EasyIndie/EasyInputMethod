@@ -41,6 +41,7 @@
 | 报告193 | 夜间回归 `macos-nightly.yml`（ADR-290）：每日 verify/离线回归/updater XCTest/探针构建/shell 语法，真实键入用 preflight 判定（78=SKIP）；发布材料 `docs/releases/0.1.13.md` 含身份表与 8 步 checklist。 | 首次运行即抓出 `test-ci-sign.py` 两处隐式依赖本地构建产物（PR #163/#164 修），第三次 run `40164726091` 全绿，验收步骤按设计 SKIP 并写明原因。
 | 报告194 | **0.1.13 已发布**：tag `v0.1.13`（`9296fb5`），Release run `40166565905`；资产 ZIP `130f3098…`（= 装机复验的那个包）、源码 `f5df1166…`、更新程序 `cd34358f…`、appcast v21 签名可验、错签被拒；DMG 签名+staple 通过；站点（Pages 需手动 dispatch）与 `releases/latest` feed 均指向 0.1.13；DMG 内含安装器/卸载器/说明。 |
 | 报告195 | 两台设备已装 0.1.13：air 用 Release ZIP、pro（Intel/13.7.8）用 Release DMG（sha256 校验通过），执行 SHA 均为 `c3b533e4…`；pro 数据未动（config `2bd3fde6…`、词库 474 行）、空闲 0 外联/RSS 9.7MiB。pro 上键入类自动化 BLOCKED（SSH 会话窗口拿不到前台、第三方源切不动），待用户本机执行。 |
+| 报告196/197 | 固定输入质量样本集脚本（14 项，`quality-samples.sh`，执行待图形会话）+ UI 快照对比度自动化（26 张 15.58–19.77:1 全过，`make macos-ui-contrast`）+ `docs/发布说明.md` 绑定 0.1.13。本轮未动产品代码。 |
 
 ## 3. 未决
 
@@ -52,7 +53,8 @@
 
 ## 4. 下一步
 
-1. 用户在 air / pro 上完成报告195 §4 的手动清单，回复逐项结论；记录设备型号、系统版本、执行 SHA、config SHA、词库行数。
+1. 屏幕解锁后先跑 `./tools/macos-probe/quality-samples.sh`（14 项输入质量样本，报告196）。
+2. 用户在 air / pro 上完成报告195 §4 的手动清单，回复逐项结论；记录设备型号、系统版本、执行 SHA、config SHA、词库行数。
 2. pro 上如需自动化：在该机本地终端 `cd <repo> && make macos-auto-acceptance`（本地会话具备前台与切源能力）。
 3. 有 FAIL 就修并出 0.1.14；全 PASS 则推进「独立第三方重建 + 五工作日试用」，这两个是最终 RC 的剩余门禁。
 4. 可选：报告177 卡顿 A/B 取证（只读，不动用户数据）。
@@ -67,6 +69,7 @@
 
 ## 9. 会话日志（最近）
 
+- 2026-10-25 / pi：补齐不依赖 pro 的部分（报告196/197）：质量样本集脚本、UI 快照对比度自动化（26 张全过）、发布说明绑定 0.1.13；质量样本执行因本机图形会话不可用而 SKIP（preflight=78）。
 - 2026-10-25 / pi（收尾）：0.1.13 已发布并装上 air/pro（执行 SHA 同为 `c3b533e4…`，报告194/195）；nightly 与一键验收入库（报告191-193）。
 - 决策：发布前先冻结 main、对最终候选装机复验再打 tag（版本号嵌提交，doc/CI 提交会产出同号不同包）；nightly 用 preflight 的 78=SKIP 区分环境缺失与真失败。
 - 验证：`make verify` PASS；`make macos-auto-acceptance` 全绿（p95 8.68ms、稳态 10.1MiB、0 外联）；Release 资产 SHA/appcast 签名逐项核对。
