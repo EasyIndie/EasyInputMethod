@@ -68,7 +68,7 @@
 | 项 | 值 |
 |---|---|
 | 系统 / 架构 | macOS 13.7.8 / x86_64，用户 `bot`，SSH 别名 `pro` |
-| 仓库 | `~/Documents/EasyInputMethod`（19:10 为 `7177f4a`；交接提交 main/dev = `8ad1fe9`） |
+| 仓库 | `~/Documents/EasyInputMethod`（19:10 为 `7177f4a`；交接提交 main/dev = `a6156bc`） |
 | 已装包 | 0.1.13 / build 21，执行 SHA `c3b533e4…`（与 air 相同），`spctl` Notarized |
 | 数据 | `config.toml` `2bd3fde6…`、词库 474 行（升级未动）；输入源 `Lampyris.default` 已启用 |
 | 探针 | 仓库内 `tools/macos-probe/bin` 已构建 10 个（x86_64）；另有旧副本 `~/lampyris-probe` |
@@ -76,7 +76,7 @@
 **开工三步**
 
 ```sh
-cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only   # 目标：8ad1fe9
+cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only   # 目标：a6156bc
 make macos-probe-build                     # 重新编译探针（x86_64，约 1 分钟）
 ./tools/macos-probe/acceptance-preflight.sh  # 应为 ready=true；78 = 环境不适合
 ```
@@ -107,7 +107,7 @@ make macos-auto-acceptance                 # 热键/上屏 + 客户端矩阵 + �
 ## 9. 会话日志（最近）
 
 - 2026-10-25 / pi（换设备交接）：0.1.13 已发布并双机装机；air 侧自动化全绿（16/16 质量样本 + acceptance 全绿）。
-- 下一步在 Pro（macOS 13.7.8/Intel）：同步仓库到 `8ad1fe9`（= 本交接提交）→ `make macos-probe-build` → 本地终端跑 `make macos-auto-acceptance` 与 `quality-samples.sh`，再手测 VoiceOver/多屏/睡眠/卸载重装。
+- 下一步在 Pro（macOS 13.7.8/Intel）：同步仓库到 `a6156bc`（= 本交接提交）→ `make macos-probe-build` → 本地终端跑 `make macos-auto-acceptance` 与 `quality-samples.sh`，再手测 VoiceOver/多屏/睡眠/卸载重装。
 - Pro 已知差异：SSH 里窗口取不到前台、TIS 切不动第三方源 → 必须本机终端执行；Xcode 缺失会被 SKIP。
 - air 回滚点：`/tmp/lampyris-rollback-0112/`、`-0113-prev/`；Pro 回滚点：`/tmp/lampyris-rollback-0112/`。
 - 交接提示词见 §4.1 + 本轮回复末尾的「继续」模板。
