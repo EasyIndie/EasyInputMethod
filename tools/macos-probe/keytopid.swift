@@ -14,20 +14,29 @@ guard args.count >= 3, let pid = pid_t(args[1]) else {
     print("usage: keytopid <pid> <keys>")
     exit(2)
 }
+let useHID = args.contains("--hid")
+let paceArgs = args.dropFirst().filter { $0 != "--hid" }
+let argIndex = Array(paceArgs)
+let paceHold = argIndex.count > 2 ? (UInt32(argIndex[2]) ?? 120) * 1000 : 120_000
+let paceGap = argIndex.count > 3 ? (UInt32(argIndex[3]) ?? 180) * 1000 : 180_000
 let source = CGEventSource(stateID: .hidSystemState)
 let modifiers: [String: (CGKeyCode, CGEventFlags)] = [
     "shift": (56, .maskShift), "opt": (58, .maskAlternate), "ctrl": (59, .maskControl),
 ]
+
+func send(_ event: CGEvent?) {
+    if useHID { event?.post(tap: .cghidEventTap) } else { event?.postToPid(pid) }
+}
 
 func tap(_ code: CGKeyCode, _ flags: CGEventFlags, hold: CGEventFlags = []) {
     let down = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true)
     let up = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false)
     down?.flags = flags.union(hold)
     up?.flags = flags.union(hold)
-    down?.postToPid(pid)
-    usleep(120_000)
-    up?.postToPid(pid)
-    usleep(180_000)
+    send(down)
+    usleep(paceHold)
+    send(up)
+    usleep(paceGap)
 }
 
 // 语法：分号分隔的片段；每段为 [shift+|opt+|ctrl+]<字符> 或单独的 <修饰键名>（单击该修饰键）。
@@ -54,10 +63,10 @@ for token in args[2].split(separator: ";") {
     let modUp = CGEvent(keyboardEventSource: source, virtualKey: modifier.0, keyDown: false)
     modDown?.flags = hold
     modUp?.flags = []
-    modDown?.postToPid(pid)
-    usleep(120_000)
+    send(modDown)
+    usleep(paceHold)
     tap(code, hold, hold: hold)
-    modUp?.postToPid(pid)
-    usleep(180_000)
+    send(modUp)
+    usleep(paceGap)
 }
 print("posted to \(pid)")

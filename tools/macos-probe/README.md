@@ -24,8 +24,17 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `selsrc <source id>` | 用 TIS 切换输入源并回读当前源 |
 | `tissrc list\|select\|enable\|disable` | 输入源查看/选中/启停（`enable` 在 macOS 13 起对第三方输入法**不生效**，首次添加仍需系统设置） |
 | `windows` | 列出 Lampyris 的窗口标题 |
+| `axfocus` | 读取前台应用焦点元素的角色/文本（跨客户端回读，报告189） |
 | `imetype --source <id> --keys <串> --settle <秒> [--out <json>]` | **自建窗口 + 进程内切源 + 合成按键 + 回读文本**，用于自动化「键入路径」验收（报告188） |
-| `keytopid <pid> <按键串>` | 把合成按键投递到指定进程；按键串用 `;` 分隔，支持 `shift;`/`opt+f`/`ctrl+a` 与普通字符（报告188） |
+| `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 把合成按键投递到指定进程（默认按 PID；`--hid` 走 HID tap）；按键串用 `;` 分隔，支持 `shift`/`opt+f`/`ctrl+a` 与普通字符（报告188） |
+
+### 一键矩阵（报告189）
+
+```sh
+KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / Chrome / Ghostty
+```
+
+脚本对每个客户端都先过 `guard-focus.sh`，不通过就 BLOCKED；结束后把输入源还原成 ABC。
 
 ### 自动化键入的组合方式（报告188）
 
@@ -36,6 +45,8 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 3. 从**受信任的终端进程**（有辅助功能授权）用 `keytopid` 向该窗口的 PID 投递按键。
 
 直接从 SSH 会话跑 `imetype` 合成按键只会得到裸 ASCII（IME 不可达）；直接 `open` 的 App 自己发键会被 TCC 静默丢弃（`keys_seen=0`）。
+
+**普通字符用默认 `postToPid` 即可；修饰键热键必须加 `--hid`**，否则绕过 IME 热键层（⌥M 会丢按、⌥ 组合会漏）。
 
 ## 使用守则
 
