@@ -48,10 +48,10 @@ keytopid <测试窗口 pid> 'wq '; keytopid <pid> 'nihao '; …
 |---|---|---|
 | ⌥M 模式循环 | 连发 3 次只生效 2 次，`config.mode` 停在 `pinyin` | **每次按下都生效**：`mixed → wubi → pinyin`，配置逐次落盘 |
 | ⌥ 组合（全角/标点） | 部分生效 | 生效（`12` → １２） |
-| 单按 Shift 切中英 | 未见 `abc` | 同样未见 `abc`，文本出现「想法」 |
+| 单按 Shift 切中英 | 未见 `abc`（`keyDown(56)` 不算修饰键变化） | 也未见 `abc`；改用真正的 `flagsChanged`（`shiftc`）后正常，见报告190 |
 
 - 结论：**修饰键热键必须用 `--hid`**（`postToPid` 绕过 IME 热键层，只把键送进 App 的 keyDown 路径）。
-- **单按 Shift 仍是未解释项**：隔离实验里单独发 `abc`（不切中英）文本为空、`keys_seen=3`，符合「wubi 码未打完不提交」；一旦先发 `shift`，最终文本变成「想法」而非 `abc`。这既不像「切到英文」，也不像「留在中文」，需真实按键复核后才可定性；本轮**不记为产品缺陷**。
+- ~~单按 Shift 仍是未解释项~~ → **已结案（报告190）**：`CGEvent` 的 `keyDown(56)` 不会产生修饰键变化；改发真正的 `flagsChanged`（`keytopid 'shiftc;abc'`）后中英切换正常，上屏 `abc`。
 
 ## 4.1 节奏参数
 
