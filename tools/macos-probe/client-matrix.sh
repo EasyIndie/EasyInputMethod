@@ -78,6 +78,10 @@ if type_into ghostty; then
     sleep 2
     printf '{"file":"%s"}\n' "$(cat "$CAT_FILE" 2>/dev/null)" | tee "$OUT/ghostty.json"
 fi
+# 报告199：ctrl+d 不总能关掉这个测试窗口，残留的 `cat` 会一直占着前台、
+# 把后续（已提前退出的）投递吞掉。按本次独有的 CAT_FILE 精确收尾。
+for _ in 1 2 3 4 5; do pgrep -f "cat > '$CAT_FILE'" >/dev/null 2>&1 || break; sleep 1; done
+pkill -f "cat > '$CAT_FILE'" 2>/dev/null
 
 echo "== Xcode"
 if ! has_app Xcode; then

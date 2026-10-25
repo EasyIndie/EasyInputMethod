@@ -19,6 +19,10 @@ done
 [ -n "$KEYS" ] || { echo "usage: type-session.sh '<keys>' [--settle N] [--source id]"; exit 2; }
 
 pkill -f 'lampyris-imetype.app/Contents/MacOS/imetype' 2>/dev/null
+# 报告199：上次被打断的调用可能留下还在投递的 keytopid，它们会不断重置读出口、把新的测试窗口“喂”到超时。
+pkill -f "$BIN/keytopid" 2>/dev/null
+KPID=""
+trap '[ -n "$KPID" ] && kill "$KPID" 2>/dev/null' EXIT INT TERM
 sleep 0.5
 OUT="$(mktemp -t imetype-out)"; rm -f "$OUT"
 open -n /tmp/lampyris-imetype.app --args --source "$SOURCE" --keys "" --settle "$SETTLE" --delay 1.0 --out "$OUT"
@@ -41,11 +45,26 @@ done
 sleep 0.6
 
 i=0
+ok=0
 while [ $i -lt 15 ]; do
-    "$BIN/keytopid" "$PID" "$KEYS" 200 700 --hid >/dev/null 2>&1 && break
+    "$BIN/keytopid" "$PID" "$KEYS" 200 700 --hid >/dev/null 2>&1 &
+    KPID=$!
+    # 报告199：测试窗口一旦写出回读结果，就立即停掉还在投递的按键，
+    # 否则窗口先退、余下的键会落到当时的前台应用（报告099/189 同类事故）。
+    j=0
+    while [ $j -lt 60 ] && kill -0 "$KPID" 2>/dev/null; do
+        [ -s "$OUT" ] && { kill "$KPID" 2>/dev/null; break; }
+        j=$((j + 1)); sleep 0.5
+    done
+    wait "$KPID" 2>/dev/null; rc=$?
+    KPID=""
+    # 只在“根本没发出去”（前台不是测试窗口，keytopid 退 3）时重试；
+    # 已发出就不再重发，否则会把同一串按键重复上屏（报告199）。
+    [ -s "$OUT" ] && { ok=1; break; }
+    [ "$rc" -eq 0 ] && { ok=1; break; }
     i=$((i + 1)); sleep 0.7
 done
-[ $i -lt 15 ] || { echo "BLOCKED 测试窗口未取得前台（按键未投递）"; exit 1; }
+[ "$ok" = 1 ] || { echo "BLOCKED 测试窗口未取得前台（按键未投递）"; exit 1; }
 
 j=0
 while [ $j -lt 60 ]; do

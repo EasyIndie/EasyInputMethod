@@ -52,7 +52,8 @@ final class Harness: NSObject, NSApplicationDelegate {
         view.window?.makeFirstResponder(view)
         var report: [String: Any] = ["requested_source": source, "keys_seen": 0]
         var seen = 0
-        var readout: DispatchWorkItem?
+        var emitted = false
+        var lastKeyAt = Date()
         let emit: () -> Void = {
             let output = self.view.string
             report["text"] = output
@@ -61,19 +62,30 @@ final class Harness: NSObject, NSApplicationDelegate {
             let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
             let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
             if self.out.isEmpty { print(json) } else { try? json.write(toFile: self.out, atomically: true, encoding: .utf8) }
-            NSApp.terminate(nil)
+            // 写完后多留 0.8 秒，给仍在投递中的按键留落点，不瞬退把余键送给别的应用（报告199）。
+            // 只用 exit(0)：NSApp.terminate 在 macOS 13 上会卡在 NSQuietSafeQuit（sample 可见），残留实例会抢前台。
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) { exit(0) }
         }
-        // 报告198：读出口从「最后一个按键」起算，而不是从启动起算，否则慢机器上尾部按键会落在读出口之后。
-        func scheduleReadout(after seconds: Double) {
-            readout?.cancel()
-            let item = DispatchWorkItem(block: emit)
-            readout = item
-            DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: item)
+        // 报告198/199：读出口从「最后一个按键」起算（静默 settle 秒），而不是从启动起算，否则慢机器上尾部按键会落在读出口之后。
+        // 用轮询静默判定而不用定时器取消：按键持续不断时也不会永远不落盘，且 settle+30 秒后无论如何都落盘。
+        func startReadout() {
+            let started = Date()
+            lastKeyAt = started
+            let timer = Timer.scheduledTimer(withTimeInterval: 0.25, repeats: true) { timer in
+                guard !emitted else { timer.invalidate(); return }
+                let idle = Date().timeIntervalSince(lastKeyAt)
+                let total = Date().timeIntervalSince(started)
+                guard idle >= self.settle || total >= self.settle + 30 else { return }
+                emitted = true
+                timer.invalidate()
+                emit()
+            }
+            RunLoop.main.add(timer, forMode: .common)
         }
         _ = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             seen += 1
             report["keys_seen"] = seen
-            if !self.selfPost { scheduleReadout(after: self.settle) }
+            lastKeyAt = Date()
             return event
         }
         if let target = SourceID.find(source) {
@@ -106,7 +118,7 @@ final class Harness: NSObject, NSApplicationDelegate {
                 if self.tap == "self" { up?.postToPid(selfPID) } else { up?.post(tap: target) }
                 usleep(180_000)
             }
-            scheduleReadout(after: self.settle)
+            startReadout()
         }
     }
 }
