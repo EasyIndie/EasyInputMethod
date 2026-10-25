@@ -9,11 +9,11 @@
 - 正式渠道仅网站/DMG（ADR-284）；最近发布记录 v0.1.12/build20（报告174）。本轮只改源码、测试、文档；**未安装/切源/发键/写真实用户数据**。
 - #142 更新可靠性修复入 main；ADR-285 在 #143 入 main 后，签名公证 run `40096030727` 的两架构最终宿主网络导入均无命中且 IMK 控制器类保留；源码重建通过。**这仅为签名静态 PASS**，新包未运行，动态外联/更新程序/最终 RC 均未验。
 
-## 1. 设备与数据（2026-10-25 09:20 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 10:30 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| 本机 B，arm64/macOS 27.0.1 | **已装 0.1.13/build21**（2026-10-25 08:19 装，报告187），Developer ID / Gatekeeper accepted；执行 SHA `a3faf05c66299992df642d1a47af31402fac9e2249c2317d9a9f04e191a441c4` | config SHA `809e2cae7d21…`（显式 8 个 hotkey；mode=mixed；`show_wubi_learning` 现为 true（用户有意测试 ⌥L 学习开关，切换+持久化正常，有意保留））；词库 520 行 / `f8929ac21264…`（09:20 采集瞬间，用户持续输入，禁止还原）；宿主 PID 12298；输入源当前 ABC（会话后已还原） | 回滚：`/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app` 或重装 v0.1.12 DMG |
+| 本机 B，arm64/macOS 27.0.1 | **已装 0.1.13/build21**（2026-10-25 08:19 装，报告187），Developer ID / Gatekeeper accepted；执行 SHA `a3faf05c66299992df642d1a47af31402fac9e2249c2317d9a9f04e191a441c4` | config SHA `809e2cae7d21…`（显式 8 个 hotkey；mode=mixed；`show_wubi_learning` 现为 true（用户有意测试 ⌥L 学习开关，切换+持久化正常，有意保留））；词库 549 行 / `7372cfb04afc…`（10:30 采集瞬间；含自动化验收上屏，用户持续输入，禁止还原）；宿主 PID 12298；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app` 或重装 v0.1.12 DMG |
 | Intel `pro`（历史记录，未远程重采） | 报告174称已升级 v0.1.12/build20，**本轮不把历史证据视为当前 SHA** | config/词库与源当前值未知 | 执行前独立重采 |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
