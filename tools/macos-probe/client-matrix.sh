@@ -30,7 +30,7 @@ type_into() {
         i=$((i + 1)); sleep 1
     done
     if [ "$(front_name)" != "$expected" ]; then
-        echo "BLOCKED 前台不是 $expected（当前：$(front_name)）"
+        echo "BLOCKED 前台不是 ${expected}（当前：$(front_name)）"
         return 1
     fi
     pid=$(front_pid)

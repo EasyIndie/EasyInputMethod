@@ -81,5 +81,52 @@ run "翻页键不破坏输入"         'nihao ,,,'                             '
 run "撤销回到空态"            'wqiy;cmd+z'                            'empty:'
 run "长文本不丢字"            'nihao nihao nihao nihao wqiy '         'contains:你好你好'
 
+# —— 切换与焦点（MVP「日常可用」条目） ——
+# 注意：用 TIS 切回输入源后，已开文档的输入上下文不会立即跟随；新建文档才会取到当前源。
+new_doc() { osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1; sleep 1.5; }
+
+case_switch_source() {
+    TOTAL=$((TOTAL + 1))
+    "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
+    open -a TextEdit >/dev/null 2>&1; sleep 1
+    "$BIN/axtext" clear >/dev/null 2>&1
+    pid=$(front_pid)
+    "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
+    "$BIN/keytopid" "$pid" 'wqiy' 250 800 --hid >/dev/null 2>&1; sleep 1
+    part1=$("$BIN/axtext" 2>/dev/null | head -1)
+    "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null; sleep 1
+    "$BIN/keytopid" "$pid" 'abc' 250 800 --hid >/dev/null 2>&1; sleep 1
+    part2=$("$BIN/axtext" 2>/dev/null | head -1)
+    "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
+    new_doc
+    pid=$(front_pid)
+    "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
+    "$BIN/keytopid" "$pid" 'nihao ' 250 800 --hid >/dev/null 2>&1; sleep 1.5
+    part3=$("$BIN/axtext" 2>/dev/null | head -1)
+    if check 'exact:你abc' "$part2" && check 'exact:你好' "$part3"; then
+        printf '%-26s PASS  %s | %s\n' "切输入源不丢字" "$part2" "$part3"
+    else
+        printf '%-26s FAIL  期望 你abc / 你好，实得 %s / %s（首段 %s）\n' "切输入源不丢字" "$part2" "$part3" "$part1"
+        FAILED=$((FAILED + 1))
+    fi
+}
+
+case_refocus() {
+    TOTAL=$((TOTAL + 1))
+    "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
+    new_doc
+    pid=$(front_pid)
+    "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
+    "$BIN/keytopid" "$pid" 'nihao ' 250 800 --hid >/dev/null 2>&1; sleep 1.2
+    open -a Safari >/dev/null 2>&1; sleep 2
+    open -a TextEdit >/dev/null 2>&1; sleep 2
+    got=$("$BIN/axtext" 2>/dev/null | head -1)
+    if check 'exact:你好' "$got"; then printf '%-26s PASS  %s\n' "失焦再回来不丢字" "$got"; else printf '%-26s FAIL  期望 你好，实得 %s\n' "失焦再回来不丢字" "$got"; FAILED=$((FAILED + 1)); fi
+}
+
+case_switch_source
+case_refocus
+osascript -e 'tell application "TextEdit" to close every document saving no' >/dev/null 2>&1
+
 python3 -c 'import json,sys;print(json.dumps({"total":int(sys.argv[1]),"failed":int(sys.argv[2]),"evidence":sys.argv[3],"result":"PASS" if int(sys.argv[2])==0 else "FAIL"},ensure_ascii=False))' "$TOTAL" "$FAILED" "$OUT"
 [ "$FAILED" -eq 0 ]

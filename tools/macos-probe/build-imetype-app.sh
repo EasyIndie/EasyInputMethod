@@ -5,7 +5,7 @@ set -eu
 PROBE="$(cd "$(dirname "$0")" && pwd)"
 APP="${APP:-/tmp/lampyris-imetype.app}"
 BIN="$PROBE/bin/imetype"
-[ -x "$BIN" ] || { echo "缺少 $BIN，先跑 make macos-probe-build" >&2; exit 1; }
+[ -x "$BIN" ] || { echo "缺少 ${BIN}，先跑 make macos-probe-build" >&2; exit 1; }
 
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS"
