@@ -124,7 +124,7 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 - 同一轮抓出报告198 的 **5 处探针回归**并修好：`DispatchWorkItem.cancel` 对 `asyncAfter` 无效（防抖从未生效，改静默轮询）、`NSApp.terminate` 卡在 NSQuietSafeQuit（改 `exit(0)`）、preflight 只在目录缺失时重建测试 App（导致旧二进制）、`type-session` 重发导致重复上屏与死锁（只在前台失败时重试 + trap 杀在途 keytopid）、Ghostty 测试窗口残留抢前台（按 CAT_FILE 精确 pkill）。修后两轮 acceptance 连过、质量样本 16/16。
 - 收尾状态：宿主新 PID 22911（soak 重启，冷态 2.9M）、config `2bd3fde6…` 未变、词库 482 行、输入源 ABC、无 imetype/keytopid/Ghostty 残留。
 - 未决：长会话 footprint 从 ~21M 涨到 ~43M 需带 footprint 的长时 soak 定性（不阻塞）；人工项（VoiceOver/多屏/睡眠/卸载重装）仍待做。
-- 入库：本轮探针修复 + 报告199 待提 PR（dev → main）。
+- 入库：本轮探针修复 + 报告199 已进 main（PR #176，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-25 / pi（pro 本机图形会话）：pro 自动化验收跑通（报告198）——首轮 3 项 FAIL 全是探针/环境（读出口竞态、macOS 13 `data:` URL、RSS 跨版本口径）；修 3 处探针后 `make macos-auto-acceptance` 与 `quality-samples.sh` 16/16 全 PASS，产品代码未动。
 - 收尾状态：config `2bd3fde6…` 未变、词库 475→479（学习写入，不还原）、宿主 PID 85195 未重启、输入源还原 ABC、探针新增的 Safari/Chrome 标签已关闭。
