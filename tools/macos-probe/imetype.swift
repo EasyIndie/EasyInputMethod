@@ -52,9 +52,28 @@ final class Harness: NSObject, NSApplicationDelegate {
         view.window?.makeFirstResponder(view)
         var report: [String: Any] = ["requested_source": source, "keys_seen": 0]
         var seen = 0
+        var readout: DispatchWorkItem?
+        let emit: () -> Void = {
+            let output = self.view.string
+            report["text"] = output
+            report["has_non_ascii"] = output.unicodeScalars.contains { $0.value > 0x7E }
+            report["length"] = output.count
+            let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
+            let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
+            if self.out.isEmpty { print(json) } else { try? json.write(toFile: self.out, atomically: true, encoding: .utf8) }
+            NSApp.terminate(nil)
+        }
+        // 报告198：读出口从「最后一个按键」起算，而不是从启动起算，否则慢机器上尾部按键会落在读出口之后。
+        func scheduleReadout(after seconds: Double) {
+            readout?.cancel()
+            let item = DispatchWorkItem(block: emit)
+            readout = item
+            DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: item)
+        }
         _ = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
             seen += 1
             report["keys_seen"] = seen
+            if !self.selfPost { scheduleReadout(after: self.settle) }
             return event
         }
         if let target = SourceID.find(source) {
@@ -87,16 +106,7 @@ final class Harness: NSObject, NSApplicationDelegate {
                 if self.tap == "self" { up?.postToPid(selfPID) } else { up?.post(tap: target) }
                 usleep(180_000)
             }
-            DispatchQueue.main.asyncAfter(deadline: .now() + self.settle) {
-                let output = self.view.string
-                report["text"] = output
-                report["has_non_ascii"] = output.unicodeScalars.contains { $0.value > 0x7E }
-                report["length"] = output.count
-                let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
-                let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
-                if self.out.isEmpty { print(json) } else { try? json.write(toFile: self.out, atomically: true, encoding: .utf8) }
-                NSApp.terminate(nil)
-            }
+            scheduleReadout(after: self.settle)
         }
     }
 }
@@ -144,7 +154,7 @@ extension Harness {
             guard !sorted.isEmpty else { return 0 }
             return (sorted[min(sorted.count - 1, Int((p / 100 * Double(sorted.count - 1)).rounded()))] / 10).rounded() / 100
         }
-        report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count]
+        report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count] as [String: Any]
         report["latencies_ms"] = sorted.map { ($0 / 10).rounded() / 100 }
         report["text"] = view.string
         report["has_non_ascii"] = view.string.unicodeScalars.contains { $0.value > 0x7E }

@@ -47,8 +47,14 @@ sleep 3
 "$BIN/axtext" clear >/dev/null 2>&1
 type_into TextEdit && "$BIN/axfocus" | tee "$OUT/textedit.json"
 
+# 报告198：macOS 13 的 LaunchServices 不接受 `open -a Safari 'data:…'`（Unable to interpret … as a path or URL），
+# 改用临时 HTML 文件，两个版本都可用。
+PAGE="$(cd "$OUT" && pwd)/page.html"
+cat > "$PAGE" <<'HTML'
+<meta charset=utf-8><textarea autofocus style="width:600px;height:200px;font-size:20px" oninput="document.title=this.value"></textarea>
+HTML
+
 echo "== Safari"
-PAGE='data:text/html,<meta charset=utf-8><textarea autofocus style="width:600px;height:200px;font-size:20px" oninput="document.title=this.value"></textarea>'
 open -a Safari "$PAGE" >/dev/null 2>&1
 if type_into Safari; then
     osascript -e 'tell application "Safari" to get name of front document' > "$OUT/safari.txt" 2>/dev/null
