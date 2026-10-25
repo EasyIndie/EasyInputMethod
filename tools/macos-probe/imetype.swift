@@ -36,6 +36,7 @@ final class Harness: NSObject, NSApplicationDelegate {
     private let out = argument("--out", default: "")
     private let delay = Double(argument("--delay", default: "1.0")) ?? 1.0
     private let tap = argument("--tap", default: "session")
+    private let selfPost = CommandLine.arguments.contains("--self-post")
     private let window = NSWindow(contentRect: NSRect(x: 240, y: 240, width: 420, height: 140),
                                   styleMask: [.titled], backing: .buffered, defer: false)
     private let view = NSTextView(frame: NSRect(x: 0, y: 0, width: 420, height: 140))
@@ -70,6 +71,10 @@ final class Harness: NSObject, NSApplicationDelegate {
             let target: CGEventTapLocation = self.tap == "hid" ? .cghidEventTap : .cgSessionEventTap
             report["tap"] = self.tap
             let selfPID = ProcessInfo.processInfo.processIdentifier
+            if self.selfPost {
+                self.runSelfPost(report: &report)
+                return
+            }
             let eventSource = CGEventSource(stateID: .hidSystemState)
             for character in self.text {
                 guard let code = keys[character] else { continue }
@@ -101,3 +106,53 @@ app.setActivationPolicy(.regular)
 let harness = Harness()
 app.delegate = harness
 app.run()
+
+extension Harness {
+    /// 自投递：把 NSEvent 直接交给测试窗口的 keyDown（经输入上下文走真实 IME 往返），
+    /// 用文本变更通知记录「投递→文本变化」用时；不轮询字符串，避免测自己（报告191）。
+    func runSelfPost(report: inout [String: Any]) {
+        var latencies: [Double] = []
+        var postedAt = DispatchTime.now()
+        let observer = NotificationCenter.default.addObserver(
+            forName: NSText.didChangeNotification, object: view, queue: nil) { _ in
+                let us = Double(DispatchTime.now().uptimeNanoseconds - postedAt.uptimeNanoseconds) / 1000
+                latencies.append(us)
+            }
+        for character in text {
+            guard let code = keys[character] else { continue }
+            let windowNumber = view.window?.windowNumber ?? 0
+            let chars = String(character)
+            guard let down = NSEvent.keyEvent(
+                    with: .keyDown, location: .zero, modifierFlags: [],
+                    timestamp: ProcessInfo.processInfo.systemUptime, windowNumber: windowNumber,
+                    context: nil, characters: chars, charactersIgnoringModifiers: chars,
+                    isARepeat: false, keyCode: code),
+                  let up = NSEvent.keyEvent(
+                    with: .keyUp, location: .zero, modifierFlags: [],
+                    timestamp: ProcessInfo.processInfo.systemUptime, windowNumber: windowNumber,
+                    context: nil, characters: chars, charactersIgnoringModifiers: chars,
+                    isARepeat: false, keyCode: code) else { continue }
+            postedAt = DispatchTime.now()
+            view.keyDown(with: down)
+            view.keyUp(with: up)
+            let deadline = Date(timeIntervalSinceNow: 0.08)
+            while Date() < deadline { RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.004)) }
+        }
+        NotificationCenter.default.removeObserver(observer)
+        let sorted = latencies.sorted()
+        func pct(_ p: Double) -> Double {
+            guard !sorted.isEmpty else { return 0 }
+            return (sorted[min(sorted.count - 1, Int((p / 100 * Double(sorted.count - 1)).rounded()))] / 10).rounded() / 100
+        }
+        report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count]
+        report["latencies_ms"] = sorted.map { ($0 / 10).rounded() / 100 }
+        finish(report: report)
+    }
+
+    func finish(report: [String: Any]) {
+        let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
+        let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
+        if out.isEmpty { print(json) } else { try? json.write(toFile: out, atomically: true, encoding: .utf8) }
+        NSApp.terminate(nil)
+    }
+}

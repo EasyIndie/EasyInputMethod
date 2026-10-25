@@ -18,6 +18,8 @@ while [ $# -gt 0 ]; do
 done
 [ -n "$KEYS" ] || { echo "usage: type-session.sh '<keys>' [--settle N] [--source id]"; exit 2; }
 
+pkill -f 'lampyris-imetype.app/Contents/MacOS/imetype' 2>/dev/null
+sleep 0.5
 OUT="$(mktemp -t imetype-out)"; rm -f "$OUT"
 open -n /tmp/lampyris-imetype.app --args --source "$SOURCE" --keys "" --settle "$SETTLE" --delay 1.0 --out "$OUT"
 PID=""
