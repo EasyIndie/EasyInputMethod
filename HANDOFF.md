@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-25 19:53 / pi（在 **pro 本机图形会话**里）。阶段：0.1.13 已发布并双机装机；**air 与 pro 的可自动化项都已全绿**，剩人工项 + pro 内存口径复测。
-- 分支：`dev` = `main`（0 开放 PR，工作树 clean，改动均已推送）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准（本文不再钉死哈希）。
+- 分支：`dev` = `main` = `567f939`（PR #175 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准（本文不再钉死哈希）。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -121,7 +121,7 @@ make macos-auto-acceptance                 # 热键/上屏 + 客户端矩阵 + �
 - 2026-10-25 / pi（pro 本机图形会话）：pro 自动化验收跑通（报告198）——首轮 3 项 FAIL 全是探针/环境（读出口竞态、macOS 13 `data:` URL、RSS 跨版本口径）；修 3 处探针后 `make macos-auto-acceptance` 与 `quality-samples.sh` 16/16 全 PASS，产品代码未动。
 - 收尾状态：config `2bd3fde6…` 未变、词库 475→479（学习写入，不还原）、宿主 PID 85195 未重启、输入源还原 ABC、探针新增的 Safari/Chrome 标签已关闭。
 - 未决：pro 的 30MB 口径需**授权重启宿主**后按 ADR-263 测 3 轮；`make macos-soak` 与人工项（VoiceOver/多屏/睡眠/卸载重装）仍待做。
-- 待办：提交本轮探针修复 + 报告198（dev → main 一个 PR），再决定是否申请重启授权。
+- 入库：探针修复 + 报告198 已进 main（PR #175，四 CI PASS；首推漏 `Signed-off-by` 补上后重推），dev 已快进同步、0 开放 PR。
 
 - 2026-10-25 / pi（换设备交接）：0.1.13 已发布并双机装机；air 侧自动化全绿（16/16 质量样本 + acceptance 全绿）。
 - 下一步在 Pro（macOS 13.7.8/Intel）：`git pull` 到远端最新 → `make macos-probe-build` → 本地终端跑 `make macos-auto-acceptance` 与 `./tools/macos-probe/quality-samples.sh`，再手测 VoiceOver/多屏/睡眠/卸载重装。
