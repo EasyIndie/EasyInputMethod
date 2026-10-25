@@ -23,7 +23,8 @@
 - [x] 2026-10-25 版本/构建号递增（0.1.13 / build 21）：`Cargo.toml` 与 `packaging/build-number` 同步，`Cargo.lock` 刷新；`make verify`（422 产物）、`macos-offline-tests`、updater 40+7 PASS；发布流程补「2.5 版本号与构建号递增」。
 - [ ] 2026-10-25 正式发布 0.1.13 时：更新 `site/index.html` 的 DMG 链接与版本文案、Release notes、appcast；未发布前不动站点。
 - [x] 2026-10-25 正式候选 0.1.13/build21（报告186）：PR #155 四 CI PASS → main `2d9c509`，acceptance run `40145382687` 产物 ZIP `f86959d6…`/源码 `c743feb4…`/执行 `a3faf05c…`；签名公证/staple/双架构零网络导入/控制器类/无隔离键/可复现 PASS；启动 30 秒抽样 0 外联，config 未变。**未安装**。
-- [ ] 2026-10-25 候选包动态验收（需授权）：安装候选（替换 `~/Library/Input Methods/Lampyris.app`，配置/词库不动，回滚为重装 v0.1.12 DMG）后验证三模式、目标客户端、辅助功能/多屏/睡眠、宿主动态零外联、p95 与内存。
+- [x] 2026-10-25 安装候选 0.1.13/build21（报告187）：原地替换生产位，执行 SHA `a3faf05c…`、`spctl` Notarized Developer ID、`codesign --strict` PASS；用户人工键入会话报告正常、词库 519→520 学习写入、宿主存活 RSS 7.8 MiB；空闲与会话后网络抽样均 0 连接。回滚点 `/tmp/lampyris-rollback-0112/`。
+- [ ] 2026-10-25 最终 RC 动态矩阵（未做）：三模式与目标客户端（编辑器/浏览器/终端/Office）、辅助功能、多屏与缩放、睡眠唤醒、键入期零外联与外联抓包、p95<16ms、稳态 ≤30MiB、升级异常与卸载、独立第三方重建、五工作日试用。合成键入在 SSH 会话不触发 IME，须图形会话人工执行或本地终端。
 
 - [x] 2026-10-24 更新链路受影响原生复验（报告183/184）：合并 main 的隔离签名更新程序 + 临时 Ed25519 密钥 + 受控 HTTPS feed，在非生产身份、0700 私有根下实测下载/验签/取消/篡改拒绝/安装两次/备份/receipt 0600/落地验签公证/注入回滚/UI 取消；生产执行 SHA、config、宿主与输入源全程未变。
 - [x] 2026-10-24 宿主网络导入工程归因（ADR-285/报告178）：隔离链接实验定位为 Rust staticlib 带入未引用代码；`build.sh` 加 `-dead_strip` 与逐架构产物导入门禁，本地 strict universal 两片不再导入 socket/connect，控制器类保留，离线回归通过。尚未由新公证包/原生路径验证，不继承给 main `56c2457` 旧包。
