@@ -146,6 +146,8 @@ extension Harness {
         }
         report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count]
         report["latencies_ms"] = sorted.map { ($0 / 10).rounded() / 100 }
+        report["text"] = view.string
+        report["has_non_ascii"] = view.string.unicodeScalars.contains { $0.value > 0x7E }
         finish(report: report)
     }
 

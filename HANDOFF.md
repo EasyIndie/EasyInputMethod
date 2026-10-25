@@ -41,7 +41,8 @@
 | 报告191 | 一键自动验收 `make macos-auto-acceptance`：热键/上屏 8 项、五客户端、160 键延迟（p50 2.23ms / p95 6.43ms）、稳定态 RSS 11.8 MiB、全程 0 外联，全部 PASS；延迟测量改用 `NSText.didChangeNotification`（轮询会把 p95 抬到 33ms）。 |
 | 报告192 | 久用与持久化自动化 `make macos-soak`：5 分钟 111 轮约 1.7k 键，全程 0 外联、词库 568 行重启前后一致、RSS 稳态 20.0 MiB（峰值 56.3 瞬时，尾部低于热身段 ⇒ 无单调增长）。报告说明 RSS 波动与采样时刻陷阱。 | 另新增 `test-uninstall-script.py` 6 项离线回归（假 HOME + 假 pgrep），覆盖 dry-run/保留数据/清理数据/标识不符/符号链接/未安装。
 | 报告193 | 夜间回归 `macos-nightly.yml`（ADR-290）：每日 verify/离线回归/updater XCTest/探针构建/shell 语法，真实键入用 preflight 判定（78=SKIP）；发布材料 `docs/releases/0.1.13.md` 含身份表与 8 步 checklist。 | 首次运行即抓出 `test-ci-sign.py` 两处隐式依赖本地构建产物（PR #163/#164 修），第三次 run `40164726091` 全绿，验收步骤按设计 SKIP 并写明原因。
-| 报告194 | **0.1.13 已发布**：tag `v0.1.13`（`9296fb5`），Release run `40166565905`；资产 ZIP `130f3098…`（= 装机复验的那个包）、源码 `f5df1166…`、更新程序 `cd34358f…`、appcast v21 签名可验、错签被拒；DMG 签名+staple 通过；站点与 `releases/latest` feed 均指向 0.1.13。 |
+| 报告194 | **0.1.13 已发布**：tag `v0.1.13`（`9296fb5`），Release run `40166565905`；资产 ZIP `130f3098…`（= 装机复验的那个包）、源码 `f5df1166…`、更新程序 `cd34358f…`、appcast v21 签名可验、错签被拒；DMG 签名+staple 通过；站点（Pages 需手动 dispatch）与 `releases/latest` feed 均指向 0.1.13；DMG 内含安装器/卸载器/说明。 |
+| 报告195 | 两台设备已装 0.1.13：air 用 Release ZIP、pro（Intel/13.7.8）用 Release DMG（sha256 校验通过），执行 SHA 均为 `c3b533e4…`；pro 数据未动（config `2bd3fde6…`、词库 474 行）、空闲 0 外联/RSS 9.7MiB。pro 上键入类自动化 BLOCKED（SSH 会话窗口拿不到前台、第三方源切不动），待用户本机执行。 |
 
 ## 3. 未决
 
@@ -57,7 +58,7 @@
 ## 4. 下一步
 
 1. 文档归档（报告183/184、ROADMAP、HANDOFF）在固定 dev，不为纯归档单开 PR，随下一批改动一起走 `dev → main`。
-2. pro / air 两台设备安装 0.1.13 并做人工验收（报告194 §4 清单）：辅助功能、多屏缩放、睡眠唤醒、真实卸载重装；需记录设备/系统版本、安装前后执行 SHA、config SHA、词库行数。
+2. 人工验收（报告195 §4）：两台设备的辅助功能/多屏缩放/睡眠唤醒/真实卸载重装；pro 的键入测试需在该机本地终端跑 `make macos-auto-acceptance` 或由用户手打。
 3. 已装 0.1.13/build21：`make macos-auto-acceptance`（+`SOAK_MINUTES` 追加 `macos-soak`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用持久化（报告191/192，全 PASS）；剩下必须人工的只有 ④ 辅助功能/多屏/睡眠 ⑤ 真实卸载流程（脚本逻辑已有离线回归） ⑥ 第三方重建与五日试用。
 3. `show_wubi_learning=true` 是用户有意设置，保留；不要再"还原"成 false。
 4. **发键前必须 guard-focus**（报告099/189）：`--hid` 面向当前前台应用，前台可能在命令之间被切走。
@@ -71,6 +72,7 @@
 
 ## 9. 会话日志（最近）
 
+- 2026-10-25 / pi：0.1.13 装上两台设备（报告195）：air=Release ZIP、pro=Release DMG，执行 SHA 同为 `c3b533e4…`，签名与数据保留核对通过；pro 的键入自动化因 SSH 会话限制 BLOCKED，需本机执行。
 - 2026-10-25 / pi：**0.1.13 发布完成**（报告194）：冻结 main 后先对候选 `c3b533e4…` 装机复验（自动化全绿），再 tag `v0.1.13` → Release `40166565905`；资产 SHA/`.sha256`/DMG 公证/appcast 签名逐项核对，站点与 latest feed 已更新。
 - 2026-10-25 / pi：夜间回归（ADR-290）合入 main，run `40164726091` 全绿（验收步骤按设计 SKIP）。
 - 2026-10-25 / pi：nightly 首次运行抓出 `test-ci-sign.py` 两处隐式依赖本地构建产物（#163/#164），修后 run `40164726091` 全绿；验收步骤在无输入源的 runner 上按设计 SKIP。
