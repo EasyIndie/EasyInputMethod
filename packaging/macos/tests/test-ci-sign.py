@@ -15,11 +15,12 @@ with tempfile.TemporaryDirectory(prefix="lampyris-ci-sign-test-") as directory:
         "ASC_API_KEY_P8", "ASC_API_KEY_ID", "ASC_API_ISSUER_ID",
     ):
         env.pop(name, None)
-    result = subprocess.run(["bash", str(SCRIPT)], env=env, capture_output=True, text=True)
-    assert result.returncode == 1 and "缺少 CI 配置" in result.stderr
-    assert not (root / "lampyris-signing").exists()
+    # 先用 fixture app，避免依赖本机是否已构建 platforms/macos/build/Lampyris.app
     app = root / "Fixture.app"
     app.mkdir()
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)], env=env, capture_output=True, text=True)
+    assert result.returncode == 1 and "缺少 CI 配置" in result.stderr, result.stderr
+    assert not (root / "lampyris-signing").exists()
     binary = root / "bin"
     binary.mkdir()
     fake = '''#!/usr/bin/env bash
