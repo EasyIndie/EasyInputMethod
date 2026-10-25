@@ -32,7 +32,7 @@
 - [x] 2026-10-25 卸载脚本离线回归（报告192）：`test-uninstall-script.py` 6 项（dry-run/保留数据/purge/标识不符/符号链接/未安装）已进 `make macos-offline-tests`，假 HOME 隔离，不触碰真实安装。
 - [x] 2026-10-25 夜间 CI 回归（ADR-290，报告193）：`macos-nightly.yml` 每日跑 verify/离线回归/更新程序 XCTest/探针构建/shell 语法，真实键入验收用 `acceptance-preflight.sh` 判定，退出码 78 = SKIP（runner 无图形会话/未装输入法），具备条件时自动实跑并上传证据。 首次运行抓出 `test-ci-sign.py` 两处隐式依赖（#163/#164 修复），run `40164726091` 全绿。
 - [x] 2026-10-25 0.1.13 发布材料（报告193）：`docs/releases/0.1.13.md` 记录身份表（ZIP `f86959d6…`/源码 `c743feb4…`/执行 `a3faf05c…`）、相对 0.1.12 的改动、已验证/未验证、升级回滚与 8 步发布 checklist。
-- [x] 2026-10-25 0.1.13 正式发布（报告194）：tag `v0.1.13`（`9296fb5`）→ Release run `40166565905` 成功；资产 ZIP `130f3098…`（与验收产物同 SHA）、源码 `f5df1166…`、更新程序 `cd34358f…`、appcast version=21 签名可验；DMG 签名/staple 通过；站点已改 0.1.13；`releases/latest/download/appcast.xml` 已指向本版。
+- [x] 2026-10-25 0.1.13 正式发布（报告194）：tag `v0.1.13`（`9296fb5`）→ Release run `40166565905` 成功；资产 ZIP `130f3098…`（与验收产物同 SHA）、源码 `f5df1166…`、更新程序 `cd34358f…`、appcast version=21 签名可验；DMG 签名/staple 通过；站点已改 0.1.13（`Pages` 为手动 dispatch，run `40167364328`）；`releases/latest/download/appcast.xml` 已指向本版。
 - [ ] 2026-10-25 pro / air 两台设备安装 0.1.13 后的人工验收：辅助功能、多屏缩放、睡眠唤醒、真实卸载重装；记录设备/系统版本与前后执行 SHA（报告194 §4）。
 - [ ] ~~2026-10-25 0.1.13 正式发布~~：更新站点链接 → 打签名 tag `v0.1.13` → 触发 Release 工作流 → 核对资产 SHA/appcast → 发布后真实更新检查（报告194）。
 - [x] 2026-10-25 Xcode 纳入客户端矩阵（报告190）：以「前台变为 Xcode」为等待条件后 `wq nihao .` → `你你好。`；五客户端全绿，`client-matrix.sh` 一键复现。
