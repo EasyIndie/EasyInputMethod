@@ -1,0 +1,87 @@
+name: macOS Nightly
+
+# 夜间回归（ADR-290）：把"能自动化但 PR 上跑不动"的项固定跑一遍。
+# 说明：真实键入验收需要「已装输入法 + 图形会话」，GitHub 托管 runner 不具备，
+# 由 tools/macos-probe/acceptance-preflight.sh 判定（退出码 78 → SKIP，不算失败）。
+on:
+  schedule:
+    - cron: "0 18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: macos-nightly
+  cancel-in-progress: false
+
+jobs:
+  nightly:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - name: Read pinned Rust toolchain
+        id: rust
+        run: |
+          channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
+          test -n "$channel"
+          echo "channel=$channel" >> "$GITHUB_OUTPUT"
+      - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
+        with:
+          toolchain: ${{ steps.rust.outputs.channel }}
+          components: rustfmt, clippy
+          targets: aarch64-apple-darwin, x86_64-apple-darwin
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
+      - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
+      - name: Repository gates
+        run: make verify
+      - name: Offline macOS and packaging regressions
+        run: make macos-offline-tests
+      - name: Updater and installer unit tests
+        run: make macos-updater-tests
+      - name: Build desktop probes
+        run: make macos-probe-build
+      - name: Shell script syntax
+        run: |
+          set -euo pipefail
+          for script in tools/macos-probe/*.sh platforms/macos/*.sh packaging/macos/*.sh scripts/*.sh; do
+            bash -n "$script"
+          done
+      - name: Automated acceptance (real input, needs a GUI session)
+        id: acceptance
+        run: |
+          set +e
+          ./tools/macos-probe/acceptance-preflight.sh > preflight.json
+          code=$?
+          cat preflight.json
+          if [ "$code" -eq 78 ]; then
+            echo "::notice::本 runner 不满足自动化验收前置（需要已装输入法与图形会话），本次跳过。"
+            echo "status=skipped" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [ "$code" -ne 0 ]; then
+            echo "::error::前置检查异常退出 $code"
+            echo "status=failed" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          OUT="$RUNNER_TEMP/acceptance" ROUNDS=10 SOAK_MINUTES=3 make macos-auto-acceptance
+          echo "status=ran" >> "$GITHUB_OUTPUT"
+      - name: Upload acceptance evidence
+        if: always() && steps.acceptance.outputs.status == 'ran'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: lampyris-nightly-acceptance-${{ github.run_id }}
+          path: ${{ runner.temp }}/acceptance
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Summary
+        if: always()
+        run: |
+          {
+            echo "## macOS Nightly"
+            echo ""
+            echo "- 提交：\`${GITHUB_SHA}\`"
+            echo "- 自动化验收：${{ steps.acceptance.outputs.status || 'not-reached' }}"
+            echo "- 证据：artifact \`lampyris-nightly-acceptance-${GITHUB_RUN_ID}\`（仅 ran 时上传）"
+          } >> "$GITHUB_STEP_SUMMARY"
