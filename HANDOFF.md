@@ -2,17 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-25 15:12 / pi（会话收尾）。阶段：**0.1.13 已发布并装机**，进入两台设备人工验收。
-- 分支：`dev` @ `864a042`（= main = origin，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**（15:11，424 产物静态网络断言）。
-- 发布：`v0.1.13`（`9296fb5`）已上线，执行 SHA `c3b533e4…`（air 与 pro 相同）；站点、`releases/latest/download/appcast.xml` 均指向本版。
-- 自动化：`make macos-auto-acceptance`（+`SOAK_MINUTES`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用；`macOS Nightly` 每日 18:00 UTC 回归（ADR-290）。
+- 更新：2026-10-25 19:12 / pi（**换设备交接**）。阶段：0.1.13 已发布并双机装机；air 侧可自动化项全绿，**待转 pro 继续验收**。
+- 分支：`dev` @ `c049de0`（= main，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。
+- 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
+- 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。
 
-## 1. 设备与数据（2026-10-25 15:10 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 19:10 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized Developer ID/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 586 行 / `e3229a79…`（用户持续输入，禁止还原）；宿主 PID 92498；输入源 `Lampyris.default` 已启用 | 回滚：`/tmp/lampyris-rollback-0112/`（0.1.12）与 `-0113-prev/`（旧候选） |
-| **pro**（Intel/macOS 13.7.8，SSH `pro`） | **0.1.13/build21**（Release DMG，sha256 `2f22120c…`），执行 `c3b533e4…` 与 air 相同 | config `2bd3fde6…`、词库 474 行**升级未动**；宿主 PID 85195；空闲 0 外联、RSS 9.7 MiB | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
+| **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 602 行 / `70cd11c2…`；宿主 PID 92498；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/`、`-0113-prev/` |
+| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库在 `~/Documents/EasyInputMethod`（19:10 时为 `7177f4a`，需 `git fetch && git switch dev && git pull` 到 `c049de0`） | config `2bd3fde6…`、词库 474 行（升级未动）；宿主 PID 85195；探针 `~/lampyris-probe`（`bin/` 已建，x86_64）与仓库内 `tools/macos-probe/bin`（10 个二进制） | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
 
@@ -46,19 +46,55 @@
 
 ## 3. 未决
 
-- **人工验收未做**（报告195 §4）：两台设备的辅助功能（VoiceOver）、多屏/缩放、睡眠唤醒、真实卸载→重装。
-- **pro 的键入类自动化受会话限制**：SSH 里 `open -n` 的窗口拿不到前台（`--hid` 前台校验拒绝投递）、`TISSelectInputSource` 对第三方源无效 → 需在该机本地终端跑 `make macos-auto-acceptance` 或用户手打。
-- App Store 搜索框首次输入偶发卡顿（报告177）：A/B 与 sample 待取证，暂不归因。
-- 最终 RC 仍需：独立第三方重建、五工作日试用；历史包 PASS 不继承。
-- `make verify-no-network` 只做静态断言，不扫描签名 `.app`；动态零外联靠探针实测（报告191/192）。
+- **pro 侧验收未做**：键入类、辅助功能、多屏/缩放、睡眠唤醒、卸载重装。air 侧可自动化项已全绿。
+- **air 侧剩余人工项**：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装。
+- **pro 的平台差异**（实测，勿当 bug）：SSH 会话里 `open -n` 的窗口拿不到前台（`keytopid --hid` 前台校验会拒绝投递）；`TISSelectInputSource` 对第三方源无效 → 在 pro 上必须**在该机本地终端**跑验收。
+- App Store 搜索框首次输入偶发卡顿（报告177）：未归因，暂不改代码。
+- 最终 RC 仍需：第三方独立重建（IT-15）、五工作日试用（IT-23）。
+- `make verify-no-network` 只做静态断言；动态零外联靠探针实测。
 
 ## 4. 下一步
 
-1. 屏幕解锁后先跑 `./tools/macos-probe/quality-samples.sh`（14 项输入质量样本，报告196）。
-2. 用户在 air / pro 上完成报告195 §4 的手动清单，回复逐项结论；记录设备型号、系统版本、执行 SHA、config SHA、词库行数。
-2. pro 上如需自动化：在该机本地终端 `cd <repo> && make macos-auto-acceptance`（本地会话具备前台与切源能力）。
-3. 有 FAIL 就修并出 0.1.14；全 PASS 则推进「独立第三方重建 + 五工作日试用」，这两个是最终 RC 的剩余门禁。
-4. 可选：报告177 卡顿 A/B 取证（只读，不动用户数据）。
+1. **在 Pro 上继续验收**（见 §4.1）：先同步仓库到 `c049de0`，再依次跑 `make macos-probe-build` → `make macos-auto-acceptance` → `make quality-samples` 风格的 `./tools/macos-probe/quality-samples.sh`。
+2. Pro 自动化跑完后，手测：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（保留数据）。
+3. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md`（或新报告198）。
+4. 启动五工作日试用（IT-23）；安排第三方离线重建（IT-15）。
+5. 任一 FAIL：修 → 出 0.1.14 → 受影响的 PASS 全部重跑（历史 PASS 不继承）。
+
+## 4.1 换到 Pro（Intel / macOS 13.7.8 / `ssh pro`）继续
+
+**环境事实**
+
+| 项 | 值 |
+|---|---|
+| 系统 / 架构 | macOS 13.7.8 / x86_64，用户 `bot`，SSH 别名 `pro` |
+| 仓库 | `~/Documents/EasyInputMethod`（19:10 为 `7177f4a`，需同步到 `c049de0`） |
+| 已装包 | 0.1.13 / build 21，执行 SHA `c3b533e4…`（与 air 相同），`spctl` Notarized |
+| 数据 | `config.toml` `2bd3fde6…`、词库 474 行（升级未动）；输入源 `Lampyris.default` 已启用 |
+| 探针 | 仓库内 `tools/macos-probe/bin` 已构建 10 个（x86_64）；另有旧副本 `~/lampyris-probe` |
+
+**开工三步**
+
+```sh
+cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only
+make macos-probe-build                     # 重新编译探针（x86_64，约 1 分钟）
+./tools/macos-probe/acceptance-preflight.sh  # 应为 ready=true；78 = 环境不适合
+```
+
+**验收命令（在该机本地终端跑，不要在 SSH 里跑）**
+
+```sh
+make macos-auto-acceptance                 # 热键/上屏 + 客户端矩阵 + 延迟/内存/零外联
+./tools/macos-probe/quality-samples.sh     # 16 项输入质量样本
+```
+
+**平台差异（已实测，别当 bug）**
+
+- SSH 会话里窗口拿不到前台 → `keytopid --hid` 会打印 `BLOCKED 测试窗口未取得前台`；这是保护，不是产品问题。
+- `TISSelectInputSource` 对第三方源无效 → `imetype --self-post` 的 `current_source` 会是 ABC。
+- Xcode 若未安装，`client-matrix.sh` 会输出 `SKIP 未安装 Xcode`，客户端矩阵按实际尝试数判定（≥4 即可）。
+
+**结论落点**：把结果写进 `docs/reviews/195-two-device-install.md` 的 pro 小节（或新建 198），附执行 SHA、config SHA、词库行数、每项 PASS/FAIL。
 
 ## 5. 边界
 
@@ -69,6 +105,12 @@
 - 换包/验收前读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA。
 
 ## 9. 会话日志（最近）
+
+- 2026-10-25 / pi（换设备交接）：0.1.13 已发布并双机装机；air 侧自动化全绿（16/16 质量样本 + acceptance 全绿）。
+- 下一步在 Pro（macOS 13.7.8/Intel）：同步仓库到 `c049de0` → `make macos-probe-build` → 本地终端跑 `make macos-auto-acceptance` 与 `quality-samples.sh`，再手测 VoiceOver/多屏/睡眠/卸载重装。
+- Pro 已知差异：SSH 里窗口取不到前台、TIS 切不动第三方源 → 必须本机终端执行；Xcode 缺失会被 SKIP。
+- air 回滚点：`/tmp/lampyris-rollback-0112/`、`-0113-prev/`；Pro 回滚点：`/tmp/lampyris-rollback-0112/`。
+- 交接提示词见 §4.1 + 本轮回复末尾的「继续」模板。
 
 - 2026-10-25 / pi：图形会话恢复后跑完质量样本（扩到 16 项，含切输入源/失焦），全 PASS；同日 `make macos-auto-acceptance` 复跑全绿（p95 6.99ms、稳态 5.5MiB）。；顺带定位「探针窗口长拼音得裸 ASCII、真实客户端正常」，脚本改为 TextEdit 回读。
 - 2026-10-25 / pi：补齐不依赖 pro 的部分（报告196/197）：质量样本集脚本、UI 快照对比度自动化（26 张全过）、发布说明绑定 0.1.13；质量样本执行因本机图形会话不可用而 SKIP（preflight=78）。
