@@ -2,17 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-25 19:12 / pi（**换设备交接**）。阶段：0.1.13 已发布并双机装机；air 侧可自动化项全绿，**待转 pro 继续验收**。
+- 更新：2026-10-25 19:53 / pi（在 **pro 本机图形会话**里）。阶段：0.1.13 已发布并双机装机；**air 与 pro 的可自动化项都已全绿**，剩人工项 + pro 内存口径复测。
 - 分支：`dev` = `main`（0 开放 PR，工作树 clean，改动均已推送）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准（本文不再钉死哈希）。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
-- 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。
+- 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
-## 1. 设备与数据（2026-10-25 19:10 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 19:53 重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 602 行 / `70cd11c2…`；宿主 PID 92498；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/`、`-0113-prev/` |
-| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库在 `~/Documents/EasyInputMethod`（需 `git fetch && git switch dev && git pull`，以远端最新为准） | config `2bd3fde6…`、词库 474 行（升级未动）；宿主 PID 85195；探针 `~/lampyris-probe`（`bin/` 已建，x86_64）与仓库内 `tools/macos-probe/bin`（10 个二进制） | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
+| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库 `~/Documents/EasyInputMethod` = `443c115` | config `2bd3fde6…`、词库 479 行（475→479 是 `show_wubi_learning` 学习写入）；宿主 PID 85195（本轮未重启）；探针 `bin/` 13 个 x86_64、0 告警 | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
 
@@ -43,35 +43,46 @@
 | 报告195 | 两台设备已装 0.1.13：air 用 Release ZIP、pro（Intel/13.7.8）用 Release DMG（sha256 校验通过），执行 SHA 均为 `c3b533e4…`；pro 数据未动（config `2bd3fde6…`、词库 474 行）、空闲 0 外联/RSS 9.7MiB。pro 上键入类自动化 BLOCKED（SSH 会话窗口拿不到前台、第三方源切不动），待用户本机执行。 |
 | 报告196/197 | 固定输入质量样本集脚本（14 项，`quality-samples.sh`，执行待图形会话）+ UI 快照对比度自动化（26 张 15.58–19.77:1 全过，`make macos-ui-contrast`）+ `docs/发布说明.md` 绑定 0.1.13。本轮未动产品代码。 |
 | 报告196/197 | 质量样本集扩到 16 项（含切源/失焦）在 0.1.13 上 **16/16 PASS**；同日 `acceptance-auto` 复跑全绿（p95 6.99ms）（在文本编辑里键入 + AX 回读；探针窗口对长拼音不可靠，已知坑）；UI 快照对比度 26 张全过；`docs/发布说明.md` 绑定 0.1.13。 |
+| **报告198 / pro 自动化** | pro 本机图形会话跑验收：首轮 3 项 FAIL 全部归因为探针/环境 —— ① `imetype` 读出口从启动起算（慢机器截尾，`keys_seen=9/10`），② macOS 13 拒绝 `open -a Safari 'data:…'`，③ macOS 13 `ps rss` 计入共享库页（51 MiB，footprint 仅 38.7M，且再打 160 键节点数下降）。修探针三处后**全 PASS**：热键 8 项、客户端 **4/4**（TextEdit/Safari/Chrome/Ghostty，Xcode 未装 SKIP）、160 键 p50 1.29/p95 2.41 ms、25 次采样 0 外联、RSS 增长 0.2 MiB；`quality-samples.sh` **16/16 PASS**。产品代码未动。 |
 
 ## 3. 未决
 
-- **pro 侧验收未做**：键入类、辅助功能、多屏/缩放、睡眠唤醒、卸载重装。air 侧可自动化项已全绿。
+- **pro 侧人工验收未做**：VoiceOver、多屏/缩放、睡眠唤醒、卸载重装（自动化项已全绿，见报告198）。air 侧可自动化项同样已全绿。
+- **pro 的 30MB 内存口径未测**（报告198 §6）：本轮只跑探针 RSS 口径且改成「增长 + 硬顶」；规格门禁是 ADR-263（新启动宿主上 `vmmap` footprint 与私有已提交同时 ≤30MiB）。当前宿主 4.6 小时、约 3k 合成按键后 footprint 43.2–43.7M、私有已提交 40.5M，而自投递 420 键节点数不涨、HID 每 100 键 +1.8–3.2k 小对象且两组递减 —— 需**授权重启宿主**后按协议测 3 轮才能下结论。
 - **air 侧剩余人工项**：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装。
-- **pro 的平台差异**（实测，勿当 bug）：SSH 会话里 `open -n` 的窗口拿不到前台（`keytopid --hid` 前台校验会拒绝投递）；`TISSelectInputSource` 对第三方源无效 → 在 pro 上必须**在该机本地终端**跑验收。
+- **pro 的平台差异**（实测，勿当 bug）：macOS 13 的 LaunchServices 不认 `open … 'data:…'`（已改成文件 URL）；`ps rss` 不能当内存口径用（见报告198）；`TISSelectInputSource` 只在**本机图形会话**里对第三方源有效。
 - App Store 搜索框首次输入偶发卡顿（报告177）：未归因，暂不改代码。
 - 最终 RC 仍需：第三方独立重建（IT-15）、五工作日试用（IT-23）。
 - `make verify-no-network` 只做静态断言；动态零外联靠探针实测。
 
 ## 4. 下一步
 
-1. **在 Pro 上继续验收**（见 §4.1）：先同步仓库到远端最新，再依次跑 `make macos-probe-build` → `make macos-auto-acceptance` → `make quality-samples` 风格的 `./tools/macos-probe/quality-samples.sh`。
-2. Pro 自动化跑完后，手测：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（保留数据）。
-3. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md`（或新报告198）。
+1. **pro 剩余项**（报告198 §6）：请求授权 → 重启动宿主后按 ADR-263 测 3 轮内存；再跑 `make macos-soak`（会重启宿主）核对词库持久化。
+2. Pro 手测：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（保留数据）。
+3. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md` 或新报告。
 4. 启动五工作日试用（IT-23）；安排第三方离线重建（IT-15）。
 5. 任一 FAIL：修 → 出 0.1.14 → 受影响的 PASS 全部重跑（历史 PASS 不继承）。
 
-## 4.1 换到 Pro（Intel / macOS 13.7.8 / `ssh pro`）继续
+## 4.1 已在 Pro 上完成的部分（报告198，勿重跑无谓项）
+
+在本机图形会话（不是 SSH）跑过并全绿：`make macos-probe-build`（13 个 x86_64 探针、0 告警）、`make macos-auto-acceptance`、`./tools/macos-probe/quality-samples.sh`。
+
+修过的探针行为（换机器复跑时注意）：
+
+- `imetype` 读出口现在**从最后一个按键起算**（防抖），慢机器不再截尾；
+- 客户端矩阵用 `OUT/page.html` 文件 URL（macOS 13 不认 `data:`）；
+- 内存门禁是「相对基线增长 ≤30MiB + 硬顶 96MiB」，**不是** ADR-263 的 30MB（footprint + 私有已提交）。
 
 **环境事实**
 
 | 项 | 值 |
 |---|---|
 | 系统 / 架构 | macOS 13.7.8 / x86_64，用户 `bot`，SSH 别名 `pro` |
-| 仓库 | `~/Documents/EasyInputMethod`（`git pull --ff-only` 到远端最新；交接时 19:10 为 `7177f4a`） |
+| 仓库 | `~/Documents/EasyInputMethod`，本轮执行时 = `443c115`（以 `git log --oneline -1 origin/main` 为准） |
 | 已装包 | 0.1.13 / build 21，执行 SHA `c3b533e4…`（与 air 相同），`spctl` Notarized |
-| 数据 | `config.toml` `2bd3fde6…`、词库 474 行（升级未动）；输入源 `Lampyris.default` 已启用 |
-| 探针 | 仓库内 `tools/macos-probe/bin` 已构建 10 个（x86_64）；另有旧副本 `~/lampyris-probe` |
+| 数据 | `config.toml` `2bd3fde6…`、词库 479 行（报告198 前后一致，含 `show_wubi_learning` 学习写入）；输入源 `Lampyris.default` 已启用 |
+| 探针 | `tools/macos-probe/bin` 13 个（x86_64，0 告警）；旧副本 `~/lampyris-probe` 已无用 |
+| 会话 | 验收必须在**本机图形会话**（有 Aqua/TCC）；SSH 会话只能做只读采集 |
 
 **开工三步**
 
@@ -92,10 +103,10 @@ make macos-auto-acceptance                 # 热键/上屏 + 客户端矩阵 + �
 **平台差异（已实测，别当 bug）**
 
 - SSH 会话里窗口拿不到前台 → `keytopid --hid` 会打印 `BLOCKED 测试窗口未取得前台`；这是保护，不是产品问题。
-- `TISSelectInputSource` 对第三方源无效 → `imetype --self-post` 的 `current_source` 会是 ABC。
+- 在 SSH 会话里 `TISSelectInputSource` 对第三方源无效（本机图形会话里有效）。
 - Xcode 若未安装，`client-matrix.sh` 会输出 `SKIP 未安装 Xcode`，客户端矩阵按实际尝试数判定（≥4 即可）。
 
-**结论落点**：把结果写进 `docs/reviews/195-two-device-install.md` 的 pro 小节（或新建 198），附执行 SHA、config SHA、词库行数、每项 PASS/FAIL。
+**结论落点**：pro 的结果已在报告198（`docs/reviews/198-pro-automated-acceptance.md`）；手测项补进该报告或报告195。
 
 ## 5. 边界
 
@@ -106,6 +117,11 @@ make macos-auto-acceptance                 # 热键/上屏 + 客户端矩阵 + �
 - 换包/验收前读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA。
 
 ## 9. 会话日志（最近）
+
+- 2026-10-25 / pi（pro 本机图形会话）：pro 自动化验收跑通（报告198）——首轮 3 项 FAIL 全是探针/环境（读出口竞态、macOS 13 `data:` URL、RSS 跨版本口径）；修 3 处探针后 `make macos-auto-acceptance` 与 `quality-samples.sh` 16/16 全 PASS，产品代码未动。
+- 收尾状态：config `2bd3fde6…` 未变、词库 475→479（学习写入，不还原）、宿主 PID 85195 未重启、输入源还原 ABC、探针新增的 Safari/Chrome 标签已关闭。
+- 未决：pro 的 30MB 口径需**授权重启宿主**后按 ADR-263 测 3 轮；`make macos-soak` 与人工项（VoiceOver/多屏/睡眠/卸载重装）仍待做。
+- 待办：提交本轮探针修复 + 报告198（dev → main 一个 PR），再决定是否申请重启授权。
 
 - 2026-10-25 / pi（换设备交接）：0.1.13 已发布并双机装机；air 侧自动化全绿（16/16 质量样本 + acceptance 全绿）。
 - 下一步在 Pro（macOS 13.7.8/Intel）：`git pull` 到远端最新 → `make macos-probe-build` → 本地终端跑 `make macos-auto-acceptance` 与 `./tools/macos-probe/quality-samples.sh`，再手测 VoiceOver/多屏/睡眠/卸载重装。
