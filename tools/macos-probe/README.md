@@ -57,6 +57,8 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 
+**探针自建窗口对长拼音组合不可靠**（`zhonghua ` 会得到裸 ASCII，真实客户端正常），输入质量用例请用 `quality-samples.sh`（在文本编辑里键入 + AX 回读）。
+
 跑矩阵前先确认 `mode=mixed`：`opt+m` 是持久化开关，停在五笔模式会让「拼音兜底」看起来像坏了。
 
 ## 使用守则

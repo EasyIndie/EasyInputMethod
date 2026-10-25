@@ -64,9 +64,9 @@ if KEYS='wq nihao .' OUT="$OUT/clients" "$PROBE/client-matrix.sh" > "$OUT/client
         grep -q '你好。' "$f" && ok=$((ok + 1))
     done
     if [ "$attempted" -ge 4 ] && [ "$ok" -eq "$attempted" ]; then
-        report "客户端矩阵" "PASS ($ok/$attempted，跳过 $skipped)"
+        report "客户端矩阵" "PASS (${ok}/${attempted}，跳过 ${skipped})"
     else
-        report "客户端矩阵" "FAIL ($ok/$attempted，跳过 $skipped)"; FAILED=1
+        report "客户端矩阵" "FAIL (${ok}/${attempted}，跳过 ${skipped})"; FAILED=1
     fi
 else
     report "客户端矩阵" "FAIL (见 $OUT/clients.log)"; FAILED=1
