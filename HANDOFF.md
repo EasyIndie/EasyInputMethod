@@ -2,19 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-25 07:50 / pi（会话收尾）。阶段：更新通道原生验收关闭，进入最终 RC 门禁前夜。
-- 分支：`dev` @ `2d9c509`（= main，已含版本递增）；最近 `make verify` PASS（08:06，422 产物静态网络断言）。
-- 生产位已装 **0.1.13 / build 21**（执行 SHA `a3faf05c…`，报告187）；回滚点 `/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app`（`c09c2d11…`）。
-- 隔离更新六条路径（取消/篡改/安装/备份/回滚/UI 取消）均有真实网络证据（报告183/184）；`/drill/` 已 404、私有根已删、生产侧未变。
-- 正式渠道仅网站/DMG（ADR-284）；**最新正式发布 v0.1.13/build21（报告194）**，本机已装其候选同 SHA 包（执行 `c3b533e4…`）。本轮已把**生产位换成 0.1.13/build21 候选**（用户授权，报告187），并跑了自动化键入验收（词库因此增长，属预期学习写入）。
-- #142 更新可靠性修复入 main；ADR-285 签名公证复验仍成立。**动态门禁已有进展**：0.1.13/build21 已装机并完成热键/上屏/五客户端/延迟/久用/零外联自动化验收（报告190-192）。
+- 更新：2026-10-25 15:12 / pi（会话收尾）。阶段：**0.1.13 已发布并装机**，进入两台设备人工验收。
+- 分支：`dev` @ `864a042`（= main = origin，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**（15:11，424 产物静态网络断言）。
+- 发布：`v0.1.13`（`9296fb5`）已上线，执行 SHA `c3b533e4…`（air 与 pro 相同）；站点、`releases/latest/download/appcast.xml` 均指向本版。
+- 自动化：`make macos-auto-acceptance`（+`SOAK_MINUTES`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用；`macOS Nightly` 每日 18:00 UTC 回归（ADR-290）。
 
-## 1. 设备与数据（2026-10-25 11:30 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 15:10 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| 本机 B，arm64/macOS 27.0.1 | **已装 0.1.13/build21**（2026-10-25 08:19 装，报告187），Developer ID / Gatekeeper accepted；执行 SHA `a3faf05c66299992df642d1a47af31402fac9e2249c2317d9a9f04e191a441c4` | config SHA `809e2cae7d21…`（显式 8 个 hotkey；mode=mixed；`show_wubi_learning` 现为 true（用户有意测试 ⌥L 学习开关，切换+持久化正常，有意保留））；词库 568 行 / 约 11:30 采集瞬间；含自动化验收上屏，用户持续输入，禁止还原）；宿主 PID 67087（11:30 采集）；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app` 或重装 v0.1.12 DMG |
-| Intel `pro`（历史记录，未远程重采） | 报告174称已升级 v0.1.12/build20，**本轮不把历史证据视为当前 SHA** | config/词库与源当前值未知 | 执行前独立重采 |
+| **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized Developer ID/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 586 行 / `e3229a79…`（用户持续输入，禁止还原）；宿主 PID 92498；输入源 `Lampyris.default` 已启用 | 回滚：`/tmp/lampyris-rollback-0112/`（0.1.12）与 `-0113-prev/`（旧候选） |
+| **pro**（Intel/macOS 13.7.8，SSH `pro`） | **0.1.13/build21**（Release DMG，sha256 `2f22120c…`），执行 `c3b533e4…` 与 air 相同 | config `2bd3fde6…`、词库 474 行**升级未动**；宿主 PID 85195；空闲 0 外联、RSS 9.7 MiB | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
 
@@ -46,31 +44,34 @@
 
 ## 3. 未决
 
-- 报告180 的签名宿主/更新程序绑定旧 main `73d468b`、build20，已被 drill 体系取代；drill 产物只用于隔离验收，不能冒充正式发布包。
-- **本会话为 SSH `Background` 会话**：GUI 程序无窗口服务器连接（`!cgsConnection`）、AX 窗口为 0、`screencapture` 被拒；凡需点击的 UI 验收都必须由用户在图形会话执行（本会话两次均已请用户代点）。
-- ADR-289 已定：目标目录缺失时安装器显式失败、不自建（生产该目录恒存在）。
-- **键入路径已可自动化**（报告188）：`tools/macos-probe/imetype`（`open -n` 起最小 .app，进程内切源、NSTextView 收字）+ `keytopid <pid> <按键串>`（从受信终端按 PID 投递）。直接从 SSH 跑或让 open 的 App 自己发键都不行（前者 IME 不可达，后者被 TCC 丢弃）。
-- 站点 `site/index.html` 仍硬编码 `Lampyris-0.1.12-universal.dmg`；**正式发布 0.1.13 时才更新**（ROADMAP 已记），提前改会造成 404。
-- App Store 搜索框首次输入偶发卡顿（报告177）：A/B、sample 与精确时间待取证，暂不归因。
-- 最终 RC 同包：真实三模式与目标客户端/辅助功能/多屏/睡眠/A-B、p95<16ms、稳态≤30MiB、升级异常与卸载、独立第三方重建/零外联及五工作日试用；历史包 PASS 不继承。
-- ADR-285 的最终宿主静态导入门禁已由 main `612020d` 新公证包两架构核实；`make verify-no-network` 自身仍不扫描签名 `.app`，`build.sh` 单独检查。旧宿主单时点 lsof 为空不关闭新候选的动态零外联门禁。
+- **人工验收未做**（报告195 §4）：两台设备的辅助功能（VoiceOver）、多屏/缩放、睡眠唤醒、真实卸载→重装。
+- **pro 的键入类自动化受会话限制**：SSH 里 `open -n` 的窗口拿不到前台（`--hid` 前台校验拒绝投递）、`TISSelectInputSource` 对第三方源无效 → 需在该机本地终端跑 `make macos-auto-acceptance` 或用户手打。
+- App Store 搜索框首次输入偶发卡顿（报告177）：A/B 与 sample 待取证，暂不归因。
+- 最终 RC 仍需：独立第三方重建、五工作日试用；历史包 PASS 不继承。
+- `make verify-no-network` 只做静态断言，不扫描签名 `.app`；动态零外联靠探针实测（报告191/192）。
 
 ## 4. 下一步
 
-1. 文档归档（报告183/184、ROADMAP、HANDOFF）在固定 dev，不为纯归档单开 PR，随下一批改动一起走 `dev → main`。
-2. 人工验收（报告195 §4）：两台设备的辅助功能/多屏缩放/睡眠唤醒/真实卸载重装；pro 的键入测试需在该机本地终端跑 `make macos-auto-acceptance` 或由用户手打。
-3. 已装 0.1.13/build21：`make macos-auto-acceptance`（+`SOAK_MINUTES` 追加 `macos-soak`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用持久化（报告191/192，全 PASS）；剩下必须人工的只有 ④ 辅助功能/多屏/睡眠 ⑤ 真实卸载流程（脚本逻辑已有离线回归） ⑥ 第三方重建与五日试用。
-3. `show_wubi_learning=true` 是用户有意设置，保留；不要再"还原"成 false。
-4. **发键前必须 guard-focus**（报告099/189）：`--hid` 面向当前前台应用，前台可能在命令之间被切走。
-4. 可选：报告177 的 App Store 搜索框首次输入卡顿 A/B + sample 取证（只读，不动用户数据）。
-5. 大项未动：三模式真实客户端矩阵、辅助功能/多屏/睡眠、p95<16ms、稳态 ≤30MiB、宿主动态零外联、独立第三方重建、五工作日试用；历史包 PASS 不继承。
+1. 用户在 air / pro 上完成报告195 §4 的手动清单，回复逐项结论；记录设备型号、系统版本、执行 SHA、config SHA、词库行数。
+2. pro 上如需自动化：在该机本地终端 `cd <repo> && make macos-auto-acceptance`（本地会话具备前台与切源能力）。
+3. 有 FAIL 就修并出 0.1.14；全 PASS 则推进「独立第三方重建 + 五工作日试用」，这两个是最终 RC 的剩余门禁。
+4. 可选：报告177 卡顿 A/B 取证（只读，不动用户数据）。
 
 ## 5. 边界
 
-- 核心零网络/遥测；配置只经 ime-config；不能修改真实 config/词库、UserDefaults 或 HIToolbox，不清用户数据。未经授权不换正式包、切源、发键、重启或创建 tag/Release。
-- 用户授权按隔离方案推进，但**还没有可以安全安装的隔离更新器**。如需实机换包/验收，先读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA，验证新包只会写私有根；本轮仅离线测试。
+- 核心零网络/遥测；配置只经 ime-config；不得改动真实 config/词库、UserDefaults 或 HIToolbox，不清用户数据。
+- 未经授权不换正式包、不切源、不发键、不重启、不创建 tag/Release。本轮 tag/Release 已获授权并完成，后续版本仍需单独授权。
+- 发键前必须 `guard-focus`（报告099/189 事故）；`--hid` 面向当前前台应用，前台可能被切走。
+- `show_wubi_learning=true` 是用户有意设置，不要"还原"。
+- 换包/验收前读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA。
 
 ## 9. 会话日志（最近）
+
+- 2026-10-25 / pi（收尾）：0.1.13 已发布并装上 air/pro（执行 SHA 同为 `c3b533e4…`，报告194/195）；nightly 与一键验收入库（报告191-193）。
+- 决策：发布前先冻结 main、对最终候选装机复验再打 tag（版本号嵌提交，doc/CI 提交会产出同号不同包）；nightly 用 preflight 的 78=SKIP 区分环境缺失与真失败。
+- 验证：`make verify` PASS；`make macos-auto-acceptance` 全绿（p95 8.68ms、稳态 10.1MiB、0 外联）；Release 资产 SHA/appcast 签名逐项核对。
+- 清理：`/tmp` 与旧证据目录已删，仅留两份回滚副本；分支只剩 dev/main 且同步，开放 PR 0。
+- 遗留：两台设备的人工验收（辅助功能/多屏/睡眠/卸载重装）；pro 键入自动化需本机执行。
 
 - 2026-10-25 / pi：0.1.13 装上两台设备（报告195）：air=Release ZIP、pro=Release DMG，执行 SHA 同为 `c3b533e4…`，签名与数据保留核对通过；pro 的键入自动化因 SSH 会话限制 BLOCKED，需本机执行。
 - 2026-10-25 / pi：**0.1.13 发布完成**（报告194）：冻结 main 后先对候选 `c3b533e4…` 装机复验（自动化全绿），再 tag `v0.1.13` → Release `40166565905`；资产 SHA/`.sha256`/DMG 公证/appcast 签名逐项核对，站点与 latest feed 已更新。
