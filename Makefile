@@ -5,13 +5,19 @@ CARGO ?= cargo
 CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流.md §4
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build handoff hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-probe-build macos-auto-acceptance macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build handoff hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-offline-tests.py
 
 macos-local-acceptance: ## 本地逐场景自动验收及持久证据（离屏，不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 python3 platforms/macos/tests/run-local-acceptance.py
+
+macos-probe-build: ## 构建 macOS 实机探针（tools/macos-probe/bin，不安装）
+	$(MAKE) -C tools/macos-probe
+
+macos-auto-acceptance: macos-probe-build ## 一键自动验收：热键/上屏 + 五客户端 + 键入延迟/内存/零外联（报告191）
+	OUT=$(or $(OUT),/tmp/lampyris-acceptance-$$(date -u +%Y%m%dT%H%M%SZ)) ROUNDS=$(or $(ROUNDS),10) ./tools/macos-probe/acceptance-auto.sh
 
 macos-ui-snapshots: ## 离屏渲染候选/关于/设置/诊断面板（亮/暗），几秒看 UI 改动，不操作桌面
 	./scripts/ui-snapshots.sh
