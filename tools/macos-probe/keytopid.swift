@@ -1,0 +1,63 @@
+// 把合成按键直接投递到指定进程（用于自动化验收：GUI 会话里的测试窗口 + 受 TCC 信任的投递进程）。
+import AppKit
+
+let keys: [Character: CGKeyCode] = [
+    "a": 0, "s": 1, "d": 2, "f": 3, "h": 4, "g": 5, "z": 6, "x": 7, "c": 8, "v": 9,
+    "b": 11, "q": 12, "w": 13, "e": 14, "r": 15, "y": 16, "t": 17, "1": 18, "2": 19,
+    "3": 20, "4": 21, "6": 22, "5": 23, "9": 25, "7": 26, "8": 28, "0": 29, "o": 31,
+    "u": 32, "i": 34, "p": 35, "l": 37, "j": 38, "k": 40, "n": 45, "m": 46,
+    " ": 49, ".": 47, ",": 43,
+]
+
+let args = CommandLine.arguments
+guard args.count >= 3, let pid = pid_t(args[1]) else {
+    print("usage: keytopid <pid> <keys>")
+    exit(2)
+}
+let source = CGEventSource(stateID: .hidSystemState)
+let modifiers: [String: (CGKeyCode, CGEventFlags)] = [
+    "shift": (56, .maskShift), "opt": (58, .maskAlternate), "ctrl": (59, .maskControl),
+]
+
+func tap(_ code: CGKeyCode, _ flags: CGEventFlags, hold: CGEventFlags = []) {
+    let down = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: true)
+    let up = CGEvent(keyboardEventSource: source, virtualKey: code, keyDown: false)
+    down?.flags = flags.union(hold)
+    up?.flags = flags.union(hold)
+    down?.postToPid(pid)
+    usleep(120_000)
+    up?.postToPid(pid)
+    usleep(180_000)
+}
+
+// 语法：分号分隔的片段；每段为 [shift+|opt+|ctrl+]<字符> 或单独的 <修饰键名>（单击该修饰键）。
+for token in args[2].split(separator: ";") {
+    let parts = token.split(separator: "+", omittingEmptySubsequences: false).map(String.init)
+    if parts.count == 1, parts[0] == " " {
+        tap(keys[" "]!, [])
+        continue
+    }
+    if parts.count == 1, !parts[0].isEmpty, parts[0].allSatisfy({ keys[$0] != nil }) {
+        for character in parts[0] { tap(keys[character]!, []) }
+        continue
+    }
+    if parts.count == 1, let modifier = modifiers[parts[0]] {
+        tap(modifier.0, modifier.1)
+        continue
+    }
+    guard parts.count == 2, let modifier = modifiers[parts[0]], let code = keys[Character(parts[1])] else {
+        print("skip token: \(token)")
+        continue
+    }
+    let hold = modifier.1
+    let modDown = CGEvent(keyboardEventSource: source, virtualKey: modifier.0, keyDown: true)
+    let modUp = CGEvent(keyboardEventSource: source, virtualKey: modifier.0, keyDown: false)
+    modDown?.flags = hold
+    modUp?.flags = []
+    modDown?.postToPid(pid)
+    usleep(120_000)
+    tap(code, hold, hold: hold)
+    modUp?.postToPid(pid)
+    usleep(180_000)
+}
+print("posted to \(pid)")

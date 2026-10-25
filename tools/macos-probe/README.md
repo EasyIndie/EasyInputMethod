@@ -24,6 +24,18 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `selsrc <source id>` | 用 TIS 切换输入源并回读当前源 |
 | `tissrc list\|select\|enable\|disable` | 输入源查看/选中/启停（`enable` 在 macOS 13 起对第三方输入法**不生效**，首次添加仍需系统设置） |
 | `windows` | 列出 Lampyris 的窗口标题 |
+| `imetype --source <id> --keys <串> --settle <秒> [--out <json>]` | **自建窗口 + 进程内切源 + 合成按键 + 回读文本**，用于自动化「键入路径」验收（报告188） |
+| `keytopid <pid> <按键串>` | 把合成按键投递到指定进程；按键串用 `;` 分隔，支持 `shift;`/`opt+f`/`ctrl+a` 与普通字符（报告188） |
+
+### 自动化键入的组合方式（报告188）
+
+`CGEvent` 是否生效取决于**投递进程的 TCC 信任**，而 IMK 的 mach 服务只在 Aqua 会话里可达。实测可行组合：
+
+1. 用 `open -n` 启动一个最小 `.app` 包（内含 `imetype`），让测试窗口落在图形会话；
+2. `imetype` 在自身进程内 `TISSelectInputSource`（外部进程切源不会影响别的 App 的输入上下文）；
+3. 从**受信任的终端进程**（有辅助功能授权）用 `keytopid` 向该窗口的 PID 投递按键。
+
+直接从 SSH 会话跑 `imetype` 合成按键只会得到裸 ASCII（IME 不可达）；直接 `open` 的 App 自己发键会被 TCC 静默丢弃（`keys_seen=0`）。
 
 ## 使用守则
 
