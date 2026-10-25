@@ -30,3 +30,19 @@ SOAK_MINUTES=3 make macos-auto-acceptance   # 与热键/客户端/延迟一起�
 
 - 辅助功能（VoiceOver 实读）、多屏缩放、睡眠唤醒、卸载后重装流程、第三方重建、五日试用。
 - 卸载器目前只在 `--dry-run` 层面可自动核对（真实卸载需先手动移除输入源并注销）。
+
+## 5. 追加：卸载脚本离线回归（同批）
+
+`packaging/macos/tests/test-uninstall-script.py`（随 `make macos-offline-tests` 自动执行，6 项）：
+
+| 用例 | 断言 |
+|---|---|
+| `--dry-run --purge-data` | 只打印计划，bundle 与 `config.toml` 均在原地 |
+| 默认卸载 | bundle 移入 `uninstalled/bundle.*/Lampyris.app`，配置与词库保留 |
+| `--purge-data` | `config.toml` 与 `user-dictionary.tsv` 移入 `uninstalled/data.*`，活动目录不再有 |
+| 标识不符 | 退出非零、提示「标识不符」、bundle 未被移动 |
+| 符号链接 bundle | 退出非零、提示拒绝符号链接 |
+| 未安装 | 退出 0、提示「没有萤火虫」 |
+
+- 用假 `HOME` 与假 `pgrep`（返回未运行）隔离，**不接触真实安装与真实宿主**，本机开着生产宿主也能跑。
+- 真实卸载流程（移除输入源 → 注销 → 重装）仍需人工；脚本逻辑本身现在有回归保护。
