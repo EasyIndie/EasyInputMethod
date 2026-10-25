@@ -6,14 +6,14 @@
 - 分支：`dev` @ `2d9c509`（= main，已含版本递增）；最近 `make verify` PASS（08:06，422 产物静态网络断言）。
 - 生产位已装 **0.1.13 / build 21**（执行 SHA `a3faf05c…`，报告187）；回滚点 `/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app`（`c09c2d11…`）。
 - 隔离更新六条路径（取消/篡改/安装/备份/回滚/UI 取消）均有真实网络证据（报告183/184）；`/drill/` 已 404、私有根已删、生产侧未变。
-- 正式渠道仅网站/DMG（ADR-284）；最近发布记录 v0.1.12/build20（报告174）。本轮只改源码、测试、文档；**未安装/切源/发键/写真实用户数据**。
-- #142 更新可靠性修复入 main；ADR-285 在 #143 入 main 后，签名公证 run `40096030727` 的两架构最终宿主网络导入均无命中且 IMK 控制器类保留；源码重建通过。**这仅为签名静态 PASS**，新包未运行，动态外联/更新程序/最终 RC 均未验。
+- 正式渠道仅网站/DMG（ADR-284）；最近正式发布 v0.1.12/build20（报告174）。本轮已把**生产位换成 0.1.13/build21 候选**（用户授权，报告187），并跑了自动化键入验收（词库因此增长，属预期学习写入）。
+- #142 更新可靠性修复入 main；ADR-285 签名公证复验仍成立。**动态门禁已有进展**：0.1.13/build21 已装机并完成热键/上屏/五客户端/延迟/久用/零外联自动化验收（报告190-192）。
 
-## 1. 设备与数据（2026-10-25 10:30 只读重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-25 11:30 只读重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| 本机 B，arm64/macOS 27.0.1 | **已装 0.1.13/build21**（2026-10-25 08:19 装，报告187），Developer ID / Gatekeeper accepted；执行 SHA `a3faf05c66299992df642d1a47af31402fac9e2249c2317d9a9f04e191a441c4` | config SHA `809e2cae7d21…`（显式 8 个 hotkey；mode=mixed；`show_wubi_learning` 现为 true（用户有意测试 ⌥L 学习开关，切换+持久化正常，有意保留））；词库 549 行 / `7372cfb04afc…`（10:30 采集瞬间；含自动化验收上屏，用户持续输入，禁止还原）；宿主 PID 12298；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app` 或重装 v0.1.12 DMG |
+| 本机 B，arm64/macOS 27.0.1 | **已装 0.1.13/build21**（2026-10-25 08:19 装，报告187），Developer ID / Gatekeeper accepted；执行 SHA `a3faf05c66299992df642d1a47af31402fac9e2249c2317d9a9f04e191a441c4` | config SHA `809e2cae7d21…`（显式 8 个 hotkey；mode=mixed；`show_wubi_learning` 现为 true（用户有意测试 ⌥L 学习开关，切换+持久化正常，有意保留））；词库 568 行 / 约 11:30 采集瞬间；含自动化验收上屏，用户持续输入，禁止还原）；宿主 PID 67087（11:30 采集）；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/Lampyris-0.1.12-build20.app` 或重装 v0.1.12 DMG |
 | Intel `pro`（历史记录，未远程重采） | 报告174称已升级 v0.1.12/build20，**本轮不把历史证据视为当前 SHA** | config/词库与源当前值未知 | 执行前独立重采 |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
@@ -34,12 +34,13 @@
 | 报告184 / #154 / main `167a644` | ADR-289：安装器在停宿主前以 `domainMissing` 拒绝缺失目标目录（XCTest 覆盖）；`--drill-run rollback` 在真实公证载荷上落地后注入失败 → 旧包 SHA `c9f05b97…` 恢复、work 0→0、无 receipt、临时目录清理。updater 40+7、离线/verify、四 CI PASS。 |
 | 遗留清理（报告183） | 旧隔离测试源 `…IMKTest.d4fcecfb-….default` 仍启用；子源 disable 无效，改停父源后条目消失；PID 1311 精确 SIGTERM 并删除 bundle。生产源/宿主/执行 SHA/config 未变，输入源列表无 IMKTest。 |
 | 报告185/186 / #155 / main `2d9c509` | 0.1.12/build20 候选静态核验（ZIP `430da00b…`）；版本递增为 0.1.13/build21 后 acceptance run `40145382687` 出正式候选（ZIP `f86959d6…`/执行 `a3faf05c…`），静态门禁与 30 秒启动零外联抽样 PASS；未安装、未发 tag/Release、站点未改。 |
-| 报告187 | 用户授权后原地替换生产位为 0.1.13/build21：执行 SHA `a3faf05c…`、codesign/spctl PASS、宿主 PID 12298；空闲 30 秒 + 会话后 20 秒网络抽样 0 连接，RSS 7.8 MiB；用户人工键入报告正常，词库 519→520 学习写入，config 仅第 12 行 `show_wubi_learning` 变化。 | 配置变更只落在 `show_wubi_learning` 一行（用户有意测试 ⌥L），注释与其余 29 行不变。
-| 报告188 | 键入自动化探针入库：五笔上屏「你」、拼音兜底「你好」、四码自动上屏、标点「。」、全角「１２」；键入期 28 次采样 0 连接、RSS 17–35 MiB、宿主 PID 12298 无崩溃；config 还原到 `809e2cae…`。修饰键热键须用 `keytopid --hid`；**单按 Shift 类热键要用 `shiftc`（真正的 flagsChanged）**，报告188 的「Shift 异常」已结案为探针问题（报告190）。 | 第二轮：`--hid` 通道修复 ⌥M 丢按；单按 Shift 仍异常。
+| 报告187 | 用户授权后原地替换生产位为 0.1.13/build21：执行 SHA `a3faf05c…`、codesign/spctl PASS、宿主 PID 67087（11:30 采集）；空闲 30 秒 + 会话后 20 秒网络抽样 0 连接，RSS 7.8 MiB；用户人工键入报告正常，词库 519→520 学习写入，config 仅第 12 行 `show_wubi_learning` 变化。 | 配置变更只落在 `show_wubi_learning` 一行（用户有意测试 ⌥L），注释与其余 29 行不变。
+| 报告188 | 键入自动化探针入库：五笔上屏「你」、拼音兜底「你好」、四码自动上屏、标点「。」、全角「１２」；键入期 28 次采样 0 连接、RSS 17–35 MiB、宿主 PID 67087（11:30 采集） 无崩溃；config 还原到 `809e2cae…`。修饰键热键须用 `keytopid --hid`；**单按 Shift 类热键要用 `shiftc`（真正的 flagsChanged）**，报告188 的「Shift 异常」已结案为探针问题（报告190）。 | 第二轮：`--hid` 通道修复 ⌥M 丢按；单按 Shift 仍异常。
 | 报告189 | 客户端矩阵脚本化：TextEdit/Safari/Chrome/Ghostty 同一按键串上屏均「你你好。」（AX/标题/文件三通道回读），`tools/macos-probe/client-matrix.sh` 逐客户端 guard-focus；Xcode BLOCKED（首次启动无编辑器焦点）。一次未 guard 的投递把 `wq ` 打进用户 Ghostty（无回车、未执行命令），教训已写进脚本与报告。 |
 | 报告190 | 热键矩阵自动化：Shift 中英、⌥P 标点、⌥F 全角、⌥T 简繁、⌥M 模式循环全部 PASS；`shiftc`/`type-session.sh` 入库；Xcode 纳入客户端矩阵后五客户端全绿；config 结束回到 `809e2cae…`。 |
 | 报告191 | 一键自动验收 `make macos-auto-acceptance`：热键/上屏 8 项、五客户端、160 键延迟（p50 2.23ms / p95 6.43ms）、稳定态 RSS 11.8 MiB、全程 0 外联，全部 PASS；延迟测量改用 `NSText.didChangeNotification`（轮询会把 p95 抬到 33ms）。 |
 | 报告192 | 久用与持久化自动化 `make macos-soak`：5 分钟 111 轮约 1.7k 键，全程 0 外联、词库 568 行重启前后一致、RSS 稳态 20.0 MiB（峰值 56.3 瞬时，尾部低于热身段 ⇒ 无单调增长）。报告说明 RSS 波动与采样时刻陷阱。 | 另新增 `test-uninstall-script.py` 6 项离线回归（假 HOME + 假 pgrep），覆盖 dry-run/保留数据/清理数据/标识不符/符号链接/未安装。
+| 报告193 | 夜间回归 `macos-nightly.yml`（ADR-290）：每日 verify/离线回归/updater XCTest/探针构建/shell 语法，真实键入用 preflight 判定（78=SKIP）；发布材料 `docs/releases/0.1.13.md` 含身份表与 8 步 checklist。 |
 
 ## 3. 未决
 
@@ -55,7 +56,8 @@
 ## 4. 下一步
 
 1. 文档归档（报告183/184、ROADMAP、HANDOFF）在固定 dev，不为纯归档单开 PR，随下一批改动一起走 `dev → main`。
-2. 已装 0.1.13/build21：`make macos-auto-acceptance`（+`SOAK_MINUTES` 追加 `macos-soak`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用持久化（报告191/192，全 PASS）；剩下必须人工的只有 ④ 辅助功能/多屏/睡眠 ⑤ 真实卸载流程（脚本逻辑已有离线回归） ⑥ 第三方重建与五日试用。
+2. 0.1.13 发布待执行：按 `docs/releases/0.1.13.md` §5 走（站点链接与 tag 必须同批，提前改会 404）；发布后补报告194。
+3. 已装 0.1.13/build21：`make macos-auto-acceptance`（+`SOAK_MINUTES` 追加 `macos-soak`）覆盖上屏/热键/五客户端/延迟/内存/零外联/久用持久化（报告191/192，全 PASS）；剩下必须人工的只有 ④ 辅助功能/多屏/睡眠 ⑤ 真实卸载流程（脚本逻辑已有离线回归） ⑥ 第三方重建与五日试用。
 3. `show_wubi_learning=true` 是用户有意设置，保留；不要再"还原"成 false。
 4. **发键前必须 guard-focus**（报告099/189）：`--hid` 面向当前前台应用，前台可能在命令之间被切走。
 4. 可选：报告177 的 App Store 搜索框首次输入卡顿 A/B + sample 取证（只读，不动用户数据）。
@@ -68,6 +70,7 @@
 
 ## 9. 会话日志（最近）
 
+- 2026-10-25 / pi：接入夜间 CI 与发布材料（ADR-290，报告193）：nightly 跑 verify/离线/updater XCTest/探针/shell 语法，真实键入以 preflight 的 78=SKIP 判定；`docs/releases/0.1.13.md` 记录身份表与 8 步发布 checklist（站点链接与 tag 同批）。
 - 2026-10-25 / pi：久用与持久化自动化（报告192）：`make macos-soak` 5 分钟 1.7k 键 0 外联、词库重启不丢、RSS 稳态 20 MiB 无泄漏；顺带记录「RSS 读数随页面回收波动、重启后立刻读会偏高 10 倍」的判定陷阱。
 - 2026-10-25 / pi：一键验收落地（报告191）：`make macos-auto-acceptance` 跑热键+五客户端+延迟/内存/零外联，全 PASS（p95 6.43ms、RSS 11.8MiB）；发现并修正「轮询字符串会把延迟测高 4 倍」。
 - 2026-10-25 / pi：热键矩阵自动化（报告190）：`shiftc` 解决单按 Shift（原判断为探针缺陷，非产品 bug），⌥P/⌥F/⌥T/⌥M 全 PASS，Xcode 纳入客户端矩阵后五客户端全绿。
