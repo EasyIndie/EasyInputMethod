@@ -28,7 +28,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `imetype --source <id> --keys <串> --settle <秒> [--out <json>]` | **自建窗口 + 进程内切源 + 合成按键 + 回读文本**，用于自动化「键入路径」验收（报告188） |
 | `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
 | `imetype --keys <串> --self-post` | 自投递模式：把 `NSEvent` 交给自己的窗口，逐键测「投递→文本变化」，输出 `latency_ms` 与 `latencies_ms`（报告191） |
-| `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`） |
+| `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`=增长上限/`RSS_HARD_MB`=绝对硬顶，报告198） |
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
 | `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它 |
 | `type-session.sh '<按键串>' [--settle N]` | 一条命令跑完「起测试窗口 → 等前台 → 激活 → 投递 → 回读上屏文本」，输出 JSON（报告190） |
@@ -56,6 +56,9 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 **测量延迟不要轮询字符串**：在主线程 `RunLoop` 里反复读 `textView.string` 会把 p95 从 ~8ms 抬到 ~33ms（测自己）。用 `NSText.didChangeNotification` 记时间戳。
 
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
+
+**RSS 绝对值不可跨 macOS 版本比较**（报告198）：macOS 13 的 `ps rss` 计入共享库/映射文件页（同一宿主 51 MiB，而 `vmmap` footprint 38.7M），macOS 27 上同样负载只有 5–20 MiB。所以探针门禁改成「键入后相对基线的**增长**（`RSS_LIMIT_MB`/`GROWTH_LIMIT_MB`）+ 绝对硬顶 `RSS_HARD_MB`」，泄漏信号看增长。
+规格里的 **`常驻内存 ≤30MB`（ADR-263）是另一套口径**：新启动宿主上 `vmmap` 的 physical footprint 与私有已提交同时 ≤30MiB，由 `platforms/macos/tests/run-imk-acceptance.sh` ⑪ 判定，不能拿探针 RSS 顶替。
 
 **探针自建窗口对长拼音组合不可靠**（`zhonghua ` 会得到裸 ASCII，真实客户端正常），输入质量用例请用 `quality-samples.sh`（在文本编辑里键入 + AX 回读）。
 

@@ -1,6 +1,7 @@
 #!/bin/sh
 # 久用与持久化验收（报告192）：连续键入若干分钟，采样网络/内存，然后重启宿主验证词库不丢。
-# 判定：全程 0 连接、RSS 增长 ≤ GROWTH_LIMIT_MB、稳定态 ≤ RSS_LIMIT_MB、词库行数重启前后一致、宿主存活。
+# 判定：全程 0 连接、RSS 增长 ≤ GROWTH_LIMIT_MB、稳定态 ≤ RSS_HARD_MB、词库行数重启前后一致、宿主存活。
+# 报告198：绝对 RSS 不可跨 macOS 版本比较（macOS 13 的 ps rss 计入共享库页），泄漏信号看「相对热身段增长」。
 set -u
 PROBE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$PROBE/bin"
@@ -9,7 +10,7 @@ DICT="$SUPPORT/user-dictionary.tsv"
 SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 MINUTES="${MINUTES:-3}"
 GROWTH_LIMIT_MB="${GROWTH_LIMIT_MB:-5}"
-RSS_LIMIT_MB="${RSS_LIMIT_MB:-30}"
+RSS_HARD_MB="${RSS_HARD_MB:-96}"
 OUT="${OUT:-/tmp/lampyris-soak-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 
@@ -59,10 +60,10 @@ sleep 5
 L2=$(dict_lines)
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
-python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_LIMIT_MB" "$ROUND" <<'PY'
+python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" <<'PY'
 import json, sys
 out, l0, l1, l2 = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
-growth_limit, rss_limit, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
+growth_limit, rss_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
 def numbers(name):
     try:
         return [int(x) for x in open(f"{out}/{name}", encoding="utf-8").read().split()]
@@ -83,10 +84,10 @@ summary = {
     "rss_steady_mb": round(tail_avg, 1),
     "rss_growth_mb": round(growth, 1), "rss_tail_avg_mb": round(tail_avg, 1),
     "max_connections": max(conns) if conns else 0,
-    "thresholds": {"growth_mb": growth_limit, "rss_mb": rss_limit},
+    "thresholds": {"growth_mb": growth_limit, "rss_hard_mb": rss_hard},
 }
 ok = (rounds > 0 and summary["max_connections"] == 0
-      and growth <= growth_limit and tail_avg <= rss_limit
+      and growth <= growth_limit and tail_avg <= rss_hard
       and l2 == l1 and l1 >= l0)
 summary["result"] = "PASS" if ok else "FAIL"
 print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
