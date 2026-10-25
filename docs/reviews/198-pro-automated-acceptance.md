@@ -1,5 +1,7 @@
 # 198 pro 侧自动化验收（0.1.13）与三处探针缺陷
 
+> 后续：报告199 修正了本文的探针修法——`DispatchWorkItem.cancel()` 对 `asyncAfter` 无效（防抖未生效）、`NSApp.terminate` 在 macOS 13 会卡住、preflight 不会重建旧测试 App，详见 [199](199-pro-memory-gate-and-soak.md) §4。
+
 ## 1. 环境与前置
 
 | 项 | 值 |
