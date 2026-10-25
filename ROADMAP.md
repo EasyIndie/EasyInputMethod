@@ -22,6 +22,7 @@
 - [x] 2026-10-25 新候选包静态核验（报告185）：main `167a644` 的 acceptance run `40141807115` 产物 ZIP `430da00b…`/源码 `a7603962…`/执行 `9c4d40f9…`，签名公证/staple/双架构零网络导入/控制器类保留/无隔离键/可复现全 PASS；与已装包同 0.1.12-build20，只能以执行 SHA 区分。
 - [x] 2026-10-25 版本/构建号递增（0.1.13 / build 21）：`Cargo.toml` 与 `packaging/build-number` 同步，`Cargo.lock` 刷新；`make verify`（422 产物）、`macos-offline-tests`、updater 40+7 PASS；发布流程补「2.5 版本号与构建号递增」。
 - [ ] 2026-10-25 正式发布 0.1.13 时：更新 `site/index.html` 的 DMG 链接与版本文案、Release notes、appcast；未发布前不动站点。
+- [x] 2026-10-25 正式候选 0.1.13/build21（报告186）：PR #155 四 CI PASS → main `2d9c509`，acceptance run `40145382687` 产物 ZIP `f86959d6…`/源码 `c743feb4…`/执行 `a3faf05c…`；签名公证/staple/双架构零网络导入/控制器类/无隔离键/可复现 PASS；启动 30 秒抽样 0 外联，config 未变。**未安装**。
 - [ ] 2026-10-25 候选包动态验收（需授权）：安装候选（替换 `~/Library/Input Methods/Lampyris.app`，配置/词库不动，回滚为重装 v0.1.12 DMG）后验证三模式、目标客户端、辅助功能/多屏/睡眠、宿主动态零外联、p95 与内存。
 
 - [x] 2026-10-24 更新链路受影响原生复验（报告183/184）：合并 main 的隔离签名更新程序 + 临时 Ed25519 密钥 + 受控 HTTPS feed，在非生产身份、0700 私有根下实测下载/验签/取消/篡改拒绝/安装两次/备份/receipt 0600/落地验签公证/注入回滚/UI 取消；生产执行 SHA、config、宿主与输入源全程未变。
