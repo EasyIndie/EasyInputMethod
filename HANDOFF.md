@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-25 19:12 / pi（**换设备交接**）。阶段：0.1.13 已发布并双机装机；air 侧可自动化项全绿，**待转 pro 继续验收**。
-- 分支：`dev` @ `c049de0`（= main，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。
+- 分支：`dev` = `main`（0 开放 PR，工作树 clean，改动均已推送）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准（本文不再钉死哈希）。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。
 
@@ -12,7 +12,7 @@
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 602 行 / `70cd11c2…`；宿主 PID 92498；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/`、`-0113-prev/` |
-| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库在 `~/Documents/EasyInputMethod`（19:10 时为 `7177f4a`，需 `git fetch && git switch dev && git pull` 到 `c049de0`） | config `2bd3fde6…`、词库 474 行（升级未动）；宿主 PID 85195；探针 `~/lampyris-probe`（`bin/` 已建，x86_64）与仓库内 `tools/macos-probe/bin`（10 个二进制） | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
+| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库在 `~/Documents/EasyInputMethod`（需 `git fetch && git switch dev && git pull`，以远端最新为准） | config `2bd3fde6…`、词库 474 行（升级未动）；宿主 PID 85195；探针 `~/lampyris-probe`（`bin/` 已建，x86_64）与仓库内 `tools/macos-probe/bin`（10 个二进制） | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
 
@@ -55,7 +55,7 @@
 
 ## 4. 下一步
 
-1. **在 Pro 上继续验收**（见 §4.1）：先同步仓库到 `c049de0`，再依次跑 `make macos-probe-build` → `make macos-auto-acceptance` → `make quality-samples` 风格的 `./tools/macos-probe/quality-samples.sh`。
+1. **在 Pro 上继续验收**（见 §4.1）：先同步仓库到远端最新，再依次跑 `make macos-probe-build` → `make macos-auto-acceptance` → `make quality-samples` 风格的 `./tools/macos-probe/quality-samples.sh`。
 2. Pro 自动化跑完后，手测：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（保留数据）。
 3. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md`（或新报告198）。
 4. 启动五工作日试用（IT-23）；安排第三方离线重建（IT-15）。
@@ -68,7 +68,7 @@
 | 项 | 值 |
 |---|---|
 | 系统 / 架构 | macOS 13.7.8 / x86_64，用户 `bot`，SSH 别名 `pro` |
-| 仓库 | `~/Documents/EasyInputMethod`（19:10 为 `7177f4a`；交接提交 main/dev = `a6156bc`） |
+| 仓库 | `~/Documents/EasyInputMethod`（`git pull --ff-only` 到远端最新；交接时 19:10 为 `7177f4a`） |
 | 已装包 | 0.1.13 / build 21，执行 SHA `c3b533e4…`（与 air 相同），`spctl` Notarized |
 | 数据 | `config.toml` `2bd3fde6…`、词库 474 行（升级未动）；输入源 `Lampyris.default` 已启用 |
 | 探针 | 仓库内 `tools/macos-probe/bin` 已构建 10 个（x86_64）；另有旧副本 `~/lampyris-probe` |
@@ -76,7 +76,8 @@
 **开工三步**
 
 ```sh
-cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only   # 目标：a6156bc
+cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only
+git log --oneline -1        # 记下这个提交，写进验收记录
 make macos-probe-build                     # 重新编译探针（x86_64，约 1 分钟）
 ./tools/macos-probe/acceptance-preflight.sh  # 应为 ready=true；78 = 环境不适合
 ```
