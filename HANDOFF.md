@@ -2,8 +2,8 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-25 22:57 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主）。阶段：0.1.13 已发布并双机装机；**air/pro 的自动化、内存门禁（ADR-263）、久用、质量样本全部通过**，只剩人工项。
-- 分支：`dev` = `main` = `567f939`（PR #175 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准（本文不再钉死哈希）。
+- 更新：2026-10-26 00:35 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主）。阶段：0.1.13 已发布并双机装机；**air/pro 的自动化全部可做项已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度），只剩人工项。
+- 分支：`dev` 领先 `main` 一个 docs 交接提交（报告200 那批未提 PR）；`make verify` **PASS**。具体提交以 `git log --oneline -1 origin/dev` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -44,12 +44,13 @@
 | 报告196/197 | 固定输入质量样本集脚本（14 项，`quality-samples.sh`，执行待图形会话）+ UI 快照对比度自动化（26 张 15.58–19.77:1 全过，`make macos-ui-contrast`）+ `docs/发布说明.md` 绑定 0.1.13。本轮未动产品代码。 |
 | 报告196/197 | 质量样本集扩到 16 项（含切源/失焦）在 0.1.13 上 **16/16 PASS**；同日 `acceptance-auto` 复跑全绿（p95 6.99ms）（在文本编辑里键入 + AX 回读；探针窗口对长拼音不可靠，已知坑）；UI 快照对比度 26 张全过；`docs/发布说明.md` 绑定 0.1.13。 |
 | **报告198 / pro 自动化** | pro 本机图形会话跑验收：首轮 3 项 FAIL 全部归因为探针/环境 —— ① `imetype` 读出口从启动起算（慢机器截尾，`keys_seen=9/10`），② macOS 13 拒绝 `open -a Safari 'data:…'`，③ macOS 13 `ps rss` 计入共享库页（51 MiB，footprint 仅 38.7M，且再打 160 键节点数下降）。修探针三处后**全 PASS**：热键 8 项、客户端 **4/4**（TextEdit/Safari/Chrome/Ghostty，Xcode 未装 SKIP）、160 键 p50 1.29/p95 2.41 ms、25 次采样 0 外联、RSS 增长 0.2 MiB；`quality-samples.sh` **16/16 PASS**。产品代码未动。 |
-| **报告199 / pro 内存门禁 + 久用** | 用户授权重启宿主后按 ADR-263 测 3 轮（新脚本 `memory-gate.sh`）：稳态 footprint **21.4–23.1M**、私有已提交 **21.7–23.2M**，均 ≤30MiB → **PASS**（冷态仅 2.9M）。`make macos-soak`（5 分钟 114 轮）PASS：0 外联、RSS 增长 0.1MiB、词库 482 行重启前后一致。同时发现并修掉报告198 的 **5 处探针回归**（`DispatchWorkItem.cancel` 对 `asyncAfter` 无效、`NSApp.terminate` 卡在 NSQuietSafeQuit、preflight 不重建旧测试 App、type-session 重发导致重复上屏与死锁、Ghostty 测试窗口残留），修后两轮 acceptance 连过。 |
-
+| **报告199 / pro 内存门禁 + 久用** | 用户授权重启宿主后按 ADR-263 测 3 轮（新脚本 `memory-gate.sh`）：稳态 footprint **21.4–23.1M**、私有已提交 **21.7–23.2M**，均 ≤30MiB → **PASS**（冷态仅 2.9M）。`make macos-soak`（5 分钟 114 轮）PASS：0 外联、RSS 增长 0.1MiB、词库重启前后一致。同时发现并修掉报告198 的 **5 处探针回归**（`DispatchWorkItem.cancel` 对 `asyncAfter` 无效、`NSApp.terminate` 卡在 NSQuietSafeQuit、preflight 不重建旧测试 App、type-session 重发导致重复上屏与死锁、Ghostty 测试窗口残留），修后两轮 acceptance 连过。 |
+| **报告200 / pro 其余自动化** | 离线回归从失败修到 **50/50 PASS**：系统 python3 是 3.9（套件要 ≥3.11 的 `tomllib`）→ `Makefile` 新增 `PYTHON`；沙盒测试把结果路径写死成新系统行为（macOS 13 在 `/var/folders/…/T/<id>`）→ 两处都查；本地验收 `candidate` 必测清单落后三个场景（方向键浏览/批量状态/内容分阶段）→ 一直全机器 BLOCKED，补上后 **6 套件全 PASS、70 用例**。另：`make macos-ui-contrast` **28/28 PASS**（最低 10.00:1）；`soak` 10 分钟带 footprint 采样 23.4→24.6M、后半段 +0.1MiB。 |
 ## 3. 未决
 
 - **pro 侧人工验收未做**：VoiceOver、多屏/缩放、睡眠唤醒、卸载重装（自动化、内存门禁、久用均已全绿，见报告198/199）。air 侧可自动化项同样已全绿。
-- **长会话内存待定性**（报告199 §2）：pro 新启动宿主稳态 footprint 21.4–23.1M（≤30MiB，门禁 PASS），但长会话（4.6 小时/约 3k 键）会涨到 43M 左右；5 分钟连续键入只 +0.1–0.2MiB。要定性需带 footprint 采样的长时 soak，不阻塞当前候选。
+- **长会话内存**（报告200 §4）：新宿主 21–23M，连续键入 10 分钟只 +1MiB（footprint 23.4→24.6，后半段 +0.1），「打字越多越涨」不成立；数小时尺度的收敛性需更长观测窗口，不阻塞当前候选。
+- **真实卸载→重装（保留数据）未在 pro 真跑**：属「换包」操作，需单独授权（离线脚本回归已有 6 项）。
 - **air 侧剩余人工项**：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装。
 - **pro 的平台差异**（实测，勿当 bug）：macOS 13 的 LaunchServices 不认 `open … 'data:…'`（已改成文件 URL）；`ps rss` 不能当内存口径用（见报告198）；`TISSelectInputSource` 只在**本机图形会话**里对第三方源有效。
 - App Store 搜索框首次输入偶发卡顿（报告177）：未归因，暂不改代码。
@@ -58,14 +59,14 @@
 
 ## 4. 下一步
 
-1. **pro 剩余项**：手测 VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（保留数据）；自动化/内存门禁/久用已完成（报告198/199），勿重跑。
+1. **pro 剩余项**：手测 VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒；真实卸载→重装（保留数据）需单独授权才能跑（报告200 §6）。自动化、内存门禁、久用、离线回归、本地验收、对比度均已完成，勿重跑。
 2. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md` 或新报告。
 3. 启动五工作日试用（IT-23）；安排第三方离线重建（IT-15）。
 4. 任一 FAIL：修 → 出 0.1.14 → 受影响的 PASS 全部重跑（历史 PASS 不继承）。
 
-## 4.1 已在 Pro 上完成的部分（报告198，勿重跑无谓项）
+## 4.1 已在 Pro 上完成的部分（报告198/199/200，勿重跑无谓项）
 
-在本机图形会话（不是 SSH）跑过并全绿：`make macos-probe-build`（13 个 x86_64 探针、0 告警）、`make macos-auto-acceptance`、`./tools/macos-probe/quality-samples.sh`。
+在本机图形会话（不是 SSH）跑过并全绿：`make macos-probe-build`（13 个 x86_64 探针、0 告警）、`make macos-auto-acceptance`、`./tools/macos-probe/quality-samples.sh`、`./tools/macos-probe/memory-gate.sh`（ADR-263）、`make macos-soak`、`make macos-offline-tests`、`make macos-local-acceptance`、`make macos-ui-contrast`。
 
 修过的探针行为（换机器复跑时注意）：
 
@@ -120,11 +121,14 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 ## 9. 会话日志（最近）
 
+- 2026-10-26 / pi（pro）：报告200 —— 其余可自动化项跑完。离线回归 **50/50 PASS**（修了 python 3.9 无 `tomllib`、沙盒测试对 macOS 13 临时目录的假设、本地验收 `candidate` 必测清单落后 3 个场景导致全机器 BLOCKED）；本地验收 **6 套件/70 用例 PASS**；UI 对比度 **28/28**；10 分钟 soak 带 footprint 采样 23.4→24.6M（后半段 +0.1）→ 连续键入不涨。
+- 本轮结论：pro 上除人工项与「真实卸载重装」外已无剩余自动化；产品代码未改，0.1.13 执行 SHA 未变。
+
 - 2026-10-25 / pi（pro，授权重启宿主）：报告199 —— ADR-263 内存门禁 **PASS**（3 轮新宿主：footprint 21.4–23.1M、私有已提交 21.7–23.2M，冷态 2.9M），`soak` 5 分钟 PASS（0 外联、RSS +0.1MiB、词库 482 行重启一致）。
 - 同一轮抓出报告198 的 **5 处探针回归**并修好：`DispatchWorkItem.cancel` 对 `asyncAfter` 无效（防抖从未生效，改静默轮询）、`NSApp.terminate` 卡在 NSQuietSafeQuit（改 `exit(0)`）、preflight 只在目录缺失时重建测试 App（导致旧二进制）、`type-session` 重发导致重复上屏与死锁（只在前台失败时重试 + trap 杀在途 keytopid）、Ghostty 测试窗口残留抢前台（按 CAT_FILE 精确 pkill）。修后两轮 acceptance 连过、质量样本 16/16。
 - 收尾状态：宿主新 PID 22911（soak 重启，冷态 2.9M）、config `2bd3fde6…` 未变、词库 482 行、输入源 ABC、无 imetype/keytopid/Ghostty 残留。
 - 未决：长会话 footprint 从 ~21M 涨到 ~43M 需带 footprint 的长时 soak 定性（不阻塞）；人工项（VoiceOver/多屏/睡眠/卸载重装）仍待做。
-- 入库：本轮探针修复 + 报告199 待提 PR（dev → main）。
+- 入库：本轮探针修复 + 报告199 已进 main（PR #176，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-25 / pi（pro 本机图形会话）：pro 自动化验收跑通（报告198）——首轮 3 项 FAIL 全是探针/环境（读出口竞态、macOS 13 `data:` URL、RSS 跨版本口径）；修 3 处探针后 `make macos-auto-acceptance` 与 `quality-samples.sh` 16/16 全 PASS，产品代码未动。
 - 收尾状态：config `2bd3fde6…` 未变、词库 475→479（学习写入，不还原）、宿主 PID 85195 未重启、输入源还原 ABC、探针新增的 Safari/Chrome 标签已关闭。

@@ -18,6 +18,10 @@ def failure_excerpt(log):
 
 
 def main():
+    # 报告200：macOS 13 自带的 python3 是 3.9，而 validate-release/release_version 用 tomllib（3.11+）。
+    if sys.version_info < (3, 11):
+        print('FAIL 离线回归需要 Python ≥3.11（tomllib）；本机 python3 是 %d.%d，请用 python3.11+ 运行' % sys.version_info[:2])
+        return 1
     root = Path(__file__).resolve().parents[3]
     files = sorted((root / 'platforms/macos/tests').glob('test-*.py')) + sorted((root / 'packaging/macos/tests').glob('test-*.py'))
     if not files:

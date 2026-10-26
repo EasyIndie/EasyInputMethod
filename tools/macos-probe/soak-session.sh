@@ -29,12 +29,17 @@ HOST=$(host_pid)
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo '{"result":"BLOCKED","reason":"无法选中输入源"}'; exit 1; }
 L0=$(dict_lines)
 
-NET="$OUT/net.csv"; RSS="$OUT/rss.csv"
-: > "$NET"; : > "$RSS"
-( for _ in $(seq 1 $((MINUTES * 60))); do
+NET="$OUT/net.csv"; RSS="$OUT/rss.csv"; FP="$OUT/footprint.csv"
+: > "$NET"; : > "$RSS"; : > "$FP"
+# 报告200：RSS 跨 macOS 版本不可比，这里额外每 10 秒记一次 physical footprint（趋势用，门禁仍是 memory-gate.sh）。
+( tick=0; while [ "$tick" -lt $((MINUTES * 60)) ]; do
     p=$(host_pid); [ -z "$p" ] && break
     echo "$(lsof -nP -a -p "$p" -i 2>/dev/null | grep -c -E 'TCP|UDP')" >> "$NET"
     echo "$(ps -o rss= -p "$p" | tr -d ' ')" >> "$RSS"
+    if [ $((tick % 10)) -eq 0 ]; then
+        vmmap -summary "$p" 2>/dev/null | awk -F: '/Physical footprint:/{sub(/^ +/,"",$2); print $2}' >> "$FP"
+    fi
+    tick=$((tick + 1))
     sleep 1
   done ) &
 SAMPLER=$!
@@ -61,7 +66,7 @@ L2=$(dict_lines)
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
 python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" <<'PY'
-import json, sys
+import json, re, sys
 out, l0, l1, l2 = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
 growth_limit, rss_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
 def numbers(name):
@@ -70,6 +75,19 @@ def numbers(name):
     except FileNotFoundError:
         return []
 conns, rss = numbers("net.csv"), numbers("rss.csv")
+def mb(name):
+    try:
+        rows = open(f"{out}/{name}", encoding="utf-8").read().split()
+    except FileNotFoundError:
+        return []
+    values = []
+    for row in rows:
+        match = re.match(r"([0-9.]+)([KMG]?)", row)
+        if match:
+            number = float(match.group(1))
+            values.append({"": number / 1048576, "K": number / 1024, "M": number, "G": number * 1024}[match.group(2)])
+    return values
+footprint = mb("footprint.csv")
 first = rss[0] / 1024 if rss else 0
 peak = max(rss) / 1024 if rss else 0
 # 只用后半段与热身段比较，避免把首次候选窗/字体加载算作增长
@@ -84,6 +102,11 @@ summary = {
     "rss_steady_mb": round(tail_avg, 1),
     "rss_growth_mb": round(growth, 1), "rss_tail_avg_mb": round(tail_avg, 1),
     "max_connections": max(conns) if conns else 0,
+    "footprint_samples": len(footprint),
+    "footprint_first_mb": round(footprint[0], 1) if footprint else None,
+    "footprint_peak_mb": round(max(footprint), 1) if footprint else None,
+    "footprint_last_mb": round(footprint[-1], 1) if footprint else None,
+    "footprint_tail_delta_mb": round(footprint[-1] - footprint[len(footprint) // 2], 1) if len(footprint) > 2 else None,
     "thresholds": {"growth_mb": growth_limit, "rss_hard_mb": rss_hard},
 }
 ok = (rounds > 0 and summary["max_connections"] == 0
