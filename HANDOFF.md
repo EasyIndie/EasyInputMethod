@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 11:08 / pi（pro 本机图形会话；用户已授权重启宿主、卸载重装，并在旁协助 VoiceOver 与睡眠唤醒）。阶段：0.1.13 已发布并双机装机；**pro 自动化项 + VoiceOver + 睡眠唤醒已完成**，剩多 Space（非全屏）切换与外接屏热插拔。
-- 分支：`dev` = `main` = `eb0b415`（PR #177-180 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main`（PR #177-181 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -52,7 +52,7 @@
 | **报告204 / 睡眠唤醒** | 先发现 `caffeinate -s`（PID 652，约 2 天）一直持有 `PreventSystemSleep`，用户停掉后测试。新增 `sleep-test.py`：`pmset sleepnow` + 时钟跳变判定 → 实测**睡了 57.1 秒**后被用户唤醒。唤醒后宿主 PID 69116 未变、首键 `wq `→`你`、候选窗 7 项、`type-session` 2/2、`quality-samples` **16/16**、config 未变、0 外联、显示布局不变。 |
 ## 3. 未决
 
-- **pro 侧剩余人工项**：多 Space（非全屏）切换、外接屏热插拔。VoiceOver 与睡眠唤醒已完成（报告203/204）；`caffeinate -s` 已停，**别再手动拉起**，否则睡眠类验收会再次卡住。
+- **pro 侧剩余人工项**：多 Space（非全屏）切换（实测主屏当前只有 1 个 Space，`ctrl+right` 未切换 → 需先在 Mission Control 加一个桌面）、外接屏热插拔。VoiceOver 与睡眠唤醒已完成（报告203/204）；`caffeinate -s` 已停，**别再手动拉起**。
 - **长会话内存**（报告200 §4）：新宿主 21–23M，连续键入 10 分钟只 +1MiB（footprint 23.4→24.6，后半段 +0.1），「打字越多越涨」不成立；数小时尺度的收敛性需更长观测窗口，不阻塞当前候选。
 - **`install.sh` 的「已自动注册到输入源」在 macOS 13 上是假成功**（报告201 §5）：`TISEnableInputSource` 返回 0 但不生效，用户必须手动添加输入源。建议 0.1.14 用 `LampyrisTIS status` 复核后再宣布成功（本轮未改代码）。
 - **卸载备份待清**：`~/Library/Application Support/Lampyris/uninstalled/bundle.6MMjbg/`（执行 SHA `c3b533e4…`）确认无需回滚后可删。

@@ -26,7 +26,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `windows` | 列出 Lampyris 的窗口标题 |
 | `axfocus` | 读取前台应用焦点元素的角色/文本（跨客户端回读，报告189） |
 | `imetype --source <id> --keys <串> --settle <秒> [--out <json>]` | **自建窗口 + 进程内切源 + 合成按键 + 回读文本**，用于自动化「键入路径」验收（报告188） |
-| `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）；另有命名键 `left/right/up/down/esc/tab/return/delete/space`（报告203，**别写成裸 `right`——那会被当成字母打进去**）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
+| `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）；另有命名键 `left/right/up/down/esc/tab/return/delete/space`（组合键同样支持，如 `ctrl+right`；报告203/204，**别写成裸 `right`——那会被当成字母打进去**）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
 | `imetype --keys <串> --self-post` | 自投递模式：把 `NSEvent` 交给自己的窗口，逐键测「投递→文本变化」，输出 `latency_ms` 与 `latencies_ms`（报告191） |
 | `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`=增长上限/`RSS_HARD_MB`=绝对硬顶，报告198） |
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
