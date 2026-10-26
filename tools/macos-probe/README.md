@@ -39,6 +39,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `cgwins [owner]` | CGWindowList 版窗口列表；**没有「屏幕录制」授权时列表为空**，此时用 `axwins` |
 | `displaymode list\|set <index> <WxH>` | 列/切显示模式；同尺寸优先选 HiDPI（pixelWidth 更大），否则会把 Retina 切成 1x（报告202） |
 | `multi-display.sh` | 逐显示器 + 全屏各测一次候选窗落点；`make macos-multi-display` 即调用它 |
+| `sleep-test.py [秒]` | 执行 `pmset sleepnow` 并用「进程挂起导致的时钟跳变」判定真的睡过+已唤醒，打印睡了多久（报告204） |
 | `type-session.sh '<按键串>' [--settle N]` | 一条命令跑完「起测试窗口 → 等前台 → 激活 → 投递 → 回读上屏文本」，输出 JSON（报告190） |
 
 ### 一键矩阵（报告189）
