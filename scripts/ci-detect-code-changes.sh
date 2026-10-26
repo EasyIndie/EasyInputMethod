@@ -20,12 +20,25 @@ fi
 files="$(git diff --name-only "${GITHUB_BASE_SHA}" HEAD 2>/dev/null || true)"
 lane=docs
 
+# platforms/<平台>/tests/** 与 crates/*/tests/** 是测试代码，不进入产物字节 → 归 tooling 泳道。
 product='^(crates/|platforms/|data/|Cargo\.(toml|lock)$|rust-toolchain\.toml$|deny\.toml$)'
+test_only='^(platforms/[^/]+/tests/|crates/[^/]+/tests/|crates/[^/]+/benches/)'
 tooling='^(tools/|scripts/|packaging/|\.github/|Makefile$)'
 
-if printf '%s\n' "${files}" | grep -qE "${product}"; then
+product_hit=false
+while IFS= read -r path; do
+  [ -n "${path}" ] || continue
+  if printf '%s\n' "${path}" | grep -qE "${product}" && ! printf '%s\n' "${path}" | grep -qE "${test_only}"; then
+    product_hit=true
+    break
+  fi
+done <<EOF
+${files}
+EOF
+
+if [ "${product_hit}" = "true" ]; then
   lane=full
-elif printf '%s\n' "${files}" | grep -qE "${tooling}"; then
+elif printf '%s\n' "${files}" | grep -qE "${product}|${tooling}"; then
   lane=tooling
 fi
 

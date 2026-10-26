@@ -117,6 +117,11 @@ class CiLanes(unittest.TestCase):
     def test_product_wins_over_tooling(self):
         self.assertEqual(self.detect(['tools/x.sh', 'crates/ime-core/src/lib.rs'])['lane'], 'full')
 
+    def test_test_only_paths_are_tooling(self):
+        """测试代码不进入产物字节，不该触发 universal 构建（报告212 里这类 PR 白跑 10 分钟）。"""
+        self.assertEqual(self.detect(['platforms/macos/tests/test-demo.py'])['lane'], 'tooling')
+        self.assertEqual(self.detect(['crates/ime-core/tests/roundtrip.rs'])['lane'], 'tooling')
+
 
 if __name__ == '__main__':
     unittest.main()
