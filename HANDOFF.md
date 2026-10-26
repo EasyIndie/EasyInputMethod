@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 00:35 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主）。阶段：0.1.13 已发布并双机装机；**air/pro 的自动化全部可做项已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度），只剩人工项。
-- 分支：`dev` 领先 `main` 一个 docs 交接提交（报告200 那批未提 PR）；`make verify` **PASS**。具体提交以 `git log --oneline -1 origin/dev` 为准。
+- 分支：`dev` = `main` = `179501b`（PR #177 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -123,6 +123,7 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 - 2026-10-26 / pi（pro）：报告200 —— 其余可自动化项跑完。离线回归 **50/50 PASS**（修了 python 3.9 无 `tomllib`、沙盒测试对 macOS 13 临时目录的假设、本地验收 `candidate` 必测清单落后 3 个场景导致全机器 BLOCKED）；本地验收 **6 套件/70 用例 PASS**；UI 对比度 **28/28**；10 分钟 soak 带 footprint 采样 23.4→24.6M（后半段 +0.1）→ 连续键入不涨。
 - 本轮结论：pro 上除人工项与「真实卸载重装」外已无剩余自动化；产品代码未改，0.1.13 执行 SHA 未变。
+- 入库：报告200 + 测试基础设施修复已进 main（PR #177，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-25 / pi（pro，授权重启宿主）：报告199 —— ADR-263 内存门禁 **PASS**（3 轮新宿主：footprint 21.4–23.1M、私有已提交 21.7–23.2M，冷态 2.9M），`soak` 5 分钟 PASS（0 外联、RSS +0.1MiB、词库 482 行重启一致）。
 - 同一轮抓出报告198 的 **5 处探针回归**并修好：`DispatchWorkItem.cancel` 对 `asyncAfter` 无效（防抖从未生效，改静默轮询）、`NSApp.terminate` 卡在 NSQuietSafeQuit（改 `exit(0)`）、preflight 只在目录缺失时重建测试 App（导致旧二进制）、`type-session` 重发导致重复上屏与死锁（只在前台失败时重试 + trap 杀在途 keytopid）、Ghostty 测试窗口残留抢前台（按 CAT_FILE 精确 pkill）。修后两轮 acceptance 连过、质量样本 16/16。
