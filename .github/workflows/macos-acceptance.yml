@@ -2,6 +2,18 @@ name: macOS Acceptance Package
 on:
   push:
     branches: [main]
+    # ADR-293：候选包只在产品字节可能变化时构建；纯文档/工具合并不再消耗 runner。
+    # 发布流程仍然要求「tag 提交存在成功的验收产物」，缺失时会明确失败而不是借用别的提交。
+    paths:
+      - "crates/**"
+      - "platforms/**"
+      - "data/**"
+      - "packaging/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - "rust-toolchain.toml"
+      - "tools/release_version.py"
+      - ".github/workflows/macos-acceptance.yml"
   workflow_dispatch:
 # 第三方 Actions 固定到审定 commit（见 CONTRIBUTING.md「CI Actions 升级」）；本工作流只读。
 permissions:

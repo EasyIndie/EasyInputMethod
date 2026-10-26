@@ -101,3 +101,14 @@ make macos-acceptance-full SKIP_MEMORY=1   # 跳过会重启宿主的内存门�
 
 前置检查（`acceptance-preflight.sh`）会先挡掉三类会把时间浪费掉的环境问题：**屏幕锁定**、
 **客户端多实例**（TextEdit/Safari/Chrome）、**输入源未启用**；`session` 探针只读会话锁状态，也可单独跑。
+
+## 证据索引（ADR-293）
+
+```sh
+make acceptance-evidence            # 本机已装包执行 SHA 已有的证据与仍缺项
+make acceptance-evidence SHA=<sha>  # 指定 SHA
+```
+
+报告里写全执行 SHA-256 后，`scripts/acceptance-evidence.py` 会把 `docs/reviews/*.md`
+按 SHA 归档并识别覆盖到的验收项（快捷键/客户端/质量样本/内存/久用/外联/VoiceOver/睡眠/多屏/Space/安装/复现/辅助功能）。
+SHA 相同即可复用结论；SHA 变了必须重跑。
