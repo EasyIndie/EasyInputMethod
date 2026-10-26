@@ -26,8 +26,10 @@ let dictionaryBefore = try? Data(contentsOf: dictionary)
 let adapter = PreviewInputMenu(session: session)
 guard let optionMode = NSEvent.keyEvent(with: .keyDown, location: .zero,
     modifierFlags: [.option], timestamp: 0, windowNumber: 0, context: nil,
-    characters: "µ", charactersIgnoringModifiers: "µ", isARepeat: false, keyCode: 46)
+    characters: "µ", charactersIgnoringModifiers: "m", isARepeat: false, keyCode: 46)
 else { exit(1) }
+// 真实 ⌥M 事件的 charactersIgnoringModifiers 是 "m"、characters 是 "µ"（报告206）：
+// 之前两处都写成 "µ"，在输入源不是 ABC 时（用户正用着萤火虫）会依赖 byApplyingModifiers 兜底而误判。
 require(ImeConfig.hotkey("hotkey.toggle_mode").matches(optionMode), "real Option character matches configured base letter")
 var cancellations = 0
 var changes = 0
