@@ -2,9 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-26 12:20 / pi（pro 本机图形会话；用户已授权重启宿主、卸载重装，并在旁协助 VoiceOver、睡眠唤醒、拔插显示器与切桌面）。阶段：0.1.13 已发布并双机装机；**pro 侧人工项已全部有结论**，剩 VoiceOver 播报缺口的产品修复与 IT-15/IT-23。
-- 分支：`dev` = `main` = `a7fa233`（PR #177-185 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
-- 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。本机装的仍是 0.1.13。
+- 更新：2026-10-26 18:20 / pi（pro 本机图形会话；用户已授权重启宿主、换包，并在旁协助 VoiceOver）。阶段：**0.1.14/build 23 已装到 pro 并复验通过（VoiceOver 播报已确认）**；未打 tag/未发 Release；剩 IT-15/IT-23 与 0.1.14 发布流程。
+- 分支：`dev` = `main` = `0b2aa24`（PR #177-186 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
+- 候选（未发布）：**0.1.14 / build 23**，main `0b2aa24`，ZIP `7741cdde…`、执行 `a165f05c…`、源码 tar（见报告207 §1）；pro 已装此包，**air 仍是 0.1.13**。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
 ## 1. 设备与数据（2026-10-26 01:58 重采；数据可能继续变化）
@@ -12,7 +13,7 @@
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 602 行 / `70cd11c2…`；宿主 PID 92498；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/`、`-0113-prev/` |
-| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.13/build21**（Release DMG），执行 `c3b533e4…`；仓库 `~/Documents/EasyInputMethod` | config `2bd3fde6…`、词库 482 行（含 `show_wubi_learning` 学习写入）；宿主 PID 22911（报告199 收尾重启，冷态 footprint 2.9M）；探针 `bin/` 13 个 x86_64、0 告警 | 回滚：pro 上 `/tmp/lampyris-rollback-0112/` |
+| **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.14/build23**（候选 ZIP `7741cdde…`），执行 `a165f05c0b704796380a39f5666da5e2cfa1a8cb2d23868dfd3d1532d429e4dc`；仓库 `~/Documents/EasyInputMethod` | config `2bd3fde6…`、词库 517 行（含 `show_wubi_learning` 学习写入）；宿主 PID 26989；输入源已还原 ABC；探针 `bin/` 加 `axsel` 共 14 个 x86_64、0 告警 | 回滚：`uninstalled/bundle.160547`（build22）、`bundle.aPZKev`/`bundle.6MMjbg`（0.1.13） |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
 
@@ -52,6 +53,7 @@
 | **报告204 / 睡眠唤醒** | 先发现 `caffeinate -s`（PID 652，约 2 天）一直持有 `PreventSystemSleep`，用户停掉后测试。新增 `sleep-test.py`：`pmset sleepnow` + 时钟跳变判定 → 实测**睡了 57.1 秒**后被用户唤醒。唤醒后宿主 PID 69116 未变、首键 `wq `→`你`、候选窗 7 项、`type-session` 2/2、`quality-samples` **16/16**、config 未变、0 外联、显示布局不变。 |
 | **报告205 / 热插拔 + 多 Space** | 用户拔插 LG 后：`screens` 布局与缩放完全恢复（`1280×800@2x` + `1920×1080@2x` 在上），`make macos-multi-display` **4/4 PASS**（`73,166`/`56,50`/`73,-914`/`13,-1030`）。多 Space：合成 `ctrl+right`（CGEvent 与 System Events 两条路）都切不动 Space（系统限制），改由用户手动切到 Space `1` 后自动判定：候选窗 `93,186 531×188` 完整在屏内、空格上屏 `你` → **PASS**。 |
 | **报告206 / 0.1.14 VoiceOver 修复** | ADR-291 落地：`CandidateAnnouncement` 纯函数决定播报（仅选中项/翻页变化）；`CandidateWindow` 发 `.announcementRequested`（250ms 去重）、暴露 `accessibilitySelectedChildren` 并 post `.selectedChildrenChanged`，`announcedTexts` 供离线断言；`InputController` 上屏后播报。candidate 套件新增 `candidate.announcements`（70→71 用例）。顺带修两处本机坑：preview-menu 的 Option+M 事件 `charactersIgnoringModifiers` 写错（输入源是萤火虫时离线回归失败）、`release_version.py` 在 python 3.9 下无 `tomllib` 导致 `build.sh --strict` 崩。CI 四门禁 PASS，PR #184 已合并。候选包：ZIP `c080b93a…`、执行 `5e6071ac…`、0.1.14/build 22、公证通过（报告206 §5）。**本机仍装 0.1.13，装 0.1.14 后需复听 VoiceOver 并重跑受影响验收**。 |
+| **报告207 / 0.1.14 装机复验** | build 22 装上后 VO 仍不念：根因是候选容器从来不是 AX 元素（`axsel` 读到 `AXSelectedChildren=[]`、`axobserve` 0 条播报）。build 23（PR #186）把容器设为 AX 元素（role group「候选字词」）+ 逐项 `AXSelected`，AX 树变 `滚动区→组→候选`；`axobserve` 在装机版抓到 `AXAnnouncementRequested`（换候选，AXGroup）+ `AXAnnouncementRequested`（上屏，AXApplication），**用户确认 VoiceOver 念「第2项，像，五笔」与「像，已上屏」**。受影响项全在 build 23 重跑：auto-acceptance PASS（p95 2.52ms、0 外联）、质量样本 16/16、ADR-263 内存门禁 PASS（20.6–20.9M）、`make verify`/离线 50/本地 71 PASS。另记 6 条本机坑（裸跑 `imetype` 会切回 ABC、第三方源切不动、`axmenu press` 路径差一层、`keytopid` 未收录键名会被当文本、多实例 TextEdit 会让质量样本误判）。 |
 ## 3. 未决
 
 - **pro 侧人工项已全部有结论**（报告198-205）：自动化、内存门禁、久用、离线回归、本地验收、对比度、卸载重装、多屏/缩放/全屏、外接屏热插拔、睡眠唤醒、VoiceOver、多 Space。剩下：VoiceOver 播报缺口的**产品修复（建议 0.1.14）**、过夜/合盖睡眠、IT-15 第三方重建、IT-23 五工作日试用。
@@ -128,6 +130,10 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 - 换包/验收前读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA。
 
 ## 9. 会话日志（最近）
+
+- 2026-10-26 / pi：报告207 —— **0.1.14/build 23 装到 pro 并复验通过**。build 22 装上后 VO 仍不念，`axsel` 定位到真因：候选容器从来不是 AX 元素（`AXSelectedChildren` 读回空、播报发在不可见元素上）。build 23 设容器为 AX 元素（role group「候选字词」）+ 逐项 `AXSelected`，AX 树变 `滚动区→组→候选`；装机版 `axobserve` 抓到换候选与上屏两条 `AXAnnouncementRequested`，**用户确认念出「第2项，像，五笔」「像，已上屏」**。受影响项全部在 build 23 重跑：auto-acceptance PASS（p95 2.52ms、0 外联）、质量样本 16/16、ADR-263 内存门禁 PASS（20.6–20.9M）、verify/离线 50/本地 71 PASS。
+- 同轮坑（写进报告207 §4）：裸跑 `imetype` 会把输入源切回 ABC；第三方源用 TIS/⌃Space/AXPress 都切不动；`axmenu press` 路径比 `dump` 少一层；`keytopid` 未收录键名（如 `escape`）会被当文本打出来；多实例 TextEdit 会让质量样本的两条“切源/失焦”用例误判（首轮 2 FAIL，关掉多余实例后 16/16）。
+- 待做：0.1.14 未打 tag/未发 Release（发布前需按流程复跑候选包 build 23）；`clean-install.sh` 的「已自动注册」假成功措辞；`quality-samples.sh` 加单实例前置；IT-15/IT-23 待安排；air 侧仍是 0.1.13。
 
 - 2026-10-26 / pi：报告206/ADR-291 —— 0.1.14（build 22）实现 VoiceOver 播报修复：选中项/翻页发 `AXAnnouncementRequested`、暴露 `AXSelectedChildren`、上屏播报；离线 `candidate.announcements` 与纯函数断言覆盖，本地验收 71 用例 PASS，`make verify`/四 CI PASS，PR #184 合并（main `51b34d4`）。
 - 同轮修：`preview-menu` 的 Option+M 事件构造错误（`charactersIgnoringModifiers` 应为 `m`，否则输入源是萤火虫时离线回归 FAIL）；`release_version.py` 缺 `tomllib` 时用正则读 `[workspace.package]`，使 macOS 13 上 `build.sh --strict` 可用。
