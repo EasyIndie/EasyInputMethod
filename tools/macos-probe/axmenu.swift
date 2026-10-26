@@ -10,6 +10,9 @@ guard let bar=el(owner,"AXExtrasMenuBar"), let items=attr(bar,kAXChildrenAttribu
 let item=items[0]
 func rootMenu()->AXUIElement? { (attr(item,kAXChildrenAttribute) as? [AXUIElement])?.first }
 func menuChildren()->[AXUIElement] { guard let m=rootMenu() else { return [] }; return (attr(m,kAXChildrenAttribute) as? [AXUIElement]) ?? [] }
+// `dump` 打印的路径把菜单自身算作第 0 层，实际遍历从菜单的孩子开始；
+// 两种写法都接受（`[0,1]` 与 `[1]` 都指第 2 个条目），避免调用方照抄 dump 后报 PATH_MISMATCH。
+func normalized(_ path:[Int])->[Int] { path.first == 0 ? Array(path.dropFirst()) : path }
 func resolve(_ path:[Int])->AXUIElement? {
     guard let m=rootMenu() else { return nil }
     var e=m
@@ -34,14 +37,16 @@ case "dump":
     }
     walk(m,1,[0])
 case "press":
-    guard let data=args[2].data(using:.utf8), let path=try? JSONSerialization.jsonObject(with:data) as? [Int] else { print("BAD_ARGS"); exit(2) }
+    guard let data=args[2].data(using:.utf8), let raw=try? JSONSerialization.jsonObject(with:data) as? [Int] else { print("BAD_ARGS"); exit(2) }
+    let path=normalized(raw)
     if menuChildren().count < 7 { _ = AXUIElementPerformAction(item,kAXPressAction as CFString); RunLoop.current.run(until:Date().addingTimeInterval(0.6)) }
     guard let e=resolve(path) else { print("PATH_MISMATCH"); exit(3) }
     print("target \(str(e,kAXRoleAttribute)) title=\(str(e,kAXTitleAttribute))")
     print("press=\(AXUIElementPerformAction(e,kAXPressAction as CFString).rawValue)")
     RunLoop.current.run(until:Date().addingTimeInterval(0.8))
 case "select":
-    guard let data=args[2].data(using:.utf8), let path=try? JSONSerialization.jsonObject(with:data) as? [Int], args.count>3 else { print("BAD_ARGS"); exit(2) }
+    guard let data=args[2].data(using:.utf8), let raw=try? JSONSerialization.jsonObject(with:data) as? [Int], args.count>3 else { print("BAD_ARGS"); exit(2) }
+    let path=normalized(raw)
     let wanted=args[3]
     if menuChildren().count < 7 { _ = AXUIElementPerformAction(item,kAXPressAction as CFString); RunLoop.current.run(until:Date().addingTimeInterval(0.6)) }
     guard let parent=resolve(path) else { print("PATH_MISMATCH"); exit(3) }

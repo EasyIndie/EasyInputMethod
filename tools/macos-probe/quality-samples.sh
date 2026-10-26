@@ -18,6 +18,13 @@ mkdir -p "$OUT"
     [ "$code" -eq 78 ] && { echo "SKIP 环境不具备（见 preflight.json）"; exit 78; }
     exit 1
 }
+# 多实例 TextEdit 会让 AppleScript 建文档（打到其中一个实例）与 axtext 读前台窗口（另一个实例）错位，
+# 使「切输入源不丢字」「失焦再回来不丢字」误判（报告207 §3.1）。
+instances=$(pgrep -x TextEdit | wc -l | tr -d ' ')
+if [ "${instances}" -gt 1 ]; then
+    echo "BLOCKED TextEdit 有 ${instances} 个实例：先退出多余实例再跑（否则建文档/读窗口可能不是同一个）" >&2
+    exit 78
+fi
 "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null
 
 check() { python3 -c 'import sys;kind,_,value=sys.argv[1].partition(":");got=sys.argv[2];f={"exact":lambda:got==value,"endswith":lambda:got.endswith(value),"contains":lambda:value in got,"ascii":lambda:got==value and got.isascii(),"unicode":lambda:bool(got) and any(ord(c)>0x7E for c in got),"empty":lambda:got==""};sys.exit(0 if f[kind]() else 1)' "$1" "$2"; }
