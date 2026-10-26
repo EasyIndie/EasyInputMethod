@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-26 18:20 / pi（pro 本机图形会话；用户已授权重启宿主、换包，并在旁协助 VoiceOver）。阶段：**0.1.14/build 23 已装到 pro 并复验通过（VoiceOver 播报已确认）**；未打 tag/未发 Release；剩 IT-15/IT-23 与 0.1.14 发布流程。
+- 更新：2026-10-26 19:50 / pi（pro 本机图形会话；用户已授权重启宿主、换包，并在旁协助 VoiceOver）。阶段：**0.1.14/build 23 在 pro 已复验通过（VoiceOver 已确认）；air 也已装但锁屏跑不了 GUI 验收（报告209）**。未打 tag/未发 Release；剩 air 解锁后补验、0.1.14 发布流程、IT-15/IT-23。
 - 分支：`dev` = `main` = `0b2aa24`（PR #177-186 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 候选（未发布）：**0.1.14 / build 23**，main `0b2aa24`，ZIP `7741cdde…`、执行 `a165f05c…`、源码 tar（见报告207 §1）；pro 已装此包，**air 仍是 0.1.13**。
@@ -12,7 +12,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（本机），arm64/macOS 27.0.1 | **0.1.13/build21**（Release ZIP），执行 `c3b533e4…`，Notarized/accepted | config `809e2cae…`（mode=mixed、标点中文、半角、简体、`show_wubi_learning=true`）；词库 602 行 / `70cd11c2…`；宿主 PID 92498；输入源当前 ABC | 回滚：`/tmp/lampyris-rollback-0112/`、`-0113-prev/` |
+| **air**，arm64/macOS 27.0.1 / SDK 27.0 / Swift 6.4（`ssh air`，用户 `joker`） | **0.1.14/build23**（候选 ZIP `7741cdde…`），执行 `a165f05c0b704796380a39f5666da5e2cfa1a8cb2d23868dfd3d1532d429e4dc`，Notarized/accepted；**只验证到「宿主能启动、不崩」（PID 75610），GUI 项因锁屏未跑** | config `809e2cae…`；词库 646 行；输入源 `Lampyris.default` 当前（另有搜狗源启用） | 回滚：`uninstalled/bundle.VQzkTh`（0.1.13，执行 `c3b533e4…`） |
 | **pro**（Intel/macOS 13.7.8，`ssh pro`，用户 `bot`） | **0.1.14/build23**（候选 ZIP `7741cdde…`），执行 `a165f05c0b704796380a39f5666da5e2cfa1a8cb2d23868dfd3d1532d429e4dc`；仓库 `~/Documents/EasyInputMethod` | config `2bd3fde6…`、词库 517 行（含 `show_wubi_learning` 学习写入）；宿主 PID 26989；输入源已还原 ABC；探针 `bin/` 加 `axsel` 共 14 个 x86_64、0 告警 | 回滚：`uninstalled/bundle.160547`（build22）、`bundle.aPZKev`/`bundle.6MMjbg`（0.1.13） |
 
 - **同一 main `73d468b6b3fea246704972e8327b9fd530c659d5` 的两份未安装附件**：宿主 run `40098075131` ZIP `3b4fb9b97025d172f50abb4bbacf1faca31bb297d64b062b61e227c9c3a8decb`、执行 `867add9fd2ced6c4c1262fac102bfd6f543316101c05507c3865a4f4915b5433`、源码 tar `5c8b8c84287863dca3995243739a5b1059e83c39ad66d062b9de51678c5ccf24`；独立更新程序 run `40098104120` ZIP `962e05c5fb5c7a949f278606829a4a3520d1123ae8483c29b53d053ea7a6c988`、执行 `0710987b30d430baf2faddd3af52349aec25ea9133f144e94011c0b14d419388`。均仍 build20，**不能冒充正式新版本/生产替换**；见报告180。
@@ -54,8 +54,11 @@
 | **报告205 / 热插拔 + 多 Space** | 用户拔插 LG 后：`screens` 布局与缩放完全恢复（`1280×800@2x` + `1920×1080@2x` 在上），`make macos-multi-display` **4/4 PASS**（`73,166`/`56,50`/`73,-914`/`13,-1030`）。多 Space：合成 `ctrl+right`（CGEvent 与 System Events 两条路）都切不动 Space（系统限制），改由用户手动切到 Space `1` 后自动判定：候选窗 `93,186 531×188` 完整在屏内、空格上屏 `你` → **PASS**。 |
 | **报告206 / 0.1.14 VoiceOver 修复** | ADR-291 落地：`CandidateAnnouncement` 纯函数决定播报（仅选中项/翻页变化）；`CandidateWindow` 发 `.announcementRequested`（250ms 去重）、暴露 `accessibilitySelectedChildren` 并 post `.selectedChildrenChanged`，`announcedTexts` 供离线断言；`InputController` 上屏后播报。candidate 套件新增 `candidate.announcements`（70→71 用例）。顺带修两处本机坑：preview-menu 的 Option+M 事件 `charactersIgnoringModifiers` 写错（输入源是萤火虫时离线回归失败）、`release_version.py` 在 python 3.9 下无 `tomllib` 导致 `build.sh --strict` 崩。CI 四门禁 PASS，PR #184 已合并。候选包：ZIP `c080b93a…`、执行 `5e6071ac…`、0.1.14/build 22、公证通过（报告206 §5）。**本机仍装 0.1.13，装 0.1.14 后需复听 VoiceOver 并重跑受影响验收**。 |
 | **报告207 / 0.1.14 装机复验** | build 22 装上后 VO 仍不念：根因是候选容器从来不是 AX 元素（`axsel` 读到 `AXSelectedChildren=[]`、`axobserve` 0 条播报）。build 23（PR #186）把容器设为 AX 元素（role group「候选字词」）+ 逐项 `AXSelected`，AX 树变 `滚动区→组→候选`；`axobserve` 在装机版抓到 `AXAnnouncementRequested`（换候选，AXGroup）+ `AXAnnouncementRequested`（上屏，AXApplication），**用户确认 VoiceOver 念「第2项，像，五笔」与「像，已上屏」**。受影响项全在 build 23 重跑：auto-acceptance PASS（p95 2.52ms、0 外联）、质量样本 16/16、ADR-263 内存门禁 PASS（20.6–20.9M）、`make verify`/离线 50/本地 71 PASS。另记 6 条本机坑（裸跑 `imetype` 会切回 ABC、第三方源切不动、`axmenu press` 路径差一层、`keytopid` 未收录键名会被当文本、多实例 TextEdit 会让质量样本误判）。 |
+| **报告209 / air 装 build 23（GUI 待验）** | air 换到 0.1.14/build 23（执行 `a165f05c…`、codesign/spctl PASS、config/词库保留、旧包备份 `uninstalled/bundle.VQzkTh`）。宿主在 macOS 27/arm64 上正常启动、无崩溃；但探针读到 `CGSSessionScreenIsLocked = 1`，`type-session` 报「测试窗口未取得前台」、`set frontmost` 无效 → 键入/热键/质量样本/内存门禁/VoiceOver/睡眠/多 Space **全部未跑**。解锁后按报告209 §3 一次跑完约 25 分钟；在此之前「双设备一致」不成立，不应打 tag。 |
 | **报告208 / IT-15 预演** | 在仓库外用源码包离线重建 0.1.14/build 23（`/tmp/it15-rebuild`）：身份链（ZIP `7741cdde…`、源码 tar `964f32f1…`、`SOURCE-COMMIT` `0b2aa24…`、版本/build）**全部对齐**；`cargo build --locked --offline` 与 `build.sh --strict [--universal]` 均 rc=0、日志 0 条下载；数据 4/4 逐字节一致；静态零网络断言与已装包运行时 0 外联 PASS。**「逐字节一致」在本机做不到**：CI 是 macOS 26.6.2/SDK 26.5/Swift 6.3.3，本机是 13.7.8/SDK 13.3/Swift 5.8.1，`otool` 显示 sdk/ld/AppKit 全不同（ADR-033 的复现边界正是这条）。正式 IT-15 需在与发布构建同 SDK 的机器上做，流程与判据见报告208 §6。**代理跑的这次不算独立结果**（ADR-125）。 |
 ## 3. 未决
+
+- **air 侧 0.1.14 未验收**（报告209）：屏幕锁定，GUI 项跑不了；解锁后按报告209 §3 跑 auto-acceptance / 质量样本 / 内存门禁 / VoiceOver / 睡眠 / 多 Space，再更新双设备结论。
 
 - **pro 侧人工项已全部有结论**（报告198-205）：自动化、内存门禁、久用、离线回归、本地验收、对比度、卸载重装、多屏/缩放/全屏、外接屏热插拔、睡眠唤醒、VoiceOver、多 Space。剩下：VoiceOver 播报缺口的**产品修复（建议 0.1.14）**、过夜/合盖睡眠、IT-15 第三方重建、IT-23 五工作日试用。
 - **多 Space 的自动切换不可用**：`keytopid ctrl+right` 与 System Events `key code 124 using control down` 都切不动 Space（符号快捷键 79/80 是 enabled）；验收时请用户手动切桌面，再用 `axwins` 判落点（报告205 §2）。
