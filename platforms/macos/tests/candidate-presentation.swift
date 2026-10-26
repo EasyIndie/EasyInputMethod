@@ -446,6 +446,11 @@ window.update(candidates: values, pageIndex: 1, pageCount: 2, selectedIndex: 1, 
 guard window.announcedTexts.last?.hasPrefix("第2页") == true else {
     fail("window announces page changes: \(window.announcedTexts)")
 }
+guard window.candidateContainerIsAccessibilityElementForTesting,
+      window.accessibilitySelectedCandidatesForTesting.first?.hasPrefix("第2项") == true
+else {
+    fail("candidate container is an AX element exposing the selection: element=\(window.candidateContainerIsAccessibilityElementForTesting) selected=\(window.accessibilitySelectedCandidatesForTesting)")
+}
 LocalAcceptanceEvidence.record("candidate.announcements",
     expected: "选中项变化/翻页才播报第N项与第M页，新组合与空候选不播报",
     actual: ["selection": selection ?? "nil", "page": page ?? "nil",

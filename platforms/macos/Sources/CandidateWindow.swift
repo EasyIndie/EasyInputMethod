@@ -199,6 +199,7 @@ final class CandidateLabel: NSTextField {
     func setKeyboardSelected(_ selected: Bool) {
         guard isKeyboardSelected != selected else { return }
         isKeyboardSelected = selected
+        setAccessibilitySelected(selected)  // ADR-291：辅助技术可直接读 `AXSelected`
         paintSelection()
     }
 
@@ -232,11 +233,21 @@ private final class CandidatePageButton: NSButton {
 
 private final class CandidateDocument: NSView {
     override var isFlipped: Bool { true }
-    /// ADR-291：让辅助技术知道当前选中哪一项。
     weak var selectedCandidateView: NSView?
 
     override func accessibilitySelectedChildren() -> [Any]? {
-        guard let selectedCandidateView else { return [] }
+        guard let selectedCandidateView, !selectedCandidateView.isHidden else { return [] }
+        return [selectedCandidateView]
+    }
+}
+
+/// ADR-291：辅助技术读到的是滚动区（`AXScrollArea`）而不是文档视图——文档视图不是 AX 元素，
+/// 在它上面实现 `accessibilitySelectedChildren` 对 VoiceOver 完全不可见（报告207 实测）。
+private final class CandidateScrollView: NSScrollView {
+    weak var selectedCandidateView: NSView?
+
+    override func accessibilitySelectedChildren() -> [Any]? {
+        guard let selectedCandidateView, !selectedCandidateView.isHidden else { return [] }
         return [selectedCandidateView]
     }
 }
@@ -616,7 +627,7 @@ final class CandidateWindow: NSObject {
     private let warningLabel = NSTextField(labelWithString: "")
     private let previousButton = CandidatePageButton()
     private let nextButton = CandidatePageButton()
-    private let scrollView = NSScrollView()
+    private let scrollView = CandidateScrollView()
     private let document = CandidateDocument()
     /// 分段计时闭包；nil 时零开销（ADR-258）。
     var phaseTiming: ((CandidatePhase, () -> Void) -> Void)?
@@ -715,6 +726,12 @@ final class CandidateWindow: NSObject {
         (!pageLabel.isHidden, previousButton.isEnabled, nextButton.isEnabled, pageLabel.stringValue)
     }
     var selectedCandidateIndexForTesting: Int { selectedIndex }
+    /// ADR-291：容器必须自己是 AX 元素。否则 `AXSelectedChildren` 与播报都发在一个不可见元素上，
+    /// 辅助技术收不到（报告207：0.1.14 首次装机就是踩了这个）。
+    var candidateContainerIsAccessibilityElementForTesting: Bool { document.isAccessibilityElement() }
+    var accessibilitySelectedCandidatesForTesting: [String] {
+        (document.accessibilitySelectedChildren() ?? []).compactMap { ($0 as? NSView)?.accessibilityLabel() }
+    }
     var keyboardSelectedCandidatesForTesting: [Int] {
         labels.prefix(renderedCount).enumerated().compactMap { $0.element.isKeyboardSelected ? $0.offset : nil }
     }
@@ -780,6 +797,9 @@ final class CandidateWindow: NSObject {
         scrollView.hasHorizontalScroller = false
         scrollView.setAccessibilityHelp("内容较长时可滚动查看全部候选，数字序号保持不变")
         scrollView.documentView = document
+        // ADR-291：文档视图默认不是 AX 元素，候选按钮会被滚动区“拍平”，
+        // 于是在它上面暴露的 AXSelectedChildren 对辅助技术不可见（报告207 实测）。
+        document.setAccessibilityElement(true)
         document.setAccessibilityRole(.group)
         document.setAccessibilityLabel("候选字词")
         container.addSubview(scrollView)
@@ -905,6 +925,7 @@ final class CandidateWindow: NSObject {
                 label.setAccessibilityLabel("第\(index + 1)项，\(visibleText)，\(candidate.source.label)\(missing ? "，" + detail : "")\(selected ? "，键盘焦点" : "")\(index == 0 ? "，首选" : "")")
                 label.onClick = { [weak self] in self?.onSelect?(index) }
                 label.setKeyboardSelected(selected)
+                label.setAccessibilitySelected(selected)
                 label.setHovered(false)
             }
         }
@@ -923,7 +944,9 @@ final class CandidateWindow: NSObject {
         announcedInput = self.input
         announcedSelected = selectedIndex
         announcedPage = self.pageIndex
-        document.selectedCandidateView = labels.indices.contains(selectedIndex) ? labels[selectedIndex] : nil
+        let selectedView = labels.indices.contains(selectedIndex) ? labels[selectedIndex] : nil
+        document.selectedCandidateView = selectedView
+        scrollView.selectedCandidateView = selectedView
         renderedCount = candidates.count
         if relayout {
             timed(.layout) { arrange() }

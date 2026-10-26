@@ -1,11 +1,13 @@
 // AX 通知观察器：注册 AXObserver 并打印目标 App 发出的通知（报告203）。
 // 用来客观判断"选中项变化/上屏"时输入法有没有通知辅助技术——VoiceOver 只靠这些通知才能播报。
-// 用法：axobserve [bundleID] [秒数]
+// 用法：axobserve [bundleID] [秒数] [深度=4]
 import AppKit
 import ApplicationServices
 
 let bundle = CommandLine.arguments.count > 1 ? CommandLine.arguments[1] : "cn.jokerhub.inputmethod.Lampyris"
 let seconds = CommandLine.arguments.count > 2 ? Double(CommandLine.arguments[2]) ?? 10 : 10
+// 播报常常发在深层元素上（如候选文档视图），深度要够（报告206）。
+let maxDepth = CommandLine.arguments.count > 3 ? Int(CommandLine.arguments[3]) ?? 4 : 4
 guard let app = NSRunningApplication.runningApplications(withBundleIdentifier: bundle).first else {
     print("{\"reason\":\"not-running\"}")
     exit(1)
@@ -48,7 +50,7 @@ func observe(_ element: AXUIElement, depth: Int) {
     for name in notifications {
         AXObserverAddNotification(observer, element, name as CFString, nil)
     }
-    guard depth < 2 else { return }
+    guard depth < maxDepth else { return }
     var raw: CFTypeRef?
     guard AXUIElementCopyAttributeValue(element, kAXChildrenAttribute as CFString, &raw) == .success,
           let children = raw as? [AXUIElement] else { return }
