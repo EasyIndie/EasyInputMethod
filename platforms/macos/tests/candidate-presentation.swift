@@ -418,4 +418,37 @@ LocalAcceptanceEvidence.record("candidate.content-phases",
     expected: "schema3 分段覆盖 state/measure/set/layout，卸载计时后结果不变",
     actual: ["phases": seenPhases.sorted()])
 
+// ADR-291：播报文本是纯函数，离屏断言「什么时候播报什么」。
+let sample = ImeCandidate(text: "像", code: "wq", source: .codeTable, isPrefix: false)
+let firstPage = CandidateAnnouncement.text(input: "wq", previousInput: "wq", selectedIndex: 0, previousSelected: 0,
+                                           pageIndex: 0, previousPage: 0, pageCount: 2, candidate: sample)
+guard firstPage == nil else { fail("no announcement without selection or page change") }
+let selection = CandidateAnnouncement.text(input: "wq", previousInput: "wq", selectedIndex: 1, previousSelected: 0,
+                                           pageIndex: 0, previousPage: 0, pageCount: 2, candidate: sample)
+guard selection == "第2项，像，五笔" else { fail("selection announcement: \(selection ?? "nil")") }
+let page = CandidateAnnouncement.text(input: "wq", previousInput: "wq", selectedIndex: 0, previousSelected: 0,
+                                      pageIndex: 1, previousPage: 0, pageCount: 2, candidate: sample)
+guard page == "第2页，共2页，第1项，像，五笔" else { fail("page announcement: \(page ?? "nil")") }
+let newComposition = CandidateAnnouncement.text(input: "wqy", previousInput: "wq", selectedIndex: 0, previousSelected: 0,
+                                                pageIndex: 0, previousPage: 0, pageCount: 1, candidate: sample)
+guard newComposition == nil else { fail("new composition is announced by the input code itself") }
+guard CandidateAnnouncement.text(input: "wq", previousInput: "wq", selectedIndex: 1, previousSelected: 0,
+                                 pageIndex: 0, previousPage: 0, pageCount: 1, candidate: nil) == nil
+else { fail("no announcement without a candidate") }
+// ADR-291：驱动窗口自己更新一次，确认播报真的从 update 里发出（AXAnnouncementRequested 只投递给辅助技术，观察器收不到）。
+window.update(candidates: values, pageIndex: 0, pageCount: 1, input: "wq")
+let announcedBefore = window.announcedTexts.count
+window.update(candidates: values, pageIndex: 0, pageCount: 1, selectedIndex: 1, input: "wq")
+guard window.announcedTexts.count > announcedBefore,
+      window.announcedTexts.last?.hasPrefix("第2项") == true
+else { fail("window announces the newly selected candidate: \(window.announcedTexts)") }
+window.update(candidates: values, pageIndex: 1, pageCount: 2, selectedIndex: 1, input: "wq")
+guard window.announcedTexts.last?.hasPrefix("第2页") == true else {
+    fail("window announces page changes: \(window.announcedTexts)")
+}
+LocalAcceptanceEvidence.record("candidate.announcements",
+    expected: "选中项变化/翻页才播报第N项与第M页，新组合与空候选不播报",
+    actual: ["selection": selection ?? "nil", "page": page ?? "nil",
+             "window": window.announcedTexts.suffix(2).joined(separator: " / ")])
+
 print("PASS candidate-presentation: native body/AX, real FFI paging, bounds/long content, light/dark, fallback, non-key panel, stale actions, state chips/HUD, content phases")

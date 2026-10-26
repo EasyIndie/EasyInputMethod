@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 12:20 / pi（pro 本机图形会话；用户已授权重启宿主、卸载重装，并在旁协助 VoiceOver、睡眠唤醒、拔插显示器与切桌面）。阶段：0.1.13 已发布并双机装机；**pro 侧人工项已全部有结论**，剩 VoiceOver 播报缺口的产品修复与 IT-15/IT-23。
-- 分支：`dev` = `main` = `c2e2e9b`（PR #177-182 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main`（PR #177-183 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 

@@ -646,6 +646,8 @@ final class LampyrisInputController: IMKInputController {
         clearMarked(client)
         guard !text.isEmpty else { return }
         client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+        // ADR-291：屏幕阅读器需要知道上屏结果（报告203 里按空格不播报）。
+        candidateWindow?.announceCommitted(text)
     }
 
     @discardableResult
