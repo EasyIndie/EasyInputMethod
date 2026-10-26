@@ -2,12 +2,12 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-26 00:35 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主）。阶段：0.1.13 已发布并双机装机；**air/pro 的自动化全部可做项已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度），只剩人工项。
-- 分支：`dev` 领先 `main` 一个 docs 交接提交（报告200 那批未提 PR）；`make verify` **PASS**。具体提交以 `git log --oneline -1 origin/dev` 为准。
+- 更新：2026-10-26 01:30 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主与卸载重装）。阶段：0.1.13 已发布并双机装机；**pro 的自动化项全部已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度/真实卸载→重装），只剩纯人工项（VoiceOver、多屏/缩放、睡眠唤醒）。
+- 分支：`dev` = `main` = `179501b`（PR #177 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
-## 1. 设备与数据（2026-10-25 22:57 重采；数据可能继续变化）
+## 1. 设备与数据（2026-10-26 01:28 重采；数据可能继续变化）
 
 | 设备 | 已装包与执行 SHA | 数据/输入源 | 恢复点 |
 |---|---|---|---|
@@ -46,12 +46,14 @@
 | **报告198 / pro 自动化** | pro 本机图形会话跑验收：首轮 3 项 FAIL 全部归因为探针/环境 —— ① `imetype` 读出口从启动起算（慢机器截尾，`keys_seen=9/10`），② macOS 13 拒绝 `open -a Safari 'data:…'`，③ macOS 13 `ps rss` 计入共享库页（51 MiB，footprint 仅 38.7M，且再打 160 键节点数下降）。修探针三处后**全 PASS**：热键 8 项、客户端 **4/4**（TextEdit/Safari/Chrome/Ghostty，Xcode 未装 SKIP）、160 键 p50 1.29/p95 2.41 ms、25 次采样 0 外联、RSS 增长 0.2 MiB；`quality-samples.sh` **16/16 PASS**。产品代码未动。 |
 | **报告199 / pro 内存门禁 + 久用** | 用户授权重启宿主后按 ADR-263 测 3 轮（新脚本 `memory-gate.sh`）：稳态 footprint **21.4–23.1M**、私有已提交 **21.7–23.2M**，均 ≤30MiB → **PASS**（冷态仅 2.9M）。`make macos-soak`（5 分钟 114 轮）PASS：0 外联、RSS 增长 0.1MiB、词库重启前后一致。同时发现并修掉报告198 的 **5 处探针回归**（`DispatchWorkItem.cancel` 对 `asyncAfter` 无效、`NSApp.terminate` 卡在 NSQuietSafeQuit、preflight 不重建旧测试 App、type-session 重发导致重复上屏与死锁、Ghostty 测试窗口残留），修后两轮 acceptance 连过。 |
 | **报告200 / pro 其余自动化** | 离线回归从失败修到 **50/50 PASS**：系统 python3 是 3.9（套件要 ≥3.11 的 `tomllib`）→ `Makefile` 新增 `PYTHON`；沙盒测试把结果路径写死成新系统行为（macOS 13 在 `/var/folders/…/T/<id>`）→ 两处都查；本地验收 `candidate` 必测清单落后三个场景（方向键浏览/批量状态/内容分阶段）→ 一直全机器 BLOCKED，补上后 **6 套件全 PASS、70 用例**。另：`make macos-ui-contrast` **28/28 PASS**（最低 10.00:1）；`soak` 10 分钟带 footprint 采样 23.4→24.6M、后半段 +0.1MiB。 |
+| **报告201 / pro 卸载重装** | 用户授权后真跑：DMG `2f22120c…`（= Release `.sha256`）→ `uninstall.sh`（空跑 `--dry-run` 后执行；首次因宿主未退被正确拒绝）→ bundle 移入 `uninstalled/`、`config.toml` 与词库**逐字节保留** → `install.sh` staple/spctl/codesign 全过、执行 SHA 仍 `c3b533e4…`、config `2bd3fde6…`、词库 SHA 不变 → 用户手动添加输入源后键入冒烟 2/2、质量样本 16/16、0 外联。另发现 `install.sh`「已自动注册」在 macOS 13 是假成功（建议 0.1.14 复核）。 |
 ## 3. 未决
 
-- **pro 侧人工验收未做**：VoiceOver、多屏/缩放、睡眠唤醒、卸载重装（自动化、内存门禁、久用均已全绿，见报告198/199）。air 侧可自动化项同样已全绿。
+- **pro 侧人工验收未做**：VoiceOver、多屏/缩放、睡眠唤醒（自动化、内存门禁、久用、离线回归、本地验收、对比度、卸载重装均已全绿，见报告198-201）。air 侧可自动化项同样已全绿。
 - **长会话内存**（报告200 §4）：新宿主 21–23M，连续键入 10 分钟只 +1MiB（footprint 23.4→24.6，后半段 +0.1），「打字越多越涨」不成立；数小时尺度的收敛性需更长观测窗口，不阻塞当前候选。
-- **真实卸载→重装（保留数据）未在 pro 真跑**：属「换包」操作，需单独授权（离线脚本回归已有 6 项）。
-- **air 侧剩余人工项**：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装。
+- **`install.sh` 的「已自动注册到输入源」在 macOS 13 上是假成功**（报告201 §5）：`TISEnableInputSource` 返回 0 但不生效，用户必须手动添加输入源。建议 0.1.14 用 `LampyrisTIS status` 复核后再宣布成功（本轮未改代码）。
+- **卸载备份待清**：`~/Library/Application Support/Lampyris/uninstalled/bundle.6MMjbg/`（执行 SHA `c3b533e4…`）确认无需回滚后可删。
+- **air 侧剩余人工项**：VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒、真实卸载→重装（air 上可照报告201 的步骤跑）。
 - **pro 的平台差异**（实测，勿当 bug）：macOS 13 的 LaunchServices 不认 `open … 'data:…'`（已改成文件 URL）；`ps rss` 不能当内存口径用（见报告198）；`TISSelectInputSource` 只在**本机图形会话**里对第三方源有效。
 - App Store 搜索框首次输入偶发卡顿（报告177）：未归因，暂不改代码。
 - 最终 RC 仍需：第三方独立重建（IT-15）、五工作日试用（IT-23）。
@@ -59,7 +61,7 @@
 
 ## 4. 下一步
 
-1. **pro 剩余项**：手测 VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒；真实卸载→重装（保留数据）需单独授权才能跑（报告200 §6）。自动化、内存门禁、久用、离线回归、本地验收、对比度均已完成，勿重跑。
+1. **pro 剩余项**：手测 VoiceOver、多屏/缩放/Spaces/全屏、睡眠唤醒。自动化项已全部完成（含卸载重装，报告201），勿重跑。
 2. 回 air 后补同样的手测项；两边结论写进 `docs/reviews/195-two-device-install.md` 或新报告。
 3. 启动五工作日试用（IT-23）；安排第三方离线重建（IT-15）。
 4. 任一 FAIL：修 → 出 0.1.14 → 受影响的 PASS 全部重跑（历史 PASS 不继承）。
@@ -121,8 +123,13 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 ## 9. 会话日志（最近）
 
+- 2026-10-26 / pi（pro，用户授权）：报告201 —— **真实卸载→重装（保留数据）PASS**。DMG `2f22120c…`（与 Release `.sha256` 一致）→ `uninstall.sh`（先被正确拒绝一次：helper `disable` 不停宿主）→ bundle 移入 `uninstalled/`、config/词库逐字节保留 → `install.sh` 公证/staple/spctl 通过、执行 SHA 仍 `c3b533e4…`、config `2bd3fde6…` 与词库 486 行 SHA 不变；用户手动添加输入源后键入冒烟 2/2、`quality-samples.sh` 16/16。
+- 同轮发现：`install.sh` 打印「已自动注册到输入源」，但 macOS 13 上 `TISEnableInputSource` 假成功（`LampyrisTIS status` 随后为空）→ 必须手动添加；建议 0.1.14 复核后再宣布，README 措辞同步。
+- 收尾状态：执行 SHA `c3b533e4…`、config `2bd3fde6…`、词库 486 行（学习计数原地累加）、输入源 `Lampyris.default` 当前、宿主 PID 69116、0 条 TCP/UDP；卸载备份 `uninstalled/bundle.6MMjbg/` 保留待清。
+
 - 2026-10-26 / pi（pro）：报告200 —— 其余可自动化项跑完。离线回归 **50/50 PASS**（修了 python 3.9 无 `tomllib`、沙盒测试对 macOS 13 临时目录的假设、本地验收 `candidate` 必测清单落后 3 个场景导致全机器 BLOCKED）；本地验收 **6 套件/70 用例 PASS**；UI 对比度 **28/28**；10 分钟 soak 带 footprint 采样 23.4→24.6M（后半段 +0.1）→ 连续键入不涨。
 - 本轮结论：pro 上除人工项与「真实卸载重装」外已无剩余自动化；产品代码未改，0.1.13 执行 SHA 未变。
+- 入库：报告200 + 测试基础设施修复已进 main（PR #177，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-25 / pi（pro，授权重启宿主）：报告199 —— ADR-263 内存门禁 **PASS**（3 轮新宿主：footprint 21.4–23.1M、私有已提交 21.7–23.2M，冷态 2.9M），`soak` 5 分钟 PASS（0 外联、RSS +0.1MiB、词库 482 行重启一致）。
 - 同一轮抓出报告198 的 **5 处探针回归**并修好：`DispatchWorkItem.cancel` 对 `asyncAfter` 无效（防抖从未生效，改静默轮询）、`NSApp.terminate` 卡在 NSQuietSafeQuit（改 `exit(0)`）、preflight 只在目录缺失时重建测试 App（导致旧二进制）、`type-session` 重发导致重复上屏与死锁（只在前台失败时重试 + trap 杀在途 keytopid）、Ghostty 测试窗口残留抢前台（按 CAT_FILE 精确 pkill）。修后两轮 acceptance 连过、质量样本 16/16。
