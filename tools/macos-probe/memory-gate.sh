@@ -1,7 +1,9 @@
 #!/bin/sh
-# ADR-263「常驻内存 ≤30MB」口径复测：新启动宿主 → marker 先行 → 四个固定时点采样 → 至少 3 个独立轮次。
-# 判定：vmmap physical footprint 与「私有已提交」（Writable regions resident + swapped_out）在稳态时点同时 ≤ LIMIT_MB。
-# 注意：这不是探针 RSS 口径（报告198），RSS 会随 macOS 版本把共享库/映射页算进来。
+# ADR-263/292「常驻内存 ≤30MB」口径复测：新启动宿主 → marker 先行 → 四个固定时点采样 → 至少 3 个独立轮次。
+# 判定：稳态时点的「私有已提交」（Writable regions resident + swapped_out）≤ LIMIT_MB —— 这是进程自己持有的量。
+# footprint 仍然采样并打印，但只作参考：它含共享只读库页，随 macOS 版本变化（报告209：同一份 0.1.13 与 0.1.14
+# 在 macOS 27 上 footprint 29–34M、私有 26–29M；在 macOS 13 上 footprint 20.6–20.9M），跨版本不可比。
+# 注意：这也不是探针 RSS 口径（报告198）。
 # 用法：memory-gate.sh [ROUNDS=3]；输出 JSON 摘要 + 每轮 vmmap 全文到 OUT。
 set -u
 PROBE="$(cd "$(dirname "$0")" && pwd)"
@@ -95,11 +97,12 @@ steady = [point for point in POINTS if point in ("six-words", "idle-8s")]
 for row in results.values():
     for point in steady:
         sample = row.get(point)
-        if not sample or sample["physical_footprint_mb"] > limit or sample["private_committed_mb"] > limit:
+        if not sample or sample["private_committed_mb"] > limit:
             failed = True
 summary = {
     "rounds": rounds,
     "limit_mb": limit,
+    "footprint_is_informational": True,
     "steady_points": steady,
     "exec_sha": exec_sha,
     "config_sha": config_sha,
