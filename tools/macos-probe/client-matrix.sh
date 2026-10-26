@@ -45,7 +45,19 @@ echo "== TextEdit"
 open -a TextEdit >/dev/null 2>&1
 sleep 3
 "$BIN/axtext" clear >/dev/null 2>&1
-type_into TextEdit && "$BIN/axfocus" | tee "$OUT/textedit.json"
+if type_into TextEdit; then
+    got=$("$BIN/axfocus" 2>/dev/null)
+    case "$got" in
+        NO_FOCUS*|"")
+            # 报告209：焦点属性偶尔读不到（与 198/199 同类的时序问题），退到窗口内文本区。
+            pid=$(front_pid)
+            sleep 1
+            got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
+            printf '{"value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
+            ;;
+        *) printf '%s\n' "$got" | tee "$OUT/textedit.json" ;;
+    esac
+fi
 
 # 报告198：macOS 13 的 LaunchServices 不接受 `open -a Safari 'data:…'`（Unable to interpret … as a path or URL），
 # 改用临时 HTML 文件，两个版本都可用。
