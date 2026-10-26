@@ -32,6 +32,11 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
 | `memory-gate.sh` | **ADR-263 的 30MB 门禁**：重启宿主 → marker → 冷态/首键后/六词后/静置 8s 四点采 `vmmap`，判定 physical footprint 与私有已提交同时 ≤30MiB（`ROUNDS` 默认 3，报告199） |
 | `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它 |
+| `screens` | 打印每块屏幕的 frame/visibleFrame/缩放/主屏（多屏验收的坐标基准，报告202） |
+| `axwins [bundleID]` | 列出指定 App 的 AX 窗口位置/尺寸/角色；macOS 13 的候选窗是 `AXSystemDialog`，用它判落点（报告202） |
+| `cgwins [owner]` | CGWindowList 版窗口列表；**没有「屏幕录制」授权时列表为空**，此时用 `axwins` |
+| `displaymode list\|set <index> <WxH>` | 列/切显示模式；同尺寸优先选 HiDPI（pixelWidth 更大），否则会把 Retina 切成 1x（报告202） |
+| `multi-display.sh` | 逐显示器 + 全屏各测一次候选窗落点；`make macos-multi-display` 即调用它 |
 | `type-session.sh '<按键串>' [--settle N]` | 一条命令跑完「起测试窗口 → 等前台 → 激活 → 投递 → 回读上屏文本」，输出 JSON（报告190） |
 
 ### 一键矩阵（报告189）
@@ -60,6 +65,10 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 
 **RSS 绝对值不可跨 macOS 版本比较**（报告198）：macOS 13 的 `ps rss` 计入共享库/映射文件页（同一宿主 51 MiB，而 `vmmap` footprint 38.7M），macOS 27 上同样负载只有 5–20 MiB。所以探针门禁改成「键入后相对基线的**增长**（`RSS_LIMIT_MB`/`GROWTH_LIMIT_MB`）+ 绝对硬顶 `RSS_HARD_MB`」，泄漏信号看增长。
 规格里的 **`常驻内存 ≤30MB`（ADR-263）是另一套口径**：新启动宿主上 `vmmap` 的 physical footprint 与私有已提交同时 ≤30MiB，由 `tools/macos-probe/memory-gate.sh`（报告199）或 `platforms/macos/tests/run-imk-acceptance.sh` ⑪ 判定，不能拿探针 RSS 顶替。
+
+**AX 坐标以主屏左上角为原点、y 向下**（其他屏可为负）；`NSScreen.frame` 是 y 向上的 AppKit 坐标，换算用**主屏高度**而不是包围盒高度（报告202 踩过）。
+
+**显示模式切换或反复全屏后，已运行 App 的输入上下文可能变成裸 ASCII**（实测）：脚本每块屏开始前重置文本编辑、每次断言后清空正文，收尾按数量关掉自建空文档（报告202）。
 
 **读出口按“静默”判定**（报告199）：`imetype` 每 0.25s 检查距最后一键是否已静默 `--settle` 秒，另有 `settle+30s` 上限兜底。不用 `DispatchWorkItem.cancel()` 做防抖——它不会阻止已排队的 `asyncAfter` 块。进程落盘后 0.8s `exit(0)`（`NSApp.terminate` 在 macOS 13 会卡在 `NSQuietSafeQuit`）。
 
