@@ -28,6 +28,11 @@ if useHID {
     }
 }
 let source = CGEventSource(stateID: .hidSystemState)
+// 命名键（报告203）：方向键/esc/return 等在候选面板里是光标移动与提交，不能靠字符循环。
+let named: [String: CGKeyCode] = [
+    "left": 123, "right": 124, "down": 125, "up": 126,
+    "esc": 53, "tab": 48, "return": 36, "delete": 51, "space": 49,
+]
 let modifiers: [String: (CGKeyCode, CGEventFlags)] = [
     "shift": (56, .maskShift), "opt": (58, .maskAlternate), "ctrl": (59, .maskControl),
     "cmd": (55, .maskCommand),
@@ -67,6 +72,10 @@ for token in args[2].split(separator: ";") {
     let parts = token.split(separator: "+", omittingEmptySubsequences: false).map(String.init)
     if parts.count == 1, parts[0] == " " {
         tap(keys[" "]!, [])
+        continue
+    }
+    if parts.count == 1, let code = named[parts[0]] {
+        tap(code, [])
         continue
     }
     if parts.count == 1, let modifier = modifiers[parts[0]] {
