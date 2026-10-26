@@ -59,7 +59,7 @@
 | **报告208 / IT-15 预演** | 在仓库外用源码包离线重建 0.1.14/build 23（`/tmp/it15-rebuild`）：身份链（ZIP `7741cdde…`、源码 tar `964f32f1…`、`SOURCE-COMMIT` `0b2aa24…`、版本/build）**全部对齐**；`cargo build --locked --offline` 与 `build.sh --strict [--universal]` 均 rc=0、日志 0 条下载；数据 4/4 逐字节一致；静态零网络断言与已装包运行时 0 外联 PASS。**「逐字节一致」在本机做不到**：CI 是 macOS 26.6.2/SDK 26.5/Swift 6.3.3，本机是 13.7.8/SDK 13.3/Swift 5.8.1，`otool` 显示 sdk/ld/AppKit 全不同（ADR-033 的复现边界正是这条）。正式 IT-15 需在与发布构建同 SDK 的机器上做，流程与判据见报告208 §6。**代理跑的这次不算独立结果**（ADR-125）。 |
 ## 3. 未决
 
-- **迭代/验收耗时**（报告212）：A–F 已落地——批量合并约定写进 `docs/开发工作流.md` §3.0；`make macos-acceptance-full`（一条命令跑完 preflight/自动验收/质量样本/内存/状态回读）+ `session` 探针（锁屏判定）+ preflight 新增 `screen_lock`/`clients_single_instance`；人在场动作压缩成 `docs/验收协作清单.md` 的 15 分钟窗口；报告改用 `docs/reviews/TEMPLATE-report.md`。**G–I（证据绑定产物 SHA、CI 分层、按产品码变化才出验收包）仍需 ADR-293，未做。**
+- **迭代/验收耗时**（报告212 + ADR-293）：A–F 已落地（批量合并约定、`make macos-acceptance-full`、`session` 锁屏探针 + preflight 新检查、`docs/验收协作清单.md` 的 15 分钟窗口、报告模板）。G–I 也已落地：**证据绑定产物执行 SHA**（`scripts/acceptance-evidence.py` / `make acceptance-evidence`，SHA 相同才可复用）、**CI 三泳道**（full/tooling/docs，见 `scripts/ci-detect-code-changes.sh`）、**候选包按需构建**（`macos-acceptance.yml` 加 paths 过滤）。下一步可观察实际节省。
 
 - **air 上 VoiceOver 开启时装机版输入上下文掉回 ABC**（报告210 §3.1）：`wq,` 打出来是裸 `wq`、输入法菜单「正在加载…」；VO 关闭时正常。未定位（可能是 VO 改了当前输入源或 IMK 在 VO 下重建客户端），air 的人耳验证因此用调试窗口完成。
 

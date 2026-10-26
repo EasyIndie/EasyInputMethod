@@ -91,7 +91,10 @@ jobs:
         id: changes
         env:
           GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: echo "code=$(./scripts/ci-detect-code-changes.sh)" >> "$GITHUB_OUTPUT"
+        run: |
+          # ADR-293：三条泳道 full（产品码）/ tooling（工具与打包）/ docs。
+          ./scripts/ci-detect-code-changes.sh >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
         if: steps.changes.outputs.code == 'true'
         with:
@@ -121,32 +124,35 @@ jobs:
         id: changes
         env:
           GITHUB_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-        run: echo "code=$(./scripts/ci-detect-code-changes.sh)" >> "$GITHUB_OUTPUT"
+        run: |
+          # ADR-293：三条泳道 full（产品码）/ tooling（工具与打包）/ docs。
+          ./scripts/ci-detect-code-changes.sh >> "$GITHUB_OUTPUT"
+          cat "$GITHUB_OUTPUT"
       - name: Read pinned Rust toolchain
         id: rust
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: |
           channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
           test -n "$channel"
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
           targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
       - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
       - name: Verify Rust and privacy
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: make verify
       - name: Build universal IMK application (arm64 + x86_64)
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: ./platforms/macos/build.sh --strict --universal
       - name: Reproduce licensed pinyin data
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: |
           ./data/sources/fetch-pinyin-data.sh
           ./data/sources/fetch-phrase-pinyin.sh
@@ -155,32 +161,42 @@ jobs:
           python3 tools/prepare-pinyin-core.py
           git diff --exit-code -- data/generated/pinyin-chars.tsv data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
       - name: Build and smoke-test independent preview
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: ./platforms/macos/dev-preview.sh --smoke-test
       - name: Validate app metadata and icons
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: |
           plutil -lint platforms/macos/build/Lampyris.app/Contents/Info.plist
           plutil -lint platforms/macos/build/preview/LampyrisPreview.app/Contents/Info.plist
           cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/Lampyris.app/Contents/Resources/Lampyris.icns
           cmp assets/icons/yinghuo-official-app.icns platforms/macos/build/preview/LampyrisPreview.app/Contents/Resources/Lampyris.icns
       - name: Verify all offline macOS and packaging regressions
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: |
           make macos-offline-tests
       - name: Verify isolated updater source and offline safety
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: make macos-updater-tests macos-updater-build
       - name: Prepare and reproduce local release candidate
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         run: |
           ./packaging/macos/prepare.sh
           for archive in packaging/out/candidate-*/*.zip; do
             (cd "$(dirname "$archive")" && shasum -a 256 -c "$(basename "$archive").sha256")
             ./platforms/macos/tests/run-repro.sh "$archive"
           done
+      - name: Tooling lane - verify and offline regressions
+        if: steps.changes.outputs.lane == 'tooling'
+        run: |
+          make verify
+          make macos-offline-tests
+
+      - name: Tooling lane - compile the macOS probes
+        if: steps.changes.outputs.lane == 'tooling'
+        run: make macos-probe-build
+
       - name: Upload unsigned review archive
-        if: steps.changes.outputs.code == 'true'
+        if: steps.changes.outputs.lane == 'full'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: Lampyris-macos-review-${{ github.sha }}
