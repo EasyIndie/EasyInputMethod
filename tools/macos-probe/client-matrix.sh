@@ -45,7 +45,19 @@ echo "== TextEdit"
 open -a TextEdit >/dev/null 2>&1
 sleep 3
 "$BIN/axtext" clear >/dev/null 2>&1
-type_into TextEdit && "$BIN/axfocus" | tee "$OUT/textedit.json"
+if type_into TextEdit; then
+    got=$("$BIN/axfocus" 2>/dev/null)
+    case "$got" in
+        NO_FOCUS*|"")
+            # 报告209：焦点属性偶尔读不到（与 198/199 同类的时序问题），退到窗口内文本区。
+            pid=$(front_pid)
+            sleep 1
+            got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
+            printf '{"value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
+            ;;
+        *) printf '%s\n' "$got" | tee "$OUT/textedit.json" ;;
+    esac
+fi
 
 # 报告198：macOS 13 的 LaunchServices 不接受 `open -a Safari 'data:…'`（Unable to interpret … as a path or URL），
 # 改用临时 HTML 文件，两个版本都可用。
@@ -57,8 +69,17 @@ HTML
 echo "== Safari"
 open -a Safari "$PAGE" >/dev/null 2>&1
 if type_into Safari; then
-    osascript -e 'tell application "Safari" to get name of front document' > "$OUT/safari.txt" 2>/dev/null
-    printf '{"title":"%s"}\n' "$(cat "$OUT/safari.txt")" | tee "$OUT/safari.json"
+    # 报告209：macOS 27 上页面标题不一定随输入更新（Safari 的 document.title 没有跟），
+    # 先用 AX 读输入区，读不到再退回标题。
+    pid=$(front_pid)
+    got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
+    case "$got" in
+        ""|NO_TEXT_AREA|NO_WINDOW)
+            osascript -e 'tell application "Safari" to get name of front document' > "$OUT/safari.txt" 2>/dev/null
+            got=$(cat "$OUT/safari.txt" 2>/dev/null)
+            ;;
+    esac
+    printf '{"title":"%s"}\n' "$got" | tee "$OUT/safari.json"
 fi
 
 echo "== Chrome"

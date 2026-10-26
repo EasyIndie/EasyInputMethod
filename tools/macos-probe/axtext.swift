@@ -11,13 +11,22 @@ let wins=(attr(ax,kAXWindowsAttribute) as? [AXUIElement]) ?? []
 let focused = el(ax, kAXFocusedWindowAttribute)
 guard let win = focused ?? el(ax,kAXMainWindowAttribute) ?? wins.first else { print("NO_WINDOW"); exit(1) }
 if CommandLine.arguments.count>3 { print("window:", str(win,kAXTitleAttribute)) }
-func findText(_ e:AXUIElement,_ depth:Int) -> AXUIElement? {
+// Safari 的网页输入区在 macOS 27 上是 AXTextField，且地址栏也是 AXTextField；
+// 先找 AXTextArea，再退到「值不像 URL」的 AXTextField（报告209：只用标题回读在 air 上失败过）。
+func looksLikeURL(_ value:String) -> Bool {
+    value.hasPrefix("file:") || value.hasPrefix("http:") || value.hasPrefix("https:") || value.hasPrefix("about:")
+}
+func findText(_ e:AXUIElement,_ depth:Int,_ allowField:Bool) -> AXUIElement? {
     if depth>6 { return nil }
-    if str(e,kAXRoleAttribute) == kAXTextAreaRole { return e }
-    if let cs=attr(e,kAXChildrenAttribute) as? [AXUIElement] { for c in cs { if let t=findText(c,depth+1) { return t } } }
+    let role = str(e,kAXRoleAttribute)
+    if role == kAXTextAreaRole { return e }
+    if allowField && role == kAXTextFieldRole && !looksLikeURL(str(e,kAXValueAttribute)) { return e }
+    if let cs=attr(e,kAXChildrenAttribute) as? [AXUIElement] {
+        for c in cs { if let t=findText(c,depth+1,allowField) { return t } }
+    }
     return nil
 }
-guard let area=findText(win,0) else { print("NO_TEXT_AREA"); exit(1) }
+guard let area=findText(win,0,false) ?? findText(win,0,true) else { print("NO_TEXT_AREA"); exit(1) }
 let mode=CommandLine.arguments.count>1 ? CommandLine.arguments[1] : "read"
 if mode == "clear" { print("clear rc", AXUIElementSetAttributeValue(area, kAXValueAttribute as CFString, "" as CFTypeRef).rawValue) }
 else if mode == "selectall" { print("select rc", AXUIElementSetAttributeValue(area, kAXSelectedTextAttribute as CFString, (str(area,kAXValueAttribute)) as CFTypeRef).rawValue) }
