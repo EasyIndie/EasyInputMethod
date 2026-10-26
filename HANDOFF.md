@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 01:30 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主与卸载重装）。阶段：0.1.13 已发布并双机装机；**pro 的自动化项全部已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度/真实卸载→重装），只剩纯人工项（VoiceOver、多屏/缩放、睡眠唤醒）。
-- 分支：`dev` = `main` = `179501b`（PR #177 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main` = `76cad78`（PR #177/#178 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -126,6 +126,7 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 - 2026-10-26 / pi（pro，用户授权）：报告201 —— **真实卸载→重装（保留数据）PASS**。DMG `2f22120c…`（与 Release `.sha256` 一致）→ `uninstall.sh`（先被正确拒绝一次：helper `disable` 不停宿主）→ bundle 移入 `uninstalled/`、config/词库逐字节保留 → `install.sh` 公证/staple/spctl 通过、执行 SHA 仍 `c3b533e4…`、config `2bd3fde6…` 与词库 486 行 SHA 不变；用户手动添加输入源后键入冒烟 2/2、`quality-samples.sh` 16/16。
 - 同轮发现：`install.sh` 打印「已自动注册到输入源」，但 macOS 13 上 `TISEnableInputSource` 假成功（`LampyrisTIS status` 随后为空）→ 必须手动添加；建议 0.1.14 复核后再宣布，README 措辞同步。
 - 收尾状态：执行 SHA `c3b533e4…`、config `2bd3fde6…`、词库 486 行（学习计数原地累加）、输入源 `Lampyris.default` 当前、宿主 PID 69116、0 条 TCP/UDP；卸载备份 `uninstalled/bundle.6MMjbg/` 保留待清。
+- 入库：报告201 已进 main（PR #178，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-26 / pi（pro）：报告200 —— 其余可自动化项跑完。离线回归 **50/50 PASS**（修了 python 3.9 无 `tomllib`、沙盒测试对 macOS 13 临时目录的假设、本地验收 `candidate` 必测清单落后 3 个场景导致全机器 BLOCKED）；本地验收 **6 套件/70 用例 PASS**；UI 对比度 **28/28**；10 分钟 soak 带 footprint 采样 23.4→24.6M（后半段 +0.1）→ 连续键入不涨。
 - 本轮结论：pro 上除人工项与「真实卸载重装」外已无剩余自动化；产品代码未改，0.1.13 执行 SHA 未变。
