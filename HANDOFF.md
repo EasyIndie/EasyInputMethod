@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 11:08 / pi（pro 本机图形会话；用户已授权重启宿主、卸载重装，并在旁协助 VoiceOver 与睡眠唤醒）。阶段：0.1.13 已发布并双机装机；**pro 自动化项 + VoiceOver + 睡眠唤醒已完成**，剩多 Space（非全屏）切换与外接屏热插拔。
-- 分支：`dev` = `main` = `eb0b415`（PR #177-180 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main`（PR #177-181 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -50,9 +50,10 @@
 | **报告202 / 多屏·缩放·全屏** | 外接 LG 4K（1920×1080 点 / scale 2，位于内置屏上方）+ 内置 Retina（1280×800）。新增 `screens`/`axwins`/`cgwins`/`displaymode` 探针与 `multi-display.sh`（`make macos-multi-display`）：逐屏 + 全屏各测一次候选窗落点 → **4/4 PASS**；把内置屏切到 1440×900@2x 再跑 → **4/4 PASS**，随后还原。另记录三处坑：换模式/反复全屏后已运行 App 的 IME 上下文会变旧（裸 ASCII，重开 App 即恢复，脚本已按此重置）、AX 坐标以主屏左上角为原点（外接屏 y 为负）、`CGDisplayCopyAllDisplayModes` 默认不返回 HiDPI 变体。 |
 | **报告203 / VoiceOver（协助实测）** | 用户旁听、我用探针取证。候选窗 AX 树完整（编码/页码/模式/语言/字形/标点/候选按钮，选中项带「键盘焦点/首选」）；**弹出面板时 VO 念「输入编码 wq」**，但**按 → 换候选、空格上屏都不念**。`axobserve` 证明原因：面板创建/重建有一串 `AXValueChanged`（所以念得出编码），而选中项变化只静默改 `AXDescription`、无任何通知，上屏无通知，全程无 `AXAnnouncementRequested`。建议 0.1.14 在选中项/翻页/上屏时 post `AXAnnouncementRequested` 并暴露 `AXSelectedChildren`（需 ADR）。 |
 | **报告204 / 睡眠唤醒** | 先发现 `caffeinate -s`（PID 652，约 2 天）一直持有 `PreventSystemSleep`，用户停掉后测试。新增 `sleep-test.py`：`pmset sleepnow` + 时钟跳变判定 → 实测**睡了 57.1 秒**后被用户唤醒。唤醒后宿主 PID 69116 未变、首键 `wq `→`你`、候选窗 7 项、`type-session` 2/2、`quality-samples` **16/16**、config 未变、0 外联、显示布局不变。 |
+| **报告205 / 热插拔 + 多 Space** | 用户拔插 LG 后：`screens` 布局与缩放完全恢复（`1280×800@2x` + `1920×1080@2x` 在上），`make macos-multi-display` **4/4 PASS**（`73,166`/`56,50`/`73,-914`/`13,-1030`）。多 Space：用户已加桌面（主屏 6 个），但合成 `ctrl+right`（CGEvent 与 System Events 两条路）都切不动 Space → 需用户手动切一次再复验。 |
 ## 3. 未决
 
-- **pro 侧剩余人工项**：多 Space（非全屏）切换、外接屏热插拔。VoiceOver 与睡眠唤醒已完成（报告203/204）；`caffeinate -s` 已停，**别再手动拉起**，否则睡眠类验收会再次卡住。
+- **pro 侧剩余人工项**：多 Space（非全屏）切切换——用户已加桌面（主屏 6 个 Space，当前 `196`），但**合成按键切不动 Space**（`keytopid ctrl+right` 与 System Events `key code 124 using control down` 都无效，符号快捷键 79/80 是 enabled）；需用户手动切一次桌面，我再用 `axwins` 复验候选窗落点。外接屏热插拔已 PASS（报告205）。VoiceOver 与睡眠唤醒已完成（报告203/204）；`caffeinate -s` 已停，**别再手动拉起**。
 - **长会话内存**（报告200 §4）：新宿主 21–23M，连续键入 10 分钟只 +1MiB（footprint 23.4→24.6，后半段 +0.1），「打字越多越涨」不成立；数小时尺度的收敛性需更长观测窗口，不阻塞当前候选。
 - **`install.sh` 的「已自动注册到输入源」在 macOS 13 上是假成功**（报告201 §5）：`TISEnableInputSource` 返回 0 但不生效，用户必须手动添加输入源。建议 0.1.14 用 `LampyrisTIS status` 复核后再宣布成功（本轮未改代码）。
 - **卸载备份待清**：`~/Library/Application Support/Lampyris/uninstalled/bundle.6MMjbg/`（执行 SHA `c3b533e4…`）确认无需回滚后可删。
@@ -125,6 +126,8 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 - 换包/验收前读 `.agents/skills/iterate-macos-ime/SKILL.md`，记录 main 提交、ZIP SHA、执行 SHA。
 
 ## 9. 会话日志（最近）
+
+- 2026-10-26 / pi（pro，用户拔插 HDMI 并新建桌面）：报告205 —— 热插拔后布局/缩放与拔插前一致，`make macos-multi-display` 4/4 PASS。多 Space：主屏已有 6 个 Space（当前 196），但 `keytopid ctrl+right` 与 System Events 的 `key code 124 using control down` 都切不动（符号快捷键 79/80 enabled），停在这里等用户手动切桌面再复验。
 
 - 2026-10-26 / pi（pro，用户停 caffeinate 并唤醒机器）：报告204 —— `pmset sleepnow` 起初无效，原因是 `caffeinate -s`（PID 652，约 2 天）一直持有 `PreventSystemSleep`。新增 `sleep-test.py`（时钟跳变判定），实测**睡 57.1s 后被唤醒**；唤醒后宿主 PID 未变、首键 `wq `→`你`、候选窗 7 项、`type-session` 2/2、`quality-samples` 16/16、config 未变、0 外联。收尾输入源 ABC。
 

@@ -91,7 +91,8 @@ for token in args[2].split(separator: ";") {
         for character in parts[0] { tap(keys[character]!, []) }
         continue
     }
-    guard parts.count == 2, let modifier = modifiers[parts[0]], let code = keys[Character(parts[1])] else {
+    guard parts.count == 2, let modifier = modifiers[parts[0]],
+          let code = named[parts[1]] ?? keys[Character(parts[1])] else {
         print("skip token: \(token)")
         continue
     }
