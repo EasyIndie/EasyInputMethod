@@ -130,13 +130,13 @@ jobs:
           cat "$GITHUB_OUTPUT"
       - name: Read pinned Rust toolchain
         id: rust
-        if: steps.changes.outputs.lane == 'full'
+        if: steps.changes.outputs.lane != 'docs'
         run: |
           channel="$(sed -n 's/^channel = "\([^" ]*\)"$/\1/p' rust-toolchain.toml)"
           test -n "$channel"
           echo "channel=$channel" >> "$GITHUB_OUTPUT"
       - uses: dtolnay/rust-toolchain@e2a55d2ffb04f378e9626c28d38b36d230d1e12f # master
-        if: steps.changes.outputs.lane == 'full'
+        if: steps.changes.outputs.lane != 'docs'
         with:
           toolchain: ${{ steps.rust.outputs.channel }}
           components: rustfmt, clippy
@@ -144,7 +144,7 @@ jobs:
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
         if: steps.changes.outputs.lane == 'full'
       - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
-        if: steps.changes.outputs.lane == 'full'
+        if: steps.changes.outputs.lane != 'docs'
       - name: Verify Rust and privacy
         if: steps.changes.outputs.lane == 'full'
         run: make verify
