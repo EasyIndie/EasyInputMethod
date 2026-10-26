@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-26 21:10 / pi（pro 本机图形会话；用户已授权重启宿主、换包，并在旁协助 VoiceOver）。阶段：**0.1.14/build 23 在 pro 与 air 跑的是同一个包（执行 `a165f05c…`）**：pro 的全项（含 VoiceOver 人耳）已通过；air 解锁后自动项全绿（客户端 5/5、质量样本 16/16、内存按 ADR-292 通过、播报有 AX 级证据），air 的人工项（VO 人耳/睡眠/多 Space）仍待做。未打 tag/未发 Release。
+- 更新：2026-10-26 21:25 / pi（pro 本机图形会话；用户已授权重启宿主、换包，并在旁协助 VoiceOver）。阶段：**0.1.14/build 23 在 pro 与 air 跑的是同一个包（执行 `a165f05c…`）**：pro 的全项（含 VoiceOver 人耳）已通过；air 解锁后自动项全绿（客户端 5/5、质量样本 16/16、内存按 ADR-292 通过、播报有 AX 级证据），air 的人工项也已补完（睡眠唤醒、多 Space、VoiceOver 人耳均 PASS，报告210）。**两设备验收项齐了，未打 tag/未发 Release。**
 - 分支：`dev` = `main` = `0b2aa24`（PR #177-186 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 候选（未发布）：**0.1.14 / build 23**，main `0b2aa24`，ZIP `7741cdde…`、执行 `a165f05c…`、源码 tar（见报告207 §1）；pro 已装此包，**air 仍是 0.1.13**。
@@ -54,11 +54,12 @@
 | **报告205 / 热插拔 + 多 Space** | 用户拔插 LG 后：`screens` 布局与缩放完全恢复（`1280×800@2x` + `1920×1080@2x` 在上），`make macos-multi-display` **4/4 PASS**（`73,166`/`56,50`/`73,-914`/`13,-1030`）。多 Space：合成 `ctrl+right`（CGEvent 与 System Events 两条路）都切不动 Space（系统限制），改由用户手动切到 Space `1` 后自动判定：候选窗 `93,186 531×188` 完整在屏内、空格上屏 `你` → **PASS**。 |
 | **报告206 / 0.1.14 VoiceOver 修复** | ADR-291 落地：`CandidateAnnouncement` 纯函数决定播报（仅选中项/翻页变化）；`CandidateWindow` 发 `.announcementRequested`（250ms 去重）、暴露 `accessibilitySelectedChildren` 并 post `.selectedChildrenChanged`，`announcedTexts` 供离线断言；`InputController` 上屏后播报。candidate 套件新增 `candidate.announcements`（70→71 用例）。顺带修两处本机坑：preview-menu 的 Option+M 事件 `charactersIgnoringModifiers` 写错（输入源是萤火虫时离线回归失败）、`release_version.py` 在 python 3.9 下无 `tomllib` 导致 `build.sh --strict` 崩。CI 四门禁 PASS，PR #184 已合并。候选包：ZIP `c080b93a…`、执行 `5e6071ac…`、0.1.14/build 22、公证通过（报告206 §5）。**本机仍装 0.1.13，装 0.1.14 后需复听 VoiceOver 并重跑受影响验收**。 |
 | **报告207 / 0.1.14 装机复验** | build 22 装上后 VO 仍不念：根因是候选容器从来不是 AX 元素（`axsel` 读到 `AXSelectedChildren=[]`、`axobserve` 0 条播报）。build 23（PR #186）把容器设为 AX 元素（role group「候选字词」）+ 逐项 `AXSelected`，AX 树变 `滚动区→组→候选`；`axobserve` 在装机版抓到 `AXAnnouncementRequested`（换候选，AXGroup）+ `AXAnnouncementRequested`（上屏，AXApplication），**用户确认 VoiceOver 念「第2项，像，五笔」与「像，已上屏」**。受影响项全在 build 23 重跑：auto-acceptance PASS（p95 2.52ms、0 外联）、质量样本 16/16、ADR-263 内存门禁 PASS（20.6–20.9M）、`make verify`/离线 50/本地 71 PASS。另记 6 条本机坑（裸跑 `imetype` 会切回 ABC、第三方源切不动、`axmenu press` 路径差一层、`keytopid` 未收录键名会被当文本、多实例 TextEdit 会让质量样本误判）。 |
+| **报告210 / air 收尾三件** | air（macOS 27/arm64、执行 `a165f05c…`）三件人工项全 PASS：**睡眠→唤醒**（真睡 26.5s、宿主 PID 2078 不变、首键 `wq `→你、质量样本 16/16、0 外联、布局不变）；**多 Space**（另一桌面候选窗 `253,328 538×188` 在屏内、`wq `→你）；**VoiceOver**（装机版 `axobserve` 抓到换候选/上屏两条 `AXAnnouncementRequested`，人耳在调试窗口确认「A」）。另记录两个探针假象：air 上 `q ` = 多（五笔一级简码），首个按键会被窗口激活吞掉，导致「多你好。」；以及 **VoiceOver 开启时 air 的装机版输入上下文会掉回 ABC**（`wq,` 变裸 `wq`、菜单「正在加载…」），故人耳验证改用同一份候选窗代码的调试窗口。 |
 | **报告209 / air 装 build 23 + 内存口径对照** | air 换到 0.1.14/build 23（执行 `a165f05c…`，0.1.13 备份在 `uninstalled/bundle.194538`）。解锁后自动项全绿：auto-acceptance PASS（**客户端 5/5**，air 有 Xcode 27；p95 7.71ms、0 外联）、质量样本 **16/16**、`axobserve` 在 macOS 27/arm64 上抓到换候选与上屏两条 `AXAnnouncementRequested`。`memory-gate` 首判 FAIL（footprint 29.3–32.4M）→ 同机 A/B 换回 0.1.13 反而 29.4–33.8M、私有已提交两版都 25.7–28.9M → **不是回归**，footprint 混了随 OS 增大的共享库页；据此新增 **ADR-292**（判定改用私有已提交，footprint 仅参考），改后 air PASS。顺带修两处探针：Safari 改用 AX 读输入区（macOS 27 标题不随输入更新）、TextEdit 焦点属性读不到时回退窗口文本区。**air 的人工项（VO 人耳、睡眠唤醒、多 Space）仍待做。** |
 | **报告208 / IT-15 预演** | 在仓库外用源码包离线重建 0.1.14/build 23（`/tmp/it15-rebuild`）：身份链（ZIP `7741cdde…`、源码 tar `964f32f1…`、`SOURCE-COMMIT` `0b2aa24…`、版本/build）**全部对齐**；`cargo build --locked --offline` 与 `build.sh --strict [--universal]` 均 rc=0、日志 0 条下载；数据 4/4 逐字节一致；静态零网络断言与已装包运行时 0 外联 PASS。**「逐字节一致」在本机做不到**：CI 是 macOS 26.6.2/SDK 26.5/Swift 6.3.3，本机是 13.7.8/SDK 13.3/Swift 5.8.1，`otool` 显示 sdk/ld/AppKit 全不同（ADR-033 的复现边界正是这条）。正式 IT-15 需在与发布构建同 SDK 的机器上做，流程与判据见报告208 §6。**代理跑的这次不算独立结果**（ADR-125）。 |
 ## 3. 未决
 
-- **air 侧 0.1.14 未验收**（报告209）：屏幕锁定，GUI 项跑不了；解锁后按报告209 §3 跑 auto-acceptance / 质量样本 / 内存门禁 / VoiceOver / 睡眠 / 多 Space，再更新双设备结论。
+- **air 上 VoiceOver 开启时装机版输入上下文掉回 ABC**（报告210 §3.1）：`wq,` 打出来是裸 `wq`、输入法菜单「正在加载…」；VO 关闭时正常。未定位（可能是 VO 改了当前输入源或 IMK 在 VO 下重建客户端），air 的人耳验证因此用调试窗口完成。
 
 - **pro 侧人工项已全部有结论**（报告198-205）：自动化、内存门禁、久用、离线回归、本地验收、对比度、卸载重装、多屏/缩放/全屏、外接屏热插拔、睡眠唤醒、VoiceOver、多 Space。剩下：VoiceOver 播报缺口的**产品修复（建议 0.1.14）**、过夜/合盖睡眠、IT-15 第三方重建、IT-23 五工作日试用。
 - **多 Space 的自动切换不可用**：`keytopid ctrl+right` 与 System Events `key code 124 using control down` 都切不动 Space（符号快捷键 79/80 是 enabled）；验收时请用户手动切桌面，再用 `axwins` 判落点（报告205 §2）。
