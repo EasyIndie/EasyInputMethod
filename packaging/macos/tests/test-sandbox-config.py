@@ -50,12 +50,18 @@ class SandboxConfigTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='lampyris-sandbox-') as folder:
             app = build_probe(Path(folder))
             subprocess.run(['open', '-W', '-g', str(app)], check=True, timeout=30)
-            result_path = container / 'Data/tmp/sandbox-probe.json'
+            # 报告200：沙盒应用的 temporaryDirectory 在 macOS 13 是 /var/folders/…/T/<bundle-id>，
+            # 在更新系统（CI runner）才是容器内 Data/tmp；两处都要找，判定的硬规则仍是“只写容器”。
+            candidates = [container / 'Data/tmp/sandbox-probe.json',
+                          Path(tempfile.gettempdir()) / PROBE_ID / 'sandbox-probe.json']
+            result_path = next((path for path in candidates if path.exists()), candidates[0])
             for _ in range(50):
-                if result_path.exists():
+                if any(path.exists() for path in candidates):
+                    result_path = next(path for path in candidates if path.exists())
                     break
                 time.sleep(0.1)
-            self.assertTrue(result_path.exists(), 'probe did not write its result inside the container')
+            self.assertTrue(result_path.exists(),
+                            'probe did not write its result (looked in %s)' % [str(p) for p in candidates])
             result = json.loads(result_path.read_text())
             self.assertIn('/Library/Containers/', result['home'])
             self.assertIn('/Library/Containers/', result['config_path'])

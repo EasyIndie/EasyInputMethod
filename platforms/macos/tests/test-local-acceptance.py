@@ -59,8 +59,9 @@ class LocalAcceptanceTests(unittest.TestCase):
             local.check(self.root)
 
     def test_valid_format_still_blocks_entire_mvp(self):
-        # 65 = 旧用例表；candidate 套件补入 hud-source 与 support-dir-override 后为 67
-        self.assertEqual(local.check(self.root), 67)
+        # 65 = 旧用例表；candidate 补入 hud-source/support-dir-override 后 67；
+        # 报告200 再把探针已有的 keyboard-confirm-target/batched-status/content-phases 纳入必测 → 70。
+        self.assertEqual(local.check(self.root), 70)
         self.assertTrue(all(c['status'] == 'BLOCKED' for c in self.report['formal_cases']))
 
     def test_mvp_cannot_be_promoted_or_required_case_omitted(self):
