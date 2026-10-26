@@ -20,6 +20,12 @@ def stamp(path):
 @unittest.skipUnless(sys.platform == 'darwin', 'requires AppKit')
 class PreviewMenuTests(unittest.TestCase):
     def test_real_shared_menu_and_private_session(self):
+        # 断言读的是系统共享输入菜单；若本机还开着调试窗口（LampyrisPreview），菜单会多出条目，
+        # 这条就会假失败（报告207 实测一次）。此时记 SKIP，不要当产品回归。
+        running = subprocess.run(['pgrep', '-f', 'LampyrisPreview.app/Contents/MacOS/LampyrisPreview'],
+                                 capture_output=True, text=True, check=False)
+        if running.stdout.strip():
+            self.skipTest('调试窗口 LampyrisPreview 正在运行，输入菜单不干净')
         real = Path.home() / 'Library/Application Support/Lampyris'
         protected = [real / 'config.toml', real / 'user-dictionary.tsv']
         before = [stamp(path) for path in protected]

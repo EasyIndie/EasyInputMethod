@@ -44,9 +44,20 @@ case "enable", "disable":
         print("\(command) \(identifier(source)) \(status)")
         if status != noErr { failed = true }
     }
+    let wanted = matching(value, includeAll: true).map(identifier)
     Thread.sleep(forTimeInterval: 0.4)
     let enabled = matching(value, includeAll: false).map(identifier)
     print("enabled \(enabled.joined(separator: ","))")
+    // macOS 13 上 enable/disable 的系统调用会返回 0 但状态没变（报告201/207），
+    // 所以以回读结果为准：请求的每个源都达到目标状态才算成功。
+    for id in wanted {
+        let present = enabled.contains(id)
+        let expected = command == "enable"
+        if present != expected {
+            print("state-unchanged \(id)")
+            failed = true
+        }
+    }
     exit(failed ? 1 : 0)
 case "status":
     print("enabled " + matching(value, includeAll: false).map(identifier).joined(separator: ","))

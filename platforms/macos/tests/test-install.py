@@ -44,6 +44,40 @@ class InstallerPermissions(unittest.TestCase):
             self.reject(app)
 
 
+class InputSourceReadback(unittest.TestCase):
+    """`enable` 返回 0 不代表源真的启用（macOS 13，报告201/207），安装脚本必须回读。"""
+
+    def run_check(self, helper_text):
+        with tempfile.TemporaryDirectory() as directory:
+            helper = pathlib.Path(directory) / 'LampyrisTIS'
+            helper.write_text(helper_text)
+            helper.chmod(0o755)
+            return subprocess.run(
+                [str(ROOT / 'platforms/macos/tools/input-source-enabled.sh'),
+                 str(helper), 'cn.jokerhub.inputmethod.Lampyris'],
+                capture_output=True, text=True, check=False)
+
+    def test_reports_enabled_when_listed(self):
+        result = self.run_check(
+            '#!/bin/sh\necho "enabled cn.jokerhub.inputmethod.Lampyris,'
+            'cn.jokerhub.inputmethod.Lampyris.default"\n')
+        self.assertEqual(result.returncode, 0, result.stderr)
+
+    def test_reports_missing_when_list_is_empty(self):
+        result = self.run_check('#!/bin/sh\necho "enabled "\n')
+        self.assertEqual(result.returncode, 1)
+
+    def test_requires_exact_identifier(self):
+        # 只有模式源、没有父源时不算注册成功。
+        result = self.run_check(
+            '#!/bin/sh\necho "enabled cn.jokerhub.inputmethod.Lampyris.default"\n')
+        self.assertEqual(result.returncode, 1)
+
+    def test_fails_when_helper_prints_nothing(self):
+        result = self.run_check('#!/bin/sh\nexit 1\n')
+        self.assertEqual(result.returncode, 1)
+
+
 class UninstallerFreshStart(unittest.TestCase):
     """`--purge-data` 把配置与词库移出活动目录，让下一次安装从 Schema 默认值开始。"""
 

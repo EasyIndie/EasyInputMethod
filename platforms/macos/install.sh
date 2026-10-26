@@ -46,13 +46,17 @@ codesign --verify --strict "${STAGE}/Lampyris.app"
 mv -n "${STAGE}/Lampyris.app" "${DEST}"
 [ ! -e "${STAGE}/Lampyris.app" ] || { echo "目标安装路径已被占用，未覆盖" >&2; exit 1; }
 HELPER="${DEST}/Contents/Helpers/LampyrisTIS"
+# 不能只看 `enable` 的返回值：macOS 13 上 `TISEnableInputSource` 会返回 0 但源并未进入启用列表
+# （报告201/207 两次实测），所以回读一次再决定措辞。
 if [ -x "${HELPER}" ]; then
   "${HELPER}" register "${DEST}" >/dev/null 2>&1 || true
-  if "${HELPER}" enable "${IDENTIFIER}" >/dev/null 2>&1; then
-    echo "安装完成，已自动注册到输入源。"
+  "${HELPER}" enable "${IDENTIFIER}" >/dev/null 2>&1 || true
+  if "${SCRIPT_DIR}/tools/input-source-enabled.sh" "${HELPER}" "${IDENTIFIER}"; then
+    echo "安装完成，已注册到输入源。"
     echo "现在用 ⌃Space 或输入法菜单选中「萤火虫」即可；若菜单里还没出现，重启登录一次。"
   else
-    echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
+    echo "安装完成，但系统没有接受自动注册（macOS 13 上的已知行为）。"
+    echo "请在系统设置 → 键盘 → 文字输入 → ＋ → 中文（简体）添加「萤火虫」。"
   fi
 else
   echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
