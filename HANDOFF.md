@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 11:08 / pi（pro 本机图形会话；用户已授权重启宿主、卸载重装，并在旁协助 VoiceOver 与睡眠唤醒）。阶段：0.1.13 已发布并双机装机；**pro 自动化项 + VoiceOver + 睡眠唤醒已完成**，剩多 Space（非全屏）切换与外接屏热插拔。
-- 分支：`dev` = `main`（PR #177-181 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main` = `c2e2e9b`（PR #177-182 已合并，0 开放 PR）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -127,7 +127,7 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 ## 9. 会话日志（最近）
 
-- 2026-10-26 / pi（pro，用户拔插 HDMI 并新建桌面）：报告205 —— 热插拔后布局/缩放与拔插前一致，`make macos-multi-display` 4/4 PASS。多 Space：主屏已有 6 个 Space（当前 196），但 `keytopid ctrl+right` 与 System Events 的 `key code 124 using control down` 都切不动（符号快捷键 79/80 enabled），停在这里等用户手动切桌面再复验。
+- 2026-10-26 / pi（pro，用户拔插 HDMI 并新建桌面）：报告205（PR #182 已合并） —— 热插拔后布局/缩放与拔插前一致，`make macos-multi-display` 4/4 PASS。多 Space：主屏已有 6 个 Space（当前 196），但 `keytopid ctrl+right` 与 System Events 的 `key code 124 using control down` 都切不动（符号快捷键 79/80 enabled），停在这里等用户手动切桌面再复验。
 
 - 2026-10-26 / pi（pro，用户停 caffeinate 并唤醒机器）：报告204 —— `pmset sleepnow` 起初无效，原因是 `caffeinate -s`（PID 652，约 2 天）一直持有 `PreventSystemSleep`。新增 `sleep-test.py`（时钟跳变判定），实测**睡 57.1s 后被唤醒**；唤醒后宿主 PID 未变、首键 `wq `→`你`、候选窗 7 项、`type-session` 2/2、`quality-samples` 16/16、config 未变、0 外联。收尾输入源 ABC。
 
