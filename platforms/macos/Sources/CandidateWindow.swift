@@ -232,6 +232,32 @@ private final class CandidatePageButton: NSButton {
 
 private final class CandidateDocument: NSView {
     override var isFlipped: Bool { true }
+    /// ADR-291：让辅助技术知道当前选中哪一项。
+    weak var selectedCandidateView: NSView?
+
+    override func accessibilitySelectedChildren() -> [Any]? {
+        guard let selectedCandidateView else { return [] }
+        return [selectedCandidateView]
+    }
+}
+
+/// ADR-291：把「该播报什么」抽成纯函数，便于离屏单测。
+enum CandidateAnnouncement {
+    static func text(
+        input: String, previousInput: String,
+        selectedIndex: Int, previousSelected: Int,
+        pageIndex: Int, previousPage: Int, pageCount: Int,
+        candidate: ImeCandidate?
+    ) -> String? {
+        guard let candidate else { return nil }
+        // 新的一次组合由输入编码自身的值变化告知辅助技术，不重复播报。
+        guard input == previousInput else { return nil }
+        let pageChanged = pageIndex != previousPage
+        guard selectedIndex != previousSelected || pageChanged else { return nil }
+        let item = "第\(selectedIndex + 1)项，\(candidate.text)，\(candidate.source.label)"
+        guard pageChanged else { return item }
+        return "第\(pageIndex + 1)页，共\(pageCount)页，\(item)"
+    }
 }
 
 /// Nonactivating teaching extension. It never owns an input session or commits text.
@@ -608,6 +634,12 @@ final class CandidateWindow: NSObject {
     private var pageIndex = 0
     private var pageCount = 0
     private var selectedIndex = 0
+    /// ADR-291：上一次的组入文本/选中项/页码，用于判定该不该播报。
+    private var announcedInput = ""
+    private var announcedSelected = 0
+    private var announcedPage = 0
+    private var lastAnnouncement: (text: String, at: Date)?
+    private(set) var announcedTexts: [String] = []
     private var themeTimer: Timer?
     private var available = NSSize(width: 640, height: 800)
     private var arrangedSize: NSSize?
@@ -618,6 +650,28 @@ final class CandidateWindow: NSObject {
     private var warning: String?
 
     var navigationHint: String { "\(isVertical ? "↑↓" : "←→")浏览 · 空格确认 · 数字直选" }
+
+    /// ADR-291：向辅助技术播报；250ms 内同一条文本不重播，避免面板重排连播。
+    private func announce(_ text: String, element: Any? = nil) {
+        let now = Date()
+        if let lastAnnouncement, lastAnnouncement.text == text,
+           now.timeIntervalSince(lastAnnouncement.at) < 0.25 { return }
+        lastAnnouncement = (text, now)
+        announcedTexts.append(text)
+        if element == nil {
+            guard panel.isVisible, renderedCount > 0 else { return }
+        }
+        NSAccessibility.post(element: element ?? document, notification: .announcementRequested,
+            userInfo: [.announcement: text, .priority: NSAccessibilityPriorityLevel.medium.rawValue])
+    }
+
+    /// 离屏套件用：本进程内实际发出的播报文本序列（`AXAnnouncementRequested` 只投递给辅助技术，观察器收不到）。
+
+    /// ADR-291：上屏后播报（此时面板已隐藏，发在 App 元素上）。
+    func announceCommitted(_ text: String) {
+        guard !text.isEmpty else { return }
+        announce("\(text)，已上屏", element: NSApp)
+    }
 
     /// Use the axis of the last rendered layout, shared by preview and IMK.
     func navigationDelta(for event: NSEvent) -> Int? {
@@ -854,6 +908,22 @@ final class CandidateWindow: NSObject {
                 label.setHovered(false)
             }
         }
+        // ADR-291：选中项/翻页变化时主动播报，并告知辅助技术选中项已变。
+        let current = candidates.indices.contains(selectedIndex) ? candidates[selectedIndex] : nil
+        if let current,
+           let announcement = CandidateAnnouncement.text(
+                input: self.input, previousInput: announcedInput,
+                selectedIndex: selectedIndex, previousSelected: announcedSelected,
+                pageIndex: self.pageIndex, previousPage: announcedPage,
+                pageCount: self.pageCount, candidate: current)
+        {
+            announce(announcement)
+            NSAccessibility.post(element: document, notification: .selectedChildrenChanged)
+        }
+        announcedInput = self.input
+        announcedSelected = selectedIndex
+        announcedPage = self.pageIndex
+        document.selectedCandidateView = labels.indices.contains(selectedIndex) ? labels[selectedIndex] : nil
         renderedCount = candidates.count
         if relayout {
             timed(.layout) { arrange() }
