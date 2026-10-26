@@ -19,6 +19,18 @@ check() { # name ok-message fail-message
 [ -n "$(pgrep -x Lampyris | head -1)" ] && check host ok "" || check host fail "宿主未运行"
 "$BIN/tissrc" list 2>/dev/null | grep -qx "enabled ${SOURCE}" \
     && check input_source ok "" || check input_source fail "输入源未启用"
+# 报告212 C：锁屏时窗口永远拿不到前台，GUI 项全部跑不了（报告209 在 air 上白等半小时）。
+if [ -x "$BIN/session" ]; then
+    "$BIN/session" 2>/dev/null | grep -q '"locked":true' \
+        && check screen_lock fail "屏幕已锁定：先解锁再跑" || check screen_lock ok ""
+fi
+# 同一个客户端开多个实例会让「AppleScript 建文档」与「AX 读前台窗口」错位（报告207 §3.1）。
+dupes=""
+for name in TextEdit Safari "Google Chrome"; do
+    count=$(pgrep -x "$(echo "$name" | tr -d ' ')" 2>/dev/null | wc -l | tr -d ' ')
+    [ "${count:-0}" -gt 1 ] && dupes="${dupes}${name}x${count} "
+done
+[ -z "$dupes" ] && check clients_single_instance ok "" || check clients_single_instance fail "客户端多实例：${dupes}"
 front=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)
 [ -n "$front" ] && check gui_session ok "" || check gui_session fail "无图形会话（无法取前台应用）"
 [ -x "$BIN/imetype" ] && check probe_built ok "" || check probe_built fail "探针未构建"

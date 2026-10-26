@@ -88,3 +88,16 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 3. **不要热替换**：换包后重登；同一登录内只测一个包，并做 A/B/A 对照。
 4. **状态还原**：测完把 `mode`、标点、字形、输入源还原，并核对 `config.toml` 字节。
 5. **平台差异**：单个 `⌃.` 会被系统当取消键吞掉；菜单只渲染纯标题与真实快捷键。
+
+## 一条命令跑完单机验收（报告212）
+
+```sh
+make macos-acceptance-full            # preflight → 自动验收 → 质量样本 → 内存门禁 → 状态回读
+make macos-acceptance-full SKIP_MEMORY=1   # 跳过会重启宿主的内存门禁
+```
+
+产物在 `OUT=/tmp/lampyris-acceptance-full-<时间>/`：`00-preflight.json`、`01-auto.log`、`02-quality.log`、
+`03-memory.log`、`steps.tsv`（每步状态）、`99-state.txt`（执行 SHA/build/宿主 PID/config/词库/连接数）。
+
+前置检查（`acceptance-preflight.sh`）会先挡掉三类会把时间浪费掉的环境问题：**屏幕锁定**、
+**客户端多实例**（TextEdit/Safari/Chrome）、**输入源未启用**；`session` 探针只读会话锁状态，也可单独跑。

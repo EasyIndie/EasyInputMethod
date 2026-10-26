@@ -7,7 +7,7 @@ CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流
 PYTHON ?= $(shell for p in python3.13 python3.12 python3.11 python3; do command -v $$p >/dev/null 2>&1 && { echo $$p; break; }; done)
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-probe-build macos-auto-acceptance macos-soak macos-multi-display macos-ui-contrast macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build handoff hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-probe-build macos-auto-acceptance macos-acceptance-full macos-soak macos-multi-display macos-ui-contrast macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build handoff hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) platforms/macos/tests/run-offline-tests.py
@@ -23,6 +23,9 @@ macos-auto-acceptance: macos-probe-build ## 一键自动验收：热键/上屏 +
 
 macos-multi-display: macos-probe-build ## 多屏/缩放/全屏下的候选窗落点（报告202）：逐屏 + 全屏各测一次
 	OUT=$(or $(OUT),/tmp/lampyris-multidisplay-$$(date -u +%Y%m%dT%H%M%SZ)) ./tools/macos-probe/multi-display.sh
+
+macos-acceptance-full: macos-probe-build ## 一条命令跑完单机验收（preflight→自动验收→质量样本→内存→汇总；SKIP_MEMORY=1 跳过会重启宿主的一项）
+	OUT=$(or $(OUT),/tmp/lampyris-acceptance-full-$$(date -u +%Y%m%dT%H%M%SZ)) SKIP_MEMORY=$(or $(SKIP_MEMORY),0) ./tools/macos-probe/acceptance-full.sh
 
 macos-soak: macos-probe-build ## 久用验收：连续键入 MINUTES 分钟，断言零外联/内存稳态/词库重启不丢（报告192）
 	MINUTES=$(or $(MINUTES),5) OUT=$(or $(OUT),/tmp/lampyris-soak-$$(date -u +%Y%m%dT%H%M%SZ)) ./tools/macos-probe/soak-session.sh
