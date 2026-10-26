@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-26 01:58 / pi（在 **pro 本机图形会话**里，用户已授权重启宿主、卸载重装）。阶段：0.1.13 已发布并双机装机；**pro 的自动化项全部已绿**（键入/客户端/内存门禁/久用/离线回归/本地验收/对比度/卸载重装/多屏+缩放+全屏），只剩纯人工项（VoiceOver 实读、睡眠唤醒、多 Space 切换、外接屏热插拔）。
-- 分支：`dev` = `main` = `76cad78`（PR #177/#178 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
+- 分支：`dev` = `main` = `d2f01c2`（PR #177/#178/#179 已合并，0 开放 PR，工作树 clean）；最近 `make verify` **PASS**。具体提交以 `git log --oneline -1 origin/main` 为准。
 - 发布：`v0.1.13`（`9296fb5`），执行 SHA `c3b533e4…`，air/pro 相同；ZIP `130f3098…`、DMG `2f22120c…`。
 - 自动验收：air 上 `make macos-auto-acceptance` 全绿（p95 6.99 ms、稳态 5.5 MiB、0 外联）；质量样本 `quality-samples.sh` **16/16 PASS**。pro 上同样两项已全绿（报告198：p95 2.41 ms、4/4 客户端、16/16 样本）。
 
@@ -126,6 +126,7 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 - 2026-10-26 / pi（pro，接了外接 4K）：报告202 —— 新增 `screens`/`axwins`/`cgwins`/`displaymode` 与 `multi-display.sh`（`make macos-multi-display`）。两块屏 × 窗口内/全屏 = **4/4 PASS**；内置屏切到 1440×900@2x 再跑仍 **4/4 PASS**，随后还原到 1280×800@2x。发现：换模式/反复全屏后已运行 App 的 IME 上下文会变旧（键入变裸 ASCII，重开 App 恢复；脚本已按此重置文本编辑并每次清空正文）、AX 坐标以主屏左上角为原点（外接屏 y 为负）、`CGDisplayCopyAllDisplayModes` 默认不返回 HiDPI 变体。
 - 收尾状态：显示布局与起始一致（内置 1280×800@2x 主屏 + LG 1920×1080@2x 在上）、执行 SHA `c3b533e4…`、config `2bd3fde6…`、输入源 `Lampyris.default`、`quality-samples` 16/16。
+- 入库：报告202 + 多屏探针/脚本已进 main（PR #179，四 CI PASS），dev 已快进同步、0 开放 PR。
 
 - 2026-10-26 / pi（pro，用户授权）：报告201 —— **真实卸载→重装（保留数据）PASS**。DMG `2f22120c…`（与 Release `.sha256` 一致）→ `uninstall.sh`（先被正确拒绝一次：helper `disable` 不停宿主）→ bundle 移入 `uninstalled/`、config/词库逐字节保留 → `install.sh` 公证/staple/spctl 通过、执行 SHA 仍 `c3b533e4…`、config `2bd3fde6…` 与词库 486 行 SHA 不变；用户手动添加输入源后键入冒烟 2/2、`quality-samples.sh` 16/16。
 - 同轮发现：`install.sh` 打印「已自动注册到输入源」，但 macOS 13 上 `TISEnableInputSource` 假成功（`LampyrisTIS status` 随后为空）→ 必须手动添加；建议 0.1.14 复核后再宣布，README 措辞同步。
