@@ -244,6 +244,11 @@ func fixtureUninstall(named name: String) -> (UninstallPaths, URL, URL, URL, URL
                          atomically: true, encoding: .utf8)
     try! FileManager.default.createDirectory(at: support.appendingPathComponent("updates/backup"),
                                              withIntermediateDirectories: true)
+    // 安装时留下的旧版本备份：keepData 只保留用户数据，备份属于安装状态（报告213 §5-P3）。
+    let uninstalled = support.appendingPathComponent("uninstalled/bundle.ABCDEF")
+    try! FileManager.default.createDirectory(at: uninstalled, withIntermediateDirectories: true)
+    try! "backup\n".write(to: uninstalled.appendingPathComponent("Lampyris.app"),
+                           atomically: true, encoding: .utf8)
     return (UninstallPaths(home: home, domain: domain, applications: applications, support: support),
             domain.appendingPathComponent("Lampyris.app"),
             applications.appendingPathComponent("LampyrisUpdateCheck.app"),
@@ -262,6 +267,8 @@ require(keepPlan.targets.contains(keepHost.path) && keepPlan.targets.contains(ke
         "host and legacy updater must be deleted")
 require(keepPlan.targets.contains(keepPaths.support.appendingPathComponent("updates").path),
         "update backups must be removed")
+require(keepPlan.targets.contains(keepPaths.support.appendingPathComponent("uninstalled").path),
+        "install backups (uninstalled/) must be removed in keepData, like report 213 P3 requires")
 let keepOutcome = try! UninstallerCore.run(
     mode: .keepData, paths: keepPaths, selfBundle: keepUpdater,
     stopApps: { _ in }, switchToABCAndDisable: { _ in })
@@ -271,6 +278,8 @@ require(FileManager.default.fileExists(atPath: keepConfig.path), "config must su
 require(FileManager.default.fileExists(atPath: keepDictionary.path), "dictionary must survive keepData")
 require(!FileManager.default.fileExists(atPath: keepPaths.support.appendingPathComponent("updates").path),
         "update backups must be gone")
+require(!FileManager.default.fileExists(atPath: keepPaths.support.appendingPathComponent("uninstalled").path),
+        "install backups must be gone after keepData")
 require(FileManager.default.fileExists(atPath: keepUpdater.path),
         "running updater bundle is deleted only after exit")
 require(keepOutcome.pendingSelfRemoval == [keepUpdater.path], "self-removal path must be reported")
