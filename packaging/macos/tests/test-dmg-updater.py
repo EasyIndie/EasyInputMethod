@@ -124,6 +124,15 @@ class ZipAndReleasePayloadContract(unittest.TestCase):
         self.assertIn('Lampyris Update.app', text)
         self.assertIn('install-backup-', text)
 
+    def test_shared_core_tests_run_in_ci(self):
+        makefile = (ROOT / 'Makefile').read_text()
+        self.assertIn('macos-installcore-tests', makefile)
+        self.assertIn('$(MAKE) macos-installcore-tests', makefile)
+        self.assertIn('--package-path platforms/macos/InstallCore', makefile)
+        for name in ('.github/workflows/ci.yml', '.github/workflows/macos-nightly.yml'):
+            workflow = (ROOT / name).read_text()
+            self.assertIn('macos-updater-tests', workflow, name)
+
     def test_updater_replaces_itself_from_the_payload(self):
         core = (ROOT / 'platforms/macos/InstallCore/Sources/LampyrisInstallCore/'
                 'UpdateInstaller.swift').read_text()
