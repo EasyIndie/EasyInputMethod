@@ -138,6 +138,11 @@ MINUTES=5 ./tools/macos-probe/soak-session.sh   # 久用 + 词库持久化（会
 
 ## 9. 会话日志（最近）
 
+- 2026-10-26 / pi（pro，用户报「点检查更新只跳网页」）：ADR-294 —— 更新程序只按 bundle id `cn.jokerhub.Lampyris.WebsiteUpdateCheck` 定位（LaunchServices → `~/Applications`、`/Applications` 单层扫描），正式包名固定 `LampyrisUpdateCheck.app`（`build.py` 的 `CFBundleName`；显示名仍「萤火虫更新」），卸载器同步按 id 定位并仍清理旧名 `Lampyris Update.app`，取消手工改名步骤。验证：`update-entry.lookup` 离线断言 + `make verify`（0 警告）+ 离线 53 项/287 例 PASS。**未出新签名包**，装机版菜单点击与卸载清理待下一候选包复验。
+- 同轮 **ADR-295（用户拍板：不上 App Store，选方案 C）**：渠道收敛为网站渠道；DMG 内含 `LampyrisUpdateCheck.app`，安装器把它装到 `~/Applications`（校验→备份→替换→复验→失败回滚，含旧名迁移）；三入口统一校验清单（加 stapler/spctl）、CLI 改为允许覆盖+备份（宿主在跑则拒绝）、ZIP 补带 `input-source-enabled.sh` 并回读注册状态、`uninstall.sh` 按 bundle id 清理更新程序；release.yml 传 `--updater`。新增 `packaging/macos/tests/test-dmg-updater.py`（9 例）。**未出签名包**，待验：DMG 装完菜单直接开更新窗口、旧名被迁走、ZIP 升级不再报「已有不同版本」。
+- 同日追加（用户要求「剩下的也一并做」）：**ZIP 也带更新程序**（`prepare.sh` 发布模式强制要求签名+公证的它，`install.sh` 装到 `~/Applications`）；**更新器自更新**（升级负载自带 `LampyrisUpdateCheck.app` 时替换本体，运行中不退出、下次生效、失败不回滚输入法、隔离构建 `applications=nil` 不碰真实目录）；**实现收敛**为 `platforms/macos/InstallCore`（`LampyrisInstallCore` 库，DMG 安装器与更新器都依赖，安装器删掉自带的替换/校验实现）。本地验证：core/updater/installer 三模块 swiftc 交叉编译通过 + 新增 `test-install-core.py` 探针（6 组断言）；`test-dmg-updater.py` 13 例；离线 **54 项/292 例**、`make verify` 0 诊断 PASS。**SwiftPM 的 Package.swift 依赖接线本机无法构建（本机仅 CLT，无 Xcode）**，只能由 `macos` CI 泳道与 `macos-acceptance` 验证。
+- 注意：HANDOFF §0/§1 的 main 与已装包描述停在 `0b2aa24`/build23，本轮未刷新（当前分支 dev `acfb514`），下一位做完整交接时用 `./scripts/handoff-status.sh` 重采。
+
 - 2026-10-26 / pi：报告207 —— **0.1.14/build 23 装到 pro 并复验通过**。build 22 装上后 VO 仍不念，`axsel` 定位到真因：候选容器从来不是 AX 元素（`AXSelectedChildren` 读回空、播报发在不可见元素上）。build 23 设容器为 AX 元素（role group「候选字词」）+ 逐项 `AXSelected`，AX 树变 `滚动区→组→候选`；装机版 `axobserve` 抓到换候选与上屏两条 `AXAnnouncementRequested`，**用户确认念出「第2项，像，五笔」「像，已上屏」**。受影响项全部在 build 23 重跑：auto-acceptance PASS（p95 2.52ms、0 外联）、质量样本 16/16、ADR-263 内存门禁 PASS（20.6–20.9M）、verify/离线 50/本地 71 PASS。
 - 同轮坑（写进报告207 §4）：裸跑 `imetype` 会把输入源切回 ABC；第三方源用 TIS/⌃Space/AXPress 都切不动；`axmenu press` 路径比 `dump` 少一层；`keytopid` 未收录键名（如 `escape`）会被当文本打出来；多实例 TextEdit 会让质量样本的两条“切源/失焦”用例误判（首轮 2 FAIL，关掉多余实例后 16/16）。
 - 待做：0.1.14 未打 tag/未发 Release（发布前需按流程复跑候选包 build 23）；`clean-install.sh` 的「已自动注册」假成功措辞；`quality-samples.sh` 加单实例前置；IT-15/IT-23 待安排；air 侧仍是 0.1.13。

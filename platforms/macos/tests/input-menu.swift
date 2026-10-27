@@ -103,3 +103,42 @@ for (index, switched, restored) in [(1, "英文输入", "中文输入"), (2, "�
     require(menu.items[index].title == restored && menu.items[index].state == .off, "toggle restores current title")
 }
 print("PASS input-menu: five flat rows, mode title cycles, no submenu/view, rejected old tags, failed change and toggles")
+
+// ADR-294：更新程序只按 bundle id 定位，目录名（正式 `LampyrisUpdateCheck.app` 或历史上手工改名的
+// `Lampyris Update.app`）不是判据。
+func makeUpdaterBundle(in directory: URL, named name: String, identifier: String) -> URL {
+    let bundle = directory.appendingPathComponent(name)
+    let contents = bundle.appendingPathComponent("Contents")
+    try! FileManager.default.createDirectory(at: contents, withIntermediateDirectories: true)
+    let info: [String: Any] = ["CFBundleIdentifier": identifier,
+                               "CFBundleExecutable": "LampyrisUpdateCheck",
+                               "CFBundlePackageType": "APPL"]
+    let data = try! PropertyListSerialization.data(fromPropertyList: info, format: .xml, options: 0)
+    try! data.write(to: contents.appendingPathComponent("Info.plist"))
+    return bundle
+}
+let workspace = URL(fileURLWithPath: NSTemporaryDirectory())
+    .appendingPathComponent("lampyris-updater-lookup-\(UUID().uuidString)")
+try! FileManager.default.createDirectory(at: workspace, withIntermediateDirectories: true)
+defer { try? FileManager.default.removeItem(at: workspace) }
+require(UpdateEntry.updater(in: workspace) == nil, "empty directory has no updater")
+_ = makeUpdaterBundle(in: workspace, named: "Something Else.app",
+                      identifier: "cn.jokerhub.Lampyris.WebsiteUpdateCheck")
+require(UpdateEntry.updater(in: workspace)?.lastPathComponent == "Something Else.app",
+        "bundle id decides, not the directory name")
+let official = makeUpdaterBundle(in: workspace, named: UpdateEntry.updaterBundleName,
+                                 identifier: UpdateEntry.updaterBundleID)
+_ = makeUpdaterBundle(in: workspace, named: "Lampyris Update.app",
+                      identifier: UpdateEntry.updaterBundleID)
+_ = makeUpdaterBundle(in: workspace, named: "Unrelated.app",
+                      identifier: "cn.jokerhub.inputmethod.Lampyris")
+require(UpdateEntry.updater(in: workspace)?.standardizedFileURL.path == official.standardizedFileURL.path,
+        "official bundle name wins over legacy names")
+try! FileManager.default.removeItem(at: official)
+require(UpdateEntry.updater(in: workspace)?.lastPathComponent == "Lampyris Update.app",
+        "legacy directory name stays launchable")
+require(UpdateEntry.installDirectories.count == 2, "only ~/Applications and /Applications are searched")
+LocalAcceptanceEvidence.record("update-entry.lookup",
+    expected: "更新程序按 bundle id 查找，包名不再要求手工改名",
+    actual: ["bundle": UpdateEntry.updaterBundleName, "directories": UpdateEntry.installDirectories.map(\.path)])
+print("PASS update-entry: bundle-id lookup ignores directory name and prefers the official bundle name")

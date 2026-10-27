@@ -1,6 +1,8 @@
 import Foundation
 import XCTest
 
+import LampyrisInstallCore
+
 @testable import WebsiteUpdateCheck
 
 final class InstallLocationTests: XCTestCase {

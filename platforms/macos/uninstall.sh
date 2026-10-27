@@ -37,6 +37,7 @@ fi
 # 预检只打印计划，不要求先退出宿主（切换前先看清会动什么）。
 if ${DRY}; then
   echo "将把 ${APP} 移到 ${BACKUP}/bundle.XXXXXX/"
+  echo "更新程序（~/Applications/LampyrisUpdateCheck.app，旧名 Lampyris Update.app）按 bundle id 一并移入备份"
   if ${PURGE}; then
     if [ "${#DATA_FILES[@]}" -eq 0 ]; then
       echo "用户数据目录里没有 config.toml / user-dictionary.tsv，无需清理"
@@ -69,6 +70,21 @@ mkdir -p "${BACKUP}"
 TARGET="$(mktemp -d "${BACKUP}/bundle.XXXXXX")"
 mv "${APP}" "${TARGET}/Lampyris.app"
 echo "已移出输入法目录，备份在 ${TARGET}"
+# ADR-294/295：更新程序按 bundle id 清理（正式名与历史改名都算），同样移入备份而不是删除。
+if pgrep -x LampyrisUpdateCheck >/dev/null; then
+  pkill -x LampyrisUpdateCheck || true
+  sleep 1
+fi
+for updater_dir in "${HOME}/Applications" /Applications; do
+  [ -d "${updater_dir}" ] || continue
+  for candidate in "${updater_dir}"/*.app; do
+    [ -d "${candidate}" ] && [ ! -L "${candidate}" ] || continue
+    candidate_id="$(/usr/libexec/PlistBuddy -c 'Print CFBundleIdentifier' "${candidate}/Contents/Info.plist" 2>/dev/null || true)"
+    [ "${candidate_id}" = cn.jokerhub.Lampyris.WebsiteUpdateCheck ] || continue
+    mv "${candidate}" "${TARGET}/$(basename "${candidate}")"
+    echo "更新程序已移入备份：${TARGET}/$(basename "${candidate}")"
+  done
+done
 if ${PURGE}; then
   if [ "${#DATA_FILES[@]}" -eq 0 ]; then
     echo "用户数据目录里没有 config.toml / user-dictionary.tsv，无需清理"

@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import LampyrisInstallCore
 import OrzAppUpdaterCore
 
 // Build metadata belongs to the signed companion bundle, never to user preferences.

@@ -51,6 +51,7 @@ jobs:
           make macos-offline-tests
           python3 platforms/macos/Installer/build.py
           python3 platforms/macos/Uninstaller/build.py
+          python3 platforms/macos/Updater/build.py
       - name: Sign and notarize with team API key
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
@@ -59,7 +60,9 @@ jobs:
           ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
           ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
           ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
-        run: bash packaging/macos/ci-sign.sh
+        # ADR-295：更新程序随包分发，必须自带公证票据（prepare.sh --signed 会校验 stapler）；
+        # 与主应用共用同一次公证提交，不额外增加一轮。
+        run: bash packaging/macos/ci-sign.sh --also platforms/macos/build/website-updater/LampyrisUpdateCheck.app
       - name: Prepare and reproduce acceptance archive
         run: |
           ./packaging/macos/prepare.sh --signed

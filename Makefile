@@ -129,11 +129,15 @@ fuzz: check-workspace ## 解析器 fuzz（需 nightly + cargo-fuzz；FUZZ_SECOND
 clean: ## 清理构建产物
 	$(CARGO) clean || true
 
-.PHONY: macos-updater-tests macos-updater-build
+.PHONY: macos-updater-tests macos-updater-build macos-installcore-tests
 macos-updater-tests: ## 独立更新检查离线安全/严格并发回归（不请求feed）
 	python3 platforms/macos/Updater/verify-vendor.py
 	cargo build --locked --release -p ime-ffi
 	$(CLEAN) swift test --package-path platforms/macos/Updater --scratch-path platforms/macos/build/updater-tests -Xswiftc -warnings-as-errors -Xswiftc -strict-concurrency=complete -Xswiftc -I$(PWD)/crates/ime-ffi/include -Xlinker $(PWD)/target/release/libime_ffi.a
+	$(MAKE) macos-installcore-tests
+
+macos-installcore-tests: ## 共享安装核心（ADR-295）的严格并发/替换回滚回归
+	$(CLEAN) swift test --package-path platforms/macos/InstallCore --scratch-path platforms/macos/build/installcore-tests -Xswiftc -warnings-as-errors -Xswiftc -strict-concurrency=complete
 
 macos-updater-build: ## 构建默认关闭的独立更新检查程序（不安装、不联网）
 	cargo build --locked --release -p ime-ffi

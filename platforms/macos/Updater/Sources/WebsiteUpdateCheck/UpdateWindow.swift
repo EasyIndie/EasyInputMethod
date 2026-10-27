@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import LampyrisInstallCore
 import OrzAppUpdaterCore
 
 /// 最小可用的更新窗口：检查 → 显示新版本 → 下载（进度）→ 验签 → 确认安装 → 结果。
@@ -11,6 +12,8 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     private let progress = NSProgressIndicator()
     private let checkButton = NSButton(title: "检查更新", target: nil, action: nil)
     private let installButton = NSButton(title: "下载并安装", target: nil, action: nil)
+    /// 自更新后当前进程仍是旧代码（ADR-295）：给一个显式的重新打开入口，立即生效。
+    private let relaunchButton = NSButton(title: "重新打开更新程序", target: nil, action: nil)
     private var release: UpdateRelease?
     private var feeds: [URL] = []
     private var running = false
@@ -95,9 +98,14 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         installButton.target = self
         installButton.action = #selector(installTapped)
         installButton.isEnabled = false
+        relaunchButton.bezelStyle = .rounded
+        relaunchButton.controlSize = .large
+        relaunchButton.target = self
+        relaunchButton.action = #selector(relaunchTapped)
+        relaunchButton.isHidden = true
         let spacer = NSView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        let buttons = NSStackView(views: [spacer, checkButton, installButton])
+        let buttons = NSStackView(views: [spacer, checkButton, relaunchButton, installButton])
         buttons.orientation = .horizontal
         buttons.alignment = .centerY
         buttons.spacing = 10
@@ -155,6 +163,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
 
     private func fail(_ message: String) {
         setBusy(false)
+        relaunchButton.keyEquivalent = ""
         status.stringValue = "更新失败"
         detail.stringValue = message
     }
@@ -250,12 +259,45 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 let receipt = try UpdateInstaller.install(
                     payload: payload.url, signature: signature, publicKeyBase64: key,
                     domain: location.domain, support: location.support,
-                    environment: DefaultInstallEnvironment.make(target: target), target: target)
+                    environment: DefaultInstallEnvironment.make(target: target), target: target,
+                    selfUpdate: location.applications.map {
+                        UpdateInstaller.SelfUpdate(
+                            directory: $0,
+                            environment: DefaultInstallEnvironment.make(target: .updater))
+                    })
                 setBusy(false)
                 status.stringValue = "已安装构建 \(release.build)"
                 detail.stringValue = "旧版本备份：\(receipt.previous ?? "无")"
+                    + (receipt.updaterBundle.map {
+                        "\n更新程序已同步到 \($0)；点「重新打开更新程序」立即使用新版本。"
+                    } ?? "")
+                if receipt.updaterBundle != nil {
+                    relaunchButton.isHidden = false
+                    relaunchButton.isEnabled = true
+                    relaunchButton.keyEquivalent = "\r"
+                    installButton.isEnabled = false
+                }
             } catch {
                 fail("安装失败：\(error.localizedDescription)")
+            }
+        }
+    }
+
+    @objc private func relaunchTapped() {
+        guard !running, let applications = location?.applications else { return }
+        let app = applications.appendingPathComponent(InstallTarget.updater.bundleName)
+        guard FileManager.default.fileExists(atPath: app.path) else {
+            return fail("找不到更新程序：\(app.path)")
+        }
+        let configuration = NSWorkspace.OpenConfiguration()
+        configuration.arguments = ["--ui"]
+        NSWorkspace.shared.openApplication(at: app, configuration: configuration) { [weak self] _, error in
+            Task { @MainActor in
+                guard error == nil else {
+                    self?.fail("重新打开失败：\(error!.localizedDescription)")
+                    return
+                }
+                NSApp.terminate(nil)
             }
         }
     }

@@ -33,7 +33,7 @@ private enum UninstallEngine {
         let home = FileManager.default.homeDirectoryForCurrentUser
         let app = home.appendingPathComponent("Library/Input Methods/Lampyris.app")
         let support = home.appendingPathComponent("Library/Application Support/Lampyris")
-        let updater = home.appendingPathComponent("Applications/Lampyris Update.app")
+        let updaters = locateUpdaters(home: home)
         let fileManager = FileManager.default
 
         if fileManager.fileExists(atPath: app.path), !isProductionApp(app) {
@@ -62,10 +62,10 @@ private enum UninstallEngine {
         let identifiers = [hostIdentifier, updaterIdentifier, installerIdentifier]
         var targets: [URL] = [
             app,
-            updater,
             home.appendingPathComponent("Library/Application Support/Lampyris-install-backups"),
             home.appendingPathComponent("Library/Application Scripts/\(hostIdentifier)"),
         ]
+        targets.append(contentsOf: updaters)
         for identifier in identifiers {
             targets.append(home.appendingPathComponent("Library/Caches/\(identifier)"))
             targets.append(home.appendingPathComponent("Library/Preferences/\(identifier).plist"))
@@ -110,6 +110,26 @@ private enum UninstallEngine {
             }
         }
         return UninstallOutcome(kept: kept, removedCount: removed)
+    }
+
+    /// 更新程序按 bundle id 定位：正式包名是 `LampyrisUpdateCheck.app`，历史上手工改名成
+    /// `Lampyris Update.app` 的安装也要能清掉（ADR-294）。
+    private static func locateUpdaters(home: URL) -> [URL] {
+        let manager = FileManager.default
+        let legacy = home.appendingPathComponent("Applications/Lampyris Update.app")
+        var found: [URL] = []
+        for directory in [home.appendingPathComponent("Applications"),
+                          URL(fileURLWithPath: "/Applications")] {
+            guard let children = try? manager.contentsOfDirectory(
+                at: directory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
+            else { continue }
+            for child in children where child.pathExtension == "app" {
+                guard Bundle(url: child)?.bundleIdentifier == updaterIdentifier else { continue }
+                if !found.contains(child) { found.append(child) }
+            }
+        }
+        if !found.contains(legacy) { found.append(legacy) }
+        return found
     }
 
     private static func stopHosts(_ identifiers: [String]) {

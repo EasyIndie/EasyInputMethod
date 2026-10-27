@@ -1,8 +1,8 @@
 import Foundation
 
 /// Developer ID candidate validation and exact executable stop for the selected target.
-enum DefaultInstallEnvironment {
-    static func make(target: InstallTarget = .production) -> InstallEnvironment {
+public enum DefaultInstallEnvironment {
+    public static func make(target: InstallTarget = .production) -> InstallEnvironment {
         InstallEnvironment(validateCandidate: { app in
             let executable = app.appendingPathComponent(target.executablePath)
             guard FileManager.default.isExecutableFile(atPath: executable.path) else {

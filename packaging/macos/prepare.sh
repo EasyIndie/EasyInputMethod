@@ -13,6 +13,8 @@ OUT="${ROOT}/packaging/out"
 mkdir -p "${OUT}"
 WORK="$(mktemp -d "${OUT}/candidate-XXXXXX")"
 APP="${ROOT}/platforms/macos/build/Lampyris.app"
+# ADR-295：更新程序随包分发（DMG 与 ZIP 都有）；发布候选必须带上签名并公证过的它。
+UPDATER="${ROOT}/platforms/macos/build/website-updater/LampyrisUpdateCheck.app"
 if ${SIGNED}; then
   [ "$(cat "${APP}/Contents/Resources/SOURCE-COMMIT")" = "${COMMIT}" ] || { echo "签名应用与当前源码提交不符，请重新构建" >&2; exit 1; }
   for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv variant-s2t.tsv; do
@@ -22,6 +24,13 @@ if ${SIGNED}; then
   codesign --verify --strict "${APP}"
   xcrun stapler validate "${APP}"
   spctl --assess --type execute --verbose=2 "${APP}"
+  [ -d "${UPDATER}" ] && [ ! -L "${UPDATER}" ] || {
+    echo "签名候选缺少更新程序；先运行 platforms/macos/Updater/build.py 并签名（ADR-295）" >&2; exit 1; }
+  [ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "${UPDATER}/Contents/Info.plist")" = cn.jokerhub.Lampyris.WebsiteUpdateCheck ] || {
+    echo "更新程序标识不符" >&2; exit 1; }
+  codesign --verify --strict "${UPDATER}"
+  xcrun stapler validate "${UPDATER}"
+  spctl --assess --type execute --verbose=2 "${UPDATER}"
 else
   CLANG_MODULE_CACHE_PATH="${WORK}/module-cache" ./platforms/macos/build.sh --strict --universal
 fi
@@ -36,6 +45,9 @@ esac
 STAGE="${WORK}/Lampyris-${VERSION}-${ARCH}"
 mkdir -p "${STAGE}/scripts"
 ditto "${APP}" "${STAGE}/Lampyris.app"
+if [ -d "${UPDATER}" ] && [ ! -L "${UPDATER}" ]; then
+  ditto "${UPDATER}" "${STAGE}/LampyrisUpdateCheck.app"
+fi
 cp LICENSE "${STAGE}/LICENSE"
 python3 - "${VERSION}" "${STAGE}/README.md" <<'PY'
 import sys
@@ -43,6 +55,9 @@ from pathlib import Path
 Path(sys.argv[2]).write_text(Path("packaging/macos/RELEASE-README.md").read_text().replace("@VERSION@", sys.argv[1]))
 PY
 cp platforms/macos/install.sh platforms/macos/uninstall.sh "${STAGE}/scripts/"
+# install.sh 靠这个 helper 回读输入源真实状态（报告201/207）；不随包带上就只能报「未知」。
+mkdir -p "${STAGE}/scripts/tools"
+cp platforms/macos/tools/input-source-enabled.sh "${STAGE}/scripts/tools/"
 cp -R packaging/licenses "${STAGE}/DATA-LICENSES"
 cp docs/数据来源与许可.md "${STAGE}/DATA-SOURCES.md"
 cp data/sources.toml "${STAGE}/data-sources.toml"
@@ -50,6 +65,9 @@ cargo tree --locked --offline -p ime-ffi > "${STAGE}/cargo-tree.txt"
 {
   printf 'commit=%s\narchitecture=%s\nlipo_archs=%s\nsigned_release=%s\n' "${COMMIT}" "${ARCH}" "${APP_ARCHS}" "${SIGNED}"
   printf 'version=%s\nbuild=%s\n' "${VERSION}" "${BUILD_NUMBER}"
+  if [ -d "${STAGE}/LampyrisUpdateCheck.app" ]; then
+    printf 'updater_build=%s\n' "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "${STAGE}/LampyrisUpdateCheck.app/Contents/Info.plist")"
+  fi
   rustc --version
   swiftc --version
   xcrun --show-sdk-version

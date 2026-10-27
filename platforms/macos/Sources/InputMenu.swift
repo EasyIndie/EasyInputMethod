@@ -15,12 +15,36 @@ struct InputMenuState {
 enum UpdateEntry {
     static let releasePage = URL(string: "https://github.com/EasyIndie/EasyInputMethod/releases/latest")!
     static let updaterBundleID = "cn.jokerhub.Lampyris.WebsiteUpdateCheck"
+    /// 正式包名（ADR-294）。目录名不是判据，只用于在两个候选里挑更规范的那个。
+    static let updaterBundleName = "LampyrisUpdateCheck.app"
+
+    /// 用户可放置更新程序的两个目录；查找不依赖子目录名字。
+    static var installDirectories: [URL] {
+        [FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications"),
+         URL(fileURLWithPath: "/Applications")]
+    }
+
+    /// 在一个目录里按 bundle id 认更新程序；历史遗留的 `Lampyris Update.app` 同样能被认出来。
+    static func updater(in directory: URL) -> URL? {
+        guard let children = try? FileManager.default.contentsOfDirectory(
+            at: directory, includingPropertiesForKeys: [.isDirectoryKey], options: [.skipsHiddenFiles])
+        else { return nil }
+        let candidates = children
+            .filter { $0.pathExtension == "app" }
+            .sorted { $0.lastPathComponent < $1.lastPathComponent }
+            .filter { Bundle(url: $0)?.bundleIdentifier == updaterBundleID }
+        return candidates.first { $0.lastPathComponent == updaterBundleName } ?? candidates.first
+    }
 
     static func updaterURL() -> URL? {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        let candidates = [home.appendingPathComponent("Applications/Lampyris Update.app"),
-                          URL(fileURLWithPath: "/Applications/Lampyris Update.app")]
-        return candidates.first { Bundle(url: $0)?.bundleIdentifier == updaterBundleID }
+        if let registered = NSWorkspace.shared.urlForApplication(withBundleIdentifier: updaterBundleID),
+           Bundle(url: registered)?.bundleIdentifier == updaterBundleID {
+            return registered
+        }
+        for directory in installDirectories {
+            if let found = updater(in: directory) { return found }
+        }
+        return nil
     }
 
     static func open() {

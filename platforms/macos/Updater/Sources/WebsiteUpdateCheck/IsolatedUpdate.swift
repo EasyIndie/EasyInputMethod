@@ -1,4 +1,5 @@
 import Foundation
+import LampyrisInstallCore
 
 /// Where an update may install and keep its private state (ADR-287).
 ///
@@ -8,6 +9,8 @@ import Foundation
 struct InstallLocation: Sendable {
     let domain: URL
     let support: URL
+    /// 更新程序自己的安装目录（ADR-295）；隔离构建为 nil，绝不碰真实的 ~/Applications。
+    let applications: URL?
     let target: InstallTarget
     let isolated: Bool
 
@@ -25,6 +28,7 @@ struct InstallLocation: Sendable {
             return InstallLocation(domain: home.appendingPathComponent("Library/Input Methods"),
                                    support: home.appendingPathComponent(
                                        "Library/Application Support/Lampyris/updates"),
+                                   applications: home.appendingPathComponent("Applications"),
                                    target: .production, isolated: false)
         }
         guard let bundle = info["CFBundleIdentifier"] as? String,
@@ -42,7 +46,7 @@ struct InstallLocation: Sendable {
         let canonical = try validateRoot(root, uuid: uuid, home: home, temporary: temporary)
         return InstallLocation(domain: canonical.appendingPathComponent("Input Methods"),
                                support: canonical.appendingPathComponent("updates"),
-                               target: target, isolated: true)
+                               applications: nil, target: target, isolated: true)
     }
 
     /// Rejects anything that is not an owned, owner-marked private root; returns the canonical root.

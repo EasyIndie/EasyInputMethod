@@ -2,7 +2,7 @@ import CryptoKit
 import Foundation
 import XCTest
 
-@testable import WebsiteUpdateCheck
+@testable import LampyrisInstallCore
 
 final class PayloadVerificationTests: XCTestCase {
     private func makeKeyPair() -> (publicKey: String, privateKey: Curve25519.Signing.PrivateKey) {

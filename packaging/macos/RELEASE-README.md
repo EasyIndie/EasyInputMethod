@@ -11,16 +11,19 @@
 ./scripts/install.sh --app ./Lampyris.app
 ```
 
-安装器会调用包内 helper 自动注册并启用输入源；用 ⌃Space 或输入法菜单选中萤火虫即可（若未出现，重启登录一次）。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Lampyris.app --system`。同版本重复执行无操作，不同版本先卸载。不要关闭 Gatekeeper；验证失败请停止安装。
+安装器会调用包内 helper 自动注册并启用输入源，并回读真实状态（macOS 13 上有时候系统调用返回成功但源未启用）：用 ⌃Space 或输入法菜单选中萤火虫即可（若回读未通过，按提示在系统设置里手动添加）。当前用户目录是默认位置；系统域可由管理员执行 `sudo ./scripts/install.sh --app ./Lampyris.app --system`。同版本重复执行无操作；不同版本会先备份旧包到 `~/Library/Application Support/Lampyris/updates/install-backup-<时间戳>/` 再覆盖，失败自动回滚（宿主仍在运行时拒绝热替换，请先切到 ABC 并注销）。不要关闭 Gatekeeper；验证失败请停止安装。
+
+更新程序：本 ZIP 自带 `LampyrisUpdateCheck.app`，安装脚本会自动把它装到 `~/Applications/LampyrisUpdateCheck.app`（同样先校验再替换，旧版移入 `updates/install-backup-<时间戳>`）。需要一个不带包的手动副本时，可从同一 Release 下载 `LampyrisUpdateCheck-<version>.zip`，解压出的 `LampyrisUpdateCheck.app` 直接放进 `~/Applications` 即可（宿主菜单按 bundle id 定位，不需要改名）。
 
 ## 从旧版升级（保留配置和个人词库）
 
-目前使用离线手动升级，没有自动检查或下载新版。请取得并核验签名公证的新版包；安装器会拒绝直接覆盖不同版本。
+升级有两条路径，语义一致（都先备份、失败回滚、不热替换）：
 
-1. 结束当前组合；卸载脚本会自动切回 ABC 并禁用输入源（宿主仍在运行时先注销一次）。
-2. 从旧版包执行默认卸载：`./scripts/uninstall.sh`（helper 可用时无需 `--input-source-removed`）。不要加`--purge-data`；默认会备份旧应用并保留配置和个人词库。
-3. 从新版包执行`./scripts/install.sh --app ./Lampyris.app --dry-run`，检查通过后去掉`--dry-run`安装。系统域安装/卸载两步都需对应的`--system`及管理员权限。
-4. 按安装步骤重新登录、添加并选中萤火虫，核对原配置、个人词、三模式输入和版本信息。新版内置系统词表随应用更新。
+- **DMG（推荐）**：打开新版 DMG，双击「安装萤火虫」，安装器会停宿主、备份旧版、替换输入法并同步更新更新程序。
+- **ZIP（终端）**：先切到 ABC 并注销，从新版包执行 `./scripts/install.sh --app ./Lampyris.app --dry-run`，通过后去掉 `--dry-run` 重跑；旧版本会自动备份到 `~/Library/Application Support/Lampyris/updates/install-backup-<时间戳>/`。不需要先卸载。
+- **更新程序**：已安装 `~/Applications/LampyrisUpdateCheck.app` 时，输入法菜单「检查更新…」可以直接下载、验签、安装新版本；新版负载里带有更新程序时，它也会把自己换到新版本（下次打开生效）。
+
+升级后核对原配置、个人词、三模式输入和版本信息。新版内置系统词表随应用更新。
 
 保留的用户数据位于`~/Library/Application Support/Lampyris/`。升级前可自行复制此目录备份；异常时保留备份和旧包，按相同移除/退出/安装流程恢复旧应用。涉及未来数据格式迁移的版本须遵循对应发布说明，不能假定任意版本均可直接降级。当前正式RC仍需在目标A/B设备完成保留升级和恢复验收；开发身份的换包成功不等同正式升级验收完成。
 
@@ -33,7 +36,7 @@
 ./scripts/uninstall.sh --input-source-removed
 ```
 
-系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/Lampyris/uninstalled 备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/Lampyris/`。
+系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/Lampyris/uninstalled 备份；更新程序（`~/Applications/LampyrisUpdateCheck.app`，含历史名 `Lampyris Update.app`）按 bundle id 一并移入同一备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/Lampyris/`。
 
 ## 核验与复现
 
