@@ -145,10 +145,9 @@ enum StateHUDLayout {
     }
 
     static func frame(size: NSSize, caret: NSRect, visibleFrame: NSRect) -> NSRect {
-        var origin = NSPoint(x: caret.midX - size.width / 2, y: caret.maxY + gap)
-        origin.x = min(max(origin.x, visibleFrame.minX + gap), visibleFrame.maxX - size.width - gap)
-        origin.y = min(max(origin.y, visibleFrame.minY + gap), visibleFrame.maxY - size.height - gap)
-        return NSRect(origin: origin, size: size)
+        CaretPlacement.frame(CaretPlacement.Request(
+            caret: caret, panelSize: size, visible: visibleFrame,
+            preferBelow: false, align: .centered, gap: gap))
     }
 }
 

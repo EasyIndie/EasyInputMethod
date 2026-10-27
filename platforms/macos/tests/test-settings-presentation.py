@@ -28,7 +28,7 @@ class SettingsPresentationTests(unittest.TestCase):
                   str(temporary / "main.swift"),
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / "platforms/macos/Sources" / name) for name in
-                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "Settings.swift", "Feedback.swift", "InfoWindow.swift",
+                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "Settings.swift", "Feedback.swift", "InfoWindow.swift",
                      "UserDictionary.swift", "Lookup.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 45),

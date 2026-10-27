@@ -39,7 +39,7 @@ class PreviewMenuTests(unittest.TestCase):
                 (['swiftc', '-warnings-as-errors', '-I', str(ROOT / 'crates/ime-ffi/include'),
                   str(temporary / 'main.swift'),
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
-                  *[str(ROOT / 'platforms/macos/Sources' / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'InputMenu.swift']],
+                  *[str(ROOT / 'platforms/macos/Sources' / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'CaretPlacement.swift', 'InputMenu.swift']],
                   str(ROOT / 'platforms/macos/Preview/InputMenuPreview.swift'),
                   str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 45),
                 ([str(temporary / 'probe'), str(temporary), str(ROOT / 'data/generated')], 10),
