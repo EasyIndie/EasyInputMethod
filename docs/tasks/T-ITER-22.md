@@ -19,16 +19,14 @@
 | 显示器 / 缩放 | |
 | VoiceOver 状态 | 开 / 关（走查 §9 时需要开） |
 
-取证命令（一次性抄走，输出贴进本表或存到证据文件）：
+取证只需一条命令（同时打印并写入一个带时间戳的文件）：
 
 ```sh
-H="$HOME/Library/Input Methods/Lampyris.app"
-echo "version=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$H/Contents/Info.plist")/$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$H/Contents/Info.plist")"
-shasum -a 256 "$H/Contents/MacOS/Lampyris"
-shasum -a 256 "$HOME/Library/Application Support/Lampyris/config.toml"
-wc -l < "$HOME/Library/Application Support/Lampyris/user-dictionary.tsv"
-sw_vers
+tools/macos-probe/walkthrough-evidence.sh --label it22-start    # 开始前
+tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 ```
+
+输出含：系统与架构、宿主/更新程序的版本与执行 SHA、宿主与 VoiceOver 的 PID、`config.toml` 与词库的 SHA 与行数、`uninstalled/`/`updates/` 是否存在、输入源列表。把 `EVIDENCE=` 后面的路径记下来即可。
 
 **判定口径**：结果只写 `PASS` / `FAIL` / `BLOCKED` / `SKIP`。`SKIP` 不能代替 `PASS`；`BLOCKED` 必须写原因。
 发现丢字、错误提交、崩溃、配置不生效 = `FAIL`，当天记问题并复验，不能靠「多数时候正常」关闭。
@@ -166,7 +164,7 @@ sw_vers
 ## 12. 收尾（每次走查都做）
 
 1. VoiceOver 关掉；输入源恢复到走查前的状态。
-2. 回读 §0 的 `config.toml` SHA、词库行数、宿主执行 SHA，记录是否有变化（词库增长属正常学习）。
+2. 再跑一次 `tools/macos-probe/walkthrough-evidence.sh --label it22-end`，与开始前那份对比（词库增长属正常学习；执行 SHA 必须不变）。
 3. 证据放 `platforms/macos/build/<本轮目录>/`，文件名写进本表「现象 / 证据」列。
 4. 把本文件填好（或把结果贴给我），我据此出 IT-22 报告与 schema2 记录。
 5. `make verify` 通过后提交：`docs: record the IT-22 product walkthrough`。
