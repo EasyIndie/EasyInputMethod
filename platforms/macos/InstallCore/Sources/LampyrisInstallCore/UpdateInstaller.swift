@@ -127,7 +127,7 @@ public enum UpdateInstaller {
         let candidate = try extract(payload: payload, staging: staging, bundleName: target.bundleName)
         try environment.validateCandidate(candidate)
         let candidateExec = candidate.appendingPathComponent(target.executablePath)
-        var receiptBase = InstallReceipt(
+        let receiptBase = InstallReceipt(
             payloadSHA256: try sha256(payload), signature: signature,
             installed: destination.path, previous: nil,
             candidateExecutableSHA256: try sha256(candidateExec),
