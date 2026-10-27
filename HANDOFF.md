@@ -2,17 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-27 19:00 / pi（**air 本机**）。阶段：**本轮更新链路验收收口**——报告 213 的 7 项：**6 PASS + 1 BLOCKED**（第 4 项「真实升级」：无 publish 作业、无私钥、两份候选同为 build 23）。P1/P2 已修并出候选 `6d89821`（PR #202），用户已在本机完成菜单点击、窗口卸载、注销回读：无任何残留。**air 当前没有安装萤火虫**（按验收流程卸掉了），数据（config `3bc1117c…`、词库 713 行 `8dbd41f4…`）完整保留。
-- 分支：`dev` = `main` = `dce7ae5`（PR #201/#202/#203 均 merge commit 合入）；开放 PR **0 个**。最近 `make verify` + 离线 **55/55（300 例）** + updater/installcore **PASS**。
-- 已装包（air）：**无**（验收结束时按流程卸载，残留检查全清）。重装用候选 ZIP `90ed224d…`（run `40486038131` @ `6d89821`，宿主 `0669f249…`/更新程序 `fbbbc11b…`）。pro 仍是旧包 `a165f05c…`。
+- 更新：2026-10-27 21:10 / pi（**air 本机**）。阶段：**0.1.15 与 0.1.16 均已发布，两台机器都在 0.1.16/build 26**。本批交付了此前从未随版本交付的更新链路（装包自带更新程序、更新窗口卸载 + `--purge-data`、P1/P2 修复、窗口标题修复）。真实跨版本升级已 PASS；**更新器自更新**仍未真机演示（等下一次发版）。MVP 门禁 IT-14/15/22/23 全部仍未开始。
+- 分支：`dev` 与 `main` 只差文档提交（main = `e54a0c3` 的后续文档）；开放 PR **0 个**。`make verify` + 离线 55/303 全绿。
+- 已装包：air 与 pro 均为 **0.1.16/build 26**，宿主执行同为 `743fb3c8…`（ZIP/候选一致）；更新程序 air `f834f198…`（ZIP 来源）、pro `3a52ce88…`（DMG 来源，签名时间戳不同导致同版不同 SHA）。
 - 换设备：仍是 **air 为主**（§4.1）；pro 上的 CLT SDK 损坏是**那台机器本地问题**，air 离线回归 54/54 全 PASS。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.0.1 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **未安装**（2026-10-27 验收后按流程卸载，TIS/菜单/进程/缓存均无残留）；最后验证过的包 = ZIP `90ed224d…` / 宿主 `0669f249…` / 更新程序 `fbbbc11b…` | config `3bc1117c…`（8 个显式 `hotkey.*`）、词库 **713 行** `8dbd41f4…`（保留数据卸载后完好）；输入源仅 ABC + 搜狗 | 重装：候选 ZIP `90ed224d…` 的 `scripts/install.sh`；注意 `/tmp` 备份已随重启清理，用户数据本身在原位 |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`） | 0.1.14/build 23，执行 `a165f05c…`（Notarized） | config `6f699c4b…`（**有 9 个显式 `hotkey.*` 项**）、词库 575 行、输入源 `Lampyris.default`、宿主 PID 26989 | `uninstalled/bundle.160547` 等若干旧包 |
+| **air**（arm64 / macOS 27.0.1 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **0.1.16 / build 26**，执行 `743fb3c8…`；更新程序 0.1.16/26（`f834f198…`，ZIP 来源）；输入源 `Lampyris.default` 在用 | config `809e2cae…`、词库 700+ 行（用户在用，行数会变）；`updates/` 保留 3 个 upgrade 备份（0.1.14/0.1.15）可回滚 |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`） | **0.1.16 / build 26**，执行 `743fb3c8…`（= air，同包）；更新程序 0.1.16/26（`3a52ce88…`，DMG 来源）；词库 575 行；输入源 `Lampyris.default` | `updates/dmg-backup-2026-10-27T13-00-46Z` |
 
 - 未安装任何新候选包；两台机器的 config / 词库 / 输入源本轮均未改动。
 
@@ -87,6 +87,7 @@ make macos-probe-build                     # 探针（arm64，约 1 分钟）
 
 ## 9. 会话日志（最近）
 
+- 2026-10-27 / pi（air）：**0.1.15 / 0.1.16 发布并完成真实升级**（报告214）：tag 打在验收候选提交上，发布 ZIP 与候选逐字节相同；0.1.14→0.1.15 与 →0.1.16 均在 air 上经更新程序联网验签安装成功（receipt `payloadSHA256` 对账、旧包备份、落地执行 `4ec77887…`/`743fb3c8…`）。修掉「窗口标题读更新程序自身版本、装完不刷新」（`InstalledVersion` + 5 例 XCTest，0.1.16 发布）。用户两次反馈「没变化」的取证：旧窗口来自被我删除 bundle 的旧进程，替换已成功但收尾中断；已同步 `~/Applications` 至 0.1.16 并清理 staging。pro 也已升级到 0.1.16/26。
 - 2026-10-27 / pi（air）：**产品页版本号精确到构建号**（PR #203 → main `dce7ae5`）：`site/index.html` 改为 `v0.1.14 · 构建 23`，新增 `test-site-version.py` 用 `Cargo.toml` + `packaging/build-number` 钉住文案与下载链接；已 dispatch Pages（run `40489884599`），线上回读一致。离线回归 55/55（300 例）。
 - 2026-10-27 / pi（air）：**报告 213 收口**——用户完成图形会话三项：菜单「检查更新…」直接开 `0.1.14/23` 窗口、窗口「卸载萤火虫…」保留数据卸载、注销重登录。注销后回读：TIS 无 `Lampyris*`、输入法菜单无「萤火虫」、app/更新程序/prefs/caches/logs/进程全无残留，数据 `3bc1117c…` + 713 行 `8dbd41f4…` 完好。7 项 = 6 PASS + 第 4 项 BLOCKED。air 现处于未安装状态。
 - 2026-10-27 / pi（air）：**修 P1+P2 并出候选 `6d89821`**（PR #202，四项 CI PASS → merge commit）：`--purge-data` 改传真实数据根（`InstallLocation.dataRoot` + `uninstallPaths()`），菜单改为安装目录优先、LaunchServices 兜底；补 `InstallLocationTests` 与 `input-menu` 断言；`test-preview-menu.py` 把「并发键入导致词库追加」改为 SKIP。实机复验：purge 后数据根整个消失，还原后逐字节一致；`LS_resolved=~/Applications` build 23。离线 54/54（297 例）+ updater/installcore 全 PASS。
