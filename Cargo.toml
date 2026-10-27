@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/*"]
 
 [workspace.package]
-version = "0.1.16"
+version = "1.0.0"
 edition = "2021"
 license = "GPL-3.0-or-later"
 rust-version = "1.98"
@@ -12,11 +12,11 @@ description = "萤火虫输入法：跨平台、离线、只做核心输入的�
 ## 内部路径依赖：显式写出 version 供 cargo-deny 解析（否则会被判为通配符 / 解析失败）。
 ## 发版时与 `[workspace.package] version` 一起改。
 [workspace.dependencies]
-ime-dict = { path = "crates/ime-dict", version = "0.1.0" }
-ime-config = { path = "crates/ime-config", version = "0.1.0" }
-ime-core = { path = "crates/ime-core", version = "0.1.0" }
-ime-pinyin = { path = "crates/ime-pinyin", version = "0.1.0" }
-ime-table = { path = "crates/ime-table", version = "0.1.0" }
+ime-dict = { path = "crates/ime-dict", version = "1.0.0" }
+ime-config = { path = "crates/ime-config", version = "1.0.0" }
+ime-core = { path = "crates/ime-core", version = "1.0.0" }
+ime-pinyin = { path = "crates/ime-pinyin", version = "1.0.0" }
+ime-table = { path = "crates/ime-table", version = "1.0.0" }
 
 [profile.release]
 lto = true
