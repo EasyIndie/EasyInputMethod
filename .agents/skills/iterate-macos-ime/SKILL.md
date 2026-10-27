@@ -105,6 +105,9 @@ make macos-clean-install APP=…/Lampyris.app ARGS=--input-source-removed
 
 ## 7. 收尾清单（每轮都做）
 
+0. **先关掉上一轮的更新窗口/更新程序进程**：它运行的是旧代码，换包后仍显示旧版本，
+   会让人（和用户）误判成「换了没生效」；若该进程的 bundle 已被删除，它的安装会
+   在替换宿主后中断（无 receipt、staging 残留）——报告214 §8。
 1. 输入源还原 ABC；`config.toml` SHA、宿主 PID、执行 SHA 回读。
 2. 自建文档/窗口关闭（不碰用户真实文档）。
 3. 证据放 `platforms/macos/build/<acceptance>/`（该目录不入库），报告写证据文件名。
