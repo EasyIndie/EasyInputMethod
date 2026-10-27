@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-10-27 19:00 / pi（**air 本机**）。阶段：**本轮更新链路验收收口**——报告 213 的 7 项：**6 PASS + 1 BLOCKED**（第 4 项「真实升级」：无 publish 作业、无私钥、两份候选同为 build 23）。P1/P2 已修并出候选 `6d89821`（PR #202），用户已在本机完成菜单点击、窗口卸载、注销回读：无任何残留。**air 当前没有安装萤火虫**（按验收流程卸掉了），数据（config `3bc1117c…`、词库 713 行 `8dbd41f4…`）完整保留。
-- 分支：`dev` = `main` = `6d89821`（PR #201/#202 均 merge commit 合入）；开放 PR **0 个**。最近 `make verify` + 离线 54/54（297 例）+ updater/installcore **PASS**。
+- 分支：`dev` = `main` = `dce7ae5`（PR #201/#202/#203 均 merge commit 合入）；开放 PR **0 个**。最近 `make verify` + 离线 **55/55（300 例）** + updater/installcore **PASS**。
 - 已装包（air）：**无**（验收结束时按流程卸载，残留检查全清）。重装用候选 ZIP `90ed224d…`（run `40486038131` @ `6d89821`，宿主 `0669f249…`/更新程序 `fbbbc11b…`）。pro 仍是旧包 `a165f05c…`。
 - 换设备：仍是 **air 为主**（§4.1）；pro 上的 CLT SDK 损坏是**那台机器本地问题**，air 离线回归 54/54 全 PASS。
 
@@ -87,6 +87,7 @@ make macos-probe-build                     # 探针（arm64，约 1 分钟）
 
 ## 9. 会话日志（最近）
 
+- 2026-10-27 / pi（air）：**产品页版本号精确到构建号**（PR #203 → main `dce7ae5`）：`site/index.html` 改为 `v0.1.14 · 构建 23`，新增 `test-site-version.py` 用 `Cargo.toml` + `packaging/build-number` 钉住文案与下载链接；已 dispatch Pages（run `40489884599`），线上回读一致。离线回归 55/55（300 例）。
 - 2026-10-27 / pi（air）：**报告 213 收口**——用户完成图形会话三项：菜单「检查更新…」直接开 `0.1.14/23` 窗口、窗口「卸载萤火虫…」保留数据卸载、注销重登录。注销后回读：TIS 无 `Lampyris*`、输入法菜单无「萤火虫」、app/更新程序/prefs/caches/logs/进程全无残留，数据 `3bc1117c…` + 713 行 `8dbd41f4…` 完好。7 项 = 6 PASS + 第 4 项 BLOCKED。air 现处于未安装状态。
 - 2026-10-27 / pi（air）：**修 P1+P2 并出候选 `6d89821`**（PR #202，四项 CI PASS → merge commit）：`--purge-data` 改传真实数据根（`InstallLocation.dataRoot` + `uninstallPaths()`），菜单改为安装目录优先、LaunchServices 兜底；补 `InstallLocationTests` 与 `input-menu` 断言；`test-preview-menu.py` 把「并发键入导致词库追加」改为 SKIP。实机复验：purge 后数据根整个消失，还原后逐字节一致；`LS_resolved=~/Applications` build 23。离线 54/54（297 例）+ updater/installcore 全 PASS。
 - 2026-10-27 / pi（air）：**PR #201 合并（`e10e6ed6`）→ 候选 ZIP `58bf1549…`/宿主 `add68cc6…`/更新程序 `02bc110f…` 已装 air 并复验 7 项**（报告 213）。PASS：旧名迁移、CLI 覆盖不再报「已有不同版本」、`--uninstall` 保留数据 + 更新程序自删、隔离构建拒绝卸载。**FAIL：`--purge-data` 不清配置/词库**（support 字段语义错位）。PARTIAL：菜单点击/注销回读缺图形会话。BLOCKED：真实升级（无 publish 作业）。air 离线回归 54/54 PASS → 修正「pro CLT 损坏是共性问题」的旧结论。
