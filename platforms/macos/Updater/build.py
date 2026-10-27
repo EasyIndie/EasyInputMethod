@@ -102,7 +102,7 @@ for slice_path in slices:
     slice_path.unlink()
 info = {'CFBundleIdentifier': 'cn.jokerhub.Lampyris.WebsiteUpdateCheck',
         'CFBundleExecutable': binary.name, 'CFBundlePackageType': 'APPL',
-        'CFBundleName': 'Lampyris Update', 'CFBundleDisplayName': '萤火虫更新',
+        'CFBundleName': 'LampyrisUpdateCheck', 'CFBundleDisplayName': '萤火虫更新',
         'CFBundleVersion': version['build'], 'CFBundleShortVersionString': version['apple'],
         'LampyrisSemanticVersion': version['version'], 'CFBundleIconFile': 'AppIcon',
         'NSHighResolutionCapable': True,
@@ -123,7 +123,7 @@ if isolated:
                 LampyrisIsolatedRoot=str(Path(args.isolated_root)),
                 LampyrisIsolatedIdentity=args.isolated_identity,
                 CFBundleVersion=current_build,
-                CFBundleName='Lampyris Update Test',
+                CFBundleName='LampyrisUpdateCheckTest',
                 CFBundleDisplayName='萤火虫 更新（测试）')
 DEFAULT_FEED = 'https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/appcast.xml'
 # 公钥是公开值：默认取自仓库文件（可审计、可离线复验），不依赖 CI 变量/Secret。

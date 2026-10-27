@@ -140,7 +140,7 @@ jobs:
           test -n "$app"
           version="$(python3 tools/release_version.py version)"
           dmg="packaging/out/release/Lampyris-${version}-universal.dmg"
-          bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --uninstaller platforms/macos/build/uninstaller/LampyrisUninstaller.app --out "$dmg"
+          bash packaging/macos/make-dmg.sh --app "$app" --installer platforms/macos/build/installer/LampyrisInstaller.app --uninstaller platforms/macos/build/uninstaller/LampyrisUninstaller.app --updater platforms/macos/build/website-updater/LampyrisUpdateCheck.app --out "$dmg"
           bash packaging/macos/ci-sign.sh --dmg "$dmg"
           # 签名/公证会改写 DMG，摘要必须在其后生成；条目使用文件名便于直接比对。
           ( cd "$(dirname "$dmg")" && shasum -a 256 "$(basename "$dmg")" ) > "$dmg.sha256"

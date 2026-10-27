@@ -2,6 +2,8 @@ import Foundation
 import XCTest
 import ime
 
+import LampyrisInstallCore
+
 @testable import WebsiteUpdateCheck
 
 final class FeedSourceTests: XCTestCase {

@@ -1,0 +1,163 @@
+// Headless probe for the shared install core (ADR-295): replacement, backup, rollback and
+// self-update semantics that the DMG installer, the updater and the CLI all rely on.
+import Foundation
+import LampyrisInstallCore
+
+func require(_ value: Bool, _ message: String) {
+    guard value else { fputs("FAIL \(message)\n", stderr); exit(1) }
+}
+
+let root = URL(fileURLWithPath: NSTemporaryDirectory())
+    .appendingPathComponent("lampyris-install-core-\(UUID().uuidString)")
+let home = root.appendingPathComponent("home")
+let domain = home.appendingPathComponent("Library/Input Methods")
+let support = home.appendingPathComponent("Library/Application Support/Lampyris")
+let applications = home.appendingPathComponent("Applications")
+for directory in [domain, support, applications] {
+    try! FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+}
+defer { try? FileManager.default.removeItem(at: root) }
+
+func makeBundle(at parent: URL, named name: String, identity: String, executable: String,
+                mark: String) -> URL {
+    let bundle = parent.appendingPathComponent("\(UUID().uuidString)-\(name)")
+    let contents = bundle.appendingPathComponent("Contents")
+    try! FileManager.default.createDirectory(at: contents.appendingPathComponent("MacOS"),
+                                             withIntermediateDirectories: true)
+    let info: [String: Any] = ["CFBundleIdentifier": identity, "CFBundleExecutable": executable,
+                               "CFBundleShortVersionString": "1.0", "CFBundleVersion": "1"]
+    try! PropertyListSerialization.data(fromPropertyList: info, format: .xml, options: 0)
+        .write(to: contents.appendingPathComponent("Info.plist"))
+    try! mark.write(to: contents.appendingPathComponent("MacOS/\(executable)"),
+                    atomically: true, encoding: .utf8)
+    return bundle
+}
+
+func mark(_ url: URL, _ executable: String) -> String {
+    (try? String(contentsOf: url.appendingPathComponent("Contents/MacOS/\(executable)")))
+        ?? "missing"
+}
+
+/// Validation stub: only accepts the expected marker so post-install checks can fail on demand.
+func environment(expect: String, executable: String) -> InstallEnvironment {
+    InstallEnvironment(validateCandidate: { candidate in
+        let value = mark(candidate, executable)
+        guard value == expect else { throw InstallError.candidateInvalid("unexpected \(value)") }
+    }, stopHost: { _ in })
+}
+
+let candidates = root.appendingPathComponent("candidates")
+try! FileManager.default.createDirectory(at: candidates, withIntermediateDirectories: true)
+let hostDestination = domain.appendingPathComponent("Lampyris.app")
+let backupRoot = support.appendingPathComponent("updates/dmg-backup-probe")
+let hostEnvironment = environment(expect: "host-newer", executable: "Lampyris")
+
+// 1) fresh install into an existing domain
+let first = makeBundle(at: candidates, named: "Lampyris.app",
+                       identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                       mark: "host-newer")
+let firstBackup = try! UpdateInstaller.replaceBundle(
+    candidate: first, destination: hostDestination, backupRoot: backupRoot,
+    environment: hostEnvironment)
+require(firstBackup == nil, "fresh install must not report a backup")
+require(mark(hostDestination, "Lampyris") == "host-newer", "fresh install must place the bundle")
+
+// 2) upgrade keeps the previous bundle as a backup
+let second = makeBundle(at: candidates, named: "Lampyris.app",
+                        identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                        mark: "host-newest")
+let secondBackup = try! UpdateInstaller.replaceBundle(
+    candidate: second, destination: hostDestination, backupRoot: backupRoot,
+    environment: environment(expect: "host-newest", executable: "Lampyris"))
+require(mark(hostDestination, "Lampyris") == "host-newest", "upgrade must install the new bundle")
+require(mark(URL(fileURLWithPath: secondBackup ?? ""), "Lampyris") == "host-newer",
+        "upgrade must back up the previous bundle")
+
+// 3) post-install validation failure restores the previous bundle
+let broken = makeBundle(at: candidates, named: "Lampyris.app",
+                        identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                        mark: "host-broken")
+var calls = 0
+let failingEnvironment = InstallEnvironment(validateCandidate: { candidate in
+    calls += 1
+    if calls >= 2 { throw InstallError.candidateInvalid("post-install") }
+    require(mark(candidate, "Lampyris") == "host-broken", "pre-install candidate content")
+}, stopHost: { _ in })
+do {
+    _ = try UpdateInstaller.replaceBundle(
+        candidate: broken, destination: hostDestination, backupRoot: backupRoot,
+        environment: failingEnvironment)
+    require(false, "post-install validation failure must throw")
+} catch {
+    require(mark(hostDestination, "Lampyris") == "host-newest", "failure must restore the previous bundle")
+}
+
+// 4) symlinked destination and missing domain are rejected without touching anything
+let linkedRoot = root.appendingPathComponent("linked")
+try! FileManager.default.createDirectory(at: linkedRoot, withIntermediateDirectories: true)
+let realBundle = makeBundle(at: candidates, named: "Lampyris.app",
+                            identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                            mark: "host-newest")
+let staged = linkedRoot.appendingPathComponent("keep.app")
+try! FileManager.default.copyItem(at: realBundle, to: staged)
+try! FileManager.default.createSymbolicLink(at: linkedRoot.appendingPathComponent("Lampyris.app"),
+                                            withDestinationURL: staged)
+do {
+    _ = try UpdateInstaller.replaceBundle(
+        candidate: makeBundle(at: candidates, named: "Lampyris.app",
+                              identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                              mark: "host-newest"),
+        destination: linkedRoot.appendingPathComponent("Lampyris.app"), backupRoot: backupRoot,
+        environment: hostEnvironment)
+    require(false, "symlinked destination must be rejected")
+} catch let error as InstallError {
+    if case .symlinkRejected = error {} else { require(false, "expected symlinkRejected, got \(error)") }
+}
+do {
+    _ = try UpdateInstaller.replaceBundle(
+        candidate: realBundle, destination: root.appendingPathComponent("missing/Lampyris.app"),
+        backupRoot: backupRoot, environment: hostEnvironment)
+    require(false, "missing domain must be rejected (ADR-289)")
+} catch let error as InstallError {
+    if case .domainMissing = error {} else { require(false, "expected domainMissing, got \(error)") }
+}
+require(mark(staged, "Lampyris") == "host-newest", "rejected installs must leave the existing bundle alone")
+
+// 5) self-update installs the sibling updater bundle into ~/Applications and keeps a backup
+let staging = root.appendingPathComponent("payload-staging")
+try! FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
+let selfUpdate = UpdateInstaller.SelfUpdate(
+    directory: applications,
+    environment: environment(expect: "updater-new", executable: "LampyrisUpdateCheck"))
+require(try! UpdateInstaller.installSelfUpdate(selfUpdate, payloadStaging: staging) == nil,
+        "payload without an updater bundle must not self-update")
+let updaterCandidate = makeBundle(at: staging, named: "LampyrisUpdateCheck.app",
+                                  identity: "cn.jokerhub.Lampyris.WebsiteUpdateCheck",
+                                  executable: "LampyrisUpdateCheck", mark: "updater-new")
+try! FileManager.default.moveItem(
+    at: updaterCandidate,
+    to: staging.appendingPathComponent(InstallTarget.updater.bundleName))
+let installedUpdater = try! UpdateInstaller.installSelfUpdate(selfUpdate, payloadStaging: staging)
+require(installedUpdater == applications.appendingPathComponent("LampyrisUpdateCheck.app").path,
+        "self-update must report the installed path")
+require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
+        == "updater-new", "self-update must install the updater bundle")
+require(FileManager.default.fileExists(atPath: installedUpdater ?? ""), "self-update target must exist")
+
+// 6) self-update over an existing updater replaces it and reports failures instead of destroying it
+let staging2 = root.appendingPathComponent("payload-staging-2")
+try! FileManager.default.createDirectory(at: staging2, withIntermediateDirectories: true)
+let newer = makeBundle(at: staging2, named: "LampyrisUpdateCheck.app",
+                       identity: "cn.jokerhub.Lampyris.WebsiteUpdateCheck",
+                       executable: "LampyrisUpdateCheck", mark: "updater-newer")
+try! FileManager.default.moveItem(
+    at: newer, to: staging2.appendingPathComponent(InstallTarget.updater.bundleName))
+_ = try! UpdateInstaller.installSelfUpdate(
+    UpdateInstaller.SelfUpdate(directory: applications,
+                               environment: environment(expect: "updater-newer",
+                                                        executable: "LampyrisUpdateCheck")),
+    payloadStaging: staging2)
+require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
+        == "updater-newer", "self-update must replace an older updater")
+
+print("PASS install-core: replace/backup/rollback/self-update semantics")

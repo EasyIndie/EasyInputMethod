@@ -1,5 +1,6 @@
 import AppKit
 import Foundation
+import LampyrisInstallCore
 import OrzAppUpdaterCore
 
 /// 最小可用的更新窗口：检查 → 显示新版本 → 下载（进度）→ 验签 → 确认安装 → 结果。
@@ -250,10 +251,18 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 let receipt = try UpdateInstaller.install(
                     payload: payload.url, signature: signature, publicKeyBase64: key,
                     domain: location.domain, support: location.support,
-                    environment: DefaultInstallEnvironment.make(target: target), target: target)
+                    environment: DefaultInstallEnvironment.make(target: target), target: target,
+                    selfUpdate: location.applications.map {
+                        UpdateInstaller.SelfUpdate(
+                            directory: $0,
+                            environment: DefaultInstallEnvironment.make(target: .updater))
+                    })
                 setBusy(false)
                 status.stringValue = "已安装构建 \(release.build)"
                 detail.stringValue = "旧版本备份：\(receipt.previous ?? "无")"
+                    + (receipt.updaterBundle.map {
+                        "\n更新程序已同步到 \($0)（下次打开更新窗口时生效）。"
+                    } ?? "")
             } catch {
                 fail("安装失败：\(error.localizedDescription)")
             }
