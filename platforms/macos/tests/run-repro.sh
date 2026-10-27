@@ -39,13 +39,29 @@ PY
 (cd "${SOURCE}" && CARGO_NET_OFFLINE=true \
   CLANG_MODULE_CACHE_PATH="${WORK}/module-cache" ./platforms/macos/build.sh --strict --universal)
 BUILT="${SOURCE}/platforms/macos/build/Lampyris.app"
+# 1) 默认数据先比：这是「源码对应」的硬证据，不受工具链影响（ADR-033）。
+for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv variant-s2t.tsv; do
+  cmp "${PACKAGE}/Lampyris.app/Contents/Resources/${name}" "${BUILT}/Contents/Resources/${name}" \
+    || { echo "数据表不一致：${name}" >&2; exit 1; }
+done
+echo "✅ 默认数据 4/4 逐字节一致"
+
+# 2) 可执行文件：只有同工具链/SDK 才能逐字节一致（ADR-033、报告208 §4）。
 cp "${PACKAGE}/Lampyris.app/Contents/MacOS/Lampyris" "${WORK}/expected"
 cp "${BUILT}/Contents/MacOS/Lampyris" "${WORK}/rebuilt"
 codesign --remove-signature "${WORK}/expected"
 codesign --remove-signature "${WORK}/rebuilt"
-cmp "${WORK}/expected" "${WORK}/rebuilt"
-for name in wubi86-core.tsv pinyin-chars.tsv pinyin-core.tsv; do
-  cmp "${PACKAGE}/Lampyris.app/Contents/Resources/${name}" "${BUILT}/Contents/Resources/${name}"
-done
-shasum -a 256 "${WORK}/rebuilt"
-echo "离线源码重建成功；去签名可执行文件与默认数据逐字节一致。"
+shasum -a 256 "${WORK}/expected" "${WORK}/rebuilt"
+built_sdk="$(otool -l "${WORK}/expected" | awk '/ sdk /{print $2; exit}')"
+local_sdk="$(xcrun --show-sdk-version 2>/dev/null || echo unknown)"
+if cmp -s "${WORK}/expected" "${WORK}/rebuilt"; then
+  echo "✅ 去签名可执行文件逐字节一致（SDK ${built_sdk} = 本机 ${local_sdk}）"
+else
+  echo "ℹ️ 去签名可执行文件不同：发布构建 SDK ${built_sdk}，本机 SDK ${local_sdk}。"
+  echo "   按 ADR-033，跨 SDK/链接器不承诺载荷逐字节一致；默认数据一致即视为源码对应。"
+  if [ "${STRICT_BYTES:-0}" = "1" ]; then
+    echo "STRICT_BYTES=1：要求逐字节一致，判定失败。" >&2
+    exit 1
+  fi
+fi
+echo "离线源码重建成功。"
