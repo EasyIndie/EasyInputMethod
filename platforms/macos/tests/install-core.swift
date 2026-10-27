@@ -34,8 +34,8 @@ func makeBundle(at parent: URL, named name: String, identity: String, executable
 }
 
 func mark(_ url: URL, _ executable: String) -> String {
-    (try? String(contentsOf: url.appendingPathComponent("Contents/MacOS/\(executable)")))
-        ?? "missing"
+    (try? String(contentsOf: url.appendingPathComponent("Contents/MacOS/\(executable)"),
+                   encoding: .utf8)) ?? "missing"
 }
 
 /// Validation stub: only accepts the expected marker so post-install checks can fail on demand.
