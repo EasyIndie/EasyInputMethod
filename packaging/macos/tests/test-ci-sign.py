@@ -73,6 +73,15 @@ esac
     result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--installer", str(installer),
         "--uninstaller", str(installer), "--sign-only"], env=env, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
+    updater = root / "Updater.app"
+    updater.mkdir()
+    # ADR-295：更新程序与主应用共用同一次公证提交；附加 app 缺失时直接拒绝。
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--also", str(updater)],
+        env=env, capture_output=True, text=True)
+    assert result.returncode == 0, result.stderr
+    result = subprocess.run(["bash", str(SCRIPT), "--app", str(app), "--also", str(root / "Missing.app")],
+        env=env, capture_output=True, text=True)
+    assert result.returncode == 1 and "附加 app 不存在" in result.stderr, result.stderr
     result = subprocess.run(["bash", str(SCRIPT), "--dmg", str(dmg)], env=env, capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
     subprocess.run(["bash", str(SCRIPT), "--cleanup"], env=env, check=True)

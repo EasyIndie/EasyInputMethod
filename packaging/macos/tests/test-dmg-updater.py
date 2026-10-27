@@ -106,8 +106,15 @@ class ZipAndReleasePayloadContract(unittest.TestCase):
     def test_acceptance_workflow_builds_and_notarizes_the_updater(self):
         workflow = (ROOT / '.github/workflows/macos-acceptance.yml').read_text()
         self.assertIn('python3 platforms/macos/Updater/build.py', workflow)
-        self.assertIn('ci-sign.sh --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app',
+        # 与主应用共用同一次公证提交（ADR-295 去掉了「每轮多一次往返」的成本）。
+        self.assertIn('ci-sign.sh --also platforms/macos/build/website-updater/LampyrisUpdateCheck.app',
                       workflow)
+        self.assertNotIn('ci-sign.sh --app platforms/macos/build/website-updater', workflow)
+        signer = (ROOT / 'packaging/macos/ci-sign.sh').read_text()
+        self.assertIn('--also', signer)
+        self.assertIn('notarytool submit "${WORK}/notarization.zip"', signer)
+        for target in ('ditto "${APP}" "${NOTARIZE}', 'stapler staple "${notarized}"'):
+            self.assertIn(target, signer)
 
     def test_cli_installer_installs_the_bundled_updater(self):
         text = (ROOT / 'platforms/macos/install.sh').read_text()

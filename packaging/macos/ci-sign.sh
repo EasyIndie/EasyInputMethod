@@ -18,6 +18,7 @@ APP="${ROOT:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)}/platforms/maco
 INSTALLER=""
 UNINSTALLER=""
 DMG=""
+EXTRA_APPS=()
 SIGN_ONLY=0
 while [ "$#" -gt 0 ]; do
   case "$1" in
@@ -25,8 +26,10 @@ while [ "$#" -gt 0 ]; do
     --installer) [ "$#" -ge 2 ] || exit 2; INSTALLER="$2"; shift 2 ;;
     --uninstaller) [ "$#" -ge 2 ] || exit 2; UNINSTALLER="$2"; shift 2 ;;
     --dmg) [ "$#" -ge 2 ] || exit 2; DMG="$2"; shift 2 ;;
+    # ADR-295：随包分发的更新程序与主应用共用同一次公证提交，不额外花一轮。
+    --also) [ "$#" -ge 2 ] || exit 2; EXTRA_APPS+=("$2"); shift 2 ;;
     --sign-only) SIGN_ONLY=1; shift ;;
-    *) echo "用法：$0 [--cleanup] [--app <path.app>] [--installer <path.app>] [--uninstaller <path.app>] [--sign-only] [--dmg <path.dmg>]" >&2; exit 2 ;;
+    *) echo "用法：$0 [--cleanup] [--app <path.app>] [--also <path.app>]... [--installer <path.app>] [--uninstaller <path.app>] [--sign-only] [--dmg <path.dmg>]" >&2; exit 2 ;;
   esac
 done
 if [ -n "${DMG}" ]; then
@@ -35,6 +38,9 @@ else
   [ -d "${APP}" ] || { echo "待签名 app 不存在：${APP}" >&2; exit 1; }
   [ -z "${INSTALLER}" ] || [ -d "${INSTALLER}" ] || { echo "安装器 app 不存在：${INSTALLER}" >&2; exit 1; }
   [ -z "${UNINSTALLER}" ] || [ -d "${UNINSTALLER}" ] || { echo "卸载器 app 不存在：${UNINSTALLER}" >&2; exit 1; }
+  for extra in "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do
+    [ -d "${extra}" ] || { echo "附加 app 不存在：${extra}" >&2; exit 1; }
+  done
 fi
 ASC_API_KEY_P8="${ASC_API_KEY_P8:-${ASC_API_KEY_P8_BASE64:-}}"
 MISSING=()
@@ -97,9 +103,19 @@ fi
 sign_app "${APP}"
 if [ -n "${INSTALLER}" ]; then sign_app "${INSTALLER}"; fi
 if [ -n "${UNINSTALLER}" ]; then sign_app "${UNINSTALLER}"; fi
+for extra in "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do sign_app "${extra}"; done
 if [ "${SIGN_ONLY}" -eq 1 ]; then exit 0; fi
-ditto -c -k --keepParent "${APP}" "${WORK}/notarization.zip"
+# 主应用与附加 app 放进同一次公证提交，各自 staple；不额外增加一次往返。
+NOTARIZE="${WORK}/notarize"
+mkdir -p "${NOTARIZE}"
+ditto "${APP}" "${NOTARIZE}/$(basename "${APP}")"
+for extra in "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do
+  ditto "${extra}" "${NOTARIZE}/$(basename "${extra}")"
+done
+ditto -c -k --keepParent "${NOTARIZE}" "${WORK}/notarization.zip"
 xcrun notarytool submit "${WORK}/notarization.zip" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m
-xcrun stapler staple "${APP}"
-xcrun stapler validate "${APP}"
-spctl --assess --type execute --verbose=2 "${APP}"
+for notarized in "${APP}" "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do
+  xcrun stapler staple "${notarized}"
+  xcrun stapler validate "${notarized}"
+  spctl --assess --type execute --verbose=2 "${notarized}"
+done
