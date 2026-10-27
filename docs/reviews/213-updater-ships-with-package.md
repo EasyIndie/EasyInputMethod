@@ -89,3 +89,24 @@ bash …/candidate-kX7GlH/ex/Lampyris-0.1.14-universal/scripts/install.sh \
 2. 用户在**图形会话**补一次第 1 项端到端点击（菜单「检查更新…」）、第 5 项窗口按钮、第 7 项注销后回读。
 3. P2/P3 需要一次取舍（更新程序定位优先级、`uninstalled/` 是否算更新备份）。
 4. 第 4 项要真正闭环，得先补 ADR-288 的 publish 作业并单独授权一次 Pages 部署。
+
+## 7. 修复后复验（候选 `6d89821`，PR #202）
+
+P1/P2 修复合入 main `6d898211b8494f65233aecd04ba4065a0e34ca02`（PR #202，四项 CI PASS），重新出候选并在 air 上装包复验：
+
+| 产物 | SHA-256 |
+|---|---|
+| `Lampyris-0.1.14-universal.zip` | `90ed224d8aa6e2d020f1b5fd372b51875b0a858b57c503438165192052e8f3ae` |
+| 宿主执行 | `0669f2493a293cafcb78e76aafd600f6ffe592d7434db758d42ea4e8ecd04fd1` |
+| 更新程序执行 | `fbbbc11be28a638f5a358e8500317dbb849cd315d483e61ac20ec607fc6774ee` |
+
+| 复验项 | 结果 | 证据 |
+|---|---|---|
+| **P1**：`--uninstall --purge-data` 真删数据 | **PASS** | 执行后 `…/Application Support/Lampyris` **整个不存在**（config、词库、`uninstalled/`、`updates/` 全清），宿主/更新程序/TIS 项同时清空（`ev-02-purge-fixed.txt`） |
+| 数据可还原 | PASS | 从 `/tmp/lampyris-verify-backup3/` 还原后与备份逐字节一致：config `3bc1117c…`、词库 713 行 `8dbd41f4…`（`ev-03-restore.txt`） |
+| **P2**：菜单定位到已装更新程序 | PASS（单元 + 实机） | `updaterURL()` 先扫 `~/Applications`→`/Applications`；实机 `LS_resolved=~/Applications/LampyrisUpdateCheck.app` build 23，仓库旧构建产物已清理（`ev-01-install.txt`） |
+| 新候选装包 | PASS | 宿主 `0669f249…`、更新程序 `fbbbc11b…`（`ev-01-install.txt`） |
+
+仍未取得人工证据的仍是 §1 的第 1/5/7 项（图形会话点击与注销），以及第 4 项（无 publish 作业）。
+
+**注意**：本轮两个候选都是 build 23（`macos-acceptance` 不自动递增构建号），所以「更新程序版本同步」这类按构建号比较的行为无法在两份候选之间演示；它不影响 P1/P2 的复验，但第 4 项闭环时应使用更高的构建号。
