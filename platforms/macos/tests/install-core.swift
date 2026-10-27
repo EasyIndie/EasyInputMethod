@@ -1,5 +1,6 @@
 // Headless probe for the shared install core (ADR-295): replacement, backup, rollback and
 // self-update semantics that the DMG installer, the updater and the CLI all rely on.
+import CryptoKit
 import Foundation
 import LampyrisInstallCore
 
@@ -138,11 +139,11 @@ try! FileManager.default.moveItem(
     at: updaterCandidate,
     to: staging.appendingPathComponent(InstallTarget.updater.bundleName))
 let installedUpdater = try! UpdateInstaller.installSelfUpdate(selfUpdate, payloadStaging: staging)
-require(installedUpdater == applications.appendingPathComponent("LampyrisUpdateCheck.app").path,
+require(installedUpdater?.installed == applications.appendingPathComponent("LampyrisUpdateCheck.app").path,
         "self-update must report the installed path")
+require(installedUpdater?.previous == nil, "first self-update has nothing to back up")
 require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
         == "updater-new", "self-update must install the updater bundle")
-require(FileManager.default.fileExists(atPath: installedUpdater ?? ""), "self-update target must exist")
 
 // 6) self-update over an existing updater replaces it and reports failures instead of destroying it
 let staging2 = root.appendingPathComponent("payload-staging-2")
@@ -160,4 +161,58 @@ _ = try! UpdateInstaller.installSelfUpdate(
 require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
         == "updater-newer", "self-update must replace an older updater")
 
-print("PASS install-core: replace/backup/rollback/self-update semantics")
+// 7) 回执写入失败 = 整笔失败：输入法与自更新都回到升级前（报告142 的语义，不能悄悄放宽）
+let payloadRoot = root.appendingPathComponent("payload")
+let package = payloadRoot.appendingPathComponent("Lampyris-1.0-universal")
+try! FileManager.default.createDirectory(at: package, withIntermediateDirectories: true)
+let payloadHost = makeBundle(at: package, named: "Lampyris.app",
+                             identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                             mark: "payload-host")
+try! FileManager.default.moveItem(at: payloadHost, to: package.appendingPathComponent("Lampyris.app"))
+let payloadUpdater = makeBundle(at: package, named: "LampyrisUpdateCheck.app",
+                                identity: "cn.jokerhub.Lampyris.WebsiteUpdateCheck",
+                                executable: "LampyrisUpdateCheck", mark: "payload-updater")
+try! FileManager.default.moveItem(at: payloadUpdater,
+                                 to: package.appendingPathComponent("LampyrisUpdateCheck.app"))
+let payload = root.appendingPathComponent("payload.zip")
+let zipper = Process()
+zipper.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+zipper.arguments = ["-c", "-k", "--keepParent", package.path, payload.path]
+try! zipper.run()
+zipper.waitUntilExit()
+require(zipper.terminationStatus == 0, "payload zip must be created")
+
+let signingKey = Curve25519.Signing.PrivateKey()
+let payloadBytes = try! Data(contentsOf: payload)
+let signature = try! signingKey.signature(for: payloadBytes).base64EncodedString()
+let publicKey = signingKey.publicKey.rawRepresentation.base64EncodedString()
+
+let receiptSupport = root.appendingPathComponent("support-with-file-receipts")
+try! FileManager.default.createDirectory(at: receiptSupport, withIntermediateDirectories: true)
+try! Data().write(to: receiptSupport.appendingPathComponent("receipts"))  // 目录位置被文件占用
+
+let beforeUpdater = mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"),
+                         "LampyrisUpdateCheck")
+let receiptDomain = root.appendingPathComponent("receipt-domain")
+let installedHost = receiptDomain.appendingPathComponent("Lampyris.app")
+try! FileManager.default.createDirectory(at: receiptDomain, withIntermediateDirectories: true)
+try! FileManager.default.copyItem(at: realBundle, to: installedHost)
+var receiptFailed = false
+do {
+    _ = try UpdateInstaller.install(
+        payload: payload, signature: signature, publicKeyBase64: publicKey,
+        domain: receiptDomain, support: receiptSupport,
+        environment: environment(expect: "payload-host", executable: "Lampyris"),
+        selfUpdate: UpdateInstaller.SelfUpdate(
+            directory: applications,
+            environment: environment(expect: "payload-updater", executable: "LampyrisUpdateCheck")))
+} catch {
+    receiptFailed = true
+}
+require(receiptFailed, "receipt failure must fail the whole install")
+require(mark(installedHost, "Lampyris") == "host-newest",
+        "receipt failure must restore the previous input method bundle")
+require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
+        == beforeUpdater, "receipt failure must restore the previous updater bundle")
+
+print("PASS install-core: replace/backup/rollback/self-update/receipt-rollback semantics")

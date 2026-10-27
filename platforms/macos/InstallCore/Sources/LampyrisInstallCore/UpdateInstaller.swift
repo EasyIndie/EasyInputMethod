@@ -145,23 +145,46 @@ public enum UpdateInstaller {
         }
         let installedExec = destination.appendingPathComponent(target.executablePath)
         // 输入法已落地；自更新是次要步骤，失败不能把输入法回滚（ADR-295）。
-        let selfUpdated = selfUpdate.flatMap { update -> String? in
+        let selfUpdated = selfUpdate.flatMap { update -> SelfUpdateOutcome? in
             try? installSelfUpdate(update, payloadStaging: candidate.deletingLastPathComponent())
         }
-        receiptBase = InstallReceipt(
+        let receipt = InstallReceipt(
             payloadSHA256: receiptBase.payloadSHA256, signature: signature,
             installed: destination.path, previous: previous,
             candidateExecutableSHA256: receiptBase.candidateExecutableSHA256,
             installedExecutableSHA256: try sha256(installedExec), dryRun: false,
-            updaterBundle: selfUpdated)
-        try writeReceipt(receiptBase, support: support)
+            updaterBundle: selfUpdated?.installed)
+        do {
+            try writeReceipt(receipt, support: support)
+        } catch {
+            // 记账失败视为整体失败：输入法与自更新都回到升级前，避免「装上新版却没记录」或
+            // 「更新程序已是新版、输入法还是旧版」这种让用户卡住的状态。
+            do {
+                try revertBundle(destination: destination, previous: previous)
+                if let selfUpdated {
+                    try revertBundle(destination: URL(fileURLWithPath: selfUpdated.installed),
+                                     previous: selfUpdated.previous)
+                }
+            } catch {
+                keepBackup = true
+                throw InstallError.replaceFailed(
+                    "回执写入失败且回滚失败，备份位于 \(work.path)：\(error.localizedDescription)")
+            }
+            throw error
+        }
         try? FileManager.default.removeItem(at: staging)
         keepBackup = previous != nil
-        return receiptBase
+        return receipt
     }
 
     /// 更新程序自更新（ADR-295）：只替换 `~/Applications` 里的程序本体，运行中的实例保持不动，
     /// 下次启动生效；候选缺失/校验失败/替换失败都不影响已经完成的输入法升级。
+    /// 自更新结果：落地路径与（可能为空的）旧版备份，便于上层失败时整笔回滚。
+    public struct SelfUpdateOutcome: Sendable, Equatable {
+        public let installed: String
+        public let previous: String?
+    }
+
     public struct SelfUpdate: Sendable {
         public let directory: URL
         public let environment: InstallEnvironment
@@ -172,16 +195,28 @@ public enum UpdateInstaller {
     }
 
     /// 安装负载里自带的更新程序本体（缺省时返回 nil，不算失败）。
-    public static func installSelfUpdate(_ update: SelfUpdate, payloadStaging: URL) throws -> String? {
+    public static func installSelfUpdate(_ update: SelfUpdate, payloadStaging: URL) throws
+        -> SelfUpdateOutcome?
+    {
         let candidate = payloadStaging.appendingPathComponent(InstallTarget.updater.bundleName)
         guard isDirectory(candidate), !isSymlink(candidate) else { return nil }
         let destination = update.directory.appendingPathComponent(InstallTarget.updater.bundleName)
         let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
         let backupRoot = update.directory.appendingPathComponent(".lampyris-updater-backup-\(stamp)")
-        defer { try? FileManager.default.removeItem(at: backupRoot) }
-        return try replaceBundle(candidate: candidate, destination: destination, backupRoot: backupRoot,
-                                 environment: update.environment, target: .updater)
-            ?? destination.path
+        let previous = try replaceBundle(candidate: candidate, destination: destination,
+                                         backupRoot: backupRoot, environment: update.environment,
+                                         target: .updater)
+        return SelfUpdateOutcome(installed: destination.path, previous: previous)
+    }
+
+    /// 把一次替换恢复原状：有备份就换回，没有就删掉刚装上的那份。
+    static func revertBundle(destination: URL, previous: String?) throws {
+        try? FileManager.default.removeItem(at: destination)
+        guard let previous else { return }
+        guard FileManager.default.fileExists(atPath: previous) else {
+            throw InstallError.replaceFailed("备份不存在：\(previous)")
+        }
+        try FileManager.default.moveItem(atPath: previous, toPath: destination.path)
     }
 
     /// 原地替换的单一实现（DMG 安装器、升级流程、自更新共用，ADR-295）。
