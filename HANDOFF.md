@@ -2,16 +2,16 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-27 18:30 / pi（**air 本机**）。阶段：**报告 213 的两个缺陷已修并出新候选、实机复验通过**——PR #202（P1 `--purge-data` 不清数据、P2 菜单命中旧更新程序）已合 main `6d89821`，候选 ZIP `90ed224d…`/宿主 `0669f249…`/更新程序 `fbbbc11b…` 已装 air：purge 后数据根整个消失、数据已逐字节还原。**只剩第 1/5/7 项的人工图形会话动作**（菜单点击、窗口卸载按钮、注销回读）与第 4 项（无 publish 作业）。
+- 更新：2026-10-27 19:00 / pi（**air 本机**）。阶段：**本轮更新链路验收收口**——报告 213 的 7 项：**6 PASS + 1 BLOCKED**（第 4 项「真实升级」：无 publish 作业、无私钥、两份候选同为 build 23）。P1/P2 已修并出候选 `6d89821`（PR #202），用户已在本机完成菜单点击、窗口卸载、注销回读：无任何残留。**air 当前没有安装萤火虫**（按验收流程卸掉了），数据（config `3bc1117c…`、词库 713 行 `8dbd41f4…`）完整保留。
 - 分支：`dev` = `main` = `6d89821`（PR #201/#202 均 merge commit 合入）；开放 PR **0 个**。最近 `make verify` + 离线 54/54（297 例）+ updater/installcore **PASS**。
-- 已装包（air）：**0.1.14 / build 23，执行 `0669f249…`**（含 P1/P2 修复）；更新程序 `fbbbc11b…`；**输入源未注册，需手动加回**。pro 仍是旧包 `a165f05c…`。
+- 已装包（air）：**无**（验收结束时按流程卸载，残留检查全清）。重装用候选 ZIP `90ed224d…`（run `40486038131` @ `6d89821`，宿主 `0669f249…`/更新程序 `fbbbc11b…`）。pro 仍是旧包 `a165f05c…`。
 - 换设备：仍是 **air 为主**（§4.1）；pro 上的 CLT SDK 损坏是**那台机器本地问题**，air 离线回归 54/54 全 PASS。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.0.1 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | 0.1.14/build 23，执行 **`0669f249…`**（PR #202 候选，Notarized）；更新程序 `fbbbc11b…`。**输入源当前未注册** | config `3bc1117c…`（8 个显式 `hotkey.*`）、词库 **713 行** `8dbd41f4…`（purge 复验后已逐字节还原）；输入源仅 ABC + 搜狗 | 回滚靠候选 ZIP `90ed224d…` 重装 + `/tmp/lampyris-verify-backup3/`（config+词库）；`uninstalled/` 已被 purge 复验清掉 |
+| **air**（arm64 / macOS 27.0.1 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **未安装**（2026-10-27 验收后按流程卸载，TIS/菜单/进程/缓存均无残留）；最后验证过的包 = ZIP `90ed224d…` / 宿主 `0669f249…` / 更新程序 `fbbbc11b…` | config `3bc1117c…`（8 个显式 `hotkey.*`）、词库 **713 行** `8dbd41f4…`（保留数据卸载后完好）；输入源仅 ABC + 搜狗 | 重装：候选 ZIP `90ed224d…` 的 `scripts/install.sh`；注意 `/tmp` 备份已随重启清理，用户数据本身在原位 |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`） | 0.1.14/build 23，执行 `a165f05c…`（Notarized） | config `6f699c4b…`（**有 9 个显式 `hotkey.*` 项**）、词库 575 行、输入源 `Lampyris.default`、宿主 PID 26989 | `uninstalled/bundle.160547` 等若干旧包 |
 
 - 未安装任何新候选包；两台机器的 config / 词库 / 输入源本轮均未改动。
@@ -40,9 +40,9 @@
 
 ## 4. 下一步（按顺序）
 
-1. **用户在图形会话补 3 个动作**（第 1/5/7 项）：系统设置 → 键盘 → 文字输入 → ＋ 加回「萤火虫」→ 菜单「检查更新…」（预期直接弹出 `0.1.14 · 构建 23` 窗口，不跳网页）→ 该窗口「卸载萤火虫…」→ 注销回读菜单无残留。
+1. **重装（可选，按需）**：air 上现在没有萤火虫；要恢复日常使用就解压候选 ZIP `90ed224d…` 跑 `scripts/install.sh --app …/Lampyris.app`，再到系统设置加回输入源。
 2. **P3 取舍**：`--uninstall`（保留数据）仍留 `uninstalled/`，要不要算「更新备份」一并清掉。
-3. 第 4 项要闭环需先补 ADR-288 的 drill publish 作业并单独授权一次 Pages 部署；届时用更高构建号（当前两份候选都是 build 23）。
+3. **第 4 项闭环**：先补 ADR-288 的 drill publish 作业（并单独授权一次 Pages 部署），用**高于 23 的构建号**验「升级后更新程序版本同步 + 重新打开更新程序」。
 4. 发布门禁不变：IT-15 第三方重建、IT-23 五工作日试用先做，再谈 tag/Release。
 
 ## 4.1 换到 air 后怎么开工
@@ -51,8 +51,8 @@
 |---|---|
 | 系统 / 架构 | macOS 27.0.1 / arm64，用户 `joker`，SSH 别名 `air` |
 | 仓库 | `~/Documents/EasyInputMethod`（先 `git switch dev && git pull --ff-only`） |
-| 已装包 | 0.1.14/build 23，执行 `0669f249…`（= PR #202 候选，含 P1/P2 修复）；更新程序 `fbbbc11b…` |
-| 重装来源 | 候选 ZIP `90ed224d…`（run `40486038131` @ `6d89821`）；`uninstalled/` 已被 purge 复验清空 |
+| 已装包 | **无**（2026-10-27 验收后卸载） |
+| 重装来源 | 候选 ZIP `90ed224d…`（run `40486038131` @ `6d89821`，宿主 `0669f249…`/更新程序 `fbbbc11b…`） |
 | ⚠️ 输入源 | 卸载器已停用 `Lampyris*`，重装后系统未自动注册 —— **需手动在系统设置加回「萤火虫」** |
 
 ```sh
@@ -87,6 +87,7 @@ make macos-probe-build                     # 探针（arm64，约 1 分钟）
 
 ## 9. 会话日志（最近）
 
+- 2026-10-27 / pi（air）：**报告 213 收口**——用户完成图形会话三项：菜单「检查更新…」直接开 `0.1.14/23` 窗口、窗口「卸载萤火虫…」保留数据卸载、注销重登录。注销后回读：TIS 无 `Lampyris*`、输入法菜单无「萤火虫」、app/更新程序/prefs/caches/logs/进程全无残留，数据 `3bc1117c…` + 713 行 `8dbd41f4…` 完好。7 项 = 6 PASS + 第 4 项 BLOCKED。air 现处于未安装状态。
 - 2026-10-27 / pi（air）：**修 P1+P2 并出候选 `6d89821`**（PR #202，四项 CI PASS → merge commit）：`--purge-data` 改传真实数据根（`InstallLocation.dataRoot` + `uninstallPaths()`），菜单改为安装目录优先、LaunchServices 兜底；补 `InstallLocationTests` 与 `input-menu` 断言；`test-preview-menu.py` 把「并发键入导致词库追加」改为 SKIP。实机复验：purge 后数据根整个消失，还原后逐字节一致；`LS_resolved=~/Applications` build 23。离线 54/54（297 例）+ updater/installcore 全 PASS。
 - 2026-10-27 / pi（air）：**PR #201 合并（`e10e6ed6`）→ 候选 ZIP `58bf1549…`/宿主 `add68cc6…`/更新程序 `02bc110f…` 已装 air 并复验 7 项**（报告 213）。PASS：旧名迁移、CLI 覆盖不再报「已有不同版本」、`--uninstall` 保留数据 + 更新程序自删、隔离构建拒绝卸载。**FAIL：`--purge-data` 不清配置/词库**（support 字段语义错位）。PARTIAL：菜单点击/注销回读缺图形会话。BLOCKED：真实升级（无 publish 作业）。air 离线回归 54/54 PASS → 修正「pro CLT 损坏是共性问题」的旧结论。
 - 2026-10-27 / pi（换设备 pro → air）：交接文档重写为当前状态。**下一步从 air 开始**：合并 PR #201 → 出签名候选包 → 装到 air 复验 §4 步骤 2 的 7 项（含 ADR-296 自删除）。

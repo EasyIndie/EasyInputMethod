@@ -15,15 +15,15 @@
 
 | # | 验收项 | 结果 | 证据 |
 |---|---|---|---|
-| 1 | 装完 → 菜单「检查更新…」直接开更新窗口，不跳网页 | **PARTIAL**（程序化证据齐，缺一次人工点击；DMG 路径未走） | `01a-menu-press.txt`、`01b-installed-updater-window.txt` |
+| 1 | 装完 → 菜单「检查更新…」直接开更新窗口，不跳网页 | **PASS**（ZIP/CLI 装包路径；DMG 路径未验——本机无 CI 公证 DMG） | `01a-menu-press.txt`、`01b-installed-updater-window.txt`、`ev-04` |
 | 2 | `~/Applications/LampyrisUpdateCheck.app` 存在；旧名迁走留备份 | **PASS** | `02-post-install.txt`、`03-cli-overwrite.txt` |
 | 3 | CLI 覆盖升级不再报「已有不同版本」 | **PASS** | `03b-production-cli-overwrite.txt`、`03-cli-overwrite.txt` |
 | 4 | 真实升级一次 → 更新程序版本同步 + 「重新打开更新程序」 | **BLOCKED** | 见 §5-P4 |
-| 5 | 更新窗口「卸载萤火虫…」→ 保留数据卸载 + 更新程序自删 | **PASS（走同一共享核心的 CLI 入口）** | `05-cli-uninstall-keepdata.txt` |
+| 5 | 更新窗口「卸载萤火虫…」→ 保留数据卸载 + 更新程序自删 | **PASS**（窗口按钮，用户执行；另有 CLI 同核心证据） | `05-cli-uninstall-keepdata.txt`、`ev-04` |
 | 6 | `--uninstall --purge-data` 彻底清理；隔离构建必须拒绝 | **FAIL（purge 未清数据）/ 拒绝面 PASS** | `06c-purge-data.txt`、`06d-data-integrity.txt`、`06a-isolated-refuses-uninstall.txt` |
-| 7 | 卸载后注销重登录，输入法菜单无残留 | **PARTIAL**（注销前已无残留；注销后回读待用户） | `05-cli-uninstall-keepdata.txt` |
+| 7 | 卸载后注销重登录，输入法菜单无残留 | **PASS** | `ev-04-residual-after-logout.txt` |
 
-**一句话**：ADR-294/295 的三条装包后行为（更新程序随包落地、旧名迁移、CLI 覆盖升级）在真机上成立；ADR-296 的**自删除成立**，但 `--uninstall --purge-data` 的「彻底清理」**不成立**——它只删 `updates/` 子树，`config.toml`、个人词库和 `uninstalled/` 全部留下，却打印「已彻底清理配置与个人词库」。
+**一句话**：ADR-294/295 的三条装包后行为在真机上成立，ADR-296 的自删除也成立；`--purge-data` 的「彻底清理」在 build 23 首候选上**不成立**（只删 `updates/`），已在本报告 §5-P1 定位、§7 修复并复验；7 项里 6 项 PASS，第 4 项仍 BLOCKED（无 publish 作业）。
 
 ## 2. 与上一份报告的差异
 
@@ -107,6 +107,29 @@ P1/P2 修复合入 main `6d898211b8494f65233aecd04ba4065a0e34ca02`（PR #202，�
 | **P2**：菜单定位到已装更新程序 | PASS（单元 + 实机） | `updaterURL()` 先扫 `~/Applications`→`/Applications`；实机 `LS_resolved=~/Applications/LampyrisUpdateCheck.app` build 23，仓库旧构建产物已清理（`ev-01-install.txt`） |
 | 新候选装包 | PASS | 宿主 `0669f249…`、更新程序 `fbbbc11b…`（`ev-01-install.txt`） |
 
-仍未取得人工证据的仍是 §1 的第 1/5/7 项（图形会话点击与注销），以及第 4 项（无 publish 作业）。
+第 1/5/7 项的人工证据由用户在图形会话补齐，见 §8。
 
 **注意**：本轮两个候选都是 build 23（`macos-acceptance` 不自动递增构建号），所以「更新程序版本同步」这类按构建号比较的行为无法在两份候选之间演示；它不影响 P1/P2 的复验，但第 4 项闭环时应使用更高的构建号。
+
+## 8. 人工图形会话复验（用户执行，候选 `90ed224d…`）
+
+pi 的会话是 Background（`AXPress`/`CGEvent` 到不了 Aqua），第 1/5/7 项由用户在本机操作，结果是「与描述一致」：
+
+| 项 | 用户动作 | 结果 |
+|---|---|---|
+| 1 | 加回输入源 → 菜单「检查更新…」 | 直接弹出更新窗口 `当前版本 0.1.14 · 构建 23`，未跳网页、未命中旧 0.1.13 副本（同时验证 §5-P2 修复） |
+| 5 | 窗口「卸载萤火虫…」→「卸载（保留配置与词库）」 | 卸载完成；`~/Applications/LampyrisUpdateCheck.app` 在进程退出后消失 |
+| 7 | 注销重登录 | 见下 |
+
+注销后回读（`ev-04-residual-after-logout.txt`）：
+
+| 检查面 | 结果 |
+|---|---|
+| TIS 输入源 | 无 `cn.jokerhub.inputmethod.Lampyris*`（当前源为搜狗拼音） |
+| 输入法菜单 | 无「萤火虫」条目 |
+| `~/Library/Input Methods/Lampyris.app`、`~/Applications/LampyrisUpdateCheck.app`、旧名 `Lampyris Update.app` | 均不存在 |
+| 进程 | 无 `Lampyris*` 进程 |
+| Preferences / Caches / Logs | 无残留 |
+| 用户数据（保留数据模式） | `config.toml` `3bc1117c…`、词库 **713 行** `8dbd41f4…`，与卸载前一致 |
+
+结论：ADR-296「已安装版本自带卸载」的保留数据模式在真机上**全链路成立**，卸载后系统侧无残留。
