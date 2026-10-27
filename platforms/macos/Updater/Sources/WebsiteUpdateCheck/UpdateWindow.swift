@@ -7,6 +7,8 @@ import OrzAppUpdaterCore
 @MainActor
 final class UpdateWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
+    /// 「当前版本」显示已安装宿主，而不是更新程序自己；安装成功后要刷新（报告214）。
+    private let versionLabel = NSTextField(labelWithString: "")
     private let status = NSTextField(labelWithString: "")
     private let detail = NSTextField(wrappingLabelWithString: "")
     private let progress = NSProgressIndicator()
@@ -36,6 +38,9 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
 
     private var info: [String: Any] { Bundle.main.infoDictionary ?? [:] }
 
+    /// 窗口标题里的「当前版本」：读已安装宿主。
+    private var installedVersionText: String { InstalledVersion.installed(location) }
+
     func show() {
         let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 320),
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
@@ -55,10 +60,10 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
 
         let title = NSTextField(labelWithString: "萤火虫")
         title.font = .systemFont(ofSize: 21, weight: .semibold)
-        let version = NSTextField(labelWithString: "当前版本 \(versionText)")
-        version.font = .systemFont(ofSize: 12)
-        version.textColor = .secondaryLabelColor
-        let titleStack = NSStackView(views: [title, version])
+        versionLabel.stringValue = "当前版本 \(installedVersionText)"
+        versionLabel.font = .systemFont(ofSize: 12)
+        versionLabel.textColor = .secondaryLabelColor
+        let titleStack = NSStackView(views: [title, versionLabel])
         titleStack.orientation = .vertical
         titleStack.alignment = .leading
         titleStack.spacing = 3
@@ -151,12 +156,6 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         NSApp.activate(ignoringOtherApps: true)
     }
 
-    private var versionText: String {
-        let version = info["CFBundleShortVersionString"] as? String ?? "?"
-        let build = info["CFBundleVersion"] as? String ?? "?"
-        return "\(version) · 构建 \(build)"
-    }
-
     private func setBusy(_ busy: Bool) {
         running = busy
         checkButton.isEnabled = !busy
@@ -201,7 +200,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                         }
                         setBusy(false)
                         status.stringValue = "已是最新版本"
-                        detail.stringValue = "当前 \(versionText)，没有更高构建。"
+                        detail.stringValue = "当前 \(installedVersionText)，没有更高构建。"
                         return
                     } catch {
                         failures += 1
@@ -273,6 +272,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                             environment: DefaultInstallEnvironment.make(target: .updater))
                     })
                 setBusy(false)
+                versionLabel.stringValue = "当前版本 \(installedVersionText)"
                 status.stringValue = "已安装构建 \(release.build)"
                 detail.stringValue = "旧版本备份：\(receipt.previous ?? "无")"
                     + (receipt.updaterBundle.map {
