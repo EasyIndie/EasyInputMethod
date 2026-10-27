@@ -4,9 +4,11 @@ import PackageDescription
 let package = Package(
     name: "LampyrisUninstaller",
     platforms: [.macOS(.v13)],
+    dependencies: [.package(path: "../InstallCore")],
     targets: [
         .executableTarget(
             name: "LampyrisUninstaller",
+            dependencies: [.product(name: "LampyrisInstallCore", package: "InstallCore")],
             path: "Sources/LampyrisUninstaller"
         )
     ]

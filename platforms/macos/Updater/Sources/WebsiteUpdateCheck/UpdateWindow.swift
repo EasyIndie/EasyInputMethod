@@ -14,6 +14,8 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     private let installButton = NSButton(title: "下载并安装", target: nil, action: nil)
     /// 自更新后当前进程仍是旧代码（ADR-295）：给一个显式的重新打开入口，立即生效。
     private let relaunchButton = NSButton(title: "重新打开更新程序", target: nil, action: nil)
+    /// 已安装版本自带卸载（ADR-296），不需要用户保留 DMG。
+    private let uninstallButton = NSButton(title: "卸载萤火虫…", target: nil, action: nil)
     private var release: UpdateRelease?
     private var feeds: [URL] = []
     private var running = false
@@ -103,9 +105,14 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         relaunchButton.target = self
         relaunchButton.action = #selector(relaunchTapped)
         relaunchButton.isHidden = true
+        uninstallButton.bezelStyle = .rounded
+        uninstallButton.controlSize = .large
+        uninstallButton.target = self
+        uninstallButton.action = #selector(uninstallTapped)
         let spacer = NSView()
         spacer.setContentHuggingPriority(.defaultLow, for: .horizontal)
-        let buttons = NSStackView(views: [spacer, checkButton, relaunchButton, installButton])
+        let buttons = NSStackView(views: [uninstallButton, spacer, checkButton, relaunchButton,
+                                          installButton])
         buttons.orientation = .horizontal
         buttons.alignment = .centerY
         buttons.spacing = 10
@@ -281,6 +288,84 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
                 fail("安装失败：\(error.localizedDescription)")
             }
         }
+    }
+
+    /// 卸载：确认 → 停宿主 → 切回 ABC → 删除/保留数据 → 退出后由 detached shell 删除自己。
+    @objc private func uninstallTapped() {
+        guard !running, let location else { return }
+        guard !location.isolated, let applications = location.applications else {
+            return fail("隔离构建不允许卸载生产安装")
+        }
+        let choice = NSAlert()
+        choice.messageText = "卸载萤火虫？"
+        choice.informativeText = "将移除输入法与更新程序，切回 ABC 并禁用输入源。"
+            + "\n默认保留 config.toml 与个人词库；卸载后需要注销重新登录。"
+        choice.addButton(withTitle: "卸载（保留配置与词库）")
+        choice.addButton(withTitle: "彻底清理全部数据…")
+        choice.addButton(withTitle: "取消")
+        var purge = false
+        switch choice.runModal() {
+        case .alertFirstButtonReturn: purge = false
+        case .alertSecondButtonReturn:
+            let confirm = NSAlert()
+            confirm.messageText = "彻底清理全部数据？"
+            confirm.informativeText = "配置、个人词库、更新备份与缓存都会被删除，且无法恢复。"
+            confirm.addButton(withTitle: "全部删除")
+            confirm.addButton(withTitle: "取消")
+            confirm.alertStyle = .warning
+            guard confirm.runModal() == .alertFirstButtonReturn else { return }
+            purge = true
+        default: return
+        }
+        running = true
+        setBusy(true)
+        uninstallButton.isEnabled = false
+        status.stringValue = "正在卸载…"
+        detail.stringValue = "切回 ABC、停止输入法并移除文件。"
+        let paths = UninstallPaths(home: location.home, domain: location.domain,
+                                   applications: applications, support: location.support)
+        let selfBundle = Bundle.main.bundleURL
+        let mode: UninstallMode = purge ? .removeAll : .keepData
+        Task.detached {
+            let result: Result<UninstallOutcome, Error>
+            do {
+                result = .success(try UninstallRunner.run(mode: mode, paths: paths,
+                                                          selfBundle: selfBundle))
+            } catch {
+                result = .failure(error)
+            }
+            await MainActor.run { [weak self] in
+                self?.finishUninstall(result, purge: purge)
+            }
+        }
+    }
+
+    private func finishUninstall(_ result: Result<UninstallOutcome, Error>, purge: Bool) {
+        switch result {
+        case .success(let outcome):
+            status.stringValue = purge ? "已彻底清理" : "卸载完成"
+            var text = "已移除 \(outcome.removedCount) 项。"
+            if !outcome.kept.isEmpty { text += "\n已保留：\n" + outcome.kept.joined(separator: "\n") }
+            detail.stringValue = text + "\n请注销并重新登录，清空输入法菜单中的残留项。"
+            afterUninstall(outcome)
+        case .failure(let error):
+            running = false
+            setBusy(false)
+            uninstallButton.isEnabled = true
+            status.stringValue = "卸载未完成"
+            detail.stringValue = error.localizedDescription
+        }
+    }
+
+    private func afterUninstall(_ outcome: UninstallOutcome) {
+        uninstallButton.isHidden = true
+        checkButton.isEnabled = false
+        installButton.isEnabled = false
+        relaunchButton.isHidden = true
+        if !outcome.pendingSelfRemoval.isEmpty {
+            _ = UninstallRunner.scheduleSelfRemoval(outcome.pendingSelfRemoval)
+        }
+        NSApp.terminate(nil)
     }
 
     @objc private func relaunchTapped() {

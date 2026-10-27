@@ -1,138 +1,17 @@
 import AppKit
 import Foundation
+import LampyrisInstallCore
 
-private let hostIdentifier = "cn.jokerhub.inputmethod.Lampyris"
-private let updaterIdentifier = "cn.jokerhub.Lampyris.WebsiteUpdateCheck"
-private let installerIdentifier = "cn.jokerhub.Lampyris.Installer"
-private let uninstallerIdentifier = "cn.jokerhub.Lampyris.Uninstaller"
-
-private enum UninstallMode: Sendable {
-    case keepData
-    case removeAll
-}
-
-private enum UninstallError: LocalizedError {
-    case invalidApp
-    case residual([String])
-
-    var errorDescription: String? {
-        switch self {
-        case .invalidApp: return "当前安装不是萤火虫输入法，已停止。"
-        case .residual(let paths): return "仍有文件未能删除：\n" + paths.joined(separator: "\n")
-        }
-    }
-}
-
-private struct UninstallOutcome: Sendable {
-    let kept: [String]
-    let removedCount: Int
-}
-
+/// UI 层只负责文案与确认；删除/保留/自删除的语义全部在共享的 InstallCore 里（ADR-296）。
 private enum UninstallEngine {
     static func run(mode: UninstallMode) throws -> UninstallOutcome {
-        let home = FileManager.default.homeDirectoryForCurrentUser
-        let app = home.appendingPathComponent("Library/Input Methods/Lampyris.app")
-        let support = home.appendingPathComponent("Library/Application Support/Lampyris")
-        let updaters = locateUpdaters(home: home)
-        let fileManager = FileManager.default
-
-        if fileManager.fileExists(atPath: app.path), !isProductionApp(app) {
-            throw UninstallError.invalidApp
-        }
-        if fileManager.fileExists(atPath: app.path) {
-            stopHosts([hostIdentifier, updaterIdentifier])
-            switchToABCAndDisable(helper: app.appendingPathComponent("Contents/Helpers/LampyrisTIS"))
-            stopHosts([hostIdentifier, updaterIdentifier])
-        } else {
-            stopHosts([hostIdentifier, updaterIdentifier])
-        }
-
-        var failures: [String] = []
-        var removed = 0
-        func remove(_ url: URL) {
-            guard fileManager.fileExists(atPath: url.path) else { return }
-            do {
-                try fileManager.removeItem(at: url)
-                removed += 1
-            } catch {
-                failures.append(url.path)
-            }
-        }
-
-        let identifiers = [hostIdentifier, updaterIdentifier, installerIdentifier]
-        var targets: [URL] = [
-            app,
-            home.appendingPathComponent("Library/Application Support/Lampyris-install-backups"),
-            home.appendingPathComponent("Library/Application Scripts/\(hostIdentifier)"),
-        ]
-        targets.append(contentsOf: updaters)
-        for identifier in identifiers {
-            targets.append(home.appendingPathComponent("Library/Caches/\(identifier)"))
-            targets.append(home.appendingPathComponent("Library/Preferences/\(identifier).plist"))
-            targets.append(home.appendingPathComponent("Library/Saved Application State/\(identifier).savedState"))
-            targets.append(home.appendingPathComponent("Library/Containers/\(identifier)"))
-            targets.append(home.appendingPathComponent("Library/HTTPStorages/\(identifier)"))
-        }
-        targets.append(home.appendingPathComponent("Library/Preferences/\(uninstallerIdentifier).plist"))
-        for target in targets { remove(target) }
-        removeDiagnostics(home: home, remove: remove)
-        removeTemporaryDiagnostics(remove: remove)
-
-        var kept: [String] = []
-        if mode == .removeAll {
-            remove(support)
-        } else {
-            let userFiles = ["config.toml", "user-dictionary.tsv"]
-            if let children = try? fileManager.contentsOfDirectory(
-                at: support, includingPropertiesForKeys: nil, options: [])
-            {
-                for child in children where !userFiles.contains(child.lastPathComponent) {
-                    remove(child)
-                }
-            }
-            for name in userFiles
-            where fileManager.fileExists(atPath: support.appendingPathComponent(name).path) {
-                kept.append(support.appendingPathComponent(name).path)
-            }
-            if let children = try? fileManager.contentsOfDirectory(atPath: support.path), children.isEmpty {
-                try? fileManager.removeItem(at: support)
-            }
-        }
-
-        if !failures.isEmpty {
-            throw UninstallError.residual(failures)
-        }
-        if mode == .removeAll {
-            let leftovers = targets.filter { fileManager.fileExists(atPath: $0.path) }
-                + [support].filter { fileManager.fileExists(atPath: $0.path) }
-            if !leftovers.isEmpty {
-                throw UninstallError.residual(leftovers.map(\.path))
-            }
-        }
-        return UninstallOutcome(kept: kept, removedCount: removed)
+        try UninstallerCore.run(
+            mode: mode, paths: .production(),
+            stopApps: { identifiers in stopApplications(identifiers) },
+            switchToABCAndDisable: { helper in switchToABCAndDisable(helper: helper) })
     }
 
-    /// 更新程序按 bundle id 定位：正式包名是 `LampyrisUpdateCheck.app`，历史上手工改名成
-    /// `Lampyris Update.app` 的安装也要能清掉（ADR-294）。
-    private static func locateUpdaters(home: URL) -> [URL] {
-        let manager = FileManager.default
-        let legacy = home.appendingPathComponent("Applications/Lampyris Update.app")
-        var found: [URL] = []
-        for directory in [home.appendingPathComponent("Applications"),
-                          URL(fileURLWithPath: "/Applications")] {
-            guard let children = try? manager.contentsOfDirectory(
-                at: directory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles])
-            else { continue }
-            for child in children where child.pathExtension == "app" {
-                guard Bundle(url: child)?.bundleIdentifier == updaterIdentifier else { continue }
-                if !found.contains(child) { found.append(child) }
-            }
-        }
-        if !found.contains(legacy) { found.append(legacy) }
-        return found
-    }
-
-    private static func stopHosts(_ identifiers: [String]) {
+    private static func stopApplications(_ identifiers: [String]) {
         let running = identifiers.flatMap {
             NSRunningApplication.runningApplications(withBundleIdentifier: $0)
         }
@@ -151,7 +30,7 @@ private enum UninstallEngine {
 
     private static func switchToABCAndDisable(helper: URL) {
         guard FileManager.default.isExecutableFile(atPath: helper.path) else { return }
-        for arguments in [["switch-abc"], ["disable", hostIdentifier]] {
+        for arguments in [["switch-abc"], ["disable", UninstallIdentifiers.host]] {
             let process = Process()
             process.executableURL = helper
             process.arguments = arguments
@@ -160,35 +39,6 @@ private enum UninstallEngine {
             try? process.run()
             process.waitUntilExit()
         }
-    }
-
-    private static func removeDiagnostics(home: URL, remove: (URL) -> Void) {
-        let prefixes = ["Lampyris-", "LampyrisUpdateCheck-", "LampyrisInstaller-", "LampyrisUninstaller-"]
-        let crashPrefixes = ["Lampyris_", "LampyrisUpdateCheck_", "LampyrisInstaller_", "LampyrisUninstaller_"]
-        for (directory, names) in [
-            (home.appendingPathComponent("Library/Logs/DiagnosticReports"), prefixes),
-            (home.appendingPathComponent("Library/Application Support/CrashReporter"), crashPrefixes),
-        ] {
-            guard let children = try? FileManager.default.contentsOfDirectory(
-                at: directory, includingPropertiesForKeys: nil, options: [.skipsHiddenFiles]) else { continue }
-            for child in children where names.contains(where: { child.lastPathComponent.hasPrefix($0) }) {
-                remove(child)
-            }
-        }
-    }
-
-    private static func removeTemporaryDiagnostics(remove: (URL) -> Void) {
-        let temporary = URL(fileURLWithPath: NSTemporaryDirectory())
-            .appendingPathComponent("lampyris-hud-diag.log")
-        remove(temporary)
-    }
-
-    private static func isProductionApp(_ app: URL) -> Bool {
-        let plist = app.appendingPathComponent("Contents/Info.plist")
-        guard let data = try? Data(contentsOf: plist),
-            let info = try? PropertyListSerialization.propertyList(from: data, format: nil) as? [String: Any]
-        else { return false }
-        return info["CFBundleIdentifier"] as? String == hostIdentifier
     }
 }
 

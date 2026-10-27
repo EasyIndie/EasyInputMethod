@@ -20,9 +20,9 @@ platforms/macos/
 │   ├── ImeSession.swift           # FFI 会话封装（指针转换）
 │   ├── CandidateWindow.swift      # 纯代码候选窗（NSPanel）
 │   └── Config.swift               # 配置读取 + 平台路径
-├── InstallCore/                   # 共享安装核心（ADR-295）：替换/备份/回滚/验签/自更新
+├── InstallCore/                   # 共享安装/卸载核心（ADR-295/296）：替换/备份/回滚/验签/自更新/卸载
 │   └── Sources/LampyrisInstallCore/  # DMG 安装器与独立更新程序都依赖它
-├── Installer/·Uninstaller/        # DMG 内的图形安装器/卸载器（SwiftPM 包）
+├── Installer/·Uninstaller/        # DMG 内的图形安装器/卸载器（SwiftPM 包，共用 InstallCore）
 ├── Updater/                       # 独立网站更新检查程序（SwiftPM 包，随发行包分发）
 ├── tools/list-input-sources.sh    # 诊断：系统是否识别到本输入法
 └── tests/

@@ -36,6 +36,8 @@
 ./scripts/uninstall.sh --input-source-removed
 ```
 
+装好之后也可以不依赖本 ZIP 卸载：打开 `~/Applications/LampyrisUpdateCheck.app`（输入法菜单「检查更新…」即可打开），窗口里的「卸载萤火虫…」会切回 ABC、禁用输入源并移除输入法与更新程序（默认保留配置与个人词库，ADR-296）。命令行等价入口：`LampyrisUpdateCheck --uninstall [--purge-data]`。
+
 系统域需加 `--system` 并由管理员执行。应用移动至安装域的 Application Support/Lampyris/uninstalled 备份；更新程序（`~/Applications/LampyrisUpdateCheck.app`，含历史名 `Lampyris Update.app`）按 bundle id 一并移入同一备份；用户 config.toml 与 user-dictionary.tsv 保留。设置路径为 `~/Library/Application Support/Lampyris/`。
 
 ## 核验与复现
