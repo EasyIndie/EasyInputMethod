@@ -10,11 +10,22 @@ struct InstallLocation: Sendable {
     /// 用户主目录（隔离构建时是私有根）：卸载路径从这里派生，窗口不再自己读 homeDirectoryForCurrentUser。
     let home: URL
     let domain: URL
+    /// 更新程序自己的状态目录（`…/Lampyris/updates`）：备份、receipt、staging 都在这里。
     let support: URL
+    /// 用户数据根（`…/Lampyris`，`config.toml` 与个人词库所在目录）。
+    ///
+    /// 卸载语义用的是**它**而不是 `support`：把状态目录当数据根会导致「彻底清理」只删掉
+    /// `updates/`，把配置与词库留在原地（报告 213 P1）。
+    let dataRoot: URL
     /// 更新程序自己的安装目录（ADR-295）；隔离构建为 nil，绝不碰真实的 ~/Applications。
     let applications: URL?
     let target: InstallTarget
     let isolated: Bool
+
+    /// 卸载入口唯一构造点：保证窗口与 `--uninstall` 用同一组路径语义。
+    func uninstallPaths() -> UninstallPaths {
+        UninstallPaths(home: home, domain: domain, applications: applications, support: dataRoot)
+    }
 
     static let testBundlePrefix = "cn.jokerhub.Lampyris.WebsiteUpdateCheckTest."
     static let isolatedIdentityPrefix = "cn.jokerhub.inputmethod.LampyrisIMKTest."
@@ -27,10 +38,11 @@ struct InstallLocation: Sendable {
         throws -> InstallLocation
     {
         guard info["LampyrisTestOnly"] as? Bool == true else {
+            let dataRoot = home.appendingPathComponent("Library/Application Support/Lampyris")
             return InstallLocation(home: home,
                                    domain: home.appendingPathComponent("Library/Input Methods"),
-                                   support: home.appendingPathComponent(
-                                       "Library/Application Support/Lampyris/updates"),
+                                   support: dataRoot.appendingPathComponent("updates"),
+                                   dataRoot: dataRoot,
                                    applications: home.appendingPathComponent("Applications"),
                                    target: .production, isolated: false)
         }
@@ -50,6 +62,7 @@ struct InstallLocation: Sendable {
         return InstallLocation(home: canonical,
                                domain: canonical.appendingPathComponent("Input Methods"),
                                support: canonical.appendingPathComponent("updates"),
+                               dataRoot: canonical,
                                applications: nil, target: target, isolated: true)
     }
 

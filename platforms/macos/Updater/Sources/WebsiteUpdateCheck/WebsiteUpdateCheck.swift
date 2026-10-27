@@ -98,12 +98,11 @@ extension WebsiteUpdateCheck {
             exit(2)
         }
         // 隔离构建只能演练自己的私有根，绝不卸载真实安装。
-        guard !location.isolated, let applications = location.applications else {
+        guard !location.isolated, location.applications != nil else {
             FileHandle.standardError.write(Data("隔离构建不允许卸载生产安装。\n".utf8))
             exit(2)
         }
-        let paths = UninstallPaths(home: location.home, domain: location.domain,
-                                   applications: applications, support: location.support)
+        let paths = location.uninstallPaths()
         do {
             let outcome = try UninstallRunner.run(mode: purgeData ? .removeAll : .keepData,
                                                   paths: paths, selfBundle: Bundle.main.bundleURL)

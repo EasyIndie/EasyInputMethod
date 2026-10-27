@@ -293,7 +293,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
     /// 卸载：确认 → 停宿主 → 切回 ABC → 删除/保留数据 → 退出后由 detached shell 删除自己。
     @objc private func uninstallTapped() {
         guard !running, let location else { return }
-        guard !location.isolated, let applications = location.applications else {
+        guard !location.isolated, location.applications != nil else {
             return fail("隔离构建不允许卸载生产安装")
         }
         let choice = NSAlert()
@@ -322,8 +322,7 @@ final class UpdateWindowController: NSObject, NSWindowDelegate {
         uninstallButton.isEnabled = false
         status.stringValue = "正在卸载…"
         detail.stringValue = "切回 ABC、停止输入法并移除文件。"
-        let paths = UninstallPaths(home: location.home, domain: location.domain,
-                                   applications: applications, support: location.support)
+        let paths = location.uninstallPaths()
         let selfBundle = Bundle.main.bundleURL
         let mode: UninstallMode = purge ? .removeAll : .keepData
         Task.detached {

@@ -59,7 +59,31 @@ final class InstallLocationTests: XCTestCase {
         XCTAssertEqual(location.domain.lastPathComponent, "Input Methods")
         XCTAssertTrue(location.domain.path.contains("/Library/Input Methods"))
         XCTAssertTrue(location.support.path.hasSuffix("/Library/Application Support/Lampyris/updates"))
+        XCTAssertEqual(location.dataRoot.path,
+                       location.home.appendingPathComponent("Library/Application Support/Lampyris").path)
         XCTAssertFalse(location.domain.path.hasPrefix(root.path))
+    }
+
+    /// 报告 213 P1：卸载的 `support` 必须是数据根，不是更新程序自己的 `updates` 目录，
+    /// 否则 `--purge-data` 只删 `updates/` 却把配置与个人词库留在原地。
+    func testUninstallPathsUseTheDataRootNotTheUpdatesDirectory() throws {
+        let home = FileManager.default.temporaryDirectory
+            .appendingPathComponent("lampyris-home-\(UUID().uuidString.lowercased())")
+        let location = try InstallLocation.resolve(info: [:], home: home)
+        let paths = location.uninstallPaths()
+        XCTAssertEqual(paths.support.path, location.dataRoot.path)
+        XCTAssertNotEqual(paths.support.path, location.support.path)
+        XCTAssertEqual(paths.support.path,
+                       home.appendingPathComponent("Library/Application Support/Lampyris").path)
+
+        // 宿主不存在时不触发 invalidApp 检查，只断言删除清单。
+        let missing = { (url: URL) in url.lastPathComponent != "Lampyris.app" }
+        let purge = try UninstallerCore.plan(mode: .removeAll, paths: paths, isInstalled: missing)
+        XCTAssertTrue(purge.removeSupport)
+        XCTAssertTrue(purge.targets.contains(location.dataRoot.path))
+
+        let keep = try UninstallerCore.plan(mode: .keepData, paths: paths, isInstalled: missing)
+        XCTAssertFalse(keep.removeSupport)
     }
 
     func testOwnedTemporaryRootResolvesToIsolatedTarget() throws {
@@ -69,6 +93,7 @@ final class InstallLocationTests: XCTestCase {
         XCTAssertTrue(location.isolated)
         XCTAssertEqual(location.domain, root.resolvingSymlinksInPath().appendingPathComponent("Input Methods"))
         XCTAssertEqual(location.support, root.resolvingSymlinksInPath().appendingPathComponent("updates"))
+        XCTAssertEqual(location.dataRoot, location.home)
         XCTAssertEqual(location.target.bundleName, "LampyrisIMKTest.app")
         XCTAssertEqual(location.target.executablePath, "Contents/MacOS/LampyrisIMKTest")
         XCTAssertTrue(location.target.identity.hasSuffix(uuid.uuidString.lowercased()))

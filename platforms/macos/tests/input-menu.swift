@@ -138,6 +138,29 @@ try! FileManager.default.removeItem(at: official)
 require(UpdateEntry.updater(in: workspace)?.lastPathComponent == "Lampyris Update.app",
         "legacy directory name stays launchable")
 require(UpdateEntry.installDirectories.count == 2, "only ~/Applications and /Applications are searched")
+// 报告 213 P2：LaunchServices 里可能残留旧包（用户从 DMG/下载目录打开过）。
+// 安装位置必须优先，注册副本只能兜底。
+let staleRegistered = workspace.appendingPathComponent("Stale Registered.app")
+_ = makeUpdaterBundle(in: workspace, named: "Stale Registered.app",
+                      identifier: UpdateEntry.updaterBundleID)
+let installed = makeUpdaterBundle(in: workspace, named: UpdateEntry.updaterBundleName,
+                                  identifier: UpdateEntry.updaterBundleID)
+func canonical(_ url: URL?) -> String? { url?.resolvingSymlinksInPath().standardizedFileURL.path }
+require(canonical(UpdateEntry.resolve(directories: [workspace], registered: staleRegistered))
+        == canonical(installed),
+        "installed location wins over a stale LaunchServices registration")
+let lone = URL(fileURLWithPath: NSTemporaryDirectory())
+    .appendingPathComponent("lampyris-updater-empty-\(UUID().uuidString)")
+try! FileManager.default.createDirectory(at: lone, withIntermediateDirectories: true)
+defer { try? FileManager.default.removeItem(at: lone) }
+require(canonical(UpdateEntry.resolve(directories: [lone], registered: staleRegistered))
+        == canonical(staleRegistered),
+        "registration is still a fallback when no install location has one")
+require(UpdateEntry.resolve(directories: [lone], registered: nil) == nil,
+        "no install location and no registration means no updater")
+require(UpdateEntry.resolve(directories: [lone],
+                            registered: lone.appendingPathComponent("Missing.app")) == nil,
+        "a deleted registration is ignored")
 LocalAcceptanceEvidence.record("update-entry.lookup",
     expected: "更新程序按 bundle id 查找，包名不再要求手工改名",
     actual: ["bundle": UpdateEntry.updaterBundleName, "directories": UpdateEntry.installDirectories.map(\.path)])

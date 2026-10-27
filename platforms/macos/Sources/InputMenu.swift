@@ -18,7 +18,7 @@ enum UpdateEntry {
     /// 正式包名（ADR-294）。目录名不是判据，只用于在两个候选里挑更规范的那个。
     static let updaterBundleName = "LampyrisUpdateCheck.app"
 
-    /// 用户可放置更新程序的两个目录；查找不依赖子目录名字。
+    /// 先按安装位置找（`~/Applications` → `/Applications`），LaunchServices 注册只作兜底。
     static var installDirectories: [URL] {
         [FileManager.default.homeDirectoryForCurrentUser.appendingPathComponent("Applications"),
          URL(fileURLWithPath: "/Applications")]
@@ -36,15 +36,24 @@ enum UpdateEntry {
         return candidates.first { $0.lastPathComponent == updaterBundleName } ?? candidates.first
     }
 
-    static func updaterURL() -> URL? {
-        if let registered = NSWorkspace.shared.urlForApplication(withBundleIdentifier: updaterBundleID),
-           Bundle(url: registered)?.bundleIdentifier == updaterBundleID {
-            return registered
-        }
-        for directory in installDirectories {
+    /// 更新程序定位：**先查安装位置，LaunchServices 只作兜底**。
+    ///
+    /// 反过来的顺序会让 LaunchServices 里残留的副本胜出——用户从 DMG/下载目录打开过一次，
+    /// 那份旧包（甚至已删除的路径）就会抢在 `~/Applications` 的新版前面，菜单点了打开旧更新
+    /// 程序或干脆没反应（报告 213 P2）。
+    static func resolve(directories: [URL], registered: URL?) -> URL? {
+        for directory in directories {
             if let found = updater(in: directory) { return found }
         }
+        if let registered, Bundle(url: registered)?.bundleIdentifier == updaterBundleID {
+            return registered
+        }
         return nil
+    }
+
+    static func updaterURL() -> URL? {
+        resolve(directories: installDirectories,
+                registered: NSWorkspace.shared.urlForApplication(withBundleIdentifier: updaterBundleID))
     }
 
     static func open() {
