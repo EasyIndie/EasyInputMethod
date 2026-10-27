@@ -45,22 +45,22 @@ dependencies = [
 
 [[package]]
 name = "ime-core"
-version = "0.1.0"
+version = "1.0.0"
 
 [[package]]
 name = "ime-dict"
-version = "0.1.0"
+version = "1.0.0"
 
 [[package]]
 name = "ime-pinyin"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "ime-core",
 ]
 
 [[package]]
 name = "ime-table"
-version = "0.1.0"
+version = "1.0.0"
 dependencies = [
  "ime-core",
 ]

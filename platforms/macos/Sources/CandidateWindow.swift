@@ -650,6 +650,8 @@ final class CandidateWindow: NSObject {
     private var announcedSelected = 0
     private var announcedPage = 0
     private var lastAnnouncement: (text: String, at: Date)?
+    /// 本次组合是否已经播报过输入编码（ADR-300）：只在组合开始时报一次。
+    private var announcedSessionStart = false
     private(set) var announcedTexts: [String] = []
     private var themeTimer: Timer?
     private var available = NSSize(width: 640, height: 800)
@@ -944,6 +946,14 @@ final class CandidateWindow: NSObject {
         announcedInput = self.input
         announcedSelected = selectedIndex
         announcedPage = self.pageIndex
+        // ADR-300：新的一次组合由**显式播报**告知辅助技术。
+        // 只挂 AXValueChanged 时 VoiceOver 不会读出编码（报告216 §9.1 的 AX 流水里没有编码播报）。
+        if candidates.isEmpty {
+            announcedSessionStart = false
+        } else if !announcedSessionStart, !self.input.isEmpty {
+            announcedSessionStart = true
+            announce("编码 \(self.input)")
+        }
         let selectedView = labels.indices.contains(selectedIndex) ? labels[selectedIndex] : nil
         document.selectedCandidateView = selectedView
         scrollView.selectedCandidateView = selectedView

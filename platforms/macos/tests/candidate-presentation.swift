@@ -431,12 +431,16 @@ let page = CandidateAnnouncement.text(input: "wq", previousInput: "wq", selected
 guard page == "第2页，共2页，第1项，像，五笔" else { fail("page announcement: \(page ?? "nil")") }
 let newComposition = CandidateAnnouncement.text(input: "wqy", previousInput: "wq", selectedIndex: 0, previousSelected: 0,
                                                 pageIndex: 0, previousPage: 0, pageCount: 1, candidate: sample)
-guard newComposition == nil else { fail("new composition is announced by the input code itself") }
+guard newComposition == nil else { fail("candidate announcement never fires on a new composition") }
 guard CandidateAnnouncement.text(input: "wq", previousInput: "wq", selectedIndex: 1, previousSelected: 0,
                                  pageIndex: 0, previousPage: 0, pageCount: 1, candidate: nil) == nil
 else { fail("no announcement without a candidate") }
 // ADR-291：驱动窗口自己更新一次，确认播报真的从 update 里发出（AXAnnouncementRequested 只投递给辅助技术，观察器收不到）。
 window.update(candidates: values, pageIndex: 0, pageCount: 1, input: "wq")
+// ADR-300：组合开始要显式播报输入编码，不能只靠 AXValueChanged。
+guard window.announcedTexts.first == "编码 wq" else {
+    fail("window announces the input code when a composition starts: \(window.announcedTexts)")
+}
 let announcedBefore = window.announcedTexts.count
 window.update(candidates: values, pageIndex: 0, pageCount: 1, selectedIndex: 1, input: "wq")
 guard window.announcedTexts.count > announcedBefore,
