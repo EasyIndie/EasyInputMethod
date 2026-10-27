@@ -41,11 +41,20 @@
 `defaults read -g AppleKeyboardUIMode` = **0**，即 macOS 默认「仅文本框之间用 Tab」，此时 Tab 不会在按钮/开关之间移动，任何 App 都一样。
 判据：开启系统设置 → 键盘 → **键盘导航** 后重测。用户已开启并复测：Tab/Space/方向键全部正常 → 判 PASS（未开启时应记 BLOCKED 而非 FAIL）。
 
-### 9.1 VoiceOver 方向键播报 —— **需要一次精确复现**
+### 9.1 VoiceOver 方向键播报 —— **结案：候选/上屏播报有证据，编码播报已补（ADR-300）**
 
 用户：在 TextEdit 里，候选窗内 `→` 报「文本结尾」、`←` 报「第N项，文字，来源」。
 拆解：候选播报（`第N项，文字，来源`）确实发声，说明 ADR-291 的播报在生效；`→` 报「文本结尾」是**焦点落在文档**时 Document 的 AX 回复，不是候选面板的。9.2（VO 浏览候选并选词）是 PASS，说明候选列表本身可被 VO 遍历。
-待确认：期望的是「按 ↓/↑ 在候选间移动并播报」还是「VO+→ 进入候选组」。这不是崩溃，但属于可访问性交互细节，需要一次带 VO 的定向复现后再定性质。
+定向复现（`axobserve` 150 秒窗口，171 条事件）结论：
+
+| 观察 | 证据 |
+|---|---|
+| 每次换候选都有播报 | `AXAnnouncementRequested` + `AXSelectedChildrenChanged`（role=`AXGroup`）在 48.8/50.0/51.2/52.2/54.0/54.9/55.9/56.6/57.3/73.6…79.1 秒密集出现，与每次按 ← 一一对应 |
+| 上屏有播报 | t=80.66 `AXAnnouncementRequested` 发在 `AXApplication` 上 |
+| 方向键没有漏到文档 | `ImeSession.consumesCompositionNavigation` 在组合态吃掉 123–126（←→↑↓），实现里 `navigationDelta` 也只处理这四个键；用户听到 `→` 报「文本结尾」的那一刻，日志显示组合已结束（面板「共0页」+ `AXUIElementDestroyed`），那是文档自身的回复，属正常 |
+| **缺口：编码播报** | 组合开始时只有 `AXValueChanged`（输入编码控件），没有 `AXAnnouncementRequested`；面板是非激活窗口，VO 不会朗读静态文本变化 → 用户按第一个键时听不到编码 |
+
+处置：按 ADR-300 在组合开始时显式播报「编码 wq」（每组合一次），断言写进 `candidate-presentation`。9.1 判 **PASS（编码播报已补）**。
 
 ### 9.4 VO 开 + 宿主重启后立即打字 —— **已有等价证据，可判 PASS**
 
