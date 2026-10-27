@@ -52,6 +52,8 @@ pub struct TablePinyinBackend {
     full_spellings: Vec<(String, String)>,
     /// 首字母串（简拼键）→ [(词, weight)]。
     initials: HashMap<String, Vec<(Arc<str>, i32)>>,
+    /// 去掉空格的整词拼音 → [(词, weight)]：多词分段拼接用（ADR-299）。
+    composed_words: HashMap<String, Vec<(Arc<str>, i32)>>,
     /// 合法音节集合（字与词音节并集）。
     syllables: HashSet<String>,
     /// 反查：字 → 首选读音（TSV 每字首选读音行在前，见 generate.rs）。
@@ -226,6 +228,21 @@ impl TablePinyinBackend {
     }
 
     fn finalize(&mut self) {
+        // 拼接索引：同一拼接串可能对应多种音节切分（如 xian = xi+an / xian），逐条合并。
+        for (key, list) in &self.words {
+            let spelling = key.replace(' ', "");
+            let entry = self.composed_words.entry(spelling).or_default();
+            for (word, weight) in list {
+                match entry.iter_mut().find(|(text, _)| text == word) {
+                    Some(slot) => slot.1 = slot.1.max(*weight),
+                    None => entry.push((Arc::clone(word), *weight)),
+                }
+            }
+        }
+        for list in self.composed_words.values_mut() {
+            list.shrink_to_fit();
+            list.sort_by(|a, b| b.1.cmp(&a.1).then(a.0.cmp(&b.0)));
+        }
         self.full_spellings = self
             .words
             .keys()
@@ -247,6 +264,95 @@ impl TablePinyinBackend {
     }
 
     /// 合法音节数（诊断用）。
+    /// 单次拼接允许的最大段数：段数越多越可能是猜的，宁可不出候选。
+    const COMPOSE_SEGMENTS_LIMIT: usize = 8;
+
+    /// 多词分段拼接：把输入切成「词表条目」或「单音节字」，拼成整串候选。
+    ///
+    /// 排序规则（依次比较）：**段数少** → 各段长度从左到右更长 → 权重和大。
+    /// 单字权重（几十万）远高于整词权重，只按权重和会切出「中|过|人」；
+    /// 「先长后短」等价于从左到右最长匹配，能把 `nihaoma` 切成「你好|吗」而不是「你|号码」。
+    /// 不做语法/整句模型，也不引入任何外部数据（ADR-299）。
+    fn compose(&self, input: &str) -> Option<(String, i32)> {
+        struct Path {
+            score: i32,
+            lengths: Vec<u8>,
+            texts: Vec<String>,
+        }
+        fn better(candidate: &Path, current: &Path) -> bool {
+            if candidate.lengths.len() != current.lengths.len() {
+                return candidate.lengths.len() < current.lengths.len();
+            }
+            for (left, right) in candidate.lengths.iter().zip(current.lengths.iter()) {
+                if left != right {
+                    return left > right;
+                }
+            }
+            candidate.score > current.score
+        }
+
+        let n = input.len();
+        if n == 0 || n > 64 {
+            return None;
+        }
+        let mut best: Vec<Option<Path>> = (0..=n).map(|_| None).collect();
+        best[0] = Some(Path {
+            score: 0,
+            lengths: Vec::new(),
+            texts: Vec::new(),
+        });
+        for end in 1..=n {
+            for start in 0..end {
+                let (current_score, mut lengths, mut texts) = match best[start].as_ref() {
+                    Some(current) if current.lengths.len() < Self::COMPOSE_SEGMENTS_LIMIT => (
+                        current.score,
+                        current.lengths.clone(),
+                        current.texts.clone(),
+                    ),
+                    _ => continue,
+                };
+                let piece = &input[start..end];
+                let word = self
+                    .composed_words
+                    .get(piece)
+                    .and_then(|list| list.first())
+                    .map(|(text, weight)| (text.to_string(), *weight));
+                let single = if self.syllables.contains(piece) {
+                    self.chars
+                        .get(piece)
+                        .and_then(|list| list.first())
+                        .map(|(ch, weight)| (ch.to_string(), *weight))
+                } else {
+                    None
+                };
+                for (text, weight) in [word, single].into_iter().flatten() {
+                    let candidate = Path {
+                        score: current_score.saturating_add(weight),
+                        lengths: {
+                            lengths.push((end - start).min(u8::MAX as usize) as u8);
+                            lengths.clone()
+                        },
+                        texts: {
+                            texts.push(text);
+                            texts.clone()
+                        },
+                    };
+                    lengths.pop();
+                    texts.pop();
+                    let replace = match best[end].as_ref() {
+                        None => true,
+                        Some(existing) => better(&candidate, existing),
+                    };
+                    if replace {
+                        best[end] = Some(candidate);
+                    }
+                }
+            }
+        }
+        let path = best.into_iter().nth(n).flatten()?;
+        Some((path.texts.concat(), path.score))
+    }
+
     pub fn syllable_count(&self) -> usize {
         self.syllables.len()
     }
@@ -309,6 +415,13 @@ impl PinyinBackend for TablePinyinBackend {
                             ));
                         }
                     }
+                }
+            }
+            // 整串不是词表条目时，用词表做多词分段拼接（`wo|ai|ni` → 我爱你，ADR-299）。
+            // 只在没有整词候选时介入，避免拼接结果抢掉精确词条。
+            if out.is_empty() && !input.contains('\'') && syllables.len() > 1 {
+                if let Some((text, weight)) = self.compose(input) {
+                    out.push(PinyinCandidate::new(text, input.to_string(), weight, false));
                 }
             }
             if syllables.len() == 1 {
@@ -376,14 +489,17 @@ mod tests {
                      zhong\t中\t70\n\
                      wen\t文\t60\n\
                      guo\t国\t50\n\
-                     ren\t人\t40\n";
+                     ren\t人\t40\n\
+                     ai\t爱\t30\n\
+                     ma\t吗\t20\n";
         let words = "# 拼音\t词\tweight\n\
                      ni hao\t你好\t200\n\
                      shi jie\t世界\t180\n\
                      zhong wen\t中文\t160\n\
                      ren min\t人民\t150\n\
                      wo men\t我们\t140\n\
-                     zhong guo\t中国\t130\n";
+                     zhong guo\t中国\t130\n\
+                     hao ma\t号码\t900\n";
         TablePinyinBackend::from_tsv(chars, words, "test").unwrap()
     }
 
@@ -475,6 +591,45 @@ mod tests {
         assert!(b.convert("你", 9).is_empty());
         assert!(b.convert("", 9).is_empty());
         assert!(b.convert("NI", 9).is_empty());
+    }
+
+    #[test]
+    fn convert_composes_multiple_words() {
+        // 整串不在词表时按词/字拼接（ADR-299）：wo|ai|ni → 我爱你
+        let b = sample();
+        let c = b.convert("woaini", 9);
+        assert_eq!(c.first().unwrap().text, "我爱你");
+        // 中国|人 比 中|国|人 段数少，优先
+        let c = b.convert("zhongguoren", 9);
+        assert_eq!(c.first().unwrap().text, "中国人");
+    }
+
+    #[test]
+    fn convert_prefers_left_longest_segment_on_ties() {
+        // 你好|吗 与 你|号码 同为两段；「号码」权重更高也不能胜出（先长后短）
+        let b = sample();
+        let c = b.convert("nihaoma", 9);
+        assert_eq!(c.first().unwrap().text, "你好吗");
+    }
+
+    #[test]
+    fn convert_keeps_exact_word_over_composition() {
+        let b = sample();
+        let c = b.convert("nihao", 9);
+        assert_eq!(c.first().unwrap().text, "你好");
+    }
+
+    #[test]
+    fn convert_does_not_compose_gibberish() {
+        let b = sample();
+        assert!(b.convert("asdfghjk", 9).is_empty());
+    }
+
+    #[test]
+    fn convert_composition_respects_segment_limit() {
+        // 9 个单音节段超过上限（8），宁可不出候选
+        let b = sample();
+        assert!(b.convert(&"ni".repeat(9), 9).is_empty());
     }
 
     #[test]

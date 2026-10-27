@@ -712,17 +712,37 @@ final class LampyrisInputController: IMKInputController {
         return min(max(0, location), length - 1)
     }
 
-    /// 光标矩形（候选窗/HUD 定位）；优先当前插入点，取不到时退回鼠标位置。
+    /// 光标矩形（候选窗/HUD 定位）。
+    ///
+    /// 走与 HUD 同一套两趟解析（报告094/095）：`attributes` 在文末与长文本里常返回零矩形，
+    /// 只调一次就会静默退回鼠标位置——候选窗于是停在鼠标旁边而不是插入点（报告216 §11.1）。
+    /// 只有两趟都拿不到**且**不在屏内时才退回鼠标，并把过程写进 `LAMPYRIS_HUD_DIAG` 日志。
     private func caretRect(_ client: IMKTextInput) -> NSRect {
-        var rect = NSRect.zero
         let selection = client.selectedRange()
-        let index = Self.caretLookupIndex(selectionLocation: selection.location,
-            length: client.length())
-        _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
-        if rect == .zero {
-            let mouse = NSEvent.mouseLocation
-            rect = NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1)
+        let length = client.length()
+        let start = Self.caretLookupIndex(selectionLocation: selection.location, length: length)
+        let lineRect: (Int) -> NSRect = { index in
+            var rect = NSRect.zero
+            _ = client.attributes(forCharacterIndex: index, lineHeightRectangle: &rect)
+            return rect
         }
-        return rect
+        let firstRect: (Int) -> NSRect = { index in
+            client.firstRect(forCharacterRange: NSRange(location: index, length: 0),
+                             actualRange: nil)
+        }
+        let screens = NSScreen.screens.map(\.frame)
+        let resolved = StateHUDCaretResolver.resolve(
+            startIndex: start, hasText: length > 0, allowsEmptyCaret: false,
+            lineRect: lineRect, firstRect: firstRect)
+        if let resolved, StateHUDLayout.isOnScreen(caret: resolved, screens: screens) {
+            return resolved
+        }
+        let mouse = NSEvent.mouseLocation
+        if Self.hudDiagEnabled {
+            let reason = resolved == nil ? "两趟解析都失败" : "解析结果不在任何屏幕内"
+            Self.hudDiag("caret fallback to mouse: \(reason) selection=\(selection.location)/"
+                + "\(length) rect=\(String(describing: resolved))")
+        }
+        return NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1)
     }
 }
