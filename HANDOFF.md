@@ -2,16 +2,16 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-27 12:05 / pi（pro 本机）。阶段：**更新链路三件事已做完，卡在「装包复验」**——ADR-294/295（装包即带更新程序 + 按 bundle id 定位 + 更新器自更新 + 安装实现收敛）已合并 main（PR #200，`e0a27ca`）；ADR-296（已安装版本自带卸载）已推 `dev`（`84caf48`）并开 **PR #201，四项检查全绿，等用户决定合并**。
-- 分支：`dev` @ 本轮交接提交；`main` = `e0a27ca`；开放 PR **1 个（#201）**。最近 `make verify` **PASS**。
-- 已装包（pro 与 air 都是）：**0.1.14 / build 23，执行 `a165f05c…`** —— 旧代码，不含本批改动。
-- 换设备：本次是 **pro → air**（场景 D），§4.1 是 air 的开工与验收指引。
+- 更新：2026-10-27 17:40 / pi（**air 本机**）。阶段：**PR #201 已合并，候选包已在 air 装包复验，验收发现 1 个真 BUG**——ADR-294/295/296 的合批候选（main `e10e6ed6`）7 项里 2/3/5 PASS、1/7 PARTIAL（只差图形会话点击/注销）、4 BLOCKED（无 publish 作业）、**6 FAIL：`--uninstall --purge-data` 不清配置与词库**。详见 `docs/reviews/213-updater-ships-with-package.md`。
+- 分支：`dev` = `main` = `e10e6ed6`（PR #201 用 merge commit 合入，dev 已快进）；开放 PR **0 个**。最近 `make verify` **PASS**。
+- 已装包（air）：**0.1.14 / build 23，执行 `add68cc6…`** = 本轮候选（含 ADR-294/295/296）；**输入源已被卸载器停用，需手动加回**。pro 仍是旧包 `a165f05c…`。
+- 换设备：仍是 **air 为主**（§4.1）；pro 上的 CLT SDK 损坏是**那台机器本地问题**，air 离线回归 54/54 全 PASS。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.0.1 / Xcode 27，`ssh air`，用户 `joker`） | 0.1.14/build 23，执行 `a165f05c…`（Notarized）。**数据为 2026-10-26 采集，换设备后先重采** | 上次记录：config `809e2cae…`、词库 646 行、输入源 `Lampyris.default`（另有搜狗源启用） | `uninstalled/bundle.VQzkTh`（0.1.13，执行 `c3b533e4…`） |
+| **air**（arm64 / macOS 27.0.1 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | 0.1.14/build 23，执行 **`add68cc6…`**（= 候选，Notarized）；更新程序执行 `02bc110f…`。**输入源当前未注册**（卸载器停用后重装未自动加回） | config `3bc1117c…`（8 个显式 `hotkey.*`）、词库 **706 行** `2dcea8f1…`；输入源仅 ABC + 搜狗 | `uninstalled/bundle.*` 11 份（0.1.13 等）、`/tmp/lampyris-verify-backup2/`（config+706 行词库）；旧包整包 `/tmp/rollback-a165f05c.zip` 已随重启的 /tmp 清理，回滚靠候选 ZIP `58bf1549…` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`） | 0.1.14/build 23，执行 `a165f05c…`（Notarized） | config `6f699c4b…`（**有 9 个显式 `hotkey.*` 项**）、词库 575 行、输入源 `Lampyris.default`、宿主 PID 26989 | `uninstalled/bundle.160547` 等若干旧包 |
 
 - 未安装任何新候选包；两台机器的 config / 词库 / 输入源本轮均未改动。
@@ -28,25 +28,21 @@
 
 ## 3. 未决
 
-- **PR #201 待合并**（用户决定）；合并后才会有含 ADR-296 的签名候选包。
-- **候选包实机复验未做**（见 §4 步骤 2 的 7 项），需用户授权装包。
-- **pro 本机工具链损坏（非代码问题）**：CLT SDK 的 `CoreVideo.framework/Headers/CVBuffer.h` 有 4749 个 NUL 字节，任何走 AppKit/Cocoa 的本地编译都失败 → `make macos-offline-tests` 有 2 项环境性 FAIL（`test-controller-menu`、`test-sandbox-config`），其余 52 项 PASS；`make verify` 不受影响。修复要 `sudo rm -rf /Library/Developer/CommandLineTools && xcode-select --install`（未执行）。**air 上先跑一次离线回归确认是否同样存在**。
-- ADR-296 的自删除**只在离线探针里验证过语义**，真实「退出后删掉自己」必须在装机版上验一次。
+- **P1 缺陷（必须先修）**：`--uninstall --purge-data` 只删 `…/Lampyris/updates`，`config.toml`/`user-dictionary.tsv`/`uninstalled/` 全留，却打印「已彻底清理」。根因：更新程序把 `InstallLocation.support`（= `…/Lampyris/updates`）传给 `UninstallPaths.support`，而 `UninstallerCore` 把它当数据根（DMG 卸载器传的是 `…/Lampyris`）。修法见报告 213 §5-P1。
+- **第 1/5/7 项差一次图形会话动作**：菜单「检查更新…」端到端点击、更新窗口「卸载萤火虫…」按钮、卸载后注销回读。pi 在 Background 会话，`AXPress`/`CGEvent` 到不了 Aqua（`cgwins` 也读不到窗口）。
+- **第 4 项 BLOCKED**：无高于 0.1.14 的已签名发布 + 生产私钥不在本机 + ADR-288 说的 drill publish 作业在当前工作流里**不存在**（只有 `build`）。
+- **pro 工具链损坏是 pro 本地问题**：air 上 `make macos-offline-tests` **54/54 文件 297 例 PASS**，`test-controller-menu`/`test-sandbox-config` 均过；pro 的 2 项 FAIL 仍待重装 CLT（未授权）。
+- **未定位异常**：09:27 回读生产包执行 SHA 变成旧包 `a165f05c…`（09:12/09:28 两次安装后都是 `add68cc6…`）。期间本会话未执行安装，可能与他人操作有关；证据见报告 213 §5-P5，注意复现。
+- ADR-296 自删除**已真机验证 PASS**（更新程序退出后本体被 detached `/bin/sh` 删除）。
 - 旧账（与本批无关，仍开放）：`install.sh` 的「已自动注册到输入源」在 macOS 13 是假成功（报告201）；air 上开 VoiceOver 时装机版输入上下文掉回 ABC（报告210）；合成按键切不动多 Space（报告205）；IT-15 第三方重建、IT-23 五工作日试用。
 
 ## 4. 下一步（按顺序）
 
-1. **合并 PR #201**（`dev → main`，merge commit）→ 触发 `macos-acceptance` 出签名候选包；记录 ZIP、宿主执行 SHA、更新程序执行 SHA、`SOURCE-COMMIT`。
-2. **在 air 装候选包并复验 7 项**（证据按 ADR-293 绑定执行 SHA）：
-   - DMG 装完 → 菜单「检查更新…」**直接开更新窗口**，不跳网页
-   - ZIP 装完 → `~/Applications/LampyrisUpdateCheck.app` 存在；旧名 `Lampyris Update.app` 被迁走并留备份
-   - CLI 覆盖升级不再报「已有不同版本」
-   - 真实升级一次 → 更新程序版本同步 + 「重新打开更新程序」生效
-   - 更新窗口「卸载萤火虫…」→ 保留数据卸载成功，**更新程序本体在退出后被删除**
-   - `LampyrisUpdateCheck --uninstall --purge-data` 彻底清理（隔离 drill 构建必须拒绝，单独取一次证）
-   - 卸载后注销重登录，输入法菜单无残留项
-3. 写 `docs/reviews/213-updater-ships-with-package.md`（或顺延编号），更新 HANDOFF/ROADMAP。
-4. 发布门禁不变：IT-15 第三方重建、IT-23 五工作日试用先做，再谈 tag/Release。
+1. **修 P1**（`--purge-data` 数据根错位）：更新程序改传真实数据根，并在 `test-dmg-updater.py` 固化「purge 后数据根不存在」断言 → `make verify` → 出新候选 → 复验第 6 项。
+2. **用户在图形会话补 3 个动作**：手动把「萤火虫」加回输入源 → 菜单「检查更新…」（预期直接开窗口）→ 更新窗口「卸载萤火虫…」→ 注销回读（第 7 项）。
+3. P2/P3 取舍：更新程序定位是否优先 `~/Applications` 精确路径；`uninstalled/` 算不算「更新备份」。
+4. 第 4 项要闭环需先补 ADR-288 的 drill publish 作业并单独授权一次 Pages 部署。
+5. 发布门禁不变：IT-15 第三方重建、IT-23 五工作日试用先做，再谈 tag/Release。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -54,15 +50,16 @@
 |---|---|
 | 系统 / 架构 | macOS 27.0.1 / arm64，用户 `joker`，SSH 别名 `air` |
 | 仓库 | `~/Documents/EasyInputMethod`（先 `git switch dev && git pull --ff-only`） |
-| 已装包 | 0.1.14/build 23，执行 `a165f05c…`（不含本批改动） |
-| 卸载备份 | `uninstalled/bundle.VQzkTh`（0.1.13） |
+| 已装包 | 0.1.14/build 23，执行 `add68cc6…`（= 报告 213 候选，含 ADR-294/295/296）；更新程序 `02bc110f…` |
+| 卸载备份 | `uninstalled/bundle.VQzkTh`（0.1.13）+ 10 份历史包；重装用候选 ZIP `58bf1549…` |
+| ⚠️ 输入源 | 卸载器已停用 `Lampyris*`，重装后系统未自动注册 —— **需手动在系统设置加回「萤火虫」** |
 
 ```sh
 cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only
 git log --oneline -1                       # 记下这个提交，写进验收记录
 ./scripts/handoff-status.sh --for=device   # 重采：已装包执行 SHA / config / 输入源 / 词库行数
 make verify                                # cargo 门禁
-make macos-offline-tests                   # 确认 air 的 SDK 是否也损坏（pro 上有 2 项环境性 FAIL）
+make macos-offline-tests                   # air 上 54/54 全 PASS（pro 的 2 项 FAIL 是那台机器本地 SDK 损坏）
 make macos-probe-build                     # 探针（arm64，约 1 分钟）
 ./tools/macos-probe/acceptance-preflight.sh # ready=true 才能跑键入类验收
 ```
@@ -89,6 +86,7 @@ make macos-probe-build                     # 探针（arm64，约 1 分钟）
 
 ## 9. 会话日志（最近）
 
+- 2026-10-27 / pi（air）：**PR #201 合并（`e10e6ed6`）→ 候选 ZIP `58bf1549…`/宿主 `add68cc6…`/更新程序 `02bc110f…` 已装 air 并复验 7 项**（报告 213）。PASS：旧名迁移、CLI 覆盖不再报「已有不同版本」、`--uninstall` 保留数据 + 更新程序自删、隔离构建拒绝卸载。**FAIL：`--purge-data` 不清配置/词库**（support 字段语义错位）。PARTIAL：菜单点击/注销回读缺图形会话。BLOCKED：真实升级（无 publish 作业）。air 离线回归 54/54 PASS → 修正「pro CLT 损坏是共性问题」的旧结论。
 - 2026-10-27 / pi（换设备 pro → air）：交接文档重写为当前状态。**下一步从 air 开始**：合并 PR #201 → 出签名候选包 → 装到 air 复验 §4 步骤 2 的 7 项（含 ADR-296 自删除）。
 - 2026-10-27 / pi：ADR-296 落地并推 `dev`（`84caf48`），PR #201 四项 PASS。卸载入口进更新程序（窗口按钮 + `--uninstall`），实现收敛进 `InstallCore.UninstallerCore`，自删除用 detached `/bin/sh`（无依赖），隔离构建拒绝卸载生产；顺手修掉窗口直接读 `homeDirectoryForCurrentUser` 破坏隔离回归的问题。`make verify` PASS。
 - 2026-10-27 / pi：**pro 工具链异常**（非代码）：CLT SDK `CVBuffer.h` 损坏（4749 NUL 字节）→ 本地离线回归 2 项环境性 FAIL，其余 52 项 PASS；`make verify` 不受影响。修复需重装 CLT，未执行。
