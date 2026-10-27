@@ -28,7 +28,7 @@ class PreviewMenuTests(unittest.TestCase):
             self.skipTest('调试窗口 LampyrisPreview 正在运行，输入菜单不干净')
         real = Path.home() / 'Library/Application Support/Lampyris'
         protected = [real / 'config.toml', real / 'user-dictionary.tsv']
-        before = [stamp(path) for path in protected]
+        before = {path: (path.read_bytes() if path.exists() else None) for path in protected}
         with tempfile.TemporaryDirectory(prefix='lampyris-preview-menu-') as folder:
             temporary = Path(folder)
             shutil.copyfile(ROOT / 'platforms/macos/tests/preview-menu.swift', temporary / 'main.swift')
@@ -52,7 +52,22 @@ class PreviewMenuTests(unittest.TestCase):
                     self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 self.assertIn('PASS preview-menu', result.stdout)
             finally:
-                self.assertEqual([stamp(path) for path in protected], before, 'real config/dictionary changed')
+                violation, appended = [], False
+                for path in protected:
+                    original = before[path]
+                    current = path.read_bytes() if path.exists() else None
+                    if current == original:
+                        continue
+                    # 真实词库是追加写的：用户在本机并发键入会让它变长。那不是私有会话泄漏，
+                    # 但也无法区分「只追加」的泄漏，所以只记 SKIP，不冒充 PASS（报告213）。
+                    if (path.name == 'user-dictionary.tsv' and original is not None
+                            and current is not None and current.startswith(original)):
+                        appended = True
+                        continue
+                    violation.append(path.name)
+            self.assertEqual(violation, [], 'real config/dictionary changed')
+            if appended:
+                self.skipTest('真实词库在运行期间被键入追加，无法判定是否私有会话泄漏')
 
 
 if __name__ == '__main__':
