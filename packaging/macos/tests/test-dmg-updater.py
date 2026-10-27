@@ -150,6 +150,41 @@ class ZipAndReleasePayloadContract(unittest.TestCase):
         self.assertNotIn('SecStaticCodeCreateWithPath', installer)
 
 
+class SelfUninstallContract(unittest.TestCase):
+    """ADR-296: the installed updater can uninstall itself without the DMG."""
+
+    def test_uninstall_lives_in_the_shared_core(self):
+        core = (ROOT / 'platforms/macos/InstallCore/Sources/LampyrisInstallCore/Uninstall.swift').read_text()
+        for symbol in ('public static func plan(', 'public static func run(',
+                       'public static func selfRemovalScript(', 'public static func scheduleSelfRemoval(',
+                       'pendingSelfRemoval'):
+            self.assertIn(symbol, core)
+        # 自删除只用系统自带的 /bin/sh，不引入额外依赖。
+        self.assertIn('"/bin/sh"', core)
+
+    def test_both_uninstallers_delegate_to_the_core(self):
+        uninstaller = (ROOT / 'platforms/macos/Uninstaller/Sources/LampyrisUninstaller/main.swift').read_text()
+        self.assertIn('import LampyrisInstallCore', uninstaller)
+        self.assertIn('UninstallerCore.run(', uninstaller)
+        self.assertNotIn('contentsOfDirectory', uninstaller)
+        package = (ROOT / 'platforms/macos/Uninstaller/Package.swift').read_text()
+        self.assertIn('LampyrisInstallCore', package)
+
+    def test_updater_window_and_cli_can_uninstall(self):
+        window = (ROOT / 'platforms/macos/Updater/Sources/WebsiteUpdateCheck/UpdateWindow.swift').read_text()
+        self.assertIn('卸载萤火虫…', window)
+        self.assertIn('UninstallRunner.run(', window)
+        self.assertIn('scheduleSelfRemoval', window)
+        cli = (ROOT / 'platforms/macos/Updater/Sources/WebsiteUpdateCheck/WebsiteUpdateCheck.swift').read_text()
+        self.assertIn('"--uninstall"', cli)
+        self.assertIn('隔离构建不允许卸载生产安装', cli)
+
+    def test_uninstall_docs_no_longer_require_the_dmg(self):
+        for name in ('README.md', 'packaging/macos/RELEASE-README.md', 'docs/更新发布流程.md'):
+            text = (ROOT / name).read_text()
+            self.assertIn('卸载', text, name)
+
+
 class ZipHelperContract(unittest.TestCase):
     def test_installer_readback_helper_ships_with_the_zip(self):
         prepare = (ROOT / 'packaging/macos/prepare.sh').read_text()

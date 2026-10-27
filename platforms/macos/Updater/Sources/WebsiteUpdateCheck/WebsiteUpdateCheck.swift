@@ -39,6 +39,11 @@ struct WebsiteUpdateCheck {
             await runDrill(mode: arguments[1])
             return
         }
+        if arguments.first == "--uninstall" {
+            // ADR-296：已安装的更新程序自带卸载，不再依赖用户保留 DMG。
+            runUninstall(purgeData: arguments.contains("--purge-data"))
+            return
+        }
         if arguments == ["--ui"] {
             let app = NSApplication.shared
             let delegate = UpdateAppDelegate()
@@ -85,6 +90,37 @@ struct WebsiteUpdateCheck {
 }
 
 extension WebsiteUpdateCheck {
+    /// 无界面卸载：DMG 卸载器与更新窗口共用同一份核心实现（ADR-296）。
+    static func runUninstall(purgeData: Bool) {
+        let info = Bundle.main.infoDictionary ?? [:]
+        guard let location = try? InstallLocation.resolve(info: info) else {
+            FileHandle.standardError.write(Data("卸载不可用：安装位置无法解析。\n".utf8))
+            exit(2)
+        }
+        // 隔离构建只能演练自己的私有根，绝不卸载真实安装。
+        guard !location.isolated, let applications = location.applications else {
+            FileHandle.standardError.write(Data("隔离构建不允许卸载生产安装。\n".utf8))
+            exit(2)
+        }
+        let paths = UninstallPaths(home: location.home, domain: location.domain,
+                                   applications: applications, support: location.support)
+        do {
+            let outcome = try UninstallRunner.run(mode: purgeData ? .removeAll : .keepData,
+                                                  paths: paths, selfBundle: Bundle.main.bundleURL)
+            print("已移除 \(outcome.removedCount) 项。")
+            for path in outcome.kept { print("已保留：\(path)") }
+            print(purgeData ? "已彻底清理配置与个人词库。" : "已保留配置与个人词库。")
+            if !outcome.pendingSelfRemoval.isEmpty {
+                _ = UninstallRunner.scheduleSelfRemoval(outcome.pendingSelfRemoval)
+                print("更新程序本体将在本进程退出后删除。")
+            }
+            print("请注销并重新登录，清空输入法菜单中的残留项。")
+        } catch {
+            FileHandle.standardError.write(Data("卸载未完成：\(error.localizedDescription)\n".utf8))
+            exit(1)
+        }
+    }
+
     /// Exercises the real feed/download/verify/install path without any UI, for isolated drill use only.
     static func runDrill(mode: String) async {
         let info = Bundle.main.infoDictionary ?? [:]

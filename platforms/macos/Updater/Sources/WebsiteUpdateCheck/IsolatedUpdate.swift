@@ -7,6 +7,8 @@ import LampyrisInstallCore
 /// dedicated test build, marked with `LampyrisTestOnly`, may point at an owned
 /// private root, and then only for the UUID-bound isolated input method identity.
 struct InstallLocation: Sendable {
+    /// 用户主目录（隔离构建时是私有根）：卸载路径从这里派生，窗口不再自己读 homeDirectoryForCurrentUser。
+    let home: URL
     let domain: URL
     let support: URL
     /// 更新程序自己的安装目录（ADR-295）；隔离构建为 nil，绝不碰真实的 ~/Applications。
@@ -25,7 +27,8 @@ struct InstallLocation: Sendable {
         throws -> InstallLocation
     {
         guard info["LampyrisTestOnly"] as? Bool == true else {
-            return InstallLocation(domain: home.appendingPathComponent("Library/Input Methods"),
+            return InstallLocation(home: home,
+                                   domain: home.appendingPathComponent("Library/Input Methods"),
                                    support: home.appendingPathComponent(
                                        "Library/Application Support/Lampyris/updates"),
                                    applications: home.appendingPathComponent("Applications"),
@@ -44,7 +47,8 @@ struct InstallLocation: Sendable {
         }
         let root = URL(fileURLWithPath: rootPath, isDirectory: true)
         let canonical = try validateRoot(root, uuid: uuid, home: home, temporary: temporary)
-        return InstallLocation(domain: canonical.appendingPathComponent("Input Methods"),
+        return InstallLocation(home: canonical,
+                               domain: canonical.appendingPathComponent("Input Methods"),
                                support: canonical.appendingPathComponent("updates"),
                                applications: nil, target: target, isolated: true)
     }

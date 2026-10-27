@@ -215,4 +215,90 @@ require(mark(installedHost, "Lampyris") == "host-newest",
 require(mark(applications.appendingPathComponent("LampyrisUpdateCheck.app"), "LampyrisUpdateCheck")
         == beforeUpdater, "receipt failure must restore the previous updater bundle")
 
-print("PASS install-core: replace/backup/rollback/self-update/receipt-rollback semantics")
+// 8) 卸载（ADR-296）：默认保留 config.toml 与个人词库，更新程序本体留到进程退出后删除
+func fixtureUninstall(named name: String) -> (UninstallPaths, URL, URL, URL, URL, URL) {
+    let home = root.appendingPathComponent(name)
+    let domain = home.appendingPathComponent("Library/Input Methods")
+    let applications = home.appendingPathComponent("Applications")
+    let support = home.appendingPathComponent("Library/Application Support/Lampyris")
+    for directory in [domain, applications, support] {
+        try! FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+    }
+    let host = makeBundle(at: domain, named: "Lampyris.app",
+                          identity: "cn.jokerhub.inputmethod.Lampyris", executable: "Lampyris",
+                          mark: "host")
+    try! FileManager.default.moveItem(at: host, to: domain.appendingPathComponent("Lampyris.app"))
+    let updater = makeBundle(at: applications, named: "LampyrisUpdateCheck.app",
+                             identity: "cn.jokerhub.Lampyris.WebsiteUpdateCheck",
+                             executable: "LampyrisUpdateCheck", mark: "updater")
+    try! FileManager.default.moveItem(at: updater,
+                                     to: applications.appendingPathComponent("LampyrisUpdateCheck.app"))
+    let legacy = makeBundle(at: applications, named: "Lampyris Update.app",
+                            identity: "cn.jokerhub.Lampyris.WebsiteUpdateCheck",
+                            executable: "LampyrisUpdateCheck", mark: "legacy")
+    try! FileManager.default.moveItem(at: legacy,
+                                     to: applications.appendingPathComponent("Lampyris Update.app"))
+    try! "mode = \"wubi\"\n".write(to: support.appendingPathComponent("config.toml"),
+                                    atomically: true, encoding: .utf8)
+    try! "dict\n".write(to: support.appendingPathComponent("user-dictionary.tsv"),
+                         atomically: true, encoding: .utf8)
+    try! FileManager.default.createDirectory(at: support.appendingPathComponent("updates/backup"),
+                                             withIntermediateDirectories: true)
+    return (UninstallPaths(home: home, domain: domain, applications: applications, support: support),
+            domain.appendingPathComponent("Lampyris.app"),
+            applications.appendingPathComponent("LampyrisUpdateCheck.app"),
+            applications.appendingPathComponent("Lampyris Update.app"),
+            support.appendingPathComponent("config.toml"),
+            support.appendingPathComponent("user-dictionary.tsv"))
+}
+
+let (keepPaths, keepHost, keepUpdater, keepLegacy, keepConfig, keepDictionary) =
+    fixtureUninstall(named: "uninstall-keep")
+let keepPlan = try! UninstallerCore.plan(mode: .keepData, paths: keepPaths, selfBundle: keepUpdater)
+require(keepPlan.pendingSelfRemoval == [keepUpdater.path], "running updater must be deferred, not deleted")
+require(keepPlan.kept.contains(keepConfig.path) && keepPlan.kept.contains(keepDictionary.path),
+        "keepData must keep config and dictionary")
+require(keepPlan.targets.contains(keepHost.path) && keepPlan.targets.contains(keepLegacy.path),
+        "host and legacy updater must be deleted")
+require(keepPlan.targets.contains(keepPaths.support.appendingPathComponent("updates").path),
+        "update backups must be removed")
+let keepOutcome = try! UninstallerCore.run(
+    mode: .keepData, paths: keepPaths, selfBundle: keepUpdater,
+    stopApps: { _ in }, switchToABCAndDisable: { _ in })
+require(!FileManager.default.fileExists(atPath: keepHost.path), "host bundle must be gone")
+require(!FileManager.default.fileExists(atPath: keepLegacy.path), "legacy updater must be gone")
+require(FileManager.default.fileExists(atPath: keepConfig.path), "config must survive keepData")
+require(FileManager.default.fileExists(atPath: keepDictionary.path), "dictionary must survive keepData")
+require(!FileManager.default.fileExists(atPath: keepPaths.support.appendingPathComponent("updates").path),
+        "update backups must be gone")
+require(FileManager.default.fileExists(atPath: keepUpdater.path),
+        "running updater bundle is deleted only after exit")
+require(keepOutcome.pendingSelfRemoval == [keepUpdater.path], "self-removal path must be reported")
+
+let script = UninstallerCore.selfRemovalScript(pid: 4242, paths: [keepUpdater.path])
+require(script.contains("kill -0 4242"), "script must wait for the caller pid")
+require(script.contains("rm -rf -- '" + keepUpdater.path + "'"), "script must quote the pending path")
+
+let (purgePaths, purgeHost, purgeUpdater, _, purgeConfig, _) =
+    fixtureUninstall(named: "uninstall-purge")
+_ = try! UninstallerCore.run(mode: .removeAll, paths: purgePaths, selfBundle: purgeUpdater,
+                             stopApps: { _ in }, switchToABCAndDisable: { _ in })
+require(!FileManager.default.fileExists(atPath: purgeHost.path), "removeAll must remove the host")
+require(!FileManager.default.fileExists(atPath: purgeConfig.path), "removeAll must remove config")
+require(!FileManager.default.fileExists(atPath: purgePaths.support.path),
+        "removeAll must remove the data directory")
+
+// 标识不符的输入法目录必须拒绝（避免误删别人的 app）
+let (wrongPaths, wrongHost, _, _, _, _) = fixtureUninstall(named: "uninstall-wrong")
+try! FileManager.default.removeItem(at: wrongHost)
+let foreign = makeBundle(at: wrongPaths.domain, named: "Lampyris.app", identity: "com.example.other",
+                         executable: "Lampyris", mark: "other")
+try! FileManager.default.moveItem(at: foreign, to: wrongPaths.domain.appendingPathComponent("Lampyris.app"))
+do {
+    _ = try UninstallerCore.plan(mode: .keepData, paths: wrongPaths)
+    require(false, "foreign bundle identity must be rejected")
+} catch let error as UninstallError {
+    if case .invalidApp = error {} else { require(false, "expected invalidApp, got \(error)") }
+}
+
+print("PASS install-core: replace/backup/rollback/self-update/receipt-rollback/uninstall semantics")
