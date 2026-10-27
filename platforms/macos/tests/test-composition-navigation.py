@@ -24,7 +24,7 @@ class CompositionNavigationTests(unittest.TestCase):
                 (["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
                   str(temporary / "main.swift"),
                   *[str(ROOT / "platforms/macos/Sources" / name) for name in
-                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift"]],
+                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 45),
                 ([str(temporary / "probe"), str(temporary)], 10),

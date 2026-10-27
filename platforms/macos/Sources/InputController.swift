@@ -320,12 +320,19 @@ final class LampyrisInputController: IMKInputController {
                 if diag { Self.hudDiag("first\(index)=\(NSStringFromRect(rect))") }
                 return rect
             })
-        else { return nil }
+        else {
+            if diag {
+                Self.hudDiag("drop: 两趟都拿不到有效光标 bundle=\(bundle) len=\(length) "
+                    + "sel=\(selection.location)")
+            }
+            return nil
+        }
         if diag {
             Self.hudDiag("pick bundle=\(bundle) len=\(length) sel=\(selection.location) "
                 + "level=\(windowLevel) rect=\(NSStringFromRect(rect))")
         }
         guard StateHUDLayout.isOnScreen(caret: rect, screens: NSScreen.screens.map(\.frame)) else {
+            if diag { Self.hudDiag("drop: 光标不在任何屏幕内 rect=\(NSStringFromRect(rect))") }
             return nil
         }
         // 桌面/图标视图会给出一个“伪光标”，它只落在桌面层窗口里（层号极大且为负），

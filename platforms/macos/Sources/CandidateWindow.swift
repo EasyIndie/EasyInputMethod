@@ -1176,23 +1176,18 @@ final class CandidateWindow: NSObject {
         layout(at: caret, within: screen?.visibleFrame ?? NSRect(x: 0, y: 0, width: 1920, height: 1080))
         panel.orderFront(nil)
     }
-    /// 候选窗与插入点行的垂直间距（报告216 §11.1 复验）。
-    ///
-    /// 上方 `aboveGap` 是贴着行顶留白；下方要大得多，因为客户端给的矩形是**字形框**而不是
-    /// 整行框，行底还要再加上下伸部（descender）与行距，否则面板会压住光标所在那一行。
-    static let aboveGap: CGFloat = 6
-    static let belowGap: CGFloat = 12
+    /// 与插入点行的间距（报告216 §11.1、ADR-301）：几何决策全部交给 `CaretPlacement`，
+    /// 这里只负责「优先向下、左对齐插入点」。
+    static let gap: CGFloat = 8
 
     func layout(at caret: NSRect, within area: NSRect) {
         learningAnchor = (caret, area)
         available = area.size
         if arrangedSize != available { arrange() }
-        let size = panel.frame.size
-        let x = max(area.minX, min(caret.minX, area.maxX - size.width))
-        let above = caret.maxY + Self.aboveGap
-        let below = caret.minY - size.height - Self.belowGap
-        let y = above + size.height <= area.maxY ? above : below
-        panel.setFrameOrigin(NSPoint(x: x, y: max(area.minY, min(y, area.maxY - size.height))))
+        let frame = CaretPlacement.frame(CaretPlacement.Request(
+            caret: caret, panelSize: panel.frame.size, visible: area,
+            preferBelow: true, align: .leading, gap: Self.gap))
+        panel.setFrameOrigin(frame.origin)
     }
     func hide() {
         themeTimer?.invalidate()
