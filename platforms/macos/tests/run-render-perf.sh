@@ -14,6 +14,7 @@ swiftc -O -warnings-as-errors -whole-module-optimization -target "$(uname -m)-ap
   "${ROOT}/platforms/macos/tests/render_perf.swift" \
   "${ROOT}/platforms/macos/Sources/ImeSession.swift" \
   "${ROOT}/platforms/macos/Sources/CandidateWindow.swift" \
+  "${ROOT}/platforms/macos/Sources/CaretPlacement.swift" \
   "${ROOT}/platforms/macos/Sources/Config.swift" \
   -Xlinker "${ROOT}/target/release/libime_ffi.a" -framework Cocoa -o "${WORK}/probe"
 "${WORK}/probe" "${ROOT}/data/generated" "${WORK}/config.toml" ${2:+"$2"}
