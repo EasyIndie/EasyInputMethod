@@ -272,11 +272,20 @@ final class LampyrisInputController: IMKInputController {
         // 只有会话仍在组合、候选窗会保留时才内联；宽度/模式/中英会 cancel 组合，
         // 这类切换必须走 HUD，否则候选窗随即关闭、用户什么都看不到。
         if let window = candidateWindow, window.isVisible, session?.isComposing == true {
+            if Self.hudDiagEnabled {
+                Self.hudDiag("feedback msg=\(message) branch=chip visible=true composing=true")
+            }
             window.updateStatus(candidateStatus())
             window.refreshLayout()
             return
         }
-        StateHUDController.shared.show(message, caret: hudCaretRect())
+        let caret = hudCaretRect()
+        if Self.hudDiagEnabled {
+            Self.hudDiag("feedback msg=\(message) branch=hud visible="
+                + "\(candidateWindow?.isVisible ?? false) composing=\(session?.isComposing ?? false) "
+                + "caret=\(caret.map(NSStringFromRect) ?? "nil")")
+        }
+        StateHUDController.shared.show(message, caret: caret)
     }
 
     /// HUD 用光标矩形：无客户端/取不到时返回 nil（不显示，不退鼠标）。
@@ -298,6 +307,11 @@ final class LampyrisInputController: IMKInputController {
         let length = max(0, client.length())
         let selection = client.selectedRange()
         let bundle = client.bundleIdentifier() ?? ""
+        if Self.hudDiagEnabled {
+            Self.hudDiag("hud client=\(bundle) frontmost="
+                + "\(NSWorkspace.shared.frontmostApplication?.bundleIdentifier ?? "nil") "
+                + "len=\(length) sel=\(selection.location)")
+        }
         let windowLevel = client.windowLevel()
         let diag = Self.hudDiagEnabled
         let startIndex = Self.caretLookupIndex(
@@ -376,7 +390,10 @@ final class LampyrisInputController: IMKInputController {
     /// 诊断开关（默认关闭）：`launchctl setenv LAMPYRIS_HUD_DIAG 1` 后重启宿主，
     /// 光标矩形解析过程写入 `$TMPDIR/lampyris-hud-diag.log`，用于真机定位 HUD 偏移。
     static var hudDiagEnabled: Bool {
-        ProcessInfo.processInfo.environment["LAMPYRIS_HUD_DIAG"] != nil
+        if ProcessInfo.processInfo.environment["LAMPYRIS_HUD_DIAG"] != nil { return true }
+        // 文件开关：宿主由 launchd 拉起，`launchctl setenv` 不总能传进来（报告219/220）。
+        let marker = ImePaths.supportDirectory()?.appendingPathComponent("hud-diag")
+        return marker.map { FileManager.default.fileExists(atPath: $0.path) } ?? false
     }
 
     static func hudDiag(_ message: String) {
