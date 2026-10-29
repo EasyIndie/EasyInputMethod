@@ -246,6 +246,19 @@ final class LampyrisInputController: IMKInputController {
     }
 
     @objc private func toggleEnglish(_ sender: Any?) {
+        // ADR-302：切到英文时，把已经输入的编码**原样上屏**，不要丢字。
+        // 用户按 Shift 的动机通常是「这段想打英文」，保留字母比清空更符合预期。
+        if let session, session.isComposing, !session.isEnglish,
+           let client = activeClient ?? (sender as? IMKTextInput)
+        {
+            let raw = session.buffer
+            if !raw.isEmpty {
+                clearMarked(client)
+                client.insertText(raw, replacementRange: NSRange(location: NSNotFound, length: 0))
+                if Self.hudDiagEnabled { Self.hudDiag("toggle-english committed raw=\(raw)") }
+            }
+            session.reset()
+        }
         session?.toggleEnglish()
         showStateFeedback(StateFeedback.language(session?.isEnglish ?? false))
         refreshAfterStateChange()
