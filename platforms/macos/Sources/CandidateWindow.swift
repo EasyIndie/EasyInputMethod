@@ -509,16 +509,18 @@ private final class LearningDetailsView: NSView {
 /// 候选窗顶部右侧的状态摘要；单字芯片，压缩到不抢候选与翻页的注意力。
 struct CandidateStatus: Equatable {
     var mode: String
-    var english: Bool
     var fullWidth: Bool
     var traditional: Bool
     var chinesePunctuation: Bool
 
     /// 两字状态 + 标点符号；学习区不在这里显示（下方学习区本身就是状态）。
+    ///
+    /// 不显示中英芯片（ADR-303）：候选窗只在组合态出现，而组合只可能在中文输入下产生
+    /// （英文模式每键立即上屏、不建缓冲区），所以这枚芯片永远是「中文」，纯占位置。
+    /// 中英切换的反馈由 HUD 承担，屏幕阅读器仍能听到「语言：中文/英文」。
     var chips: [(text: String, active: Bool)] {
         [
             (mode == "wubi" ? "五笔" : mode == "pinyin" ? "拼音" : "混输", mode != "mixed"),
-            (english ? "英文" : "中文", english),
             (fullWidth ? "全角" : "半角", fullWidth),
             (traditional ? "繁体" : "简体", traditional),
             (chinesePunctuation ? "。" : ".", !chinesePunctuation),
@@ -528,7 +530,6 @@ struct CandidateStatus: Equatable {
     func accessibilityLabel(for text: String) -> String {
         switch text {
         case "混输", "五笔", "拼音": return "输入模式：" + text
-        case "中文", "英文": return "语言：" + text
         case "全角", "半角": return "宽度：" + text
         case "简体", "繁体": return "字形：" + text
         case "。": return "标点：中文标点"

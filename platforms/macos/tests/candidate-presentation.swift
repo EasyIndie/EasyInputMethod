@@ -256,32 +256,32 @@ guard !window.accessiblePressForTesting(at: 0), !window.pagePressForTesting(1),
 else { fail("hidden stale actions") }
 LocalAcceptanceEvidence.record("candidate.stale", expected: "隐藏后旧选词和翻页动作失效", actual: ["selected": selected, "input": window.displayedInput, "page_visible": window.pageStateForTesting.visible])
 // 头部状态芯片：右对齐到翻页区左侧、与翻页按钮同中心线；学习区开启时追加“学”。
-window.updateStatus(CandidateStatus(mode: "mixed", english: true, fullWidth: true,
+window.updateStatus(CandidateStatus(mode: "mixed", fullWidth: true,
     traditional: false, chinesePunctuation: false))
 window.update(candidates: values, pageIndex: 0, pageCount: 30, input: "tr")
 window.layout(at: caret, within: NSRect(x: 0, y: 0, width: 1000, height: 400))
 let chipTexts = window.stateChipsForTesting
 let stripFrame = window.stateStripFrameForTesting
 let pagerFrame = window.pageFramesForTesting[0]
-guard chipTexts == ["混输", "英文", "全角", "简体", "."] else { fail("state chips " + chipTexts.joined()) }
+guard chipTexts == ["混输", "全角", "简体", "."] else { fail("state chips " + chipTexts.joined()) }
 let inputFrame = window.inputFrameForTesting
 // 翻页区为光学对齐整体上提 1.5pt：允许比芯片中心高 0–2pt，而不是要求严格相等。
 let pagerLift = pagerFrame.midY - stripFrame.midY
 guard stripFrame.maxX <= pagerFrame.minX, stripFrame.minX >= 16,
       pagerLift >= 0.5, pagerLift <= 2.5,
       abs(inputFrame.midY - stripFrame.midY) < 0.5 else { fail("header items not aligned") }
-window.updateStatus(CandidateStatus(mode: "pinyin", english: false, fullWidth: false,
+window.updateStatus(CandidateStatus(mode: "pinyin", fullWidth: false,
     traditional: true, chinesePunctuation: true))
-guard window.stateChipsForTesting == ["拼音", "中文", "半角", "繁体", "。"] else { fail("state chips value") }
+guard window.stateChipsForTesting == ["拼音", "半角", "繁体", "。"] else { fail("state chips value") }
 LocalAcceptanceEvidence.record("candidate.status",
-    expected: "两字状态芯片 5 枚（学习区不占芯片）右对齐到翻页左侧且同中心线",
+    expected: "两字状态芯片 4 枚（不含中英，学习区不占芯片）右对齐到翻页左侧且同中心线",
     actual: ["chips": chipTexts, "gap": pagerFrame.minX - stripFrame.maxX,
              "center_delta": abs(stripFrame.midY - pagerFrame.midY)])
 // Batched status/content refresh must retain the standalone layout contract.
 let batchedWindow = CandidateWindow()
 let referenceWindow = CandidateWindow()
 for (index, mode) in ["mixed", "wubi", "pinyin", "mixed"].enumerated() {
-    let status = CandidateStatus(mode: mode, english: index % 2 == 1,
+    let status = CandidateStatus(mode: mode,
         fullWidth: index % 2 == 0, traditional: index == 2,
         chinesePunctuation: index != 1)
     let selected = index % values.count
