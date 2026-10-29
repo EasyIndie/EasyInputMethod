@@ -109,6 +109,8 @@ make macos-clean-install APP=…/Lampyris.app ARGS=--input-source-removed
    会让人（和用户）误判成「换了没生效」；若该进程的 bundle 已被删除，它的安装会
    在替换宿主后中断（无 receipt、staging 残留）——报告214 §8。
 1. 输入源还原 ABC；`config.toml` SHA、宿主 PID、执行 SHA 回读。
+   **换包后必查「跑的是新二进制」**：`lsof -p "$(pgrep -x Lampyris)" | grep 'MacOS/Lampyris' | grep -c deleted`
+   必须为 0；否则进程还持有被替换掉的旧文件，HUD/候选的旧行为会被误当成新包的缺陷（报告220）。
 2. 自建文档/窗口关闭（不碰用户真实文档）。
 3. 证据放 `platforms/macos/build/<acceptance>/`（该目录不入库），报告写证据文件名。
 4. `make verify` 全绿 → 固定`dev`提交/推送；同批`dev → main` PR持续跟进至合并或关闭，不按验收轮次另开分支/PR；HANDOFF §1/§3/§4/§9同步（ADR-246/248）。
