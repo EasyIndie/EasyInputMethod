@@ -147,11 +147,11 @@ final class PreviewInput: NSTextView {
         let summary = values.map { "\(CandidateTextPresentation.display($0.text))[\($0.source.label)]" }.joined(separator: " · ")
         status?("\(session.variantErrorMessage.map { $0 + "   " } ?? "")词库：\(session.dictionaryError == IME_OK ? "正常" : "读写失败")   页：\(session.pageIndex + 1)/\(session.pageCount)   组合：\(session.buffer.isEmpty ? "（空）" : session.buffer)   候选：\(summary)")
         let status = CandidateStatus(
-            mode: session.mode, english: session.isEnglish, fullWidth: session.isFullWidth,
+            mode: session.mode, fullWidth: session.isFullWidth,
             traditional: session.isTraditional,
             chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")
         let caret = firstRect(forCharacterRange: NSRange(location: content.length, length: 0), actualRange: nil)
-        let feedback = (status.mode, status.english, status.fullWidth, status.traditional,
+        let feedback = (status.mode, session.isEnglish, status.fullWidth, status.traditional,
                         status.chinesePunctuation, ImeConfig.bool("candidate.show_wubi_learning"))
         if let last = lastFeedback, last != feedback {
             if session.isComposing {
@@ -161,7 +161,7 @@ final class PreviewInput: NSTextView {
                 if last.0 != feedback.0 {
                     message = StateFeedback.mode(status.mode)
                 } else if last.1 != feedback.1 {
-                    message = StateFeedback.language(status.english)
+                    message = StateFeedback.language(session.isEnglish)
                 } else if last.2 != feedback.2 {
                     message = StateFeedback.width(status.fullWidth)
                 } else if last.3 != feedback.3 {

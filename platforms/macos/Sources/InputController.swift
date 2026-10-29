@@ -424,7 +424,6 @@ final class LampyrisInputController: IMKInputController {
     private func candidateStatus() -> CandidateStatus {
         CandidateStatus(
             mode: session?.mode ?? ImeConfig.string("mode") ?? "mixed",
-            english: session?.isEnglish ?? false,
             fullWidth: session?.isFullWidth ?? false,
             traditional: session?.isTraditional ?? false,
             chinesePunctuation: (ImeConfig.string("input.punctuation") ?? "chinese") == "chinese")

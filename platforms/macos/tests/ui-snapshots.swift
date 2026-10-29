@@ -114,13 +114,13 @@ for (theme, appearance) in themes {
     guard ImeConfig.setString("appearance.theme", theme) else { exit(1) }
     let window = CandidateWindow()
     window.setAppearanceForTesting(NSAppearance(named: appearance)!)
-    window.updateStatus(CandidateStatus(mode: "mixed", english: false, fullWidth: false,
+    window.updateStatus(CandidateStatus(mode: "mixed", fullWidth: false,
         traditional: false, chinesePunctuation: true))
     window.update(candidates: short, input: "wq")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-single-\(theme)")
     reportCandidate(window, theme, "single")
-    window.updateStatus(CandidateStatus(mode: "mixed", english: true, fullWidth: true,
+    window.updateStatus(CandidateStatus(mode: "mixed", fullWidth: true,
         traditional: false, chinesePunctuation: false))
     window.update(candidates: short, pageIndex: 0, pageCount: 55, input: "wq")
     window.layout(at: caret, within: area)
@@ -128,13 +128,13 @@ for (theme, appearance) in themes {
     save(window.renderSnapshotForTesting(), "candidate-pager-\(theme)")
     window.simulateHover(at: 1, false)
     reportCandidate(window, theme, "pager")
-    window.updateStatus(CandidateStatus(mode: "wubi", english: false, fullWidth: false,
+    window.updateStatus(CandidateStatus(mode: "wubi", fullWidth: false,
         traditional: true, chinesePunctuation: true))
     window.update(candidates: longWords, pageIndex: 0, pageCount: 2, input: "kwwl")
     window.layout(at: caret, within: area)
     save(window.renderSnapshotForTesting(), "candidate-long-\(theme)")
     reportCandidate(window, theme, "long")
-    window.updateStatus(CandidateStatus(mode: "pinyin", english: true, fullWidth: false,
+    window.updateStatus(CandidateStatus(mode: "pinyin", fullWidth: false,
         traditional: false, chinesePunctuation: false))
     window.update(candidates: short, pageIndex: 0, pageCount: 55, input: "wq", hint: "键位提示：W 人 · Q 金")
     window.layout(at: caret, within: area)
