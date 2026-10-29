@@ -483,9 +483,10 @@ final class LampyrisInputController: IMKInputController {
         defer { refreshStateMenu() }
         if ImeConfig.string("mode") != next, !ImeConfig.setString("mode", next) { presentConfigError(); return }
         guard session?.mode != next else { return }
-        cancelClientComposition()
+        // ADR-302：组合中切模式保留编码，由核心按新模式重算候选（报告 222：这里原先会先取消组合）。
         session?.setMode(next)
         showStateFeedback(StateFeedback.mode(next))
+        refreshAfterStateChange()
     }
 
     // MARK: - 按键处理
@@ -506,13 +507,24 @@ final class LampyrisInputController: IMKInputController {
             session?.noteModifierChange(event)
             let other =
                 flags.contains(.control) || flags.contains(.option) || flags.contains(.command)
-            if let session,
-                session.shiftTransition(isDown: flags.contains(.shift), otherModifier: other)
-            {
-                if let client = activeClient ?? (sender as? IMKTextInput) { clearMarked(client) }
-                candidateWindow?.hide()
-                // 键盘单独 Shift 与菜单/快捷键走同一提示：候选窗已隐藏，这里应弹 HUD。
-                showStateFeedback(StateFeedback.language(session.isEnglish))
+            if let session {
+                // ADR-302：切到英文前把编码原样上屏。必须在 `shiftTransition` 之前取，
+                // 它内部会 `cancel()` 掉缓冲区（报告 222）。
+                let pendingRaw = session.isComposing && !session.isEnglish ? session.buffer : nil
+                let toggled = session.shiftTransition(
+                    isDown: flags.contains(.shift), otherModifier: other)
+                if toggled {
+                    let client = activeClient ?? (sender as? IMKTextInput)
+                    if let client { clearMarked(client) }
+                    if let raw = pendingRaw, !raw.isEmpty, let client {
+                        client.insertText(raw,
+                            replacementRange: NSRange(location: NSNotFound, length: 0))
+                        if Self.hudDiagEnabled { Self.hudDiag("shift committed raw=\(raw)") }
+                    }
+                    candidateWindow?.hide()
+                    // 键盘单独 Shift 与菜单/快捷键走同一提示：候选窗已隐藏，这里应弹 HUD。
+                    showStateFeedback(StateFeedback.language(session.isEnglish))
+                }
             }
             return false
         }
