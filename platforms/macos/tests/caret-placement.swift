@@ -81,4 +81,17 @@ let onSecondary = CaretPlacement.frame(request(NSRect(x: 1500, y: 400, width: 1,
 require(onSecondary.minX >= secondary.minX && onSecondary.maxX <= secondary.maxX,
         "uses the visible frame of the target screen: \(onSecondary)")
 
-print("PASS caret-placement: below-first, flip, glyph normalization, right-edge mirror, HUD centered-above, clamping, secondary screen")
+// 9) 回退链（报告219）：本轮解析 → 上次位置 → 鼠标，鼠标只在最后一档。
+let caretLine = NSRect(x: 100, y: 420, width: 2, height: 16)
+let previousLine = NSRect(x: 300, y: 300, width: 2, height: 16)
+let mouse = NSPoint(x: 900, y: 90)
+let first = CaretPlacement.fallback(current: caretLine, previous: previousLine, mouse: mouse)
+require(first.source == .resolved && first.rect == caretLine, "resolved caret wins: \(first)")
+let second = CaretPlacement.fallback(current: nil, previous: previousLine, mouse: mouse)
+require(second.source == .previous && second.rect == previousLine,
+        "falls back to the last known caret, not the mouse: \(second)")
+let third = CaretPlacement.fallback(current: nil, previous: nil, mouse: mouse)
+require(third.source == .mouse && third.rect.minX == mouse.x && third.rect.minY == mouse.y,
+        "uses the mouse only when nothing else is known: \(third)")
+
+print("PASS caret-placement: below-first, flip, glyph normalization, right-edge mirror, HUD centered-above, clamping, secondary screen, fallback order")

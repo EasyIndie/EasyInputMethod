@@ -719,6 +719,9 @@ final class LampyrisInputController: IMKInputController {
         return min(max(0, location), length - 1)
     }
 
+    /// 上一次成功解析到的插入点矩形：解析失败时优先复用它，而不是跳到鼠标（报告219）。
+    private var lastCaretRect: NSRect?
+
     /// 光标矩形（候选窗/HUD 定位）。
     ///
     /// 走与 HUD 同一套两趟解析（报告094/095）：`attributes` 在文末与长文本里常返回零矩形，
@@ -738,18 +741,19 @@ final class LampyrisInputController: IMKInputController {
                              actualRange: nil)
         }
         let screens = NSScreen.screens.map(\.frame)
+        // `allowsEmptyCaret: true`：空输入框（或 length 不含预编辑文本的客户端）里
+        // 插入点仍然有效，退成 false 会让解析器直接返回 nil、候选窗跟着鼠标跑（报告219）。
         let resolved = StateHUDCaretResolver.resolve(
-            startIndex: start, hasText: length > 0, allowsEmptyCaret: false,
+            startIndex: start, hasText: length > 0, allowsEmptyCaret: true,
             lineRect: lineRect, firstRect: firstRect)
-        if let resolved, StateHUDLayout.isOnScreen(caret: resolved, screens: screens) {
-            return resolved
+        let valid = resolved.flatMap { StateHUDLayout.isOnScreen(caret: $0, screens: screens) ? $0 : nil }
+        let choice = CaretPlacement.fallback(current: valid, previous: lastCaretRect,
+                                             mouse: NSEvent.mouseLocation)
+        if choice.source == .resolved { lastCaretRect = choice.rect }
+        if Self.hudDiagEnabled, choice.source != .resolved {
+            Self.hudDiag("caret fallback=\(choice.source.rawValue) selection=\(selection.location)/"
+                + "\(length) resolved=\(String(describing: resolved))")
         }
-        let mouse = NSEvent.mouseLocation
-        if Self.hudDiagEnabled {
-            let reason = resolved == nil ? "两趟解析都失败" : "解析结果不在任何屏幕内"
-            Self.hudDiag("caret fallback to mouse: \(reason) selection=\(selection.location)/"
-                + "\(length) rect=\(String(describing: resolved))")
-        }
-        return NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1)
+        return choice.rect
     }
 }
