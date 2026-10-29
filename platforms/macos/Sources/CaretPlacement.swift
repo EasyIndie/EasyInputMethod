@@ -100,4 +100,21 @@ enum CaretPlacement {
         let spaceAbove = visible.maxY - line.maxY
         return spaceBelow >= spaceAbove ? below : above
     }
+
+    /// 取不到光标时的回退顺序（报告219）：上一次成功的位置 → 鼠标。
+    ///
+    /// 鼠标几乎从来不是用户想要的位置：输入框有焦点、鼠标在别处时，跟着鼠标会把候选窗
+    /// 放到屏幕上完全无关的角落。因此只在「本轮解析失败且没有任何历史位置」时才用鼠标。
+    enum Fallback: String, Equatable {
+        case resolved
+        case previous
+        case mouse
+    }
+
+    static func fallback(current: NSRect?, previous: NSRect?,
+                         mouse: NSPoint) -> (rect: NSRect, source: Fallback) {
+        if let current { return (current, .resolved) }
+        if let previous { return (previous, .previous) }
+        return (NSRect(x: mouse.x, y: mouse.y, width: 1, height: 1), .mouse)
+    }
 }
