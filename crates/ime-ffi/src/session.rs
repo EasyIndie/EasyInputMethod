@@ -1535,7 +1535,9 @@ mod tests {
         // SAFETY：候选指针借自会话，测试期间保持有效。
         assert_eq!(unsafe { (*wubi.items).source }, SOURCE_CODE_TABLE);
 
-        // 拼音候选。
+        // 拼音候选。ADR-302 起切换方案会**保留**已输入的编码，所以先显式取消，
+        // 否则五笔的 "wq" 会被带进拼音缓冲（这正是新语义要的效果，本用例只是要干净的起点）。
+        assert_eq!(ime_session_key(s, 0x1b), IME_KEY_CONSUMED);
         let pinyin_mode = CString::new("pinyin").unwrap();
         assert_eq!(ime_session_set_mode(s, pinyin_mode.as_ptr()), IME_OK);
         for ch in "nihao".chars() {

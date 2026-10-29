@@ -206,9 +206,10 @@ impl Session {
         self.english = !self.english;
         self.cancel();
     }
+    /// 全角/半角只影响**之后**提交的标点与数字，与当前编码无关（ADR-302）：
+    /// 组合中的缓冲区与候选必须保留，否则用户按一次 ⌥F 就会丢掉正在打的字。
     pub fn toggle_width(&mut self) {
         self.width_override = Some(!self.width_override.unwrap_or(self.full_width));
-        self.cancel();
     }
 
     /// 当前是否全角（含临时切换覆盖）。
@@ -283,9 +284,20 @@ impl Session {
         self.mode
     }
 
+    /// 切换方案时保留已输入的编码，并按新模式重算候选（ADR-302）。
+    ///
+    /// 新模式若没有候选，缓冲区仍然保留（用户可以继续补码或按 Esc 取消），
+    /// 不再像旧行为那样把整段编码清掉。这里用 `recompute_with_commit(false)`：
+    /// 换模式不应触发「四码自动上屏」，那会让用户莫名其妙多出几个字。
     pub fn set_mode(&mut self, mode: InputMode) {
+        if self.mode == mode {
+            return;
+        }
         self.mode = mode;
-        self.cancel();
+        if self.composing {
+            self.page = 0;
+            let _ = self.recompute_with_commit(false);
+        }
     }
 
     pub fn cycle_mode(&mut self) -> InputMode {
@@ -1166,6 +1178,60 @@ mod tests {
         assert_eq!(InputMode::Mixed.next(), InputMode::WubiOnly);
         assert_eq!(InputMode::WubiOnly.next(), InputMode::PinyinOnly);
         assert_eq!(InputMode::PinyinOnly.next(), InputMode::Mixed);
+    }
+
+    #[test]
+    fn toggle_width_keeps_the_composition() {
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        assert_eq!(s.handle_key('w'), KeyOutcome::Consumed);
+        assert_eq!(s.handle_key('a'), KeyOutcome::Consumed);
+        let before = s.candidates().to_vec();
+        assert!(!before.is_empty());
+        s.toggle_width();
+        assert!(s.is_full_width(), "width toggles");
+        assert!(
+            s.composing(),
+            "width switch must keep the composition (ADR-302)"
+        );
+        assert_eq!(s.buffer(), "wa", "buffer survives the width switch");
+        assert_eq!(
+            s.candidates(),
+            before.as_slice(),
+            "candidates survive unchanged"
+        );
+    }
+
+    #[test]
+    fn set_mode_keeps_the_buffer_and_recomputes() {
+        let mut s = session_with_wubi(InputMode::WubiOnly);
+        assert_eq!(s.handle_key('a'), KeyOutcome::Consumed);
+        assert_eq!(s.buffer(), "a");
+        assert!(!s.candidates().is_empty());
+        s.set_mode(InputMode::Mixed);
+        assert_eq!(s.mode(), InputMode::Mixed);
+        assert!(
+            s.composing(),
+            "switching mode must keep the composition (ADR-302)"
+        );
+        assert_eq!(s.buffer(), "a", "buffer survives the mode switch");
+        assert!(
+            !s.candidates().is_empty(),
+            "candidates are recomputed for the new mode"
+        );
+    }
+
+    #[test]
+    fn set_mode_without_candidates_keeps_the_buffer_for_escape() {
+        // 新模式没有任何候选时也不能清空编码：用户还可以 Esc 或继续补码。
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_wubi_engine(Box::new(MockEngine));
+        assert_eq!(s.handle_key('c'), KeyOutcome::Consumed);
+        assert!(s.candidates().is_empty());
+        s.set_mode(InputMode::PinyinOnly);
+        assert_eq!(s.buffer(), "c");
+        assert!(s.candidates().is_empty());
+        assert_eq!(s.handle_key('\u{1b}'), KeyOutcome::Consumed);
+        assert!(!s.composing(), "escape still cancels");
     }
 
     #[test]
