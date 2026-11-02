@@ -8,6 +8,7 @@
 非人工工程验收见 [MVP自动验收状态](MVP自动验收状态.md)。
 
 MVP定义及发布验收见 [MVP产品验收标准](MVP产品验收标准.md)；首版后的路线见 [MVP后里程碑](MVP后里程碑.md)。
+- [MVP后执行计划](MVP后执行计划.md) — v1.0.0 之后的批次划分与执行顺序
 
 本地逐场景自动验收及证据边界见 [报告041](reviews/041-local-automated-acceptance.md)；可重复入口见 [任务卡](tasks/T-LOCAL-ACCEPTANCE.md)。
 
