@@ -45,7 +45,7 @@
 | 系统 / 架构 | macOS 27.0.1 / arm64，用户 `joker`，SSH 别名 `air` |
 | 仓库 | `~/Documents/EasyInputMethod`（先 `git switch dev && git pull --ff-only`） |
 | 已装包 | **1.0.0 / build 34**（宿主执行 `94394884…`），输入源在用，不要重装 |
-| 证据目录 | `platforms/macos/build/acceptance-air-1.0.0-b29|b33|b34/`（不入库） |
+| 证据目录 | **只剩 `platforms/macos/build/acceptance-air-1.0.0-b34/`**（候选 + IT-23 取证）；2026-11-03 按用户决定清理了约 8.4G 旧候选/源码副本 |
 
 ```sh
 cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git pull --ff-only
