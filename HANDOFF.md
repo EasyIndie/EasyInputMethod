@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-10-29 / pi（**air 本机**）。阶段：**1.0.0 / build 34 已装两台机器，四道 MVP 门禁已过 IT-14（锁定候选）/ IT-22（走查）/ IT-15（独立重建），只剩 IT-23 五工作日试用未起算**。
+- 更新：2026-11-04 / pi（**air 本机**）。阶段：**MVP 已发布——`v1.0.0`（build 34）tag/Release/Pages 全部完成**；两台机器都装同一个 1.0.0/build 34。下一批是 1.0.1（设置项一致性，ADR-305）。
 - 分支：`dev` 领先 `main` 一个文档提交（main = `27301f5`，PR #214 merge）；开放 PR **0 个**。`make verify` PASS、离线 **56 文件 / 303 例** PASS。
 - 版本：`Cargo.toml` = **1.0.0**、`packaging/build-number` = **34**（ADR-298：1.0.0 只对应一个二进制，门禁只在冻结包上做）。
 - 已装包：air 与 pro 均为 **1.0.0/build 34**，宿主执行同为 `9439488404a16414d9f2af7ba92d7ee0a735cbbbf27566a7f437b28ac58c7c25`（同一个二进制，`running_deleted=0`）。
@@ -27,16 +27,19 @@
 
 ## 3. 未决
 
-- **IT-23 五工作日试用未起算**：两台设备已固定在 1.0.0/build 34，从**下一个工作日**开始记第 1 天；期间**不换包**，只做文档/CI/审查。
+- **IT-23 已按用户裁定结案**（2026-11-04）：4 个不同日历日 + 同日多次复测合并，全程同一二进制与 PID 1595；口径写在报告 211 §1 与发布清单。
+- **1.0.1 待做（ADR-305 / 报告 225）**：设置页「全角 ASCII」改枚举并跟随 ⌥F，旧布尔配置只读兼容。
 - **更新器自更新**仍未在真机演示：本机两次跨版本升级分别由 0.1.14 旧更新程序与被删过 bundle 的旧进程执行，未走 selfUpdate 分支；1.0.0 正式发布时若由 build 34 更新程序执行升级才可闭环。
 - 旧账（与本批无关）：`install.sh` 新文案在 pro（macOS 13）复验；`AppleKeyboardUIMode=0` 导致设置面板 Tab 无效（系统默认，非缺陷）。
 - 已知行为（写进发布说明）：⌥M 切到无候选的模式时，候选窗隐藏、编码以预编辑文本留在输入框，用户按 Esc 取消或继续补码。
 
 ## 4. 下一步（按顺序）
 
-1. **IT-23 第 1 天（下一个工作日）**：`tools/macos-probe/walkthrough-evidence.sh --label it23-day1`，覆盖中英混排 / 较长输入 / 撤销 / 焦点切换 / 睡眠唤醒；逐日 `it23-day2…day5`，模板见 `docs/reviews/211-it23-five-day-template.md`。
-2. **五天全绿 → ADR-298 阶段 D**：`git tag -a v1.0.0` 打在**验收候选提交**（本轮 build 34 = `27301f5` 的候选 ZIP `a7f89ee1…`，宿主 `94394884…`）→ 触发 Release → 核对资产（ZIP/DMG/源码/更新程序 `.sha256` + appcast `sparkle:version`）→ dispatch Pages。
-3. 发布后：回读站点版本行、补写 `docs/releases/1.0.0.md`、宣布 MVP 完成。
+0. **已完成：v1.0.0 发布**（tag `v1.0.0` → `27301f5`，Release `41888742821`，Pages `41896813237`，站点 `v1.0.0 · 构建 34`）。
+1. ~~IT-23 第 1 天~~：`tools/macos-probe/walkthrough-evidence.sh --label it23-day1`，覆盖中英混排 / 较长输入 / 撤销 / 焦点切换 / 睡眠唤醒；逐日 `it23-day2…day5`，模板见 `docs/reviews/211-it23-five-day-template.md`。
+2. ~~五天全绿 → ADR-298 阶段 D~~：`git tag -a v1.0.0` 打在**验收候选提交**（本轮 build 34 = `27301f5` 的候选 ZIP `a7f89ee1…`，宿主 `94394884…`）→ 触发 Release → 核对资产（ZIP/DMG/源码/更新程序 `.sha256` + appcast `sparkle:version`）→ dispatch Pages。
+3. **已完成**：站点回读一致、`docs/releases/1.0.0.md` 已写。
+4. **下一批 = 1.0.1（批次 B2）**：ADR-305 设置项一致性 + 借此闭环「更新器自更新」（1.0.0 → 1.0.1 由 build 34 的更新程序执行）；之后 1.1.0 = 简码 + 位次上移（ADR-304）。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -79,6 +82,7 @@ make macos-offline-tests                    # air 上 56 文件 / 303 例全 PAS
 
 ## 9. 会话日志（最近）
 
+- 2026-11-04 / pi（air）：**MVP 正式发布 `v1.0.0`**。tag 打在验收候选提交 `27301f5`，Release `41888742821` 成功，ZIP `a7f89ee1…` 与候选**逐字节一致**，DMG `stapler`+`spctl` 通过，appcast `sparkle:version=34`，Pages `41896813237` 上线 `v1.0.0 · 构建 34`。IT-23 按用户裁定结案（4 个不同日历日 + 同日复测，同一二进制与 PID 1595）。`docs/releases/1.0.0.md` 记录资产与门禁。
 - 2026-10-29 / pi（air）：**候选窗去掉中英芯片（ADR-303 / 报告 223，build 34）**。代码确认候选窗只在组合态出现、英文模式 `handle_key` 每键即 `commit` 不建缓冲 ⇒ 芯片恒为「中文」，纯占位。`CandidateStatus.chips` 5 → 4、删 `english` 字段与「语言：」无障碍分支；`candidate-presentation`/`ui-snapshots`/`Preview` 同步。用户实机确认外观 OK。PR #214 → main `27301f5`，候选 ZIP `a7f89ee1…`、宿主 `94394884…`，两台设备已装。
 - 2026-10-29 / pi（air）：**组合态切换不再丢字（ADR-302 / 报告 221+222，build 32 → 33）**。核心 `toggle_width`/`set_mode` 去掉 `cancel()`（切模式保留缓冲并按新模式 `recompute_with_commit(false)` 重算、不自动上屏）；Shift 切英文改为把编码**原样上屏**。build 32 只通过 ⌥F——Shift 走 `flagsChanged`、⌥M 在 `applyInputMode` 里先 `cancelClientComposition()`，33 补上两条宿主路径后三条实机全 PASS。PR #212 `c9951fa` / #213 `55ffdc6`。
 - 2026-10-29 / pi（air）：**IT-22 限定范围通过、IT-15 独立重建通过（报告 218）**。IT-15 发现工具缺陷：`set -e` 下先 `cmp` 可执行文件（跨 SDK 必失败）导致**数据表比对从未执行**；改为数据表先比（4 张，不一致即失败）、可执行文件后比并解释 SDK 差异。复跑：身份链 PASS、数据 4/4 逐字节一致、空闲 0 外联。

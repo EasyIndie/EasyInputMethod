@@ -219,7 +219,17 @@ final class ImeSession {
     /// 当前是否全角（含 Shift+Space 临时切换）。
     var isFullWidth: Bool { ime_session_is_full_width(handle) == 1 }
     func toggleEnglish() { _ = ime_session_toggle_english(handle) }
-    func toggleWidth() { _ = ime_session_configure(handle); _ = ime_session_toggle_width(handle) }
+    /// 全/半角切换：翻转 `input.full_width` 并写回配置（默认 `alt+f`）。
+    ///
+    /// ADR-305：与标点/字形一致——写配置而不是只改会话覆盖，
+    /// 这样设置面板的同一行会随配置变化即时刷新，重启后偏好也保留。
+    @discardableResult
+    func toggleWidth() -> Bool {
+        let next = (ImeConfig.string("input.full_width") ?? "half") == "half" ? "full" : "half"
+        guard ImeConfig.setString("input.full_width", next) else { return false }
+        _ = ime_session_configure(handle)
+        return true
+    }
 
     /// 中英标点切换：翻转 `input.punctuation` 并写回配置（默认 `Ctrl+.`）。
     @discardableResult

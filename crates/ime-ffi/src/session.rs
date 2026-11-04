@@ -467,7 +467,7 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
         let cfg = crate::config::snapshot();
         let boolean = |key| cfg.get(key).and_then(|v| v.as_bool()).unwrap_or(false);
         s.session.set_input_options(
-            boolean("input.full_width"),
+            cfg.get("input.full_width").and_then(|v| v.as_str()) == Some("full"),
             cfg.get("input.punctuation").and_then(|v| v.as_str()) == Some("chinese"),
         );
         let changed = s.session.configure_engines(&ime_core::EngineOptions {

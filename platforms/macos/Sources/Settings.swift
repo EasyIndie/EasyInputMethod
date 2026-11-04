@@ -218,6 +218,18 @@ final class SettingRow: NSStackView, NSTextFieldDelegate {
         }
     }
 
+    /// 供自测断言：该行的输入控件形态（复选框 / 下拉 / 数字 / 文本 / 快捷键）。
+    var controlKindForTesting: String {
+        if checkbox != nil { return "checkbox" }
+        if popup != nil { return "popup" }
+        if segmented != nil { return "segmented" }
+        if stepper != nil { return "stepper" }
+        if textField != nil { return "text" }
+        if shortcutButton != nil { return "shortcut" }
+        return "unknown"
+    }
+    /// 供自测断言：下拉项标题（非下拉返回空）。
+    var popupTitlesForTesting: [String] { popup?.itemTitles ?? [] }
     var shortcutTitleForTesting: String? { shortcutButton?.title }
     var textValueForTesting: String? { textField?.stringValue }
     func commitTextForTesting(_ value: String) -> Bool {

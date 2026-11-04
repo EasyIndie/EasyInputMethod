@@ -222,11 +222,13 @@ pub static SCHEMA: &[OptionSpec] = &[
     },
     OptionSpec {
         key: "input.full_width",
-        value_type: ValueType::Bool,
-        enum_labels_zh: &[],
-        default: "false",
-        title_zh: "全角 ASCII",
-        doc_zh: "全角 ASCII（全/半角快捷键可临时切换）",
+        value_type: ValueType::Enum {
+            values: &["half", "full"],
+        },
+        enum_labels_zh: &["半角", "全角"],
+        default: "\"half\"",
+        title_zh: "字符宽度",
+        doc_zh: "选择半角或全角 ASCII；全/半角快捷键切换会保存此偏好（旧版布尔值读取时自动迁移）",
         scope: Scope::Engine,
     },
     OptionSpec {
