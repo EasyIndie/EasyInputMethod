@@ -687,6 +687,40 @@ mod tests {
     }
 
     #[test]
+    fn legacy_bool_width_value_migrates_without_rewriting_the_file() {
+        // ADR-305：旧版把字符宽度存成布尔；读取时映射成 half/full，且不改写用户文件。
+        for (legacy, expected) in [("false", "half"), ("true", "full")] {
+            let tmp = TempFile::new("legacy-width");
+            let text = format!("[input]\nfull_width = {legacy}\n",);
+            write(tmp.path(), &text);
+            let store = ConfigStore::load(tmp.path()).unwrap();
+            assert_eq!(
+                store.get("input.full_width").unwrap().as_str(),
+                Some(expected),
+                "legacy {legacy}"
+            );
+            assert_eq!(read(tmp.path()), text, "load must not rewrite {legacy}");
+        }
+    }
+
+    #[test]
+    fn width_enum_rejects_unknown_values() {
+        let tmp = TempFile::new("width-enum");
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        assert!(store.set("input.full_width", "\"wide\"").is_err());
+        assert_eq!(
+            store.get("input.full_width").unwrap().as_str(),
+            Some("half"),
+            "default stays half after a rejected write"
+        );
+        store.set("input.full_width", "\"full\"").unwrap();
+        assert_eq!(
+            store.get("input.full_width").unwrap().as_str(),
+            Some("full")
+        );
+    }
+
+    #[test]
     fn enum_and_bool_literals_accept_quoted_and_bare_forms() {
         let tmp = TempFile::new("literals");
         let store = ConfigStore::load(tmp.path()).unwrap();

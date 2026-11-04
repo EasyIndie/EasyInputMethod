@@ -17,6 +17,23 @@ guard panel.sectionCount == 5, panel.rowCount == options.count, options.count ==
 else { fail("schema/native toolbar/session availability") }
 panel.selectSectionForTesting(0)
 guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
+
+// ADR-305：宽度项从复选框改为下拉，与「标点风格」「输出字形」同构
+// （模式仍用分段控件，因为它只有三个互斥项且要一眼看全，属既有设计，不在本 ADR 范围）。
+for key in ["input.chinese_variant", "input.punctuation", "input.full_width"] {
+    guard let row = panel.rowForTesting(key) else { fail("missing row " + key) }
+    guard row.controlKindForTesting == "popup" else {
+        fail("state row is not a dropdown: \(key) -> \(row.controlKindForTesting)")
+    }
+}
+guard panel.rowForTesting("input.full_width")?.popupTitlesForTesting == ["半角", "全角"] else {
+    fail("width options")
+}
+LocalAcceptanceEvidence.record("settings.state_rows",
+    expected: "字形/标点/宽度三行为下拉（模式为分段控件），宽度选项为半角/全角",
+    actual: ["mode", "input.chinese_variant", "input.punctuation", "input.full_width"].map { key in
+        (panel.rowForTesting(key)?.controlKindForTesting ?? "missing") + ":" + (panel.rowForTesting(key)?.popupTitlesForTesting.joined(separator: "/") ?? "")
+    })
 panel.selectSectionForTesting(1)
 guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "appearance.theme", "candidate.show_wubi_learning"] else { fail("candidate design group order") }
 LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有22项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])

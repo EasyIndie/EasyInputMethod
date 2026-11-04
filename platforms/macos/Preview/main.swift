@@ -967,13 +967,13 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard ImeConfig.setToml("pinyin.fuzzy", "false"), ImeConfig.setString("mode", "mixed") else { exit(1) }
     view.configChanged("pinyin.fuzzy"); session.setMode("mixed"); view.clear()
     // Width preference changes replace only the temporary width override.
-    guard ImeConfig.setToml("input.full_width", "false") else { exit(1) }
+    guard ImeConfig.setToml("input.full_width", "\"half\"") else { exit(1) }
     session.prepare(); session.toggleWidth()
     guard session.isFullWidth else { exit(1) }
     session.prepare()
-    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "true") else { exit(1) }
+    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "\"full\"") else { exit(1) }
     session.prepare()
-    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "false") else { exit(1) }
+    guard session.isFullWidth, ImeConfig.setToml("input.full_width", "\"half\"") else { exit(1) }
     session.prepare()
     guard !session.isFullWidth else { exit(1) }
     view.clear(); keys("1"); check("1")

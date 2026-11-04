@@ -294,7 +294,22 @@ fn scalar_value(
     }
 }
 
+/// 历史布尔值到枚举取值的迁移表：`(键, false 对应值, true 对应值)`。
+///
+/// 只读兼容：旧版把这些项存成布尔，改成枚举后仍要能解析既有 `config.toml`，
+/// 且**不主动改写用户文件**——只有用户再次改动该项时才按新类型落盘（ADR-305）。
+static LEGACY_BOOL_ENUM: &[(&str, &str, &str)] = &[("input.full_width", "half", "full")];
+
 fn scalar_from_value(spec: &schema::OptionSpec, value: &Value) -> Result<ConfigValue, ConfigError> {
+    if let Some((_, false_value, true_value)) =
+        LEGACY_BOOL_ENUM.iter().find(|(key, _, _)| *key == spec.key)
+    {
+        if let Some(legacy) = value.as_bool() {
+            return Ok(ConfigValue::String(
+                if legacy { true_value } else { false_value }.to_string(),
+            ));
+        }
+    }
     match spec.value_type {
         ValueType::Bool => value
             .as_bool()
