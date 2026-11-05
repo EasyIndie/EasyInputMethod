@@ -124,6 +124,10 @@ do {
 }
 require(mark(staged, "Lampyris") == "host-newest", "rejected installs must leave the existing bundle alone")
 
+// 4c) 自更新绝不停掉正在运行的更新程序（ADR-306）：停进程会让事务死在「宿主已换、回执未写」的半路。
+require(DefaultInstallEnvironment.stopsRunningInstance(.production), "production install must stop the host")
+require(!DefaultInstallEnvironment.stopsRunningInstance(.updater), "self-update must never stop the updater")
+
 // 5) self-update installs the sibling updater bundle into ~/Applications and keeps a backup
 let staging = root.appendingPathComponent("payload-staging")
 try! FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
