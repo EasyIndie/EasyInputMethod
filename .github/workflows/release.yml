@@ -65,8 +65,11 @@ jobs:
         run: |
           set -euo pipefail
           sha="${{ steps.meta.outputs.sha }}"
-          run_id="$(gh run list -w macos-acceptance.yml --commit "${sha}" --status success \
-            --limit 1 --json databaseId -q '.[0].databaseId')"
+          # 只按提交过滤，再在 jq 里挑成功的：`--status success` 与 `--commit` 组合在
+          # 某些提交上会返回空（2026-11-05 的 v1.0.2 发布即因此失败），单独用任一条件都正常。
+          run_id="$(gh run list -w macos-acceptance.yml --commit "${sha}" --limit 20 \
+            --json databaseId,status,conclusion \
+            -q '[.[] | select(.status == "completed" and .conclusion == "success")][0].databaseId')"
           if [ -z "${run_id}" ] || [ "${run_id}" = "null" ]; then
             echo "未找到提交 ${sha} 的成功验收产物；请先让 main 的 macOS Acceptance 流程成功产出候选包。" >&2
             exit 1
