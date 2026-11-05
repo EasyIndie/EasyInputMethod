@@ -1,0 +1,82 @@
+{
+  "label": "1.0.2 / build 37（简码入表、位次上移之前的基线）",
+  "recordedAt": "2026-11-05T11:06:46Z",
+  "commit": "328d83e8715c9af604db210355b94d48ebb16821",
+  "version": "1.0.2",
+  "build": 37,
+  "samplesSHA256": "33197cfde564a6c696aeb6fe16e0a101e9b0dc09c7cc7a4e58749d68c9d7f94d",
+  "tableSHA256": "1b403b85a10f53c7061870c2b4a96de68023cdfdcc7fdd6c9605f5225c38deaa",
+  "engine": {
+    "binary": "ime-eval (ime-cli)",
+    "pageSize": 9,
+    "maxCandidates": 500
+  },
+  "metrics": {
+    "overall": {
+      "samples": 200,
+      "hits": 184,
+      "firstChoice": 171,
+      "meanPosition": 0.11,
+      "meanKeystrokes": 4.47,
+      "pages": 0
+    },
+    "categories": {
+      "jianma1": {
+        "samples": 25,
+        "hits": 14,
+        "firstChoice": 8,
+        "meanPosition": 1.14,
+        "meanKeystrokes": 2.24,
+        "pages": 0
+      },
+      "jianma2": {
+        "samples": 30,
+        "hits": 30,
+        "firstChoice": 28,
+        "meanPosition": 0.07,
+        "meanKeystrokes": 3.07,
+        "pages": 0
+      },
+      "sentence": {
+        "samples": 17,
+        "hits": 12,
+        "firstChoice": 12,
+        "meanPosition": 0.0,
+        "meanKeystrokes": 11.0,
+        "pages": 0
+      },
+      "single": {
+        "samples": 50,
+        "hits": 50,
+        "firstChoice": 50,
+        "meanPosition": 0.0,
+        "meanKeystrokes": 4.46,
+        "pages": 0
+      },
+      "word2": {
+        "samples": 25,
+        "hits": 25,
+        "firstChoice": 25,
+        "meanPosition": 0.0,
+        "meanKeystrokes": 4.16,
+        "pages": 0
+      },
+      "word2v": {
+        "samples": 30,
+        "hits": 30,
+        "firstChoice": 28,
+        "meanPosition": 0.07,
+        "meanKeystrokes": 4.4,
+        "pages": 0
+      },
+      "word34": {
+        "samples": 23,
+        "hits": 23,
+        "firstChoice": 20,
+        "meanPosition": 0.17,
+        "meanKeystrokes": 4.35,
+        "pages": 0
+      }
+    }
+  }
+}

@@ -94,8 +94,16 @@ bootstrap: ## 安装开发依赖（版本固定，见 MVP 审计 SEC-07）
 	cargo install cargo-deny --version 0.20.2 --locked
 	cargo install cargo-fuzz --version 0.13.2 --locked
 
+EVAL_SAMPLES ?= tools/eval/samples.tsv
+EVAL_TABLE ?= data/generated/wubi86-core.tsv
+EVAL_JSON ?= tools/eval/last-run.json
+
 verify-no-network: ## 静态扫描已知网络依赖/符号（不代替最终包动态外联核验）
 	./scripts/verify-no-network.sh
+
+eval-candidates: ## 候选排序评测（样本集对比；写 tools/eval/last-run.json）
+	$(CLEAN) $(CARGO) run -q -p ime-cli --bin ime-eval -- \
+		--samples $(EVAL_SAMPLES) --table $(EVAL_TABLE) --json $(EVAL_JSON)
 
 usage-report: ## 汇总用量/成本（纯本地，不花 token）
 	./scripts/usage-report.sh
