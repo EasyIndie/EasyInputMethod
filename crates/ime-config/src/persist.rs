@@ -96,6 +96,7 @@ pub(crate) fn set_value(
 ) -> Result<(), ConfigError> {
     let mut item = toml_item(value);
     preserve_value_decor(doc, key, &mut item);
+    refresh_migrated_comment(key, &mut item);
     match section_of(key) {
         None => {
             doc.as_table_mut().insert(key, item);
@@ -123,6 +124,26 @@ fn preserve_value_decor(doc: &DocumentMut, key: &str, new_item: &mut Item) {
     if let Some(suffix) = old_value.decor().suffix() {
         decor.set_suffix(suffix.clone());
     }
+}
+
+/// 迁移过的键：写入时用当前 schema 的说明刷新行尾注释。
+///
+/// 旧版把 `input.full_width` 存成布尔，注释写的是「快捷键可临时切换」；ADR-305 之后语义变成
+/// 「切换会保存」，若不刷新，升级用户会长期看到与新行为矛盾的说明。
+fn refresh_migrated_comment(key: &str, item: &mut Item) {
+    if !LEGACY_BOOL_ENUM
+        .iter()
+        .any(|(migrated, _, _)| *migrated == key)
+    {
+        return;
+    }
+    let Some(spec) = schema::SCHEMA.iter().find(|spec| spec.key == key) else {
+        return;
+    };
+    let Some(value) = item.as_value_mut() else {
+        return;
+    };
+    value.decor_mut().set_suffix(format!("  # {}", spec.doc_zh));
 }
 
 fn find_item<'a>(doc: &'a DocumentMut, key: &str) -> Option<&'a Item> {

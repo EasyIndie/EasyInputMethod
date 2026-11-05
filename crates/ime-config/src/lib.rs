@@ -704,6 +704,25 @@ mod tests {
     }
 
     #[test]
+    fn legacy_width_write_refreshes_the_stale_comment() {
+        let tmp = TempFile::new("legacy-width-comment");
+        let text = "[input]\nfull_width = false  # 全角 ASCII（全/半角快捷键可临时切换）\n";
+        write(tmp.path(), text);
+        let store = ConfigStore::load(tmp.path()).unwrap();
+        store.set("input.full_width", "\"full\"").unwrap();
+        let updated = read(tmp.path());
+        assert!(updated.contains("full_width = \"full\""), "{updated}");
+        assert!(
+            updated.contains("# 选择半角或全角 ASCII"),
+            "comment not refreshed: {updated}"
+        );
+        assert!(
+            !updated.contains("临时切换"),
+            "stale comment kept: {updated}"
+        );
+    }
+
+    #[test]
     fn width_enum_rejects_unknown_values() {
         let tmp = TempFile::new("width-enum");
         let store = ConfigStore::load(tmp.path()).unwrap();
