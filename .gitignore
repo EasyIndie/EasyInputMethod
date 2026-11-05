@@ -43,3 +43,4 @@ docs/experiments/runs/sessions/
 # Python 回归运行缓存
 __pycache__/
 *.py[cod]
+tools/eval/last-run.json

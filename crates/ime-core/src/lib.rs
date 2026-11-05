@@ -330,6 +330,11 @@ impl Session {
     }
 
     /// Merge local user entries and rank within each engine source.
+    ///
+    /// 五笔侧的学习结果**不再改权重刻度**，而是把学过的候选按固定步数上移（ADR-304 P1）：
+    /// 学过至少一次上移 1 位、至少 4 次上移 2 位，**永不越过首位**。
+    /// 这样"用过一次"不会推翻静态词频排序（老做法 `weight + learned.min(32)` 会让
+    /// 一个生僻词永久压住高频词），也修掉了单字完全不吃学习的问题。
     pub fn personalize(&mut self, extra: Vec<Candidate>, score: impl Fn(&Candidate) -> u32) {
         self.candidates.extend(extra);
         let mut scored: Vec<_> = self
@@ -340,18 +345,13 @@ impl Session {
                 let frequency = if c.source == CandidateSource::Pinyin {
                     i64::from(learned)
                 } else {
-                    let bonus = if c.text.chars().count() > 1 {
-                        learned.min(32)
-                    } else {
-                        0
-                    };
-                    i64::from(c.weight) + i64::from(bonus)
+                    i64::from(c.weight)
                 };
-                (c, frequency)
+                (c, frequency, learned)
             })
             .collect();
         let rank = |c: &Candidate| usize::from(c.source == CandidateSource::Pinyin);
-        scored.sort_by(|(a, a_score), (b, b_score)| {
+        scored.sort_by(|(a, a_score, _), (b, b_score, _)| {
             rank(a)
                 .cmp(&rank(b))
                 .then_with(|| a.is_prefix.cmp(&b.is_prefix))
@@ -361,13 +361,56 @@ impl Session {
                 .then_with(|| a.text.cmp(&b.text))
         });
         let mut seen = std::collections::HashSet::new();
-        self.candidates = scored
+        let mut scored: Vec<_> = scored
             .into_iter()
-            .map(|(c, _)| c)
-            .filter(|c| seen.insert(c.text.clone()))
+            .filter(|(c, _, _)| seen.insert(c.text.clone()))
             .collect();
+        let table_count = scored
+            .iter()
+            .take_while(|(c, _, _)| c.source != CandidateSource::Pinyin)
+            .count();
+        Self::promote_learned(&mut scored, table_count);
+        self.candidates = scored.into_iter().map(|(c, _, _)| c).collect();
         self.arrange_mixed_fallback();
         self.page = self.page.min(self.page_count().saturating_sub(1));
+    }
+
+    /// 有界位次上移：只在码表候选段内、按学习次数走固定步长，绝不越过首位。
+    ///
+    /// 单字与多字同一规则（老实现给单字 `bonus = 0`，等于单字永远学不动）。
+    fn promote_learned(scored: &mut Vec<(Candidate, i64, u32)>, table_count: usize) {
+        if table_count < 2 {
+            return;
+        }
+        // 精确/补全/模糊三类各自成块（排序键里已保证连续），上移不得跨块：
+        // 否则"学过"的补全候选会压到精确命中前面，破坏"精确优先"的硬约束。
+        let class = |c: &Candidate| (c.is_prefix, c.is_fuzzy);
+        let mut index = 0;
+        while index < table_count {
+            let learned = scored[index].2;
+            let steps = match learned {
+                0 => 0,
+                1..=3 => 1,
+                _ => 2,
+            };
+            if steps == 0 {
+                index += 1;
+                continue;
+            }
+            let key = class(&scored[index].0);
+            let mut floor = index;
+            while floor > 0 && class(&scored[floor - 1].0) == key {
+                floor -= 1;
+            }
+            // 首选位保护：学过的候选最多升到第 2 位，永不把当前首选挤下去（ADR-304）。
+            let protected = usize::from(index > 0);
+            let target = index.saturating_sub(steps).max(floor).max(protected);
+            if target < index {
+                let entry = scored.remove(index);
+                scored.insert(target, entry);
+            }
+            index += 1;
+        }
     }
 
     fn arrange_mixed_fallback(&mut self) {
@@ -745,19 +788,37 @@ mod tests {
         let mut fuzzy = pin("模糊", 1000);
         fuzzy.is_fuzzy = true;
         s.personalize(vec![pin("拼一", 20), pin("拼二", 10), fuzzy], |_| 0);
-        assert_eq!(s.candidates()[0].text, "词00");
-        assert_eq!(s.candidates()[7].text, "拼一");
-        assert_eq!(s.candidates()[8].text, "拼二");
-        assert_eq!(s.candidates.len(), 23);
-        s.personalize(vec![], |c| if c.text == "词19" { 100 } else { 0 });
-        assert_eq!(s.candidates()[0].text, "词19");
-        assert_eq!(s.candidates()[7].text, "拼一");
+        let texts = |s: &Session| -> Vec<String> {
+            s.candidates().iter().map(|c| c.text.clone()).collect()
+        };
+        assert_eq!(texts(&s)[0], "词00");
+        assert_eq!(texts(&s)[7], "拼一");
+        assert_eq!(texts(&s)[8], "拼二");
+
+        // 首选位保护：学了多少次都不能把当前首选挤下去（ADR-304）。
+        s.personalize(vec![], |c| if c.text == "词01" { 100 } else { 0 });
+        assert_eq!(texts(&s)[0], "词00");
+        assert_eq!(texts(&s)[1], "词01");
+        assert_eq!(texts(&s)[7], "拼一");
+
+        // 第三位学过一次也停在第二位，兜底位置不变。
+        s.personalize(vec![], |c| if c.text == "词02" { 100 } else { 0 });
+        assert_eq!(texts(&s)[0], "词00");
+        assert_eq!(texts(&s)[1], "词02");
+        assert_eq!(texts(&s)[2], "词01");
+        assert_eq!(texts(&s)[7], "拼一");
+
+        // 翻页与原顺序无关；缩小每页后兜底仍在前两页之内。
         s.page(1);
-        assert_eq!(s.candidates()[0].text, "词06");
+        assert_eq!(
+            texts(&s)[0],
+            "词07",
+            "第二页从第 10 位开始（前两位已被学习改写）"
+        );
+        s.page(-1);
         s.set_page_size(3);
-        assert_eq!(s.candidates()[0].text, "词19");
-        assert_eq!(s.candidates()[1].text, "拼一");
-        assert_eq!(s.candidates()[2].text, "拼二");
+        assert_eq!(texts(&s)[0], "词00");
+        assert_eq!(texts(&s)[1], "拼一", "缩小每页后兜底必须仍然可见");
         assert_eq!(s.handle_key('2'), KeyOutcome::Committed("拼一".into()));
     }
 
@@ -1013,7 +1074,9 @@ mod tests {
     }
 
     #[test]
-    fn wubi_single_order_ignores_learning_but_phrases_have_bounded_bonus() {
+    fn wubi_learning_promotes_singles_and_phrases_by_bounded_steps() {
+        // ADR-304 P1：单字与多字同一规则——学过至少一次上移 1 位、至少 4 次上移 2 位，
+        // 且任何候选都不得挤掉当前首选（"首选位保护"）。
         let mut s = Session::new(InputMode::WubiOnly);
         let candidates = vec![
             Candidate::new("甲", "a", 100, CandidateSource::CodeTable),
@@ -1021,11 +1084,20 @@ mod tests {
             Candidate::new("常用词", "a", 80, CandidateSource::Phrase),
             Candidate::new("冷门词", "a", 1, CandidateSource::Phrase),
         ];
-        s.personalize(candidates, |c| if c.text == "甲" { 0 } else { u32::MAX });
+        s.personalize(candidates, |c| match c.text.as_str() {
+            "甲" => 0,
+            "乙" => 1,     // 一次：上移 1 位，但首选位受保护
+            "常用词" => 4, // 四次：上移 2 位
+            _ => 9,        // 冷门词：也是上移 2 位
+        });
         let texts: Vec<_> = s.candidates().iter().map(|c| c.text.as_str()).collect();
-        assert_eq!(texts, ["常用词", "甲", "乙", "冷门词"]);
-        s.personalize(vec![], |_| 0);
-        assert_eq!(s.candidates()[0].text, "甲");
+        assert_eq!(texts, ["甲", "冷门词", "常用词", "乙"]);
+
+        // 单字确实会动（老实现 bonus 恒为 0，单字永远学不动）。
+        s.personalize(vec![], |c| u32::from(c.text == "乙") * 4);
+        let texts: Vec<_> = s.candidates().iter().map(|c| c.text.as_str()).collect();
+        assert_eq!(texts[0], "甲", "首选位保护：学多少次都不越首位");
+        assert_eq!(texts[1], "乙", "学过的单字上移到第二位");
     }
 
     #[test]
