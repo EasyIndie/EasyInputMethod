@@ -2,6 +2,16 @@ import Foundation
 
 /// Developer ID candidate validation and exact executable stop for the selected target.
 public enum DefaultInstallEnvironment {
+    /// 替换前是否需要停掉正在运行的同类实例。
+    ///
+    /// **更新程序自更新时不能停**（ADR-306）：执行自更新的进程正是它自己，
+    /// `stopHost` 会把当前进程 SIGTERM 掉，安装事务停在「宿主已换、回执未写」的半路，
+    /// 留下 staging 与缺失的 receipt。运行中的 bundle 允许被 rename 替换（旧 inode 继续服务），
+    /// 下次启动自然用新版，这正是 ADR-295 说的「运行中的实例保持不动」。
+    public static func stopsRunningInstance(_ target: InstallTarget) -> Bool {
+        target.identity != InstallTarget.updater.identity
+    }
+
     public static func make(target: InstallTarget = .production) -> InstallEnvironment {
         InstallEnvironment(validateCandidate: { app in
             let executable = app.appendingPathComponent(target.executablePath)
@@ -27,6 +37,7 @@ public enum DefaultInstallEnvironment {
             try require("/usr/bin/xcrun", ["stapler", "validate", app.path])
             try require("/usr/sbin/spctl", ["--assess", "--type", "execute", app.path])
         }, stopHost: { executable in
+            guard stopsRunningInstance(target) else { return }
             let holders = run("/usr/sbin/lsof", ["-t", executable.path])
             for value in holders.split(whereSeparator: { $0.isWhitespace }) {
                 guard let pid = Int32(value) else { continue }
