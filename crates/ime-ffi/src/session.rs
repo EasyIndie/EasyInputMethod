@@ -1218,8 +1218,15 @@ mod tests {
 
     #[test]
     fn rare_single_choice_keeps_rank_after_backspace_paging_and_store_reload() {
-        let root =
-            std::env::temp_dir().join(format!("lampyris-fixed-single-{}", std::process::id()));
+        // 目录名带时间戳：上一次失败可能留下同 pid 的残留，导致学习次数不是从 0 开始。
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let root = std::env::temp_dir().join(format!(
+            "lampyris-fixed-single-{}-{stamp}",
+            std::process::id()
+        ));
         std::fs::create_dir_all(&root).unwrap();
         let path = root.join("user.tsv");
         let mut table = Table::new();
@@ -1227,8 +1234,10 @@ mod tests {
             table.insert("ab", text, weight);
         }
         table.finalize();
+        let mut selections = 0u32;
         for mode in [InputMode::WubiOnly, InputMode::Mixed] {
-            for _ in 0..3 {
+            for round in 0..3 {
+                let _ = round;
                 let mut s = ImeSession::from_engines(
                     mode,
                     Some(Box::new(CodeTableEngine::new(table.clone(), 4))),
@@ -1240,14 +1249,78 @@ mod tests {
                     ime_session_key(&mut *s, key as u32);
                     assert_eq!(s.session.candidates()[0].text, "甲");
                 }
-                ime_session_page(&mut *s, 1);
-                assert_eq!(s.session.candidates()[0].text, "龘");
-                assert_eq!(ime_session_key(&mut *s, '1' as u32), IME_KEY_COMMITTED);
+                // ADR-304 P1：学习结果按固定步数上移（≥1 次升 1 位、≥4 次升 2 位，
+                // 首选位保护），所以它的位置随磁盘里的学习次数变化，而不是靠 weight+bonus 冲顶。
+                let count = s
+                    .dictionary
+                    .as_ref()
+                    .unwrap()
+                    .entries()
+                    .get(&("wubi".into(), "ab".into(), "龘".into()))
+                    .copied()
+                    .unwrap_or(0);
+                let steps = match count {
+                    0 => 0,
+                    1..=3 => 1,
+                    _ => 2,
+                };
+                let expected = 3usize.saturating_sub(steps).max(1);
+                assert_eq!(count, selections, "每次选择各学一次");
+                if expected >= 3 {
+                    ime_session_page(&mut *s, 1);
+                    assert_eq!(s.session.candidates()[0].text, "龘");
+                    assert_eq!(ime_session_key(&mut *s, '1' as u32), IME_KEY_COMMITTED);
+                } else {
+                    assert_eq!(s.session.candidates()[expected].text, "龘");
+                    assert_eq!(
+                        ime_session_key(&mut *s, (b'1' + expected as u8) as u32),
+                        IME_KEY_COMMITTED
+                    );
+                }
                 assert_eq!(s.session.committed(), "龘");
+                selections += 1;
             }
         }
         let store = ime_dict::Store::load(&path).unwrap();
         assert!(store.entries()[&("wubi".into(), "ab".into(), "龘".into())] > 0);
+
+        // ADR-304 P1：学习记录落盘后重新加载，生僻单字应按"有界位次上移"升一位，
+        // 从第二页升进首页第三格（老实现靠 weight+bonus，龘 权重 1 永远升不动）。
+        let mut reloaded = ImeSession::from_engines(
+            InputMode::WubiOnly,
+            Some(Box::new(CodeTableEngine::new(table, 4))),
+            None,
+        );
+        reloaded.dictionary = Some(store);
+        ime_session_set_page_size(&mut *reloaded, 3);
+        for key in ['a', 'b'] {
+            ime_session_key(&mut *reloaded, key as u32);
+        }
+        eprintln!(
+            "DEBUG counts={:?}",
+            reloaded.dictionary.as_ref().map(|d| d.entries().len())
+        );
+        eprintln!(
+            "DEBUG order={:?}",
+            reloaded
+                .session
+                .candidates()
+                .iter()
+                .map(|c| (c.text.clone(), c.code.clone()))
+                .collect::<Vec<_>>()
+        );
+        assert_eq!(reloaded.session.candidates()[0].text, "甲", "首选位保护");
+        assert_eq!(
+            reloaded.session.candidates()[1].text,
+            "龘",
+            "学过 6 次：上移 2 位，但停在第二位"
+        );
+        assert_eq!(
+            ime_session_key(&mut *reloaded, '2' as u32),
+            IME_KEY_COMMITTED
+        );
+        assert_eq!(reloaded.session.committed(), "龘");
+        drop(reloaded);
         std::fs::remove_dir_all(root).unwrap();
     }
 

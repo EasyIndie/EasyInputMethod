@@ -535,6 +535,27 @@ mod tests {
     }
 
     #[test]
+    fn level1_code_is_an_exact_hit_and_never_auto_commits() {
+        // ADR-304 P0：一级简码以 1 字母入表后必须是「精确命中」——
+        // 排在所有同前缀全码候选之前，且**不**触发自动上屏（自动上屏仍要求 4 码）。
+        let mut table = Table::new();
+        table.insert("g", "一", 217_830);
+        table.insert("gggg", "王", 19_704);
+        table.insert("gggg", "一", 400);
+        table.insert("ggll", "五", 3_000);
+        table.finalize();
+        let engine = CodeTableEngine::new(table, 4);
+        let result = engine.convert("g", 9);
+        assert_eq!(result.candidates[0].text, "一");
+        assert!(!result.candidates[0].is_prefix, "简码必须是精确命中");
+        assert!(result.candidates[1].is_prefix, "其余仍是补全候选");
+        assert_eq!(result.should_commit, None, "1 码不得自动上屏");
+
+        // 四码唯一仍然自动上屏，简码不改变这条既有行为。
+        assert_eq!(engine.convert("ggll", 9).should_commit, Some("五".into()));
+    }
+
+    #[test]
     fn bounded_top_k_preserves_best_candidates_for_prefix_and_wildcard() {
         let mut table = Table::new();
         for i in 0..1000 {

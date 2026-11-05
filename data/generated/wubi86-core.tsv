@@ -2,7 +2,9 @@
 # 由 crates/wubi-encoder/examples/generate_core.rs 生成（T-M1-09）。
 # 裁剪规则：单字全量保留；前 20000 基础词组+D15训练词+D16组合词；已有频次不变，新组合权重1。
 # 单字来源：WindInput（MIT，D3）；词组/词频：jieba（MIT，D10）及自编组合词（CC-BY-SA-4.0，D16）。
+# 简码：一级 25 条（D17，自建清单 CC-BY-SA-4.0，ADR-304），权重取该字在全码表里的权重。
 # code	text	weight
+a	工	3771
 aaaa	工	3771
 aaaa	恭恭敬敬	427
 aaaa	㠭	1
@@ -2724,6 +2726,7 @@ ayym	荆州市	3082
 ayyn	荒谬	411
 ayys	共享文档	1
 ayyv	荒唐	448
+b	了	883634
 baag	陈艺戈	256
 baat	䧖	1
 badw	陿	1
@@ -3661,6 +3664,7 @@ byxg	防线	844
 byyj	防腐剂	330
 byym	随州市	1304
 byyw	防腐	297
+c	以	136106
 caaf	巴基斯坦	1238
 caaf	巴勒斯坦	898
 caah	駴	1
@@ -4517,6 +4521,7 @@ cyxy	𫠊	1
 cyy	馼	1
 cyy	𫘜	1
 cyyi	㕚	1
+d	在	727915
 daal	礷	1
 daat	碊	1
 dadi	石英砂	311
@@ -6802,6 +6807,7 @@ dyym	太庙	3798
 dyys	矿床	883
 dyyv	太康	1129
 dyyv	太郎	295
+e	有	423765
 eaat	䏼	1
 eadt	臓	1
 eadt	臟	1
@@ -7786,6 +7792,7 @@ eyxf	膟	1
 eyxy	臃	61
 eyxy	胘	1
 eyyp	﨤	1
+f	地	160541
 faaq	示范区	2096
 faaw	载荷	430
 fabb	老莱子	257
@@ -10367,6 +10374,7 @@ fyy	坟	1159
 fyym	南京市	2046
 fyym	二郎庙	266
 fyyv	戴证良	256
+g	一	217830
 gaaa	形式	15188
 gaaa	开工	874
 gaaa	型式	433
@@ -12950,6 +12958,7 @@ gyxf	㻭	1
 gyxy	玹	301
 gyy	玟	3
 gyyx	死亡率	516
+h	上	258101
 haag	虐	152
 haak	䁥	1
 haas	瞸	1
@@ -13958,6 +13967,7 @@ hywf	㱖	1
 hywf	睟	1
 hyxy	眩	143
 hyy	盿	1
+i	不	360331
 iaah	㳦	1
 iaai	江东	374
 iaal	江苏	3337
@@ -16711,6 +16721,7 @@ iyyn	流亡	557
 iyyn	游记	370
 iyyt	流放	318
 iyyy	流言	346
+j	是	796991
 jaak	暱	679
 jaas	蠂	1
 jaat	䗃	1
@@ -18122,6 +18133,7 @@ jyxy	昡	1
 jyxy	蚿	1
 jyy	蚊	295
 jyy	旼	4
+k	中	243191
 kaah	咬牙切齿	479
 kaah	㖑	1
 kaai	中医药大学	279
@@ -19965,6 +19977,7 @@ kyxy	噰	25
 kyxy	呟	3
 kyy	呅	1
 kyym	鄂州市	1553
+l	国	29996
 laag	轼	9
 laag	軾	1
 laat	輚	1
@@ -21214,6 +21227,7 @@ lyve	䡙	1
 lyxu	䍗	1
 lyym	恩施市	1037
 lyyt	恩施州	522
+m	同	37578
 maad	周芷若	815
 maah	典雅	390
 maai	典范	316
@@ -22724,6 +22738,7 @@ mywo	鴅	1
 myxy	䝮	1
 myy	㞶	1
 myyn	同义词	824
+n	民	6640
 naaa	民工	558
 naae	㞡	1
 naag	恜	5
@@ -24274,6 +24289,7 @@ nyyq	心底	804
 nyyw	昼夜	887
 nyyy	民主主义	652
 nyyy	民族主义	575
+o	为	295952
 oaag	烒	1
 oadn	烧成	215
 oadn	煁	16
@@ -25212,6 +25228,7 @@ oyxx	䊌	1
 oyxy	炫	166
 oyy	炆	165
 oyyy	灬	1
+p	这	261791
 paai	空荡荡	243
 padd	宽大	549
 pagk	宽带	259
@@ -26860,6 +26877,7 @@ pyyt	神话	1378
 pyyt	福州	897
 pyyt	神州	422
 pyyw	社论	244
+q	我	328841
 qaag	鉽	1
 qaai	错落	347
 qaas	鐷	1
@@ -29773,6 +29791,7 @@ qyxy	鉉	1
 qyy	鈫	1
 qyyg	岛主	316
 qyyo	留恋	211
+r	的	318825
 raag	拭	327
 raas	擛	1
 rab	皂	285
@@ -32193,6 +32212,7 @@ ryyb	撤离	400
 ryyc	扩充	584
 ryyg	邀请	3258
 ryyy	抗议	1222
+s	要	156581
 saaa	模式	3809
 saag	栻	19
 saah	械	776
@@ -34424,6 +34444,7 @@ syyg	贾亦斌	259
 syyi	想方设法	245
 syyt	杭州	2806
 syyu	述说	215
+t	和	555815
 taad	长期	8664
 taar	箋	1
 taat	㣤	1
@@ -37710,6 +37731,7 @@ tyyl	入库	334
 tyym	重庆市	806
 tyym	入市	701
 tyyy	程序设计	28
+u	产	6838
 uabb	瓶子	309
 uabh	郱	1
 uabn	辛苦了	1
@@ -40020,6 +40042,7 @@ uyyt	凉州	205
 uyyw	辩论	474
 uyyw	门诊	417
 uyyw	辨认	399
+v	发	16840
 vaak	嫟	22
 vaan	嬺	1
 vabg	媶	2
@@ -41194,6 +41217,7 @@ vyvy	娘娘	972
 vyxl	㜅	1
 vyxy	妶	6
 vyy	妏	13
+w	人	313209
 waag	侙	1
 waah	㑘	1
 waai	任茂东	256
@@ -44000,6 +44024,7 @@ wyyu	俗话说	442
 wyyw	今夜	753
 wyyy	雠	118
 wyyy	讎	1
+x	经	21042
 xaal	红薯	473
 xaal	练功	391
 xaal	红莲	267
@@ -45447,6 +45472,7 @@ xyy	紋	1
 xyyc	编译	343
 xyyf	统计	5381
 xyyx	统率	775
+y	主	14838
 yaag	试	3723
 yaag	試	1
 yaah	诫	190
