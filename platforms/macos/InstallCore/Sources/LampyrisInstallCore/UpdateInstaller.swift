@@ -307,12 +307,17 @@ public enum UpdateInstaller {
         let previous: String?
         let candidateExecutableSHA256: String
         let installedExecutableSHA256: String
+        /// 自更新把更新程序换到哪、旧版备份在哪；没做自更新时为 nil。
+        ///
+        /// 之前漏了这一列，导致真机演练里"更新程序确实被替换了"只能靠 mtime 与备份目录反推（报告 226 §5）。
+        let updaterBundle: String?
         init(receipt: InstallReceipt) {
             payloadSHA256 = receipt.payloadSHA256
             signature = receipt.signature
             installed = receipt.installed
             previous = receipt.previous
             candidateExecutableSHA256 = receipt.candidateExecutableSHA256
+            updaterBundle = receipt.updaterBundle
             installedExecutableSHA256 = receipt.installedExecutableSHA256
         }
     }

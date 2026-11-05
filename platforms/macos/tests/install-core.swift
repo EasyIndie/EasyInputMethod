@@ -192,6 +192,22 @@ let signature = try! signingKey.signature(for: payloadBytes).base64EncodedString
 let publicKey = signingKey.publicKey.rawRepresentation.base64EncodedString()
 
 let receiptSupport = root.appendingPathComponent("support-with-file-receipts")
+// 7b) 回执必须记录自更新结果（报告 226 §5：漏了这列，真机只能靠 mtime 反推）
+let receiptOK = root.appendingPathComponent("receipt-ok")
+try! FileManager.default.createDirectory(at: receiptOK, withIntermediateDirectories: true)
+_ = try! UpdateInstaller.install(
+    payload: payload, signature: signature, publicKeyBase64: publicKey,
+    domain: receiptOK, support: root.appendingPathComponent("receipt-ok-support"),
+    environment: environment(expect: "payload-host", executable: "Lampyris"),
+    selfUpdate: UpdateInstaller.SelfUpdate(
+        directory: applications,
+        environment: environment(expect: "payload-updater", executable: "LampyrisUpdateCheck")))
+let receiptFiles = try! FileManager.default.contentsOfDirectory(
+    at: root.appendingPathComponent("receipt-ok-support/receipts"), includingPropertiesForKeys: nil)
+require(receiptFiles.count == 1, "one receipt per install")
+let receiptJSON = String(decoding: try! Data(contentsOf: receiptFiles[0]), as: UTF8.self)
+require(receiptJSON.contains("\"updaterBundle\""), "receipt must record the self-updated updater path")
+
 try! FileManager.default.createDirectory(at: receiptSupport, withIntermediateDirectories: true)
 try! Data().write(to: receiptSupport.appendingPathComponent("receipts"))  // 目录位置被文件占用
 
