@@ -53,3 +53,31 @@ receiptsExists = true
 - `install-core.swift` 新增两条断言（生产停、自更新不停）
 - 真机复验：见本报告后续追加（将在 1.0.2 发布后执行：更新程序 ≥ 宿主版本的一次安装，
   检查回执写入、staging 清理、更新程序被替换且进程不再自杀）
+
+## 5. 真机复验（2026-11-05，air，1.0.2 / build 37）
+
+做法：装 1.0.2（宿主与更新程序都是 37，含修复），用仓库里既有的**演练专用**比较基准
+`LAMPYRIS_UPDATE_CURRENT_BUILD=30` 启动更新程序，使它认为"有新版本 37"，从而走完整安装 + 自更新分支
+（`WebsiteReleaseConfiguration.currentBuild` 注释即为此用途）。
+
+在更新程序窗口里点「安装更新」后核对：
+
+| 项 | 结果 |
+|---|---|
+| 回执写入 | `updates/receipts/2026-11-05T10-11-57Z.json` ✅ |
+| `payloadSHA256` | `732756e5…` = **已发布的 1.0.2 ZIP** ✅ |
+| 宿主执行 | `b0b3bf5c…`（1.0.2/37）✅ |
+| 旧宿主备份 | `upgrade-2026-11-05T10-11-50Z-…/backup/Lampyris.app` ✅ |
+| **更新程序被替换** | `~/Applications/LampyrisUpdateCheck.app` mtime = 负载内同名 bundle 的 mtime（17:35:44），旧版在 `.lampyris-updater-backup-2026-11-05T10-11-54Z`（4.3 MB，build 37）✅ |
+| **进程未被自己杀掉** | 安装持续到写完回执（10:11:54 替换 → 10:11:57 回执）✅ |
+| staging 清理 | `upgrade-…/` 只剩 `backup/`；`~/Applications/.lampyris-install-*` 无残留 ✅ |
+| 用户数据 | config `5d4271fb…`、词库 1124 行，与升级前一致 ✅ |
+
+**结论：ADR-306 的修复经真机验证通过；长期挂着的「更新器自更新」验收项闭环。**
+
+## 6. 同批发现的两处记账/门禁问题（已修或已排期）
+
+1. **回执漏记自更新结果**：`ReceiptPayload` 没有 `updaterBundle` 字段，导致本次只能靠 mtime 与备份目录反推"更新程序真被替换了"。
+   已在源码补上该字段并加断言（`install-core.swift` 7b 段），随下个版本发布。
+2. **发布工作流取产物失败**：`gh run list --commit X --status success` 对 1.0.2 的提交返回空，而两个条件单独都正常；
+   改为只按提交过滤、在 jq 里判 `completed && success`（PR #220）。
