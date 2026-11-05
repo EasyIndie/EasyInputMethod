@@ -306,6 +306,7 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] **更新器自更新验收（2026-11-05 闭环，报告 226 / ADR-306）**：1.0.0→1.0.1 演练暴露 `stopHost` 把正在自更新的进程 SIGTERM 掉；1.0.2 修复后真机复验：回执 `payloadSHA256=732756e5…`、更新程序 bundle 被替换且旧版备份、staging 清理、进程未自杀。
 - [x] **候选排序质量（1.1.0 / ADR-304 P0+P1，报告 227–228）**：一级简码 25 条入表（D17）+ `personalize` 改有界位次上移；评测 `jianma1` 命中 56%→100%、首选 32%→100%，其余类别零劣化。二级 625 条待登记 D17-bis。
 - [ ] IT-25：ADR-159五笔主动后项学习工程已通过隔离回归、make verify/strict universal/Swift FFI；待新签名原生验收与用户例子确认。见docs/tasks/T-ITER-25.md。
+- [x] **1.1.0 自动探针（报告 229）**：热键/上屏 8/8、TextEdit 实键入、包与数据表身份（25 条简码）全 PASS；**性能门禁改判 BLOCKED**（`--self-post` 不计 IME，历史 p95 需复核），Safari/Chrome/Xcode 回读为空。顺带修 `acceptance-auto.sh`/`perf-session.sh`/`client-matrix.sh` 三处工具缺陷（相对 OUT、性能与客户端的先后、终端项不再投递到用户 shell）。
 
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 

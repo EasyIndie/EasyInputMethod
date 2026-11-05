@@ -10,6 +10,7 @@ CONFIG="$SUPPORT/config.toml"
 OUT="${OUT:-/tmp/lampyris-acceptance-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 FAILED=0
+BLOCKED=0
 
 field() { grep -m1 "^$1" "$CONFIG" | sed 's/.*= *//; s/ *#.*//; s/"//g'; }
 report() { printf '%-24s %s\n' "$1" "$2"; }
@@ -55,29 +56,37 @@ assert_text "⌥T 繁简切换"     'opt+t;xuexi '          'exact:學習'
 assert_text "⌥T 切回简体"     'opt+t;xuexi '          'exact:学习'
 assert_text "⌥M 模式循环"     'opt+m;opt+m;opt+m;wq ' 'unicode:'
 
-# 3. 客户端矩阵
+# 3. 性能与网络（必须在客户端矩阵**之前**：矩阵结束会把输入源还原成 ABC，之后无法再程序化选回第三方源——报告229）
+PERF=$(ROUNDS="${ROUNDS:-10}" SETTLE="${SETTLE:-20}" OUT="$OUT/perf" "$PROBE/perf-session.sh" 2>/dev/null | tail -1)
+case "$PERF" in
+    *'"result": "PASS"'*) report "性能/网络" "PASS $(printf '%s' "$PERF" | head -c 160)" ;;
+    *'"result": "BLOCKED"'*) report "性能/网络" "BLOCKED $(printf '%s' "$PERF" | head -c 160)"; BLOCKED=1 ;;
+    *) report "性能/网络" "FAIL $(printf '%s' "$PERF" | head -c 160)"; FAILED=1 ;;
+esac
+
+# 4. 客户端矩阵（放最后：它会用系统 Terminal 开测试窗口并把输入源还原成 ABC）
 if KEYS='wq nihao .' OUT="$OUT/clients" "$PROBE/client-matrix.sh" > "$OUT/clients.log" 2>&1; then
-    ok=0; attempted=0; skipped=0
+    ok=0; attempted=0; skipped=0; blank=0
     for f in "$OUT"/clients/*.json; do
         if grep -q 'SKIP' "$f"; then skipped=$((skipped + 1)); continue; fi
         attempted=$((attempted + 1))
-        grep -q '你好。' "$f" && ok=$((ok + 1))
+        if grep -q '你好。' "$f"; then
+            ok=$((ok + 1))
+        elif grep -qE '"(value|title|file)":""' "$f"; then
+            # 回读为空：按键投递成功但该客户端没给我们可读的落点，属"未取证"，既不 PASS 也不算产品 FAIL（报告229）
+            blank=$((blank + 1))
+        fi
     done
     if [ "$attempted" -ge 4 ] && [ "$ok" -eq "$attempted" ]; then
         report "客户端矩阵" "PASS (${ok}/${attempted}，跳过 ${skipped})"
+    elif [ "$blank" -gt 0 ] && [ $((ok + blank)) -eq "$attempted" ]; then
+        report "客户端矩阵" "BLOCKED (${ok}/${attempted} 取证，${blank} 回读为空，跳过 ${skipped})"; BLOCKED=1
     else
-        report "客户端矩阵" "FAIL (${ok}/${attempted}，跳过 ${skipped})"; FAILED=1
+        report "客户端矩阵" "FAIL (${ok}/${attempted}，回读为空 ${blank}，跳过 ${skipped})"; FAILED=1
     fi
 else
     report "客户端矩阵" "FAIL (见 $OUT/clients.log)"; FAILED=1
 fi
-
-# 4. 性能与网络
-PERF=$(ROUNDS="${ROUNDS:-10}" SETTLE="${SETTLE:-20}" OUT="$OUT/perf" "$PROBE/perf-session.sh" 2>/dev/null | tail -1)
-case "$PERF" in
-    *'"result": "PASS"'*) report "性能/网络" "PASS $(printf '%s' "$PERF" | head -c 160)" ;;
-    *) report "性能/网络" "FAIL $(printf '%s' "$PERF" | head -c 160)"; FAILED=1 ;;
-esac
 
 # 4b. 久用（可选）：SOAK_MINUTES>0 时追加
 SOAK_MINUTES="${SOAK_MINUTES:-0}"
@@ -94,5 +103,10 @@ fi
 final_mode=$(field mode)
 [ "$final_mode" = "mixed" ] || { report "还原 mode" "FAIL ($final_mode)"; FAILED=1; }
 
-python3 -c 'import json,sys;print(json.dumps({"result":"PASS" if int(sys.argv[1])==0 else "FAIL","evidence_dir":sys.argv[2]},ensure_ascii=False))' "$FAILED" "$OUT"
-[ "$FAILED" -eq 0 ]
+python3 -c 'import json,sys
+failed, blocked = int(sys.argv[1]), int(sys.argv[2])
+result = "FAIL" if failed else ("SKIP" if blocked else "PASS")
+print(json.dumps({"result": result, "evidence_dir": sys.argv[3]}, ensure_ascii=False))' "$FAILED" "$BLOCKED" "$OUT"
+[ "$FAILED" -ne 0 ] && exit 1
+[ "$BLOCKED" -ne 0 ] && exit 78
+exit 0

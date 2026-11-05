@@ -89,20 +89,13 @@ if type_into "Google Chrome"; then
     printf '{"title":"%s"}\n' "$(cat "$OUT/chrome.txt")" | tee "$OUT/chrome.json"
 fi
 
-echo "== Ghostty"
-CAT_FILE="$OUT/ghostty.txt"
-rm -f "$CAT_FILE"
-open -na Ghostty --args -e bash -c "cat > '$CAT_FILE'" >/dev/null 2>&1
-if type_into ghostty; then
-    pid=$(front_pid)
-    "$BIN/keytopid" "$pid" 'ctrl+d' 150 400 --hid >/dev/null 2>&1
-    sleep 2
-    printf '{"file":"%s"}\n' "$(cat "$CAT_FILE" 2>/dev/null)" | tee "$OUT/ghostty.json"
-fi
-# 报告199：ctrl+d 不总能关掉这个测试窗口，残留的 `cat` 会一直占着前台、
-# 把后续（已提前退出的）投递吞掉。按本次独有的 CAT_FILE 精确收尾。
-for _ in 1 2 3 4 5; do pgrep -f "cat > '$CAT_FILE'" >/dev/null 2>&1 || break; sleep 1; done
-pkill -f "cat > '$CAT_FILE'" 2>/dev/null
+# 报告229：终端项不做自动化。
+# 原因一：往 Terminal.app 投递按键会落进**用户自己的** shell 会话（do script 的前台窗口不确定），
+#        实测 `cat > 文件` 收不到字、按键可能污染用户终端；
+# 原因二：用户设备偏好明确不用 Ghostty（旧实现在这里 example 用的就是 Ghostty 独立实例）。
+# 终端路径仍由 IT-22 §3.5 人工走查覆盖，这里只留一条 SKIP 记录，不假装 PASS。
+echo "== Terminal"
+echo '{"status":"SKIP","reason":"终端项不在自动化矩阵内，见 docs/tasks/T-ITER-22.md §3.5"}' | tee "$OUT/terminal.json"
 
 echo "== Xcode"
 if ! has_app Xcode; then
