@@ -57,10 +57,18 @@ class B0CorpusTests(unittest.TestCase):
         """v4：合体字的组件数必须与码长自洽（n 或 n-1），且成字字根带笔画（报告 244）。"""
         import json
         entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        unaligned = []
         for entry in entries:
-            if entry['class'] == 'compound' and entry['code']:
-                self.assertIn(len(entry['components']), (len(entry['code']), len(entry['code']) - 1),
-                              f"{entry['char']}: 组件数与码长对不上")
+            if entry['class'] != 'compound' or not entry['code']:
+                continue
+            if len(entry['components']) in (len(entry['code']), len(entry['code']) - 1):
+                continue
+            # D2 自身漏拆的极少数条目：允许存在，但必须 partial 且写明原因
+            self.assertEqual(entry['quality'], 'partial', f"{entry['char']}: 对不上却非 partial")
+            self.assertTrue(any('对不上' in n for n in entry['notes']), f"{entry['char']}: 缺原因说明")
+            unaligned.append(entry['char'])
+        self.assertLessEqual(len(unaligned), len(entries) // 100,
+                             f'组件数对不上的条目过多：{len(unaligned)}')
         radical_chars = [e for e in entries if e['class'] == 'radical-char']
         self.assertTrue(radical_chars)
         for entry in radical_chars:
@@ -72,6 +80,14 @@ class B0CorpusTests(unittest.TestCase):
         strokes = subprocess.run(query + ['用'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertIn('成字字根', strokes.stdout)
         self.assertIn('丿', strokes.stdout)
+
+    def test_no_unlicensed_source_in_corpus(self):
+        """ADR-310：D3（未声明许可）只能作 oracle，产物里不得出现其组件来源。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        sources = {e.get('componentsSource') for e in entries}
+        self.assertNotIn('D3', sources)
+        self.assertTrue(sources <= {None, 'D1', 'D2'}, sources)
 
     def test_ids_structure_is_consistent(self):
         """v5：ids 必须是 IDS 序列，idsStructure 必须与根算子一致（报告 245）。"""

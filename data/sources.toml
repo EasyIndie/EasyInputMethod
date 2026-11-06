@@ -24,13 +24,13 @@ name = "五笔86 字→字根拆分（huanfeng/WindInput）"
 path = "data/sources/windinput-wubi86-chaizi.txt"
 url = "https://github.com/huanfeng/WindInput/blob/master/data/schemas/wubi86/wubi86_chaizi.txt"
 upstream = "huanfeng/WindInput"
-license = "MIT"
-risk = "low"
+license = "Unspecified (upstream NOTICE.md: no license attached)"
+risk = "high"
 sha256 = "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6"
-used_for = ["wubi86-chaizi-crosscheck"]
+used_for = ["wubi86-chaizi-oracle-only"]
 fetch_script = "data/sources/fetch-wubi-chaizi.sh"
 added_at = "2026-10-08"
-notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库"
+notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库。许可证更正（2026-11-06，报告 246）：上游 NOTICE.md 明确该数据与 HeiTiZiGen.ttf 均「未附带任何版权声明或许可证信息」，来源不详；代码仓库 v0.127.0 起 GPL-3.0-or-later（此前 MIT）。**仅作构建期 oracle，不进发布产物、不复用其字体**（ADR-310）"
 
 [[source]]
 id = "D4"

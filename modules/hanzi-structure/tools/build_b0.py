@@ -335,6 +335,12 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
                 or (pool[0] if pool else None))
         source, readable, unknown_glyphs = pick if pick else (None, [], 0)
 
+    if readable and len(code) >= 2 and len(readable) > len(code):
+        dropped = len(readable) - len(code)
+        readable = readable[:len(code)]
+        unknown_glyphs = sum(1 for c in readable if c is None)
+        notes.append(f'拆字序列长于全码，已按码位截断（多出 {dropped} 个字形丢弃）')
+
     if unknown_glyphs:
         notes.append(f'有 {unknown_glyphs} 个字根字形未识别（占位，键位取自码位）')
 

@@ -2,8 +2,8 @@
   "schemaVersion": 5,
   "entries": 1000,
   "quality": {
-    "full": 737,
-    "partial": 255,
+    "full": 735,
+    "partial": 257,
     "unknown": 8
   },
   "classes": {
@@ -12,20 +12,19 @@
     "key-name": 23,
     "None": 8
   },
-  "withRecognition": 622,
+  "withRecognition": 624,
   "componentsSource": {
     "D1": 42,
-    "D2": 901,
-    "D3": 26
+    "D2": 927
   },
   "puaMap": "corpus/pua-map.json",
-  "placeholderEntries": 249,
-  "placeholderComponents": 273,
-  "recognitionSlotPua": 15,
+  "placeholderEntries": 243,
+  "placeholderComponents": 259,
+  "recognitionSlotPua": 0,
   "withStrokes": 41,
   "withIds": 990,
-  "idsFilled": 23,
-  "positionMismatchEntries": 49,
+  "idsFilled": 24,
+  "positionMismatchEntries": 50,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",
@@ -47,10 +46,6 @@
       "path": "../../data/generated/pinyin-chars.tsv",
       "sha256": "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12"
     },
-    "d3": {
-      "path": "../../data/sources/windinput-wubi86-chaizi.txt",
-      "sha256": "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6"
-    },
     "readable_keys": {
       "path": "../../data/learning/wubi86-readable-keys.tsv",
       "sha256": "49c2f901fa8bd830817ee3b33b1752f7e555776a9f00a279b814205a6f76d0ac"
@@ -61,5 +56,5 @@
     }
   },
   "generator": "modules/hanzi-structure/tools/build_b0.py",
-  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --d3 ../../data/sources/windinput-wubi86-chaizi.txt --pua-map corpus/pua-map.json --readable-keys ../../data/learning/wubi86-readable-keys.tsv --ids ../../data/sources/ids_lv1.txt --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
+  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --pua-map corpus/pua-map.json --readable-keys ../../data/learning/wubi86-readable-keys.tsv --ids ../../data/sources/ids_lv1.txt --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
 }

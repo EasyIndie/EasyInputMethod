@@ -2716,18 +2716,12 @@
   "char": "没",
   "code": "imcy",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "氵",
-   "几",
-   "又",
-   null
+   "氵"
   ],
   "keys": [
-   "i",
-   "m",
-   "c",
-   "y"
+   "i"
   ],
   "strokes": null,
   "ids": "⿰氵殳",
@@ -2740,9 +2734,7 @@
   "frequency": 52407,
   "quality": "partial",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 4 个（键 y）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
@@ -3350,10 +3342,10 @@
   "char": "家",
   "code": "peu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "宀",
-   null,
+   "一",
    null
   ],
   "keys": [
@@ -3364,7 +3356,9 @@
   "strokes": null,
   "ids": "⿱宀豕",
   "idsStructure": "上下",
-  "positionMismatch": [],
+  "positionMismatch": [
+   2
+  ],
   "recognition": null,
   "short1": null,
   "short2": "pe",
@@ -3372,8 +3366,9 @@
   "frequency": 41022,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 e）、第 3 个（键 u）",
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -4792,24 +4787,27 @@
   "char": "每",
   "code": "txgu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "𠂉",
    "母",
-   "一",
    null
   ],
   "keys": [
    "t",
    "x",
-   "g",
-   "u"
+   "g"
   ],
   "strokes": null,
   "ids": "⿱𠂉母",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "mei",
@@ -4817,8 +4815,7 @@
   "quality": "partial",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 4 个（键 u）",
-   "字根已够四码，无识别码"
+   "占位字根：第 3 个（键 g）"
   ]
  },
  {
@@ -5021,11 +5018,11 @@
   "char": "应",
   "code": "yid",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "广",
-   "一",
-   null
+   "𭕄",
+   "一"
   ],
   "keys": [
    "y",
@@ -5036,17 +5033,18 @@
   "ids": "⿸广⿱𭕄一",
   "idsStructure": "杂合",
   "positionMismatch": [
-   2
+   3
   ],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "ying",
   "frequency": 25537,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 d）",
+   "按 IDS（D19）补齐 1 个占位字根：⿸广⿱𭕄一",
    "字根已够四码，无识别码"
   ]
  },
@@ -6109,33 +6107,33 @@
   "char": "吗",
   "code": "kcg",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "口",
+   null,
    "一"
   ],
   "keys": [
    "k",
-   "c"
+   "c",
+   "g"
   ],
   "strokes": null,
   "ids": "⿰口马",
   "idsStructure": "左右",
-  "positionMismatch": [
-   2
-  ],
-  "recognition": {
-   "key": "g",
-   "stroke": "横",
-   "structure": "左右",
-   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
-  },
+  "positionMismatch": [],
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "ma",
   "frequency": 21245,
-  "quality": "full",
-  "notes": []
+  "quality": "partial",
+  "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 2 个（键 c）",
+   "字根已够四码，无识别码"
+  ]
  },
  {
   "char": "经",
@@ -6449,18 +6447,14 @@
   "char": "城",
   "code": "fdnt",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "土",
-   "厂",
-   "𠃌",
-   null
+   "厂"
   ],
   "keys": [
    "f",
-   "d",
-   "n",
-   "t"
+   "d"
   ],
   "strokes": null,
   "ids": "⿰土成",
@@ -6473,44 +6467,44 @@
   "frequency": 19953,
   "quality": "partial",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 4 个（键 t）",
-   "字根已够四码，无识别码"
+   "字根数 2 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
   "char": "马",
   "code": "cnng",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "一",
    null,
-   "ㄅ",
-   "一"
+   "一",
+   null
   ],
   "keys": [
    "c",
    "n",
-   "n",
-   "g"
+   "n"
   ],
   "strokes": null,
   "ids": "⿹𢎘一",
   "idsStructure": "杂合",
   "positionMismatch": [
-   1
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "cn",
   "pinyin": "ma",
   "frequency": 19918,
   "quality": "partial",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 n）",
-   "字根已够四码，无识别码"
+   "有 2 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 1 个（键 c）、第 3 个（键 n）"
   ]
  },
  {
@@ -10073,7 +10067,7 @@
   "char": "加",
   "code": "lkg",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "力",
    "口"
@@ -10618,11 +10612,11 @@
   "char": "光",
   "code": "iqb",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "⺌",
-   "儿",
-   null
+   "一",
+   "儿"
   ],
   "keys": [
    "i",
@@ -10632,16 +10626,18 @@
   "strokes": null,
   "ids": "⿱⺌兀",
   "idsStructure": "上下",
-  "positionMismatch": [],
+  "positionMismatch": [
+   2,
+   3
+  ],
   "recognition": null,
   "short1": null,
   "short2": "iq",
   "pinyin": "guang",
   "frequency": 10895,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 b）",
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "字根已够四码，无识别码"
   ]
  },
@@ -12282,11 +12278,11 @@
   "char": "龙",
   "code": "dxv",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    null,
    "ヒ",
-   null
+   "丶"
   ],
   "keys": [
    "d",
@@ -12296,7 +12292,9 @@
   "strokes": null,
   "ids": "⿺𡯃丶",
   "idsStructure": "杂合",
-  "positionMismatch": [],
+  "positionMismatch": [
+   3
+  ],
   "recognition": null,
   "short1": null,
   "short2": "dx",
@@ -12304,8 +12302,9 @@
   "frequency": 9197,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 d）、第 3 个（键 v）",
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 1 个（键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -14087,16 +14086,12 @@
   "char": "余",
   "code": "wtu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "人",
-   null,
-   null
+   "人"
   ],
   "keys": [
-   "w",
-   "t",
-   "u"
+   "w"
   ],
   "strokes": null,
   "ids": "⿱亼朩",
@@ -14109,9 +14104,7 @@
   "frequency": 7959,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 t）、第 3 个（键 u）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 3 对不上，无法判定识别码"
   ]
  },
  {
@@ -16537,16 +16530,12 @@
   "char": "代",
   "code": "way",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "亻",
-   null,
-   null
+   "亻"
   ],
   "keys": [
-   "w",
-   "a",
-   "y"
+   "w"
   ],
   "strokes": null,
   "ids": "⿰亻弋",
@@ -16559,9 +16548,7 @@
   "frequency": 6666,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 a）、第 3 个（键 y）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 3 对不上，无法判定识别码"
   ]
  },
  {
@@ -16725,11 +16712,11 @@
   "char": "民",
   "code": "nav",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    null,
-   "弋",
-   null
+   null,
+   "弋"
   ],
   "keys": [
    "n",
@@ -16739,7 +16726,9 @@
   "strokes": null,
   "ids": "⿸巳𫠠",
   "idsStructure": "杂合",
-  "positionMismatch": [],
+  "positionMismatch": [
+   3
+  ],
   "recognition": null,
   "short1": "n",
   "short2": "na",
@@ -16747,8 +16736,9 @@
   "frequency": 6640,
   "quality": "partial",
   "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 n）、第 3 个（键 v）",
+   "占位字根：第 1 个（键 n）、第 2 个（键 a）",
    "字根已够四码，无识别码"
   ]
  },
@@ -16948,33 +16938,35 @@
   "char": "举",
   "code": "iwfh",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "一",
+   null,
    "八",
-   "二",
-   "丨"
+   "二"
   ],
   "keys": [
    "i",
    "w",
-   "f",
-   "h"
+   "f"
   ],
   "strokes": null,
   "ids": "⿱兴𰀁",
   "idsStructure": "上下",
-  "positionMismatch": [
-   1
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "h",
+   "stroke": "竖",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔竖 + 结构左右 ⇒ 识别码 h"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "ju",
   "frequency": 6506,
-  "quality": "full",
+  "quality": "partial",
   "notes": [
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 1 个（键 i）"
   ]
  },
  {
@@ -17108,18 +17100,12 @@
   "char": "件",
   "code": "wrhh",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "亻",
-   null,
-   "丨",
-   null
+   "亻"
   ],
   "keys": [
-   "w",
-   "r",
-   "h",
-   "h"
+   "w"
   ],
   "strokes": null,
   "ids": "⿰亻牛",
@@ -17132,9 +17118,7 @@
   "frequency": 6482,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 r）、第 4 个（键 h）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
@@ -17301,7 +17285,7 @@
   "char": "云",
   "code": "fcu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "二",
    "厶",
@@ -17323,6 +17307,7 @@
   "frequency": 6353,
   "quality": "partial",
   "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
    "占位字根：第 3 个（键 u）",
    "字根已够四码，无识别码"
@@ -18219,11 +18204,11 @@
   "char": "交",
   "code": "uqu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   null,
-   null,
-   null
+   "亠",
+   "八",
+   "乂"
   ],
   "keys": [
    "u",
@@ -18233,16 +18218,19 @@
   "strokes": null,
   "ids": "⿱亠父",
   "idsStructure": "上下",
-  "positionMismatch": [],
+  "positionMismatch": [
+   1,
+   2,
+   3
+  ],
   "recognition": null,
   "short1": null,
   "short2": "uq",
   "pinyin": "jiao",
   "frequency": 6026,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 3 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 u）、第 2 个（键 q）、第 3 个（键 u）",
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "字根已够四码，无识别码"
   ]
  },
@@ -19262,18 +19250,12 @@
   "char": "凭",
   "code": "wtfm",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "亻",
-   "丿",
-   "士",
-   "几"
+   "亻"
   ],
   "keys": [
-   "w",
-   "t",
-   "f",
-   "m"
+   "w"
   ],
   "strokes": null,
   "ids": "⿱任几",
@@ -19284,9 +19266,9 @@
   "short2": null,
   "pinyin": "ping",
   "frequency": 5717,
-  "quality": "full",
+  "quality": "partial",
   "notes": [
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
@@ -19547,18 +19529,12 @@
   "char": "俄",
   "code": "wtrt",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "亻",
-   null,
-   "扌",
-   null
+   "亻"
   ],
   "keys": [
-   "w",
-   "t",
-   "r",
-   "t"
+   "w"
   ],
   "strokes": null,
   "ids": "⿰亻我",
@@ -19571,9 +19547,7 @@
   "frequency": 5645,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 t）、第 4 个（键 t）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
@@ -21331,33 +21305,33 @@
   "char": "妈",
   "code": "vcg",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "女",
+   null,
    "一"
   ],
   "keys": [
    "v",
-   "c"
+   "c",
+   "g"
   ],
   "strokes": null,
   "ids": "⿰女马",
   "idsStructure": "左右",
-  "positionMismatch": [
-   2
-  ],
-  "recognition": {
-   "key": "g",
-   "stroke": "横",
-   "structure": "左右",
-   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
-  },
+  "positionMismatch": [],
+  "recognition": null,
   "short1": null,
   "short2": "vc",
   "pinyin": "ma",
   "frequency": 5014,
-  "quality": "full",
-  "notes": []
+  "quality": "partial",
+  "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 2 个（键 c）",
+   "字根已够四码，无识别码"
+  ]
  },
  {
   "char": "度",
@@ -22869,18 +22843,12 @@
   "char": "浠",
   "code": "iqdh",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   "氵",
-   "乂",
-   null,
-   "丨"
+   "氵"
   ],
   "keys": [
-   "i",
-   "q",
-   "d",
-   "h"
+   "i"
   ],
   "strokes": null,
   "ids": "⿰氵希",
@@ -22893,9 +22861,7 @@
   "frequency": 4587,
   "quality": "partial",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 d）",
-   "字根已够四码，无识别码"
+   "字根数 1 与码长 4 对不上，无法判定识别码"
   ]
  },
  {
@@ -24148,24 +24114,27 @@
   "char": "毒",
   "code": "gxgu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "主",
    "母",
-   "一",
    null
   ],
   "keys": [
    "g",
    "x",
-   "g",
-   "u"
+   "g"
   ],
   "strokes": null,
   "ids": "⿱龶母",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "du",
@@ -24173,8 +24142,7 @@
   "quality": "partial",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 4 个（键 u）",
-   "字根已够四码，无识别码"
+   "占位字根：第 3 个（键 g）"
   ]
  },
  {
@@ -24413,11 +24381,11 @@
   "char": "兴",
   "code": "iwu",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
+   null,
    "一",
-   "八",
-   null
+   "八"
   ],
   "keys": [
    "i",
@@ -24428,7 +24396,8 @@
   "ids": "⿱𭕄𬺢",
   "idsStructure": "上下",
   "positionMismatch": [
-   1
+   2,
+   3
   ],
   "recognition": null,
   "short1": null,
@@ -24437,8 +24406,9 @@
   "frequency": 4294,
   "quality": "partial",
   "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 u）",
+   "占位字根：第 1 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -27811,11 +27781,11 @@
   "char": "乐",
   "code": "qii",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "丿",
-   "小",
-   null
+   null,
+   "小"
   ],
   "keys": [
    "q",
@@ -27835,8 +27805,9 @@
   "frequency": 3667,
   "quality": "partial",
   "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 i）",
+   "占位字根：第 2 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -28599,33 +28570,33 @@
   "char": "杩",
   "code": "scg",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "木",
+   null,
    "一"
   ],
   "keys": [
    "s",
-   "c"
+   "c",
+   "g"
   ],
   "strokes": null,
   "ids": "⿰木马",
   "idsStructure": "左右",
-  "positionMismatch": [
-   2
-  ],
-  "recognition": {
-   "key": "g",
-   "stroke": "横",
-   "structure": "左右",
-   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
-  },
+  "positionMismatch": [],
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "ma",
   "frequency": 3505,
-  "quality": "full",
-  "notes": []
+  "quality": "partial",
+  "notes": [
+   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 2 个（键 c）",
+   "字根已够四码，无识别码"
+  ]
  },
  {
   "char": "灭",
@@ -31423,33 +31394,35 @@
   "char": "赵",
   "code": "fhqi",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
    "土",
    null,
-   "乂",
-   null
+   "乂"
   ],
   "keys": [
    "f",
    "h",
-   "q",
-   "i"
+   "q"
   ],
   "strokes": null,
   "ids": "⿺走乂",
   "idsStructure": "杂合",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "i",
+   "stroke": "捺",
+   "structure": "杂合",
+   "because": "3 个字根不足四码：末笔捺 + 结构杂合 ⇒ 识别码 i"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "zhao",
   "frequency": 3084,
   "quality": "partial",
   "notes": [
-   "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 h）、第 4 个（键 i）",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（占位，键位取自码位）",
+   "占位字根：第 2 个（键 h）"
   ]
  },
  {
