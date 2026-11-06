@@ -13,6 +13,15 @@ make eval-candidates EVAL_JSON=/tmp/x.json # 指定输出
 默认样本 `tools/eval/samples.tsv`、码表 `data/generated/wubi86-core.tsv`。
 纯本地、不联网、不读用户配置、不写 `~/Library`。
 
+## 1.1 二级简码「选谁」的来源对照
+
+```sh
+python3 tools/eval/compare-level2-sources.py     # 全码权重 vs 通用字频，各生成一版临时表对比
+```
+
+结论与决策见 `docs/reviews/237-level2-shortcode-source-decision.md`：两种来源在 624 个码位里只差 5 个生僻字，
+因此采用现有全码权重（少一个依赖、与码表同源、可复现）。
+
 ## 2. 样本集
 
 `tools/eval/gen-samples.py` 生成，**勿手改** `samples.tsv`（要改进就改生成器，样本集一改等于换考卷）。

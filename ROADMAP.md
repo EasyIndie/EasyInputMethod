@@ -281,7 +281,7 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 
 ## P2 — MVP后输入质量深化
 
-- [ ] **D17-bis 二级简码 625 条**（下一步首选）：需登记来源与 SHA（`docs/数据来源与许可.md` + `data/sources.toml`），
+- [ ] **D17-bis 二级简码（规则推导 624 条，`cx` 待官方表）**：频度来源已定（全码权重 D3，报告 237）；需登记来源与 SHA（`docs/数据来源与许可.md` + `data/sources.toml`），
       生成后跑 `check-level1-codes` 的同类校验与 `make eval-candidates`（`jianma2` 首选定格在 93.3% 作为对照）。
       影响 1–2 码候选顺序，按版本口径进 **1.2.0**，不塞进 1.1.x 补丁。
 - [ ] **冷首键 15–26ms 归因（可选）**：ADR-307 已把它与稳态分开披露并记录（p95 25.77ms），
