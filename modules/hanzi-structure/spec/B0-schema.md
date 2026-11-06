@@ -1,7 +1,7 @@
 # B0 结构事实库 · 数据模型（试点 1,000 高频字）
 
 > 状态：**B0 试点**（ADR-189 的第一次落地）。只读事实库，不进入输入热路径，不改候选排序。
-> 版本：`schemaVersion: 1`。字段变更必须升版本并写报告。
+> 版本：`schemaVersion: 2`（v2 新增 `componentsSource` / `keys`，见报告 241）。字段变更必须升版本并写报告。
 
 ## 1. 目的
 
@@ -15,7 +15,9 @@
 | `char` | string | 单字 |
 | `code` | string | 五笔86 全码（来自 D1 生成码表） |
 | `class` | enum | `key-name`（键名字）/ `radical-char`（成字字根）/ `compound`（合体字） |
-| `components` | string[] | 字根序列（D2 可读字形；不含识别码字形） |
+| `components` | string[] | 字根序列（可读字形；**不含任何 PUA 字形**，解不出的已丢弃并在 notes 标注） |
+| `componentsSource` | enum | `D2` / `D3` / `null`：组件来自哪一份拆字源（报告 241：D2 优先，D3 兜底） |
+| `keys` | string[] | 每个字根对应的键位字母（取全码同位置；`len(components) ≤ 4` 时成立） |
 | `recognition` | object \| null | `{key, stroke, structure, because}`：识别码字母、末笔、结构、判定依据 |
 | `short1` / `short2` | string \| null | 一级 / 二级简码（D17 / D17-bis） |
 | `pinyin` | string \| null | 首选读音（D5） |
@@ -31,8 +33,9 @@
    - `len(code) == n + 1` → 末位是**识别码**：`(stroke, structure) = inverse(末位)`；
    - `len(code) == n` → **无识别码**（字根已够四码）；
    - 其它 → `quality=partial`，`notes` 记录 `code_len` 与 `n` 的具体数值。
-4. **PUA 处理**：D2 的补充区私有码位（如识别码字形、生僻字根）一律**丢弃**；若字根序列里出现 PUA
-   （不是末尾识别码字形），该字标 `partial` 并注明"字根含私有区字形，无法渲染"。
+4. **PUA 处理**：补充区（≥U+F0000）与 BMP 私有区（U+E000–U+F8FF）**一律不得进入产物**；
+   先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出），查不到就丢弃并计一次未知，
+   该字降级为 `partial` 且 notes 写明「有 N 个字形无法解码」。
 5. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
 
 ## 4. 质量等级

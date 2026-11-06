@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2  # v2：新增 componentsSource；组件可由 D3 经 PUA 解码得到
 
 # 识别码反查表：末笔 × 结构（顺序：左右、上下、杂合）
 RECOGNITION = {
@@ -69,6 +69,11 @@ def load_radicals(path: Path) -> dict[str, list[str]]:
     return out
 
 
+def load_pua_map(path: Path) -> dict[str, str]:
+    data = json.loads(path.read_text(encoding='utf-8'))
+    return {pua: info['readable'] for pua, info in data.get('map', {}).items()}
+
+
 def load_short(path: Path, width: int) -> dict[str, str]:
     out: dict[str, str] = {}
     for parts in read_rows(path):
@@ -95,16 +100,65 @@ def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
     return pinyin, freq
 
 
+def decode(glyphs: list[str], pua_map: dict[str, str]) -> tuple[list[str], int]:
+    """把一组字形解码成可读形式；返回 (字形, 无法解码的数量)。
+
+    补充区私有码位（D2 用它表示识别码字形）直接丢弃；BMP 私有区字形（D3 的字根）
+    先查映射，查不到就原样保留并计入"无法解码"。
+    """
+    out, unknown = [], 0
+    for g in glyphs:
+        if ord(g) >= 0xF0000:
+            continue
+        if 0xE000 <= ord(g) <= 0xF8FF:
+            readable = pua_map.get(g)
+            if readable:
+                out.append(readable)
+            else:
+                # 解不出来就**丢弃**（ADR-189 不许产物含 PUA），并计一次未知
+                unknown += 1
+        else:
+            out.append(g)
+    return out, unknown
+
+
 def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
-          pinyin: dict, freq: dict) -> dict:
+          pinyin: dict, freq: dict, pua_map: dict[str, str] | None = None,
+          d3_glyphs: list[str] | None = None) -> dict:
+    pua_map = pua_map or {}
     notes: list[str] = []
-    readable = [g for g in glyphs if ord(g) < 0xF0000]
-    dropped = len(glyphs) - len(readable)
+
+    def candidates() -> list[tuple[str, list[str], int]]:
+        out = []
+        if d3_glyphs:
+            decoded, unknown = decode(d3_glyphs, pua_map)
+            if decoded:
+                out.append(('D3', decoded, unknown))
+        decoded2, unknown2 = decode(glyphs, pua_map)
+        if decoded2:
+            out.append(('D2', decoded2, unknown2))
+        return out
+
+    def fits(components: list[str]) -> bool:
+        n = len(components)
+        return n >= 2 and len(code) in (n, n + 1)
+
+    # 选择顺序：D2 优先（报告 241：D3 的组件序列常混入识别码/笔画字形，直接采用反而更差），
+    # D3 只在 D2 缺失或对不上码长时兜底。
+    pool = candidates()
+    pool.sort(key=lambda c: 0 if c[0] == 'D2' else 1)
+    pick = (next((c for c in pool if fits(c[1]) and c[2] == 0), None)
+            or next((c for c in pool if fits(c[1])), None)
+            or (pool[0] if pool else None))
+    source, readable, unknown_glyphs = pick if pick else (None, [], 0)
+
     entry = {
         'char': char,
         'code': code,
         'class': None,
+        'componentsSource': source,
         'components': [],
+        'keys': [],
         'recognition': None,
         'short1': short1.get(char),
         'short2': short2.get(char),
@@ -113,28 +167,38 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'quality': 'unknown',
         'notes': notes,
     }
+    if unknown_glyphs:
+        notes.append(f'有 {unknown_glyphs} 个字形无法解码，组件序列可能不完整')
 
+    # 1) 键名字：四位同键
     if len(code) == 4 and len(set(code)) == 1:
         entry['class'] = 'key-name'
         entry['components'] = [char]
         entry['quality'] = 'full'
         return entry
 
-    if readable and readable[0] == char:
+    # 2) 成字字根：D2 字形首位是它自己，后续是笔画
+    if glyphs and glyphs[0] == char:
         entry['class'] = 'radical-char'
         entry['components'] = [char]
-        strokes = [g for g in readable[1:] if g in STROKES]
-        if len(strokes) == len(readable) - 1 and strokes:
+        strokes = [g for g in readable[1:] if g in STROKES] if readable and readable[0] == char else []
+        if strokes and len(strokes) == len(readable) - 1:
             notes.append('成字字根：报户口 + ' + '、'.join(STROKES[g] + '（' + g + '）' for g in strokes))
-            entry['quality'] = 'full'
+            entry['quality'] = 'partial' if unknown_glyphs else 'full'
         else:
             notes.append('成字字根：笔画字形不完整，无法给出首/次/末笔依据')
             entry['quality'] = 'partial'
         return entry
 
+    # 3) 合体字
+    if not readable:
+        notes.append('缺可读拆字（PUA 解码失败）')
+        return entry
     entry['class'] = 'compound'
     entry['components'] = readable
     n = len(readable)
+    # 每个字根对应全码里的同位置字母（n ≤ 4 时成立，识别码在末尾）
+    entry['keys'] = list(code[:n]) if n <= len(code) else []
     if n >= 2 and len(code) == n + 1 and code[-1] in RECOGNITION:
         stroke, structure = RECOGNITION[code[-1]]
         entry['recognition'] = {
@@ -143,16 +207,13 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             'structure': structure,
             'because': f'{n} 个字根不足四码：末笔{stroke} + 结构{structure} ⇒ 识别码 {code[-1]}',
         }
-        entry['quality'] = 'full'
+        entry['quality'] = 'partial' if unknown_glyphs else 'full'
     elif n >= 2 and len(code) == n:
         notes.append('字根已够四码，无识别码')
-        entry['quality'] = 'full'
+        entry['quality'] = 'partial' if unknown_glyphs else 'full'
     else:
         notes.append(f'字根数 {n} 与码长 {len(code)} 对不上，无法判定识别码')
         entry['quality'] = 'partial'
-    if dropped > 1:
-        notes.append(f'拆字含 {dropped} 个私有区字形（已丢弃），字根序列可能不完整')
-        entry['quality'] = 'partial' if entry['quality'] == 'full' else entry['quality']
     return entry
 
 
@@ -160,6 +221,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--codes', required=True)
     parser.add_argument('--radicals', required=True)
+    parser.add_argument('--d3', help='D3 拆字（可选，配合 --pua-map 提高覆盖率）')
+    parser.add_argument('--pua-map', help='PUA→可读字根映射（tools/decode_pua.py 生成）')
     parser.add_argument('--short1', required=True)
     parser.add_argument('--short2', required=True)
     parser.add_argument('--pinyin', required=True)
@@ -168,6 +231,8 @@ def main() -> int:
     args = parser.parse_args()
 
     paths = {name: Path(getattr(args, name)) for name in ('codes', 'radicals', 'short1', 'short2', 'pinyin')}
+    if args.d3:
+        paths['d3'] = Path(args.d3)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -178,6 +243,8 @@ def main() -> int:
     short1 = load_short(paths['short1'], 1)
     short2 = load_short(paths['short2'], 2)
     pinyin, freq = load_pinyin_and_freq(paths['pinyin'])
+    pua_map = load_pua_map(Path(args.pua_map)) if args.pua_map else {}
+    d3 = load_radicals(Path(args.d3)) if args.d3 else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -197,7 +264,8 @@ def main() -> int:
             entry['notes'] = ['缺拆字数据']
             entries.append(entry)
             continue
-        entries.append(build(char, code, glyphs, short1, short2, pinyin, freq))
+        entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
+                             pua_map=pua_map, d3_glyphs=d3.get(char)))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
@@ -206,6 +274,8 @@ def main() -> int:
         stats[f'class:{entry["class"]}'] = stats.get(f'class:{entry["class"]}', 0) + 1
         if entry['recognition']:
             stats['recognition'] = stats.get('recognition', 0) + 1
+        if entry.get('componentsSource'):
+            stats[f"source:{entry['componentsSource']}"] = stats.get(f"source:{entry['componentsSource']}", 0) + 1
 
     report = {
         'schemaVersion': SCHEMA_VERSION,
@@ -214,6 +284,9 @@ def main() -> int:
                     'unknown': stats.get('unknown', 0)},
         'classes': {k.split(':', 1)[1]: v for k, v in stats.items() if k.startswith('class:')},
         'withRecognition': stats.get('recognition', 0),
+        'componentsSource': {k.split(':', 1)[1]: v for k, v in stats.items() if k.startswith('source:')},
+        'puaMap': str(args.pua_map) if args.pua_map else None,
+        'undecodedPuaEntries': sum(1 for e in entries if any('无法解码' in n for n in e['notes'])),
         'inputs': {name: {'path': str(path), 'sha256': sha256(path)} for name, path in paths.items()},
         'generator': 'modules/hanzi-structure/tools/build_b0.py',
         'command': ' '.join(['python3', 'tools/build_b0.py'] + sys.argv[1:]),

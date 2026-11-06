@@ -12,9 +12,9 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 1
-FIELDS = {'char', 'code', 'class', 'components', 'recognition', 'short1', 'short2',
-          'pinyin', 'frequency', 'quality', 'notes'}
+SCHEMA_VERSION = 2  # v2：componentsSource / keys（报告 241）
+FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'recognition',
+          'short1', 'short2', 'pinyin', 'frequency', 'quality', 'notes'}
 CLASSES = {'key-name', 'radical-char', 'compound', None}
 QUALITIES = {'full', 'partial', 'unknown'}
 RECOGNITION = {
@@ -94,8 +94,12 @@ def main() -> int:
         if entry['short2'] != short2.get(char):
             problems.append(f'{char}: 二级简码不一致')
         text = json.dumps(entry, ensure_ascii=False)
-        if any(ord(ch) >= 0xF0000 for ch in text):
-            problems.append(f'{char}: 产物含私有区字形（ADR-189 不允许）')
+        # 两种 PUA 都要拦：BMP（U+E000–U+F8FF）与补充区（≥U+F0000）
+        pua = [ch for ch in text if 0xE000 <= ord(ch) <= 0xF8FF or ord(ch) >= 0xF0000]
+        if pua:
+            problems.append(f'{char}: 产物含私有区字形 {[hex(ord(c)) for c in pua][:3]}（ADR-189 不允许）')
+        if entry['class'] == 'compound' and len(entry['keys']) != len(entry['components']):
+            problems.append(f'{char}: keys 与 components 数量不一致')
         if entry['quality'] != 'full' and not entry['notes']:
             problems.append(f'{char}: 非 full 等级必须写 notes')
         recognition = entry['recognition']
