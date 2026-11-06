@@ -1,0 +1,59 @@
+# B0 结构事实库 · 数据模型（试点 1,000 高频字）
+
+> 状态：**B0 试点**（ADR-189 的第一次落地）。只读事实库，不进入输入热路径，不改候选排序。
+> 版本：`schemaVersion: 1`。字段变更必须升版本并写报告。
+
+## 1. 目的
+
+给"学 / 练"提供**每字可解释**的事实：这个字怎么取码、末笔与结构如何决定识别码、有没有简码。
+判定标准是"讲解**能追溯到事实**"，不是"字段多"。
+
+## 2. 字段
+
+| 字段 | 类型 | 说明 |
+|---|---|---|
+| `char` | string | 单字 |
+| `code` | string | 五笔86 全码（来自 D1 生成码表） |
+| `class` | enum | `key-name`（键名字）/ `radical-char`（成字字根）/ `compound`（合体字） |
+| `components` | string[] | 字根序列（D2 可读字形；不含识别码字形） |
+| `recognition` | object \| null | `{key, stroke, structure, because}`：识别码字母、末笔、结构、判定依据 |
+| `short1` / `short2` | string \| null | 一级 / 二级简码（D17 / D17-bis） |
+| `pinyin` | string \| null | 首选读音（D5） |
+| `frequency` | int | 通用字频（D10，jieba 单字频；0 表示缺） |
+| `quality` | enum | `full` / `partial` / `unknown`，见 §4 |
+| `notes` | string[] | 缺口与不确定点（**不允许**留空的"看起来完整"） |
+
+## 3. 判定规则（全部来自已登记数据，不引入新来源）
+
+1. **键名字**：全码 4 位且四位相同 → `class=key-name`，`because="键名字，连打该键四次"`。
+2. **成字字根**：D2 字形序列首位 == 该字 → `class=radical-char`，后续字形是笔画（可读，如 一丨丿丶乙）。
+3. **合体字**：D2 可读字形即字根序列；`n = len(components)`
+   - `len(code) == n + 1` → 末位是**识别码**：`(stroke, structure) = inverse(末位)`；
+   - `len(code) == n` → **无识别码**（字根已够四码）；
+   - 其它 → `quality=partial`，`notes` 记录 `code_len` 与 `n` 的具体数值。
+4. **PUA 处理**：D2 的补充区私有码位（如识别码字形、生僻字根）一律**丢弃**；若字根序列里出现 PUA
+   （不是末尾识别码字形），该字标 `partial` 并注明"字根含私有区字形，无法渲染"。
+5. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
+
+## 4. 质量等级
+
+| 等级 | 含义 |
+|---|---|
+| `full` | 三类之一判定成功，且（合体字）能给出识别码依据或无识别码结论 |
+| `partial` | 有码，但字根数/码长对不上，或含无法渲染的字根 |
+| `unknown` | 缺码或缺拆字数据 |
+
+**发布规则**：`partial` / `unknown` 允许存在，但必须带 `notes`；对外讲解时按等级降级表述，
+不得把 `partial` 当完整解释。
+
+## 5. 产物
+
+- `corpus/B0.json`：数组，按 `frequency` 降序、`char` 升序；
+- `corpus/B0-report.json`：覆盖统计、输入文件 SHA-256、生成命令；
+- 两者都由 `tools/build_b0.py` 生成，`tests/validate_b0.py` 独立复核。
+
+## 6. 边界（ADR-189）
+
+- 本目录不依赖 `ime-*`、平台代码或主仓库路径；工具的输入输出全部由命令行显式给出。
+- 事实来源许可与 SHA 见 `provenance/B0.md`；PUA 与私有字形不进入本库。
+- 不改变输入法行为；运行包/接入方式另定（ADR-189「产物边界」）。
