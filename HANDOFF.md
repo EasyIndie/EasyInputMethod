@@ -59,7 +59,7 @@
 - **D3 只能作构建期 oracle（ADR-310）**：许可「未声明」，不得进发布产物、不得复用其字体。
 - **客户端自动回读缺口**：Safari/Chrome/Xcode 在自动矩阵是 BLOCKED，需人工补（报告 229）。
 - **发布加固项**：签名 tag 校验仍未启用（缺 `packaging/git-allowed-signers`），当前只警告不失败（报告 248 §5）。
-- **`ps rss` 口径**：macOS 27 计入共享页，`RSS_HARD_MB=96` 贴近误判边缘，建议改 `vmmap` footprint。
+- ~~`ps rss` 口径~~ → **已改**（报告 251）：`perf-session.sh` 与 `soak-session.sh` 的绝对硬顶统一改用 `vmmap` physical footprint（`FOOTPRINT_HARD_MB=40`），rss 降为参考；延迟统计新增 long-code / paging 两段。
 
 ## 4. 下一步（1.2.0，按 `docs/迭代计划-1.2.0.md` 逐批推进）
 
@@ -115,6 +115,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**1.2.0 B1 批完成（报告 251）**。D1 签名 tag 改 SSH key（白名单 `packaging/git-allowed-signers`，本地已验签）；D2 CI 取 D2 拆字数据 + D17 简码表入库，B0 独立重算不再 skip；D5 perf/soak 绝对硬顶改 vmmap footprint；D6 站点改占位符 + `tools/stamp-site.py` + Pages 盖章；D4 延迟统计加 long-code/paging 两段；E2 soak 30 分钟档。未换包、未改输入行为；离线 61 文件 / 323 例 PASS。
 - 2026-11-06 / pi（air）：**1.2.0 迭代计划（`docs/迭代计划-1.2.0.md`）**。按"除平台扩张外全部收口"排成 6 批：B1 工程收口 → B2 数据地基 → B3 L3 提示 → B4 L4 练习 → B5 质量项（有证据才做）→ B6 数据扩张；只换一次包。原则：低风险先行、依赖链不打断、无证据的项明确关闭并写触发条件。可立即开始 B1 与 C1（互不阻塞）。
 - 2026-11-06 / pi（air）：**下一版积压梳理（`docs/待办与积压.md`）**。把 ROADMAP 未勾项、ADR 待定项、报告遗留与已知限制收成 A–G 七类，每项给证据/成本/依赖/授权；给出 1.2.0 三套套餐（A 工程收口+教学地基 / B 质量与门禁最小版 / C 平台扩张），推荐 A。需要用户拍三件事：套餐、签名 tag 是否启用、Windows spike 是否启动。
 - 2026-11-06 / pi（air）：**1.1.0 闭环 + air 输入源故障收尾**。用户在 pro 确认候选/切源正常；air 报「萤火虫不能用」经查是**被移出已启用输入源**（包、宿主、签名均健康），用户重新添加后恢复。把排查命令与「TIS 后台启用不持久化」写进 `docs/故障恢复.md` §4.1，HANDOFF 同步。

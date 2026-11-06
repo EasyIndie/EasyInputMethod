@@ -1,7 +1,9 @@
 #!/bin/sh
 # 久用与持久化验收（报告192）：连续键入若干分钟，采样网络/内存，然后重启宿主验证词库不丢。
-# 判定：全程 0 连接、RSS 增长 ≤ GROWTH_LIMIT_MB、稳定态 ≤ RSS_HARD_MB、词库行数重启前后一致、宿主存活。
-# 报告198：绝对 RSS 不可跨 macOS 版本比较（macOS 13 的 ps rss 计入共享库页），泄漏信号看「相对热身段增长」。
+# 判定：全程 0 连接、**footprint** 增长 ≤ GROWTH_LIMIT_MB、稳定态 footprint ≤ FOOTPRINT_HARD_MB、
+# 词库行数重启前后一致、宿主存活。
+# 报告198/229：`ps rss` 在 macOS 27 计入共享页（同宿主 footprint 33 MiB / rss 95 MiB），
+# 不能当硬顶（ADR 报告 251 起改用 vmmap physical footprint）；rss 仍采样，只作参考。
 set -u
 PROBE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$PROBE/bin"
@@ -10,7 +12,7 @@ DICT="$SUPPORT/user-dictionary.tsv"
 SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 MINUTES="${MINUTES:-3}"
 GROWTH_LIMIT_MB="${GROWTH_LIMIT_MB:-5}"
-RSS_HARD_MB="${RSS_HARD_MB:-96}"
+FOOTPRINT_HARD_MB="${FOOTPRINT_HARD_MB:-40}"
 OUT="${OUT:-/tmp/lampyris-soak-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 
@@ -77,10 +79,10 @@ sleep 5
 L2=$(dict_lines)
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
-python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" "${IME_ROUNDS:-0}" "$TRUNCATED" <<'PY'
+python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$FOOTPRINT_HARD_MB" "$ROUND" "${IME_ROUNDS:-0}" "$TRUNCATED" <<'PY'
 import json, re, sys
 out, l0, l1, l2 = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
-growth_limit, rss_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
+growth_limit, footprint_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
 ime_rounds = int(sys.argv[8])
 truncated = int(sys.argv[9])
 def numbers(name):
@@ -102,6 +104,10 @@ def mb(name):
             values.append({"": number / 1048576, "K": number / 1024, "M": number, "G": number * 1024}[match.group(2)])
     return values
 footprint = mb("footprint.csv")
+fp_warm = footprint[len(footprint) // 4] if len(footprint) > 8 else (footprint[0] if footprint else 0)
+fp_tail = footprint[-max(1, len(footprint) // 4):]
+fp_tail_avg = sum(fp_tail) / len(fp_tail) if fp_tail else 0
+fp_growth = fp_tail_avg - fp_warm
 first = rss[0] / 1024 if rss else 0
 peak = max(rss) / 1024 if rss else 0
 # 只用后半段与热身段比较，避免把首次候选窗/字体加载算作增长
@@ -121,11 +127,13 @@ summary = {
     "footprint_peak_mb": round(max(footprint), 1) if footprint else None,
     "footprint_last_mb": round(footprint[-1], 1) if footprint else None,
     "footprint_tail_delta_mb": round(footprint[-1] - footprint[len(footprint) // 2], 1) if len(footprint) > 2 else None,
-    "thresholds": {"growth_mb": growth_limit, "rss_hard_mb": rss_hard},
+    "footprint_steady_mb": round(fp_tail_avg, 1),
+    "footprint_growth_mb": round(fp_growth, 1),
+    "thresholds": {"growth_mb": growth_limit, "footprint_hard_mb": footprint_hard},
 }
 # 报告229：一个走 IME 的 round 都没有，说明久用测的不是输入法，直接判 FAIL。
 ok = (rounds > 0 and ime_rounds > 0 and truncated == 0 and summary["max_connections"] == 0
-      and growth <= growth_limit and tail_avg <= rss_hard
+      and fp_tail_avg > 0 and fp_growth <= growth_limit and fp_tail_avg <= footprint_hard
       and l2 == l1 and l1 >= l0)
 summary["result"] = "PASS" if ok else "FAIL"
 print(json.dumps(summary, ensure_ascii=False, sort_keys=True))

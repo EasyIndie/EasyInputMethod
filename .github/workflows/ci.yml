@@ -160,6 +160,10 @@ jobs:
           cargo run -p ime-pinyin --example generate_pinyin
           python3 tools/prepare-pinyin-core.py
           git diff --exit-code -- data/generated/pinyin-chars.tsv data/generated/pinyin-core.tsv data/generated/pinyin-core-report.json
+      - name: Fetch Wubi decomposition data for structure tests
+        if: steps.changes.outputs.lane == 'full'
+        run: ./data/sources/fetch-wubi-chaizi.sh
+
       - name: Build and smoke-test independent preview
         if: steps.changes.outputs.lane == 'full'
         run: ./platforms/macos/dev-preview.sh --smoke-test
