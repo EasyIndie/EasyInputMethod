@@ -8,6 +8,9 @@ if [ ! -d "${ROOT}/.git" ]; then
   exit 1
 fi
 
-dst="${ROOT}/.git/hooks/pre-push"
-install -m 0755 "${ROOT}/scripts/hooks/pre-push" "${dst}"
-echo "✅ 已安装 ${dst}（临时跳过：git push --no-verify）"
+for name in pre-push commit-msg; do
+  dst="${ROOT}/.git/hooks/${name}"
+  install -m 0755 "${ROOT}/scripts/hooks/${name}" "${dst}"
+  echo "✅ 已安装 ${dst}"
+done
+echo "临时跳过：git push --no-verify / git commit --no-verify"
