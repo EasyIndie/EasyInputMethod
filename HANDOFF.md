@@ -39,6 +39,8 @@
 
 ## 3. 未决
 
+- **corpus 数据来源已调研（`docs/research/corpus-data-sources.md`）**：主选 `yi-bai/ids`（MIT）+ Unihan（Unicode License v3）+ 自编 130 字根笔画；**明确不采用** Make Me a Hanzi 的 Arphic 图形与 Hanzi Writer、KanjiVG、字典抓取。实测 IDS 覆盖 B0 992/1000、partial 236/238，识别码结构一致性 87.1%（13% 需先定口径）。未引入任何数据。
+
 - **B0 消费契约已定（报告 241 方案 A）**：按 `quality` 降级表述——full 给完整解释、partial 必带「拆解待核验」、unknown 只说缺资料；`tools/b0_query.py` 是参考实现，校验器 + 离线回归守住不变量。B0 v2 口径：full 753 / partial 239 / unknown 8（514 条给出识别码依据）。
 - **自建 corpus 已立项（ADR-309，未开工）**：字根字形库 + 笔画/笔顺 + 结构标注；验收=高频 3,000 字 ≥98% 可解释、许可齐全、体积/延迟实测、模块内可独立构建。
 
@@ -124,6 +126,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**corpus 数据来源调研（未改仓库数据）**。结论：不需要 Arphic 衍生的笔顺图形；结构用 `yi-bai/ids`（MIT）+ Unihan 交叉校验，字根笔画自编 130 条。可行性实测：IDS 覆盖 992/1000、partial 236/238、与识别码结构一致 446/512（87.1%），13% 不一致需先定口径。ADR-309 已追加来源结论，约 1 周工作量。
 - 2026-11-06 / pi（air）：**落地方案 A + 立项方案 C（报告 241 / ADR-309）**。B0 消费契约写进 spec §6（full 完整 / partial 必带「拆解待核验」/ unknown 只说缺资料），新增 `tools/b0_query.py` 参考实现与两条校验不变量（unknown 不带组件/识别码、识别码条目组件数=码长-1）；顺手修两处数据问题（`〇` 是占位字形不算笔画、缺拆字时组件不应是自身）。ADR-309 立项自建 corpus（字根字形 + 笔画/笔顺 + 结构标注），验收=高频 3,000 字 ≥98% 可解释。离线 61 文件/315 例全绿。
 - 2026-11-06 / pi（air）：**PUA 字根解码（报告 241 / B0 schema v2）**。对齐 6,191 字学出 184 个 PUA→字根映射；但 D3 组件序列不可靠（混识别码/笔画），覆盖率未提升，反而暴露 B0 v1 的 BMP PUA 校验漏洞（18 条）→ v2 修正为 full 754 / partial 238 / unknown 8，并新增 `componentsSource` / `keys` 字段与严格的 PUA 拦截。建议 A 接受 76%（partial 降级表述）之外，另可 B 人工核验高频 partial、C 启动自建 corpus。
 - 2026-11-06 / pi（air）：**B0 结构事实库试点落地（报告 240 / ADR-308）**。在 `modules/hanzi-structure/` 写出 schema v1、派生生成器（输入输出显式传参）、1,000 高频字产物（363 KB）、独立复核器与 provenance；覆盖 full 760 / partial 232 / unknown 8，513 条可解释识别码来源。离线回归新增 `test-hanzi-structure-b0.py`。
