@@ -2,6 +2,12 @@
 
 > 把 ROADMAP 的阶段拆成**独立可交付、可被低成本模型（deepseek-v4-flash）执行**的最小任务卡。
 > **规则见根目录 `AGENTS.md`**（铁律/工作流/验证）；本目录只负责"更细的粒度"。
+>
+> **本目录只放"还在做/还要做"的卡**（2026-11-06 起）：完成的卡一律 `git mv` 到
+> [`docs/archive/tasks/`](../archive/tasks/)，并保留原文件名，历史链接照旧可查。
+> 现在在册的只有：IT-22 走查相关三张（`T-ITER-22.md`、`T-ITER-22-coverage.md`、
+> `T-ITER-22-1.1.0-affected.md`）。清单外的文件出现即视为文档卫生违规
+> （`platforms/macos/tests/test-docs-hygiene.py` 强制）。
 
 ## 一、任务卡格式（每张卡固定结构）
 
@@ -31,10 +37,10 @@
 
 ```bash
 # 默认：一张卡 = 一个新 worker
-./scripts/dispatch-task.sh docs/tasks/T-M1-01.md --model deepseek-v4-flash
+./scripts/dispatch-task.sh docs/archive/tasks/T-M1-01.md --model deepseek-v4-flash
 
 # 仅当后一卡必须接着前一卡的上下文时，才复用同一会话
-./scripts/dispatch-task.sh docs/tasks/T-M1-02.md --model <flash> --reuse seq-a
+./scripts/dispatch-task.sh docs/archive/tasks/T-M1-02.md --model <flash> --reuse seq-a
 ```
 
 脚本会：读任务卡 → 用指定模型 headless 执行 → 要求跑 `make verify` + 更新 HANDOFF/ROADMAP → 只回简短摘要；**并把本次 token/成本记入 `docs/experiments/runs/usage.jsonl`**。
@@ -57,78 +63,78 @@
 
 ### 当前迭代（T-ITER-01进行中；其余待认领）
 
-统一排序与其余待拆任务见 [迭代计划](../迭代计划.md)。
+统一排序与其余待拆任务见 [迭代计划](../../HANDOFF.md)。
 
 | 卡片 | 主题 | 前置 |
 |---|---|---|
-| [T-ITER-01](T-ITER-01.md) | 多应用验收资源所有权 | 无 |
-| [T-ITER-02](T-ITER-02.md) | 面板验收文件与词库隔离 | 无 |
-| [T-ITER-04](T-ITER-04.md) | 快捷键统一解析与校验 | 无 |
-| [T-ITER-05](T-ITER-05.md) | 全半角配置与覆盖一致 | 无 |
-| [T-ITER-06](T-ITER-06.md) | 组合中配置重算 | 无 |
-| [T-ITER-07](T-ITER-07.md) | 保存失败反馈 | IT-04 |
+| [T-ITER-01](../archive/tasks/T-ITER-01.md) | 多应用验收资源所有权 | 无 |
+| [T-ITER-02](../archive/tasks/T-ITER-02.md) | 面板验收文件与词库隔离 | 无 |
+| [T-ITER-04](../archive/tasks/T-ITER-04.md) | 快捷键统一解析与校验 | 无 |
+| [T-ITER-05](../archive/tasks/T-ITER-05.md) | 全半角配置与覆盖一致 | 无 |
+| [T-ITER-06](../archive/tasks/T-ITER-06.md) | 组合中配置重算 | 无 |
+| [T-ITER-07](../archive/tasks/T-ITER-07.md) | 保存失败反馈 | IT-04 |
 
-[T-ITER-03](T-ITER-03.md)结果分类与覆盖门禁、[T-ITER-12](T-ITER-12.md)宿主性能基线、[T-ITER-13](T-ITER-13.md)发布附件与构建元信息、[T-ITER-20](T-ITER-20.md)五笔键位提示均已拆卡并进行中；其余卡按统一队列到点细化。以下原里程碑卡片用于追溯，状态以各卡为准。
+[T-ITER-03](../archive/tasks/T-ITER-03.md)结果分类与覆盖门禁、[T-ITER-12](../archive/tasks/T-ITER-12.md)宿主性能基线、[T-ITER-13](../archive/tasks/T-ITER-13.md)发布附件与构建元信息、[T-ITER-20](../archive/tasks/T-ITER-20.md)五笔键位提示均已拆卡并进行中；其余卡按统一队列到点细化。以下原里程碑卡片用于追溯，状态以各卡为准。
 
 
 ### P1-M1（自建码表 + 词频）—— 历史任务；主体已交付
 
 | ID | 标题 | 模型 | 依赖 |
 |---|---|---|---|
-| [T-M1-01](T-M1-01.md) | 字根表建模与编码器 crate 骨架 | flash | 无 |
-| [T-M1-02](T-M1-02.md) | 键名字 + 成字字根编码规则 | flash | T-M1-01 |
-| [T-M1-03](T-M1-03.md) | 合体字取码 + 末笔字型识别码 | **pro** | T-M1-02 |
-| [T-M1-04](T-M1-04.md) | 拆字数据加载与交叉校验 | flash | 无 |
-| [T-M1-04b](T-M1-04b.md) | 接入第二个 oracle 码表（rime-wubi） | flash | T-M1-04 |
-| [T-M1-05a](T-M1-05a.md) | 引入独立的结构/末笔数据源 | **pro** | T-M1-03, T-M1-04 |
-| [T-M1-05b](T-M1-05b.md) | 自建独立结构/末笔数据集（IDS+部件表） | **pro** | T-M1-05a |
-| [T-M1-05](T-M1-05.md) | 单字码表生成 + 多 oracle 回归 | **pro** | T-M1-03, T-M1-04, T-M1-04b |
-| [T-M1-06](T-M1-06.md) | 词组码自动生成 | flash | T-M1-05 |
-| [T-M1-06b](T-M1-06b.md) | 词表与词频升级（jieba，含 T-M1-07） | flash | T-M1-05, T-M1-06 |
-| [T-M1-07](T-M1-07.md) | 词频权重接入（已并入 06b） | flash | — |
-| [T-M1-08](T-M1-08.md) | 数据来源与许可登记 | flash | T-M1-04/06b |
-| [T-M1-09](T-M1-09.md) | 正式码表接入 ime-table / ime-cli | **pro** | T-M1-05, T-M1-06b |
-| [T-M1-10](T-M1-10.md) | `convert` 去全表线性扫描（二分 + 前缀区间） | **pro** | ADR-060 |
+| [T-M1-01](../archive/tasks/T-M1-01.md) | 字根表建模与编码器 crate 骨架 | flash | 无 |
+| [T-M1-02](../archive/tasks/T-M1-02.md) | 键名字 + 成字字根编码规则 | flash | T-M1-01 |
+| [T-M1-03](../archive/tasks/T-M1-03.md) | 合体字取码 + 末笔字型识别码 | **pro** | T-M1-02 |
+| [T-M1-04](../archive/tasks/T-M1-04.md) | 拆字数据加载与交叉校验 | flash | 无 |
+| [T-M1-04b](../archive/tasks/T-M1-04b.md) | 接入第二个 oracle 码表（rime-wubi） | flash | T-M1-04 |
+| [T-M1-05a](../archive/tasks/T-M1-05a.md) | 引入独立的结构/末笔数据源 | **pro** | T-M1-03, T-M1-04 |
+| [T-M1-05b](../archive/tasks/T-M1-05b.md) | 自建独立结构/末笔数据集（IDS+部件表） | **pro** | T-M1-05a |
+| [T-M1-05](../archive/tasks/T-M1-05.md) | 单字码表生成 + 多 oracle 回归 | **pro** | T-M1-03, T-M1-04, T-M1-04b |
+| [T-M1-06](../archive/tasks/T-M1-06.md) | 词组码自动生成 | flash | T-M1-05 |
+| [T-M1-06b](../archive/tasks/T-M1-06b.md) | 词表与词频升级（jieba，含 T-M1-07） | flash | T-M1-05, T-M1-06 |
+| [T-M1-07](../archive/tasks/T-M1-07.md) | 词频权重接入（已并入 06b） | flash | — |
+| [T-M1-08](../archive/tasks/T-M1-08.md) | 数据来源与许可登记 | flash | T-M1-04/06b |
+| [T-M1-09](../archive/tasks/T-M1-09.md) | 正式码表接入 ime-table / ime-cli | **pro** | T-M1-05, T-M1-06b |
+| [T-M1-10](../archive/tasks/T-M1-10.md) | `convert` 去全表线性扫描（二分 + 前缀区间） | **pro** | ADR-060 |
 
 ### 原P2已提前交付项（现属MVP功能集；见各卡完成记录）
 
 | ID | 标题 | 模型 | 依赖 |
 |---|---|---|---|
-| [T-P2-01](T-P2-01.md) | 简繁转换（含 `Ctrl+Shift+F` 默认键） | **pro** | ADR-014/016/068 |
-| [T-P2-02](T-P2-02.md) | 偏好设置面板（Schema 驱动非模态） | **pro** | ADR-070 |
-| [T-P2-03](T-P2-03.md) | 用户反馈入口（本地诊断 + 用户主动打开） | **pro** | ADR-071 |
-| [T-P2-04](T-P2-04-memory.md) | 引擎常驻内存优化（**MEM-1**，macOS 27/arm64 ≤30MB） | **pro** | ADR-060、MVP-05 §2.4 |
+| [T-P2-01](../archive/tasks/T-P2-01.md) | 简繁转换（含 `Ctrl+Shift+F` 默认键） | **pro** | ADR-014/016/068 |
+| [T-P2-02](../archive/tasks/T-P2-02.md) | 偏好设置面板（Schema 驱动非模态） | **pro** | ADR-070 |
+| [T-P2-03](../archive/tasks/T-P2-03.md) | 用户反馈入口（本地诊断 + 用户主动打开） | **pro** | ADR-071 |
+| [T-P2-04](../archive/tasks/T-P2-04-memory.md) | 引擎常驻内存优化（**MEM-1**，macOS 27/arm64 ≤30MB） | **pro** | ADR-060、MVP-05 §2.4 |
 
 ### 后续（粗粒度，到点时再拆）
 
-见 [backlog.md](backlog.md)。
+见 [backlog.md](../archive/tasks/backlog.md)。
 
 ### P1-M2（配置 + 拼音 + 混输）
 
 | ID | 标题 | 模型 | 依赖 |
 |---|---|---|---|
-| [T-M2-01](T-M2-01.md) | `ime-config` 配置子系统 | **pro** | 无 |
-| [T-M2-02](T-M2-02.md) | 内置轻量拼音引擎 `ime-pinyin` | **pro** | T-M2-01 |
-| [T-M2-03](T-M2-03.md) | 拼音反查 + `ime-config` 接入 CLI | **pro** | T-M2-01, T-M2-02 |
-| [T-M2-04](T-M2-04.md) | `inputx-pinyin` spike | flash | — |
+| [T-M2-01](../archive/tasks/T-M2-01.md) | `ime-config` 配置子系统 | **pro** | 无 |
+| [T-M2-02](../archive/tasks/T-M2-02.md) | 内置轻量拼音引擎 `ime-pinyin` | **pro** | T-M2-01 |
+| [T-M2-03](../archive/tasks/T-M2-03.md) | 拼音反查 + `ime-config` 接入 CLI | **pro** | T-M2-01, T-M2-02 |
+| [T-M2-04](../archive/tasks/T-M2-04.md) | `inputx-pinyin` spike | flash | — |
 
 ### P1-M3（macOS 宿主）
 
 | ID | 标题 | 模型 | 依赖 |
 |---|---|---|---|
-| [T-M3-01](T-M3-01.md) | `ime-ffi` C ABI（会话 + 配置） | **pro** | P1-M1/M2 |
-| [T-M3-02](T-M3-02.md) | Swift + InputMethodKit 宿主（需人工验证） | **pro** | T-M3-01 |
-| [T-M3-03](T-M3-03.md) | 安装/卸载脚本 + Gatekeeper 说明 | flash | T-M3-02 |
-| [T-M3-04](T-M3-04.md) | CI 加 macOS runner（覆盖 Swift 前端） | flash | T-M3-02 |
+| [T-M3-01](../archive/tasks/T-M3-01.md) | `ime-ffi` C ABI（会话 + 配置） | **pro** | P1-M1/M2 |
+| [T-M3-02](../archive/tasks/T-M3-02.md) | Swift + InputMethodKit 宿主（需人工验证） | **pro** | T-M3-01 |
+| [T-M3-03](../archive/tasks/T-M3-03.md) | 安装/卸载脚本 + Gatekeeper 说明 | flash | T-M3-02 |
+| [T-M3-04](../archive/tasks/T-M3-04.md) | CI 加 macOS runner（覆盖 Swift 前端） | flash | T-M3-02 |
 
-- [T-ITER-23：单人五工作日手动试用](T-ITER-23.md)：用户计划2026-10-13开始，最终RC及实际结果待验。
+- [T-ITER-23：单人五工作日手动试用](../archive/tasks/T-ITER-23.md)：用户计划2026-10-13开始，最终RC及实际结果待验。
 
 ## 核心完整性评估待办
 
-- [IT-29](T-ITER-29.md)：混输自动提交跨引擎歧义。
-- [IT-26](T-ITER-26.md)：拼音兜底首屏可达。
-- [IT-27](T-ITER-27.md)：隔音符与常用读音质量。
-- [IT-28](T-ITER-28.md)：编辑键/安全输入边界取证，非已确认漏洞。
+- [IT-29](../archive/tasks/T-ITER-29.md)：混输自动提交跨引擎歧义。
+- [IT-26](../archive/tasks/T-ITER-26.md)：拼音兜底首屏可达。
+- [IT-27](../archive/tasks/T-ITER-27.md)：隔音符与常用读音质量。
+- [IT-28](../archive/tasks/T-ITER-28.md)：编辑键/安全输入边界取证，非已确认漏洞。
 
 IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进；全部最终包原生门禁待验。见[报告012](../reviews/012-core-refinement.md)。
 
@@ -140,6 +146,6 @@ IT-29与IT-26工程完成，IT-27隔音符工程完成、读音质量待推进�
 
 ## 当前教学数据专项
 
-[T-MVP-LEARNING-COVERAGE](T-MVP-LEARNING-COVERAGE.md)：覆盖审计已完成，按高频100→500→1000/3500分批核验教学；与UI工程完成分开验收。
+[T-MVP-LEARNING-COVERAGE](../archive/tasks/T-MVP-LEARNING-COVERAGE.md)：覆盖审计已完成，按高频100→500→1000/3500分批核验教学；与UI工程完成分开验收。
 
 - [`T-ITER-22.md`](T-ITER-22.md)：最终候选产品走查（IT-22 执行清单，含取证命令与判定口径）。

@@ -78,4 +78,4 @@ t=8.735  AXAnnouncementRequested   role=AXApplication                 ← 上屏
 1. `quality-samples.sh` 增加前置：`pgrep -x TextEdit` 实例数 >1 时先关掉（或直接判 BLOCKED），避免再次误判。
 2. `axmenu` 的 `press` 路径语义与 `dump` 统一（差一层）。
 3. `clean-install.sh` 的「已自动注册到输入源」在 macOS 13 是假成功，改为回读 `tissrc list` 再决定措辞（报告201 的建议，仍未做）。
-4. 0.1.14 尚未打 tag / 未发 Release；发布前需按 `docs/发布说明.md` 流程再走一次候选包（build 23）验收。
+4. 0.1.14 尚未打 tag / 未发 Release；发布前需按 `docs/archive/发布说明-0.1.15.md` 流程再走一次候选包（build 23）验收。

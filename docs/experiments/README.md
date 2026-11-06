@@ -21,7 +21,7 @@
 
 ```bash
 # 1) 平时派发任务卡时自动记录（零额外成本）
-./scripts/dispatch-task.sh docs/tasks/T-M1-01.md --model <flash> --reuse batch-a
+./scripts/dispatch-task.sh docs/archive/tasks/T-M1-01.md --model <flash> --reuse batch-a
 
 # 2) 汇总（纯本地，不花 token）
 ./scripts/usage-report.sh            # 全部
@@ -29,7 +29,7 @@
 
 # 3) 受控 A/B / 微基准（会真的跑 pi，花 token）
 ./scripts/bench-session-vs-workers.sh --micro
-./scripts/bench-session-vs-workers.sh --tasks "docs/tasks/T-M1-01.md docs/tasks/T-M1-04.md"
+./scripts/bench-session-vs-workers.sh --tasks "docs/archive/tasks/T-M1-01.md docs/archive/tasks/T-M1-04.md"
 ```
 
 - `--micro`：用同一句极短 prompt 跑"新会话"与"复用会话"，**直接量出冷启动过路费**。

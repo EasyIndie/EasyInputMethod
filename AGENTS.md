@@ -38,6 +38,8 @@
 7. **设计变更先写 ADR**：改架构/协议/约定 → 先更新 `docs/决策记录.md`，再动代码。
 8. **提交前必须跑验证**：`make verify`（见 §5），全绿才能提交；**0 警告 0 错误**（ADR-081）。
 9. **文档同步**：行为变更 → 同步更新对应文档；文档与代码不一致视为 bug。
+   活文档必须能从 `docs/README.md` 链到；完成的任务卡 `git mv` 到 `docs/archive/tasks/`；
+   违规会被 `platforms/macos/tests/test-docs-hygiene.py` / `test-docs-sync.py` 拦下（报告 236）。
 10. **小步、可验证**：一次只做**一个**明确、可独立验证的改动；不要顺手重构无关代码。
 11. **验收自清场**：任何会开窗口/拉起应用的验收脚本必须挂 `trap … EXIT INT TERM` 并调用
     `tools/macos-probe/cleanup-windows.sh`（只回收自己开出来的东西，绝不误关用户窗口）。

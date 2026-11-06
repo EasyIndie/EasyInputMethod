@@ -13,7 +13,9 @@
 | [数据来源与许可.md](数据来源与许可.md) | 数据准入、来源清单、自建流水线、许可兼容 |
 | [隐私与安全.md](隐私与安全.md) | 零网络承诺、威胁模型、可验证性 |
 | [故障恢复.md](故障恢复.md) | 配置/词库/数据的手工恢复步骤 |
-| [README.md](../README.md) · [CONTRIBUTING.md](../CONTRIBUTING.md) | 项目介绍与贡献规范 |
+| [README.md](../README.md) · [CONTRIBUTING.md](../CONTRIBUTING.md) · [SECURITY.md](../SECURITY.md) | 项目介绍、贡献规范、漏洞披露 |
+| [AGENTS.md](../AGENTS.md) · [CLAUDE.md](../CLAUDE.md) | AI 代理入口（铁律/工作流/验证）；CLAUDE.md 只是指向 AGENTS.md 的指针 |
+| [HANDOFF.md](../HANDOFF.md) · [ROADMAP.md](../ROADMAP.md) | 当前状态与任务清单（**唯一状态来源**） |
 
 ## 验收与发布
 
@@ -23,8 +25,7 @@
 | [MVP单人验收清单.md](MVP单人验收清单.md) | 用户手动走查、五工作日试用、独立核验材料 |
 | [macos-release-checklist.md](macos-release-checklist.md) | 发布清单：已关闭/未关闭门禁 |
 | [更新发布流程.md](更新发布流程.md) · [更新源与镜像.md](更新源与镜像.md) | 发版流程与站点规则 |
-| [发布说明.md](发布说明.md) | 版本说明、快捷键、限制（面向用户） |
-| [releases/](releases/) | 每个已发布版本的实测结论 |
+| [releases/](releases/) | 每个版本的发布说明与实测结论：**1.1.0（候选）**、1.0.2、1.0.1、1.0.0、0.1.15、0.1.13 |
 | [人工验收与多机复现.md](人工验收与多机复现.md) | 历史验收操作与双机复现步骤 |
 | [验收协作清单.md](验收协作清单.md) | 换包验收时"谁做什么"、15 分钟窗口顺序 |
 
@@ -34,7 +35,7 @@
 |---|---|
 | [reviews/README.md](reviews/README.md) | 报告索引：编号口径、当前有效报告、按阶段回溯 |
 | [reviews/TEMPLATE-report.md](reviews/TEMPLATE-report.md) | 报告模板（只写新增结论 + 证据路径 + 差异） |
-| [tasks/README.md](tasks/README.md) | 任务卡机制与当前可认领项 |
+| [tasks/README.md](tasks/README.md) | 任务卡机制；**本目录只放活跃卡**（当前只有 IT-22 走查三张） |
 
 ## 协作与流程
 
@@ -58,11 +59,23 @@
 
 ## 历史归档（仅供追溯，不代表现状）
 
-- [history/](history/) — 阶段性快照与本地记录
-- [archive/](archive/) — 早期讨论稿（v0.1–v0.5 技术方案、输入法调研），结论已并入 `技术方案.md`
+- [archive/README.md](archive/README.md) — 归档索引：已完成任务卡（`archive/tasks/`）、0.1.15 发布说明底稿、v0.2–v0.5 技术方案、早期调研
+- [history/](history/) — 阶段性快照（冻结，不校验内部链接）
+- [design/README.md](design/README.md) — 设计稿迭代（过程产物，不是产品契约）
+- [research/README.md](research/README.md) — 议题级研究（结构库、教学生成），结论已并入方案/ADR
 - [experiments/](experiments/) — 用量/性能实验（ADR-082 旁证）
 
 ## 待确认（见 `决策记录.md` 待定项）
 
 - TBD-2 五笔98 / 新世纪 / 郑码数据源
 - TBD-1（jieba）、TBD-3（TSV v1）、TBD-4（包名 Lampyris）已定
+
+## 文档卫生规则（2026-11-06 起，机器强制）
+
+1. **一张表定生死**：当前有效的文档必须能从本文件链到；链不到的要么补进来，要么归档。
+2. **任务卡只放活跃的**：完成的卡 `git mv` 到 `docs/archive/tasks/`，文件名不变；`docs/tasks/` 里出现清单外的文件即违规。
+3. **归档只管追溯**：`archive/`、`history/`、`reviews/`、`design/`、`experiments/`、`research/` 内的链接不校验（内容冻结），
+   但 `archive/README.md` 必须列出新增归档项。
+4. **版本与文档对账**：`Cargo.toml` 版本 ↔ `docs/releases/<版本>.md` ↔ `HANDOFF.md` ↔ `ROADMAP.md` 当前发布列车，四者必须一致。
+5. 以上由 `platforms/macos/tests/test-docs-hygiene.py` 与 `test-docs-sync.py` 在离线回归里检查；
+   跑 `make macos-offline-tests` 就能发现"文档又烂了"。
