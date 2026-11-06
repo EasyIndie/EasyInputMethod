@@ -34,19 +34,29 @@ struct SourceID {
 /// `insertText` 覆盖提交。只看 `NSText.didChangeNotification` 会漏掉合成更新（每轮只剩 4 个样本）。
 final class TimedTextView: NSTextView {
     var pendingKeyAt: DispatchTime?
+    var pendingKey = ""
     var latencies: [Double] = []
-    private func record() {
+    /// 报告233：按"哪个键 + 哪类回调"记录，才能归因长尾（提交 vs 合成刷新 vs 空回调）。
+    var events: [[String: Any]] = []
+    private func record(_ kind: String) {
         guard let start = pendingKeyAt else { return }
-        latencies.append(Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000)
+        let ms = Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000
+        latencies.append(ms)
+        events.append(["key": pendingKey, "kind": kind, "ms": (ms * 100).rounded() / 100])
         pendingKeyAt = nil
     }
     override func setMarkedText(_ string: Any, selectedRange: NSRange, replacementRange: NSRange) {
-        record()
+        record("marked")
         super.setMarkedText(string, selectedRange: selectedRange, replacementRange: replacementRange)
     }
     override func insertText(_ string: Any, replacementRange: NSRange) {
-        record()
+        record("commit")
         super.insertText(string, replacementRange: replacementRange)
+    }
+    override func doCommand(by selector: Selector) {
+        // 未走 IME 的按键（方向键/功能键）也算一次"没进合成"的事件，便于区分。
+        if pendingKeyAt != nil { record("command") }
+        super.doCommand(by: selector)
     }
 }
 
@@ -90,6 +100,7 @@ final class Harness: NSObject, NSApplicationDelegate {
                 }
                 report["latencies_ms"] = sorted.map { ($0 * 100).rounded() / 100 }
                 report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count] as [String: Any]
+                report["events"] = self.view.events
             }
             let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
             let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
@@ -122,6 +133,7 @@ final class Harness: NSObject, NSApplicationDelegate {
             let blocked: NSEvent.ModifierFlags = [.command, .control, .option]
             if event.modifierFlags.intersection(blocked).isEmpty && !(event.characters ?? "").isEmpty {
                 self.view.pendingKeyAt = DispatchTime.now()
+                self.view.pendingKey = event.characters ?? "?"
             }
             return event
         }

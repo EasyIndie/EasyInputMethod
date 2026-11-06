@@ -313,6 +313,7 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] **验收收尾清理（报告 231）**：`cleanup-windows.sh` 按 URL/标题/未保存内容签名回收探针窗口与进程，四个验收脚本挂 `trap`（失败/中断同样清）；`client-matrix` 自建并关闭 TextEdit 文档；连跑三次零残留。
 - [x] **验收自清场固化（报告 231 §6）**：`test-probe-cleanup.py` 强制「开窗口的探针必须 trap + cleanup-windows.sh」，含反向自检；规则写进 AGENTS 铁律 11 / skill / CONTRIBUTING / README。上马时修好 `multi-display.sh`、`type-session.sh` 两处缺口。
 - [x] **验收状态自归位（报告 232）**：`ime-state.sh` 的 snapshot/ensure/restore 接入 `acceptance-auto`/`quality-samples`；修掉「上一轮留下 ABC/繁体导致整轮连锁 FAIL、并改用户偏好」的问题。仅剩性能 p95 贴线待归因。
+- [x] **延迟长尾归因（报告 233 / ADR-307）**：逐键归因证明慢样本全部是「每个新窗口的首键」（14.6–27.1ms），稳态 p95 6.08ms；两组对照排除候选窗，定位为输入上下文首次建立。门禁拆为「稳态 p95 ≤16ms」+「冷首键记录」，实测 6.71ms / 冷首键 p95 25.77ms。
 
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 

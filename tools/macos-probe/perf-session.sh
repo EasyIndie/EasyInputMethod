@@ -67,7 +67,7 @@ echo "${STEADY_RSS:-0}" > "$OUT/steady-rss-kb"
 python3 - "$OUT" "$THRESHOLD_MS" "$RSS_LIMIT_MB" "$RSS_HARD_MB" "$BASE_RSS" <<'PY'
 import glob, json, sys
 out, threshold, rss_limit, rss_hard, base_kb = sys.argv[1], float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5] or 0)
-latencies, mismatched, invalid = [], 0, 0
+latencies, cold, mismatched, invalid, missing_events = [], [], 0, 0, 0
 for path in sorted(glob.glob(out + "/round-*.json")):
     data = json.load(open(path, encoding="utf-8"))
     if data.get("current_source", "").find("Lampyris") < 0:
@@ -77,8 +77,17 @@ for path in sorted(glob.glob(out + "/round-*.json")):
     if not data.get("has_non_ascii") or data.get("keys_seen", 0) == 0:
         invalid += 1
         continue
-    latencies.extend(data.get("latencies_ms", []))
+    events = data.get("events")
+    if not events:
+        missing_events += 1
+        latencies.extend(data.get("latencies_ms", []))
+        continue
+    # 报告233：慢样本全部集中在"新窗口的第一个键"（输入上下文首次建立 + 首帧候选），
+    # 与稳定态键入是两件事，必须分开算，否则 p95 由每轮 1/16 的冷样本决定。
+    cold.append(events[0]["ms"])
+    latencies.extend(e["ms"] for e in events[1:])
 latencies.sort()
+cold.sort()
 def pct(p):
     if not latencies:
         return None
@@ -93,15 +102,23 @@ steady_kb = int(open(out + "/steady-rss-kb", encoding="utf-8").read().strip() or
 steady_mb = round(steady_kb / 1024, 1)
 base_mb = round(base_kb / 1024, 1)
 growth_mb = round(steady_mb - base_mb, 1)
+def pct_cold(p):
+    if not cold:
+        return None
+    return cold[min(len(cold) - 1, int(round(p / 100 * (len(cold) - 1))))]
 summary = {
-    "keys": len(latencies),
+    "keys": len(latencies) + len(cold),
+    "steady_keys": len(latencies),
     "p50_ms": pct(50), "p95_ms": pct(95), "max_ms": latencies[-1] if latencies else None,
+    "cold_first_key_ms": {"p50": pct_cold(50), "p95": pct_cold(95), "max": cold[-1] if cold else None, "count": len(cold)},
+    "missing_events_rounds": missing_events,
     "baseline_rss_mb": base_mb, "steady_rss_mb": steady_mb, "rss_growth_mb": growth_mb,
     "max_connections": conns,
     "source_mismatch_rounds": mismatched,
     "thresholds": {"p95_ms": threshold, "rss_growth_mb": rss_limit, "rss_hard_mb": rss_hard},
 }
-ok = (bool(latencies) and summary["p95_ms"] <= threshold
+# 门禁只看稳定态（ADR-307）；冷首键单独记录，不参与 PASS/FAIL，但要保证确实采到样本。
+ok = (bool(latencies) and summary["p95_ms"] <= threshold and len(cold) > 0
       and growth_mb <= rss_limit and steady_mb <= rss_hard and conns == 0 and mismatched == 0)
 summary["invalid_rounds"] = invalid
 if not latencies:
