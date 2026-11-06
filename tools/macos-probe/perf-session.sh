@@ -38,14 +38,14 @@ BASE_RSS=$(ps -o rss= -p "$HOST" | tr -d ' ')
   done ) &
 SAMPLER=$!
 
+# 报告229：延迟必须量到输入法，所以用 HID 投递（type-session.sh 负责起窗口、校验前台、投递、回读），
+# 不再用 `--self-post`——进程内合成事件进不了 IMK，量到的是 ASCII 直通。
 round=0
 while [ "$round" -lt "$ROUNDS" ]; do
     out="$OUT/round-$round.json"
     rm -f "$out"
-    open -n /tmp/lampyris-imetype.app --args --source "$SOURCE" --keys "$KEYS" \
-        --settle 2 --delay 1.0 --self-post --out "$out" >/dev/null 2>&1
-    i=0
-    while [ $i -lt 30 ]; do [ -s "$out" ] && break; i=$((i + 1)); sleep 0.5; done
+    "$PROBE/type-session.sh" "$KEYS" --settle "${ROUND_SETTLE:-4}" --source "$SOURCE" > "$out" 2>/dev/null
+    if [ -x "$BIN/tissrc" ]; then "$BIN/tissrc" select "$SOURCE" >/dev/null 2>&1; fi
     round=$((round + 1))
 done
 kill "$SAMPLER" 2>/dev/null

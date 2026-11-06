@@ -52,12 +52,14 @@ while [ "$(date +%s)" -lt "$END" ]; do
     idx=$((ROUND % COUNT + 1))
     chunk=$(printf '%s' "$CHUNKS" | tr ';' '\n' | sed -n "${idx}p")
     out="$OUT/round-$ROUND.json"; rm -f "$out"
-    open -n /tmp/lampyris-imetype.app --args --source "$SOURCE" --keys "$chunk" \
-        --settle 2 --delay 1.0 --self-post --out "$out" >/dev/null 2>&1
-    i=0; while [ $i -lt 30 ]; do [ -s "$out" ] && break; i=$((i + 1)); sleep 0.5; done
+    # 报告229：久用必须真的走输入法（`--self-post` 的进程内合成事件进不了 IMK），
+    # 所以复用 type-session.sh 的 HID 投递：起窗口→校验前台→投键→回读。
+    "$PROBE/type-session.sh" "$chunk" --settle "${ROUND_SETTLE:-3}" --source "$SOURCE" > "$out" 2>/dev/null
+    [ -x "$BIN/tissrc" ] && "$BIN/tissrc" select "$SOURCE" >/dev/null 2>&1
     ROUND=$((ROUND + 1))
 done
 kill "$SAMPLER" 2>/dev/null
+IME_ROUNDS=$(grep -l '"has_non_ascii": true' "$OUT"/round-*.json 2>/dev/null | wc -l | tr -d ' ')
 L1=$(dict_lines)
 
 restart_host || { echo '{"result":"FAIL","reason":"宿主重启失败"}'; exit 1; }
@@ -65,10 +67,11 @@ sleep 5
 L2=$(dict_lines)
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
-python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" <<'PY'
+python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" "${IME_ROUNDS:-0}" <<'PY'
 import json, re, sys
 out, l0, l1, l2 = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
 growth_limit, rss_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
+ime_rounds = int(sys.argv[8])
 def numbers(name):
     try:
         return [int(x) for x in open(f"{out}/{name}", encoding="utf-8").read().split()]
@@ -96,7 +99,7 @@ tail = rss[-max(1, len(rss) // 4):]
 tail_avg = sum(tail) / len(tail) / 1024 if tail else peak
 growth = tail_avg - warm
 summary = {
-    "rounds": rounds, "dict_before": l0, "dict_after_typing": l1, "dict_after_restart": l2,
+    "rounds": rounds, "ime_rounds": ime_rounds, "dict_before": l0, "dict_after_typing": l1, "dict_after_restart": l2,
     "learned_delta": l1 - l0,
     "samples": len(rss), "rss_first_mb": round(first, 1), "rss_peak_mb": round(peak, 1),
     "rss_steady_mb": round(tail_avg, 1),
@@ -109,7 +112,8 @@ summary = {
     "footprint_tail_delta_mb": round(footprint[-1] - footprint[len(footprint) // 2], 1) if len(footprint) > 2 else None,
     "thresholds": {"growth_mb": growth_limit, "rss_hard_mb": rss_hard},
 }
-ok = (rounds > 0 and summary["max_connections"] == 0
+# 报告229：一个走 IME 的 round 都没有，说明久用测的不是输入法，直接判 FAIL。
+ok = (rounds > 0 and ime_rounds > 0 and summary["max_connections"] == 0
       and growth <= growth_limit and tail_avg <= rss_hard
       and l2 == l1 and l1 >= l0)
 summary["result"] = "PASS" if ok else "FAIL"

@@ -79,6 +79,9 @@ except Exception:
     print("BLOCKED 无回读结果"); raise SystemExit(1)
 print(json.dumps({"text": data.get("text"), "keys_seen": data.get("keys_seen"),
                   "current_source": data.get("current_source"),
-                  "has_non_ascii": data.get("has_non_ascii")}, ensure_ascii=False))
+                  "has_non_ascii": data.get("has_non_ascii"),
+                  # 报告229：HID 投递下的真实 IME 往返延迟（按键到达 → 首次文本变化）
+                  "latencies_ms": data.get("latencies_ms"),
+                  "latency_ms": data.get("latency_ms")}, ensure_ascii=False))
 PY
 rm -f "$OUT"

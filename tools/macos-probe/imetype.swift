@@ -29,6 +29,27 @@ struct SourceID {
     }
 }
 
+/// 带计时的文本视图：报告229 的要求是"按键 → 输入法把结果交回 UI"，
+/// 所以直接在 NSTextInputClient 的回调点上打时间戳——`setMarkedText` 覆盖合成中的每次刷新，
+/// `insertText` 覆盖提交。只看 `NSText.didChangeNotification` 会漏掉合成更新（每轮只剩 4 个样本）。
+final class TimedTextView: NSTextView {
+    var pendingKeyAt: DispatchTime?
+    var latencies: [Double] = []
+    private func record() {
+        guard let start = pendingKeyAt else { return }
+        latencies.append(Double(DispatchTime.now().uptimeNanoseconds - start.uptimeNanoseconds) / 1_000_000)
+        pendingKeyAt = nil
+    }
+    override func setMarkedText(_ string: Any, selectedRange: NSRange, replacementRange: NSRange) {
+        record()
+        super.setMarkedText(string, selectedRange: selectedRange, replacementRange: replacementRange)
+    }
+    override func insertText(_ string: Any, replacementRange: NSRange) {
+        record()
+        super.insertText(string, replacementRange: replacementRange)
+    }
+}
+
 final class Harness: NSObject, NSApplicationDelegate {
     private let source = argument("--source", default: "com.apple.keylayout.ABC")
     private let text = argument("--keys", default: "wq")
@@ -39,7 +60,7 @@ final class Harness: NSObject, NSApplicationDelegate {
     private let selfPost = CommandLine.arguments.contains("--self-post")
     private let window = NSWindow(contentRect: NSRect(x: 240, y: 240, width: 420, height: 140),
                                   styleMask: [.titled], backing: .buffered, defer: false)
-    private let view = NSTextView(frame: NSRect(x: 0, y: 0, width: 420, height: 140))
+    private let view = TimedTextView(frame: NSRect(x: 0, y: 0, width: 420, height: 140))
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         view.isEditable = true
@@ -54,11 +75,22 @@ final class Harness: NSObject, NSApplicationDelegate {
         var seen = 0
         var emitted = false
         var lastKeyAt = Date()
+        // 报告229：HID 模式下按键由外部 keytopid 投递（只有走窗口服务器的事件才进 IMK），
+        // 计时点落在 IME 把结果交回 UI 的那一刻，见 TimedTextView。
         let emit: () -> Void = {
+            let latencies = self.view.latencies
             let output = self.view.string
             report["text"] = output
             report["has_non_ascii"] = output.unicodeScalars.contains { $0.value > 0x7E }
             report["length"] = output.count
+            if !latencies.isEmpty {
+                let sorted = latencies.sorted()
+                func pct(_ p: Double) -> Double {
+                    (sorted[min(sorted.count - 1, Int((p / 100 * Double(sorted.count - 1)).rounded()))] * 100).rounded() / 100
+                }
+                report["latencies_ms"] = sorted.map { ($0 * 100).rounded() / 100 }
+                report["latency_ms"] = ["p50": pct(50), "p95": pct(95), "max": pct(100), "count": sorted.count] as [String: Any]
+            }
             let data = try? JSONSerialization.data(withJSONObject: report, options: [.sortedKeys])
             let json = String(data: data ?? Data(), encoding: .utf8) ?? "{}"
             if self.out.isEmpty { print(json) } else { try? json.write(toFile: self.out, atomically: true, encoding: .utf8) }
@@ -86,6 +118,11 @@ final class Harness: NSObject, NSApplicationDelegate {
             seen += 1
             report["keys_seen"] = seen
             lastKeyAt = Date()
+            // 只给"会产生文本"的按键计时：激活窗口用的 ⌃ 之类不计（报告229）。
+            let blocked: NSEvent.ModifierFlags = [.command, .control, .option]
+            if event.modifierFlags.intersection(blocked).isEmpty && !(event.characters ?? "").isEmpty {
+                self.view.pendingKeyAt = DispatchTime.now()
+            }
             return event
         }
         if let target = SourceID.find(source) {
