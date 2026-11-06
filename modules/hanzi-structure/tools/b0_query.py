@@ -35,6 +35,9 @@ def explain(entry: dict, as_json: bool) -> int:
             parts.append(f'二级简码 {entry["short2"]}')
         if entry['pinyin']:
             parts.append(f'读音 {entry["pinyin"]}')
+        if entry['components'] and entry['keys']:
+            parts.append('字根：' + ' '.join(f'{c if c else "？"}({k})'
+                                            for c, k in zip(entry['components'], entry['keys'])))
         parts.append('拆解待核验（' + '；'.join(entry['notes'] or ['数据不完整']) + '）')
         if entry['recognition']:
             parts.append(f'参考识别码 {entry["recognition"]["key"]}')
@@ -48,7 +51,8 @@ def explain(entry: dict, as_json: bool) -> int:
             note = note.split('：', 1)[1] if note.startswith('成字字根：') else note
             parts.append('成字字根（' + note + '）')
         else:
-            components = ' '.join(f'{c}({k})' for c, k in zip(entry['components'], entry['keys']))
+            components = ' '.join(f'{c if c else "？"}({k})'
+                                  for c, k in zip(entry['components'], entry['keys']))
             parts.append('字根：' + components)
             recognition = entry['recognition']
             if recognition:

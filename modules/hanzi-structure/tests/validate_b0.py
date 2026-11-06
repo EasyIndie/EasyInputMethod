@@ -12,7 +12,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 2  # v2：componentsSource / keys（报告 241）
+SCHEMA_VERSION = 3  # v3：占位组件 null + 键位推断（报告 243）
 FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'recognition',
           'short1', 'short2', 'pinyin', 'frequency', 'quality', 'notes'}
 CLASSES = {'key-name', 'radical-char', 'compound', None}
@@ -100,6 +100,22 @@ def main() -> int:
             problems.append(f'{char}: 产物含私有区字形 {[hex(ord(c)) for c in pua][:3]}（ADR-189 不允许）')
         if entry['class'] == 'compound' and len(entry['keys']) != len(entry['components']):
             problems.append(f'{char}: keys 与 components 数量不一致')
+        components = entry['components']
+        if any(c is None for c in components):
+            if entry['quality'] == 'full':
+                problems.append(f'{char}: 含占位组件（字形未识别）不得判 full')
+            for index, glyph in enumerate(components):
+                if glyph is None and not (entry['keys'] and index < len(entry['keys'])):
+                    problems.append(f'{char}: 第 {index + 1} 个占位组件缺少键位')
+        for glyph in components:
+            if glyph is None:
+                continue
+            if not isinstance(glyph, str) or not glyph.strip():
+                problems.append(f'{char}: 组件必须是可读字形或 null')
+            elif any(0xE000 <= ord(ch) <= 0xF8FF or ord(ch) >= 0xF0000 for ch in glyph):
+                problems.append(f'{char}: 组件含私有区字形')
+            elif any(ch.isspace() for ch in glyph):
+                problems.append(f'{char}: 组件含空白字符（D3 需按空格分隔解析）')
         if entry['quality'] == 'unknown' and entry['components']:
             problems.append(f'{char}: unknown 条目不应带组件')
         if entry['quality'] == 'unknown' and entry['recognition']:

@@ -31,11 +31,12 @@ def is_bmp_pua(ch: str) -> bool:
 def load_d2(path: Path) -> dict[str, list[str]]:
     out = {}
     for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.lstrip('\ufeff').rstrip('\r')
         if not line.strip():
             continue
-        parts = line.rstrip('\n').split('\t')
+        parts = line.split('\t')
         if len(parts) >= 2:
-            out[parts[0]] = list(parts[1])
+            out[parts[0]] = [g for g in parts[1] if not g.isspace()]
     return out
 
 
@@ -44,7 +45,7 @@ def load_d3(path: Path) -> dict[str, list[str]]:
     for line in path.read_text(encoding='utf-8').splitlines():
         if not line.strip() or line.startswith('#'):
             continue
-        parts = line.rstrip('\n').split('\t')
+        parts = line.lstrip('\ufeff').rstrip('\r').split('\t')
         if len(parts) >= 3:
             out[parts[0]] = [c for c in parts[1].split() if c != PLACEHOLDER]
     return out

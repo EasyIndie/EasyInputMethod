@@ -22,14 +22,18 @@
   "char": "是",
   "code": "jghu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "日",
-   "一"
+   "一",
+   null,
+   null
   ],
   "keys": [
    "j",
-   "g"
+   "g",
+   "h",
+   "u"
   ],
   "recognition": null,
   "short1": "j",
@@ -38,7 +42,9 @@
   "frequency": 796991,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 h）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -47,22 +53,29 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
+   null,
    "丨",
    "土"
   ],
   "keys": [
    "d",
-   "h"
+   "h",
+   "f"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "d",
+   "stroke": "横",
+   "structure": "杂合",
+   "because": "3 个字根不足四码：末笔横 + 结构杂合 ⇒ 识别码 d"
+  },
   "short1": "d",
   "short2": null,
   "pinyin": "zai",
   "frequency": 727915,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -95,26 +108,29 @@
   "char": "有",
   "code": "def",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   " ",
-   "月",
-   " "
+   null,
+   "月"
   ],
   "keys": [
    "d",
-   "e",
-   "f"
+   "e"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": "e",
   "short2": null,
   "pinyin": "you",
   "frequency": 423765,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -365,14 +381,18 @@
   "char": "年",
   "code": "rhfk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "丨",
-   "十"
+   "十",
+   null
   ],
   "keys": [
    "r",
-   "h"
+   "h",
+   "f",
+   "k"
   ],
   "recognition": null,
   "short1": null,
@@ -381,7 +401,9 @@
   "frequency": 248559,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 4 个（键 k）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -572,10 +594,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "目",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -590,7 +612,8 @@
   "frequency": 188584,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 d）、第 4 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -864,13 +887,17 @@
   "char": "以",
   "code": "nywy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "丶",
-   "人"
+   "人",
+   null
   ],
   "keys": [
    "n",
+   "y",
+   "w",
    "y"
   ],
   "recognition": null,
@@ -880,7 +907,9 @@
   "frequency": 136106,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 n）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -1201,9 +1230,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
-   " ",
+   null,
+   null,
+   null,
    "又"
   ],
   "keys": [
@@ -1219,7 +1248,8 @@
   "frequency": 106845,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 p）、第 2 个（键 u）、第 3 个（键 h）",
    "字根已够四码，无识别码"
   ]
  },
@@ -1227,12 +1257,16 @@
   "char": "于",
   "code": "gfk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "一"
+   "一",
+   "一",
+   null
   ],
   "keys": [
-   "g"
+   "g",
+   "f",
+   "k"
   ],
   "recognition": null,
   "short1": null,
@@ -1241,7 +1275,9 @@
   "frequency": 106176,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 3 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 k）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -1511,14 +1547,18 @@
   "char": "或",
   "code": "akgd",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "戈",
-   "口"
+   "口",
+   null,
+   null
   ],
   "keys": [
    "a",
-   "k"
+   "k",
+   "g",
+   "d"
   ],
   "recognition": null,
   "short1": null,
@@ -1527,7 +1567,9 @@
   "frequency": 78942,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 g）、第 4 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -1615,14 +1657,18 @@
   "char": "所",
   "code": "rnrh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "⺁",
-   "斤"
+   "丨",
+   "斤",
+   null
   ],
   "keys": [
    "r",
-   "n"
+   "n",
+   "r",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -1631,7 +1677,9 @@
   "frequency": 76462,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -1738,14 +1786,18 @@
   "char": "很",
   "code": "tvey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "彳",
-   "彐"
+   "彐",
+   null,
+   null
   ],
   "keys": [
    "t",
-   "v"
+   "v",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -1754,33 +1806,38 @@
   "frequency": 69103,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "看",
   "code": "rhf",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   " ",
-   "目",
-   " "
+   null,
+   "目"
   ],
   "keys": [
    "r",
-   "h",
-   "f"
+   "h"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "kan",
   "frequency": 66641,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）"
   ]
  },
  {
@@ -1983,8 +2040,8 @@
   "componentsSource": "D3",
   "components": [
    "ㄇ",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "m",
@@ -1998,7 +2055,8 @@
   "frequency": 58965,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）、第 3 个（键 b）",
    "字根已够四码，无识别码"
   ]
  },
@@ -2006,14 +2064,18 @@
   "char": "起",
   "code": "fhnv",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "土",
-   "己"
+   null,
+   "己",
+   null
   ],
   "keys": [
    "f",
-   "h"
+   "h",
+   "n",
+   "v"
   ],
   "recognition": null,
   "short1": null,
@@ -2022,7 +2084,9 @@
   "frequency": 58684,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 v）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -2048,14 +2112,18 @@
   "char": "高",
   "code": "ymkf",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "冂",
-   "口"
+   "口",
+   null
   ],
   "keys": [
    "y",
-   "m"
+   "m",
+   "k",
+   "f"
   ],
   "recognition": null,
   "short1": null,
@@ -2064,7 +2132,9 @@
   "frequency": 57483,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 y）、第 4 个（键 f）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -2155,26 +2225,25 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "f",
-   "t"
+   "t",
+   "e"
   ],
-  "recognition": {
-   "key": "e",
-   "stroke": "撇",
-   "structure": "杂合",
-   "because": "2 个字根不足四码：末笔撇 + 结构杂合 ⇒ 识别码 e"
-  },
+  "recognition": null,
   "short1": null,
   "short2": "ft",
   "pinyin": "cai",
   "frequency": 55415,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整"
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 f）、第 2 个（键 t）、第 3 个（键 e）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -2208,12 +2277,18 @@
   "char": "没",
   "code": "imcy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "氵"
+   "氵",
+   "几",
+   "又",
+   null
   ],
   "keys": [
-   "i"
+   "i",
+   "m",
+   "c",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -2222,7 +2297,9 @@
   "frequency": 52407,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -2232,8 +2309,8 @@
   "componentsSource": "D3",
   "components": [
    "土",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "f",
@@ -2247,7 +2324,8 @@
   "frequency": 50437,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -2338,8 +2416,8 @@
   "componentsSource": "D3",
   "components": [
    "乃",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "e",
@@ -2353,7 +2431,8 @@
   "frequency": 49988,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -2525,14 +2604,18 @@
   "char": "叫",
   "code": "knhh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "口",
-   "丨"
+   null,
+   "丨",
+   null
   ],
   "keys": [
    "k",
-   "n"
+   "n",
+   "h",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -2541,7 +2624,9 @@
   "frequency": 43431,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -2649,8 +2734,8 @@
   "componentsSource": "D3",
   "components": [
    "二",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "f",
@@ -2664,7 +2749,8 @@
   "frequency": 42181,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）、第 3 个（键 v）",
    "字根已够四码，无识别码"
   ]
  },
@@ -2752,10 +2838,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "七",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "t",
@@ -2770,7 +2856,8 @@
   "frequency": 40281,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 t）、第 3 个（键 y）、第 4 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -2935,9 +3022,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "匕",
-   " "
+   null
   ],
   "keys": [
    "x",
@@ -2951,7 +3038,8 @@
   "frequency": 35305,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 x）、第 3 个（键 n）",
    "字根已够四码，无识别码"
   ]
  },
@@ -3470,9 +3558,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "𠃌",
-   " "
+   null
   ],
   "keys": [
    "d",
@@ -3486,7 +3574,8 @@
   "frequency": 29391,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）、第 3 个（键 v）",
    "字根已够四码，无识别码"
   ]
  },
@@ -3522,10 +3611,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "日",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -3540,7 +3629,8 @@
   "frequency": 29107,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 l）、第 4 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -3649,9 +3739,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "大",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -3665,7 +3755,8 @@
   "frequency": 28177,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -3924,14 +4015,18 @@
   "char": "每",
   "code": "txgu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "𠂉",
-   "母"
+   "母",
+   "一",
+   null
   ],
   "keys": [
    "t",
-   "x"
+   "x",
+   "g",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -3940,7 +4035,9 @@
   "frequency": 26048,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -3974,23 +4071,31 @@
   "char": "谁",
   "code": "ywyg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "讠",
-   "亻"
+   "亻",
+   null
   ],
   "keys": [
    "y",
-   "w"
+   "w",
+   "y"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "shui",
   "frequency": 25842,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）"
   ]
  },
  {
@@ -4052,14 +4157,18 @@
   "char": "进",
   "code": "fjpk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "二",
-   "辶"
+   null,
+   "辶",
+   null
   ],
   "keys": [
    "f",
-   "j"
+   "j",
+   "p",
+   "k"
   ],
   "recognition": null,
   "short1": null,
@@ -4068,7 +4177,9 @@
   "frequency": 25668,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 j）、第 4 个（键 k）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -4155,14 +4266,18 @@
   "char": "县",
   "code": "egcu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "一",
-   "厶"
+   "厶",
+   null
   ],
   "keys": [
    "e",
-   "g"
+   "g",
+   "c",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -4171,7 +4286,9 @@
   "frequency": 25322,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 e）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -4199,9 +4316,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "口",
-   " "
+   null
   ],
   "keys": [
    "h",
@@ -4215,7 +4332,8 @@
   "frequency": 25139,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 3 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -4301,14 +4419,18 @@
   "char": "点",
   "code": "hkou",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "口",
-   "灬"
+   "灬",
+   null
   ],
   "keys": [
    "h",
-   "k"
+   "k",
+   "o",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -4317,7 +4439,9 @@
   "frequency": 24685,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -4685,23 +4809,31 @@
   "char": "站",
   "code": "uhkg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "立",
+   null,
    "口"
   ],
   "keys": [
    "u",
-   "h"
+   "h",
+   "k"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "uh",
   "pinyin": "zhan",
   "frequency": 23194,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）"
   ]
  },
  {
@@ -4737,9 +4869,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "八",
-   " "
+   null
   ],
   "keys": [
    "a",
@@ -4753,7 +4885,8 @@
   "frequency": 22996,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 a）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -4922,14 +5055,18 @@
   "char": "派",
   "code": "irey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "氵",
-   "⺁"
+   "⺁",
+   null,
+   null
   ],
   "keys": [
    "i",
-   "r"
+   "r",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -4938,7 +5075,9 @@
   "frequency": 21853,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -5207,40 +5346,43 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "t",
-   "y"
+   "y",
+   "i"
   ],
-  "recognition": {
-   "key": "i",
-   "stroke": "捺",
-   "structure": "杂合",
-   "because": "2 个字根不足四码：末笔捺 + 结构杂合 ⇒ 识别码 i"
-  },
+  "recognition": null,
   "short1": null,
   "short2": "ty",
   "pinyin": "ru",
   "frequency": 20209,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整"
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 t）、第 2 个（键 y）、第 3 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "真",
   "code": "fhwu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "十",
-   "八"
+   null,
+   "八",
+   null
   ],
   "keys": [
    "f",
-   "h"
+   "h",
+   "w",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -5249,7 +5391,9 @@
   "frequency": 19988,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -5283,14 +5427,18 @@
   "char": "城",
   "code": "fdnt",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "土",
-   "厂"
+   "厂",
+   "𠃌",
+   null
   ],
   "keys": [
    "f",
-   "d"
+   "d",
+   "n",
+   "t"
   ],
   "recognition": null,
   "short1": null,
@@ -5299,19 +5447,27 @@
   "frequency": 19953,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 t）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "马",
   "code": "cnng",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "一",
+   null,
+   "ㄅ",
    "一"
   ],
   "keys": [
-   "c"
+   "c",
+   "n",
+   "n",
+   "g"
   ],
   "recognition": null,
   "short1": null,
@@ -5320,7 +5476,9 @@
   "frequency": 19918,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -5480,23 +5638,31 @@
   "char": "难",
   "code": "cwyg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "又",
-   "亻"
+   "亻",
+   null
   ],
   "keys": [
    "c",
-   "w"
+   "w",
+   "y"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "cw",
   "pinyin": "nan",
   "frequency": 18505,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）"
   ]
  },
  {
@@ -5524,9 +5690,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "小",
-   " "
+   null
   ],
   "keys": [
    "a",
@@ -5540,7 +5706,8 @@
   "frequency": 18279,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 a）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -5684,9 +5851,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "⺄",
-   " "
+   null
   ],
   "keys": [
    "r",
@@ -5700,7 +5867,8 @@
   "frequency": 17826,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 3 个（键 b）",
    "字根已够四码，无识别码"
   ]
  },
@@ -5790,10 +5958,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "子",
-   " "
+   null
   ],
   "keys": [
    "i",
@@ -5808,7 +5976,8 @@
   "frequency": 17482,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 i）、第 2 个（键 p）、第 4 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -5871,14 +6040,18 @@
   "char": "既",
   "code": "vcaq",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "彐",
-   "厶"
+   "厶",
+   null,
+   null
   ],
   "keys": [
    "v",
-   "c"
+   "c",
+   "a",
+   "q"
   ],
   "recognition": null,
   "short1": null,
@@ -5887,7 +6060,9 @@
   "frequency": 17016,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 a）、第 4 个（键 q）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -5897,21 +6072,28 @@
   "componentsSource": "D2",
   "components": [
    "艹",
+   null,
    "口"
   ],
   "keys": [
    "a",
-   "d"
+   "d",
+   "k"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "ruo",
   "frequency": 17000,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 d）"
   ]
  },
  {
@@ -6086,8 +6268,8 @@
   "componentsSource": "D3",
   "components": [
    "二",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "f",
@@ -6101,7 +6283,8 @@
   "frequency": 16803,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 i）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -6137,14 +6320,18 @@
   "char": "兵",
   "code": "rgwu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "一",
-   "八"
+   "八",
+   null
   ],
   "keys": [
    "r",
-   "g"
+   "g",
+   "w",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -6153,7 +6340,9 @@
   "frequency": 16574,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -6269,9 +6458,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "一",
-   " "
+   null
   ],
   "keys": [
    "q",
@@ -6285,7 +6474,8 @@
   "frequency": 16190,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 q）、第 3 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -6377,8 +6567,8 @@
   "componentsSource": "D3",
   "components": [
    "十",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "f",
@@ -6392,7 +6582,8 @@
   "frequency": 15928,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 3 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -6400,14 +6591,18 @@
   "char": "定",
   "code": "pghu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "宀",
-   "一"
+   "一",
+   null,
+   null
   ],
   "keys": [
    "p",
-   "g"
+   "g",
+   "h",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -6416,7 +6611,9 @@
   "frequency": 15882,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 h）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -6509,8 +6706,8 @@
   "componentsSource": "D3",
   "components": [
    "士",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "f",
@@ -6524,7 +6721,8 @@
   "frequency": 15713,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 3 个（键 r）",
    "字根已够四码，无识别码"
   ]
  },
@@ -6551,14 +6749,18 @@
   "char": "低",
   "code": "wqay",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
+   null,
+   "弋",
    "丶"
   ],
   "keys": [
    "w",
-   "q"
+   "q",
+   "a",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -6567,7 +6769,9 @@
   "frequency": 15504,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -6621,14 +6825,18 @@
   "char": "极",
   "code": "seyy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "木",
-   "乃"
+   "乃",
+   null,
+   null
   ],
   "keys": [
    "s",
-   "e"
+   "e",
+   "y",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -6637,7 +6845,9 @@
   "frequency": 15314,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -6745,12 +6955,14 @@
   "components": [
    "爫",
    "冖",
+   null,
    "又"
   ],
   "keys": [
    "e",
    "p",
-   "d"
+   "d",
+   "c"
   ],
   "recognition": null,
   "short1": null,
@@ -6759,8 +6971,9 @@
   "frequency": 14878,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 3 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -7085,14 +7298,18 @@
   "char": "讲",
   "code": "yfjh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "讠",
-   "二"
+   "二",
+   null,
+   null
   ],
   "keys": [
    "y",
-   "f"
+   "f",
+   "j",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -7101,7 +7318,9 @@
   "frequency": 13587,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 j）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -7248,26 +7467,25 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "x",
-   "t"
+   "t",
+   "e"
   ],
-  "recognition": {
-   "key": "e",
-   "stroke": "撇",
-   "structure": "杂合",
-   "because": "2 个字根不足四码：末笔撇 + 结构杂合 ⇒ 识别码 e"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "xiang",
   "frequency": 13348,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整"
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 x）、第 2 个（键 t）、第 3 个（键 e）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -7484,26 +7702,29 @@
   "char": "左",
   "code": "daf",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   " ",
-   "工",
-   " "
+   null,
+   "工"
   ],
   "keys": [
    "d",
-   "a",
-   "f"
+   "a"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": null,
   "short2": "da",
   "pinyin": "zuo",
   "frequency": 12823,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -7799,13 +8020,17 @@
   "char": "官",
   "code": "pnhn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "宀",
+   "丨",
+   "丨",
    "丨"
   ],
   "keys": [
    "p",
+   "n",
+   "h",
    "n"
   ],
   "recognition": null,
@@ -7813,9 +8038,9 @@
   "short2": "pn",
   "pinyin": "guan",
   "frequency": 12197,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -7929,14 +8154,18 @@
   "char": "变",
   "code": "yocu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亠",
-   "又"
+   null,
+   "又",
+   null
   ],
   "keys": [
    "y",
-   "o"
+   "o",
+   "c",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -7945,7 +8174,9 @@
   "frequency": 12121,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 o）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -7954,10 +8185,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "夂",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "l",
@@ -7972,7 +8203,8 @@
   "frequency": 12112,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 l）、第 3 个（键 u）、第 4 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -8190,12 +8422,18 @@
   "char": "建",
   "code": "vfhp",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
+   "二",
+   "丨",
    "廴"
   ],
   "keys": [
-   "v"
+   "v",
+   "f",
+   "h",
+   "p"
   ],
   "recognition": null,
   "short1": null,
@@ -8204,7 +8442,9 @@
   "frequency": 11608,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 v）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -8429,14 +8669,18 @@
   "char": "黑",
   "code": "lfou",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "土",
-   "灬"
+   "灬",
+   null
   ],
   "keys": [
    "l",
-   "f"
+   "f",
+   "o",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -8445,7 +8689,9 @@
   "frequency": 11296,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 l）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -8530,13 +8776,17 @@
   "char": "置",
   "code": "lfhf",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "罒",
-   "十"
+   "十",
+   null,
+   null
   ],
   "keys": [
    "l",
+   "f",
+   "h",
    "f"
   ],
   "recognition": null,
@@ -8546,7 +8796,9 @@
   "frequency": 11145,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 h）、第 4 个（键 f）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -8600,14 +8852,18 @@
   "char": "黄",
   "code": "amwu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "由",
-   "八"
+   "八",
+   null
   ],
   "keys": [
    "a",
-   "m"
+   "m",
+   "w",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -8616,7 +8872,9 @@
   "frequency": 11062,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 a）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -8910,13 +9168,17 @@
   "char": "买",
   "code": "nudu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "乛",
-   "大"
+   null,
+   "大",
+   null
   ],
   "keys": [
    "n",
+   "u",
+   "d",
    "u"
   ],
   "recognition": null,
@@ -8926,7 +9188,9 @@
   "frequency": 10529,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 u）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -8991,9 +9255,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "一",
-   " "
+   null
   ],
   "keys": [
    "e",
@@ -9007,7 +9271,8 @@
   "frequency": 10470,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 e）、第 3 个（键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9171,14 +9436,18 @@
   "char": "忙",
   "code": "nynn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "忄",
-   "亠"
+   "亠",
+   null,
+   null
   ],
   "keys": [
    "n",
-   "y"
+   "y",
+   "n",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -9187,7 +9456,9 @@
   "frequency": 10154,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 n）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -9197,9 +9468,9 @@
   "componentsSource": "D3",
   "components": [
    "尸",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "n",
@@ -9214,7 +9485,8 @@
   "frequency": 10117,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 3 个（键 u）、第 4 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9353,14 +9625,18 @@
   "char": "级",
   "code": "xeyy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "纟",
-   "乃"
+   "乃",
+   null,
+   null
   ],
   "keys": [
    "x",
-   "e"
+   "e",
+   "y",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -9369,7 +9645,9 @@
   "frequency": 9853,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -9587,10 +9865,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "辶",
-   " "
+   null
   ],
   "keys": [
    "c",
@@ -9605,7 +9883,8 @@
   "frequency": 9628,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 c）、第 2 个（键 e）、第 4 个（键 k）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9694,14 +9973,18 @@
   "char": "令",
   "code": "wycu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "人",
-   "丶"
+   "丶",
+   null,
+   null
   ],
   "keys": [
    "w",
-   "y"
+   "y",
+   "c",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -9710,7 +9993,9 @@
   "frequency": 9565,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 c）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -9720,8 +10005,8 @@
   "componentsSource": "D3",
   "components": [
    "⺄",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "n",
@@ -9735,7 +10020,8 @@
   "frequency": 9563,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 u）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9798,8 +10084,8 @@
   "componentsSource": "D3",
   "components": [
    "口",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "k",
@@ -9813,7 +10099,8 @@
   "frequency": 9485,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9874,26 +10161,29 @@
   "char": "右",
   "code": "dkf",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   " ",
-   "口",
-   " "
+   null,
+   "口"
   ],
   "keys": [
    "d",
-   "k",
-   "f"
+   "k"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": null,
   "short2": "dk",
   "pinyin": "you",
   "frequency": 9451,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -9931,8 +10221,8 @@
   "componentsSource": "D3",
   "components": [
    "亠",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "y",
@@ -9946,7 +10236,8 @@
   "frequency": 9343,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 o）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -9956,26 +10247,25 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "n",
-   "t"
+   "t",
+   "y"
   ],
-  "recognition": {
-   "key": "y",
-   "stroke": "捺",
-   "structure": "左右",
-   "because": "2 个字根不足四码：末笔捺 + 结构左右 ⇒ 识别码 y"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "gai",
   "frequency": 9286,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整"
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 n）、第 2 个（键 t）、第 3 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10001,14 +10291,18 @@
   "char": "破",
   "code": "dhcy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "石",
-   "又"
+   null,
+   "又",
+   null
   ],
   "keys": [
    "d",
-   "h"
+   "h",
+   "c",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -10017,7 +10311,9 @@
   "frequency": 9250,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10026,26 +10322,25 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
+   null,
    "ヒ",
    "丶"
   ],
   "keys": [
    "d",
-   "x"
+   "x",
+   "v"
   ],
-  "recognition": {
-   "key": "v",
-   "stroke": "折",
-   "structure": "杂合",
-   "because": "2 个字根不足四码：末笔折 + 结构杂合 ⇒ 识别码 v"
-  },
+  "recognition": null,
   "short1": null,
   "short2": "dx",
   "pinyin": "long",
   "frequency": 9197,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10161,13 +10456,15 @@
   "componentsSource": "D2",
   "components": [
    "阝",
+   null,
    "月",
    "辶"
   ],
   "keys": [
    "b",
    "d",
-   "e"
+   "e",
+   "p"
   ],
   "recognition": null,
   "short1": null,
@@ -10176,8 +10473,9 @@
   "frequency": 9036,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 3 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10292,10 +10590,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "口",
-   " "
+   null
   ],
   "keys": [
    "v",
@@ -10310,7 +10608,8 @@
   "frequency": 8891,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 v）、第 2 个（键 t）、第 4 个（键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -10346,14 +10645,18 @@
   "char": "战",
   "code": "hkat",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "口",
-   "戈"
+   "戈",
+   "ノ"
   ],
   "keys": [
    "h",
-   "k"
+   "k",
+   "a",
+   "t"
   ],
   "recognition": null,
   "short1": null,
@@ -10362,21 +10665,27 @@
   "frequency": 8864,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "眼",
   "code": "hvey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "目",
-   "彐"
+   "彐",
+   null,
+   null
   ],
   "keys": [
    "h",
-   "v"
+   "v",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -10385,7 +10694,9 @@
   "frequency": 8863,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10610,14 +10921,18 @@
   "char": "铁",
   "code": "qrwy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "钅",
-   "人"
+   null,
+   "人",
+   null
   ],
   "keys": [
    "q",
-   "r"
+   "r",
+   "w",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -10626,7 +10941,9 @@
   "frequency": 8654,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 r）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10732,14 +11049,18 @@
   "char": "现",
   "code": "gmqn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "王",
-   "ㄇ"
+   "ㄇ",
+   null,
+   null
   ],
   "keys": [
    "g",
-   "m"
+   "m",
+   "q",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -10748,7 +11069,9 @@
   "frequency": 8541,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 q）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10856,14 +11179,18 @@
   "char": "象",
   "code": "qjeu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "⺈",
-   "口"
+   "口",
+   null,
+   null
   ],
   "keys": [
    "q",
-   "j"
+   "j",
+   "e",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -10872,7 +11199,9 @@
   "frequency": 8475,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -10951,13 +11280,17 @@
   "char": "惊",
   "code": "nyiy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "忄",
-   "小"
+   null,
+   "小",
+   null
   ],
   "keys": [
    "n",
+   "y",
+   "i",
    "y"
   ],
   "recognition": null,
@@ -10967,7 +11300,9 @@
   "frequency": 8417,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11160,9 +11495,9 @@
   "componentsSource": "D3",
   "components": [
    "扌",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "r",
@@ -11177,7 +11512,8 @@
   "frequency": 8344,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 3 个（键 j）、第 4 个（键 h）",
    "字根已够四码，无识别码"
   ]
  },
@@ -11230,14 +11566,18 @@
   "char": "周",
   "code": "mfkd",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "土",
-   "口"
+   "口",
+   null
   ],
   "keys": [
    "m",
-   "f"
+   "f",
+   "k",
+   "d"
   ],
   "recognition": null,
   "short1": null,
@@ -11246,7 +11586,9 @@
   "frequency": 8326,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 m）、第 4 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11275,9 +11617,9 @@
   "componentsSource": "D3",
   "components": [
    "了",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "b",
@@ -11292,7 +11634,8 @@
   "frequency": 8308,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 d）、第 3 个（键 i）、第 4 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -11328,10 +11671,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "丨",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "n",
@@ -11346,7 +11689,8 @@
   "frequency": 8235,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 n）、第 3 个（键 t）、第 4 个（键 y）",
    "字根已够四码，无识别码"
   ]
  },
@@ -11380,14 +11724,18 @@
   "char": "供",
   "code": "wawy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
-   "八"
+   null,
+   "八",
+   null
   ],
   "keys": [
    "w",
-   "a"
+   "a",
+   "w",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -11396,7 +11744,9 @@
   "frequency": 8136,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11450,14 +11800,18 @@
   "char": "敢",
   "code": "nbty",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "乛",
    "耳",
-   "夂"
+   null,
+   null
   ],
   "keys": [
    "n",
-   "b"
+   "b",
+   "t",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -11466,7 +11820,9 @@
   "frequency": 7965,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 t）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11476,8 +11832,8 @@
   "componentsSource": "D3",
   "components": [
    "人",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "w",
@@ -11491,7 +11847,8 @@
   "frequency": 7959,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 t）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -11529,28 +11886,27 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null,
+   null
   ],
   "keys": [
    "u",
    "v",
-   "o"
+   "o",
+   "u"
   ],
-  "recognition": {
-   "key": "u",
-   "stroke": "捺",
-   "structure": "上下",
-   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "jian",
   "frequency": 7927,
   "quality": "partial",
   "notes": [
-   "有 4 个字形无法解码，组件序列可能不完整"
+   "有 4 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 v）、第 3 个（键 o）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11659,14 +12015,18 @@
   "char": "断",
   "code": "onrh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "米",
-   "斤"
+   null,
+   "斤",
+   null
   ],
   "keys": [
    "o",
-   "n"
+   "n",
+   "r",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -11675,7 +12035,9 @@
   "frequency": 7773,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11844,14 +12206,18 @@
   "char": "忽",
   "code": "qrnu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "勹",
-   "心"
+   null,
+   "心",
+   null
   ],
   "keys": [
    "q",
-   "r"
+   "r",
+   "n",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -11860,7 +12226,9 @@
   "frequency": 7683,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 r）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -11889,8 +12257,8 @@
   "componentsSource": "D3",
   "components": [
    "ク",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "q",
@@ -11904,7 +12272,8 @@
   "frequency": 7645,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -12103,14 +12472,18 @@
   "char": "皆",
   "code": "xxrf",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "匕",
-   "白"
+   "白",
+   null
   ],
   "keys": [
    "x",
-   "x"
+   "x",
+   "r",
+   "f"
   ],
   "recognition": null,
   "short1": null,
@@ -12119,7 +12492,9 @@
   "frequency": 7511,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 x）、第 4 个（键 f）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -12443,14 +12818,18 @@
   "char": "退",
   "code": "vepi",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "彐",
-   "辶"
+   null,
+   "辶",
+   null
   ],
   "keys": [
    "v",
-   "e"
+   "e",
+   "p",
+   "i"
   ],
   "recognition": null,
   "short1": null,
@@ -12459,7 +12838,9 @@
   "frequency": 7280,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 e）、第 4 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -12493,13 +12874,17 @@
   "char": "实",
   "code": "pudu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "宀",
-   "大"
+   null,
+   "大",
+   null
   ],
   "keys": [
    "p",
+   "u",
+   "d",
    "u"
   ],
   "recognition": null,
@@ -12509,7 +12894,9 @@
   "frequency": 7258,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 u）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -12518,10 +12905,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "工",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -12536,7 +12923,8 @@
   "frequency": 7254,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 d）、第 4 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -12574,26 +12962,25 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "r",
+   "i",
    "i"
   ],
-  "recognition": {
-   "key": "i",
-   "stroke": "捺",
-   "structure": "杂合",
-   "because": "2 个字根不足四码：末笔捺 + 结构杂合 ⇒ 识别码 i"
-  },
+  "recognition": null,
   "short1": null,
   "short2": "ri",
   "pinyin": "zhu",
   "frequency": 7218,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整"
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 2 个（键 i）、第 3 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -12630,9 +13017,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "又",
-   " "
+   null
   ],
   "keys": [
    "h",
@@ -12646,7 +13033,8 @@
   "frequency": 7184,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -12736,14 +13124,18 @@
   "char": "科",
   "code": "tufh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "禾",
-   "十"
+   null,
+   "十",
+   null
   ],
   "keys": [
    "t",
-   "u"
+   "u",
+   "f",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -12752,7 +13144,9 @@
   "frequency": 7098,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 u）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -12864,14 +13258,18 @@
   "char": "底",
   "code": "yqay",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "广",
+   null,
+   "弋",
    "丶"
   ],
   "keys": [
    "y",
-   "q"
+   "q",
+   "a",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -12880,7 +13278,9 @@
   "frequency": 7005,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -13121,24 +13521,29 @@
   "char": "驻",
   "code": "cygg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "一",
    "丶",
    "王"
   ],
   "keys": [
    "c",
-   "y"
+   "y",
+   "g"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "cy",
   "pinyin": "zhu",
   "frequency": 6848,
-  "quality": "partial",
-  "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "产",
@@ -13362,10 +13767,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "ㄇ",
-   " "
+   null
   ],
   "keys": [
    "i",
@@ -13380,7 +13785,8 @@
   "frequency": 6705,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 i）、第 2 个（键 p）、第 4 个（键 q）",
    "字根已够四码，无识别码"
   ]
  },
@@ -13390,28 +13796,27 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null,
+   null
   ],
   "keys": [
    "l",
    "f",
-   "t"
+   "t",
+   "e"
   ],
-  "recognition": {
-   "key": "e",
-   "stroke": "撇",
-   "structure": "杂合",
-   "because": "3 个字根不足四码：末笔撇 + 结构杂合 ⇒ 识别码 e"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "tuan",
   "frequency": 6703,
   "quality": "partial",
   "notes": [
-   "有 4 个字形无法解码，组件序列可能不完整"
+   "有 4 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 l）、第 2 个（键 f）、第 3 个（键 t）、第 4 个（键 e）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -13503,8 +13908,8 @@
   "componentsSource": "D3",
   "components": [
    "亻",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "w",
@@ -13518,7 +13923,8 @@
   "frequency": 6666,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）、第 3 个（键 y）",
    "字根已够四码，无识别码"
   ]
  },
@@ -13661,9 +14067,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "弋",
-   " "
+   null
   ],
   "keys": [
    "n",
@@ -13677,7 +14083,8 @@
   "frequency": 6640,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 n）、第 3 个（键 v）",
    "字根已够四码，无识别码"
   ]
  },
@@ -13715,9 +14122,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "小",
-   " "
+   null
   ],
   "keys": [
    "y",
@@ -13731,7 +14138,8 @@
   "frequency": 6583,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 y）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -13824,8 +14232,8 @@
   "componentsSource": "D3",
   "components": [
    "廿",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "a",
@@ -13839,7 +14247,8 @@
   "frequency": 6523,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 3 个（键 v）",
    "字根已够四码，无识别码"
   ]
  },
@@ -13847,23 +14256,27 @@
   "char": "举",
   "code": "iwfh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "一",
    "八",
-   "二"
+   "二",
+   "丨"
   ],
   "keys": [
    "i",
-   "w"
+   "w",
+   "f",
+   "h"
   ],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "ju",
   "frequency": 6506,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -13977,12 +14390,18 @@
   "char": "件",
   "code": "wrhh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "亻"
+   "亻",
+   null,
+   "丨",
+   null
   ],
   "keys": [
-   "w"
+   "w",
+   "r",
+   "h",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -13991,7 +14410,9 @@
   "frequency": 6482,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 r）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -14189,23 +14610,31 @@
   "char": "错",
   "code": "qajg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "钅",
+   null,
    "日"
   ],
   "keys": [
    "q",
-   "a"
+   "a",
+   "j"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "cuo",
   "frequency": 6340,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）"
   ]
  },
  {
@@ -14214,9 +14643,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "丨",
-   " "
+   null
   ],
   "keys": [
    "r",
@@ -14230,7 +14659,8 @@
   "frequency": 6339,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 3 个（键 k）",
    "字根已够四码，无识别码"
   ]
  },
@@ -14238,28 +14668,31 @@
   "char": "拜",
   "code": "rdfh",
   "class": "compound",
-  "componentsSource": "D3",
+  "componentsSource": "D2",
   "components": [
-   " ",
-   " ",
-   "十",
-   " "
+   null,
+   "三",
+   "十"
   ],
   "keys": [
    "r",
    "d",
-   "f",
-   "h"
+   "f"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "h",
+   "stroke": "竖",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔竖 + 结构左右 ⇒ 识别码 h"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "bai",
   "frequency": 6338,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
-   "字根已够四码，无识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）"
   ]
  },
  {
@@ -14291,23 +14724,31 @@
   "char": "推",
   "code": "rwyg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "扌",
-   "亻"
+   "亻",
+   null
   ],
   "keys": [
    "r",
-   "w"
+   "w",
+   "y"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "tui",
   "frequency": 6324,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）"
   ]
  },
  {
@@ -14505,9 +14946,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "八",
-   " "
+   null
   ],
   "keys": [
    "h",
@@ -14521,7 +14962,8 @@
   "frequency": 6228,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -14531,9 +14973,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "十",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -14547,7 +14989,8 @@
   "frequency": 6215,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 3 个（键 k）",
    "字根已够四码，无识别码"
   ]
  },
@@ -14583,14 +15026,18 @@
   "char": "集",
   "code": "wysu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
-   "木"
+   null,
+   "木",
+   null
   ],
   "keys": [
    "w",
-   "y"
+   "y",
+   "s",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -14599,7 +15046,9 @@
   "frequency": 6174,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -14922,8 +15371,8 @@
   "componentsSource": "D3",
   "components": [
    "主",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "g",
@@ -14937,7 +15386,8 @@
   "frequency": 6017,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 e）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -15097,14 +15547,18 @@
   "char": "银",
   "code": "qvey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "钅",
-   "彐"
+   "彐",
+   null,
+   null
   ],
   "keys": [
    "q",
-   "v"
+   "v",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -15113,7 +15567,9 @@
   "frequency": 5956,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -15200,14 +15656,18 @@
   "char": "界",
   "code": "lwjj",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "田",
-   "人"
+   "人",
+   null,
+   null
   ],
   "keys": [
    "l",
-   "w"
+   "w",
+   "j",
+   "j"
   ],
   "recognition": null,
   "short1": null,
@@ -15216,7 +15676,9 @@
   "frequency": 5931,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 j）、第 4 个（键 j）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -15497,14 +15959,18 @@
   "char": "亚",
   "code": "gogd",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "一",
-   "一"
+   null,
+   "一",
+   null
   ],
   "keys": [
    "g",
-   "o"
+   "o",
+   "g",
+   "d"
   ],
   "recognition": null,
   "short1": null,
@@ -15513,7 +15979,9 @@
   "frequency": 5789,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 o）、第 4 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -15757,44 +16225,54 @@
   "char": "凭",
   "code": "wtfm",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "亻"
+   "亻",
+   "丿",
+   "士",
+   "几"
   ],
   "keys": [
-   "w"
+   "w",
+   "t",
+   "f",
+   "m"
   ],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "ping",
   "frequency": 5717,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "追",
   "code": "wnnp",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
+   "丨",
+   "丨",
    "辶"
   ],
   "keys": [
    "w",
-   "n"
+   "n",
+   "n",
+   "p"
   ],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "zhui",
   "frequency": 5675,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -15987,12 +16465,18 @@
   "char": "俄",
   "code": "wtrt",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "亻"
+   "亻",
+   null,
+   "扌",
+   null
   ],
   "keys": [
-   "w"
+   "w",
+   "t",
+   "r",
+   "t"
   ],
   "recognition": null,
   "short1": null,
@@ -16001,7 +16485,9 @@
   "frequency": 5645,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 t）、第 4 个（键 t）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -16062,10 +16548,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "月",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "a",
@@ -16080,7 +16566,8 @@
   "frequency": 5634,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 a）、第 3 个（键 t）、第 4 个（键 y）",
    "字根已够四码，无识别码"
   ]
  },
@@ -16166,14 +16653,18 @@
   "char": "陈",
   "code": "baiy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "阝",
-   "小"
+   null,
+   "小",
+   null
   ],
   "keys": [
    "b",
-   "a"
+   "a",
+   "i",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -16182,21 +16673,27 @@
   "frequency": 5608,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "礼",
   "code": "pynn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "礻",
-   "乚"
+   null,
+   "丶",
+   "乚",
+   null
   ],
   "keys": [
    "p",
-   "y"
+   "y",
+   "n",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -16205,7 +16702,9 @@
   "frequency": 5605,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 p）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -16525,14 +17024,18 @@
   "char": "根",
   "code": "svey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "木",
-   "彐"
+   "彐",
+   null,
+   null
   ],
   "keys": [
    "s",
-   "v"
+   "v",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -16541,7 +17044,9 @@
   "frequency": 5413,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -16630,23 +17135,31 @@
   "char": "值",
   "code": "wfhg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
-   "十"
+   "十",
+   null
   ],
   "keys": [
    "w",
-   "f"
+   "f",
+   "h"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "zhi",
   "frequency": 5361,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 h）"
   ]
  },
  {
@@ -16735,14 +17248,18 @@
   "char": "鬼",
   "code": "rqci",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "白",
-   "厶"
+   null,
+   "厶",
+   null
   ],
   "keys": [
    "r",
-   "q"
+   "q",
+   "c",
+   "i"
   ],
   "recognition": null,
   "short1": null,
@@ -16751,21 +17268,27 @@
   "frequency": 5314,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）、第 4 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "批",
   "code": "rxxn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "扌",
-   "匕"
+   null,
+   "匕",
+   null
   ],
   "keys": [
    "r",
-   "x"
+   "x",
+   "x",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -16774,7 +17297,9 @@
   "frequency": 5299,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 x）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17054,23 +17579,31 @@
   "char": "贴",
   "code": "mhkg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "贝",
+   null,
    "口"
   ],
   "keys": [
    "m",
-   "h"
+   "h",
+   "k"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "tie",
   "frequency": 5204,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）"
   ]
  },
  {
@@ -17397,14 +17930,18 @@
   "char": "易",
   "code": "jqrr",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "日",
-   "勹"
+   "勹",
+   null,
+   null
   ],
   "keys": [
    "j",
-   "q"
+   "q",
+   "r",
+   "r"
   ],
   "recognition": null,
   "short1": null,
@@ -17413,7 +17950,9 @@
   "frequency": 5042,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 r）、第 4 个（键 r）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17424,26 +17963,25 @@
   "components": [
    "贝",
    "戈",
+   null,
    "ノ"
   ],
   "keys": [
    "m",
    "a",
-   "d"
+   "d",
+   "t"
   ],
-  "recognition": {
-   "key": "t",
-   "stroke": "撇",
-   "structure": "左右",
-   "because": "3 个字根不足四码：末笔撇 + 结构左右 ⇒ 识别码 t"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "zei",
   "frequency": 5032,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17530,14 +18068,18 @@
   "char": "专",
   "code": "fnyi",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "二",
-   "丶"
+   null,
+   "丶",
+   null
   ],
   "keys": [
    "f",
-   "n"
+   "n",
+   "y",
+   "i"
   ],
   "recognition": null,
   "short1": null,
@@ -17546,7 +18088,9 @@
   "frequency": 4975,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 4 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17604,14 +18148,18 @@
   "char": "忘",
   "code": "ynnu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亠",
-   "心"
+   null,
+   "心",
+   null
   ],
   "keys": [
    "y",
-   "n"
+   "n",
+   "n",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -17620,21 +18168,27 @@
   "frequency": 4957,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "赴",
   "code": "fhhi",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "土",
-   "卜"
+   null,
+   "卜",
+   null
   ],
   "keys": [
    "f",
-   "h"
+   "h",
+   "h",
+   "i"
   ],
   "recognition": null,
   "short1": null,
@@ -17643,7 +18197,9 @@
   "frequency": 4943,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17905,14 +18461,18 @@
   "char": "虎",
   "code": "hamv",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "七",
-   "几"
+   "几",
+   null
   ],
   "keys": [
    "h",
-   "a"
+   "a",
+   "m",
+   "v"
   ],
   "recognition": null,
   "short1": null,
@@ -17921,7 +18481,9 @@
   "frequency": 4845,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 4 个（键 v）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -17930,22 +18492,29 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
+   null,
    "冂",
    "丨"
   ],
   "keys": [
    "d",
-   "m"
+   "m",
+   "h"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "j",
+   "stroke": "竖",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔竖 + 结构上下 ⇒ 识别码 j"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "bu",
   "frequency": 4827,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -18004,13 +18573,17 @@
   "char": "依",
   "code": "wyey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
-   "亠"
+   "亠",
+   null,
+   null
   ],
   "keys": [
    "w",
+   "y",
+   "e",
    "y"
   ],
   "recognition": null,
@@ -18020,7 +18593,9 @@
   "frequency": 4797,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -18108,14 +18683,18 @@
   "char": "逃",
   "code": "iqpv",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "儿",
-   "辶"
+   "辶",
+   null
   ],
   "keys": [
    "i",
-   "q"
+   "q",
+   "p",
+   "v"
   ],
   "recognition": null,
   "short1": null,
@@ -18124,7 +18703,9 @@
   "frequency": 4781,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 i）、第 4 个（键 v）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -18553,23 +19134,31 @@
   "char": "组",
   "code": "xegg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "纟",
+   null,
    "一"
   ],
   "keys": [
    "x",
-   "e"
+   "e",
+   "g"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "zu",
   "frequency": 4621,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 e）"
   ]
  },
  {
@@ -18685,12 +19274,18 @@
   "char": "浠",
   "code": "iqdh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "氵"
+   "氵",
+   "乂",
+   null,
+   "丨"
   ],
   "keys": [
-   "i"
+   "i",
+   "q",
+   "d",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -18699,7 +19294,9 @@
   "frequency": 4587,
   "quality": "partial",
   "notes": [
-   "字根数 1 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -18761,14 +19358,18 @@
   "char": "显",
   "code": "jogf",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "日",
-   "一"
+   null,
+   "一",
+   null
   ],
   "keys": [
    "j",
-   "o"
+   "o",
+   "g",
+   "f"
   ],
   "recognition": null,
   "short1": null,
@@ -18777,7 +19378,9 @@
   "frequency": 4574,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 o）、第 4 个（键 f）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -18841,9 +19444,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "一",
-   " "
+   null
   ],
   "keys": [
    "o",
@@ -18857,7 +19460,8 @@
   "frequency": 4553,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 o）、第 3 个（键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -19000,14 +19604,18 @@
   "char": "赶",
   "code": "fhfk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "土",
-   "干"
+   null,
+   "干",
+   null
   ],
   "keys": [
    "f",
-   "h"
+   "h",
+   "f",
+   "k"
   ],
   "recognition": null,
   "short1": null,
@@ -19016,21 +19624,27 @@
   "frequency": 4518,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 k）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "迎",
   "code": "qbpk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "白",
    "卩",
-   "辶"
+   "辶",
+   null
   ],
   "keys": [
    "q",
-   "b"
+   "b",
+   "p",
+   "k"
   ],
   "recognition": null,
   "short1": null,
@@ -19039,7 +19653,9 @@
   "frequency": 4509,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 k）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -19231,8 +19847,8 @@
   "componentsSource": "D3",
   "components": [
    "文",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "y",
@@ -19246,7 +19862,8 @@
   "frequency": 4450,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 j）、第 3 个（键 j）",
    "字根已够四码，无识别码"
   ]
  },
@@ -19254,23 +19871,27 @@
   "char": "骑",
   "code": "cdsk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "一",
    "大",
+   "丁",
    "口"
   ],
   "keys": [
    "c",
-   "d"
+   "d",
+   "s",
+   "k"
   ],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "qi",
   "frequency": 4437,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -19443,23 +20064,31 @@
   "char": "借",
   "code": "wajg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
+   null,
    "日"
   ],
   "keys": [
    "w",
-   "a"
+   "a",
+   "j"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "jie",
   "frequency": 4411,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）"
   ]
  },
  {
@@ -19623,14 +20252,18 @@
   "char": "奉",
   "code": "dwfh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "三",
-   "人"
+   null,
+   "人",
+   "二",
+   "丨"
   ],
   "keys": [
    "d",
-   "w"
+   "w",
+   "f",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -19639,21 +20272,27 @@
   "frequency": 4375,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "观",
   "code": "cmqn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "又",
-   "ㄇ"
+   "ㄇ",
+   null,
+   null
   ],
   "keys": [
    "c",
-   "m"
+   "m",
+   "q",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -19662,7 +20301,9 @@
   "frequency": 4368,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 q）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -19725,14 +20366,18 @@
   "char": "毒",
   "code": "gxgu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "主",
-   "母"
+   "母",
+   "一",
+   null
   ],
   "keys": [
    "g",
-   "x"
+   "x",
+   "g",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -19741,7 +20386,9 @@
   "frequency": 4357,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -19776,14 +20423,18 @@
   "char": "味",
   "code": "kfiy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "口",
-   "二"
+   "二",
+   null,
+   null
   ],
   "keys": [
    "k",
-   "f"
+   "f",
+   "i",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -19792,7 +20443,9 @@
   "frequency": 4348,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 i）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -19882,10 +20535,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "几",
-   " "
+   null
   ],
   "keys": [
    "y",
@@ -19900,7 +20553,8 @@
   "frequency": 4307,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 y）、第 2 个（键 p）、第 4 个（键 b）",
    "字根已够四码，无识别码"
   ]
  },
@@ -19911,8 +20565,8 @@
   "componentsSource": "D3",
   "components": [
    "大",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "d",
@@ -19926,7 +20580,8 @@
   "frequency": 4300,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 d）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -19963,8 +20618,8 @@
   "componentsSource": "D3",
   "components": [
    "止",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "h",
@@ -19978,7 +20633,8 @@
   "frequency": 4285,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 i）、第 3 个（键 r）",
    "字根已够四码，无识别码"
   ]
  },
@@ -20014,9 +20670,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "彐",
-   " "
+   null
   ],
   "keys": [
    "f",
@@ -20030,7 +20686,8 @@
   "frequency": 4284,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 f）、第 3 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -20277,10 +20934,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "辶",
-   " "
+   null
   ],
   "keys": [
    "u",
@@ -20295,7 +20952,8 @@
   "frequency": 4209,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 e）、第 4 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -20572,14 +21230,18 @@
   "char": "恨",
   "code": "nvey",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "忄",
-   "彐"
+   "彐",
+   null,
+   null
   ],
   "keys": [
    "n",
-   "v"
+   "v",
+   "e",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -20588,21 +21250,27 @@
   "frequency": 4139,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 e）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "祭",
   "code": "wfiu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "二",
-   "小"
+   "小",
+   null
   ],
   "keys": [
    "w",
-   "f"
+   "f",
+   "i",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -20611,7 +21279,9 @@
   "frequency": 4139,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 w）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -20663,14 +21333,18 @@
   "char": "僭",
   "code": "waqj",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
+   null,
+   null,
    "日"
   ],
   "keys": [
    "w",
-   "a"
+   "a",
+   "q",
+   "j"
   ],
   "recognition": null,
   "short1": null,
@@ -20679,7 +21353,9 @@
   "frequency": 4123,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）、第 3 个（键 q）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -20741,14 +21417,18 @@
   "char": "虚",
   "code": "haog",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "七",
+   null,
    "一"
   ],
   "keys": [
    "h",
-   "a"
+   "a",
+   "o",
+   "g"
   ],
   "recognition": null,
   "short1": null,
@@ -20757,7 +21437,9 @@
   "frequency": 4112,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 h）、第 3 个（键 o）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -21351,22 +22033,29 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
+   null,
    "丨",
    "子"
   ],
   "keys": [
    "d",
-   "h"
+   "h",
+   "b"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "d",
+   "stroke": "横",
+   "structure": "杂合",
+   "because": "3 个字根不足四码：末笔横 + 结构杂合 ⇒ 识别码 d"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "cun",
   "frequency": 3981,
   "quality": "partial",
   "notes": [
-   "有 1 个字形无法解码，组件序列可能不完整",
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 d）"
   ]
  },
  {
@@ -21457,9 +22146,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "月",
-   " "
+   null
   ],
   "keys": [
    "m",
@@ -21473,7 +22162,8 @@
   "frequency": 3946,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 m）、第 3 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -21755,14 +22445,18 @@
   "char": "蛋",
   "code": "nhju",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "乛",
-   "虫"
+   null,
+   "虫",
+   null
   ],
   "keys": [
    "n",
-   "h"
+   "h",
+   "j",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -21771,7 +22465,9 @@
   "frequency": 3862,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -21888,10 +22584,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "皿",
-   " "
+   null
   ],
   "keys": [
    "t",
@@ -21906,7 +22602,8 @@
   "frequency": 3846,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 t）、第 2 个（键 e）、第 4 个（键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -21943,9 +22640,9 @@
   "componentsSource": "D3",
   "components": [
    "⺈",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "q",
@@ -21960,7 +22657,8 @@
   "frequency": 3841,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 v）、第 3 个（键 h）、第 4 个（键 j）",
    "字根已够四码，无识别码"
   ]
  },
@@ -22366,14 +23064,18 @@
   "char": "波",
   "code": "ihcy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "氵",
-   "又"
+   null,
+   "又",
+   null
   ],
   "keys": [
    "i",
-   "h"
+   "h",
+   "c",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -22382,7 +23084,9 @@
   "frequency": 3739,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -22497,14 +23201,18 @@
   "char": "纸",
   "code": "xqan",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "纟",
-   "弋"
+   null,
+   "弋",
+   null
   ],
   "keys": [
    "x",
-   "q"
+   "q",
+   "a",
+   "n"
   ],
   "recognition": null,
   "short1": null,
@@ -22513,7 +23221,9 @@
   "frequency": 3727,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 q）、第 4 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -22550,10 +23260,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "灬",
-   " "
+   null
   ],
   "keys": [
    "q",
@@ -22568,7 +23278,8 @@
   "frequency": 3720,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 q）、第 2 个（键 d）、第 4 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -22685,14 +23396,18 @@
   "char": "绿",
   "code": "xviy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "纟",
-   "氺"
+   null,
+   "氺",
+   null
   ],
   "keys": [
    "x",
-   "v"
+   "v",
+   "i",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -22701,7 +23416,9 @@
   "frequency": 3701,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 v）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -22711,9 +23428,9 @@
   "componentsSource": "D3",
   "components": [
    "疒",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "u",
@@ -22728,7 +23445,8 @@
   "frequency": 3680,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 c）、第 3 个（键 e）、第 4 个（键 k）",
    "字根已够四码，无识别码"
   ]
  },
@@ -22736,23 +23454,31 @@
   "char": "准",
   "code": "uwyg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "冫",
-   "亻"
+   "亻",
+   null
   ],
   "keys": [
    "u",
-   "w"
+   "w",
+   "y"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "zhun",
   "frequency": 3672,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 y）"
   ]
  },
  {
@@ -22830,9 +23556,9 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
+   null,
    "人",
-   " "
+   null
   ],
   "keys": [
    "r",
@@ -22846,7 +23572,8 @@
   "frequency": 3661,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 r）、第 3 个（键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -23174,10 +23901,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "ㄇ",
-   " "
+   null
   ],
   "keys": [
    "t",
@@ -23192,7 +23919,8 @@
   "frequency": 3600,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 t）、第 2 个（键 e）、第 4 个（键 q）",
    "字根已够四码，无识别码"
   ]
  },
@@ -23228,23 +23956,31 @@
   "char": "社",
   "code": "pyfg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
-   "礻",
+   null,
+   "丶",
    "土"
   ],
   "keys": [
    "p",
-   "y"
+   "y",
+   "f"
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "py",
   "pinyin": "she",
   "frequency": 3573,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 p）"
   ]
  },
  {
@@ -23359,14 +24095,18 @@
   "char": "宜",
   "code": "pegf",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "宀",
-   "一"
+   null,
+   "一",
+   null
   ],
   "keys": [
    "p",
-   "e"
+   "e",
+   "g",
+   "f"
   ],
   "recognition": null,
   "short1": null,
@@ -23375,7 +24115,9 @@
   "frequency": 3533,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 e）、第 4 个（键 f）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -23816,14 +24558,18 @@
   "char": "印",
   "code": "qgbh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   "白",
    "一",
-   "卩"
+   "卩",
+   null
   ],
   "keys": [
    "q",
-   "g"
+   "g",
+   "b",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -23832,7 +24578,9 @@
   "frequency": 3458,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -24085,14 +24833,18 @@
   "char": "店",
   "code": "yhkd",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "广",
-   "口"
+   null,
+   "口",
+   null
   ],
   "keys": [
    "y",
-   "h"
+   "h",
+   "k",
+   "d"
   ],
   "recognition": null,
   "short1": null,
@@ -24101,7 +24853,9 @@
   "frequency": 3417,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 d）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -24512,14 +25266,18 @@
   "char": "郭",
   "code": "ybbh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "孑",
-   "阝"
+   "阝",
+   null
   ],
   "keys": [
    "y",
-   "b"
+   "b",
+   "b",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -24528,7 +25286,9 @@
   "frequency": 3318,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 y）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -24537,28 +25297,27 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null,
+   null
   ],
   "keys": [
    "u",
    "d",
-   "y"
+   "y",
+   "j"
   ],
-  "recognition": {
-   "key": "j",
-   "stroke": "竖",
-   "structure": "上下",
-   "because": "3 个字根不足四码：末笔竖 + 结构上下 ⇒ 识别码 j"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "yang",
   "frequency": 3311,
   "quality": "partial",
   "notes": [
-   "有 4 个字形无法解码，组件序列可能不完整"
+   "有 4 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 u）、第 2 个（键 d）、第 3 个（键 y）、第 4 个（键 j）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -24703,8 +25462,8 @@
   "componentsSource": "D3",
   "components": [
    "亠",
-   " ",
-   " "
+   null,
+   null
   ],
   "keys": [
    "y",
@@ -24718,7 +25477,8 @@
   "frequency": 3280,
   "quality": "partial",
   "notes": [
-   "有 2 个字形无法解码，组件序列可能不完整",
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 e）、第 3 个（键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -24729,9 +25489,9 @@
   "componentsSource": "D3",
   "components": [
    "亻",
-   " ",
-   " ",
-   " "
+   null,
+   null,
+   null
   ],
   "keys": [
    "w",
@@ -24746,7 +25506,8 @@
   "frequency": 3272,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 d）、第 3 个（键 y）、第 4 个（键 y）",
    "字根已够四码，无识别码"
   ]
  },
@@ -24806,10 +25567,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "卜",
-   " "
+   null
   ],
   "keys": [
    "p",
@@ -24824,7 +25585,8 @@
   "frequency": 3259,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 p）、第 2 个（键 u）、第 4 个（键 y）",
    "字根已够四码，无识别码"
   ]
  },
@@ -24912,14 +25674,18 @@
   "char": "费",
   "code": "xjmu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "弓",
-   "贝"
+   null,
+   "贝",
+   null
   ],
   "keys": [
    "x",
-   "j"
+   "j",
+   "m",
+   "u"
   ],
   "recognition": null,
   "short1": null,
@@ -24928,7 +25694,9 @@
   "frequency": 3247,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 j）、第 4 个（键 u）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -24962,13 +25730,17 @@
   "char": "瓦",
   "code": "gnyn",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "一",
+   null,
+   "丶",
    "丶"
   ],
   "keys": [
    "g",
+   "n",
+   "y",
    "n"
   ],
   "recognition": null,
@@ -24978,7 +25750,9 @@
   "frequency": 3228,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 1 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 n）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -25055,14 +25829,18 @@
   "char": "拱",
   "code": "rawy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "扌",
-   "八"
+   null,
+   "八",
+   null
   ],
   "keys": [
    "r",
-   "a"
+   "a",
+   "w",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -25071,7 +25849,9 @@
   "frequency": 3217,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 a）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -25103,14 +25883,18 @@
   "char": "毕",
   "code": "xxfj",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
+   null,
    "匕",
-   "十"
+   "十",
+   null
   ],
   "keys": [
    "x",
-   "x"
+   "x",
+   "f",
+   "j"
   ],
   "recognition": null,
   "short1": null,
@@ -25119,7 +25903,9 @@
   "frequency": 3209,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 x）、第 4 个（键 j）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -25388,10 +26174,10 @@
   "class": "compound",
   "componentsSource": "D3",
   "components": [
-   " ",
-   " ",
+   null,
+   null,
    "口",
-   " "
+   null
   ],
   "keys": [
    "v",
@@ -25406,7 +26192,8 @@
   "frequency": 3153,
   "quality": "partial",
   "notes": [
-   "有 3 个字形无法解码，组件序列可能不完整",
+   "有 3 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 1 个（键 v）、第 2 个（键 t）、第 4 个（键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -25576,14 +26363,18 @@
   "char": "棣",
   "code": "sviy",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "木",
-   "氺"
+   null,
+   "氺",
+   null
   ],
   "keys": [
    "s",
-   "v"
+   "v",
+   "i",
+   "y"
   ],
   "recognition": null,
   "short1": null,
@@ -25592,21 +26383,27 @@
   "frequency": 3115,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 v）、第 4 个（键 y）",
+   "字根已够四码，无识别码"
   ]
  },
  {
   "char": "哼",
   "code": "kybh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "口",
-   "了"
+   null,
+   "了",
+   null
   ],
   "keys": [
    "k",
-   "y"
+   "y",
+   "b",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -25615,7 +26412,9 @@
   "frequency": 3113,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 y）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -25758,14 +26557,18 @@
   "char": "赵",
   "code": "fhqi",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "土",
-   "乂"
+   null,
+   "乂",
+   null
   ],
   "keys": [
    "f",
-   "h"
+   "h",
+   "q",
+   "i"
   ],
   "recognition": null,
   "short1": null,
@@ -25774,7 +26577,9 @@
   "frequency": 3084,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 2 个（键 h）、第 4 个（键 i）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -25809,14 +26614,18 @@
   "char": "佛",
   "code": "wxjh",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D3",
   "components": [
    "亻",
-   "弓"
+   "弓",
+   null,
+   null
   ],
   "keys": [
    "w",
-   "x"
+   "x",
+   "j",
+   "h"
   ],
   "recognition": null,
   "short1": null,
@@ -25825,7 +26634,9 @@
   "frequency": 3080,
   "quality": "partial",
   "notes": [
-   "字根数 2 与码长 4 对不上，无法判定识别码"
+   "有 2 个字根字形未识别（保留占位，键位由码位推断）",
+   "字形未识别的字根用占位表示：第 3 个（键 j）、第 4 个（键 h）",
+   "字根已够四码，无识别码"
   ]
  },
  {

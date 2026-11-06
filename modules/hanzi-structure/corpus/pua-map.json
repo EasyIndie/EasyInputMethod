@@ -1,10 +1,10 @@
 {
-  "alignedChars": 6191,
+  "alignedChars": 6192,
   "mismatchedChars": 670,
   "puaTotal": 251,
   "confident": 184,
   "ambiguous": 67,
-  "observations": 19306,
+  "observations": 19309,
   "minSamples": 3,
   "minShare": 0.9,
   "map": {
@@ -15,7 +15,7 @@
     },
     "": {
       "readable": "一",
-      "samples": 944,
+      "samples": 945,
       "share": 0.963
     },
     "": {
@@ -60,7 +60,7 @@
     },
     "": {
       "readable": "亻",
-      "samples": 324,
+      "samples": 325,
       "share": 0.994
     },
     "": {
@@ -230,7 +230,7 @@
     },
     "": {
       "readable": "田",
-      "samples": 116,
+      "samples": 117,
       "share": 1.0
     },
     "": {

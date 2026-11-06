@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "entries": 1000,
   "quality": {
-    "full": 753,
-    "partial": 239,
+    "full": 759,
+    "partial": 233,
     "unknown": 8
   },
   "classes": {
@@ -12,13 +12,14 @@
     "key-name": 23,
     "None": 8
   },
-  "withRecognition": 514,
+  "withRecognition": 525,
   "componentsSource": {
-    "D2": 916,
-    "D3": 76
+    "D2": 807,
+    "D3": 185
   },
   "puaMap": "corpus/pua-map.json",
-  "undecodedPuaEntries": 84,
+  "placeholderEntries": 192,
+  "placeholderComponents": 380,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",

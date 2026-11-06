@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 2  # v2：新增 componentsSource；组件可由 D3 经 PUA 解码得到
+SCHEMA_VERSION = 3  # v3：无法解码的字根保留为占位组件（null），键位由码位推断（报告 242/243）
 
 # 识别码反查表：末笔 × 结构（顺序：左右、上下、杂合）
 RECOGNITION = {
@@ -60,13 +60,30 @@ def load_full_codes(path: Path) -> dict[str, str]:
 
 
 def load_radicals(path: Path) -> dict[str, list[str]]:
+    """D2（wubi-lex）：字根**连写**在第二列，逐字符取；容忍 BOM。"""
     out: dict[str, list[str]] = {}
     for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.lstrip('\ufeff').rstrip('\r')
         if not line.strip():
             continue
-        parts = line.rstrip('\n').split('\t')
+        parts = line.split('\t')
         if len(parts) >= 2:
-            out[parts[0]] = list(parts[1])
+            out[parts[0]] = [g for g in parts[1] if not g.isspace()]
+    return out
+
+
+def load_d3(path: Path) -> dict[str, list[str]]:
+    """D3（WindInput）：第二列是**空格分隔**的字根，必须 split()；U+E000 是空位占位。"""
+    out: dict[str, list[str]] = {}
+    for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.lstrip('\ufeff').rstrip('\r')
+        if not line.strip() or line.startswith('#'):
+            continue
+        parts = line.split('\t')
+        if len(parts) >= 2:
+            glyphs = [g for g in parts[1].split() if g != '\ue000']
+            if glyphs:
+                out[parts[0]] = glyphs
     return out
 
 
@@ -101,13 +118,14 @@ def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
     return pinyin, freq
 
 
-def decode(glyphs: list[str], pua_map: dict[str, str]) -> tuple[list[str], int]:
-    """把一组字形解码成可读形式；返回 (字形, 无法解码的数量)。
+def decode(glyphs: list[str], pua_map: dict[str, str]) -> tuple[list[str | None], int]:
+    """把一组字形解码成可读字形；解不出的 BMP 私有区字形变成占位组件 None。
 
-    补充区私有码位（D2 用它表示识别码字形）直接丢弃；BMP 私有区字形（D3 的字根）
-    先查映射，查不到就原样保留并计入"无法解码"。
+    补充区私有码位（D2 用它表示识别码字形）直接丢弃；BMP 私有区字形（D2/D3 的字根）
+    先查映射，查不到就记一个占位（v3）：位置仍在，键位可由码位推断，但字形不进入产物。
     """
-    out, unknown = [], 0
+    out: list[str | None] = []
+    unknown = 0
     for g in glyphs:
         if ord(g) >= 0xF0000:
             continue
@@ -116,7 +134,7 @@ def decode(glyphs: list[str], pua_map: dict[str, str]) -> tuple[list[str], int]:
             if readable:
                 out.append(readable)
             else:
-                # 解不出来就**丢弃**（ADR-189 不许产物含 PUA），并计一次未知
+                out.append(None)  # 占位：不许把 PUA 写进产物
                 unknown += 1
         else:
             out.append(g)
@@ -140,7 +158,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             out.append(('D2', decoded2, unknown2))
         return out
 
-    def fits(components: list[str]) -> bool:
+    def fits(components: list) -> bool:
         n = len(components)
         return n >= 2 and len(code) in (n, n + 1)
 
@@ -169,7 +187,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'notes': notes,
     }
     if unknown_glyphs:
-        notes.append(f'有 {unknown_glyphs} 个字形无法解码，组件序列可能不完整')
+        notes.append(f'有 {unknown_glyphs} 个字根字形未识别（保留占位，键位由码位推断）')
 
     # 1) 键名字：四位同键
     if len(code) == 4 and len(set(code)) == 1:
@@ -182,7 +200,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     if glyphs and glyphs[0] == char:
         entry['class'] = 'radical-char'
         entry['components'] = [char]
-        strokes = [g for g in readable[1:] if g in STROKES] if readable and readable[0] == char else []
+        strokes = [g for g in readable[1:] if isinstance(g, str) and g in STROKES] if readable and readable[0] == char else []
         if strokes and len(strokes) == len(readable) - 1:
             notes.append('成字字根：报户口 + ' + '、'.join(STROKES[g] + '（' + g + '）' for g in strokes))
             entry['quality'] = 'partial' if unknown_glyphs else 'full'
@@ -198,8 +216,11 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     entry['class'] = 'compound'
     entry['components'] = readable
     n = len(readable)
-    # 每个字根对应全码里的同位置字母（n ≤ 4 时成立，识别码在末尾）
     entry['keys'] = list(code[:n]) if n <= len(code) else []
+    opaque = sum(1 for c in readable if c is None)
+    if opaque:
+        notes.append('字形未识别的字根用占位表示：' +
+                     '、'.join(f'第 {i + 1} 个（键 {k}）' for i, (c, k) in enumerate(zip(readable, entry['keys'] or '?' * n)) if c is None))
     if n >= 2 and len(code) == n + 1 and code[-1] in RECOGNITION:
         stroke, structure = RECOGNITION[code[-1]]
         entry['recognition'] = {
@@ -245,7 +266,7 @@ def main() -> int:
     short2 = load_short(paths['short2'], 2)
     pinyin, freq = load_pinyin_and_freq(paths['pinyin'])
     pua_map = load_pua_map(Path(args.pua_map)) if args.pua_map else {}
-    d3 = load_radicals(Path(args.d3)) if args.d3 else {}
+    d3 = load_d3(Path(args.d3)) if args.d3 else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -287,7 +308,8 @@ def main() -> int:
         'withRecognition': stats.get('recognition', 0),
         'componentsSource': {k.split(':', 1)[1]: v for k, v in stats.items() if k.startswith('source:')},
         'puaMap': str(args.pua_map) if args.pua_map else None,
-        'undecodedPuaEntries': sum(1 for e in entries if any('无法解码' in n for n in e['notes'])),
+        'placeholderEntries': sum(1 for e in entries if any(c is None for c in e.get('components') or [])),
+        'placeholderComponents': sum(1 for e in entries for c in (e.get('components') or []) if c is None),
         'inputs': {name: {'path': str(path), 'sha256': sha256(path)} for name, path in paths.items()},
         'generator': 'modules/hanzi-structure/tools/build_b0.py',
         'command': ' '.join(['python3', 'tools/build_b0.py'] + sys.argv[1:]),
