@@ -6,6 +6,7 @@
 - 分支：`dev` @ 本轮（`origin/main` = `d816953`，**PR #224 已合并**）；开放 PR **0 个**。
 - **PR #225 已合并**（1.1.0 发布稿 + 人工走查结果 + 验收可移植性），main = `e43ee55`；开放 PR 0 个，`dev` 已快进同步。
 - 1.1.0 只剩三件：**自用 3 天** → `tag v1.1.0` → Release/Pages → pro 用更新器升级（后两项需单独授权）。
+- `ROADMAP.md` 已对账（2026-11-06）：补齐 6 处「已完成未勾」（IT-15/IT-22/IT-23/IT-25/UI04-05/RC 相关口径），新增「当前发布列车：1.1.0」三条可勾任务与 P2 的 D17-bis；未勾项现在只剩 P2–P6、TBD-2、拆字教学、结构库、RC-UI-01（待裁定）。
 - 本批 CI 首次 dco 失败 → 已 `git rebase --signoff` 重写并 force-push，同时新增 `commit-msg` hook + `install-hooks.sh` 装两个 hook，防止再犯。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **57 文件 / 300 例 PASS（6 并发 33s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
 - 版本：`Cargo.toml` = **1.1.0**、`packaging/build-number` = **38**；站点仍为 `v1.0.2 · 构建 37`（1.1.0 未发布），最新 tag `v1.0.2`。
 - 1.1.0 候选身份（CI success @ `393318c`）：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
@@ -107,6 +108,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**ROADMAP 对账收口**。把 6 处「已完成但没勾」补齐（最终 RC 人工项、P1-M5/IT-15、I2/I3/I4、IT-25、UI04-05、2026-10-15 的冻结候选两项），MVP 标准抬头改为「已由 v1.0.0 关闭」，新增「当前发布列车：1.1.0」三条任务与 P2 的 D17-bis/冷首键，并写死「发布对账」三步防止复发。未勾项只剩 P2–P6 / TBD-2 / 拆字教学 / 结构库 / RC-UI-01（待裁定）。
 - 2026-11-06 / pi（air）：**合并 PR #225**（1.1.0 发布稿 + 报告 234 走查结果 + 只依赖系统自带应用的验收整改）。main = `e43ee55`，`dev` 已快进同步；1.1.0 只剩自用 3 天、tag/Release、pro 升级三件事。
 - 2026-11-06 / pi（air）：**人工走查通过（报告 234）**。用户本机跑完 A 档 10 项 + IT-25 四项全 PASS，无 FAIL/BLOCKED；并按用户裁定**验收只依赖系统自带应用**——VS Code / 其它 App（微信）从清单移除，Chrome/Xcode 降为 optional 且缺装 SKIP，Xcode 不再写死 `Xcode-27.0.0.app`；新增 `client-matrix-verdict.py`、`test-acceptance-portability.py` 两个门禁，A 档人工从 12 项降到 10 项。
 - 2026-11-06 / pi（air）：**按用户决定，走查通过后再提 PR**。写好人工走查执行单 `docs/reviews/234-1.1.0-walkthrough.md`（A 档 12 项 + IT-25 四项 + 取证命令 + 空结果列），并写明后续：结果回填 → 补结论 → 与 1.1.0 发布稿同一个 PR；两份文档都留在 dev，暂不合并 main。
