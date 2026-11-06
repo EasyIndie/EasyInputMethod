@@ -8,8 +8,21 @@ ROOT = Path(__file__).resolve().parents[3]
 MODULE = ROOT / 'modules/hanzi-structure'
 
 
+INPUTS = {
+    'codes': ROOT / 'data/generated/wubi86-single.tsv',
+    'radicals': ROOT / 'data/sources/wubi-lex-86.txt',
+    'short1': ROOT / 'data/sources/wubi86-level1-codes.tsv',
+    'short2': ROOT / 'data/sources/wubi86-level2-codes.tsv',
+    'pinyin': ROOT / 'data/generated/pinyin-chars.tsv',
+}
+
+
 class B0CorpusTests(unittest.TestCase):
     def test_corpus_validates_against_inputs(self):
+        """独立重算需要下载型输入（D2/D17）；CI 不下载它们时跳过，改由内部一致性用例把关。"""
+        missing = [name for name, path in INPUTS.items() if not path.is_file()]
+        if missing:
+            self.skipTest('缺少下载型输入，跳过独立重算：' + ', '.join(missing))
         cmd = [sys.executable, str(MODULE / 'tests/validate_b0.py'),
                '--corpus', str(MODULE / 'corpus/B0.json'),
                '--report', str(MODULE / 'corpus/B0-report.json'),
@@ -80,6 +93,38 @@ class B0CorpusTests(unittest.TestCase):
         strokes = subprocess.run(query + ['用'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertIn('成字字根', strokes.stdout)
         self.assertIn('丿', strokes.stdout)
+
+    def test_corpus_internal_consistency(self):
+        """不依赖下载型输入：字段、等级、识别码、键位、结构、无 PUA 的机器不变量。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        report = json.loads((MODULE / 'corpus/B0-report.json').read_text(encoding='utf-8'))
+        self.assertEqual(report['entries'], len(entries))
+        self.assertEqual(report['schemaVersion'], 5)
+        recognition = {
+            'g': ('横', '左右'), 'f': ('横', '上下'), 'd': ('横', '杂合'),
+            'h': ('竖', '左右'), 'j': ('竖', '上下'), 'k': ('竖', '杂合'),
+            't': ('撇', '左右'), 'r': ('撇', '上下'), 'e': ('撇', '杂合'),
+            'y': ('捺', '左右'), 'u': ('捺', '上下'), 'i': ('捺', '杂合'),
+            'n': ('折', '左右'), 'b': ('折', '上下'), 'v': ('折', '杂合'),
+        }
+        for entry in entries:
+            char = entry['char']
+            if entry['class'] == 'compound':
+                self.assertEqual(len(entry['keys']), len(entry['components']), f'{char}: keys 长度')
+            for glyph in entry['components']:
+                if glyph is None:
+                    continue
+                self.assertFalse(any(0xE000 <= ord(c) <= 0xF8FF or ord(c) >= 0xF0000 for c in glyph),
+                                 f'{char}: 组件含私有区字形')
+            if entry['quality'] != 'full':
+                self.assertTrue(entry['notes'], f'{char}: 非 full 必须有 notes')
+            record = entry['recognition']
+            if record:
+                self.assertEqual(record['key'], entry['code'][-1], f'{char}: 识别码不是末位')
+                self.assertEqual((record['stroke'], record['structure']), recognition[record['key']])
+                self.assertEqual(len(entry['components']), len(entry['code']) - 1)
+            self.assertIsInstance(entry.get('positionMismatch'), list)
 
     def test_no_unlicensed_source_in_corpus(self):
         """ADR-310：D3（未声明许可）只能作 oracle，产物里不得出现其组件来源。"""
