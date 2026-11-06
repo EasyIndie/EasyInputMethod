@@ -9,6 +9,15 @@ SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 OUT="${OUT:-/tmp/lampyris-client-matrix}"
 
 mkdir -p "$OUT"
+# 报告231：矩阵会开 TextEdit 文档、浏览器标签和 Xcode 窗口，结束（含失败）一律收掉。
+# 「由我们启动」的应用在没有窗口时才退出；本来就开着的（用户可能在用）只关我们自己的窗口。
+STARTED=""
+for pair in "TextEdit:TextEdit" "Xcode:Xcode"; do
+    app="${pair%%:*}"; binary="${pair##*:}"
+    pgrep -x "$binary" >/dev/null 2>&1 || STARTED="$STARTED --quit-app $app"
+done
+cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit $STARTED >&2 || true; }
+trap cleanup_run EXIT INT TERM
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo "BLOCKED 无法选中输入源 $SOURCE"; exit 1; }
 
 has_app() {
@@ -43,7 +52,10 @@ type_into() {
 
 echo "== TextEdit"
 open -a TextEdit >/dev/null 2>&1
-sleep 3
+sleep 2
+# 报告231：自己开一个空白文档，读完就关——不再借用（也可能污染）用户正在写的文档。
+osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+sleep 1.5
 "$BIN/axtext" clear >/dev/null 2>&1
 if type_into TextEdit; then
     got=$("$BIN/axfocus" 2>/dev/null)
@@ -58,6 +70,8 @@ if type_into TextEdit; then
         *) printf '%s\n' "$got" | tee "$OUT/textedit.json" ;;
     esac
 fi
+# 关掉自己开的那个文档（front document 就是刚建的空白文档）
+osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
 
 # 报告198：macOS 13 的 LaunchServices 不接受 `open -a Safari 'data:…'`（Unable to interpret … as a path or URL），
 # 改用临时 HTML 文件，两个版本都可用。

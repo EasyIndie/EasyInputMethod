@@ -11,6 +11,9 @@ OUT="${OUT:-/tmp/lampyris-acceptance-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 FAILED=0
 BLOCKED=0
+# 报告231：跑完（含中断、失败）都把本轮开出来的窗口/进程收掉，保证"再跑一遍还是干净的"。
+cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
+trap cleanup_run EXIT INT TERM
 # 报告230：FAST=1 用于开发迭代（轮数与静置都降一档，约省一半时间）；发布门禁用默认值。
 if [ "${FAST:-0}" = "1" ]; then
     # 热键项不能压太狠：⌥M/⌥T 要等配置落盘，settle 4 会读到空文本（实测一次 FAIL）。
@@ -52,7 +55,8 @@ done
 report "前置 mode=mixed" "OK"
 
 # 2. 热键与上屏
-assert_text "混输+标点"       'wq nihao .'            'endswith:你好。'
+# 报告230：「混输+标点」与 quality-samples.sh 的兜底/句号/引号用例重复，已移出本脚本；
+# 中文态由下面的 ensure_cn 把关，热键项只看状态语义。
 ensure_cn && report "前置 中文态" "OK" || { report "前置 中文态" "FAIL"; FAILED=1; }
 assert_text "Shift 切英文"    'shiftc;abc'            'ascii:abc'
 ensure_cn && report "还原中文态" "OK" || { report "还原中文态" "FAIL"; FAILED=1; }

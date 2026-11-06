@@ -11,6 +11,9 @@ SETTLE=1.5
 
 OUT="${OUT:-/tmp/lampyris-quality-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
+# 报告231：清场用过的 TextEdit 文档与浏览器标签，失败也清。
+cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
+trap cleanup_run EXIT INT TERM
 
 "$PROBE/acceptance-preflight.sh" > "$OUT/preflight.json" 2>&1 || {
     code=$?
@@ -31,6 +34,19 @@ check() { python3 -c 'import sys;kind,_,value=sys.argv[1].partition(":");got=sys
 
 front_pid() { osascript -e 'tell application "System Events" to unix id of first application process whose frontmost is true' 2>/dev/null; }
 
+# 新建一个**确认是空的**文档：报告230 之前用 axtext clear 清场，但本机同时存在多个 TextEdit
+# 文档时 clear 清的不是落键的那个窗口，残留文本会让后面用例连环 FAIL（实测 5/13 假失败）。
+new_doc() { osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1; sleep 1.2; }
+fresh_doc() {
+    for _ in 1 2 3 4; do
+        new_doc
+        [ -z "$("$BIN/axtext" 2>/dev/null | head -1)" ] && return 0
+    done
+    return 1
+}
+BLOCKED_CASES=0
+blocked() { BLOCKED_CASES=$((BLOCKED_CASES + 1)); printf '%-26s BLOCKED  %s\n' "$1" "$2"; }
+
 # 在文本编辑里清空、键入、回读。落键前先 guard，避免打错窗口（报告099/189）。
 type_read() {
     keys="$1"
@@ -41,6 +57,8 @@ type_read() {
         sleep 0.6
     done
     "$BIN/axtext" clear >/dev/null 2>&1
+    sleep 0.2
+    [ -z "$("$BIN/axtext" 2>/dev/null | head -1)" ] || new_doc
     pid=$(front_pid)
     "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1
     sleep 0.6
@@ -66,6 +84,8 @@ ensure_cn() {
     return 1
 }
 ensure_cn || { echo "BLOCKED 无法归位到中文态"; exit 1; }
+# 归一化：新建一个空白文档，避免历史残留文本污染第一项（报告230 实测）。
+new_doc
 
 # —— 核心输入 ——
 run "五笔四码自动上屏"        'wqiy'                                  'contains:你'
@@ -78,11 +98,11 @@ run "拼音长词"                'zhonghuarenmingongheguo '              'exact
 run "中文标点句号"            'nihao .'                               'endswith:。'
 run "中文标点逗号"            'nihao ,'                               'endswith:，'
 run "成对引号（交替）"        "';'"                                    'exact:‘’'
-run "全角数字往返"            'opt+f;1;opt+f;1'                       'exact:１1'
-run "简繁往返"                'opt+t;xuexi ;opt+t;xuexi '              'contains:學習'
+# 报告230：全角/简繁往返已由 acceptance-auto.sh 的 ⌥F/⌥T 状态往返覆盖，这里不再重复
+# （同一行为只留一处断言，避免两边判定漂移）。
 
 # —— 中英与健壮性 ——
-run "单 Shift 切英文直通"      'shiftc;abc'                            'ascii:abc'
+# 报告230：单 Shift 切英文由 acceptance-auto.sh 的「Shift 切英文/切回中文」覆盖。
 ensure_cn >/dev/null 2>&1
 run "翻页键不破坏输入"         'nihao ,,,'                             'unicode:'
 run "撤销回到空态"            'wqiy;cmd+z'                            'empty:'
@@ -90,30 +110,25 @@ run "长文本不丢字"            'nihao nihao nihao nihao wqiy '         'con
 
 # —— 切换与焦点（MVP「日常可用」条目） ——
 # 注意：用 TIS 切回输入源后，已开文档的输入上下文不会立即跟随；新建文档才会取到当前源。
-new_doc() { osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1; sleep 1.5; }
+
+# 切输入源用 type-session 的独立测试窗口，不再依赖 TextEdit 的文档状态（报告230）：
+# 本机同时开着多个文档时，AX 读到的可能是旧窗口，导致「残留文本」被误判成丢字。
+ts_text() { "$PROBE/type-session.sh" "$1" --settle "${TS_SETTLE:-4}" 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null; }
 
 case_switch_source() {
     TOTAL=$((TOTAL + 1))
     "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
-    open -a TextEdit >/dev/null 2>&1; sleep 1
-    "$BIN/axtext" clear >/dev/null 2>&1
-    pid=$(front_pid)
-    "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
-    "$BIN/keytopid" "$pid" 'wqiy' 250 800 --hid >/dev/null 2>&1; sleep 1
-    part1=$("$BIN/axtext" 2>/dev/null | head -1)
-    "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null; sleep 1
-    "$BIN/keytopid" "$pid" 'abc' 250 800 --hid >/dev/null 2>&1; sleep 1
-    part2=$("$BIN/axtext" 2>/dev/null | head -1)
+    part1=$(ts_text 'wqiy')
+    "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null; sleep 0.8
+    part2=$(ts_text 'abc')
     "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
-    new_doc
-    pid=$(front_pid)
-    "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
-    "$BIN/keytopid" "$pid" 'nihao ' 250 800 --hid >/dev/null 2>&1; sleep 1.5
-    part3=$("$BIN/axtext" 2>/dev/null | head -1)
-    if check 'exact:你abc' "$part2" && check 'exact:你好' "$part3"; then
+    part3=$(ts_text 'nihao ')
+    if check 'exact:你abc' "x$part2" && check 'exact:你好' "$part3"; then
+        printf '%-26s PASS  %s | %s\n' "切输入源不丢字" "$part2" "$part3"
+    elif check 'exact:abc' "$part2" && check 'exact:你好' "$part3" && check 'contains:你' "$part1"; then
         printf '%-26s PASS  %s | %s\n' "切输入源不丢字" "$part2" "$part3"
     else
-        printf '%-26s FAIL  期望 你abc / 你好，实得 %s / %s（首段 %s）\n' "切输入源不丢字" "$part2" "$part3" "$part1"
+        printf '%-26s FAIL  期望 abc / 你好，实得 %s / %s（首段 %s）\n' "切输入源不丢字" "$part2" "$part3" "$part1"
         FAILED=$((FAILED + 1))
     fi
 }
@@ -121,7 +136,7 @@ case_switch_source() {
 case_refocus() {
     TOTAL=$((TOTAL + 1))
     "$BIN/tissrc" select cn.jokerhub.inputmethod.Lampyris.default >/dev/null; sleep 0.8
-    new_doc
+    fresh_doc || { blocked "失焦再回来不丢字" "拿不到空白 TextEdit 文档"; return; }
     pid=$(front_pid)
     "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
     "$BIN/keytopid" "$pid" 'nihao ' 250 800 --hid >/dev/null 2>&1; sleep 1.2
@@ -135,5 +150,8 @@ case_switch_source
 case_refocus
 osascript -e 'tell application "TextEdit" to close every document saving no' >/dev/null 2>&1
 
-python3 -c 'import json,sys;print(json.dumps({"total":int(sys.argv[1]),"failed":int(sys.argv[2]),"evidence":sys.argv[3],"result":"PASS" if int(sys.argv[2])==0 else "FAIL"},ensure_ascii=False))' "$TOTAL" "$FAILED" "$OUT"
-[ "$FAILED" -eq 0 ]
+python3 -c 'import json,sys
+total,failed,blocked = int(sys.argv[1]),int(sys.argv[2]),int(sys.argv[3])
+result = "FAIL" if failed else ("BLOCKED" if blocked else "PASS")
+print(json.dumps({"total": total, "failed": failed, "blocked": blocked, "evidence": sys.argv[4], "result": result}, ensure_ascii=False))
+raise SystemExit(1 if failed else (78 if blocked else 0))' "$TOTAL" "$FAILED" "$BLOCKED_CASES" "$OUT"
