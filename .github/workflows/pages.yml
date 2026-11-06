@@ -43,7 +43,7 @@ jobs:
           if match is None:
               sys.exit('appcast.xml 里没有 sparkle:version')
           subprocess.run([sys.executable, 'tools/stamp-site.py', '--version', version,
-                          '--build', match.group(1), '--size-mb', f'{zip_size / 1048576:.1f}',
+                          '--build', match.group(1), '--size-mb', f'{zip_size / 1_000_000:.1f}',
                           '--out', 'site-out'], check=True)
           PY
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
