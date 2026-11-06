@@ -12,7 +12,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.1.0 / build 38**（候选），宿主执行 `d3c5a2ef…`，宿主 PID 59867；输入源 `Lampyris.default` 在用 | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.0.0 / build 34**，宿主执行 `94394884…`（**未升到 1.1.0**） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
 
@@ -55,7 +55,7 @@
 - **corpus 第二阶段未开工（ADR-309/310，需求见 `docs/结构库第二阶段需求.md`）**：缺的是**许可干净的字根字形身份库**（N1，249 条占位的根因）与**真实笔顺**（N2）。现有数据已榨干：IDS 粒度粗（220 条叶数不等）、两款上游字体无许可、D2 自身对 8 个字漏拆。
 - **D3 只能作构建期 oracle（ADR-310）**：许可「未声明」，**不得**进发布产物、不得复用其字体；`pua-map.json` 也不随包分发。
 - **B0 体积会超标**：现 558 B/字，扩到 3,000 字约 1.6 MiB，超出 512 KiB 预算 → 第二阶段必须先定「运行包字段子集」（`ids`/`positionMismatch`/`notes` 不进包）。
-- **1.1.0 预检已过（报告 247）**：候选 `393318c` 身份零偏差（1.1.0/build 38、CI 双绿、ZIP `448d3170…` 逐字节一致、站点仍 `v1.0.2·37`、无 tag）；**自用 3 天已由用户 2026-11-06 显式豁免**（写进 `docs/releases/1.1.0.md` §3）；**tag/Release 已完成（报告 248）**：tag `v1.1.0` → `393318c`，run `42225134493` success，ZIP `448d3170…` 与候选逐字节一致、DMG staple+spctl 通过、appcast `sparkle:version=38`、包内执行 `d3c5a2ef…`。**只剩**：① dispatch Pages（站点仍 `v1.0.2·37`）② pro 用自带更新器升级——两项都需授权。
+- **1.1.0 预检已过（报告 247）**：候选 `393318c` 身份零偏差（1.1.0/build 38、CI 双绿、ZIP `448d3170…` 逐字节一致、站点仍 `v1.0.2·37`、无 tag）；**自用 3 天已由用户 2026-11-06 显式豁免**（写进 `docs/releases/1.1.0.md` §3）；**tag/Release 已完成（报告 248）**：tag `v1.1.0` → `393318c`，run `42225134493` success，ZIP `448d3170…` 与候选逐字节一致、DMG staple+spctl 通过、appcast `sparkle:version=38`、包内执行 `d3c5a2ef…`。**站点与 pro 均已完成（报告 250）**：`input.jokerhub.cn` = `v1.1.0 · 构建 38`；pro 经更新程序 1.0.0/34 → **1.1.0/38**（执行 `d3c5a2ef…`），config `d66579d1…` 与词库 959 行未变。**1.1.0 发布闭环完成**；剩 pro 本机实键入确认（SSH 无法驱动 GUI）。
 - **pro 仍是 1.0.0/build 34**：等 1.1.0 Release 上线后用它自带更新器升级（一次验证同包 + 升级链）。
 - **客户端自动回读缺口**：Safari/Chrome/Xcode 在自动矩阵是 BLOCKED，需人工补（报告 229）。
 - **`ps rss` 口径**：macOS 27 计入共享页（同宿主 footprint 33 MiB / rss 95 MiB），`RSS_HARD_MB=96` 贴近误判边缘，建议改 `vmmap` footprint。
@@ -116,6 +116,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**1.1.0 站点 + pro 升级（报告 250）**。站点版本行是硬编码，先改 `site/index.html` 再经 PR #226 合入 main（CI 前两次红灯：预览冒烟 `zz` 撞五笔通配、B0 测试在 CI 缺下载数据——都不是产品回归，已修并留报告 249/补 skip 逻辑），dispatch Pages 后回读 `v1.1.0 · 构建 38`。pro 经更新程序 1.0.0/34 → 1.1.0/38（执行 `d3c5a2ef…`），config 与 959 行词库未变，更新程序同步升到 1.1.0；`--verify-payload` 独立验签通过。
 - 2026-11-06 / pi（air）：**1.1.0 发布（报告 248）**。用户授权 tag → `git tag -a v1.1.0 393318c` 推送，Release run `42225134493` success；回读：ZIP `448d3170…` 逐字节一致、DMG staple+spctl 通过、appcast `sparkle:version=38`、更新程序 1.1.0 已公证、包内执行 `d3c5a2ef…`/universal/38 全对。站点未部署（等授权），pro 仍 1.0.0。
 - 2026-11-06 / pi（air）：**用户豁免 1.1.0 的「自用 3 天」**。豁免事实与替代证据（报告 229 久用、报告 234 人工走查）写进 `docs/releases/1.1.0.md` §3 与报告 247 §2；**尚未执行 tag/Release/Pages/换包**，等下一步授权。
 - 2026-11-06 / pi（air）：**1.1.0 发布预检（报告 247）**。候选 `393318c` 全项核对：版本/构建号、CI 双绿、ZIP 与本地逐字节一致、站点仍 v1.0.2·37、无 v1.1.0 tag、`release.yml` 会产出 ZIP/DMG/更新程序/appcast。**缺口：自用 3 天 0/3 + 四处授权**；发布稿两处「待补」确认就是 Release 产物，不是缺陷。未执行任何 tag/Release/Pages/换包动作。
