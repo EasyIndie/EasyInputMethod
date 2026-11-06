@@ -25,7 +25,7 @@
 - 数据是**移动**到备份目录，不删除、不覆盖；不在活动目录留下「显式旧默认值」。
 - 不触碰 `~/Library/Preferences`、`UserDefaults` 或第二份配置（铁律 3 不变）。
 
-## 全新安装流程（写进 `docs/发布说明.md` §6 与 `docs/开发工作流.md` 守则 2）
+## 全新安装流程（写进 `docs/archive/发布说明-0.1.15.md` §6 与 `docs/开发工作流.md` 守则 2）
 
 1. 切到 **ABC**；「系统设置 → 键盘 → 文字输入」移除萤火虫。
 2. `platforms/macos/uninstall.sh --dry-run --purge-data` 看计划（此步无需退出宿主）。

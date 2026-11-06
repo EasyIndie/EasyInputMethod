@@ -24,13 +24,13 @@ name = "五笔86 字→字根拆分（huanfeng/WindInput）"
 path = "data/sources/windinput-wubi86-chaizi.txt"
 url = "https://github.com/huanfeng/WindInput/blob/master/data/schemas/wubi86/wubi86_chaizi.txt"
 upstream = "huanfeng/WindInput"
-license = "MIT"
-risk = "low"
+license = "Unspecified (upstream NOTICE.md: no license attached)"
+risk = "high"
 sha256 = "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6"
-used_for = ["wubi86-chaizi-crosscheck"]
+used_for = ["wubi86-chaizi-oracle-only"]
 fetch_script = "data/sources/fetch-wubi-chaizi.sh"
 added_at = "2026-10-08"
-notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库"
+notes = "格式 字\t字根（空格分隔）\t五笔86码；字根多为 PUA 字符；文件下载获取，不入库。许可证更正（2026-11-06，报告 246）：上游 NOTICE.md 明确该数据与 HeiTiZiGen.ttf 均「未附带任何版权声明或许可证信息」，来源不详；代码仓库 v0.127.0 起 GPL-3.0-or-later（此前 MIT）。**仅作构建期 oracle，不进发布产物、不复用其字体**（ADR-310）"
 
 [[source]]
 id = "D4"
@@ -250,3 +250,30 @@ sha256 = "0045deb812fd3bf0a54a753caaf98e26015d432123de78be2982323183b8962c"
 used_for = ["wubi86-level1-code-rows", "candidate-order-evaluation"]
 added_at = "2026-11-05"
 notes = "ADR-304；一级简码是公开标准事实，按标准逐条转写，不含第三方文件内容；二级 625 条待登记后另行加入"
+
+[[source]]
+id = "D17-bis"
+name = "五笔86 二级简码表（项目自建清单）"
+path = "data/sources/wubi86-level2-codes.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/sources/wubi86-level2-codes.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "e6e1b777f5a93bf857ed727bcf09b85257b60c59c419fe2d027382f0f03a0d26"
+used_for = ["wubi86-level2-code-rows", "candidate-order-evaluation"]
+added_at = "2026-11-06"
+notes = "ADR-304 的二级简码落地（报告238）：按公开 86 版二级简码表逐条转写，并与 rime/rime-wubi（D9，LGPL-3，仅作验证 oracle）逐格对照；每条都通过「简码 = 全码前两码」校验。不采纳极爽词库自行新增的 17 个码位与 2 条前缀不符项（hb=齰、ya=占位符）"
+
+[[source]]
+id = "D19"
+name = "汉字 IDS 结构分解（yi-bai/ids）"
+path = "data/sources/ids_lv1.txt"
+url = "https://raw.githubusercontent.com/yi-bai/ids/main/ids_lv1.txt"
+upstream = "yi-bai/ids"
+license = "MIT"
+risk = "low"
+sha256 = "aa9ba7e394d8fd5cf797b6b9bd6ae5b4546f5222d10f15158c656f099b35c0cf"
+used_for = ["hanzi-structure-ids-crosscheck", "hanzi-structure-placeholder-fill"]
+fetch_script = "data/sources/fetch-ids.sh"
+added_at = "2026-11-06"
+notes = "MIT；2 MB，下载获取不入库。只用于 B0 结构事实库的结构参考与占位字根补齐（ADR-309，报告 245），不进入输入热路径"

@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 5,
+  "entries": 1000,
+  "quality": {
+    "full": 735,
+    "partial": 257,
+    "unknown": 8
+  },
+  "classes": {
+    "radical-char": 42,
+    "compound": 927,
+    "key-name": 23,
+    "None": 8
+  },
+  "withRecognition": 624,
+  "componentsSource": {
+    "D1": 42,
+    "D2": 927
+  },
+  "puaMap": "corpus/pua-map.json",
+  "placeholderEntries": 243,
+  "placeholderComponents": 259,
+  "recognitionSlotPua": 0,
+  "withStrokes": 41,
+  "withIds": 990,
+  "idsFilled": 24,
+  "positionMismatchEntries": 50,
+  "inputs": {
+    "codes": {
+      "path": "../../data/generated/wubi86-single.tsv",
+      "sha256": "72328b6966e323deafa4e85ae751b07801040146ce7e153bc14e6b8e63202686"
+    },
+    "radicals": {
+      "path": "../../data/sources/wubi-lex-86.txt",
+      "sha256": "da8a20e6af3446348d5d68a89ac71d5e3b9b17b00446d8204ac1e9529626697f"
+    },
+    "short1": {
+      "path": "../../data/sources/wubi86-level1-codes.tsv",
+      "sha256": "0045deb812fd3bf0a54a753caaf98e26015d432123de78be2982323183b8962c"
+    },
+    "short2": {
+      "path": "../../data/sources/wubi86-level2-codes.tsv",
+      "sha256": "e6e1b777f5a93bf857ed727bcf09b85257b60c59c419fe2d027382f0f03a0d26"
+    },
+    "pinyin": {
+      "path": "../../data/generated/pinyin-chars.tsv",
+      "sha256": "70536b58ffdfe5d66b22cb601cdb68742c11ab4bcfa8d25cad9a2af940027c12"
+    },
+    "readable_keys": {
+      "path": "../../data/learning/wubi86-readable-keys.tsv",
+      "sha256": "49c2f901fa8bd830817ee3b33b1752f7e555776a9f00a279b814205a6f76d0ac"
+    },
+    "ids": {
+      "path": "../../data/sources/ids_lv1.txt",
+      "sha256": "aa9ba7e394d8fd5cf797b6b9bd6ae5b4546f5222d10f15158c656f099b35c0cf"
+    }
+  },
+  "generator": "modules/hanzi-structure/tools/build_b0.py",
+  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --pua-map corpus/pua-map.json --readable-keys ../../data/learning/wubi86-readable-keys.tsv --ids ../../data/sources/ids_lv1.txt --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
+}

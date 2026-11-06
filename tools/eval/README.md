@@ -13,6 +13,23 @@ make eval-candidates EVAL_JSON=/tmp/x.json # 指定输出
 默认样本 `tools/eval/samples.tsv`、码表 `data/generated/wubi86-core.tsv`。
 纯本地、不联网、不读用户配置、不写 `~/Library`。
 
+## 1.1 二级简码「选谁」的来源对照
+
+```sh
+python3 tools/eval/compare-level2-sources.py     # 全码权重 vs 通用字频，各生成一版临时表对比
+```
+
+结论与决策见 `docs/reviews/237-level2-shortcode-source-decision.md`：两种来源在 624 个码位里只差 5 个生僻字，
+因此采用现有全码权重（少一个依赖、与码表同源、可复现）。
+
+## 1.2 三级简码收益评估
+
+```sh
+python3 tools/eval/simulate-level3.py     # 模拟「高频前 4400 个四码字可 3 码上屏」并对比
+```
+
+结论见 `docs/reviews/239-level3-shortcode-evaluation.md`：按键 4.25→4.03、+53 KB、582 处撞码，**建议暂缓**。
+
 ## 2. 样本集
 
 `tools/eval/gen-samples.py` 生成，**勿手改** `samples.tsv`（要改进就改生成器，样本集一改等于换考卷）。
@@ -20,7 +37,8 @@ make eval-candidates EVAL_JSON=/tmp/x.json # 指定输出
 | 类别 | 条数 | 键盘输入 | 意图来源 |
 |---|---|---|---|
 | `jianma1` | 25 | 1 字母（五笔86 一级简码） | 公开标准键位表 |
-| `jianma2` | 30 | 2 字母（该字全码前两位，ADR-304 二级简码规则） | 高频单字 |
+| `jianma2` | 40 | 2 字母（**官方二级简码表** D17-bis 等距取样） | 官方简码表 |
+| `prefix2` | 30 | 2 字母（该字全码前两位） | 高频单字（原 jianma2 考卷，报告238 改名） |
 | `single` | 50 | 4 字母全码 | `pinyin-chars.tsv` 单字词频（jieba，D10） |
 | `word2` | 25 | 4 字母词码 | `input-quality.tsv` **holdout**（ADR-227） |
 | `word2v` | 30 | 同上 | 同上 **validation**（数量补足，单独统计） |
@@ -60,7 +78,7 @@ PY
 判定口径（`docs/MVP后执行计划.md` §4）：`hit%` / `first%` / `keys` 不得劣化，`jianma1` 的 `first%`
 与 `keys` 必须明显改善；否则不发布。
 
-## 5. 基线（1.0.2 / build 37）
+## 5. 基线（1.0.2 / build 37；240 条新样本的基线见 `baselines/1.1.0-build38.json`）
 
 ```
 category     samples   hit%  first%    avgPos keys/sample

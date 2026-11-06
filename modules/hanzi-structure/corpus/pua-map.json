@@ -1,0 +1,1262 @@
+{
+  "alignedChars": 6192,
+  "mismatchedChars": 670,
+  "puaTotal": 251,
+  "confident": 184,
+  "ambiguous": 67,
+  "observations": 19309,
+  "minSamples": 3,
+  "minShare": 0.9,
+  "map": {
+    "": {
+      "readable": "口",
+      "samples": 1062,
+      "share": 0.996
+    },
+    "": {
+      "readable": "一",
+      "samples": 945,
+      "share": 0.963
+    },
+    "": {
+      "readable": "人",
+      "samples": 517,
+      "share": 0.969
+    },
+    "": {
+      "readable": "艹",
+      "samples": 448,
+      "share": 0.998
+    },
+    "": {
+      "readable": "木",
+      "samples": 445,
+      "share": 0.998
+    },
+    "": {
+      "readable": "土",
+      "samples": 423,
+      "share": 0.991
+    },
+    "": {
+      "readable": "丨",
+      "samples": 384,
+      "share": 0.964
+    },
+    "": {
+      "readable": "丶",
+      "samples": 369,
+      "share": 0.992
+    },
+    "": {
+      "readable": "日",
+      "samples": 368,
+      "share": 0.921
+    },
+    "": {
+      "readable": "氵",
+      "samples": 338,
+      "share": 1.0
+    },
+    "": {
+      "readable": "亻",
+      "samples": 325,
+      "share": 0.994
+    },
+    "": {
+      "readable": "又",
+      "samples": 297,
+      "share": 0.973
+    },
+    "": {
+      "readable": "大",
+      "samples": 295,
+      "share": 0.993
+    },
+    "": {
+      "readable": "二",
+      "samples": 270,
+      "share": 0.911
+    },
+    "": {
+      "readable": "扌",
+      "samples": 258,
+      "share": 1.0
+    },
+    "": {
+      "readable": "十",
+      "samples": 241,
+      "share": 0.992
+    },
+    "": {
+      "readable": "宀",
+      "samples": 229,
+      "share": 1.0
+    },
+    "": {
+      "readable": "冂",
+      "samples": 212,
+      "share": 0.943
+    },
+    "": {
+      "readable": "八",
+      "samples": 207,
+      "share": 0.99
+    },
+    "": {
+      "readable": "厶",
+      "samples": 198,
+      "share": 1.0
+    },
+    "": {
+      "readable": "贝",
+      "samples": 191,
+      "share": 0.99
+    },
+    "": {
+      "readable": "钅",
+      "samples": 175,
+      "share": 1.0
+    },
+    "": {
+      "readable": "亠",
+      "samples": 173,
+      "share": 0.994
+    },
+    "": {
+      "readable": "女",
+      "samples": 168,
+      "share": 1.0
+    },
+    "": {
+      "readable": "小",
+      "samples": 162,
+      "share": 0.994
+    },
+    "": {
+      "readable": "山",
+      "samples": 162,
+      "share": 0.988
+    },
+    "": {
+      "readable": "勹",
+      "samples": 157,
+      "share": 0.994
+    },
+    "": {
+      "readable": "虫",
+      "samples": 155,
+      "share": 1.0
+    },
+    "": {
+      "readable": "止",
+      "samples": 155,
+      "share": 0.981
+    },
+    "": {
+      "readable": "尸",
+      "samples": 153,
+      "share": 0.98
+    },
+    "": {
+      "readable": "月",
+      "samples": 149,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丿",
+      "samples": 149,
+      "share": 0.926
+    },
+    "": {
+      "readable": "阝",
+      "samples": 145,
+      "share": 0.993
+    },
+    "": {
+      "readable": "心",
+      "samples": 145,
+      "share": 1.0
+    },
+    "": {
+      "readable": "火",
+      "samples": 138,
+      "share": 0.978
+    },
+    "": {
+      "readable": "目",
+      "samples": 137,
+      "share": 1.0
+    },
+    "": {
+      "readable": "王",
+      "samples": 137,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺈",
+      "samples": 136,
+      "share": 0.993
+    },
+    "": {
+      "readable": "𠂉",
+      "samples": 135,
+      "share": 1.0
+    },
+    "": {
+      "readable": "辶",
+      "samples": 134,
+      "share": 0.993
+    },
+    "": {
+      "readable": "匕",
+      "samples": 134,
+      "share": 0.985
+    },
+    "": {
+      "readable": "纟",
+      "samples": 131,
+      "share": 0.977
+    },
+    "": {
+      "readable": "厂",
+      "samples": 127,
+      "share": 0.992
+    },
+    "": {
+      "readable": "讠",
+      "samples": 123,
+      "share": 1.0
+    },
+    "": {
+      "readable": "田",
+      "samples": 117,
+      "share": 1.0
+    },
+    "": {
+      "readable": "月",
+      "samples": 115,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺮",
+      "samples": 114,
+      "share": 1.0
+    },
+    "": {
+      "readable": "儿",
+      "samples": 112,
+      "share": 0.938
+    },
+    "": {
+      "readable": "广",
+      "samples": 112,
+      "share": 1.0
+    },
+    "": {
+      "readable": "夕",
+      "samples": 111,
+      "share": 1.0
+    },
+    "": {
+      "readable": "寸",
+      "samples": 109,
+      "share": 0.991
+    },
+    "": {
+      "readable": "忄",
+      "samples": 107,
+      "share": 1.0
+    },
+    "": {
+      "readable": "刂",
+      "samples": 106,
+      "share": 1.0
+    },
+    "": {
+      "readable": "禾",
+      "samples": 104,
+      "share": 1.0
+    },
+    "": {
+      "readable": "疒",
+      "samples": 101,
+      "share": 1.0
+    },
+    "": {
+      "readable": "米",
+      "samples": 100,
+      "share": 1.0
+    },
+    "": {
+      "readable": "力",
+      "samples": 99,
+      "share": 0.949
+    },
+    "": {
+      "readable": "乚",
+      "samples": 99,
+      "share": 0.96
+    },
+    "": {
+      "readable": "夂",
+      "samples": 99,
+      "share": 0.98
+    },
+    "": {
+      "readable": "石",
+      "samples": 98,
+      "share": 0.99
+    },
+    "": {
+      "readable": "白",
+      "samples": 95,
+      "share": 0.979
+    },
+    "": {
+      "readable": "日",
+      "samples": 89,
+      "share": 0.989
+    },
+    "": {
+      "readable": "几",
+      "samples": 78,
+      "share": 1.0
+    },
+    "": {
+      "readable": "彐",
+      "samples": 78,
+      "share": 1.0
+    },
+    "": {
+      "readable": "立",
+      "samples": 76,
+      "share": 1.0
+    },
+    "": {
+      "readable": "犭",
+      "samples": 76,
+      "share": 1.0
+    },
+    "": {
+      "readable": "凵",
+      "samples": 74,
+      "share": 0.986
+    },
+    "": {
+      "readable": "士",
+      "samples": 74,
+      "share": 1.0
+    },
+    "": {
+      "readable": "车",
+      "samples": 74,
+      "share": 0.973
+    },
+    "": {
+      "readable": "灬",
+      "samples": 72,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乂",
+      "samples": 71,
+      "share": 0.972
+    },
+    "": {
+      "readable": "ㄠ",
+      "samples": 69,
+      "share": 0.913
+    },
+    "": {
+      "readable": "丆",
+      "samples": 68,
+      "share": 0.956
+    },
+    "": {
+      "readable": "刀",
+      "samples": 68,
+      "share": 0.985
+    },
+    "": {
+      "readable": "弓",
+      "samples": 67,
+      "share": 1.0
+    },
+    "": {
+      "readable": "方",
+      "samples": 65,
+      "share": 0.985
+    },
+    "": {
+      "readable": "罒",
+      "samples": 64,
+      "share": 1.0
+    },
+    "": {
+      "readable": "西",
+      "samples": 64,
+      "share": 1.0
+    },
+    "": {
+      "readable": "匚",
+      "samples": 63,
+      "share": 1.0
+    },
+    "": {
+      "readable": "门",
+      "samples": 63,
+      "share": 1.0
+    },
+    "": {
+      "readable": "彡",
+      "samples": 63,
+      "share": 0.984
+    },
+    "": {
+      "readable": "ㄅ",
+      "samples": 61,
+      "share": 1.0
+    },
+    "": {
+      "readable": "廿",
+      "samples": 61,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ノ",
+      "samples": 61,
+      "share": 0.951
+    },
+    "": {
+      "readable": "工",
+      "samples": 60,
+      "share": 0.983
+    },
+    "": {
+      "readable": "ㄇ",
+      "samples": 59,
+      "share": 0.966
+    },
+    "": {
+      "readable": "爫",
+      "samples": 56,
+      "share": 1.0
+    },
+    "": {
+      "readable": "皿",
+      "samples": 56,
+      "share": 1.0
+    },
+    "": {
+      "readable": "斤",
+      "samples": 55,
+      "share": 1.0
+    },
+    "": {
+      "readable": "耳",
+      "samples": 52,
+      "share": 0.981
+    },
+    "": {
+      "readable": "⺋",
+      "samples": 51,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺁",
+      "samples": 48,
+      "share": 1.0
+    },
+    "": {
+      "readable": "彳",
+      "samples": 46,
+      "share": 1.0
+    },
+    "": {
+      "readable": "廾",
+      "samples": 46,
+      "share": 0.978
+    },
+    "": {
+      "readable": "子",
+      "samples": 46,
+      "share": 0.978
+    },
+    "": {
+      "readable": "臼",
+      "samples": 45,
+      "share": 1.0
+    },
+    "": {
+      "readable": "羽",
+      "samples": 45,
+      "share": 0.978
+    },
+    "": {
+      "readable": "古",
+      "samples": 45,
+      "share": 1.0
+    },
+    "": {
+      "readable": "文",
+      "samples": 44,
+      "share": 0.932
+    },
+    "": {
+      "readable": "八",
+      "samples": 44,
+      "share": 0.955
+    },
+    "": {
+      "readable": "⺌",
+      "samples": 44,
+      "share": 1.0
+    },
+    "": {
+      "readable": "主",
+      "samples": 42,
+      "share": 1.0
+    },
+    "": {
+      "readable": "冫",
+      "samples": 42,
+      "share": 1.0
+    },
+    "": {
+      "readable": "艹",
+      "samples": 41,
+      "share": 1.0
+    },
+    "": {
+      "readable": "戈",
+      "samples": 37,
+      "share": 0.973
+    },
+    "": {
+      "readable": "七",
+      "samples": 36,
+      "share": 1.0
+    },
+    "": {
+      "readable": "九",
+      "samples": 34,
+      "share": 1.0
+    },
+    "": {
+      "readable": "𠃌",
+      "samples": 33,
+      "share": 0.97
+    },
+    "": {
+      "readable": "ヒ",
+      "samples": 33,
+      "share": 0.939
+    },
+    "": {
+      "readable": "巳",
+      "samples": 33,
+      "share": 1.0
+    },
+    "": {
+      "readable": "孑",
+      "samples": 32,
+      "share": 1.0
+    },
+    "": {
+      "readable": "卜",
+      "samples": 32,
+      "share": 1.0
+    },
+    "": {
+      "readable": "小",
+      "samples": 32,
+      "share": 1.0
+    },
+    "": {
+      "readable": "覀",
+      "samples": 31,
+      "share": 1.0
+    },
+    "": {
+      "readable": "巴",
+      "samples": 30,
+      "share": 1.0
+    },
+    "": {
+      "readable": "氺",
+      "samples": 30,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺄",
+      "samples": 30,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乛",
+      "samples": 29,
+      "share": 1.0
+    },
+    "": {
+      "readable": "干",
+      "samples": 29,
+      "share": 1.0
+    },
+    "": {
+      "readable": "亠",
+      "samples": 29,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乛",
+      "samples": 28,
+      "share": 0.929
+    },
+    "": {
+      "readable": "言",
+      "samples": 28,
+      "share": 0.929
+    },
+    "": {
+      "readable": "丁",
+      "samples": 28,
+      "share": 0.964
+    },
+    "": {
+      "readable": "丁",
+      "samples": 27,
+      "share": 1.0
+    },
+    "": {
+      "readable": "弋",
+      "samples": 27,
+      "share": 0.926
+    },
+    "": {
+      "readable": "⺈",
+      "samples": 26,
+      "share": 1.0
+    },
+    "": {
+      "readable": "水",
+      "samples": 25,
+      "share": 0.96
+    },
+    "": {
+      "readable": "卩",
+      "samples": 25,
+      "share": 1.0
+    },
+    "": {
+      "readable": "主",
+      "samples": 23,
+      "share": 1.0
+    },
+    "": {
+      "readable": "廴",
+      "samples": 23,
+      "share": 1.0
+    },
+    "": {
+      "readable": "由",
+      "samples": 22,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乃",
+      "samples": 21,
+      "share": 1.0
+    },
+    "": {
+      "readable": "手",
+      "samples": 21,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乙",
+      "samples": 20,
+      "share": 1.0
+    },
+    "": {
+      "readable": "己",
+      "samples": 18,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ユ",
+      "samples": 18,
+      "share": 1.0
+    },
+    "": {
+      "readable": "卜",
+      "samples": 18,
+      "share": 1.0
+    },
+    "": {
+      "readable": "金",
+      "samples": 18,
+      "share": 0.944
+    },
+    "": {
+      "readable": "了",
+      "samples": 18,
+      "share": 1.0
+    },
+    "": {
+      "readable": "厶",
+      "samples": 17,
+      "share": 1.0
+    },
+    "": {
+      "readable": "𠃌",
+      "samples": 17,
+      "share": 0.941
+    },
+    "": {
+      "readable": "癶",
+      "samples": 17,
+      "share": 1.0
+    },
+    "": {
+      "readable": "木",
+      "samples": 16,
+      "share": 1.0
+    },
+    "": {
+      "readable": "母",
+      "samples": 16,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乛",
+      "samples": 16,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ㄋ",
+      "samples": 14,
+      "share": 0.929
+    },
+    "": {
+      "readable": "艹",
+      "samples": 14,
+      "share": 1.0
+    },
+    "": {
+      "readable": "也",
+      "samples": 14,
+      "share": 1.0
+    },
+    "": {
+      "readable": "七",
+      "samples": 13,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丶",
+      "samples": 13,
+      "share": 1.0
+    },
+    "": {
+      "readable": "上",
+      "samples": 13,
+      "share": 1.0
+    },
+    "": {
+      "readable": "巛",
+      "samples": 13,
+      "share": 1.0
+    },
+    "": {
+      "readable": "几",
+      "samples": 13,
+      "share": 1.0
+    },
+    "": {
+      "readable": "一",
+      "samples": 12,
+      "share": 1.0
+    },
+    "": {
+      "readable": "乂",
+      "samples": 12,
+      "share": 1.0
+    },
+    "": {
+      "readable": "甲",
+      "samples": 12,
+      "share": 1.0
+    },
+    "": {
+      "readable": "扌",
+      "samples": 12,
+      "share": 1.0
+    },
+    "": {
+      "readable": "豸",
+      "samples": 12,
+      "share": 1.0
+    },
+    "": {
+      "readable": "之",
+      "samples": 11,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丬",
+      "samples": 11,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丬",
+      "samples": 10,
+      "share": 0.9
+    },
+    "": {
+      "readable": "乃",
+      "samples": 10,
+      "share": 1.0
+    },
+    "": {
+      "readable": "川",
+      "samples": 9,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ス",
+      "samples": 9,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺌",
+      "samples": 8,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丨",
+      "samples": 8,
+      "share": 1.0
+    },
+    "": {
+      "readable": "⺗",
+      "samples": 7,
+      "share": 1.0
+    },
+    "": {
+      "readable": "彑",
+      "samples": 7,
+      "share": 1.0
+    },
+    "": {
+      "readable": "一",
+      "samples": 7,
+      "share": 1.0
+    },
+    "": {
+      "readable": "丿",
+      "samples": 7,
+      "share": 1.0
+    },
+    "": {
+      "readable": "リ",
+      "samples": 6,
+      "share": 1.0
+    },
+    "": {
+      "readable": "一",
+      "samples": 6,
+      "share": 1.0
+    },
+    "": {
+      "readable": "五",
+      "samples": 6,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ㄗ",
+      "samples": 5,
+      "share": 1.0
+    },
+    "": {
+      "readable": "ク",
+      "samples": 5,
+      "share": 1.0
+    },
+    "": {
+      "readable": "亻",
+      "samples": 5,
+      "share": 1.0
+    },
+    "": {
+      "readable": "口",
+      "samples": 5,
+      "share": 1.0
+    },
+    "": {
+      "readable": "曰",
+      "samples": 4,
+      "share": 1.0
+    },
+    "": {
+      "readable": "卩",
+      "samples": 4,
+      "share": 1.0
+    },
+    "": {
+      "readable": "氺",
+      "samples": 4,
+      "share": 1.0
+    },
+    "": {
+      "readable": "口",
+      "samples": 4,
+      "share": 1.0
+    },
+    "": {
+      "readable": "已",
+      "samples": 4,
+      "share": 1.0
+    },
+    "": {
+      "readable": "白",
+      "samples": 3,
+      "share": 1.0
+    },
+    "": {
+      "readable": "氺",
+      "samples": 3,
+      "share": 1.0
+    }
+  },
+  "ambiguousSamples": [
+    {
+      "pua": "",
+      "samples": 289,
+      "top": [
+        [
+          "丿",
+          232
+        ],
+        [
+          "丶",
+          41
+        ],
+        [
+          "亅",
+          11
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 255,
+      "top": [
+        [
+          "丿",
+          169
+        ],
+        [
+          "ノ",
+          83
+        ],
+        [
+          "目",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 197,
+      "top": [
+        [
+          "䒑",
+          168
+        ],
+        [
+          "丷",
+          29
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 192,
+      "top": [
+        [
+          "三",
+          172
+        ],
+        [
+          "丨",
+          18
+        ],
+        [
+          "艹",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 170,
+      "top": [
+        [
+          "冖",
+          151
+        ],
+        [
+          "丷",
+          18
+        ],
+        [
+          "儿",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 137,
+      "top": [
+        [
+          "丷",
+          117
+        ],
+        [
+          "䒑",
+          20
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 91,
+      "top": [
+        [
+          "〢",
+          63
+        ],
+        [
+          "三",
+          13
+        ],
+        [
+          "八",
+          9
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 90,
+      "top": [
+        [
+          "囗",
+          79
+        ],
+        [
+          "〇",
+          10
+        ],
+        [
+          "丿",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 89,
+      "top": [
+        [
+          "夂",
+          79
+        ],
+        [
+          "攵",
+          9
+        ],
+        [
+          "弋",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 82,
+      "top": [
+        [
+          "ノ",
+          60
+        ],
+        [
+          "丶",
+          11
+        ],
+        [
+          "弋",
+          5
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 81,
+      "top": [
+        [
+          "衤",
+          52
+        ],
+        [
+          "礻",
+          29
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 47,
+      "top": [
+        [
+          "亅",
+          34
+        ],
+        [
+          "丁",
+          13
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 42,
+      "top": [
+        [
+          "早",
+          36
+        ],
+        [
+          "日",
+          6
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 40,
+      "top": [
+        [
+          "犬",
+          30
+        ],
+        [
+          "大",
+          9
+        ],
+        [
+          "丶",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 37,
+      "top": [
+        [
+          "辛",
+          23
+        ],
+        [
+          "立",
+          13
+        ],
+        [
+          "十",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 34,
+      "top": [
+        [
+          "乂",
+          11
+        ],
+        [
+          "丶",
+          10
+        ],
+        [
+          "小",
+          6
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 34,
+      "top": [
+        [
+          "乂",
+          24
+        ],
+        [
+          "八",
+          10
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 25,
+      "top": [
+        [
+          "亠",
+          15
+        ],
+        [
+          "六",
+          10
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 22,
+      "top": [
+        [
+          "ㄥ",
+          19
+        ],
+        [
+          "ㄠ",
+          2
+        ],
+        [
+          "亠",
+          1
+        ]
+      ]
+    },
+    {
+      "pua": "",
+      "samples": 20,
+      "top": [
+        [
+          "用",
+          17
+        ],
+        [
+          "月",
+          3
+        ]
+      ]
+    }
+  ]
+}

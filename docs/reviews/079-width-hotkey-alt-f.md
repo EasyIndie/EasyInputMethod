@@ -18,7 +18,7 @@
 | `platforms/macos/tests/settings-presentation.swift` | 设置页期望 `⌥F` |
 | `platforms/macos/tests/wubi-learning.swift` | 宽度快捷键用例改 `⌥F`，并新增「`⌥Space` 不再切换」的负向断言 |
 | `platforms/macos/Preview/main.swift` | 冲突用例改 `alt+f` |
-| `docs/配置架构.md` / `docs/发布说明.md` | 默认值与快捷键表同步（发布说明的旧 `Shift+Space`/`Ctrl+Shift+*` 一并订正） |
+| `docs/配置架构.md` / `docs/archive/发布说明-0.1.15.md` | 默认值与快捷键表同步（发布说明的旧 `Shift+Space`/`Ctrl+Shift+*` 一并订正） |
 | `platforms/macos/tests/run-local-acceptance.py` | 补登记 `candidate.padding`、`learning.stale-chord`，两个套件不再恒为 BLOCKED |
 | `crates/ime-ffi/src/session.rs` | 注释去掉过时的 `Shift+Space` |
 

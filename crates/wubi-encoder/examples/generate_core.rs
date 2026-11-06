@@ -12,7 +12,8 @@
 //!   - 词组码表：`data/generated/wubi86-phrases.tsv`（T-M1-06b，`code\t词组\tweight`）。
 //!
 //! 简码（ADR-304）：一级 25 条来自 `data/sources/wubi86-level1-codes.tsv`（D17），
-//! 以"键位 = 码、字 = 文本、字在全码表里的权重"追加成码表行，使 1 字母输入成为**精确命中**。
+//! 二级 598 条来自 `data/sources/wubi86-level2-codes.tsv`（D17-bis，报告 237/238），
+//! 都以"码 = 简码、字 = 字、权重 = 字在全码表里的权重"追加成码表行，使简码输入成为**精确命中**。
 //! 不改 `auto_commit`（仍要求 4 码），简码必须空格或数字确认。
 //!
 //! 输出：
@@ -48,6 +49,9 @@ const REQUIRED_PHRASES: &[(&str, &str)] = &[
 
 /// 一级简码键位表（D17，项目自建清单）。
 const LEVEL1_PATH: &str = "data/sources/wubi86-level1-codes.tsv";
+
+/// 二级简码表（D17-bis，项目自建清单；报告 237/238）。
+const LEVEL2_PATH: &str = "data/sources/wubi86-level2-codes.tsv";
 
 /// 内置核心必须包含的验收样本单字（码写死）。
 const REQUIRED_SINGLES: &[(&str, &str)] = &[("你", "wqiy")];
@@ -92,6 +96,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         return Err("单字码表为空".into());
     }
     let level1 = parse_level1(&fs::read_to_string(root.join(LEVEL1_PATH))?, &singles)?;
+    let level2 = parse_level2(&fs::read_to_string(root.join(LEVEL2_PATH))?, &singles)?;
 
     let domain = fs::read_to_string(root.join("data/domain-vocabulary.tsv"))?;
     let mut selected = supplement_phrases(&mut phrases, &singles, &domain)?;
@@ -108,7 +113,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let kept_phrases = top_phrases(&phrases, CORE_PHRASE_LIMIT, &selected);
     verify_required(&singles, &kept_phrases)?;
 
-    let core_tsv = render_core(&singles, &kept_phrases, &level1);
+    let core_tsv = render_core(&singles, &kept_phrases, &level1, &level2);
     let core_bytes = core_tsv.len();
     if core_bytes > BUDGET_BYTES {
         return Err(
@@ -201,6 +206,52 @@ fn parse_level1(input: &str, singles: &[Row]) -> Result<Vec<Row>, Box<dyn Error>
     }
     if rows.len() != 25 {
         return Err(format!("一级简码必须是 25 条，实际 {} 条", rows.len()).into());
+    }
+    Ok(rows)
+}
+
+/// 解析二级简码表（D17-bis）并转成码表行：`code` = 两码、`text` = 字、
+/// `weight` = 该字在全码表里的最大权重（与一级简码同一口径）。
+fn parse_level2(input: &str, singles: &[Row]) -> Result<Vec<Row>, Box<dyn Error>> {
+    let mut weights: std::collections::HashMap<&str, u32> = std::collections::HashMap::new();
+    for row in singles {
+        let entry = weights.entry(row.text.as_str()).or_insert(0);
+        *entry = (*entry).max(row.weight);
+    }
+    let mut rows: Vec<Row> = Vec::new();
+    let mut seen_code = std::collections::BTreeSet::new();
+    let mut seen_text = std::collections::BTreeSet::new();
+    for (idx, raw) in input.lines().enumerate() {
+        let line = raw.trim_start_matches('\u{feff}').trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let mut fields = line.split('\t');
+        let code = fields.next().unwrap_or_default().trim();
+        let text = fields.next().unwrap_or_default().trim();
+        if code.is_empty() || text.is_empty() || fields.next().is_some() {
+            return Err(format!("二级简码表第 {} 行格式非法：{line}", idx + 1).into());
+        }
+        if code.chars().count() != 2 || text.chars().count() != 1 {
+            return Err(format!("二级简码必须是两码单字：{line}").into());
+        }
+        if !seen_code.insert(code.to_string()) {
+            return Err(format!("二级简码码位重复：{code}").into());
+        }
+        if !seen_text.insert(text.to_string()) {
+            return Err(format!("二级简码的字重复：{text}").into());
+        }
+        let weight = *weights
+            .get(text)
+            .ok_or_else(|| format!("二级简码的字不在全码表里：{text}"))?;
+        rows.push(Row {
+            code: code.to_string(),
+            text: text.to_string(),
+            weight,
+        });
+    }
+    if rows.len() != 598 {
+        return Err(format!("二级简码必须是 598 条，实际 {} 条", rows.len()).into());
     }
     Ok(rows)
 }
@@ -307,11 +358,12 @@ fn find<'a>(rows: &'a [Row], text: &str) -> Option<(&'a str, u32)> {
 }
 
 /// 渲染核心码表：单字 + 精选词组，`code` 升序、同码内 `weight` 降序。
-fn render_core(singles: &[Row], phrases: &[Row], level1: &[Row]) -> String {
+fn render_core(singles: &[Row], phrases: &[Row], level1: &[Row], level2: &[Row]) -> String {
     let mut rows: Vec<&Row> = singles
         .iter()
         .chain(phrases.iter())
         .chain(level1.iter())
+        .chain(level2.iter())
         .collect();
     rows.sort_by(|a, b| {
         a.code

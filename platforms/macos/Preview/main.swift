@@ -381,7 +381,7 @@ if panelProbe, CommandLine.arguments[2] != "interactive" {
     app.setActivationPolicy(.regular)
     session.prepare()
     guard ImeConfig.setString("mode", "wubi"),
-        session.addWord(scheme: "wubi", code: "zz", text: "面板隔离测试词") == IME_OK
+        session.addWord(scheme: "wubi", code: "aowo", text: "面板隔离测试词") == IME_OK
     else { fputs("FAIL：隔离数据初始化失败。\n", stderr); exit(1) }
     SettingsPanel.shared.prepare()
     let alert = NSAlert()
@@ -878,14 +878,14 @@ if CommandLine.arguments.contains("--smoke-test") {
     session.prepare()
     session.setPageSize(3)
     session.setMode("mixed")
-    guard session.addWord(scheme: "wubi", code: "zz", text: "离线测试词") == IME_OK else { exit(1) }
-    guard session.addWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_OK,
-        session.removeWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_OK,
-        session.removeWord(scheme: "wubi", code: "zz", text: "待删测试词") == IME_ERR_NOT_FOUND,
+    guard session.addWord(scheme: "wubi", code: "aowo", text: "离线测试词") == IME_OK else { exit(1) }
+    guard session.addWord(scheme: "wubi", code: "aowo", text: "待删测试词") == IME_OK,
+        session.removeWord(scheme: "wubi", code: "aowo", text: "待删测试词") == IME_OK,
+        session.removeWord(scheme: "wubi", code: "aowo", text: "待删测试词") == IME_ERR_NOT_FOUND,
         UserDictionaryUI.entryError(IME_ERR_INVALID_INPUT, code: "AB", text: "词").contains("小写"),
         UserDictionaryUI.entryError(IME_ERR_NOT_FOUND, code: "ab", text: "词").contains("未找到")
     else { fputs("用户词条精确删除或校验反馈失败。\n", stderr); exit(1) }
-    view.clear(); keys("zz "); check("离线测试词")
+    view.clear(); keys("aowo "); check("离线测试词")
     let exported = smokeDirectory.appendingPathComponent("export.tsv")
     guard session.exportDictionary(exported.path) == IME_OK else { exit(1) }
     guard session.importDictionary(exported.path) == IME_OK else { exit(1) }
@@ -899,7 +899,8 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard let restored = ImeSession(wubiPath: data.appendingPathComponent("wubi86-core.tsv").path,
         pinyinCharsPath: data.appendingPathComponent("pinyin-chars.tsv").path,
         pinyinWordsPath: data.appendingPathComponent("pinyin-core.tsv").path) else { exit(1) }
-    restored.setMode("mixed"); _ = restored.feed(122); _ = restored.feed(122)
+    restored.setMode("mixed")
+    for scalar in "aowo".unicodeScalars { _ = restored.feed(scalar.value) }
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     // 设置面板（ADR-070）：Schema 驱动、界面零硬编码。
     let settingsOptions = SettingsSchema.options()

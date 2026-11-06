@@ -12,7 +12,7 @@ phrase_rows_kept = 20189
 
 [size]
 core_rows = 48012
-core_bytes = 666746
+core_bytes = 673962
 budget_bytes = 800000（0.8 MB）
 within_budget = yes
 

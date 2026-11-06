@@ -1,0 +1,83 @@
+{
+  "pageSize": 9,
+  "maxCandidates": 500,
+  "overall": {
+    "samples": 240,
+    "hits": 231,
+    "firstChoice": 201,
+    "meanPosition": 0.32,
+    "meanKeystrokes": 4.3,
+    "pages": 0
+  },
+  "categories": {
+    "jianma1": {
+      "samples": 25,
+      "hits": 25,
+      "firstChoice": 25,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 2.0,
+      "pages": 0
+    },
+    "jianma2": {
+      "samples": 40,
+      "hits": 36,
+      "firstChoice": 13,
+      "meanPosition": 2.08,
+      "meanKeystrokes": 3.58,
+      "pages": 0
+    },
+    "prefix2": {
+      "samples": 30,
+      "hits": 30,
+      "firstChoice": 28,
+      "meanPosition": 0.07,
+      "meanKeystrokes": 3.07,
+      "pages": 0
+    },
+    "sentence": {
+      "samples": 17,
+      "hits": 12,
+      "firstChoice": 12,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 11.0,
+      "pages": 0
+    },
+    "single": {
+      "samples": 50,
+      "hits": 50,
+      "firstChoice": 50,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 4.46,
+      "pages": 0
+    },
+    "word2": {
+      "samples": 25,
+      "hits": 25,
+      "firstChoice": 25,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 4.16,
+      "pages": 0
+    },
+    "word2v": {
+      "samples": 30,
+      "hits": 30,
+      "firstChoice": 28,
+      "meanPosition": 0.07,
+      "meanKeystrokes": 4.4,
+      "pages": 0
+    },
+    "word34": {
+      "samples": 23,
+      "hits": 23,
+      "firstChoice": 20,
+      "meanPosition": 0.17,
+      "meanKeystrokes": 4.35,
+      "pages": 0
+    }
+  },
+  "meta": {
+    "note": "1.1.0/build 38 的表（含一级简码 25、无二级简码），用修正后的样本集（jianma2 改为官方简码 40 条、新增 prefix2）测得",
+    "table": "git show 393318c:data/generated/wubi86-core.tsv",
+    "samples": "tools/eval/samples.tsv（report 238 修订版）"
+  }
+}
