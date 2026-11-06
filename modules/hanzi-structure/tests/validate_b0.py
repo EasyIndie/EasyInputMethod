@@ -12,9 +12,11 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 3  # v3：占位组件 null + 键位推断（报告 243）
-FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'recognition',
-          'short1', 'short2', 'pinyin', 'frequency', 'quality', 'notes'}
+SCHEMA_VERSION = 4  # v4：strokes / positionMismatch + 每码位对齐（报告 244）
+FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'strokes',
+          'positionMismatch', 'recognition', 'short1', 'short2', 'pinyin', 'frequency',
+          'quality', 'notes'}
+STROKE_GLYPHS = set('一丨丿丶乙')
 CLASSES = {'key-name', 'radical-char', 'compound', None}
 QUALITIES = {'full', 'partial', 'unknown'}
 RECOGNITION = {
@@ -116,6 +118,16 @@ def main() -> int:
                 problems.append(f'{char}: 组件含私有区字形')
             elif any(ch.isspace() for ch in glyph):
                 problems.append(f'{char}: 组件含空白字符（D3 需按空格分隔解析）')
+        strokes = entry.get('strokes')
+        if strokes is not None:
+            if entry['class'] != 'radical-char':
+                problems.append(f'{char}: 只有成字字根可以有 strokes')
+            elif not strokes or any(x not in STROKE_GLYPHS for x in strokes):
+                problems.append(f'{char}: strokes 必须是笔画字形序列')
+            elif entry['quality'] != 'full':
+                problems.append(f'{char}: 已有笔画序列却未判 full')
+        if not isinstance(entry.get('positionMismatch'), list):
+            problems.append(f'{char}: positionMismatch 必须是数组')
         if entry['quality'] == 'unknown' and entry['components']:
             problems.append(f'{char}: unknown 条目不应带组件')
         if entry['quality'] == 'unknown' and entry['recognition']:

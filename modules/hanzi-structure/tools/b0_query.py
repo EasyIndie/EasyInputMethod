@@ -47,9 +47,11 @@ def explain(entry: dict, as_json: bool) -> int:
         if entry['class'] == 'key-name':
             parts.append('键名字：连打该键四次')
         elif entry['class'] == 'radical-char':
+            if entry.get('strokes'):
+                parts.append('成字字根（' + ''.join(entry['strokes']) + '）')
             note = entry['notes'][0] if entry['notes'] else '报户口 + 笔画'
             note = note.split('：', 1)[1] if note.startswith('成字字根：') else note
-            parts.append('成字字根（' + note + '）')
+            parts.append(note)
         else:
             components = ' '.join(f'{c if c else "？"}({k})'
                                   for c, k in zip(entry['components'], entry['keys']))

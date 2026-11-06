@@ -1,9 +1,9 @@
 {
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "entries": 1000,
   "quality": {
-    "full": 759,
-    "partial": 233,
+    "full": 714,
+    "partial": 278,
     "unknown": 8
   },
   "classes": {
@@ -12,14 +12,18 @@
     "key-name": 23,
     "None": 8
   },
-  "withRecognition": 525,
+  "withRecognition": 622,
   "componentsSource": {
-    "D2": 807,
-    "D3": 185
+    "D1": 42,
+    "D2": 901,
+    "D3": 26
   },
   "puaMap": "corpus/pua-map.json",
-  "placeholderEntries": 192,
-  "placeholderComponents": 380,
+  "placeholderEntries": 272,
+  "placeholderComponents": 297,
+  "recognitionSlotPua": 15,
+  "withStrokes": 41,
+  "positionMismatchEntries": 49,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",
@@ -44,8 +48,12 @@
     "d3": {
       "path": "../../data/sources/windinput-wubi86-chaizi.txt",
       "sha256": "7c64e5846f2ed96a26da24abffaaa2d139a5efc7a0d6de336d13269b70095ac6"
+    },
+    "readable_keys": {
+      "path": "../../data/learning/wubi86-readable-keys.tsv",
+      "sha256": "49c2f901fa8bd830817ee3b33b1752f7e555776a9f00a279b814205a6f76d0ac"
     }
   },
   "generator": "modules/hanzi-structure/tools/build_b0.py",
-  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --d3 ../../data/sources/windinput-wubi86-chaizi.txt --pua-map corpus/pua-map.json --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
+  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --d3 ../../data/sources/windinput-wubi86-chaizi.txt --pua-map corpus/pua-map.json --readable-keys ../../data/learning/wubi86-readable-keys.tsv --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
 }

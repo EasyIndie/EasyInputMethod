@@ -1,7 +1,8 @@
 # B0 结构事实库 · 数据模型（试点 1,000 高频字）
 
 > 状态：**B0 试点**（ADR-189 的第一次落地）。只读事实库，不进入输入热路径，不改候选排序。
-> 版本：`schemaVersion: 3`（v3 允许**占位组件** `null` + 键位推断，见报告 243；v2 见报告 241）。字段变更必须升版本并写报告。
+> 版本：`schemaVersion: 4`（v4 新增 `strokes` / `positionMismatch`，并把 D2 的「每码位一形」对齐写成规则，见报告 244；
+> v3 = 占位组件（报告 243），v2 = `componentsSource`/`keys`（报告 241））。字段变更必须升版本并写报告。
 
 ## 1. 目的
 
@@ -18,6 +19,8 @@
 | `components` | (string\|null)[] | 字根序列（可读字形；**不含任何 PUA 字形**）。`null` = **占位组件**：位置已知、字形未识别，键位见 `keys` |
 | `componentsSource` | enum | `D2` / `D3` / `null`：组件来自哪一份拆字源（报告 241：D2 优先，D3 兜底） |
 | `keys` | string[] | 每个字根对应的键位字母（取全码同位置；含占位组件时同样成立，故 `len(keys) == len(components)`） |
+| `strokes` | (string\|null)[] \| null | **成字字根**的笔画序列（首→末，可读字形）；其它类为 `null` |
+| `positionMismatch` | int[] | 诊断用：字形键与码位不一致的位次（D14 只收常用字根，复合字形会误报，不据此降级） |
 | `recognition` | object \| null | `{key, stroke, structure, because}`：识别码字母、末笔、结构、判定依据 |
 | `short1` / `short2` | string \| null | 一级 / 二级简码（D17 / D17-bis） |
 | `pinyin` | string \| null | 首选读音（D5） |
@@ -33,12 +36,15 @@
    - `len(code) == n + 1` → 末位是**识别码**：`(stroke, structure) = inverse(末位)`；
    - `len(code) == n` → **无识别码**（字根已够四码）；
    - 其它 → `quality=partial`，`notes` 记录 `code_len` 与 `n` 的具体数值。
-4. **PUA 处理**：补充区（≥U+F0000）与 BMP 私有区（U+E000–U+F8FF）**一律不得进入产物**。
-   先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出）；查不到的 BMP 字形**保留为占位组件 `null`**
-   （v3）：位置仍参与"组件数 ↔ 码长"判定，键位由码位推断（第 i 个组件 ↔ `code[i]`），
-   该字降级为 `partial` 且 notes 写明「第 k 个字根（键 x）字形未识别」。
-   占位让识别码推导重新成立（报告 242：54 条 A 类），但**不得**因占位而判 `full`。
-5. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
+4. **PUA 处理（v4 规则）**：私有区字形（BMP 与补充区）**一律不得进入产物**。
+   - D2 序列与全码等长时（「每码位一形」），**末位**私有区字形是**识别码槽**，整位丢弃；
+   - 其余位置先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出），查不到则保留为**占位组件 `null`**，
+     键位取自码位（第 i 个组件 ↔ `code[i]`），notes 写明「第 k 个字根（键 x）字形未识别」；
+   - 含占位组件**不得**判 `full`。
+5. **成字字根笔画（v4）**：若该字在可读字根键表（D14）里且全码形如「键 + 首/次/末笔」，
+   笔画序列由全码推导（`strokes`），notes 注明「按五笔取码规则，非笔顺教学数据」；
+   形如 `XXLL` 的单笔画按「连打两次 + 补 LL」解释。
+6. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
 
 ## 4. 质量等级
 
@@ -71,7 +77,8 @@
 
 1. 判分（练习对错）**只允许**用 `full` 条目出题；
 2. `partial` 只能出现在"查询/提示"路径，且必须带降级文案；
-3. `unknown` 只用于"这个字暂缺资料"的说明。
+3. `unknown` 只用于"这个字暂缺资料"的说明；
+4. 成字字根的 `strokes` 是**取码笔顺**（由全码反推），讲笔顺仍须另接笔画数据，不得直接当笔顺教学。
 
 机器约束：`tests/validate_b0.py` 检查"非 full 必须有 notes""recognition 必须能对上码长和组件数""含占位组件不得判 full""keys 与 components 等长"，
 `tools/b0_query.py` 是这套契约的参考实现（可直接看输出格式）。
