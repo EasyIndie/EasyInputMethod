@@ -11,7 +11,7 @@
 | 验收日期/设备 | 待填写；A为Intel/macOS13，B为arm64/macOS27 |
 | 包版本/40位源码提交/ZIP SHA-256 | 待最终候选，当前留空 |
 | 签名/公证/Gatekeeper | 待核对实际候选 |
-| 系统/目标应用版本 | TextEdit、Safari、Chrome、VS Code、微信、Terminal逐一记录 |
+| 系统/目标应用版本 | 必需：TextEdit、Safari、Terminal（系统自带）；可选：Chrome / Xcode / 其它（装了才记，报告234） |
 | 数据与安装恢复准备 | 使用自己的空白测试文档/草稿；保留安装恢复步骤 |
 
 实际安装请按[平台说明](../platforms/macos/README.md)及[发布清单](macos-release-checklist.md)；不要运行仍禁用的旧live脚本。输入内容使用非私人样本，例如“你好”“中华人民共和国”和自造测试词。

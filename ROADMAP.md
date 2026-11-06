@@ -314,7 +314,8 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] **验收自清场固化（报告 231 §6）**：`test-probe-cleanup.py` 强制「开窗口的探针必须 trap + cleanup-windows.sh」，含反向自检；规则写进 AGENTS 铁律 11 / skill / CONTRIBUTING / README。上马时修好 `multi-display.sh`、`type-session.sh` 两处缺口。
 - [x] **验收状态自归位（报告 232）**：`ime-state.sh` 的 snapshot/ensure/restore 接入 `acceptance-auto`/`quality-samples`；修掉「上一轮留下 ABC/繁体导致整轮连锁 FAIL、并改用户偏好」的问题。仅剩性能 p95 贴线待归因。
 - [x] **延迟长尾归因（报告 233 / ADR-307）**：逐键归因证明慢样本全部是「每个新窗口的首键」（14.6–27.1ms），稳态 p95 6.08ms；两组对照排除候选窗，定位为输入上下文首次建立。门禁拆为「稳态 p95 ≤16ms」+「冷首键记录」，实测 6.71ms / 冷首键 p95 25.77ms。
-
+- [x] **1.1.0 发布准备稿**：`docs/releases/1.1.0.md` 绑定候选身份（ZIP `448d3170…`/执行 `d3c5a2ef…`/提交 `393318c`）、唯一产品变更（ADR-304）与 ADR-307 两个延迟数；`docs/发布说明.md` 标注为 0.1.15 历史底稿。
+- [x] **1.1.0 人工走查通过（报告 234）**：A 档 10 项 + IT-25 四项全 PASS；同时把「验收只依赖系统自带应用」固化（Chrome/Xcode optional、Xcode 不再写死版本路径、VS Code/微信移出清单），新增 `client-matrix-verdict.py` + `test-acceptance-portability.py`。
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 
 2026-10-14 IT-29：ADR-160混输跨引擎歧义保护工程完成，wang不再提前提交；核心回归/默认码表FFI通过，最终包原生待验。本地保存，未推送/安装。

@@ -82,25 +82,15 @@ case "$PERF" in
 esac
 
 # 4. 客户端矩阵（放最后：它会用系统 Terminal 开测试窗口并把输入源还原成 ABC）
+# 报告234：只有**系统自带**应用（TextEdit/Safari）算门禁；Chrome/Xcode/终端属 optional，
+# 没安装就 SKIP，装了但回读失败也不算产品 FAIL（按 BLOCKED 记账）。
 if KEYS='wq nihao .' OUT="$OUT/clients" "$PROBE/client-matrix.sh" > "$OUT/clients.log" 2>&1; then
-    ok=0; attempted=0; skipped=0; blank=0
-    for f in "$OUT"/clients/*.json; do
-        if grep -q 'SKIP' "$f"; then skipped=$((skipped + 1)); continue; fi
-        attempted=$((attempted + 1))
-        if grep -q '你好。' "$f"; then
-            ok=$((ok + 1))
-        elif grep -qE '"(value|title|file)":""' "$f"; then
-            # 回读为空：按键投递成功但该客户端没给我们可读的落点，属"未取证"，既不 PASS 也不算产品 FAIL（报告229）
-            blank=$((blank + 1))
-        fi
-    done
-    if [ "$attempted" -ge 4 ] && [ "$ok" -eq "$attempted" ]; then
-        report "客户端矩阵" "PASS (${ok}/${attempted}，跳过 ${skipped})"
-    elif [ "$blank" -gt 0 ] && [ $((ok + blank)) -eq "$attempted" ]; then
-        report "客户端矩阵" "BLOCKED (${ok}/${attempted} 取证，${blank} 回读为空，跳过 ${skipped})"; BLOCKED=1
-    else
-        report "客户端矩阵" "FAIL (${ok}/${attempted}，回读为空 ${blank}，跳过 ${skipped})"; FAILED=1
-    fi
+    verdict=$(python3 "$PROBE/client-matrix-verdict.py" "$OUT/clients")
+    case "$verdict" in
+        PASS*) report "客户端矩阵" "$verdict" ;;
+        BLOCKED*) report "客户端矩阵" "$verdict"; BLOCKED=1 ;;
+        *) report "客户端矩阵" "$verdict"; FAILED=1 ;;
+    esac
 else
     report "客户端矩阵" "FAIL (见 $OUT/clients.log)"; FAILED=1
 fi
