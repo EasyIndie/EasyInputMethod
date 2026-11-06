@@ -17,6 +17,9 @@ SKIP_SOAK="${SKIP_SOAK:-1}"
 mkdir -p "$OUT"
 
 say() { printf '%-22s %s\n' "$1" "$2"; }
+# 报告231：子脚本自己会清，这里再兜一遍，避免中途被杀时留窗口。
+cleanup_all() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
+trap cleanup_all EXIT INT TERM
 
 # 1. 前置：装没装、宿主、锁屏、多实例、输入源、探针
 "$PROBE/acceptance-preflight.sh" > "$OUT/00-preflight.json" 2>&1
@@ -46,7 +49,7 @@ else
     failed=1
 fi
 
-# 3. 质量样本（16 项）
+# 3. 质量样本（13 项，报告230 去掉与热键项重复的 3 项）
 quality_out=$(OUT="$OUT/quality" "$PROBE/quality-samples.sh" 2>&1); quality_rc=$?
 printf '%s\n' "$quality_out" > "$OUT/02-quality.log"
 if [ "$quality_rc" -eq 0 ]; then

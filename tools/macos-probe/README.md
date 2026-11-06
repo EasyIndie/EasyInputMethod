@@ -27,11 +27,14 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `axfocus` | 读取前台应用焦点元素的角色/文本（跨客户端回读，报告189） |
 | `imetype --source <id> --keys <串> --settle <秒> [--out <json>]` | **自建窗口 + 进程内切源 + 合成按键 + 回读文本**，用于自动化「键入路径」验收（报告188） |
 | `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）；另有命名键 `left/right/up/down/esc/tab/return/delete/space`（组合键同样支持，如 `ctrl+right`；报告203/204，**别写成裸 `right`——那会被当成字母打进去**）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
-| `imetype --keys <串> --self-post` | 自投递模式：把 `NSEvent` 交给自己的窗口，逐键测「投递→文本变化」，输出 `latency_ms` 与 `latencies_ms`（报告191） |
+| `imetype --keys <串> --self-post` | **只做文本插入压测，不要用来量输入法延迟**：进程内合成事件进不了 `NSTextInputContext`，`has_non_ascii=false`、`keys_seen=0`（报告229） |
+| `imetype`（HID 模式）+ `keytopid` | 计时点落在 `NSTextInputClient` 回调（`setMarkedText`/`insertText`），输出 `latency_ms`/`latencies_ms` = 按键到达 → 输入法交回 UI；`type-session.sh` 已封装（报告229） |
 | `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`=增长上限/`RSS_HARD_MB`=绝对硬顶，报告198） |
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
 | `memory-gate.sh` | **ADR-263 的 30MB 门禁**：重启宿主 → marker → 冷态/首键后/六词后/静置 8s 四点采 `vmmap`，判定 physical footprint 与私有已提交同时 ≤30MiB（`ROUNDS` 默认 3，报告199） |
-| `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它 |
+| `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它（`FAST=1` 迭代档） |
+| `ime-state.sh` | 验收状态自归位（报告232）：`--snapshot` 记四项偏好、`--ensure` 收敛到 mixed/chinese/half/simplified、`--restore` 还原；收敛不了退 78 |
+| `cleanup-windows.sh` | 验收收尾：只回收探针自己开的窗口/进程（按 URL / 标题 / 未保存内容签名认领）；`--textedit` 才清 TextEdit，`--quit-app` 只对"本轮由我们启动且已无窗口"的应用；浏览器永不退出（报告231） |
 | `screens` | 打印每块屏幕的 frame/visibleFrame/缩放/主屏（多屏验收的坐标基准，报告202） |
 | `axwins [bundleID]` | 列出指定 App 的 AX 窗口位置/尺寸/角色；macOS 13 的候选窗是 `AXSystemDialog`，用它判落点（报告202） |
 | `axdump [bundleID] [depth]` | 递归打印 AX 角色/描述/值，判断辅助技术能读到什么（报告203） |
@@ -62,7 +65,21 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 
 **普通字符用默认 `postToPid` 即可；修饰键热键必须加 `--hid`**，否则绕过 IME 热键层。**单按 Shift 类热键要用 `shiftc`（真正的 flagsChanged）**，用 `keyDown(56)` 不会触发。
 
-**测量延迟不要轮询字符串**：在主线程 `RunLoop` 里反复读 `textView.string` 会把 p95 从 ~8ms 抬到 ~33ms（测自己）。用 `NSText.didChangeNotification` 记时间戳。
+**测量延迟不要轮询字符串**：在主线程 `RunLoop` 里反复读 `textView.string` 会把 p95 从 ~8ms 抬到 ~33ms（测自己）。
+**并且必须走 HID 投递**：`view.keyDown(...)`／`window.sendEvent(...)` 这类进程内合成事件都进不了 IMK，
+只会插入裸 ASCII（报告229 三组对照）。正确做法是 `keytopid --hid` 投递 + 在 `NSTextInputClient`
+回调里记时间戳（`perf-session.sh`、`soak-session.sh` 现在都这样跑）。
+
+### 新增探针脚本检查清单（报告 231，机器强制）
+
+1. 只要脚本里出现 `open -a TextEdit|Safari|Chrome|Xcode` 或拉起 `lampyris-imetype.app`，
+   **必须**开头写 `cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit; }` +
+   `trap cleanup_run EXIT INT TERM`（失败与 Ctrl-C 也要清）。
+2. 只按"属于自己的证据"认领窗口：URL 指向本轮的 `page.html` / 标题含 `xcode.txt` / 未保存且内容命中探针签名。
+   **永远不要** `quit` Safari 或 Chrome（用户可能开着真实会话）。
+3. 收尾自检：`pgrep -x TextEdit` 为空、Safari/Chrome 标签数为 0、`pgrep -f lampyris-imetype.app` 为空。
+4. 以上由 `platforms/macos/tests/test-probe-cleanup.py` 在离线回归里强制，包含一条反向自检
+   （故意写一个没有 `trap` 的假脚本，必须被判违规）。
 
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 

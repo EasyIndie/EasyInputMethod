@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# 强制 DCO 署名（报告 233）：缺 Signed-off-by 的提交在 CI 的 dco 检查会失败，
+# 与其等 PR 红了再回滚重写历史，不如在本地就拦住（git commit -s 自动添加）。
+set -euo pipefail
+message_file="$1"
+if ! grep -qE '^Signed-off-by: .+ <.+>' "$message_file"; then
+    echo "✗ 提交信息缺少 Signed-off-by（DCO）。请用 git commit -s 重新提交。" >&2
+    exit 1
+fi

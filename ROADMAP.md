@@ -304,7 +304,16 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] `TBD-4` 英文/包名最终形（ADR-056：Lampyris）
 
 - [x] **更新器自更新验收（2026-11-05 闭环，报告 226 / ADR-306）**：1.0.0→1.0.1 演练暴露 `stopHost` 把正在自更新的进程 SIGTERM 掉；1.0.2 修复后真机复验：回执 `payloadSHA256=732756e5…`、更新程序 bundle 被替换且旧版备份、staging 清理、进程未自杀。
+- [x] **候选排序质量（1.1.0 / ADR-304 P0+P1，报告 227–228）**：一级简码 25 条入表（D17）+ `personalize` 改有界位次上移；评测 `jianma1` 命中 56%→100%、首选 32%→100%，其余类别零劣化。二级 625 条待登记 D17-bis。
 - [ ] IT-25：ADR-159五笔主动后项学习工程已通过隔离回归、make verify/strict universal/Swift FFI；待新签名原生验收与用户例子确认。见docs/tasks/T-ITER-25.md。
+- [x] **1.1.0 自动探针（报告 229）**：热键/上屏 8/8、TextEdit 实键入、包与数据表身份（25 条简码）全 PASS；**性能门禁改判 BLOCKED**（`--self-post` 不计 IME，历史 p95 需复核），Safari/Chrome/Xcode 回读为空。顺带修 `acceptance-auto.sh`/`perf-session.sh`/`client-matrix.sh` 三处工具缺陷（相对 OUT、性能与客户端的先后、终端项不再投递到用户 shell）。
+- [x] **延迟门禁口径修复（报告 229 §7）**：`perf-session.sh` 改 HID 投递 + `NSTextInputClient` 回调计时（`--self-post` 只能做文本插入压测，进不了 IMK）。1.1.0/build 38 实测 160 键 p50 4.19ms / p95 14.64ms / max 24.68ms、0 外联；历史 p95 作废不继承。`soak-session.sh` 同步换驱动（`ime_rounds > 0` 门禁），待授权重跑。
+- [x] **久用定版复跑（报告 229 §7.5）**：键间隔可配（`KEY_HOLD`/`KEY_INTERVAL`）+ soak 修 chunk off-by-one + `truncated_rounds` 截尾门禁 + `WARMUP` 热身。5 分钟 30 轮全部走 IME、0 截尾、365 键、0 外联；遗留 `ps rss` 共享页口径问题。
+- [x] **验收提效（报告 230）**：离线回归并行（166s→34s，`JOBS=N`）+ 删除腐烂的第二套 runner（`macos-local-acceptance` 变别名）+ `acceptance-auto` 的 `FAST=1` 档（9 分钟→4.7 分钟）+ IT-22 人工从 65 项压到 12 项（每次换包）/5 项（每版一次），映射与防腐烂校验见 `docs/tasks/T-ITER-22-coverage.md`、`test-acceptance-map.py`。
+- [x] **验收收尾清理（报告 231）**：`cleanup-windows.sh` 按 URL/标题/未保存内容签名回收探针窗口与进程，四个验收脚本挂 `trap`（失败/中断同样清）；`client-matrix` 自建并关闭 TextEdit 文档；连跑三次零残留。
+- [x] **验收自清场固化（报告 231 §6）**：`test-probe-cleanup.py` 强制「开窗口的探针必须 trap + cleanup-windows.sh」，含反向自检；规则写进 AGENTS 铁律 11 / skill / CONTRIBUTING / README。上马时修好 `multi-display.sh`、`type-session.sh` 两处缺口。
+- [x] **验收状态自归位（报告 232）**：`ime-state.sh` 的 snapshot/ensure/restore 接入 `acceptance-auto`/`quality-samples`；修掉「上一轮留下 ABC/繁体导致整轮连锁 FAIL、并改用户偏好」的问题。仅剩性能 p95 贴线待归因。
+- [x] **延迟长尾归因（报告 233 / ADR-307）**：逐键归因证明慢样本全部是「每个新窗口的首键」（14.6–27.1ms），稳态 p95 6.08ms；两组对照排除候选窗，定位为输入上下文首次建立。门禁拆为「稳态 p95 ≤16ms」+「冷首键记录」，实测 6.71ms / 冷首键 p95 25.77ms。
 
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 

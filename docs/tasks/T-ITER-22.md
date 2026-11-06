@@ -33,6 +33,11 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ---
 
+> **报告 230 精简：本表 65 项里 47 项已自动覆盖，人工只需 12 项（每次换包）+ 5 项（每版一次）。**
+> 映射与人工清单见 [`T-ITER-22-coverage.md`](T-ITER-22-coverage.md)；
+> 自动化命令：`make verify` → `make macos-offline-tests` → `make macos-acceptance-full`（或 `FAST=1` 迭代档）。
+> 下面各表保留为"人工项参考"；标 🔁 的条目已由脚本/单测判过，除非怀疑回归，不必重复。
+
 ## 1. 核心输入（必做）
 
 用**空白测试文档**，内容只用「你好」「中华人民共和国」这类非私人样本。
@@ -54,6 +59,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 2. 编辑与恢复（必做）
 
+> 🔁 2.1–2.6、2.8、2.9 已由质量样本与核心单测覆盖（`quality-samples.sh`、`make test`）；人工只需 2.7 CapsLock、2.10 睡眠唤醒。
+
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
 | 2.1 | 连续打 8–10 个字母不选字 | 长组合不丢字、候选可翻页、Esc 可取消 | FAIL|三种模式下8-10个字母不会出候选 |
@@ -69,6 +76,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 3. 客户端矩阵（必做，各 30 秒）
 
+> 🔁 3.1/3.2 已由 `client-matrix.sh` 回读覆盖；人工只需 3.3 Chrome、3.4 VS Code、3.5 Terminal、3.6 其它 App（自动矩阵会往用户 shell 打字，已移除终端项）。
+
 | # | 客户端 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
 | 3.1 | TextEdit（空白文档） | 输入/翻页/撤销正常 | PASS| |
@@ -82,6 +91,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 4. 候选窗与视觉（必做）
 
+> 🔁 4.1/4.2/4.3/4.5/4.6/4.7 已由 `make macos-ui-contrast` 与候选/光标几何单测覆盖；人工只需 4.4 悬停视觉。
+
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
 | 4.1 | 系统外观切到亮色后输入 | 候选/状态芯片对比清晰，无白字白底 | PASS| |
@@ -93,6 +104,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 | 4.7 | 状态提示（`⌥F`/`⌥T`/`⌥M`/Shift） | HUD 出现在光标附近，1 秒左右消失，不抢焦点 | PASS| |
 
 ## 5. 设置面板（必做）
+
+> 🔁 5.1–5.4、5.6 已由 `test-settings-presentation.py` 覆盖；人工只需 5.5 键盘导航（依赖系统开关）。
 
 从菜单打开「偏好设置」：
 
@@ -107,6 +120,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 6. 用户词库（必做）
 
+> 🔁 6.1–6.5 已由 `test-wubi-learning.py`（14 例）与 `ime-core` 单测覆盖，无需人工。
+
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
 | 6.1 | 新增一个自造词并立刻打出来 | 出现在候选中 | PASS| |
@@ -116,6 +131,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 | 6.5 | 拼音反查一个未知词 | 保留输入、结果可复制 | PASS| chen 趁   |
 
 ## 7. 关于 / 反馈 / 版本（必做）
+
+> 🔁 7.1–7.3 已由 `test-tools-presentation.py` 覆盖（含反馈链接失败回退），无需人工。
 
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
@@ -144,6 +161,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 10. 多屏 / 缩放 / Spaces / 全屏（必做）
 
+> 🔁 10.1/10.2 已由 `make macos-multi-display` 与光标几何单测覆盖；人工只需 10.3 Space、10.4 全屏。
+
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
 | 10.1 | 候选窗出现在非主屏的文本框旁 | 位置正确、不越界 | PASS| |
@@ -152,6 +171,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 | 10.4 | 进入全屏 App 后输入 | 候选正常显示在屏内 | PASS| |
 
 ## 11. 体感与性能（必做，不必重测自动化项）
+
+> 🔁 11.3 已由 `make macos-soak` / 内存门禁覆盖；人工只需 11.2 首键（11.1 并入日常）。
 
 | # | 步骤 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|

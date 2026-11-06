@@ -114,3 +114,7 @@ make macos-clean-install APP=…/Lampyris.app ARGS=--input-source-removed
 2. 自建文档/窗口关闭（不碰用户真实文档）。
 3. 证据放 `platforms/macos/build/<acceptance>/`（该目录不入库），报告写证据文件名。
 4. `make verify` 全绿 → 固定`dev`提交/推送；同批`dev → main` PR持续跟进至合并或关闭，不按验收轮次另开分支/PR；HANDOFF §1/§3/§4/§9同步（ADR-246/248）。
+5. **验收必须自清场**（报告231）：脚本里 `trap cleanup_run EXIT INT TERM` +
+   `"$PROBE/cleanup-windows.sh" --out "$OUT" --textedit`；只按 URL/标题/未保存内容签名认领自己的窗口，
+   浏览器永不 quit。跑完自检：`pgrep -x TextEdit`、Safari/Chrome 标签数、`pgrep -f lampyris-imetype.app` 应为空/0。
+   新增同类脚本漏接线会被 `platforms/macos/tests/test-probe-cleanup.py` 拦下。

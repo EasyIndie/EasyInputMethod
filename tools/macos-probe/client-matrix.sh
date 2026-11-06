@@ -9,6 +9,15 @@ SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 OUT="${OUT:-/tmp/lampyris-client-matrix}"
 
 mkdir -p "$OUT"
+# 报告231：矩阵会开 TextEdit 文档、浏览器标签和 Xcode 窗口，结束（含失败）一律收掉。
+# 「由我们启动」的应用在没有窗口时才退出；本来就开着的（用户可能在用）只关我们自己的窗口。
+STARTED=""
+for pair in "TextEdit:TextEdit" "Xcode:Xcode"; do
+    app="${pair%%:*}"; binary="${pair##*:}"
+    pgrep -x "$binary" >/dev/null 2>&1 || STARTED="$STARTED --quit-app $app"
+done
+cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit $STARTED >&2 || true; }
+trap cleanup_run EXIT INT TERM
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo "BLOCKED 无法选中输入源 $SOURCE"; exit 1; }
 
 has_app() {
@@ -43,21 +52,26 @@ type_into() {
 
 echo "== TextEdit"
 open -a TextEdit >/dev/null 2>&1
-sleep 3
+sleep 2
+# 报告231：自己开一个空白文档，读完就关——不再借用（也可能污染）用户正在写的文档。
+osascript -e 'tell application "TextEdit" to activate' -e 'tell application "TextEdit" to make new document' >/dev/null 2>&1
+sleep 1.5
 "$BIN/axtext" clear >/dev/null 2>&1
 if type_into TextEdit; then
-    got=$("$BIN/axfocus" 2>/dev/null)
+    # 报告232：回读必须绑定到 TextEdit 自己的 pid。之前用 `axfocus`（读"当前前台应用"），
+    # 一旦焦点在我们自己的终端（pi 所在窗口）上，就会把终端的文本当成 TextEdit 的结果（实测踩到）。
+    te_pid=$(pgrep -x TextEdit | head -1)
+    got=""
+    [ -n "$te_pid" ] && got=$("$BIN/axtext" read "$te_pid" 2>/dev/null | head -1)
     case "$got" in
-        NO_FOCUS*|"")
-            # 报告209：焦点属性偶尔读不到（与 198/199 同类的时序问题），退到窗口内文本区。
-            pid=$(front_pid)
-            sleep 1
-            got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
-            printf '{"value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
+        ""|NO_TEXT_AREA|NO_WINDOW)
+            got=$("$BIN/axfocus" 2>/dev/null)
             ;;
-        *) printf '%s\n' "$got" | tee "$OUT/textedit.json" ;;
     esac
+    printf '{"app":"TextEdit","value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
 fi
+# 关掉自己开的那个文档（front document 就是刚建的空白文档）
+osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
 
 # 报告198：macOS 13 的 LaunchServices 不接受 `open -a Safari 'data:…'`（Unable to interpret … as a path or URL），
 # 改用临时 HTML 文件，两个版本都可用。
@@ -71,8 +85,9 @@ open -a Safari "$PAGE" >/dev/null 2>&1
 if type_into Safari; then
     # 报告209：macOS 27 上页面标题不一定随输入更新（Safari 的 document.title 没有跟），
     # 先用 AX 读输入区，读不到再退回标题。
-    pid=$(front_pid)
-    got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
+    sf_pid=$(pgrep -x Safari | head -1)
+    [ -n "$sf_pid" ] || sf_pid=$(front_pid)
+    got=$("$BIN/axtext" read "$sf_pid" 2>/dev/null | head -1)
     case "$got" in
         ""|NO_TEXT_AREA|NO_WINDOW)
             osascript -e 'tell application "Safari" to get name of front document' > "$OUT/safari.txt" 2>/dev/null
@@ -89,20 +104,13 @@ if type_into "Google Chrome"; then
     printf '{"title":"%s"}\n' "$(cat "$OUT/chrome.txt")" | tee "$OUT/chrome.json"
 fi
 
-echo "== Ghostty"
-CAT_FILE="$OUT/ghostty.txt"
-rm -f "$CAT_FILE"
-open -na Ghostty --args -e bash -c "cat > '$CAT_FILE'" >/dev/null 2>&1
-if type_into ghostty; then
-    pid=$(front_pid)
-    "$BIN/keytopid" "$pid" 'ctrl+d' 150 400 --hid >/dev/null 2>&1
-    sleep 2
-    printf '{"file":"%s"}\n' "$(cat "$CAT_FILE" 2>/dev/null)" | tee "$OUT/ghostty.json"
-fi
-# 报告199：ctrl+d 不总能关掉这个测试窗口，残留的 `cat` 会一直占着前台、
-# 把后续（已提前退出的）投递吞掉。按本次独有的 CAT_FILE 精确收尾。
-for _ in 1 2 3 4 5; do pgrep -f "cat > '$CAT_FILE'" >/dev/null 2>&1 || break; sleep 1; done
-pkill -f "cat > '$CAT_FILE'" 2>/dev/null
+# 报告229：终端项不做自动化。
+# 原因一：往 Terminal.app 投递按键会落进**用户自己的** shell 会话（do script 的前台窗口不确定），
+#        实测 `cat > 文件` 收不到字、按键可能污染用户终端；
+# 原因二：用户设备偏好明确不用 Ghostty（旧实现在这里 example 用的就是 Ghostty 独立实例）。
+# 终端路径仍由 IT-22 §3.5 人工走查覆盖，这里只留一条 SKIP 记录，不假装 PASS。
+echo "== Terminal"
+echo '{"status":"SKIP","reason":"终端项不在自动化矩阵内，见 docs/tasks/T-ITER-22.md §3.5"}' | tee "$OUT/terminal.json"
 
 echo "== Xcode"
 if ! has_app Xcode; then
