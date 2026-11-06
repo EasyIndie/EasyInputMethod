@@ -479,9 +479,9 @@
   "short2": null,
   "pinyin": "yi",
   "frequency": 217830,
-  "quality": "full",
+  "quality": "partial",
   "notes": [
-   "成字字根：报户口 + 横（一）、横（〇）、横（〇）"
+   "成字字根：笔画字形不完整，无法给出首/次/末笔依据"
   ]
  },
  {
@@ -8145,10 +8145,8 @@
   "char": "紝",
   "code": "xtfg",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "紝"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -12889,10 +12887,8 @@
   "char": "銆",
   "code": "qdjg",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "銆"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -15280,10 +15276,8 @@
   "char": "鐨",
   "code": "qxjm",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "鐨"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -15299,10 +15293,8 @@
   "char": "剉",
   "code": "wwfj",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "剉"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -20626,10 +20618,8 @@
   "char": "屽",
   "code": "mfh",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "屽"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -21154,10 +21144,8 @@
   "char": "鏄",
   "code": "qgjf",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "鏄"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -22823,10 +22811,8 @@
   "char": "槸",
   "code": "sfwy",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "槸"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,
@@ -24999,10 +24985,8 @@
   "char": "簡",
   "code": "tujf",
   "class": null,
-  "componentsSource": "D2",
-  "components": [
-   "簡"
-  ],
+  "componentsSource": null,
+  "components": [],
   "keys": [],
   "recognition": null,
   "short1": null,

@@ -33,7 +33,8 @@ RECOGNITION = {
     'n': ('折', '左右'), 'b': ('折', '上下'), 'v': ('折', '杂合'),
 }
 # 单笔画可读字形（D2 的成字字根后续字形）
-STROKES = {'一': '横', '丨': '竖', '丿': '撇', '丶': '捺', '乙': '折', '乛': '折', '亅': '竖', '〇': '横'}
+# 注意：'〇' 在 D2 里是占位字形（不是笔画），不能算进首/次/末笔
+STROKES = {'一': '横', '丨': '竖', '丿': '撇', '丶': '捺', '乙': '折', '乛': '折', '亅': '竖'}
 
 
 def sha256(path: Path) -> str:
@@ -258,11 +259,11 @@ def main() -> int:
             continue
         glyphs = radicals.get(char)
         if not glyphs:
-            entry = build(char, code, [char], short1, short2, pinyin, freq)
-            entry['class'] = None
-            entry['quality'] = 'unknown'
-            entry['notes'] = ['缺拆字数据']
-            entries.append(entry)
+            entries.append({'char': char, 'code': code, 'class': None, 'componentsSource': None,
+                            'components': [], 'keys': [], 'recognition': None,
+                            'short1': short1.get(char), 'short2': short2.get(char),
+                            'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
+                            'quality': 'unknown', 'notes': ['缺拆字数据']})
             continue
         entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
                              pua_map=pua_map, d3_glyphs=d3.get(char)))

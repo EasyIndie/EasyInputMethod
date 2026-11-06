@@ -100,6 +100,10 @@ def main() -> int:
             problems.append(f'{char}: 产物含私有区字形 {[hex(ord(c)) for c in pua][:3]}（ADR-189 不允许）')
         if entry['class'] == 'compound' and len(entry['keys']) != len(entry['components']):
             problems.append(f'{char}: keys 与 components 数量不一致')
+        if entry['quality'] == 'unknown' and entry['components']:
+            problems.append(f'{char}: unknown 条目不应带组件')
+        if entry['quality'] == 'unknown' and entry['recognition']:
+            problems.append(f'{char}: unknown 条目不应带识别码')
         if entry['quality'] != 'full' and not entry['notes']:
             problems.append(f'{char}: 非 full 等级必须写 notes')
         recognition = entry['recognition']
@@ -111,6 +115,8 @@ def main() -> int:
                 problems.append(f'{char}: 识别码的末笔/结构与字母不符')
             if not entry['code'] or entry['code'][-1] != key:
                 problems.append(f'{char}: 识别码不是全码末位')
+            if len(entry['components']) != len(entry['code']) - 1:
+                problems.append(f'{char}: 识别码条目的组件数应比码长少 1')
 
     if problems:
         for problem in problems[:20]:

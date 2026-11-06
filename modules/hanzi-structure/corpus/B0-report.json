@@ -2,8 +2,8 @@
   "schemaVersion": 2,
   "entries": 1000,
   "quality": {
-    "full": 754,
-    "partial": 238,
+    "full": 753,
+    "partial": 239,
     "unknown": 8
   },
   "classes": {
@@ -14,7 +14,7 @@
   },
   "withRecognition": 514,
   "componentsSource": {
-    "D2": 924,
+    "D2": 916,
     "D3": 76
   },
   "puaMap": "corpus/pua-map.json",

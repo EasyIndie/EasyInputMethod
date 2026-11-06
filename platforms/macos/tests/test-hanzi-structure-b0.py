@@ -22,6 +22,16 @@ class B0CorpusTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertIn('B0 校验通过', result.stdout)
 
+    def test_query_degrades_partial_entries(self):
+        """消费契约：full 给完整解释，partial 必须带"拆解待核验"。"""
+        query = [sys.executable, str(MODULE / 'tools/b0_query.py')]
+        full = subprocess.run(query + ['和'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        self.assertEqual(full.returncode, 0, full.stderr)
+        self.assertIn('识别码 g', full.stdout)
+        partial = subprocess.run(query + ['一'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        self.assertEqual(partial.returncode, 0, partial.stderr)
+        self.assertIn('拆解待核验', partial.stdout)
+
     def test_provenance_records_hashes(self):
         text = (MODULE / 'provenance/B0.md').read_text(encoding='utf-8')
         for marker in ('D2', 'D17-bis', 'SHA-256', 'CC-BY-SA-4.0'):
