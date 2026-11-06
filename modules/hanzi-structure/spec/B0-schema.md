@@ -1,7 +1,8 @@
 # B0 结构事实库 · 数据模型（试点 1,000 高频字）
 
 > 状态：**B0 试点**（ADR-189 的第一次落地）。只读事实库，不进入输入热路径，不改候选排序。
-> 版本：`schemaVersion: 4`（v4 新增 `strokes` / `positionMismatch`，并把 D2 的「每码位一形」对齐写成规则，见报告 244；
+> 版本：`schemaVersion: 5`（v5 新增 `ids` / `idsStructure`，并用 IDS 填占位字根，见报告 245）
+> 上一版：`schemaVersion: 4`（v4 新增 `strokes` / `positionMismatch`，并把 D2 的「每码位一形」对齐写成规则，见报告 244；
 > v3 = 占位组件（报告 243），v2 = `componentsSource`/`keys`（报告 241））。字段变更必须升版本并写报告。
 
 ## 1. 目的
@@ -20,6 +21,8 @@
 | `componentsSource` | enum | `D2` / `D3` / `null`：组件来自哪一份拆字源（报告 241：D2 优先，D3 兜底） |
 | `keys` | string[] | 每个字根对应的键位字母（取全码同位置；含占位组件时同样成立，故 `len(keys) == len(components)`） |
 | `strokes` | (string\|null)[] \| null | **成字字根**的笔画序列（首→末，可读字形）；其它类为 `null` |
+| `ids` | string \| null | IDS 分解序列（D19，MIT），如 `⿰禾口` |
+| `idsStructure` | string \| null | **IDS 口径**的三分类结构（左右/上下/杂合）；与五笔结构可能不同（报告 242），只作参考 |
 | `positionMismatch` | int[] | 诊断用：字形键与码位不一致的位次（D14 只收常用字根，复合字形会误报，不据此降级） |
 | `recognition` | object \| null | `{key, stroke, structure, because}`：识别码字母、末笔、结构、判定依据 |
 | `short1` / `short2` | string \| null | 一级 / 二级简码（D17 / D17-bis） |
@@ -41,10 +44,13 @@
    - 其余位置先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出），查不到则保留为**占位组件 `null`**，
      键位取自码位（第 i 个组件 ↔ `code[i]`），notes 写明「第 k 个字根（键 x）字形未识别」；
    - 含占位组件**不得**判 `full`。
-5. **成字字根笔画（v4）**：若该字在可读字根键表（D14）里且全码形如「键 + 首/次/末笔」，
+5. **IDS 填占位（v5）**：IDS（D19，MIT）叶子数与组件数相同、已知位字形一致（或键位一致）、
+   且填入字形的键位与码位相符时，才用 IDS 叶子替换占位 `null`；不满足一律保留占位并写 notes。
+   `idsStructure` 是 IDS 口径，**不得**覆盖以识别码为准的五笔结构。
+6. **成字字根笔画（v4）**：若该字在可读字根键表（D14）里且全码形如「键 + 首/次/末笔」，
    笔画序列由全码推导（`strokes`），notes 注明「按五笔取码规则，非笔顺教学数据」；
    形如 `XXLL` 的单笔画按「连打两次 + 补 LL」解释。
-6. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
+7. 识别码反查表（末笔 × 结构）：横 GFD / 竖 HJK / 撇 TRE / 捺 YUI / 折 NBV（各自顺序=左右、上下、杂合）。
 
 ## 4. 质量等级
 

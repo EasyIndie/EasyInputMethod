@@ -29,6 +29,8 @@ def explain(entry: dict, as_json: bool) -> int:
         result['text'] = f'{char}：暂无编码/拆解资料'
     elif quality == 'partial':
         parts = [f'{char} 「{entry["code"]}」'] if entry['code'] else [char]
+        if entry.get('ids'):
+            parts.append(f'IDS {entry["ids"]}（{entry["idsStructure"]}，参考）')
         if entry['short1']:
             parts.append(f'一级简码 {entry["short1"]}')
         if entry['short2']:
@@ -38,6 +40,8 @@ def explain(entry: dict, as_json: bool) -> int:
         if entry['components'] and entry['keys']:
             parts.append('字根：' + ' '.join(f'{c if c else "？"}({k})'
                                             for c, k in zip(entry['components'], entry['keys'])))
+        if entry.get('ids'):
+            parts.append(f'IDS {entry["ids"]}（{entry["idsStructure"]}，参考）')
         parts.append('拆解待核验（' + '；'.join(entry['notes'] or ['数据不完整']) + '）')
         if entry['recognition']:
             parts.append(f'参考识别码 {entry["recognition"]["key"]}')

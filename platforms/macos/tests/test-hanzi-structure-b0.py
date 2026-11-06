@@ -48,10 +48,10 @@ class B0CorpusTests(unittest.TestCase):
             text = json.dumps(entry, ensure_ascii=False)
             self.assertNotIn('\ue000', ''.join(c for c in text if 0xE000 <= ord(c) <= 0xF8FF))
         query = [sys.executable, str(MODULE / 'tools/b0_query.py')]
-        result = subprocess.run(query + ['在'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        result = subprocess.run(query + ['是'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('？(d)', result.stdout)
-        self.assertIn('参考识别码 d', result.stdout)
+        self.assertIn('？(h)', result.stdout)
+        self.assertIn('参考识别码 u', result.stdout)
 
     def test_component_counts_align_with_codes(self):
         """v4：合体字的组件数必须与码长自洽（n 或 n-1），且成字字根带笔画（报告 244）。"""
@@ -72,6 +72,43 @@ class B0CorpusTests(unittest.TestCase):
         strokes = subprocess.run(query + ['用'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertIn('成字字根', strokes.stdout)
         self.assertIn('丿', strokes.stdout)
+
+    def test_ids_structure_is_consistent(self):
+        """v5：ids 必须是 IDS 序列，idsStructure 必须与根算子一致（报告 245）。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        ops = set('⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻')
+        self.assertTrue(any(e['ids'] for e in entries))
+        for entry in entries:
+            seq, structure = entry['ids'], entry['idsStructure']
+            if seq is None:
+                self.assertIsNone(structure, f"{entry['char']}: 无 ids 却给了结构")
+                continue
+            self.assertIn(seq[0], ops, f"{entry['char']}: ids 不是 IDS 序列")
+            expected = ('左右' if seq[0] in '⿰⿲' else '上下' if seq[0] in '⿱⿳' else '杂合')
+            self.assertEqual(structure, expected, f"{entry['char']}: 结构与根算子不一致")
+
+    def test_ids_filled_placeholders_match_keys(self):
+        """v5：IDS 补进来的字根必须与码位键一致，占位不得因此被"凑"出来。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        keys = {}
+        for line in (ROOT / 'data/learning/wubi86-readable-keys.tsv').read_text(encoding='utf-8').splitlines():
+            if not line or line.startswith('#'):
+                continue
+            key, glyphs = line.split('\t')
+            for glyph in glyphs:
+                keys.setdefault(glyph, key)
+        filled = [e for e in entries if any('按 IDS' in n for n in e['notes'])]
+        self.assertTrue(filled, 'IDS 应至少补齐一条占位')
+        for entry in filled:
+            skip = set(entry.get('positionMismatch') or [])
+            for index, (glyph, key) in enumerate(zip(entry['components'], entry['keys']), start=1):
+                if index in skip:
+                    continue
+                self.assertIsNotNone(glyph, f"{entry['char']}: 填过占位却残留 null")
+                if glyph in keys:
+                    self.assertEqual(keys[glyph], key, f"{entry['char']}: {glyph} 的键位与码位不符")
 
     def test_provenance_records_hashes(self):
         text = (MODULE / 'provenance/B0.md').read_text(encoding='utf-8')

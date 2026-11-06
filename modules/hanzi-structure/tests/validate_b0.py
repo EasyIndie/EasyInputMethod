@@ -12,10 +12,11 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 4  # v4：strokes / positionMismatch + 每码位对齐（报告 244）
+SCHEMA_VERSION = 5  # v5：ids / idsStructure（D19）+ 用 IDS 填占位（报告 245）
 FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'strokes',
-          'positionMismatch', 'recognition', 'short1', 'short2', 'pinyin', 'frequency',
-          'quality', 'notes'}
+          'ids', 'idsStructure', 'positionMismatch', 'recognition', 'short1', 'short2',
+          'pinyin', 'frequency', 'quality', 'notes'}
+IDS_OPS = set('⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻')
 STROKE_GLYPHS = set('一丨丿丶乙')
 CLASSES = {'key-name', 'radical-char', 'compound', None}
 QUALITIES = {'full', 'partial', 'unknown'}
@@ -128,6 +129,16 @@ def main() -> int:
                 problems.append(f'{char}: 已有笔画序列却未判 full')
         if not isinstance(entry.get('positionMismatch'), list):
             problems.append(f'{char}: positionMismatch 必须是数组')
+        ids_seq = entry.get('ids')
+        if ids_seq is not None:
+            if not isinstance(ids_seq, str) or ids_seq[0] not in IDS_OPS:
+                problems.append(f'{char}: ids 必须是 IDS 序列')
+            expected = ('左右' if ids_seq[0] in '⿰⿲' else '上下' if ids_seq[0] in '⿱⿳'
+                        else '杂合' if ids_seq[0] in '⿴⿵⿶⿷⿸⿹⿺⿻' else None)
+            if entry.get('idsStructure') != expected:
+                problems.append(f'{char}: idsStructure 与 ids 根算子不一致')
+        elif entry.get('idsStructure') is not None:
+            problems.append(f'{char}: 无 ids 却给了 idsStructure')
         if entry['quality'] == 'unknown' and entry['components']:
             problems.append(f'{char}: unknown 条目不应带组件')
         if entry['quality'] == 'unknown' and entry['recognition']:

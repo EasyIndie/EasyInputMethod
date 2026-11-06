@@ -16,6 +16,8 @@
    "乙",
    "丨"
   ],
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": "b",
@@ -43,6 +45,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱日𤴓",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -66,7 +70,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠂇",
    "丨",
    "土"
   ],
@@ -76,6 +80,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿸𠂇⿰丨土",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -87,10 +93,10 @@
   "short2": null,
   "pinyin": "zai",
   "frequency": 727915,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 d）"
+   "按 IDS（D19）补齐 1 个占位字根：⿸𠂇⿰丨土"
   ]
  },
  {
@@ -107,6 +113,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰禾口",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -135,6 +143,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿸𠂇⺝",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -166,6 +176,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰亻也",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -194,6 +206,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿸丆卜",
+  "idsStructure": "杂合",
   "positionMismatch": [
    2
   ],
@@ -228,6 +242,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱丿⿻亅𭟮",
+  "idsStructure": "上下",
   "positionMismatch": [
    4
   ],
@@ -259,6 +275,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰白勺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -283,6 +301,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": "w",
@@ -311,6 +331,8 @@
    "丨",
    "乙"
   ],
+  "ids": "⿻⿺乚丨𠃌",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -340,6 +362,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿵⿽力丶丶",
+  "idsStructure": "杂合",
   "positionMismatch": [
    2,
    4
@@ -372,6 +396,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰京尤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -399,6 +425,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶文",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -432,6 +460,8 @@
    "一",
    "一"
   ],
+  "ids": "⿱⺊一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": "h",
@@ -459,6 +489,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𠂉㐄",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -490,6 +522,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿻丨口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -520,6 +554,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰亻尔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -552,6 +588,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰讠兑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -573,6 +611,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": "g",
@@ -602,6 +642,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰至刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -631,6 +673,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰者阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -658,6 +702,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𥫗寺",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -688,6 +734,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿸羊目",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -719,6 +767,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰又寸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -747,6 +797,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿻十⿱䒑人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -777,6 +829,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿹⿺㇉一一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -805,6 +859,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰土也",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -835,6 +891,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶不",
+  "idsStructure": "杂合",
   "positionMismatch": [
    2
   ],
@@ -865,6 +923,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱覀女",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -889,6 +949,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -908,6 +970,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻人一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -933,6 +997,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱丆𦉫",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -957,6 +1023,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱丶#",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -984,6 +1052,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶首",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1001,7 +1071,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠄌",
    "丶",
    "人"
   ],
@@ -1011,6 +1081,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿲𠄌丶人",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -1022,10 +1094,10 @@
   "short2": null,
   "pinyin": "yi",
   "frequency": 136106,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 n）"
+   "按 IDS（D19）补齐 1 个占位字根：⿲𠄌丶人"
   ]
  },
  {
@@ -1046,6 +1118,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰彳㝵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1071,6 +1145,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰女也",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -1099,6 +1175,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱人丨",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -1129,6 +1207,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿸𠂆𠮛",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -1157,6 +1237,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱土厶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -1187,6 +1269,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰丬𪧷",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -1217,6 +1301,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰𭃂阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -1247,6 +1333,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰亻旦",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -1275,6 +1363,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰人人",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -1299,6 +1389,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿵⺆二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1322,6 +1414,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱一卜",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -1350,6 +1444,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰扌巴",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -1382,6 +1478,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰衤皮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1402,13 +1500,15 @@
   "componentsSource": "D2",
   "components": [
    "一",
-   null
+   "𬺰"
   ],
   "keys": [
    "g",
    "f"
   ],
   "strokes": null,
+  "ids": "⿱一𬺰",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -1420,10 +1520,10 @@
   "short2": "gf",
   "pinyin": "yu",
   "frequency": 106176,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 f）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱一𬺰"
   ]
  },
  {
@@ -1440,6 +1540,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰日寸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -1468,6 +1570,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱口八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -1496,6 +1600,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱夕夕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -1524,6 +1630,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶寸",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -1552,6 +1660,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿹丁口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -1580,6 +1690,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱䒑廾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -1612,6 +1724,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰䏍𫧇",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1637,6 +1751,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰女子",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -1667,6 +1783,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱人云",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -1695,6 +1813,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱屮凵",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -1725,6 +1845,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿹戈𬺣",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -1752,6 +1874,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿴囗一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1780,6 +1904,8 @@
    "乙",
    "一"
   ],
+  "ids": "⿻[:-1]丨日",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1805,6 +1931,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱⿻甲一一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -1838,6 +1966,8 @@
    "乙",
    "丨"
   ],
+  "ids": "⿵⺆𰀁",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1865,6 +1995,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰户斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -1898,6 +2030,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱丿冋",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -1922,6 +2056,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿹コ乚",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -1947,6 +2083,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱⿴龷二八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -1979,6 +2117,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰纟合",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2006,6 +2146,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰彳艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -2029,7 +2171,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "龵",
    "目"
   ],
   "keys": [
@@ -2037,6 +2179,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿸龵目",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -2048,10 +2192,10 @@
   "short2": null,
   "pinyin": "kan",
   "frequency": 66641,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 r）"
+   "按 IDS（D19）补齐 1 个占位字根：⿸龵目"
   ]
  },
  {
@@ -2072,6 +2216,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰亻吏",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2099,6 +2245,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱䒑刖",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -2129,6 +2277,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰亲斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -2159,6 +2309,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱相心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -2189,6 +2341,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰去卩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -2217,6 +2371,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿱宀匕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -2247,6 +2403,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱日取",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -2275,6 +2433,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱冂⿸丿乚",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -2308,6 +2468,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿺走己",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -2344,6 +2506,8 @@
    "丿",
    "丶"
   ],
+  "ids": "⿰丿𰍨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2371,6 +2535,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿳亠口冋",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -2404,6 +2570,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿻丆⿱日乀",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -2432,6 +2600,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰女口",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -2462,6 +2632,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱一冉",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -2482,7 +2654,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𬺰",
    "丿"
   ],
   "keys": [
@@ -2490,6 +2662,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿹𬺰丿",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -2501,10 +2675,10 @@
   "short2": "ft",
   "pinyin": "cai",
   "frequency": 55415,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 f）"
+   "按 IDS（D19）补齐 1 个占位字根：⿹𬺰丿"
   ]
  },
  {
@@ -2525,6 +2699,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰亻更",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2554,6 +2730,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰氵殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2574,13 +2752,15 @@
   "componentsSource": "D2",
   "components": [
    "土",
-   null
+   "龰"
   ],
   "keys": [
    "f",
    "h"
   ],
   "strokes": null,
+  "ids": "⿱土龰",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -2592,10 +2772,10 @@
   "short2": null,
   "pinyin": "zou",
   "frequency": 50437,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 h）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱土龰"
   ]
  },
  {
@@ -2614,6 +2794,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰亻故",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -2642,6 +2824,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰讠上",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -2670,6 +2854,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿻人冂",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -2698,6 +2884,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿻[l,b]㇋人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -2729,6 +2917,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰口斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -2761,6 +2951,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿵戊𠃌",
+  "idsStructure": "杂合",
   "positionMismatch": [
    4
   ],
@@ -2790,6 +2982,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱夂口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -2822,6 +3016,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿻𬺰⿱口⺕",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2851,6 +3047,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱口丂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -2881,6 +3079,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𠫔土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -2911,6 +3111,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰口丩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -2946,6 +3148,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱一⿻从冂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -2971,6 +3175,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱⺌𫜹",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -3004,6 +3210,8 @@
    "一",
    "一"
   ],
+  "ids": "⿱一二",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -3029,6 +3237,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿻十亼",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -3057,6 +3267,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱一尢",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -3088,6 +3300,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰止匕",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -3116,6 +3330,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰亻门",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -3146,6 +3362,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱宀豕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -3175,6 +3393,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿻𰀠一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -3208,6 +3428,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱亠巾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -3241,6 +3463,8 @@
    "丨",
    "乙"
   ],
+  "ids": "⿰⿱丶丨𠃌",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -3266,6 +3490,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱一止",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -3296,6 +3522,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿵冂𠮛",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -3326,6 +3554,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰口乞",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -3354,6 +3584,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱一大",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -3374,7 +3606,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "匕",
    "匕"
   ],
   "keys": [
@@ -3382,6 +3614,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰匕匕",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -3393,10 +3627,10 @@
   "short2": "xx",
   "pinyin": "bi",
   "frequency": 35305,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 x）"
+   "按 IDS（D19）补齐 1 个占位字根：⿰匕匕"
   ]
  },
  {
@@ -3418,6 +3652,8 @@
    "丿",
    "丶"
   ],
+  "ids": "⿻⺌𠆣",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -3443,6 +3679,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰夕卜",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -3473,6 +3711,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰⿸𢀳丶卩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -3501,6 +3741,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱八刀",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -3529,6 +3771,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿵门口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -3559,6 +3803,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰讠舌",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -3587,6 +3833,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰扌丁",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -3617,6 +3865,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿱耂匕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -3645,6 +3895,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱丿目",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -3677,6 +3929,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰畐刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -3704,6 +3958,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰𧾷艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -3734,6 +3990,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱𥫗夭",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -3762,6 +4020,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰贝刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -3792,6 +4052,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻象",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -3826,6 +4088,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰车交",
+  "idsStructure": "左右",
   "positionMismatch": [
    2,
    3,
@@ -3857,6 +4121,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿴囗玉",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -3887,6 +4153,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿸歹匕",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -3917,6 +4185,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱小自",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -3947,6 +4217,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰亻主",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -3975,6 +4247,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱一勹",
+  "idsStructure": "上下",
   "positionMismatch": [
    1
   ],
@@ -4008,6 +4282,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿴囗大",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4038,6 +4314,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱丷𭥴",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -4069,6 +4347,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱二儿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -4099,6 +4379,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰口尼",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -4132,6 +4414,8 @@
    "一",
    "丨"
   ],
+  "ids": "⿻𠂌一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4157,6 +4441,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶大",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4185,6 +4471,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4220,6 +4508,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰亻乍",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4249,6 +4539,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰讠亥",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4270,6 +4562,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻[.,]丿⿻𡿨一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4293,6 +4587,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱一廾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -4325,6 +4621,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰𧾷各",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4352,6 +4650,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰纟勺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -4380,6 +4680,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱冖车",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -4410,6 +4712,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰禾尔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -4438,6 +4742,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱夕口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -4469,6 +4775,8 @@
    "一",
    "一"
   ],
+  "ids": "⿱一一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4498,6 +4806,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱𠂉母",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4529,6 +4839,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸尸禹",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4556,6 +4868,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰讠隹",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -4589,6 +4903,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿳爫冖又",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -4621,6 +4937,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿳卅冖巾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4648,6 +4966,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶井",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -4681,6 +5001,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱𠂒儿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -4711,6 +5033,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿸广⿱𭕄一",
+  "idsStructure": "杂合",
   "positionMismatch": [
    2
   ],
@@ -4740,6 +5064,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰口巴",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -4770,6 +5096,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱且厶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -4806,6 +5134,8 @@
    "乙",
    "丶"
   ],
+  "ids": "⿲丶⿺乚丶丶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -4823,7 +5153,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "⺊",
    "口"
   ],
   "keys": [
@@ -4831,6 +5161,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱⺊口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -4842,10 +5174,10 @@
   "short2": "hk",
   "pinyin": "zhan",
   "frequency": 25139,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 h）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱⺊口"
   ]
  },
  {
@@ -4862,6 +5194,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿺夂卜",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4890,6 +5224,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿷匚乂",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4918,6 +5254,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱大丶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -4948,6 +5286,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱占灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -4975,6 +5315,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿰㇇𰛅",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5002,6 +5344,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿵𲓜𢆉",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5029,6 +5373,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰弓长",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -5059,6 +5405,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱亽𠃍",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -5087,6 +5435,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿵门日",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -5117,6 +5467,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱𠮦心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -5145,6 +5497,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿴囗口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -5169,6 +5523,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿶凵丨",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5194,6 +5550,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰讠青",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5224,6 +5582,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱耂日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -5256,6 +5616,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱龸兄",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5285,6 +5647,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰⿷⿻𠂆一二殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5312,6 +5676,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰氵去",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -5340,6 +5706,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶车",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -5370,6 +5738,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰立占",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5405,6 +5775,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱𥫗𢎨",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5430,6 +5802,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱艹𬺢",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -5461,6 +5835,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱口力",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -5489,6 +5865,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱牛一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -5517,6 +5895,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱人王",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -5547,6 +5927,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰彳亍",
+  "idsStructure": "左右",
   "positionMismatch": [
    2,
    3
@@ -5582,6 +5964,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻到",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5609,6 +5993,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰忄夬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -5639,6 +6025,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰氵𠂢",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -5674,6 +6062,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰口阿",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5699,6 +6089,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰木目",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5727,6 +6119,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰口马",
+  "idsStructure": "左右",
   "positionMismatch": [
    2
   ],
@@ -5759,6 +6153,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰纟𢀖",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5789,6 +6185,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰扌安",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5817,6 +6215,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰扌戈",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "t",
@@ -5841,6 +6241,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿴〢二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -5866,6 +6268,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰土匀",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -5896,6 +6300,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰禾中",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -5924,6 +6330,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱宀子",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -5952,6 +6360,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿹乀丿",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -5985,6 +6395,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱直八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -6020,6 +6432,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿱合手",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6049,6 +6463,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰土成",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6080,6 +6496,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿹𢎘一",
+  "idsStructure": "杂合",
   "positionMismatch": [
    1
   ],
@@ -6114,6 +6532,8 @@
    "一",
    "丨"
   ],
+  "ids": "⿱一十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6135,6 +6555,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱一土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6160,6 +6582,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰扌居",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -6193,6 +6617,8 @@
    "乙",
    "一"
   ],
+  "ids": "⿴囗儿",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6214,6 +6640,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻了一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6241,6 +6669,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿺⿻丨⿱𠃍𠃌丶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6270,6 +6700,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰亻乃",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6297,6 +6729,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰又隹",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -6333,6 +6767,8 @@
    "丨",
    "一"
   ],
+  "ids": "⿱一𠁤",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6358,6 +6794,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿻[1:]亅⿱⿻𠃊一八",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -6389,6 +6827,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱小丿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "r",
@@ -6419,6 +6859,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰冫欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -6449,6 +6891,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱此二",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -6477,6 +6921,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰钅戋",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "t",
@@ -6505,6 +6951,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿲二丨匕",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -6533,6 +6981,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿳𠂉一㇈",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -6564,6 +7014,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶斤",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -6592,6 +7044,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱乂朩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -6622,6 +7076,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰氵青",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -6652,6 +7108,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱𰃮子",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -6685,6 +7143,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰弓虽",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -6717,6 +7177,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱冖与",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6744,6 +7206,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰⿸𢀳丶旡",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -6773,6 +7237,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱艹右",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -6806,6 +7272,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰彳主",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -6834,6 +7302,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱厶口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -6864,6 +7334,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿸厂𤽄",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -6896,6 +7368,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸⿺⿻丿𠃊丶又",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": "v",
@@ -6923,6 +7397,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰亻壬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -6953,6 +7429,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱𦍌大",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -6981,6 +7459,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿻𰀁人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -7016,6 +7496,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰木𠃓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7045,6 +7527,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱丘八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -7078,6 +7562,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿲三〢三",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -7110,6 +7596,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰阝余",
+  "idsStructure": "左右",
   "positionMismatch": [
    3,
    4
@@ -7138,6 +7626,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶力",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -7166,6 +7656,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰亻立",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -7194,6 +7686,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱⺈𲰶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -7225,6 +7719,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰日月",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -7255,6 +7751,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰讠殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -7287,6 +7785,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿲𬼀忄丨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7312,6 +7812,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱十⿴𠀃三",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -7345,6 +7847,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱宀𤴓",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -7380,6 +7884,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿺走戉",
+  "idsStructure": "杂合",
   "positionMismatch": [
    3,
    4
@@ -7414,6 +7920,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱丿⿹⿴⿻[.x]冂丿二一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7445,6 +7953,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿻𡈼旦",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7463,13 +7973,15 @@
   "componentsSource": "D2",
   "components": [
    "士",
-   null
+   "𠃜"
   ],
   "keys": [
    "f",
    "n"
   ],
   "strokes": null,
+  "ids": "⿱士𠃜",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "r",
@@ -7481,10 +7993,10 @@
   "short2": null,
   "pinyin": "sheng",
   "frequency": 15713,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 n）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱士𠃜"
   ]
  },
  {
@@ -7506,6 +8018,8 @@
    "丨",
    "一"
   ],
+  "ids": "⿱一𫝀",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7535,6 +8049,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰亻氐",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7564,6 +8080,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𠦏一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -7595,6 +8113,8 @@
    "丿",
    "乙"
   ],
+  "ids": "⿰丿乚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7622,6 +8142,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰木及",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -7653,6 +8175,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰方攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -7677,6 +8201,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻全丷",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7700,6 +8226,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰纟工",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -7730,6 +8258,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰𠦝月",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -7762,6 +8292,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿳爫冖友",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7791,6 +8323,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰矢口",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -7819,6 +8353,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱亠土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -7851,6 +8387,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱你心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7878,6 +8416,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰扌𠬝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -7906,6 +8446,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱米大",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -7939,6 +8481,8 @@
    "乙",
    "丨"
   ],
+  "ids": "⿱日十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -7964,6 +8508,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱口虫",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -7996,6 +8542,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱丆囬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8023,6 +8571,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰另刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -8055,6 +8605,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰衤刀",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8084,6 +8636,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰忄生",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8116,6 +8670,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱刑土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8143,6 +8699,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰讠井",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -8176,6 +8734,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰咅阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -8206,6 +8766,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶关",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -8236,6 +8798,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶元",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -8264,6 +8828,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸𠂆又",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -8294,6 +8860,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰扌旨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8322,6 +8890,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿸𠃋𠂈",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -8358,6 +8928,8 @@
    "一",
    "乙"
   ],
+  "ids": "⿱亠勹",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8385,6 +8957,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱⿵艹二⿷匸八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -8415,6 +8989,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱宀元",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -8447,6 +9023,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱龸吊",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8474,6 +9052,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱音心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -8502,6 +9082,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰阝人",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -8532,6 +9114,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰氵肙",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8560,6 +9144,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿹弋工",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -8580,7 +9166,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠂇",
    "工"
   ],
   "keys": [
@@ -8588,6 +9174,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿸𠂇工",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -8599,10 +9187,10 @@
   "short2": "da",
   "pinyin": "zuo",
   "frequency": 12823,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 d）"
+   "按 IDS（D19）补齐 1 个占位字根：⿸𠂇工"
   ]
  },
  {
@@ -8619,6 +9207,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰扌立",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8649,6 +9239,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿱艹化",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -8677,6 +9269,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿻乚日",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -8709,6 +9303,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰钅奔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8734,6 +9330,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱夂朩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -8766,6 +9364,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰佥刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8797,6 +9397,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰示申",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8828,6 +9430,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰云力",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8855,6 +9459,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰氵胡",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8885,6 +9491,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰氵可",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -8909,6 +9517,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱丿日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8934,6 +9544,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱宀㠯",
+  "idsStructure": "上下",
   "positionMismatch": [
    2
   ],
@@ -8971,6 +9583,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰リ帀",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -8996,6 +9610,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰亻又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -9028,6 +9644,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰孝攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9057,6 +9675,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰口那",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9084,6 +9704,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱𰁜又",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9117,6 +9739,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿴囗冬",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -9150,6 +9774,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿻丅䒑",
+  "idsStructure": "杂合",
   "positionMismatch": [
    3
   ],
@@ -9182,6 +9808,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿸广付",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -9214,6 +9842,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱执灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9243,6 +9873,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰⿻牛冂刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9274,6 +9906,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱⿰亡月王",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9301,6 +9935,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱山夕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9323,6 +9959,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰糸壬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9352,6 +9990,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰车专",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9381,6 +10021,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿺廴聿",
+  "idsStructure": "杂合",
   "positionMismatch": [
    3
   ],
@@ -9414,6 +10056,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱亼叩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9439,6 +10083,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰力口",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -9469,6 +10115,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱𥫗官",
+  "idsStructure": "上下",
   "positionMismatch": [
    3
   ],
@@ -9503,6 +10151,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰土𠃓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9534,6 +10184,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰𧾷包",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9563,6 +10215,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱穴牙",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9592,6 +10246,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱人从",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9620,6 +10276,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸丿厶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9650,6 +10308,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱⿻[1:]丄⿱⿴囗丷一灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9681,6 +10341,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰忄白",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -9709,6 +10371,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿵几乂",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -9737,6 +10401,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰亻言",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -9767,6 +10433,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱罒直",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -9800,6 +10468,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱刍心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9833,6 +10503,8 @@
    "丿",
    "一"
   ],
+  "ids": "⿸丆口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9850,7 +10522,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "龷",
    "由",
    "八"
   ],
@@ -9860,6 +10532,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿳龷由八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -9871,10 +10545,10 @@
   "short2": null,
   "pinyin": "huang",
   "frequency": 11062,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 a）"
+   "按 IDS（D19）补齐 1 个占位字根：⿳龷由八"
   ]
  },
  {
@@ -9895,6 +10569,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰钅真",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9922,6 +10598,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰耳又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -9952,6 +10630,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱⺌兀",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -9981,6 +10661,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱音儿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -10012,6 +10694,8 @@
    "丿",
    "乙"
   ],
+  "ids": "⿻丿𠃌",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10039,6 +10723,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰娄攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -10071,6 +10757,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10098,6 +10786,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱立朩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10130,6 +10820,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰亻专",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10161,6 +10853,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰氵罙",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10190,6 +10884,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰月佥",
+  "idsStructure": "左右",
   "positionMismatch": [
    4
   ],
@@ -10219,6 +10915,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱乛头",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10252,6 +10950,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰扌妾",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -10282,6 +10982,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱𦫸朩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10302,7 +11004,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "⺝",
    "一"
   ],
   "keys": [
@@ -10310,6 +11012,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱⺝一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -10321,10 +11025,10 @@
   "short2": "eg",
   "pinyin": "qie",
   "frequency": 10470,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 e）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱⺝一"
   ]
  },
  {
@@ -10341,6 +11045,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰⿹力丶丶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -10371,6 +11077,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰彳寺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -10404,6 +11112,8 @@
    "一",
    "丶"
   ],
+  "ids": "⿱亠乂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10431,6 +11141,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰扌是",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -10461,6 +11173,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱丿糸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10493,6 +11207,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱旦里",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10520,6 +11236,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰忄亡",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -10553,6 +11271,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱尺⺀",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10586,6 +11306,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰口曷",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -10618,6 +11340,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰君阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10650,6 +11374,8 @@
    "乙",
    "丨"
   ],
+  "ids": "⿻[1:]丨⿱⿻𠃊一一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10677,6 +11403,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰口拉",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -10707,6 +11435,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰冈刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -10737,6 +11467,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰纟及",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -10770,6 +11502,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿱北⺝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -10802,6 +11536,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱㐫禸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10827,6 +11563,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰古攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -10851,6 +11589,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿳亠二口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10876,6 +11616,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰氵每",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -10906,6 +11648,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰亻本",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -10938,6 +11682,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿸广坐",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -10965,6 +11711,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰氵酉",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -10995,6 +11743,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶甬",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -11030,6 +11780,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰氵𬜯",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11059,6 +11811,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰口牙",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11086,6 +11840,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱木子",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -11116,6 +11872,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱亽龴",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -11147,6 +11905,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿺㇈⿱丿丶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -11180,6 +11940,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰氵㐬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11209,6 +11971,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰彳𢛳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11227,13 +11991,15 @@
   "componentsSource": "D2",
   "components": [
    "口",
-   null
+   "龰"
   ],
   "keys": [
    "k",
    "h"
   ],
   "strokes": null,
+  "ids": "⿱口龰",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -11245,10 +12011,10 @@
   "short2": null,
   "pinyin": "zu",
   "frequency": 9485,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 h）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱口龰"
   ]
  },
  {
@@ -11269,6 +12035,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿰目焦",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11298,6 +12066,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱亼口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -11318,7 +12088,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠂇",
    "口"
   ],
   "keys": [
@@ -11326,6 +12096,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿸𠂇口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -11337,10 +12109,10 @@
   "short2": "dk",
   "pinyin": "you",
   "frequency": 9451,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 d）"
+   "按 IDS（D19）补齐 1 个占位字根：⿸𠂇口"
   ]
  },
  {
@@ -11359,6 +12131,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱罒去",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -11387,6 +12161,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱亠⿰丿小",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -11410,14 +12186,16 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
-   "夂"
+   "己",
+   "攵"
   ],
   "keys": [
    "n",
    "t"
   ],
   "strokes": null,
+  "ids": "⿰己攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -11429,10 +12207,10 @@
   "short2": null,
   "pinyin": "gai",
   "frequency": 9286,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 n）"
+   "按 IDS（D19）补齐 1 个占位字根：⿰己攵"
   ]
  },
  {
@@ -11452,6 +12230,8 @@
    "乙",
    "丿"
   ],
+  "ids": "⿹𠃌丿",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11479,6 +12259,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰石皮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -11512,6 +12294,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿺𡯃丶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11543,6 +12327,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱雨而",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11572,6 +12358,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱宀苋",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11597,6 +12385,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿲丶⿱丶𠤎丶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -11629,6 +12419,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿸疒丙",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11658,6 +12450,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿰阝迶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11687,6 +12481,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰彡页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -11715,6 +12511,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿸尸古",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -11743,6 +12541,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱口王",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -11771,6 +12571,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰氵又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -11801,6 +12603,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰君羊",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -11834,6 +12638,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱𥫗𥃲",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -11864,6 +12670,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰占戈",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "t",
@@ -11897,6 +12705,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰目艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -11928,6 +12738,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱宀女",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -11960,6 +12772,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱告非",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -11989,6 +12803,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱艹臧",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12020,6 +12836,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱艹洛",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12047,6 +12865,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰工页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12077,6 +12897,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱䒑自",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -12109,6 +12931,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿱龸𠰅",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12138,6 +12962,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰徍亍",
+  "idsStructure": "左右",
   "positionMismatch": [
    4
   ],
@@ -12167,6 +12993,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰钅失",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12200,6 +13028,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰牛勿",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "r",
@@ -12228,6 +13058,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰木木",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12252,6 +13084,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱十一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12277,6 +13111,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱艹采",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -12307,6 +13143,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰王见",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -12342,6 +13180,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿳亠⿲冫幺⿱丿丶十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12365,6 +13205,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻人丷",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12390,6 +13232,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰木乔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -12420,6 +13264,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰月殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12450,6 +13296,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿳⺈⿻[1:]丿口⿲𰀪㇁⿱丿乀",
+  "idsStructure": "上下",
   "positionMismatch": [
    2
   ],
@@ -12488,6 +13336,8 @@
    "丨",
    "一"
   ],
+  "ids": "⿱十口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12515,6 +13365,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰𧾷兆",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -12544,6 +13396,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱甘木",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -12574,6 +13428,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰忄京",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12609,6 +13465,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰扌高",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12640,6 +13498,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱艹约",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12667,6 +13527,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰冫中",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -12695,6 +13557,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰又又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -12728,6 +13592,8 @@
    "一",
    "丶"
   ],
+  "ids": "⿱亠八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12755,6 +13621,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰忄青",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -12787,6 +13655,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰咢阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12814,6 +13684,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰扌卓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -12841,6 +13713,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱亠䒑",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12866,6 +13740,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰舌乚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -12896,6 +13772,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿵𱖆口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -12930,6 +13808,8 @@
    "丿",
    "乙"
   ],
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -12957,6 +13837,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿻了⿲㇇三⿱丿乀",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -12988,6 +13870,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰木寸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -13018,6 +13902,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰丩攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -13049,6 +13935,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿻⺌二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -13079,6 +13967,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰亻共",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -13113,6 +14003,8 @@
    "丿",
    "乙"
   ],
+  "ids": "⿻丿㇈",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13140,6 +14032,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰氵舌",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -13160,9 +14054,9 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠃍",
    "耳",
-   "夂"
+   "攵"
   ],
   "keys": [
    "n",
@@ -13170,6 +14064,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰⿱𠃍耳攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -13181,10 +14077,10 @@
   "short2": "nb",
   "pinyin": "gan",
   "frequency": 7965,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 n）"
+   "按 IDS（D19）补齐 1 个占位字根：⿰⿱𠃍耳攵"
   ]
  },
  {
@@ -13203,6 +14099,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱亼朩",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13234,6 +14132,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱艹犾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13263,6 +14163,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱䒑⿻〢⿱⺕八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -13297,6 +14199,8 @@
    "一",
    "丨"
   ],
+  "ids": "⿻丨一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13326,6 +14230,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰牛寺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13355,6 +14261,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰舟㕣",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13384,6 +14292,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰丁页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -13414,6 +14324,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰⿺𠃊米斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -13449,6 +14361,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰亻以",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13478,6 +14392,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿻乇一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -13510,6 +14426,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰讠周",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13539,6 +14457,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱口天",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -13571,6 +14491,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰开彡",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13596,6 +14518,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰纟戋",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "t",
@@ -13626,6 +14550,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱勿心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -13660,6 +14586,8 @@
    "一",
    "乙"
   ],
+  "ids": "⿻乚一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13685,6 +14613,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸丿ス",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -13716,6 +14646,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿻丿⿱口乀",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -13748,6 +14680,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰车害",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13775,6 +14709,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱艹央",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -13807,6 +14743,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱十买",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -13834,6 +14772,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱丿皿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -13864,6 +14804,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱一𰢵",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -13894,6 +14836,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰车𢀖",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -13924,6 +14868,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿱比白",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -13957,6 +14903,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰氵台",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -13985,6 +14933,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰木又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -14015,6 +14965,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱吅犬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -14045,6 +14997,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱穴工",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -14073,6 +15027,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰讠己",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -14101,6 +15057,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱田力",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -14132,6 +15090,8 @@
    "丿",
    "丶"
   ],
+  "ids": "⿰丿乀",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14161,6 +15121,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱壴口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14188,6 +15150,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰讠仑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -14220,6 +15184,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰亻𱐩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14247,6 +15213,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱加木",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -14275,6 +15243,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰リ𫜹",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -14305,6 +15275,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶艮",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -14340,6 +15312,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰氵斿",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14367,6 +15341,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱宀头",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -14400,6 +15376,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿸羊工",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -14433,6 +15411,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰女生",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -14461,6 +15441,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿻牛人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -14494,6 +15476,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿵冂⿰乂乂",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -14522,6 +15506,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸⿻丨#",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -14557,6 +15543,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰朿刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14588,6 +15576,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰目垂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14617,6 +15607,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶先",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14644,6 +15636,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰禾斗",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -14675,6 +15669,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱䒑大",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -14703,6 +15699,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰亻𠤎",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -14735,6 +15733,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰氵兵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14766,6 +15766,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱吅马",
+  "idsStructure": "上下",
   "positionMismatch": [
    4
   ],
@@ -14799,6 +15801,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸广氐",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14820,6 +15824,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰金百",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14849,6 +15855,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰阝完",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14878,6 +15886,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱今口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14907,6 +15917,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰氵同",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -14932,6 +15944,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰木几",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -14960,6 +15974,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱⺈巴",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -14990,6 +16006,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰阝可",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -15020,6 +16038,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱壮衣",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -15050,6 +16070,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰王里",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -15082,6 +16104,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰马主",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -15111,6 +16135,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿳亠丷厂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -15143,6 +16169,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰钅甫",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15172,6 +16200,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰令页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15201,6 +16231,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰土夬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -15233,6 +16265,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱乍心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15260,6 +16294,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰圭寸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -15290,6 +16326,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿰讠炎",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -15322,6 +16360,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰讠者",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15349,6 +16389,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱𰃮见",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15378,6 +16420,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿴囗才",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -15411,6 +16455,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿵内人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -15443,6 +16489,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰其月",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15472,6 +16520,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱丿⿹⿴#",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15499,6 +16549,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰亻弋",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15530,6 +16582,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰矢豆",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15555,6 +16609,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰丨日",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -15587,6 +16643,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰口觜",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15614,6 +16672,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰扌圭",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -15646,6 +16706,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱⿰𱍸刀田",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15675,6 +16737,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿸巳𫠠",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": "n",
@@ -15704,6 +16768,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰舌攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -15732,6 +16798,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱亠𱒃",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -15765,6 +16833,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰讠寺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -15797,6 +16867,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱原心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15826,6 +16898,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱艹𡋵",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15851,6 +16925,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿻⿺𠃊凵一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -15886,6 +16962,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱兴𰀁",
+  "idsStructure": "上下",
   "positionMismatch": [
    1
   ],
@@ -15917,6 +16995,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰𡱒殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15948,6 +17028,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱邦巾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -15975,6 +17057,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰扌爪",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -16007,6 +17091,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰扌奂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16036,6 +17122,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰亻牛",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16065,6 +17153,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿺⿻𬺰⿰冫⿱丿丶丶",
+  "idsStructure": "杂合",
   "positionMismatch": [
    1
   ],
@@ -16099,6 +17189,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰月却",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16126,6 +17218,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸户方",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -16158,6 +17252,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰歹克",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16185,6 +17281,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱宀吕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -16215,6 +17313,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱二厶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16244,6 +17344,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱人良",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -16274,6 +17376,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰钅昔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16305,6 +17409,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿻丨⿱𠂉一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -16338,6 +17444,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰龵⿱一丰",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -16373,6 +17481,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰饣反",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16402,6 +17512,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰扌隹",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16433,6 +17545,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰丬犬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -16463,6 +17577,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱𭥍夂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -16491,6 +17607,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿹勹口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -16519,6 +17637,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱古儿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -16551,6 +17671,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰求攵",
+  "idsStructure": "左右",
   "positionMismatch": [
    1
   ],
@@ -16580,6 +17702,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰木娄",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16610,6 +17734,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰月生",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16638,6 +17764,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱⿵冂三𬺢",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -16669,6 +17797,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -16702,6 +17832,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸尸云",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -16732,6 +17864,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱隹木",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -16767,6 +17901,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱艹者",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16794,6 +17930,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰丿⿱丄𠃍",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -16824,6 +17962,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱大卉",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -16852,6 +17992,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱立早",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -16880,6 +18022,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿸尸由",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -16904,6 +18048,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿻十人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -16929,6 +18075,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰忄圣",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16957,6 +18105,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰氵工",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -16987,6 +18137,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰扌包",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -17017,6 +18169,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰耳只",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -17045,6 +18199,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰扌白",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -17075,6 +18231,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱亠父",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17102,6 +18260,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿱龶𧘇",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -17137,6 +18297,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰阝夅",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17160,6 +18322,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿴囗十",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17187,6 +18351,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱𫇦吕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17216,6 +18382,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿸攸彡",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17245,6 +18413,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱耂丂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17270,6 +18440,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱口贝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -17300,6 +18472,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰钅艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -17335,6 +18509,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰谷欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17362,6 +18538,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰亻可",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -17394,6 +18572,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰亻亭",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17423,6 +18603,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱田介",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -17458,6 +18640,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰角𭷔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17483,6 +18667,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱艹早",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -17505,6 +18691,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰金費",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17524,6 +18712,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰坐刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17553,6 +18743,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱此糸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17578,6 +18770,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰文刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -17610,6 +18804,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱⿻羊丷𠮛",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17637,6 +18833,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱禾日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -17667,6 +18865,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱丷⿻甲一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -17697,6 +18897,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰日免",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17726,6 +18928,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰口屯",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17753,6 +18957,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱一业",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -17786,6 +18992,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰扌仓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -17814,6 +19022,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱王廾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -17844,6 +19054,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰歹刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -17874,6 +19086,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿸𣂑贝",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -17906,6 +19120,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰钅同",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17935,6 +19151,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰讠司",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17963,6 +19181,8 @@
    "一",
    "丿"
   ],
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -17992,6 +19212,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰日爰",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -18023,6 +19245,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱咸心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18052,6 +19276,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱任几",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18081,6 +19307,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶𠂤",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18112,6 +19340,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱𰀡糸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18141,6 +19371,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿺是页",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18162,7 +19394,7 @@
   "components": [
    "匚",
    "丨",
-   null,
+   "コ",
    "丨"
   ],
   "keys": [
@@ -18172,16 +19404,18 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿷匚⿳丨コ丨",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "chen",
   "frequency": 5666,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 n）",
+   "按 IDS（D19）补齐 1 个占位字根：⿷匚⿳丨コ丨",
    "字根已够四码，无识别码"
   ]
  },
@@ -18199,6 +19433,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰氵由",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -18231,6 +19467,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰讠卖",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18260,6 +19498,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰王求",
+  "idsStructure": "左右",
   "positionMismatch": [
    2
   ],
@@ -18287,6 +19527,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱宀寸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -18319,6 +19561,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰亻我",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18348,6 +19592,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰工力",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18377,6 +19623,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰立耑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18404,6 +19652,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰⿱龷⺝攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18435,6 +19685,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱丶乂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -18463,6 +19715,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱八厶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -18491,6 +19745,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰工攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18521,6 +19777,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰阝东",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18554,6 +19812,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰示乚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -18585,6 +19845,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿱龶⺝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -18613,6 +19875,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰弓丨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -18643,6 +19907,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰扌殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18667,6 +19933,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿴囗二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18692,6 +19960,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰木对",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18720,6 +19990,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱土寸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -18750,6 +20022,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱山冈",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -18782,6 +20056,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰土啬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18811,6 +20087,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰皮页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -18840,6 +20118,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱⺌冋",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -18868,6 +20148,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿵几丶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -18898,6 +20180,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰丰阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -18928,6 +20212,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰木艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -18959,6 +20245,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": null,
+  "idsStructure": null,
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -18989,6 +20277,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰木仓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -19019,6 +20309,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶云",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -19049,6 +20341,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰亻直",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -19084,6 +20378,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰氵巷",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19115,6 +20411,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰口向",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19144,6 +20442,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱执力",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19171,6 +20471,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱丿⿷⿻[1:]⿸丿乚日厶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -19204,6 +20506,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰扌比",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -19235,6 +20539,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿻[l,l,.]勹巳",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -19267,6 +20573,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱㚘日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19294,6 +20602,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿹𠃌𠮛",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -19324,6 +20634,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱龹㔾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -19356,6 +20668,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿳亠丷⿱冖方",
+  "idsStructure": "上下",
   "positionMismatch": [
    1,
    3,
@@ -19387,6 +20701,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱𦣻夂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -19417,6 +20733,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰扌召",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -19449,6 +20767,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿹⿽弋一止",
+  "idsStructure": "杂合",
   "positionMismatch": [
    1,
    2,
@@ -19480,6 +20800,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱冃目",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -19512,6 +20834,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿸𭤨矢",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19539,6 +20863,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰贝占",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -19574,6 +20900,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰石更",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19599,6 +20927,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰禾刂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -19629,6 +20959,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰土云",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -19659,6 +20991,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰冫令",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19684,6 +21018,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱一圡",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -19716,6 +21052,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿰月退",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19747,6 +21085,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱𥫗合",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19774,6 +21114,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰亻呆",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -19806,6 +21148,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱昭灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19835,6 +21179,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰亻叚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19864,6 +21210,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰木反",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -19896,6 +21244,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰彳卸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19925,6 +21275,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿱日勿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "r",
@@ -19960,6 +21312,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰贝戎",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -19987,6 +21341,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰女马",
+  "idsStructure": "左右",
   "positionMismatch": [
    2
   ],
@@ -20019,6 +21375,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸𲟁又",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -20047,6 +21405,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱宀木",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -20077,6 +21437,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱⿻𠃑二丶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -20112,6 +21474,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱孰灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20139,6 +21503,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰讠十",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -20169,6 +21535,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱亡心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -20202,6 +21570,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿺走卜",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -20237,6 +21607,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰身寸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20264,6 +21636,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱丆贝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -20295,6 +21669,8 @@
    "丿",
    "乙"
   ],
+  "ids": "⿹𠄎丿",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20324,6 +21700,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰土完",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20354,6 +21732,8 @@
    "丨",
    "乙"
   ],
+  "ids": "⿴巳丨",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20381,6 +21761,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰口自",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -20409,6 +21791,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿱十又",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -20439,6 +21823,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿸厂㫗",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -20471,6 +21857,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰火尧",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20500,6 +21888,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰彳𢼸",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20527,6 +21917,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿸虍几",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -20560,6 +21952,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿸𠂇巾",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -20591,6 +21985,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱艹𰆊",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -20619,6 +22015,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿻⿰𰀪丨一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -20649,6 +22047,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰亻衣",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -20680,6 +22080,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱艹古",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -20710,6 +22112,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰纟色",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -20742,6 +22146,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰番羽",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20769,6 +22175,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶兆",
+  "idsStructure": "杂合",
   "positionMismatch": [
    1
   ],
@@ -20806,6 +22214,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿸广⿱肀口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20835,6 +22245,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱𡗗日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -20863,6 +22275,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿵门耳",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -20893,6 +22307,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱大可",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -20923,6 +22339,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰田各",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -20956,6 +22374,8 @@
    "乙",
    "丨"
   ],
+  "ids": "⿻[1:]丨日",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -20983,6 +22403,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱林疋",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -21015,6 +22437,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰口咸",
+  "idsStructure": "左右",
   "positionMismatch": [
    4
   ],
@@ -21044,6 +22468,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰亻分",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -21076,6 +22502,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿴玨𬼀",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21106,6 +22534,8 @@
    "一",
    "丿"
   ],
+  "ids": "⿱丶厂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21133,6 +22563,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱奴心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -21161,6 +22593,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰子小",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -21193,6 +22627,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰纟秀",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21222,6 +22658,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰片反",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21249,6 +22687,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰土不",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -21281,6 +22721,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰纟且",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -21312,6 +22754,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰口十",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -21342,6 +22786,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰车仑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -21374,6 +22820,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱可可",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21401,6 +22849,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰冫夬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -21433,6 +22883,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰氵希",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21462,6 +22914,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸厂圡",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -21494,6 +22948,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰弓单",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21521,6 +22977,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱日业",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -21554,6 +23012,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰讠吾",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -21586,6 +23046,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱宀至",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21611,6 +23073,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱⿻〢丷一",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -21646,6 +23110,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰扌莫",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21671,6 +23137,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿸广由",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -21701,6 +23169,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰禾肖",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -21731,6 +23201,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱龶糸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -21759,6 +23231,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰扌卜",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -21789,6 +23263,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿺走干",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -21822,6 +23298,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶卬",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -21855,6 +23333,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱宀玉",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -21883,6 +23363,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿻甲𠆣",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -21915,6 +23397,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱𠀐贝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21944,6 +23428,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰火少",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -21973,6 +23459,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿵门市",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22000,6 +23488,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰扌台",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22033,6 +23523,8 @@
    "丨",
    "丶"
   ],
+  "ids": "⿱一𠕒",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22058,6 +23550,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱文⿰丿丨",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -22093,6 +23587,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰马奇",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -22124,6 +23620,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱圤皿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -22156,6 +23654,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𠅃十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22183,6 +23683,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱日生",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -22213,6 +23715,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰口里",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22243,6 +23747,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱宀各",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -22275,6 +23781,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰扌罢",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22302,6 +23810,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻昔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22333,6 +23843,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰扌斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -22361,6 +23873,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱⺈贝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -22389,6 +23903,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱𰀁凵",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -22421,6 +23937,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿹𢦏異",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22446,6 +23964,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿰纟田",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22474,6 +23994,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱口木",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -22504,6 +24026,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𡗗𰀁",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -22537,6 +24061,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰又见",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -22570,6 +24096,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰口昌",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22600,6 +24128,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱化十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -22632,6 +24162,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱龶母",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22661,6 +24193,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰氵尼",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -22691,6 +24225,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰口未",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -22724,6 +24260,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰氵斩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -22754,6 +24292,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰女台",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -22786,6 +24326,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰木黄",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -22815,6 +24357,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿳亠口冗",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -22839,13 +24383,15 @@
   "componentsSource": "D2",
   "components": [
    "大",
-   null
+   "镸"
   ],
   "keys": [
    "d",
    "d"
   ],
   "strokes": null,
+  "ids": "⿱大镸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -22857,10 +24403,10 @@
   "short2": null,
   "pinyin": "tao",
   "frequency": 4300,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 d）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱大镸"
   ]
  },
  {
@@ -22879,6 +24425,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿱𭕄𬺢",
+  "idsStructure": "上下",
   "positionMismatch": [
    1
   ],
@@ -22901,13 +24449,15 @@
   "componentsSource": "D2",
   "components": [
    "止",
-   null
+   "𣥂"
   ],
   "keys": [
    "h",
    "i"
   ],
   "strokes": null,
+  "ids": "⿱止𣥂",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "r",
@@ -22919,10 +24469,10 @@
   "short2": "hi",
   "pinyin": "bu",
   "frequency": 4285,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 i）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱止𣥂"
   ]
  },
  {
@@ -22939,6 +24489,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰亻山",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -22967,6 +24519,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿱雨𫜹",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -23000,6 +24554,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰亻咅",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -23028,6 +24584,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰氵干",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -23061,6 +24619,8 @@
    "丨",
    "一"
   ],
+  "ids": "⿹丅⿺丄二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23088,6 +24648,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰木各",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -23116,6 +24678,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱己心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -23148,6 +24712,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰木亥",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23175,6 +24741,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰纟从",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -23207,6 +24775,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱哭吅",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23236,6 +24806,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱艹耦",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23265,6 +24837,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶㒸",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -23298,6 +24872,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰王元",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -23330,6 +24906,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰纟𫠣",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23361,6 +24939,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱罒非",
+  "idsStructure": "上下",
   "positionMismatch": [
    2,
    3
@@ -23391,6 +24971,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱𦍌皿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -23421,6 +25003,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰𧾷巨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -23453,6 +25037,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿱𡨄朩",
+  "idsStructure": "上下",
   "positionMismatch": [
    3
   ],
@@ -23484,6 +25070,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰口下",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -23514,6 +25102,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿻乖人",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "v",
@@ -23542,6 +25132,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿸厂丁",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -23570,6 +25162,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰口又",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -23600,6 +25194,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰忄艮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -23633,6 +25229,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱⿰𱼀龴示",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -23658,6 +25256,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰山干",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23685,6 +25285,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰讠召",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -23717,6 +25319,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻朁",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23748,6 +25352,8 @@
    "r"
   ],
   "strokes": null,
+  "ids": "⿰其斤",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23775,6 +25381,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰口欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -23807,6 +25415,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿸虍业",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23838,6 +25448,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰氵𠃓",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23869,6 +25481,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰句多",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23896,6 +25510,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰讠卂",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -23928,6 +25544,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰女𠂔",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -23953,6 +25571,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿻人二",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -23983,6 +25603,8 @@
    "x"
   ],
   "strokes": null,
+  "ids": "⿰弓玄",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -24013,6 +25635,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰王不",
+  "idsStructure": "左右",
   "positionMismatch": [
    3
   ],
@@ -24045,6 +25669,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰米青",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -24073,6 +25699,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱丶尸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -24103,6 +25731,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿰扌军",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -24135,6 +25765,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿺爪巴",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24162,6 +25794,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱山己",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -24194,6 +25828,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱𡗗天",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24221,6 +25857,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰扌寺",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -24243,6 +25881,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰金專",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24268,6 +25908,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰亻乙",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -24300,6 +25942,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿱亠⿰亻⿴夂丶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24329,6 +25973,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰氵原",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24358,6 +26004,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿴囗韦",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24385,6 +26033,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿸尸⿹𠃌口",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -24413,6 +26063,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱又土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -24445,6 +26097,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰忄董",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24462,7 +26116,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𠂇",
    "丨",
    "子"
   ],
@@ -24472,6 +26126,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿸𠂇⿰丨子",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -24483,10 +26139,10 @@
   "short2": null,
   "pinyin": "cun",
   "frequency": 3981,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 d）"
+   "按 IDS（D19）补齐 1 个占位字根：⿸𠂇⿰丨子"
   ]
  },
  {
@@ -24507,6 +26163,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰禾少",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24536,6 +26194,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱今心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24563,6 +26223,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰女良",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -24591,6 +26253,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿱冎⺝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -24626,6 +26290,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰扌臿",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24655,6 +26321,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰南犬",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24684,6 +26352,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰土竟",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24713,6 +26383,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱宓山",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24742,6 +26414,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰⿱𠂉丨亇",
+  "idsStructure": "左右",
   "positionMismatch": [
    2
   ],
@@ -24773,6 +26447,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻曾",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24804,6 +26480,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰酉夋",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24831,6 +26509,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰火因",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -24863,6 +26543,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿺走召",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24892,6 +26574,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱艹办",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -24922,6 +26606,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱疋虫",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -24957,6 +26643,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰阝鬲",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -24986,6 +26674,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿳亠丷冏",
+  "idsStructure": "上下",
   "positionMismatch": [
    1,
    3
@@ -25018,6 +26708,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰扌非",
+  "idsStructure": "左右",
   "positionMismatch": [
    2,
    3
@@ -25050,6 +26742,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𫩠土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25077,6 +26771,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱舟皿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -25108,6 +26804,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱白王",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -25138,6 +26836,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿻[1:]亇⺕",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -25171,6 +26871,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿴囗员",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -25203,6 +26905,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰亻扁",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25232,6 +26936,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰厄页",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25261,6 +26967,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰犭句",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25286,6 +26994,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱⺈小",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -25318,6 +27028,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰又鸟",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25345,6 +27057,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰氵相",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -25377,6 +27091,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰月兑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25406,6 +27122,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰扌童",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25427,6 +27145,8 @@
   ],
   "keys": [],
   "strokes": null,
+  "ids": "⿱一丄",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": "a",
@@ -25452,6 +27172,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰纟吉",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -25484,6 +27206,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿱丶𢂇",
+  "idsStructure": "上下",
   "positionMismatch": [
    1,
    3
@@ -25516,6 +27240,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱𥫗扁",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25545,6 +27271,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿰扌廷",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25572,6 +27300,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰犭㔾",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -25602,6 +27332,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰氵皮",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -25635,6 +27367,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱𠂒口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -25663,6 +27397,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱罒夕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -25693,6 +27429,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰车欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -25721,6 +27459,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱丿十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -25751,6 +27491,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰纟氏",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -25784,6 +27526,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰讠式",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -25804,7 +27548,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   null,
+   "𱼀",
    "犬",
    "灬"
   ],
@@ -25814,6 +27558,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱⿰𱼀犬灬",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -25825,10 +27571,10 @@
   "short2": "qd",
   "pinyin": "ran",
   "frequency": 3720,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 1 个（键 q）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱⿰𱼀犬灬"
   ]
  },
  {
@@ -25847,6 +27593,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱林夕",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -25877,6 +27625,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰木公",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -25905,6 +27655,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶了",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -25937,6 +27689,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿸𭤨其",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -25964,6 +27718,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰纟录",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -25997,6 +27753,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿸疒甬",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -26030,6 +27788,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰冫隹",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -26063,6 +27823,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿻[1:]亅⿱#",
+  "idsStructure": "杂合",
   "positionMismatch": [
    1
   ],
@@ -26092,6 +27854,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱士心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -26114,6 +27878,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿰木埶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26139,6 +27905,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿻人⿱𠂉一",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -26174,6 +27942,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱𫲸口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26201,6 +27971,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰阝咅",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -26233,6 +28005,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰口舍",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26262,6 +28036,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰至攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26291,6 +28067,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱其土",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26318,6 +28096,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰讠正",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -26350,6 +28130,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰身朵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26379,6 +28161,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰石角",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -26411,6 +28195,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶畐",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26439,6 +28225,8 @@
    "一",
    "丨"
   ],
+  "ids": "⿱一亅",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26466,6 +28254,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰正攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -26498,6 +28288,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰火考",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26525,6 +28317,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰舟见",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26554,6 +28348,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰火包",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -26584,6 +28380,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰示土",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -26617,6 +28415,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰钅中",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -26649,6 +28449,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰口交",
+  "idsStructure": "左右",
   "positionMismatch": [
    2,
    3,
@@ -26682,6 +28484,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰米唐",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26711,6 +28515,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰又力",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26738,6 +28544,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱宀且",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -26771,6 +28579,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰月要",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -26799,6 +28609,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰木马",
+  "idsStructure": "左右",
   "positionMismatch": [
    2
   ],
@@ -26829,6 +28641,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱一火",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -26861,6 +28675,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱𥫗前",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26888,6 +28704,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻则",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -26916,6 +28734,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱𫜹寸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -26948,6 +28768,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰身尚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -26977,6 +28799,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱亠𱔞",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -27005,6 +28829,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿱⺈用",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -27035,6 +28861,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱因心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -27067,6 +28895,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰口我",
+  "idsStructure": "左右",
   "positionMismatch": [
    4
   ],
@@ -27098,6 +28928,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰𧾷危",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27127,6 +28959,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶禺",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27156,6 +28990,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿰氵亶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27183,6 +29019,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿳八人口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -27215,6 +29053,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿰犭孟",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27242,6 +29082,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰𠀉卩",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -27273,6 +29115,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿱巳廾",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -27303,6 +29147,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰扌㐌",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -27333,6 +29179,8 @@
    "v"
   ],
   "strokes": null,
+  "ids": "⿰米良",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "e",
@@ -27365,6 +29213,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰𠦝韦",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27392,6 +29242,8 @@
    "g"
   ],
   "strokes": null,
+  "ids": "⿱木旦",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -27424,6 +29276,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰口麻",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27449,6 +29303,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰火丁",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -27479,6 +29335,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿰扌亢",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -27509,6 +29367,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰亻申",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -27539,6 +29399,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿸广占",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -27570,6 +29432,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰阝日",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -27598,6 +29462,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿰阝车",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -27626,6 +29492,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱口儿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "b",
@@ -27656,6 +29524,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰巾长",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -27688,6 +29558,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰纟扁",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27717,6 +29589,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱知日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27744,6 +29618,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰氵㕣",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -27776,6 +29652,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿰扌喿",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27803,6 +29681,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿹𢦏车",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "k",
@@ -27833,6 +29713,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰日音",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -27861,6 +29743,8 @@
    "o"
   ],
   "strokes": null,
+  "ids": "⿱𫜹火",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -27889,6 +29773,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿱丆日",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -27921,6 +29807,8 @@
    "p"
   ],
   "strokes": null,
+  "ids": "⿺辶曹",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -27950,6 +29838,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰禾多",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -27980,6 +29870,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰石欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -28010,6 +29902,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰享阝",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -28043,6 +29937,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿳䒑夫⿰丿丨",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -28074,6 +29970,8 @@
    "e"
   ],
   "strokes": null,
+  "ids": "⿰古月",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "g",
@@ -28104,6 +30002,8 @@
    "u"
   ],
   "strokes": null,
+  "ids": "⿰口乎",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -28136,6 +30036,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰舟殳",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28165,6 +30067,8 @@
    "a"
   ],
   "strokes": null,
+  "ids": "⿰扌乇",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -28195,6 +30099,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿱宀示",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -28216,13 +30122,15 @@
   "componentsSource": "D2",
   "components": [
    "亠",
-   null
+   "𧘇"
   ],
   "keys": [
    "y",
    "e"
   ],
   "strokes": null,
+  "ids": "⿱亠𧘇",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -28234,10 +30142,10 @@
   "short2": "ye",
   "pinyin": "yi",
   "frequency": 3280,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 e）"
+   "按 IDS（D19）补齐 1 个占位字根：⿱亠𧘇"
   ]
  },
  {
@@ -28256,6 +30164,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰亻丈",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -28291,6 +30201,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿰舟叟",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28322,6 +30234,8 @@
    "l"
   ],
   "strokes": null,
+  "ids": "⿱成皿",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28351,6 +30265,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰衤卜",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -28386,6 +30302,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿸𠃋厶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28411,6 +30329,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱五口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "f",
@@ -28443,6 +30363,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱𥫗毛",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28470,6 +30392,8 @@
    "m"
   ],
   "strokes": null,
+  "ids": "⿱弗贝",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -28505,6 +30429,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰木丙",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28523,8 +30449,8 @@
   "componentsSource": "D2",
   "components": [
    "一",
-   null,
-   null,
+   "𠄌",
+   "㇈",
    "丶"
   ],
   "keys": [
@@ -28534,6 +30460,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱一⿴⿰𠄌㇈丶",
+  "idsStructure": "上下",
   "positionMismatch": [
    4
   ],
@@ -28542,10 +30470,10 @@
   "short2": null,
   "pinyin": "wa",
   "frequency": 3228,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
    "有 2 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 n）、第 3 个（键 y）",
+   "按 IDS（D19）补齐 2 个占位字根：⿱一⿴⿰𠄌㇈丶",
    "字根已够四码，无识别码"
   ]
  },
@@ -28557,6 +30485,8 @@
   "components": [],
   "keys": [],
   "strokes": null,
+  "ids": "⿱𥫗間",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28582,6 +30512,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿰贝攵",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -28614,6 +30546,8 @@
    "t"
   ],
   "strokes": null,
+  "ids": "⿱丷𢎨",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28641,6 +30575,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰扌共",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -28674,6 +30610,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿰山令",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28701,6 +30639,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱比十",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -28732,6 +30672,8 @@
    "s"
   ],
   "strokes": null,
+  "ids": "⿸广木",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -28764,6 +30706,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿰氵先",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28794,6 +30738,8 @@
    "丨",
    "一"
   ],
+  "ids": "⿺丄⺊",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28823,6 +30769,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰饣欠",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28854,6 +30802,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿰片卑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28883,6 +30833,8 @@
    "q"
   ],
   "strokes": null,
+  "ids": "⿱父多",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28912,6 +30864,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰𢀖力",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28941,6 +30895,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰石宛",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -28968,6 +30924,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿱父𰆊",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "j",
@@ -29000,6 +30958,8 @@
    "c"
   ],
   "strokes": null,
+  "ids": "⿸麻鬼",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29027,6 +30987,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿱尹口",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "d",
@@ -29058,6 +31020,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰子乚",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "n",
@@ -29090,6 +31054,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿱亚心",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29121,6 +31087,8 @@
    "h"
   ],
   "strokes": null,
+  "ids": "⿰氵州",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29148,6 +31116,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱⿰丬夕大",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -29176,6 +31146,8 @@
    "y"
   ],
   "strokes": null,
+  "ids": "⿺木丶",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -29208,6 +31180,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰氵岑",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29235,6 +31209,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿰木隶",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -29268,6 +31244,8 @@
    "b"
   ],
   "strokes": null,
+  "ids": "⿰口亨",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -29299,6 +31277,8 @@
    "f"
   ],
   "strokes": null,
+  "ids": "⿱大寸",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -29331,6 +31311,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰犭者",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29360,6 +31342,8 @@
    "k"
   ],
   "strokes": null,
+  "ids": "⿰扌荅",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29387,6 +31371,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿰扌夫",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -29417,6 +31403,8 @@
    "n"
   ],
   "strokes": null,
+  "ids": "⿰月永",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "i",
@@ -29449,6 +31437,8 @@
    "i"
   ],
   "strokes": null,
+  "ids": "⿺走乂",
+  "idsStructure": "杂合",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29478,6 +31468,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿰耳关",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "y",
@@ -29508,6 +31500,8 @@
    "j"
   ],
   "strokes": null,
+  "ids": "⿰亻弗",
+  "idsStructure": "左右",
   "positionMismatch": [],
   "recognition": {
    "key": "h",
@@ -29539,6 +31533,8 @@
    "w"
   ],
   "strokes": null,
+  "ids": "⿱宀八",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",
@@ -29572,6 +31568,8 @@
    "乙",
    "丶"
   ],
+  "ids": "⿱中⿰一丶",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": null,
   "short1": null,
@@ -29599,6 +31597,8 @@
    "d"
   ],
   "strokes": null,
+  "ids": "⿱艹旲",
+  "idsStructure": "上下",
   "positionMismatch": [],
   "recognition": {
    "key": "u",

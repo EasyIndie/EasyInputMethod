@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 4  # v4：D2 每码位一个字形的对齐 + 识别码槽判定 + 成字字根笔画（报告 244）
+SCHEMA_VERSION = 5  # v5：引入 IDS（D19）填占位字根并给结构参考（报告 245）
 
 # 识别码反查表：末笔 × 结构（顺序：左右、上下、杂合）
 RECOGNITION = {
@@ -152,6 +152,69 @@ def decode(glyphs: list[str], pua_map: dict[str, str],
     return out, unknown
 
 
+IDS_OPS = set('⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻')
+
+
+def load_ids(path: Path) -> dict[str, str]:
+    """读 IDS 分解（D19，MIT）：字 -> 主 IDS 序列（取第一条以结构算子开头的）。"""
+    out: dict[str, str] = {}
+    for line in path.read_text(encoding='utf-8').splitlines():
+        parts = line.split('\t')
+        if len(parts) < 2:
+            continue
+        for seq in parts[1].split(';'):
+            seq = seq.split('(')[0].strip()
+            if seq and seq[0] in IDS_OPS:
+                out[parts[0]] = seq
+                break
+    return out
+
+
+def ids_leaves(seq: str) -> list[str]:
+    """IDS 的叶子（分量）序列；结构算子本身不是分量。"""
+    return [c for c in seq if c not in IDS_OPS]
+
+
+def ids_structure(seq: str) -> str | None:
+    """IDS 根算子 → 三分类结构（左右/上下/杂合）。注意这是 IDS 口径，不是五笔口径。"""
+    if not seq:
+        return None
+    root = seq[0]
+    if root in '⿰⿲':
+        return '左右'
+    if root in '⿱⿳':
+        return '上下'
+    if root in '⿴⿵⿶⿷⿸⿹⿺⿻':
+        return '杂合'
+    return None
+
+
+def fill_placeholders(components: list, keys: list[str], seq: str,
+                      keymap: dict[str, str]) -> tuple[list, int]:
+    """用 IDS 叶子填占位字根：只在"位数相同 + 已知位一致 + 键位对得上"时才填。
+
+    返回 (新组件, 填入数量)。宁可不填，也不猜（ADR-309）。
+    """
+    leaves = ids_leaves(seq)
+    if not leaves or len(leaves) != len(components):
+        return components, 0
+    for leaf, current, key in zip(leaves, components, keys):
+        if leaf in IDS_OPS or not leaf.strip():
+            return components, 0
+        if 0xE000 <= ord(leaf) <= 0xF8FF or ord(leaf) >= 0xF0000:
+            return components, 0
+        if current is not None:
+            if current == leaf:
+                continue
+            if keymap.get(current) == keymap.get(leaf) and keymap.get(leaf) is not None:
+                continue
+            return components, 0
+        if leaf in keymap and keymap[leaf] != key:
+            return components, 0
+    filled = sum(1 for current, leaf in zip(components, leaves) if current is None)
+    return list(leaves), filled
+
+
 def recognition_slot_pua(d2: dict[str, list[str]], codes: dict[str, str]) -> set[str]:
     """学出"只出现在末位"的私有区字形——它们是识别码字形，不是一个字根。
 
@@ -178,10 +241,12 @@ def is_pua(glyph: str) -> bool:
 def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           pinyin: dict, freq: dict, pua_map: dict[str, str] | None = None,
           d3_glyphs: list[str] | None = None, rec_slot_pua: set[str] | None = None,
-          readable_keys: dict[str, str] | None = None) -> dict:
+          readable_keys: dict[str, str] | None = None,
+          ids: dict[str, str] | None = None) -> dict:
     pua_map = pua_map or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
+    ids = ids or {}
     notes: list[str] = []
 
     def fits(components: list) -> bool:
@@ -196,6 +261,8 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'components': [],
         'keys': [],
         'strokes': None,
+        'ids': ids.get(char),
+        'idsStructure': ids_structure(ids.get(char, '')),
         'positionMismatch': [],
         'recognition': None,
         'short1': short1.get(char),
@@ -279,6 +346,14 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     entry['components'] = readable
     n = len(readable)
     entry['keys'] = list(code[:n]) if n <= len(code) else []
+    if any(c is None for c in readable) and entry['ids']:
+        filled_components, filled = fill_placeholders(readable, entry['keys'],
+                                                     entry['ids'], readable_keys)
+        if filled:
+            readable = filled_components
+            entry['components'] = readable
+            unknown_glyphs = sum(1 for c in readable if c is None)
+            notes.append(f'按 IDS（D19）补齐 {filled} 个占位字根：{entry["ids"]}')
     mismatched = [i for i, (c, k) in enumerate(zip(readable, entry['keys']))
                   if isinstance(c, str) and c in readable_keys and readable_keys[c] != k]
     # 诊断用：字形键与码位不一致的位次（D14 只收常用字根，复合字形会误报，故不据此降级）
@@ -316,6 +391,7 @@ def main() -> int:
     parser.add_argument('--short2', required=True)
     parser.add_argument('--pinyin', required=True)
     parser.add_argument('--readable-keys', help='D14 可读字根键表（成字字根笔画推导用，可选）')
+    parser.add_argument('--ids', help='IDS 分解（D19，MIT；填占位字根与结构参考，可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
@@ -325,6 +401,8 @@ def main() -> int:
         paths['d3'] = Path(args.d3)
     if args.readable_keys:
         paths['readable_keys'] = Path(args.readable_keys)
+    if args.ids:
+        paths['ids'] = Path(args.ids)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -343,6 +421,7 @@ def main() -> int:
             for glyph in parts[1]:
                 readable_keys.setdefault(glyph, parts[0])
     rec_slot_pua = recognition_slot_pua(radicals, codes) if args.d3 else set()
+    ids = load_ids(Path(args.ids)) if args.ids else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -358,6 +437,7 @@ def main() -> int:
         if not glyphs:
             entries.append({'char': char, 'code': code, 'class': None, 'componentsSource': None,
                             'components': [], 'keys': [], 'strokes': None,
+                            'ids': ids.get(char), 'idsStructure': ids_structure(ids.get(char, '')),
                             'positionMismatch': [], 'recognition': None,
                             'short1': short1.get(char), 'short2': short2.get(char),
                             'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
@@ -365,7 +445,8 @@ def main() -> int:
             continue
         entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
                              pua_map=pua_map, d3_glyphs=d3.get(char),
-                             rec_slot_pua=rec_slot_pua, readable_keys=readable_keys))
+                             rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
+                             ids=ids))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
@@ -390,6 +471,8 @@ def main() -> int:
         'placeholderComponents': sum(1 for e in entries for c in (e.get('components') or []) if c is None),
         'recognitionSlotPua': len(rec_slot_pua),
         'withStrokes': sum(1 for e in entries if e.get('strokes')),
+        'withIds': sum(1 for e in entries if e.get('ids')),
+        'idsFilled': sum(1 for e in entries if any('按 IDS' in n for n in e['notes'])),
         'positionMismatchEntries': sum(1 for e in entries if e.get('positionMismatch')),
         'inputs': {name: {'path': str(path), 'sha256': sha256(path)} for name, path in paths.items()},
         'generator': 'modules/hanzi-structure/tools/build_b0.py',
