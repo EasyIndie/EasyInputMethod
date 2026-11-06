@@ -1,13 +1,17 @@
 #!/bin/sh
 # 一次可复现的键入会话：起测试窗口 → 等它成为前台 → 投递按键（带前台校验与重试）→ 回读上屏文本。
 # 报告188/189：`--hid` 投递面向"当前前台应用"，因此必须确认目标窗口就是前台，否则按键会落到别处。
-# 用法：type-session.sh '<按键串>' [--settle 秒] [--source <输入源 id>]
+# 用法：type-session.sh '<按键串>' [--settle 秒] [--source <输入源 id>]   （节奏：KEY_HOLD/KEY_INTERVAL）
 set -u
 PROBE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$PROBE/bin"
 SOURCE="cn.jokerhub.inputmethod.Lampyris.default"
 SETTLE=10
 KEYS=""
+# 报告229：按键节奏可配。默认 200ms 按住 / 700ms 间隔是"最稳"的值；
+# 久用（soak）需要更大音量时可以调小，但一轮的 keys_seen 必须仍是全量，否则就是截尾。
+HOLD="${KEY_HOLD:-200}"
+INTERVAL="${KEY_INTERVAL:-700}"
 
 while [ $# -gt 0 ]; do
     case "$1" in
@@ -47,7 +51,7 @@ sleep 0.6
 i=0
 ok=0
 while [ $i -lt 15 ]; do
-    "$BIN/keytopid" "$PID" "$KEYS" 200 700 --hid >/dev/null 2>&1 &
+    "$BIN/keytopid" "$PID" "$KEYS" "$HOLD" "$INTERVAL" --hid >/dev/null 2>&1 &
     KPID=$!
     # 报告199：测试窗口一旦写出回读结果，就立即停掉还在投递的按键，
     # 否则窗口先退、余下的键会落到当时的前台应用（报告099/189 同类事故）。

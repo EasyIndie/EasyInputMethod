@@ -27,6 +27,9 @@ restart_host() {
 HOST=$(host_pid)
 [ -n "$HOST" ] || { echo '{"result":"BLOCKED","reason":"宿主未运行"}'; exit 1; }
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo '{"result":"BLOCKED","reason":"无法选中输入源"}'; exit 1; }
+# 报告229：`tissrc` 查询/选源会把宿主拉起来，刚启动的 RSS 会虚高（README「重启后立刻读数会偏高」），
+# 先热身再取基线，否则 rss_hard 会被启动瞬时值误判成 FAIL。
+sleep "${WARMUP:-10}"
 L0=$(dict_lines)
 
 NET="$OUT/net.csv"; RSS="$OUT/rss.csv"; FP="$OUT/footprint.csv"
@@ -46,16 +49,23 @@ SAMPLER=$!
 
 END=$(( $(date +%s) + MINUTES * 60 ))
 ROUND=0
+TRUNCATED=0
 CHUNKS="wq nihao xuexi .;nihao shijie .;wq xuexi nihao .;zhongguo .;renmin .;shijian ."
-COUNT=$(printf '%s' "$CHUNKS" | tr ';' '\n' | wc -l | tr -d ' ')
+# 报告229：原来用 `printf '%s' | tr ';' '\n' | wc -l` 数行数，末段没有换行 → 少算一条，
+# 最后一条 chunk（shijian）从来没跑过。改成按分隔符数段。
+COUNT=$(printf '%s' "$CHUNKS" | awk -F';' '{print NF}')
 while [ "$(date +%s)" -lt "$END" ]; do
     idx=$((ROUND % COUNT + 1))
     chunk=$(printf '%s' "$CHUNKS" | tr ';' '\n' | sed -n "${idx}p")
     out="$OUT/round-$ROUND.json"; rm -f "$out"
     # 报告229：久用必须真的走输入法（`--self-post` 的进程内合成事件进不了 IMK），
     # 所以复用 type-session.sh 的 HID 投递：起窗口→校验前台→投键→回读。
-    "$PROBE/type-session.sh" "$chunk" --settle "${ROUND_SETTLE:-3}" --source "$SOURCE" > "$out" 2>/dev/null
+    KEY_HOLD="${KEY_HOLD:-120}" KEY_INTERVAL="${KEY_INTERVAL:-250}" \
+        "$PROBE/type-session.sh" "$chunk" --settle "${ROUND_SETTLE:-3}" --source "$SOURCE" > "$out" 2>/dev/null
     [ -x "$BIN/tissrc" ] && "$BIN/tissrc" select "$SOURCE" >/dev/null 2>&1
+    # 报告199/229：节奏加快后要防"读出口早于最后一个键"，keys_seen 必须等于该 chunk 的字符数。
+    got=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1])).get("keys_seen") or 0)' "$out" 2>/dev/null)
+    [ "${got:-0}" = "${#chunk}" ] || TRUNCATED=$((TRUNCATED + 1))
     ROUND=$((ROUND + 1))
 done
 kill "$SAMPLER" 2>/dev/null
@@ -67,11 +77,12 @@ sleep 5
 L2=$(dict_lines)
 "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
-python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" "${IME_ROUNDS:-0}" <<'PY'
+python3 - "$OUT" "$L0" "$L1" "$L2" "$GROWTH_LIMIT_MB" "$RSS_HARD_MB" "$ROUND" "${IME_ROUNDS:-0}" "$TRUNCATED" <<'PY'
 import json, re, sys
 out, l0, l1, l2 = sys.argv[1], int(sys.argv[2]), int(sys.argv[3]), int(sys.argv[4])
 growth_limit, rss_hard, rounds = float(sys.argv[5]), float(sys.argv[6]), int(sys.argv[7])
 ime_rounds = int(sys.argv[8])
+truncated = int(sys.argv[9])
 def numbers(name):
     try:
         return [int(x) for x in open(f"{out}/{name}", encoding="utf-8").read().split()]
@@ -99,7 +110,7 @@ tail = rss[-max(1, len(rss) // 4):]
 tail_avg = sum(tail) / len(tail) / 1024 if tail else peak
 growth = tail_avg - warm
 summary = {
-    "rounds": rounds, "ime_rounds": ime_rounds, "dict_before": l0, "dict_after_typing": l1, "dict_after_restart": l2,
+    "rounds": rounds, "ime_rounds": ime_rounds, "truncated_rounds": truncated, "dict_before": l0, "dict_after_typing": l1, "dict_after_restart": l2,
     "learned_delta": l1 - l0,
     "samples": len(rss), "rss_first_mb": round(first, 1), "rss_peak_mb": round(peak, 1),
     "rss_steady_mb": round(tail_avg, 1),
@@ -113,7 +124,7 @@ summary = {
     "thresholds": {"growth_mb": growth_limit, "rss_hard_mb": rss_hard},
 }
 # 报告229：一个走 IME 的 round 都没有，说明久用测的不是输入法，直接判 FAIL。
-ok = (rounds > 0 and ime_rounds > 0 and summary["max_connections"] == 0
+ok = (rounds > 0 and ime_rounds > 0 and truncated == 0 and summary["max_connections"] == 0
       and growth <= growth_limit and tail_avg <= rss_hard
       and l2 == l1 and l1 >= l0)
 summary["result"] = "PASS" if ok else "FAIL"

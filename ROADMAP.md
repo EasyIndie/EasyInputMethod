@@ -308,6 +308,7 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [ ] IT-25：ADR-159五笔主动后项学习工程已通过隔离回归、make verify/strict universal/Swift FFI；待新签名原生验收与用户例子确认。见docs/tasks/T-ITER-25.md。
 - [x] **1.1.0 自动探针（报告 229）**：热键/上屏 8/8、TextEdit 实键入、包与数据表身份（25 条简码）全 PASS；**性能门禁改判 BLOCKED**（`--self-post` 不计 IME，历史 p95 需复核），Safari/Chrome/Xcode 回读为空。顺带修 `acceptance-auto.sh`/`perf-session.sh`/`client-matrix.sh` 三处工具缺陷（相对 OUT、性能与客户端的先后、终端项不再投递到用户 shell）。
 - [x] **延迟门禁口径修复（报告 229 §7）**：`perf-session.sh` 改 HID 投递 + `NSTextInputClient` 回调计时（`--self-post` 只能做文本插入压测，进不了 IMK）。1.1.0/build 38 实测 160 键 p50 4.19ms / p95 14.64ms / max 24.68ms、0 外联；历史 p95 作废不继承。`soak-session.sh` 同步换驱动（`ime_rounds > 0` 门禁），待授权重跑。
+- [x] **久用定版复跑（报告 229 §7.5）**：键间隔可配（`KEY_HOLD`/`KEY_INTERVAL`）+ soak 修 chunk off-by-one + `truncated_rounds` 截尾门禁 + `WARMUP` 热身。5 分钟 30 轮全部走 IME、0 截尾、365 键、0 外联；遗留 `ps rss` 共享页口径问题。
 
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 
