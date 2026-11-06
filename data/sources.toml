@@ -277,3 +277,12 @@ used_for = ["hanzi-structure-ids-crosscheck", "hanzi-structure-placeholder-fill"
 fetch_script = "data/sources/fetch-ids.sh"
 added_at = "2026-11-06"
 notes = "MIT；2 MB，下载获取不入库。只用于 B0 结构事实库的结构参考与占位字根补齐（ADR-309，报告 245），不进入输入热路径"
+
+[[derived]]
+id = "b0-runtime"
+path = "data/generated/B0-runtime.tsv"
+source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D19"]
+license = "CC-BY-SA-4.0"
+sha256 = "4fc65df8a6abbe9b00c7a4b037f95cb3fd32619a08f05d032357d87868a2db49"
+generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out"
+notes = "ADR-311 教学运行时资源：字\t全码\t质量\t讲解（预渲染），3,000 字 287,310 字节（约 96 B/字，预算 512 KiB）；不含 PUA；只读提示，不改候选顺序"

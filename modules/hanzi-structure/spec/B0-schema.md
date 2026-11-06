@@ -89,7 +89,25 @@
 机器约束：`tests/validate_b0.py` 检查"非 full 必须有 notes""recognition 必须能对上码长和组件数""含占位组件不得判 full""keys 与 components 等长"，
 `tools/b0_query.py` 是这套契约的参考实现（可直接看输出格式）。
 
-## 6. 边界（ADR-189）
+## 6. 运行时资源（ADR-311）
+
+构建期同时产出一份**预渲染**的教学运行时资源 `data/generated/B0-runtime.tsv`：
+
+| 列 | 内容 |
+|---|---|
+| 字 | 单个汉字 |
+| 全码 | 五笔86 全码（可为空） |
+| 质量 | `full` / `partial` / `unknown` |
+| 讲解 | 预渲染中文文案（与 `tools/b0_query.py` 同一套规则） |
+
+规则：
+
+1. 3,000 字，预算 **≤512 KiB**（实测 287,310 字节，约 96 B/字）；
+2. 不含 PUA、不含结构化中间字段（`ids`/`positionMismatch`/`frequency`/`notes` 数组不进包）；
+3. 宿主只做查表展示：`partial` 必带「拆解待核验」、`unknown` 只说缺资料；
+4. 资源缺失时提示功能静默关闭，输入与候选行为不受影响。
+
+## 7. 边界（ADR-189）
 
 - 本目录不依赖 `ime-*`、平台代码或主仓库路径；工具的输入输出全部由命令行显式给出。
 - 事实来源许可与 SHA 见 `provenance/B0.md`；PUA 与私有字形不进入本库。

@@ -387,6 +387,55 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     return entry
 
 
+
+def render_explanation(entry: dict) -> str:
+    """把一条 B0 记录渲染成运行时讲解文本（ADR-311：宿主只展示，不拼句子）。
+
+    与 `tools/b0_query.py` 的规则保持一致：full 完整讲、partial 必带「拆解待核验」、unknown 只说缺资料。
+    """
+    quality = entry['quality']
+    if quality == 'unknown':
+        return '暂无编码/拆解资料'
+    parts = []
+    if entry['code']:
+        parts.append(entry['code'])
+    if quality == 'partial':
+        if any(c is None for c in entry['components']) and entry['keys']:
+            parts.append('字根：' + ' '.join(f'{c if c else "？"}({k})'
+                                            for c, k in zip(entry['components'], entry['keys'])))
+        reasons = []
+        if any(c is None for c in entry['components']):
+            reasons.append('部分字根字形未识别')
+        if entry['code'] and len(entry['components']) not in (len(entry['code']), len(entry['code']) - 1):
+            reasons.append('字根数与码长不符')
+        if not reasons:
+            reasons.append((entry['notes'][0] if entry['notes'] else '数据不完整')[:24])
+        parts.append('拆解待核验（' + '；'.join(reasons) + '）')
+        if entry['recognition']:
+            parts.append('参考识别码 ' + entry['recognition']['key'])
+        return '｜'.join(parts)
+    if entry['class'] == 'key-name':
+        parts.append('键名字：连打该键四次')
+    elif entry['class'] == 'radical-char':
+        if entry.get('strokes'):
+            parts.append('成字字根（' + ''.join(entry['strokes']) + '）')
+        note = entry['notes'][0] if entry['notes'] else ''
+        parts.append(note.split('：', 1)[1] if '：' in note else '报户口 + 笔画')
+    else:
+        parts.append('字根：' + ' '.join(f'{c if c else "？"}({k})'
+                                        for c, k in zip(entry['components'], entry['keys'])))
+        record = entry['recognition']
+        if record:
+            parts.append(f'识别码 {record["key"]}（末笔{record["stroke"]}+{record["structure"]}）')
+        else:
+            parts.append('字根已够四码，无识别码')
+    if entry['short1']:
+        parts.append('一级简码 ' + entry['short1'])
+    if entry['short2']:
+        parts.append('二级简码 ' + entry['short2'])
+    return '｜'.join(parts)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--codes', required=True)
@@ -399,6 +448,7 @@ def main() -> int:
     parser.add_argument('--readable-keys', help='D14 可读字根键表（成字字根笔画推导用，可选）')
     parser.add_argument('--ids', help='IDS 分解（D19，MIT；填占位字根与结构参考，可选）')
     parser.add_argument('--limit', type=int, default=1000)
+    parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
 
@@ -489,6 +539,18 @@ def main() -> int:
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / 'B0.json').write_text(json.dumps(entries, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     (out_dir / 'B0-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+    if args.runtime_out:
+        rows = ['# 教学运行时资源（ADR-311）：字\t全码\t质量\t讲解；由 build_b0.py 生成，勿手改']
+        for entry in entries:
+            text = render_explanation(entry).replace('\t', ' ')
+            rows.append('\t'.join([entry['char'], entry['code'] or '', entry['quality'], text]))
+        payload = '\n'.join(rows) + '\n'
+        Path(args.runtime_out).write_text(payload, encoding='utf-8')
+        size = len(payload.encode('utf-8'))
+        print(f'写入 {args.runtime_out}（{len(entries)} 条，{size} 字节，约 {size / max(len(entries), 1):.1f} B/字）')
+        report['runtime'] = {'path': args.runtime_out, 'bytes': size,
+                             'bytesPerEntry': round(size / max(len(entries), 1), 1)}
+
     print(f'写入 {out_dir}/B0.json（{len(entries)} 条）')
     print(json.dumps(report['quality'], ensure_ascii=False), '识别码可解释:', report['withRecognition'])
     return 0
