@@ -29,7 +29,8 @@ python3 tools/eval/compare-level2-sources.py     # 全码权重 vs 通用字频�
 | 类别 | 条数 | 键盘输入 | 意图来源 |
 |---|---|---|---|
 | `jianma1` | 25 | 1 字母（五笔86 一级简码） | 公开标准键位表 |
-| `jianma2` | 30 | 2 字母（该字全码前两位，ADR-304 二级简码规则） | 高频单字 |
+| `jianma2` | 40 | 2 字母（**官方二级简码表** D17-bis 等距取样） | 官方简码表 |
+| `prefix2` | 30 | 2 字母（该字全码前两位） | 高频单字（原 jianma2 考卷，报告238 改名） |
 | `single` | 50 | 4 字母全码 | `pinyin-chars.tsv` 单字词频（jieba，D10） |
 | `word2` | 25 | 4 字母词码 | `input-quality.tsv` **holdout**（ADR-227） |
 | `word2v` | 30 | 同上 | 同上 **validation**（数量补足，单独统计） |
@@ -69,7 +70,7 @@ PY
 判定口径（`docs/MVP后执行计划.md` §4）：`hit%` / `first%` / `keys` 不得劣化，`jianma1` 的 `first%`
 与 `keys` 必须明显改善；否则不发布。
 
-## 5. 基线（1.0.2 / build 37）
+## 5. 基线（1.0.2 / build 37；240 条新样本的基线见 `baselines/1.1.0-build38.json`）
 
 ```
 category     samples   hit%  first%    avgPos keys/sample

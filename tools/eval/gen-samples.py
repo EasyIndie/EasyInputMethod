@@ -6,7 +6,8 @@
 | 类别 | 来源 | 取法 |
 |---|---|---|
 | `jianma1` | 五笔86 一级简码（公开标准，见 `docs/技术方案.md`） | 25 个键位全取，按键 = 1 字母 |
-| `jianma2` | 高频单字取码表前两码（ADR-304 的二级简码规则） | 30 条，按键 = 2 字母 |
+| `prefix2` | 高频单字的**全码前两码**（不是官方简码，只测前缀反查） | 30 条，按键 = 2 字母 |
+| `jianma2` | **官方二级简码表** `data/sources/wubi86-level2-codes.tsv`（D17-bis） | 40 条（按码位等距取样），期望 = 该码位的字 |
 | `single` | 意图频次取 `data/generated/pinyin-chars.tsv`（jieba 单字词频，D10），码取码表 | 前 50 个高频单字；**意图来源与码表排序权重不同源**，否则"首选率 100%"是自证 |
 | `word2` | `data/input-quality.tsv` **holdout** 两字词（ADR-227） | 全部，且码表里有 4 字母码 |
 | `word2v` | 同上 **validation** 两字词 | 补足数量用（与 holdout 分开统计，避免混考卷） |
@@ -79,6 +80,18 @@ def build() -> list[tuple[str, str, str]]:
     for key, char in LEVEL1.items():
         samples.append(("jianma1", key, char))
 
+    # 官方二级简码（D17-bis）：码位与期望字都来自数据文件，按码位等距取 40 条。
+    level2 = []
+    for line in (ROOT / "data/sources/wubi86-level2-codes.tsv").read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("#"):
+            continue
+        code, char = line.split("\t")[:2]
+        level2.append((code, char))
+    level2.sort()
+    step = max(1, len(level2) // 40)
+    for code, char in level2[::step][:40]:
+        samples.append(("jianma2", code, char))
+
     # 意图频次用 jieba 单字词频（pinyin-chars），与码表排序用的 WindInput 权重不同源。
     freq: dict[str, int] = {}
     for line in CHAR_FREQ.read_text(encoding="utf-8").splitlines():
@@ -90,8 +103,8 @@ def build() -> list[tuple[str, str, str]]:
     singles = sorted(((w, t) for t, w in freq.items()), reverse=True)
     for _, char in singles:
         code = best_code(by_text, char)
-        if code and len(code) == 4 and sum(1 for s in samples if s[0] == "jianma2") < 30:
-            samples.append(("jianma2", code[:2], char))
+        if code and len(code) == 4 and sum(1 for s in samples if s[0] == "prefix2") < 30:
+            samples.append(("prefix2", code[:2], char))
     seen: set[str] = set()
     for _, char in singles:
         if char in seen:

@@ -250,3 +250,16 @@ sha256 = "0045deb812fd3bf0a54a753caaf98e26015d432123de78be2982323183b8962c"
 used_for = ["wubi86-level1-code-rows", "candidate-order-evaluation"]
 added_at = "2026-11-05"
 notes = "ADR-304；一级简码是公开标准事实，按标准逐条转写，不含第三方文件内容；二级 625 条待登记后另行加入"
+
+[[source]]
+id = "D17-bis"
+name = "五笔86 二级简码表（项目自建清单）"
+path = "data/sources/wubi86-level2-codes.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/sources/wubi86-level2-codes.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "e6e1b777f5a93bf857ed727bcf09b85257b60c59c419fe2d027382f0f03a0d26"
+used_for = ["wubi86-level2-code-rows", "candidate-order-evaluation"]
+added_at = "2026-11-06"
+notes = "ADR-304 的二级简码落地（报告238）：按公开 86 版二级简码表逐条转写，并与 rime/rime-wubi（D9，LGPL-3，仅作验证 oracle）逐格对照；每条都通过「简码 = 全码前两码」校验。不采纳极爽词库自行新增的 17 个码位与 2 条前缀不符项（hb=齰、ya=占位符）"

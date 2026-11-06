@@ -63,9 +63,12 @@ def main() -> int:
     for key, char in zip(keys, chars):
         if (key, char) not in core_index:
             problems.append(f"生成结果缺少简码行：{key} → {char}")
-    short = [r for r in core_rows if len(r[0]) <= 2]
-    if len(short) != 25:
-        problems.append(f"核心码表中 ≤2 码的行应为 25，实际 {len(short)}")
+    one_code = [r for r in core_rows if len(r[0]) == 1]
+    if len(one_code) != 25:
+        problems.append(f"核心码表中 1 码的行应为 25，实际 {len(one_code)}")
+    two_code = [r for r in core_rows if len(r[0]) == 2]
+    if len(two_code) != 598:
+        problems.append(f"核心码表中 2 码的行应为 598（二级简码 D17-bis），实际 {len(two_code)}")
 
     if problems:
         for p in problems:

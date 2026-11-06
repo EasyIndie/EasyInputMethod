@@ -5,9 +5,10 @@
 - 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.0.0（MVP）与补丁 1.0.1/1.0.2 均已发布；1.1.0 / build 38 候选已装 air，待「装机复验 → tag/Release」**。
 - 分支：`dev` @ 本轮（`origin/main` = `d816953`，**PR #224 已合并**）；开放 PR **0 个**。
 - **PR #225 已合并**（1.1.0 发布稿 + 人工走查结果 + 验收可移植性），main = `e43ee55`；开放 PR 0 个，`dev` 已快进同步。
+- **dev 已进入 1.2.0 线**（Cargo 1.2.0 / build 39）：二级简码 598 条入表（报告 238）。**1.1.0 的 tag 仍打在冻结候选 `393318c` 上**（其 Cargo 版本是 1.1.0），发布流程不受影响。
 - 1.1.0 只剩三件：**自用 3 天** → `tag v1.1.0` → Release/Pages → pro 用更新器升级（后两项需单独授权）。
 - `ROADMAP.md` 已对账（2026-11-06）：补齐 6 处「已完成未勾」（IT-15/IT-22/IT-23/IT-25/UI04-05/RC 相关口径），新增「当前发布列车：1.1.0」三条可勾任务与 P2 的 D17-bis；未勾项现在只剩 P2–P6、TBD-2、拆字教学、结构库（RC-UI-01 已按用户裁定于 2026-11-06 结案，见报告 235）。
-- 本批 CI 首次 dco 失败 → 已 `git rebase --signoff` 重写并 force-push，同时新增 `commit-msg` hook + `install-hooks.sh` 装两个 hook，防止再犯。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **57 文件 / 300 例 PASS（6 并发 33s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
+- 本批 CI 首次 dco 失败 → 已 `git rebase --signoff` 重写并 force-push，同时新增 `commit-msg` hook + `install-hooks.sh` 装两个 hook，防止再犯。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **60 文件 / 312 例 PASS（6 并发 ~80s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
 - 版本：`Cargo.toml` = **1.1.0**、`packaging/build-number` = **38**；站点仍为 `v1.0.2 · 构建 37`（1.1.0 未发布），最新 tag `v1.0.2`。
 - 1.1.0 候选身份（CI success @ `393318c`）：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
 
@@ -37,6 +38,8 @@
 | **自动探针（报告 229）** | 用户授权后跑 `acceptance-auto.sh`：热键/上屏 **8/8 PASS**、TextEdit 实键入 `你你好。` PASS、已装包=候选包与数据表 25 条简码 PASS；**性能门禁改判 BLOCKED**（自投递不计 IME，见 §3），Safari/Chrome/Xcode 回读为空 BLOCKED。工具链三处缺陷已修：相对 `OUT` 导致测速空结果、性能项排在客户端矩阵之后（矩阵结尾还原 ABC 会抢源）、终端项误投用户 shell。 |
 
 ## 3. 未决
+
+- **二级简码已入表（报告 238 / D17-bis）**：598 条官方二级简码（自编清单，CC-BY-SA-4.0），与 D9 oracle 逐格对照 + 「简码=全码前缀」双校验；`jianma2` 首选 32.5%→100%、键 3.58→3.00，其余类别零劣化。**报告 237 的「规则推导 624 条」结论作废**：与 oracle 对照 429/616 选字不同（70%），不能当简码用。评测样本集随之修正：`jianma2` 改为官方简码 40 条，原考卷改名 `prefix2`。
 
 - **二级简码频度来源已定（报告 237）**：全码权重 vs 通用字频在 624 个码位里只差 5 个（全是生僻扩展字），故选 **全码权重（D3）**；规则推导最多 624 条（`cx` 无单字归属，只有词组「巴比伦」）。jianma2 首选 93.3%→100%、按键 3.07→3.00。
 - **五笔原理/方案/实现评估已入库（`docs/research/wubi-schemes-and-learning-loop.md`）**：确认 86 取码规则与识别码实现正确；最大能力缺口是**二级简码缺失**（2 码无精确命中）与**三级简码完全缺失**；给出「学·练·用」L0–L5 分批规划（L0=D17-bis、L2=结构事实库试点）。
@@ -113,6 +116,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**二级简码落地 + 评测口径修正（报告 238）**。取 D9（rime-wubi）2 码条目做 oracle，发现规则推导与官方表 **429/616（70%）选字不同**，故放弃规则推导，改用公开 86 版表逐条转写 598 条（排除极爽新增 17 码位与 2 条前缀不符项），登记 D17-bis；`jianma2` 首选 32.5%→100%、键 3.58→3.00，`prefix2` 按官方简码优先后 40%（预期）。版本进 1.2.0/build 39（1.1.0 tag 仍在 393318c）。
 - 2026-11-06 / pi（air）：**二级简码频度来源对照（报告 237）**。新增 `tools/eval/compare-level2-sources.py`：两种来源各生成一版 2 码行注入临时表跑评测——624 个码位只有 5 个选字不同（全是生僻扩展字），jianma2 首选 93.3%→100%、按键 3.07→3.00；决定采用全码权重（D3），并发现 `cx` 码位没有单字归属（规则推导只能得 624 条）。
 - 2026-11-06 / pi（air）：**五笔原理与学练用评估（研究文档）**。梳理 86 取码/识别码/简码/词组规则与 98/新世纪/郑码差异；评估当前实现：规则与识别码正确（GB1 99.98%），但二级简码 625、三级简码 4,400+ 均未入表，且简码行复用全码权重、词频非输入语料；提出以结构事实库为唯一数据源的「学·练·用」L0–L5 规划（禁练习成绩污染排序、禁热路径教学计算）。
 - 2026-11-06 / pi（air）：**文档全面梳理（报告 236）**。活文档死链 29→0（`docs/迭代计划.md` 早已不存在却被 8 处引用）；62 张已完成任务卡 `git mv` 到 `docs/archive/tasks/`（69→4 张活跃卡）；`发布说明.md` 归档并改用 `releases/` 索引；新增 `docs/archive/README.md`、`docs/research/README.md`，重写 `docs/README.md`（含 5 条文档卫生规则）；新增 `test-docs-hygiene.py`（索引/死链/任务卡/归档登记）。离线 60 文件/312 例全绿。
