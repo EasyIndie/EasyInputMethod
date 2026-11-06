@@ -7,7 +7,7 @@
 #   - TextEdit：只关"无路径（未保存）+ 内容命中探针输出"的文档；用户若有未保存文档，内容不会命中
 #   - 进程：`lampyris-imetype.app` 测速窗口、残留 `keytopid`
 #
-# 用法：cleanup-windows.sh [--out DIR] [--textedit] [--quit-app NAME]... [--dry-run]
+# 用法：cleanup-windows.sh [--out DIR] [--textedit] [--quit-app NAME]... [--processes-only] [--dry-run]
 #   --textedit 才会清理未保存的 TextEdit 文档（按内容签名认领），默认不动 TextEdit。
 #   --quit-app 只对本轮「由我们启动、且已没有任何窗口」的应用使用（浏览器永不 quit）。
 set -u
@@ -17,12 +17,14 @@ OUT=""
 DRY=0
 TEXTEDIT=0
 QUIT_APPS=""
+PROCESSES_ONLY=0
 while [ $# -gt 0 ]; do
     case "$1" in
         --out) OUT="$2"; shift 2 ;;
         --dry-run) DRY=1; shift ;;
         --textedit) TEXTEDIT=1; shift ;;
         --quit-app) QUIT_APPS="$QUIT_APPS $2"; shift 2 ;;
+        --processes-only) PROCESSES_ONLY=1; shift ;;
         *) shift ;;
     esac
 done
@@ -176,7 +178,12 @@ kill_probes() {
     say "processes" "killed=$n"
 }
 
-say "cleanup" "out=${OUT:-<none>} dry_run=$DRY"
+say "cleanup" "out=${OUT:-<none>} dry_run=$DRY processes_only=$PROCESSES_ONLY"
+if [ "$PROCESSES_ONLY" = "1" ]; then
+    kill_probes
+    say "cleanup" "done (processes only)"
+    exit 0
+fi
 close_browser_tabs "Safari"
 close_browser_tabs "Google Chrome"
 close_xcode

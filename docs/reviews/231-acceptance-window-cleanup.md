@@ -58,3 +58,20 @@
 - 不删证据：`--out` 目录里的 JSON/日志属于验收证据，保留不动（清理只针对窗口与进程）。
 - 仍有 1 个已存在的坑：`performance` 项在这台机器上 p95 已贴到 14–16ms（阈值 16），
   单轮曾出现 16.09 的 FAIL —— 属真实的边缘性能信号，不是清理引入的（报告 229 §7.2）。
+
+## 6. 固化：以后新增验收项不清场会直接挂掉
+
+只写文档不够（报告 230 的教训：`run-local-acceptance.py` 的契约腐烂了很久没人发现）。本轮把它做成机器门禁：
+
+| 载体 | 内容 |
+|---|---|
+| `platforms/macos/tests/test-probe-cleanup.py` | 扫描 `tools/macos-probe/*.sh`：凡出现 `open -a TextEdit/Safari/Chrome/Xcode` 或拉起 `lampyris-imetype.app` 的脚本，必须引用 `cleanup-windows.sh` 且带 `trap … EXIT/INT`；另有**反向自检**（假脚本缺 trap 必须被判违规），防止门禁空转 |
+| `AGENTS.md` §2 铁律 11 | 「验收自清场」写进所有 agent 都必须遵守的硬规则 |
+| `.agents/skills/iterate-macos-ime/SKILL.md` §7 | 收尾清单新增第 5 条：trap + cleanup + 自检命令 |
+| `CONTRIBUTING.md` §5 | 代码规范表格新增「验收脚本」一行 |
+| `tools/macos-probe/README.md` | 新增「新增探针脚本检查清单」（4 条 + 机器强制说明） |
+
+这条门禁上线时就抓出两个真实缺口并已修：
+- `multi-display.sh` 会开 TextEdit 但从不清理；
+- `type-session.sh` 拉起测速窗口，只在启动时 `pkill` 旧残留、退出时不收自己的（现改为 `trap` +
+  `cleanup-windows.sh --processes-only`，每轮调用也足够轻量）。

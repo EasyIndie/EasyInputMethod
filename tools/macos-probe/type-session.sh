@@ -26,7 +26,8 @@ pkill -f 'lampyris-imetype.app/Contents/MacOS/imetype' 2>/dev/null
 # 报告199：上次被打断的调用可能留下还在投递的 keytopid，它们会不断重置读出口、把新的测试窗口“喂”到超时。
 pkill -f "$BIN/keytopid" 2>/dev/null
 KPID=""
-trap '[ -n "$KPID" ] && kill "$KPID" 2>/dev/null' EXIT INT TERM
+# 报告231：本脚本每轮都会拉起测速窗口，退出/中断时连窗口进程一起收掉（只清进程，轻量）。
+trap '[ -n "$KPID" ] && kill "$KPID" 2>/dev/null; "$PROBE/cleanup-windows.sh" --processes-only >/dev/null 2>&1' EXIT INT TERM
 sleep 0.5
 OUT="$(mktemp -t imetype-out)"; rm -f "$OUT"
 open -n /tmp/lampyris-imetype.app --args --source "$SOURCE" --keys "" --settle "$SETTLE" --delay 1.0 --out "$OUT"

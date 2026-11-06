@@ -62,6 +62,8 @@ Signed-off-by: Your Name <you@example.com>
 | 测试 | 新逻辑需有单测；解析器改动需补 fuzz 目标 |
 | 依赖 | 新增依赖须过 `cargo deny check` 并说明理由 |
 | 注释 | 代码注释用英文；面向用户的文案用中文 |
+| 验收脚本 | 会开窗口/拉起应用的探针必须 `trap` 清理并调用 `cleanup-windows.sh`（只回收自己的窗口）；
+  `platforms/macos/tests/test-probe-cleanup.py` 会强制检查（报告231） |
 
 ## 6. 文档规范
 

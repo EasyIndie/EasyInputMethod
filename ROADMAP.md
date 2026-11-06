@@ -311,6 +311,7 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] **久用定版复跑（报告 229 §7.5）**：键间隔可配（`KEY_HOLD`/`KEY_INTERVAL`）+ soak 修 chunk off-by-one + `truncated_rounds` 截尾门禁 + `WARMUP` 热身。5 分钟 30 轮全部走 IME、0 截尾、365 键、0 外联；遗留 `ps rss` 共享页口径问题。
 - [x] **验收提效（报告 230）**：离线回归并行（166s→34s，`JOBS=N`）+ 删除腐烂的第二套 runner（`macos-local-acceptance` 变别名）+ `acceptance-auto` 的 `FAST=1` 档（9 分钟→4.7 分钟）+ IT-22 人工从 65 项压到 12 项（每次换包）/5 项（每版一次），映射与防腐烂校验见 `docs/tasks/T-ITER-22-coverage.md`、`test-acceptance-map.py`。
 - [x] **验收收尾清理（报告 231）**：`cleanup-windows.sh` 按 URL/标题/未保存内容签名回收探针窗口与进程，四个验收脚本挂 `trap`（失败/中断同样清）；`client-matrix` 自建并关闭 TextEdit 文档；连跑三次零残留。
+- [x] **验收自清场固化（报告 231 §6）**：`test-probe-cleanup.py` 强制「开窗口的探针必须 trap + cleanup-windows.sh」，含反向自检；规则写进 AGENTS 铁律 11 / skill / CONTRIBUTING / README。上马时修好 `multi-display.sh`、`type-session.sh` 两处缺口。
 
 2026-10-14报告011：21个隔离默认配置FFI样例与Apple/Rime/Fcitx官方对照，新增待决IT-29混输提交歧义、IT-26兜底首屏、IT-27隔音符/读音质量与IT-28编辑/隐私补验；无产品代码修改。IT-25本地提交先保存，整体UI/公开推送继续暂缓。
 

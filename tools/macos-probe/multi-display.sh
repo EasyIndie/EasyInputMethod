@@ -9,6 +9,9 @@ BIN="$PROBE/bin"
 SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 OUT="${OUT:-/tmp/lampyris-multidisplay-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
+# 报告231：多屏验收会在 TextEdit 里开窗口打字，结束（含失败）一并收掉。
+cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
+trap cleanup_run EXIT INT TERM
 
 "$PROBE/acceptance-preflight.sh" > "$OUT/preflight.json" 2>&1 || {
     code=$?

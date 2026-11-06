@@ -69,6 +69,17 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 只会插入裸 ASCII（报告229 三组对照）。正确做法是 `keytopid --hid` 投递 + 在 `NSTextInputClient`
 回调里记时间戳（`perf-session.sh`、`soak-session.sh` 现在都这样跑）。
 
+### 新增探针脚本检查清单（报告 231，机器强制）
+
+1. 只要脚本里出现 `open -a TextEdit|Safari|Chrome|Xcode` 或拉起 `lampyris-imetype.app`，
+   **必须**开头写 `cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit; }` +
+   `trap cleanup_run EXIT INT TERM`（失败与 Ctrl-C 也要清）。
+2. 只按"属于自己的证据"认领窗口：URL 指向本轮的 `page.html` / 标题含 `xcode.txt` / 未保存且内容命中探针签名。
+   **永远不要** `quit` Safari 或 Chrome（用户可能开着真实会话）。
+3. 收尾自检：`pgrep -x TextEdit` 为空、Safari/Chrome 标签数为 0、`pgrep -f lampyris-imetype.app` 为空。
+4. 以上由 `platforms/macos/tests/test-probe-cleanup.py` 在离线回归里强制，包含一条反向自检
+   （故意写一个没有 `trap` 的假脚本，必须被判违规）。
+
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 
 **RSS 绝对值不可跨 macOS 版本比较**（报告198）：macOS 13 的 `ps rss` 计入共享库/映射文件页（同一宿主 51 MiB，而 `vmmap` footprint 38.7M），macOS 27 上同样负载只有 5–20 MiB。所以探针门禁改成「键入后相对基线的**增长**（`RSS_LIMIT_MB`/`GROWTH_LIMIT_MB`）+ 绝对硬顶 `RSS_HARD_MB`」，泄漏信号看增长。
