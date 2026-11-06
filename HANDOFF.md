@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.0.0（MVP）与补丁 1.0.1/1.0.2 均已发布；1.1.0 / build 38 候选已装 air，待「装机复验 → tag/Release」**。
-- 分支：`dev` @ `393318c`（= `origin/main`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（107 产物零网络符号）、`make macos-offline-tests` **56 文件 / 303 例 PASS**、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
+- 分支：`dev` @ 本轮提交（`origin/main` = `393318c`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **56 文件 / 303 例 PASS**、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
 - 版本：`Cargo.toml` = **1.1.0**、`packaging/build-number` = **38**；站点仍为 `v1.0.2 · 构建 37`（1.1.0 未发布），最新 tag `v1.0.2`。
 - 1.1.0 候选身份（CI success @ `393318c`）：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
 
@@ -23,11 +23,14 @@
 | **B 基线采集（报告 227）** | `tools/eval/` 200 条样本（单字/两字词/三四字/混排长句/一级二级简码）+ `ime-eval` 评测器 + `baselines/1.0.2-build37.json` 入库，任意包可一键复跑。 |
 | **1.1.0 代码（ADR-304 / 报告 228，build 38）** | D17 一级简码 25 条入表（`data/sources/wubi86-level1-codes.tsv` + `tools/check-level1-codes.py`）+ `personalize` 改「有界位次上移」（首选位保护、不跨精确/补全分块）。评测：`jianma1` 命中 56%→100%、首选 32%→100%，ALL 命中 92.0%→97.5%、首选 85.5%→94.0%，其余类别零劣化；5 条核心单测改动/新增。 |
 | **air 装机** | 1.1.0/build 38 候选已装 air（执行 `d3c5a2ef…`），证据 `platforms/macos/build/acceptance-air-1.1.0-b38/`。 |
+| **延迟门禁修复（报告 229 §7）** | `perf-session.sh` 从 `--self-post` 改为 **HID 投递 + `NSTextInputClient` 回调计时**（`imetype` 新增 `TimedTextView`），`type-session.sh` 输出 `latencies_ms`，`soak-session.sh` 同步换驱动并要求 `ime_rounds > 0`。1.1.0/build 38 首次实测：**160 键，p50 4.19ms / p95 14.64ms / max 24.68ms**，0 外联，RSS −0.1MiB。 |
 | **自动探针（报告 229）** | 用户授权后跑 `acceptance-auto.sh`：热键/上屏 **8/8 PASS**、TextEdit 实键入 `你你好。` PASS、已装包=候选包与数据表 25 条简码 PASS；**性能门禁改判 BLOCKED**（自投递不计 IME，见 §3），Safari/Chrome/Xcode 回读为空 BLOCKED。工具链三处缺陷已修：相对 `OUT` 导致测速空结果、性能项排在客户端矩阵之后（矩阵结尾还原 ABC 会抢源）、终端项误投用户 shell。 |
 
 ## 3. 未决
 
-- **性能门禁口径待修（报告 229 §3.1，优先）**：`perf-session.sh --self-post` 把事件直接塞进测试窗口队列、绕开 IMK，`round-*.json` 里 `has_non_ascii=false`/`keys_seen=0` 却仍算出 `p95 7.19ms` 判 PASS——**历史 p95 数字（报告 191/199/207）不能直接继承，需在修好的 harness 上复核**。同一条 app 走 HID 时 `keys_seen=16`、`text=你你好学习。`，证明 IME 正常。现在已改成丢弃无效 round、无有效样本输出 `BLOCKED`（退出 78）。
+- **性能门禁口径已修（报告 229 §3.1/§7）**：`--self-post` 是进程内合成事件，进不了 IMK（三组对照已证），历史 p95（报告 191/199/207）**作废不继承**。新口径实测 1.1.0/build 38：p50 4.19ms / p95 14.64ms / max 24.68ms（阈值 16ms，余量 ~1.3ms，**属勉强达标**，发布说明只写实测值）。
+- **`soak-session.sh` 换了驱动但尚未重跑**（脚本会重启宿主，需单独授权）；重跑前「久用 PASS」的旧结论不继承。
+- **延迟采样只覆盖 `wq nihao xuexi .`**：长编码、多页翻页、候选窗刷新路径没有单独统计。
 - **1.1.0 装机复验未做**：IT-25 原生验收、IT-22 受影响行复跑（简码会改所有 1–2 码行为）、样本集四项指标在**装机包**上的对比、三天自用（计划 §4 轻量口径）。探针只能覆盖热键/TextEdit（报告 229）。
 - **客户端回读缺口**：Safari（macOS 27 标题不随输入更新）、Chrome（Chrome 侧问题）、Xcode（编辑器未取焦点）在自动矩阵里是 BLOCKED，需人工补；终端项已从自动矩阵移除，走 IT-22 §3.5 人工。
 - **pro 仍是 1.0.0/build 34**：未装 1.1.0；「两台设备同包」与「升级路径」未完成。建议让 pro 保持 1.0.0，等 1.1.0 Release 上线后**用它自带更新程序升级**（一次同时验证同包与升级链）。
@@ -92,6 +95,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**延迟门禁按方案 A 修好（报告 229 §7）**。`imetype` 新增 `TimedTextView`（在 `setMarkedText`/`insertText` 打时间戳），`perf-session`/`soak-session` 改 HID 投递、`type-session` 输出 `latencies_ms`。首次真实数据：160 键 p50 4.19ms / p95 14.64ms / max 24.68ms、0 外联、RSS −0.1MiB；`make verify` + 离线 56/303 全绿。soak 待授权重跑。
 - 2026-11-06 / pi（air）：**1.1.0 装机跑自动探针（报告 229）**。热键 8/8 与 TextEdit 实键入 PASS；性能门禁改判 **BLOCKED**——`--self-post` 不计 IME（ASCII 直通被当成 p95 7.19ms），历史 p95 需复核；客户端 Safari/Chrome/Xcode 回读为空。修工具链三处（相对 OUT、性能在矩阵前、终端项不再往用户 shell 打字）。输入源/config 已还原 `5d4271fb…`。
 - 2026-11-06 / pi（air）：**交接对齐现实**。HANDOFF 原停在 1.0.0，实际已走到 1.1.0/build 38（1.0.1 ADR-305、1.0.2 ADR-306 自更新闭环、B 基线报告 227、C 简码+位次上移报告 228）。air 已装 38（`d3c5a2ef…`）、pro 仍 1.0.0/build 34；站点 `v1.0.2 · 构建 37`。下一步 = 1.1.0 装机复验 → tag/Release（§4）。
 - 2026-11-05 / pi（air）：**1.1.0 代码入库（ADR-304 / 报告 228，build 38）**。一级简码 25 条（D17）+ 有界位次上移；`jianma1` 56%→100% 命中、首选 32%→100%，其余类别零劣化；PR #223 → main `393318c`，air 已装候选。
