@@ -1,0 +1,90 @@
+{
+  "pageSize": 9,
+  "maxCandidates": 500,
+  "overall": {
+    "samples": 280,
+    "hits": 275,
+    "firstChoice": 242,
+    "meanPosition": 0.13,
+    "meanKeystrokes": 4.26,
+    "pages": 0
+  },
+  "categories": {
+    "jianma1": {
+      "samples": 25,
+      "hits": 25,
+      "firstChoice": 25,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 2.0,
+      "pages": 0
+    },
+    "jianma2": {
+      "samples": 40,
+      "hits": 40,
+      "firstChoice": 40,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 3.0,
+      "pages": 0
+    },
+    "jianma3": {
+      "samples": 40,
+      "hits": 40,
+      "firstChoice": 30,
+      "meanPosition": 0.35,
+      "meanKeystrokes": 4.25,
+      "pages": 0
+    },
+    "prefix2": {
+      "samples": 30,
+      "hits": 30,
+      "firstChoice": 12,
+      "meanPosition": 0.6,
+      "meanKeystrokes": 3.6,
+      "pages": 0
+    },
+    "sentence": {
+      "samples": 17,
+      "hits": 12,
+      "firstChoice": 12,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 11.0,
+      "pages": 0
+    },
+    "single": {
+      "samples": 50,
+      "hits": 50,
+      "firstChoice": 50,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 4.46,
+      "pages": 0
+    },
+    "word2": {
+      "samples": 25,
+      "hits": 25,
+      "firstChoice": 25,
+      "meanPosition": 0.0,
+      "meanKeystrokes": 4.16,
+      "pages": 0
+    },
+    "word2v": {
+      "samples": 30,
+      "hits": 30,
+      "firstChoice": 28,
+      "meanPosition": 0.07,
+      "meanKeystrokes": 4.4,
+      "pages": 0
+    },
+    "word34": {
+      "samples": 23,
+      "hits": 23,
+      "firstChoice": 20,
+      "meanPosition": 0.17,
+      "meanKeystrokes": 4.35,
+      "pages": 0
+    }
+  },
+  "meta": {
+    "note": "1.2.0/build 39：含一级 25 + 二级 598 简码；样本 280 条（新增 jianma3 评估类，报告239）",
+    "table": "data/generated/wubi86-core.tsv（提交 92b34f7 之后）"
+  }
+}

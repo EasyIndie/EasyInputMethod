@@ -22,6 +22,14 @@ python3 tools/eval/compare-level2-sources.py     # 全码权重 vs 通用字频�
 结论与决策见 `docs/reviews/237-level2-shortcode-source-decision.md`：两种来源在 624 个码位里只差 5 个生僻字，
 因此采用现有全码权重（少一个依赖、与码表同源、可复现）。
 
+## 1.2 三级简码收益评估
+
+```sh
+python3 tools/eval/simulate-level3.py     # 模拟「高频前 4400 个四码字可 3 码上屏」并对比
+```
+
+结论见 `docs/reviews/239-level3-shortcode-evaluation.md`：按键 4.25→4.03、+53 KB、582 处撞码，**建议暂缓**。
+
 ## 2. 样本集
 
 `tools/eval/gen-samples.py` 生成，**勿手改** `samples.tsv`（要改进就改生成器，样本集一改等于换考卷）。
