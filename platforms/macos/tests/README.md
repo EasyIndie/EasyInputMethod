@@ -108,7 +108,10 @@ ADR-182：`test-preview-menu.py`以真实Rust/Swift会话核验同组件菜单�
 
 ### 逐场景本地验收（ADR-192）
 
-`make macos-local-acceptance`复用生产组件/真实FFI执行六组原生离屏场景，自动创建独立运行目录。不是安装包或正式系统IMK验收，不显示窗口、不发送桌面事件、不打开外链；只使用私有配置/词库及命名剪贴板。既有保护用例仅核对真实配置/词库摘要，不记录内容。
+**已废弃（报告230）**：`make macos-local-acceptance` 保留为别名，实际执行 `make macos-offline-tests`。
+原来的第二套 runner（`run-local-acceptance.py`）跑的是同一批 `test-*.py`，却要求早已废弃的
+`observations.json`/固定 case 名契约，长期处于“必失败”状态，已删除。
+离线回归现在是唯一入口，可并行（`JOBS=N`，默认 6 并发，55 文件/293 例约 34s）。
 
 ```sh
 python3 platforms/macos/tests/run-local-acceptance.py --output platforms/macos/build/local-acceptance/my-new-run

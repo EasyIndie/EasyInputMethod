@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.0.0（MVP）与补丁 1.0.1/1.0.2 均已发布；1.1.0 / build 38 候选已装 air，待「装机复验 → tag/Release」**。
-- 分支：`dev` @ 本轮提交（`origin/main` = `393318c`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **56 文件 / 303 例 PASS**、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
+- 分支：`dev` @ 本轮提交（`origin/main` = `393318c`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **56 文件 / 295 例 PASS（6 并发 34s，串行需 166s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
 - 版本：`Cargo.toml` = **1.1.0**、`packaging/build-number` = **38**；站点仍为 `v1.0.2 · 构建 37`（1.1.0 未发布），最新 tag `v1.0.2`。
 - 1.1.0 候选身份（CI success @ `393318c`）：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
 
@@ -23,6 +23,7 @@
 | **B 基线采集（报告 227）** | `tools/eval/` 200 条样本（单字/两字词/三四字/混排长句/一级二级简码）+ `ime-eval` 评测器 + `baselines/1.0.2-build37.json` 入库，任意包可一键复跑。 |
 | **1.1.0 代码（ADR-304 / 报告 228，build 38）** | D17 一级简码 25 条入表（`data/sources/wubi86-level1-codes.tsv` + `tools/check-level1-codes.py`）+ `personalize` 改「有界位次上移」（首选位保护、不跨精确/补全分块）。评测：`jianma1` 命中 56%→100%、首选 32%→100%，ALL 命中 92.0%→97.5%、首选 85.5%→94.0%，其余类别零劣化；5 条核心单测改动/新增。 |
 | **air 装机** | 1.1.0/build 38 候选已装 air（执行 `d3c5a2ef…`），证据 `platforms/macos/build/acceptance-air-1.1.0-b38/`。 |
+| **验收提效（报告 230）** | 离线回归并行化（串行 166s → **34s**，`JOBS=N`）；删除腐烂的第二套 runner（`run-local-acceptance.py` 必失败 → `macos-local-acceptance` 改为 `macos-offline-tests` 别名）；`acceptance-auto` 增加 `FAST=1` 档（9 分钟 → **4.7 分钟**）；IT-22 从 65 项压到 **12 项（每次换包）+ 5 项（每版一次）**，映射见 `docs/tasks/T-ITER-22-coverage.md`；新增 `test-acceptance-map.py` 防文档腐烂，修掉 `test-preview-menu.py` 在有宿主运行时必挂的假 FAIL。 |
 | **延迟门禁修复（报告 229 §7）** | `perf-session.sh` 从 `--self-post` 改为 **HID 投递 + `NSTextInputClient` 回调计时**（`imetype` 新增 `TimedTextView`），`type-session.sh` 输出 `latencies_ms`，`soak-session.sh` 同步换驱动并要求 `ime_rounds > 0`。1.1.0/build 38 首次实测：**160 键，p50 4.19ms / p95 14.64ms / max 24.68ms**，0 外联，RSS −0.1MiB。 |
 | **自动探针（报告 229）** | 用户授权后跑 `acceptance-auto.sh`：热键/上屏 **8/8 PASS**、TextEdit 实键入 `你你好。` PASS、已装包=候选包与数据表 25 条简码 PASS；**性能门禁改判 BLOCKED**（自投递不计 IME，见 §3），Safari/Chrome/Xcode 回读为空 BLOCKED。工具链三处缺陷已修：相对 `OUT` 导致测速空结果、性能项排在客户端矩阵之后（矩阵结尾还原 ABC 会抢源）、终端项误投用户 shell。 |
 
@@ -41,15 +42,15 @@
 
 ## 4. 下一步（1.1.0 收尾，按顺序）
 
-1. **机器可判部分（air，无需换包）**：
+1. **机器可判部分（air，无需换包；报告 230 起一套命令）**：
    ```sh
-   make verify                 # fmt-check + lint + test + deny + verify-no-network
-   make macos-offline-tests    # Swift/打包/脚本离线回归
-   python3 tools/check-level1-codes.py
-   make eval-candidates EVAL_JSON=/tmp/after.json   # 对比基线见 tools/eval/README.md §4
+   make verify                      # 13s
+   make macos-offline-tests         # 56 文件/295 例，6 并发 ~34s（JOBS=N 可调）
+   FAST=1 make macos-auto-acceptance # 迭代档 4.7 分钟；发布门禁用默认档（~9 分钟）
+   python3 tools/check-level1-codes.py && make eval-candidates EVAL_JSON=/tmp/after.json
    ```
    判定：零诊断全绿；`jianma1` 命中/首选明显改善、其余类别 `hit%`/`first%`/`keys` 零劣化。
-2. **装机复验（本机图形会话 + 用户在场）**：IT-25 原生验收（`docs/tasks/T-ITER-25.md`）、IT-22 受影响行复跑（`docs/tasks/T-ITER-22.md`，重点关注简码页、四码自动上屏、混输兜底位）。
+2. **装机复验（本机图形会话 + 用户在场）**：IT-25 原生验收（`docs/tasks/T-ITER-25.md`）、IT-22 受影响行复跑（`docs/tasks/T-ITER-22-1.1.0-affected.md`；整册已精简，人工只剩 `T-ITER-22-coverage.md` §2 的 12 项）。
 3. **三天自用**：1.1.0 装包后自用 3 天再 tag（计划 §4）；期间不换包，「换包后确认新二进制」必做（报告 220 教训：`lsof … | grep -c deleted` 必须为 0）。
 4. **发布（需用户明确授权）**：`git tag -a v1.1.0` 打在**验收候选提交** `393318c` → Release → 核对资产（ZIP `448d3170…` 逐字节一致、DMG staple/spctl、appcast `sparkle:version=38`）→ dispatch Pages → 写 `docs/releases/1.1.0.md` → 站点回读 `v1.1.0 · 构建 38`。
 5. **pro 升级**：Release 上线后让 pro 用自带更新程序 `1.0.0 → 1.1.0`（同包 + 升级链一次闭环），升级后核 `payloadSHA256`、执行 SHA `d3c5a2ef…`、config/词库保留。
@@ -95,6 +96,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**验收提效（报告 230）**。离线回归并行（166s→34s）；删掉必失败的第二套 runner，`macos-local-acceptance` 改成离线回归别名；`acceptance-auto` 加 `FAST=1`（9 分钟→4.7 分钟）；IT-22 65 项压到 12+5 项并加 `T-ITER-22-coverage.md` 映射；新增 `test-acceptance-map.py` 防腐烂；修 `test-preview-menu.py` 有宿主时必挂的假 FAIL（宿主重写词库 → SKIP）。`make verify` + 56 文件/295 例全绿。
 - 2026-11-06 / pi（air）：**键间隔可配 + soak 定版复跑（报告 229 §7.5）**。`type-session` 加 `KEY_HOLD`/`KEY_INTERVAL`（soak 120/250），soak 修掉 chunk 计数 off-by-one（`shijian` 段此前从未跑过）、新增 `truncated_rounds` 截尾门禁与 `WARMUP` 基线热身。5 分钟结果：30 轮全部走 IME、0 截尾、365 键、0 外联、footprint 31.5→33.5MiB、词库 1146 行重启一致。遗留：`ps rss` 在 macOS 27 计入共享页，硬顶 96MiB 贴近误判边缘。
 - 2026-11-06 / pi（air）：**久用按新驱动重跑（报告 229 §7.4）**。5 分钟 18 轮全部走 IME、0 外联、RSS 增长 0.0MiB、词库 1145 行重启一致、宿主重启后执行 SHA 不变并还原输入源。注意新驱动 5 分钟只有 ~290 键（旧驱动 ~1.7k），需要同音量时用 `MINUTES=15`。
 - 2026-11-06 / pi（air）：**延迟门禁按方案 A 修好（报告 229 §7）**。`imetype` 新增 `TimedTextView`（在 `setMarkedText`/`insertText` 打时间戳），`perf-session`/`soak-session` 改 HID 投递、`type-session` 输出 `latencies_ms`。首次真实数据：160 键 p50 4.19ms / p95 14.64ms / max 24.68ms、0 外联、RSS −0.1MiB；`make verify` + 离线 56/303 全绿。soak 待授权重跑。

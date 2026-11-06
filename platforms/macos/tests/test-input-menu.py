@@ -31,6 +31,8 @@ class InputMenuTests(unittest.TestCase):
                 result = subprocess.run(command, cwd=ROOT, env=environment, capture_output=True, text=True, timeout=45)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn('PASS input-menu', result.stdout)
+            # 报告230：把探针输出的 case 名透传到日志，现场可直接核对覆盖了哪些场景。
+            print(result.stdout, end='')
 
 
 if __name__ == '__main__':

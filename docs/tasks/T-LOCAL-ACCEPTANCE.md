@@ -1,3 +1,6 @@
+> **报告230 起废弃**：本任务卡的 `run-local-acceptance.py` 与其自测已删除，`make macos-local-acceptance` 成为 `make macos-offline-tests` 的别名。
+> 保留本文件只为追溯 ADR-192 与报告 041 的历史证据。
+
 # 本地逐场景自动验收记录（ADR-192）
 
 - 用户要求：先本地自动化测试，先前手工覆盖缺少确定记录；合入/公证/安装暂停。

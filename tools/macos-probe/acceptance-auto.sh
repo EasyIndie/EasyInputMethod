@@ -11,6 +11,11 @@ OUT="${OUT:-/tmp/lampyris-acceptance-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 FAILED=0
 BLOCKED=0
+# 报告230：FAST=1 用于开发迭代（轮数与静置都降一档，约省一半时间）；发布门禁用默认值。
+if [ "${FAST:-0}" = "1" ]; then
+    # 热键项不能压太狠：⌥M/⌥T 要等配置落盘，settle 4 会读到空文本（实测一次 FAIL）。
+    ROUNDS="${ROUNDS:-4}"; SETTLE="${SETTLE:-8}"; KEY_SETTLE="${KEY_SETTLE:-6}"
+fi
 
 field() { grep -m1 "^$1" "$CONFIG" | sed 's/.*= *//; s/ *#.*//; s/"//g'; }
 report() { printf '%-24s %s\n' "$1" "$2"; }
@@ -18,7 +23,9 @@ report() { printf '%-24s %s\n' "$1" "$2"; }
 # 谓词：exact:/endswith:/contains:/ascii:/unicode:
 check() { python3 -c 'import sys;kind,_,value=sys.argv[1].partition(":");got=sys.argv[2];f={"exact":lambda:got==value,"endswith":lambda:got.endswith(value),"contains":lambda:value in got,"ascii":lambda:got==value and got.isascii(),"unicode":lambda:bool(got) and any(ord(c)>0x7E for c in got)};sys.exit(0 if f[kind]() else 1)' "$1" "$2"; }
 
-run_text() { "$PROBE/type-session.sh" "$1" --settle 8 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null; }
+KEY_SETTLE="${KEY_SETTLE:-8}"
+
+run_text() { "$PROBE/type-session.sh" "$1" --settle "$KEY_SETTLE" 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null; }
 
 # 中英状态不在 config 里，只能探测：打 `wq ` 出中文说明是中文态，出裸 ascii 说明是英文态，再按一次 Shift 还原。
 ensure_cn() {
@@ -30,7 +37,7 @@ ensure_cn() {
 }
 
 assert_text() { # name keys predicate
-    got=$("$PROBE/type-session.sh" "$2" --settle 8 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null)
+    got=$("$PROBE/type-session.sh" "$2" --settle "$KEY_SETTLE" 2>/dev/null | python3 -c 'import json,sys;print(json.load(sys.stdin).get("text",""))' 2>/dev/null)
     if check "$3" "$got"; then report "$1" "PASS ($got)"; else report "$1" "FAIL (got '$got' want '$3')"; FAILED=1; fi
 }
 
@@ -38,7 +45,7 @@ assert_text() { # name keys predicate
 mode=$(field mode)
 for _ in 1 2 3; do
     [ "$mode" = "mixed" ] && break
-    "$PROBE/type-session.sh" 'opt+m' --settle 6 >/dev/null 2>&1
+    "$PROBE/type-session.sh" 'opt+m' --settle "$KEY_SETTLE" >/dev/null 2>&1
     mode=$(field mode)
 done
 [ "$mode" = "mixed" ] || { report "前置 mode" "BLOCKED (mode=$mode)"; exit 1; }

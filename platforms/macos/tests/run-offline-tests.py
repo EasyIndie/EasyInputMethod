@@ -2,6 +2,7 @@
 """Run every offline Python regression; never run native desktop probes."""
 import json
 import os
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 import re
 import subprocess
@@ -28,8 +29,17 @@ def main():
         print('FAIL 未发现离线回归')
         return 1
     output = Path(tempfile.mkdtemp(prefix='lampyris-offline-tests-'))
-    rows = []
-    for index, file in enumerate(files):
+    # 报告230：这 56 个文件互不共享状态（各自用临时目录/假 HOME），串行跑纯属浪费——
+    # 改成并行后总时长由最慢的一个文件决定。JOBS=1 可退回串行做归因。
+    try:
+        jobs = int(os.environ.get('JOBS', '0'))
+    except ValueError:
+        jobs = 0
+    if jobs <= 0:
+        jobs = min(6, os.cpu_count() or 4)
+    jobs = max(1, min(jobs, len(files)))
+
+    def run_one(index, file):
         log = output / f'{index:02d}-{file.stem}.log'
         started = time.monotonic()
         status = 'FAIL'
@@ -43,13 +53,23 @@ def main():
                 status = 'TIMEOUT'
         log.chmod(0o600)
         counts = re.findall(r'Ran (\d+) tests?', log.read_text())
-        rows.append({'file': str(file.relative_to(root)), 'status': status, 'exit': code, 'seconds': round(time.monotonic() - started, 3), 'tests': int(counts[-1]) if counts else None, 'log': str(log)})
-        print(f'{status} {file.relative_to(root)}', flush=True)
-        if status != 'PASS':
-            print('失败诊断：' + failure_excerpt(log), flush=True)
+        return {'file': str(file.relative_to(root)), 'status': status, 'exit': code, 'seconds': round(time.monotonic() - started, 3), 'tests': int(counts[-1]) if counts else None, 'log': str(log)}
+
+    started_all = time.monotonic()
+    with ThreadPoolExecutor(max_workers=jobs) as pool:
+        futures = [(index, pool.submit(run_one, index, file)) for index, file in enumerate(files)]
+        rows = []
+        for index, future in futures:
+            row = future.result()
+            rows.append(row)
+            print(f"{row['status']} {row['file']}", flush=True)
+            if row['status'] != 'PASS':
+                print('失败诊断：' + failure_excerpt(Path(row['log'])), flush=True)
+    elapsed = round(time.monotonic() - started_all, 1)
     report = output / 'summary.json'
-    report.write_text(json.dumps({'passed': all(row['status'] == 'PASS' for row in rows), 'files': len(rows), 'tests': sum(row['tests'] or 0 for row in rows), 'results': rows}, ensure_ascii=False, indent=2))
+    report.write_text(json.dumps({'passed': all(row['status'] == 'PASS' for row in rows), 'files': len(rows), 'tests': sum(row['tests'] or 0 for row in rows), 'jobs': jobs, 'seconds': elapsed, 'serial_seconds': round(sum(row['seconds'] for row in rows), 1), 'results': rows}, ensure_ascii=False, indent=2), encoding='utf-8')
     report.chmod(0o600)
+    print(f'离线回归 {len(rows)} 文件 / {sum(row["tests"] or 0 for row in rows)} 例，{jobs} 并发，{elapsed}s（串行需 {round(sum(row["seconds"] for row in rows), 1)}s）')
     print('EVIDENCE=' + str(report))
     return 0 if all(row['status'] == 'PASS' for row in rows) else 1
 

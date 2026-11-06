@@ -12,14 +12,16 @@ FUZZ_SECONDS ?= 30
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) platforms/macos/tests/run-offline-tests.py
 
-macos-local-acceptance: ## 本地逐场景自动验收及持久证据（离屏，不操作桌面）
-	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) platforms/macos/tests/run-local-acceptance.py
+macos-local-acceptance: ## 已废弃的入口别名：等于 macos-offline-tests（报告230 合并两套 runner）
+	@echo "⚠️  macos-local-acceptance 已在报告230 废弃：它和离线回归跑同一批测试，且契约早已过期。"
+	@echo "    现在统一用 make macos-offline-tests（单一 runner、可并行：JOBS=N）。"
+	@$(MAKE) --no-print-directory macos-offline-tests
 
 macos-probe-build: ## 构建 macOS 实机探针（tools/macos-probe/bin，不安装）
 	$(MAKE) -C tools/macos-probe
 
-macos-auto-acceptance: macos-probe-build ## 一键自动验收：热键/上屏 + 五客户端 + 键入延迟/内存/零外联（报告191）
-	OUT=$(or $(OUT),/tmp/lampyris-acceptance-$$(date -u +%Y%m%dT%H%M%SZ)) ROUNDS=$(or $(ROUNDS),10) ./tools/macos-probe/acceptance-auto.sh
+macos-auto-acceptance: macos-probe-build ## 一键自动验收：热键/上屏 + 五客户端 + 键入延迟/内存/零外联（报告191；FAST=1 约省一半时间）
+	OUT=$(or $(OUT),/tmp/lampyris-acceptance-$$(date -u +%Y%m%dT%H%M%SZ)) ROUNDS=$(or $(ROUNDS),10) FAST=$(or $(FAST),0) ./tools/macos-probe/acceptance-auto.sh
 
 macos-multi-display: macos-probe-build ## 多屏/缩放/全屏下的候选窗落点（报告202）：逐屏 + 全屏各测一次
 	OUT=$(or $(OUT),/tmp/lampyris-multidisplay-$$(date -u +%Y%m%dT%H%M%SZ)) ./tools/macos-probe/multi-display.sh
