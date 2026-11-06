@@ -76,16 +76,18 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ## 3. 客户端矩阵（必做，各 30 秒）
 
-> 🔁 3.1/3.2 已由 `client-matrix.sh` 回读覆盖；人工只需 3.3 Chrome、3.4 VS Code、3.5 Terminal、3.6 其它 App（自动矩阵会往用户 shell 打字，已移除终端项）。
+> 🔁 **验收只依赖系统自带应用**（报告234）：3.1 TextEdit / 3.2 Safari 由 `client-matrix.sh` 自动回读（必需）；
+> 3.3 Chrome / 3.4 VS Code / 3.6 其它 App 都是**可选**（非系统自带，未安装就 SKIP，不算失败），
+> 3.4 VS Code 已从清单移除（不假定用户装了第三方编辑器）；3.5 Terminal 仍人工，因为自动投递会往用户 shell 打字。
 
 | # | 客户端 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
-| 3.1 | TextEdit（空白文档） | 输入/翻页/撤销正常 | PASS| |
-| 3.2 | Safari（文本框，**不要用地址栏**） | 同上 | PASS| |
-| 3.3 | Chrome 文本框 | 同上 | PASS| |
-| 3.4 | VS Code 编辑器 | 同上 | PASS| |
-| 3.5 | Terminal（普通 shell 提示符） | 同上 | PASS| |
-| 3.6 | 微信 / 其它常用 App（如已装） | 同上 | PASS| |
+| 3.1 | TextEdit（空白文档，系统自带） | 输入/翻页/撤销正常 | PASS| 自动：`client-matrix.sh`（required） |
+| 3.2 | Safari（文本框，系统自带；**不要用地址栏**） | 同上 | PASS| 自动：`client-matrix.sh`（required） |
+| 3.3 | Chrome（可选，非系统自带） | 同上 | | 装了才测；没装 SKIP，不计失败 |
+| 3.4 | ~~VS Code~~ | — | 已移除 | 报告234：不假定用户装了第三方编辑器 |
+| 3.5 | Terminal（普通 shell 提示符，人工） | 同上 | | 自动投递会往用户 shell 打字 |
+| 3.6 | 其它 App（可选，如已装） | 同上 | | 不必做；发现输入异常时再单独记 |
 
 > 地址栏残留预编辑属**已接受限制（UX-1）**：按 Esc 可取消；若出现丢字/错误提交，另记 `FAIL`，不能用旧限制覆盖。
 

@@ -25,6 +25,7 @@
 | **B 基线采集（报告 227）** | `tools/eval/` 200 条样本（单字/两字词/三四字/混排长句/一级二级简码）+ `ime-eval` 评测器 + `baselines/1.0.2-build37.json` 入库，任意包可一键复跑。 |
 | **1.1.0 代码（ADR-304 / 报告 228，build 38）** | D17 一级简码 25 条入表（`data/sources/wubi86-level1-codes.tsv` + `tools/check-level1-codes.py`）+ `personalize` 改「有界位次上移」（首选位保护、不跨精确/补全分块）。评测：`jianma1` 命中 56%→100%、首选 32%→100%，ALL 命中 92.0%→97.5%、首选 85.5%→94.0%，其余类别零劣化；5 条核心单测改动/新增。 |
 | **air 装机** | 1.1.0/build 38 候选已装 air（执行 `d3c5a2ef…`），证据 `platforms/macos/build/acceptance-air-1.1.0-b38/`。 |
+| **1.1.0 人工走查通过 + 验收可移植性（报告 234）** | 用户本机执行：A 档 10 项 + IT-25 四项全 PASS。按用户要求，验收改为**只依赖系统自带应用**：`client-matrix.sh` 必需=TextEdit/Safari、Chrome/Xcode 标 optional（缺装 SKIP）、Xcode 不再写死版本路径；新增 `client-matrix-verdict.py` 与 `test-acceptance-portability.py`（含清单检查）。 |
 | **1.1.0 发布准备稿（docs/releases/1.1.0.md）** | 绑定候选身份（ZIP `448d3170…` / 源码 `e0b9536b…` / 执行 `d3c5a2ef…` / 提交 `393318c`）；写清唯一产品变更（AD-304 简码 + 有界位次上移）与评测对比；验收结果按「已完成 / 待办」分列；延迟按 ADR-307 写两个数（稳态 p95 6.71ms、冷首键 p95 25.77ms）。`docs/发布说明.md` 标注为 0.1.15 历史底稿。 |
 | **验收状态自归位（报告 232）** | 新增 `ime-state.sh`：轮前 `--snapshot` + `--ensure`（mixed/chinese/half/simplified），trap 里 `--restore` 再 cleanup；`acceptance-auto`/`quality-samples` 已接线。修掉「上一轮留下 ABC/繁体 → 本轮 8 个热键项 + 4 个质量样本连锁 FAIL、跑完还改用户偏好」的问题。 |
 | **验收自清场固化（报告 231 §6）** | 新增 `platforms/macos/tests/test-probe-cleanup.py`：凡开窗口/拉应用的探针脚本必须接 `cleanup-windows.sh` + `trap EXIT/INT`，含反向自检；规则同时写进 `AGENTS.md` 铁律 11、`iterate-macos-ime` skill §7、`CONTRIBUTING.md` §5、探针 README 清单。上马时抓出并修好 `multi-display.sh`（从不清 TextEdit）与 `type-session.sh`（退出不收测速窗口）两处缺口。 |
@@ -59,7 +60,7 @@
    python3 tools/check-level1-codes.py && make eval-candidates EVAL_JSON=/tmp/after.json
    ```
    判定：零诊断全绿；`jianma1` 命中/首选明显改善、其余类别 `hit%`/`first%`/`keys` 零劣化。
-2. **装机人工走查（唯一在做的事）**：按 **`docs/reviews/234-1.1.0-walkthrough.md`** 执行——A 档 12 项 + IT-25 四项，约 12 分钟；开始/结束各跑一次 `walkthrough-evidence.sh --label it22-110-start|end`，执行 SHA 必须一致。结果回填后由 agent 补结论，与 `docs/releases/1.1.0.md` 一起提一个 PR（不另开第二个）。
+2. ~~装机人工走查~~ **已完成（2026-11-06，报告 234）**：A 档 10 项 + IT-25 四项全部 PASS，无 FAIL/BLOCKED。用户同时定下新规矩：**验收只依赖系统自带应用**（VS Code / 微信等非默认安装的应用从清单移除，Chrome/Xcode 降为 optional），已由 `test-acceptance-portability.py` 强制。
 3. **三天自用**：1.1.0 装包后自用 3 天再 tag（计划 §4）；期间不换包，「换包后确认新二进制」必做（报告 220 教训：`lsof … | grep -c deleted` 必须为 0）。
 4. **发布（需用户明确授权）**：`git tag -a v1.1.0` 打在**验收候选提交** `393318c` → Release → 核对资产（ZIP `448d3170…` 逐字节一致、DMG staple/spctl、appcast `sparkle:version=38`）→ dispatch Pages → 写 `docs/releases/1.1.0.md` → 站点回读 `v1.1.0 · 构建 38`。
 5. **pro 升级**：Release 上线后让 pro 用自带更新程序 `1.0.0 → 1.1.0`（同包 + 升级链一次闭环），升级后核 `payloadSHA256`、执行 SHA `d3c5a2ef…`、config/词库保留。
@@ -105,6 +106,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**人工走查通过（报告 234）**。用户本机跑完 A 档 10 项 + IT-25 四项全 PASS，无 FAIL/BLOCKED；并按用户裁定**验收只依赖系统自带应用**——VS Code / 其它 App（微信）从清单移除，Chrome/Xcode 降为 optional 且缺装 SKIP，Xcode 不再写死 `Xcode-27.0.0.app`；新增 `client-matrix-verdict.py`、`test-acceptance-portability.py` 两个门禁，A 档人工从 12 项降到 10 项。
 - 2026-11-06 / pi（air）：**按用户决定，走查通过后再提 PR**。写好人工走查执行单 `docs/reviews/234-1.1.0-walkthrough.md`（A 档 12 项 + IT-25 四项 + 取证命令 + 空结果列），并写明后续：结果回填 → 补结论 → 与 1.1.0 发布稿同一个 PR；两份文档都留在 dev，暂不合并 main。
 - 2026-11-06 / pi（air）：**合并 PR #224 + 起草 1.1.0 发布稿**。main `d816953`，dev 已快进同步；`docs/releases/1.1.0.md` 绑定候选身份与 ADR-307 两个延迟数，并把待办（IT-25/IT-22 A 档、3 天自用、tag/Release、pro 升级）列清；`docs/发布说明.md` 标为 0.1.15 历史底稿（此前与实际版本不一致）。
 - 2026-11-06 / pi（air）：**延迟长尾归因（报告 233 / ADR-307）**。给 imetype 加逐键归因（key/kind/pos），发现 160 个样本里的慢样本 100% 是每轮首键（14.6–27.1ms），稳态 p95 6.08ms；两组对照排除候选窗，定位为「新输入上下文首次建立」。门禁拆为稳态 p95（6.71ms PASS）+ 冷首键记录（15.88/25.77ms），并更正报告 232 §4 的错误结论（当时用的是排序后数组）。

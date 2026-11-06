@@ -20,6 +20,11 @@ cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit $STARTED >&2
 trap cleanup_run EXIT INT TERM
 "$BIN/tissrc" select "$SOURCE" >/dev/null || { echo "BLOCKED 无法选中输入源 $SOURCE"; exit 1; }
 
+# 报告234：验收只依赖**系统自带**应用（TextEdit / Safari），它们在每台 macOS 上都有；
+# Chrome / Xcode 这类"用户自己装的"一律 optional：装了才测，没装就 SKIP，且不计入必需的通过数。
+required_json='{"required":true'
+optional_json='{"required":false'
+
 has_app() {
     [ -d "/Applications/$1.app" ] || [ -d "/System/Applications/$1.app" ] && return 0
     for candidate in /Applications/"$1"*.app; do [ -d "$candidate" ] && return 0; done
@@ -68,7 +73,7 @@ if type_into TextEdit; then
             got=$("$BIN/axfocus" 2>/dev/null)
             ;;
     esac
-    printf '{"app":"TextEdit","value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
+    printf '%s,"app":"TextEdit","value":"%s"}\n' "$required_json" "$got" | tee "$OUT/textedit.json"
 fi
 # 关掉自己开的那个文档（front document 就是刚建的空白文档）
 osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
@@ -94,14 +99,18 @@ if type_into Safari; then
             got=$(cat "$OUT/safari.txt" 2>/dev/null)
             ;;
     esac
-    printf '{"title":"%s"}\n' "$got" | tee "$OUT/safari.json"
+    printf '%s,"title":"%s"}\n' "$required_json" "$got" | tee "$OUT/safari.json"
 fi
 
-echo "== Chrome"
-open -a "Google Chrome" "$PAGE" >/dev/null 2>&1
-if type_into "Google Chrome"; then
-    osascript -e 'tell application "Google Chrome" to get title of active tab of front window' > "$OUT/chrome.txt" 2>/dev/null
-    printf '{"title":"%s"}\n' "$(cat "$OUT/chrome.txt")" | tee "$OUT/chrome.json"
+echo "== Chrome（可选：非系统自带）"
+if has_app "Google Chrome"; then
+    open -a "Google Chrome" "$PAGE" >/dev/null 2>&1
+    if type_into "Google Chrome"; then
+        osascript -e 'tell application "Google Chrome" to get title of active tab of front window' > "$OUT/chrome.txt" 2>/dev/null
+        printf '%s,"title":"%s"}\n' "$optional_json" "$(cat "$OUT/chrome.txt")" | tee "$OUT/chrome.json"
+    fi
+else
+    printf '%s,"status":"SKIP","reason":"未安装 Google Chrome（非系统自带）"}\n' "$optional_json" | tee "$OUT/chrome.json"
 fi
 
 # 报告229：终端项不做自动化。
@@ -110,24 +119,24 @@ fi
 # 原因二：用户设备偏好明确不用 Ghostty（旧实现在这里 example 用的就是 Ghostty 独立实例）。
 # 终端路径仍由 IT-22 §3.5 人工走查覆盖，这里只留一条 SKIP 记录，不假装 PASS。
 echo "== Terminal"
-echo '{"status":"SKIP","reason":"终端项不在自动化矩阵内，见 docs/tasks/T-ITER-22.md §3.5"}' | tee "$OUT/terminal.json"
+printf '%s,"status":"SKIP","reason":"终端项不在自动化矩阵内（会往用户 shell 打字）"}\n' "$optional_json" | tee "$OUT/terminal.json"
 
-echo "== Xcode"
+echo "== Xcode（可选：非系统自带）"
 if ! has_app Xcode; then
-    echo '{"file":"SKIP 未安装 Xcode"}' | tee "$OUT/xcode.json"
-    echo "== restore"
-    "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null
-    "$BIN/tissrc" list | grep '^current'
-    exit 0
-fi
-XFILE="$OUT/xcode.txt"
-printf '' > "$XFILE"
-open -a "/Applications/Xcode-27.0.0.app" "$XFILE" >/dev/null 2>&1
-if type_into Xcode; then
-    pid=$(front_pid)
-    "$BIN/keytopid" "$pid" 'cmd+s' 200 500 --hid >/dev/null 2>&1
-    sleep 3
-    printf '{"file":"%s"}\n' "$(cat "$XFILE" 2>/dev/null)" | tee "$OUT/xcode.json"
+    printf '%s,"status":"SKIP","reason":"未安装 Xcode（非系统自带）"}\n' "$optional_json" | tee "$OUT/xcode.json"
+else
+    XFILE="$OUT/xcode.txt"
+    printf '' > "$XFILE"
+    # 报告234：不写死版本路径（旧实现是 /Applications/Xcode-27.0.0.app），按应用名打开。
+    open -a Xcode "$XFILE" >/dev/null 2>&1
+    if type_into Xcode; then
+        pid=$(front_pid)
+        "$BIN/keytopid" "$pid" 'cmd+s' 200 500 --hid >/dev/null 2>&1
+        sleep 3
+        printf '%s,"file":"%s"}\n' "$optional_json" "$(cat "$XFILE" 2>/dev/null)" | tee "$OUT/xcode.json"
+    else
+        printf '%s,"status":"SKIP","reason":"前台未切到 Xcode（可选客户端）"}\n' "$optional_json" | tee "$OUT/xcode.json"
+    fi
 fi
 
 echo "== restore"
