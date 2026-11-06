@@ -13,7 +13,13 @@ FAILED=0
 BLOCKED=0
 # 报告231：跑完（含中断、失败）都把本轮开出来的窗口/进程收掉，保证"再跑一遍还是干净的"。
 cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
-trap cleanup_run EXIT INT TERM
+# 报告232：先记下用户当前的四项状态，跑完（含失败）还原；再归位到验收需要的状态。
+STATE_BEFORE="$OUT/state-before.txt"
+restore_state() { [ -f "$STATE_BEFORE" ] && "$PROBE/ime-state.sh" --restore "$STATE_BEFORE" >&2 || true; }
+finish() { restore_state; cleanup_run; }
+trap finish EXIT INT TERM
+"$PROBE/ime-state.sh" --snapshot "$STATE_BEFORE" 2>/dev/null || true
+"$PROBE/ime-state.sh" --ensure >&2 || { echo "BLOCKED 输入法状态无法归位（见 ime-state.sh 输出）"; exit 78; }
 # 报告230：FAST=1 用于开发迭代（轮数与静置都降一档，约省一半时间）；发布门禁用默认值。
 if [ "${FAST:-0}" = "1" ]; then
     # 热键项不能压太狠：⌥M/⌥T 要等配置落盘，settle 4 会读到空文本（实测一次 FAIL）。

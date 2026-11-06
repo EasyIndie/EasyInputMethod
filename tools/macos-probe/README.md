@@ -33,6 +33,7 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
 | `memory-gate.sh` | **ADR-263 的 30MB 门禁**：重启宿主 → marker → 冷态/首键后/六词后/静置 8s 四点采 `vmmap`，判定 physical footprint 与私有已提交同时 ≤30MiB（`ROUNDS` 默认 3，报告199） |
 | `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它（`FAST=1` 迭代档） |
+| `ime-state.sh` | 验收状态自归位（报告232）：`--snapshot` 记四项偏好、`--ensure` 收敛到 mixed/chinese/half/simplified、`--restore` 还原；收敛不了退 78 |
 | `cleanup-windows.sh` | 验收收尾：只回收探针自己开的窗口/进程（按 URL / 标题 / 未保存内容签名认领）；`--textedit` 才清 TextEdit，`--quit-app` 只对"本轮由我们启动且已无窗口"的应用；浏览器永不退出（报告231） |
 | `screens` | 打印每块屏幕的 frame/visibleFrame/缩放/主屏（多屏验收的坐标基准，报告202） |
 | `axwins [bundleID]` | 列出指定 App 的 AX 窗口位置/尺寸/角色；macOS 13 的候选窗是 `AXSystemDialog`，用它判落点（报告202） |

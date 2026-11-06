@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.0.0（MVP）与补丁 1.0.1/1.0.2 均已发布；1.1.0 / build 38 候选已装 air，待「装机复验 → tag/Release」**。
-- 分支：`dev` @ 本轮提交（`origin/main` = `393318c`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **57 文件 / 300 例 PASS（6 并发 33s，串行需 162s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
+- 分支：`dev` @ 本轮提交（`origin/main` = `393318c`，PR #223 merge）；开放 PR **0 个**。本轮复跑：`make verify` PASS（112 产物零网络符号）、`make macos-offline-tests` **57 文件 / 300 例 PASS（6 并发 33s）**、`FAST=1 make macos-auto-acceptance` PASS（4.7 分钟）、`tools/check-level1-codes.py` PASS、`make eval-candidates` 与报告 228 数字一致。
 - 版本：`Cargo.toml` = **1.1.0**、`packaging/build-number` = **38**；站点仍为 `v1.0.2 · 构建 37`（1.1.0 未发布），最新 tag `v1.0.2`。
 - 1.1.0 候选身份（CI success @ `393318c`）：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
 
@@ -23,6 +23,7 @@
 | **B 基线采集（报告 227）** | `tools/eval/` 200 条样本（单字/两字词/三四字/混排长句/一级二级简码）+ `ime-eval` 评测器 + `baselines/1.0.2-build37.json` 入库，任意包可一键复跑。 |
 | **1.1.0 代码（ADR-304 / 报告 228，build 38）** | D17 一级简码 25 条入表（`data/sources/wubi86-level1-codes.tsv` + `tools/check-level1-codes.py`）+ `personalize` 改「有界位次上移」（首选位保护、不跨精确/补全分块）。评测：`jianma1` 命中 56%→100%、首选 32%→100%，ALL 命中 92.0%→97.5%、首选 85.5%→94.0%，其余类别零劣化；5 条核心单测改动/新增。 |
 | **air 装机** | 1.1.0/build 38 候选已装 air（执行 `d3c5a2ef…`），证据 `platforms/macos/build/acceptance-air-1.1.0-b38/`。 |
+| **验收状态自归位（报告 232）** | 新增 `ime-state.sh`：轮前 `--snapshot` + `--ensure`（mixed/chinese/half/simplified），trap 里 `--restore` 再 cleanup；`acceptance-auto`/`quality-samples` 已接线。修掉「上一轮留下 ABC/繁体 → 本轮 8 个热键项 + 4 个质量样本连锁 FAIL、跑完还改用户偏好」的问题。 |
 | **验收自清场固化（报告 231 §6）** | 新增 `platforms/macos/tests/test-probe-cleanup.py`：凡开窗口/拉应用的探针脚本必须接 `cleanup-windows.sh` + `trap EXIT/INT`，含反向自检；规则同时写进 `AGENTS.md` 铁律 11、`iterate-macos-ime` skill §7、`CONTRIBUTING.md` §5、探针 README 清单。上马时抓出并修好 `multi-display.sh`（从不清 TextEdit）与 `type-session.sh`（退出不收测速窗口）两处缺口。 |
 | **验收收尾清理（报告 231）** | 新增 `cleanup-windows.sh`：按 URL/标题/未保存内容签名回收探针自己开的 Safari/Chrome 标签、Xcode 窗口、TextEdit 文档与 `imetype`/`keytopid` 进程；四个验收脚本都挂 `trap EXIT INT TERM`，失败/中断同样清理。`client-matrix.sh` 改为自建并关闭 TextEdit 文档。实测：连跑三次后 TextEdit 未运行、Safari/Chrome 0 标签、Xcode 仅剩用户自己的窗口。 |
 | **验收提效（报告 230）** | 离线回归并行化（串行 166s → **34s**，`JOBS=N`）；删除腐烂的第二套 runner（`run-local-acceptance.py` 必失败 → `macos-local-acceptance` 改为 `macos-offline-tests` 别名）；`acceptance-auto` 增加 `FAST=1` 档（9 分钟 → **4.7 分钟**）；IT-22 从 65 项压到 **12 项（每次换包）+ 5 项（每版一次）**，映射见 `docs/tasks/T-ITER-22-coverage.md`；新增 `test-acceptance-map.py` 防文档腐烂，修掉 `test-preview-menu.py` 在有宿主运行时必挂的假 FAIL。 |
@@ -31,6 +32,7 @@
 
 ## 3. 未决
 
+- **性能 p95 贴线（报告 232 §4，唯一红灯）**：1.1.0/build 38 在 air 上 6 轮 p95 = 14.48–16.26ms（阈值 16），full3 一轮 16.26 FAIL；拆样本后「每轮第一键」p95 仅 2.68ms，长尾是每轮 5% 的 16–35ms 样本。需先归因（候选窗首显/翻页/提交）再定口径，**不擅自放宽阈值**。
 - **性能门禁口径已修（报告 229 §3.1/§7）**：`--self-post` 是进程内合成事件，进不了 IMK（三组对照已证），历史 p95（报告 191/199/207）**作废不继承**。新口径实测 1.1.0/build 38：p50 4.19ms / p95 14.64ms / max 24.68ms（阈值 16ms，余量 ~1.3ms，**属勉强达标**，发布说明只写实测值）。
 - **久用已按新驱动重跑（报告 229 §7.4/§7.5）**：`MINUTES=5` → 30 轮 **30 轮走 IME、`truncated_rounds=0`**、365 键（6 条 chunk 全用到）、0 外联、footprint 31.5→33.5 MiB、词库 1146 行重启前后一致、宿主单实例且执行 SHA 不变、输入源已还原。键间隔已做成 `KEY_HOLD`/`KEY_INTERVAL`（soak 用 120/250）；要接近旧音量（~1.7k 键）用 `MINUTES=20`。**遗留口径**：macOS 27 的 `ps rss` 计入共享页（同宿主 footprint 33 MiB / rss 95 MiB），`RSS_HARD_MB=96` 已贴近误判边缘，建议后续硬顶改用 `vmmap` footprint。
 - **延迟采样只覆盖 `wq nihao xuexi .`**：长编码、多页翻页、候选窗刷新路径没有单独统计。
@@ -98,6 +100,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**验收状态自归位（报告 232）**。新增 `ime-state.sh`（snapshot/ensure/restore，走产品热键、不直接改配置），接进 `acceptance-auto` 与 `quality-samples` 的 trap。修掉一次真实连锁失败：上一轮留下 ABC/繁体 → 8 个热键项 + 4 个质量样本全 FAIL，且结束时把用户 config 留在 pinyin/traditional。复跑 quality 13/13 PASS、全量仅剩性能 p95 16.26ms 贴线（唯一红灯）。
 - 2026-11-06 / pi（air）：**把「验收自清场」固化成门禁（报告 231 §6）**。`test-probe-cleanup.py` 扫描探针脚本：开窗口却不接 `cleanup-windows.sh`/`trap` 直接 FAIL，并有反向自检防止空转；规则同步进 AGENTS 铁律 11、skill §7、CONTRIBUTING §5、README 清单。上马即抓出 `multi-display.sh` 与 `type-session.sh` 两个缺口并修好。离线 **57 文件/300 例** 全绿。
 - 2026-11-06 / pi（air）：**验收跑完自动清场（报告 231）**。新增 `cleanup-windows.sh` + 四个脚本的 `trap`：只回收自己开的窗口（URL/标题/未保存内容签名），浏览器永不退出，`--quit-app` 仅对本轮启动且已无窗口的 App 生效；`client-matrix` 改自建并关闭 TextEdit 文档。实测三次连跑后无残留；`FAST=1 acceptance-auto` PASS（p95 14.48ms）。踩坑记录：`tell application` 会拉起应用、AppleScript 混用 and/or 必须加括号、未保存文档 `path` 是空串而非 missing value。
 - 2026-11-06 / pi（air）：**验收提效（报告 230）**。离线回归并行（166s→34s）；删掉必失败的第二套 runner，`macos-local-acceptance` 改成离线回归别名；`acceptance-auto` 加 `FAST=1`（9 分钟→4.7 分钟）；IT-22 65 项压到 12+5 项并加 `T-ITER-22-coverage.md` 映射；新增 `test-acceptance-map.py` 防腐烂；修 `test-preview-menu.py` 有宿主时必挂的假 FAIL（宿主重写词库 → SKIP）。`make verify` + 56 文件/295 例全绿。

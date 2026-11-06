@@ -13,7 +13,13 @@ OUT="${OUT:-/tmp/lampyris-quality-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 # 报告231：清场用过的 TextEdit 文档与浏览器标签，失败也清。
 cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
-trap cleanup_run EXIT INT TERM
+# 报告232：记住用户状态，跑完还原；开始前归位到 mixed/chinese/half/simplified。
+STATE_BEFORE="$OUT/state-before.txt"
+restore_state() { [ -f "$STATE_BEFORE" ] && "$PROBE/ime-state.sh" --restore "$STATE_BEFORE" >&2 || true; }
+finish() { restore_state; cleanup_run; }
+trap finish EXIT INT TERM
+"$PROBE/ime-state.sh" --snapshot "$STATE_BEFORE" 2>/dev/null || true
+"$PROBE/ime-state.sh" --ensure >&2 || { echo "BLOCKED 输入法状态无法归位"; exit 78; }
 
 "$PROBE/acceptance-preflight.sh" > "$OUT/preflight.json" 2>&1 || {
     code=$?

@@ -58,17 +58,17 @@ osascript -e 'tell application "TextEdit" to activate' -e 'tell application "Tex
 sleep 1.5
 "$BIN/axtext" clear >/dev/null 2>&1
 if type_into TextEdit; then
-    got=$("$BIN/axfocus" 2>/dev/null)
+    # 报告232：回读必须绑定到 TextEdit 自己的 pid。之前用 `axfocus`（读"当前前台应用"），
+    # 一旦焦点在我们自己的终端（pi 所在窗口）上，就会把终端的文本当成 TextEdit 的结果（实测踩到）。
+    te_pid=$(pgrep -x TextEdit | head -1)
+    got=""
+    [ -n "$te_pid" ] && got=$("$BIN/axtext" read "$te_pid" 2>/dev/null | head -1)
     case "$got" in
-        NO_FOCUS*|"")
-            # 报告209：焦点属性偶尔读不到（与 198/199 同类的时序问题），退到窗口内文本区。
-            pid=$(front_pid)
-            sleep 1
-            got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
-            printf '{"value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
+        ""|NO_TEXT_AREA|NO_WINDOW)
+            got=$("$BIN/axfocus" 2>/dev/null)
             ;;
-        *) printf '%s\n' "$got" | tee "$OUT/textedit.json" ;;
     esac
+    printf '{"app":"TextEdit","value":"%s"}\n' "$got" | tee "$OUT/textedit.json"
 fi
 # 关掉自己开的那个文档（front document 就是刚建的空白文档）
 osascript -e 'tell application "TextEdit" to close front document saving no' >/dev/null 2>&1
@@ -85,8 +85,9 @@ open -a Safari "$PAGE" >/dev/null 2>&1
 if type_into Safari; then
     # 报告209：macOS 27 上页面标题不一定随输入更新（Safari 的 document.title 没有跟），
     # 先用 AX 读输入区，读不到再退回标题。
-    pid=$(front_pid)
-    got=$("$BIN/axtext" read "$pid" 2>/dev/null | head -1)
+    sf_pid=$(pgrep -x Safari | head -1)
+    [ -n "$sf_pid" ] || sf_pid=$(front_pid)
+    got=$("$BIN/axtext" read "$sf_pid" 2>/dev/null | head -1)
     case "$got" in
         ""|NO_TEXT_AREA|NO_WINDOW)
             osascript -e 'tell application "Safari" to get name of front document' > "$OUT/safari.txt" 2>/dev/null
