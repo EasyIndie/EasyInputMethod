@@ -31,6 +31,45 @@ require(Practice.judgeCode(sample.code.uppercased() + " ", question: sample), "�
 require(!Practice.judgeCode("zzzz", question: sample), "错误码判错")
 require(Practice.recognitionLetter(stroke: "横", structure: "左右") == "G", "识别码表 横/左右 → G")
 require(Practice.recognitionLetter(stroke: "折", structure: "杂合") == "V", "识别码表 折/杂合 → V")
+// ADR-313 练习流程（自动化）：答题 → 判分 → 进度增长；识别码说明用正确答案。
+let flowDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("lampyris-practice-flow")
+try? FileManager.default.removeItem(at: flowDir)
+try? FileManager.default.createDirectory(at: flowDir, withIntermediateDirectories: true)
+let flowProgress = PracticeProgress(url: flowDir.appendingPathComponent("flow.tsv"))
+let flow = PracticeSession(kind: .code, progress: flowProgress)
+guard let firstQuestion = flow.question else { exit(1) }
+let before = flow.summary
+guard let okResult = flow.submitCode(firstQuestion.code) else { exit(1) }
+require(okResult.correct, "正确码应判对")
+require(flow.summary != before, "作答后进度摘要应变化")
+require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 1, "应记录 1 次作答")
+require(flowProgress.rows.values.reduce(0) { $0 + $1.correct } == 1, "应记录 1 次正确")
+_ = flow.submitCode("zzzz")
+require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 2, "错误作答也应计数")
+let recognitionSession = PracticeSession(kind: .recognition, progress: flowProgress)
+guard let recognitionQuestion = recognitionSession.question, let expected = recognitionQuestion.recognition else { exit(1) }
+guard let recognitionResult = recognitionSession.submitRecognition(stroke: expected.stroke,
+                                                                  structure: expected.structure) else { exit(1) }
+require(recognitionResult.correct, "正确末笔/结构应判对")
+require(recognitionResult.explanation.contains(expected.letter), "说明应包含正确字母")
+require(recognitionResult.explanation.contains(expected.stroke), "说明应包含**正确**的末笔（不是用户选的）")
+// 输入视图只接受 a–y、退格与回车。
+let answer = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
+var submitted: String?
+answer.onReturn = { submitted = $0 }
+func key(_ text: String) -> NSEvent? {
+    NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+                     windowNumber: 0, context: nil, characters: text,
+                     charactersIgnoringModifiers: text, isARepeat: false, keyCode: 0)
+}
+for character in "GCft" { if let event = key(String(character)) { answer.keyDown(with: event) } }
+require(answer.text == "gcft", "只接受小写字母（实际 \(answer.text)）")
+if let event = key("\u{7F}") { answer.keyDown(with: event) }
+require(answer.text == "gcf", "退格删除")
+if let event = key("z") { answer.keyDown(with: event) }
+require(answer.text == "gcf", "z 不接受")
+if let event = key("\r") { answer.keyDown(with: event) }
+require(submitted == "gcf", "回车提交")
 // ADR-313 练习窗口：版式自检（控件不越界、不与题型控件重叠）。
 for kind in [PracticeKind.code, PracticeKind.recognition] {
     let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)

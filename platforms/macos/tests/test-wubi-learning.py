@@ -34,7 +34,7 @@ class WubiLearningTests(unittest.TestCase):
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / "platforms/macos/Sources" / name) for name in
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift",
-                     "LearningHints.swift", "Practice.swift", "PracticeWindow.swift"]],
+                     "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 45),
                 ([str(temporary / "probe"), str(temporary), str(output)], 10),
