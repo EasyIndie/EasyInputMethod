@@ -63,3 +63,27 @@
   或在文档里把这条写进安装步骤，避免用户以为装坏了。
 
 已记录，未在本轮实现。
+
+## 7. ⌥L 漏字符：最终结论（2026-11-06 晚，诊断包 `45bc4d6b`）
+
+给控制器加了"hud-diag 开启时记录每个带 Option 的 keyDown"的诊断后，实测日志：
+
+```
+[hud] keydown chars=¬ ignore=l flags=524288 learning=true    ×14
+[hud] feedback msg=学习区：开 / 关
+[hud] inputText ...                                          ← 0 次
+```
+
+- 我们的处理器**收到并匹配**（`learning=true`），HUD 正常切换，`inputText` 一次没被调用 → **事件确实被消费**；
+- 日志里 `frontmost=com.mitchellh.ghostty`：**用户是在 Ghostty 里按的**。Ghostty 自己对 Option 组合键做字符映射（⌥L → ¬）并送进 pty，不认输入法的"已消费"。
+- 用户复测：**TextEdit 与 Terminal.app 都正常**（只有 HUD 提示，无 `¬`）。
+
+**结论**：修复有效；Ghostty 的行为属其自身 Option 映射，不是输入法缺陷。文档与反馈都按此记录。
+
+**附带发现（低优先）**：19 次按键里有 1 次 `learning=false`（刚激活后的首击，被"组合键时效"守卫挡下）——
+首击漏字符是另一个小问题，可单独修（放宽首击的时效判定）。
+
+## 8. 诊断开关
+
+`hud-diag` 文件存在时，控制器会把带 Option 的 keyDown（原始字符、ignoring 字符、flags、热键是否命中）
+与 `inputText` 投递写入 `$TMPDIR/lampyris-hud-diag.log`；不需要时删掉该文件即静默。
