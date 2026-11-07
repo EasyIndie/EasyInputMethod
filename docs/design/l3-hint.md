@@ -1,5 +1,6 @@
 # 学习区（⌥L）· 草图与规格（B3 批，待评审后实现）
 
+> 2026-11-06 **已实现**（离屏渲染见下方实拍；装机后的性能/内存实测待候选包）。
 > 2026-11-06 第三稿。用户裁定：**候选窗保持简洁，零改动**；学习信息只在 ⌥L 学习区；
 > 学习区自己也必须精简；并且——**学习区不重复当前字/词**（它已在候选窗里处于选中态）。
 > 草图见 [`learning-area-mock.png`](learning-area-mock.png)（五格：现状 + A/B/C + 高度对比）。
@@ -112,3 +113,20 @@ k       w       w       l
 1. 简码在**第一行右上角**，字母大写；「完整码」标签保留；
 2. 识别码**两行**：`识别码：<末笔>·<结构>结构` + 单独大写字母；`partial` 前加「参考」；
 3. 词组**按输入码对应的字显示**，取不到对应码的字省略，其余进「逐字 ▸」。
+
+## 9. 实现与实拍（2026-11-06）
+
+实现落在 `platforms/macos/Sources/CandidateWindow.swift`（`WubiLearningView.arrange`）与
+`platforms/macos/Sources/LearningHints.swift`（`B0-runtime.tsv` 解析，缺失时返回空表）。
+
+| 状态 | 实拍 |
+|---|---|
+| 单字（`full`，带简码与识别码） | [`learning-real-single.png`](learning-real-single.png) |
+| 单字（`partial`，`？` + 拆解待核验） | [`learning-real-partial.png`](learning-real-partial.png) |
+| 词组（按码对应到字） | [`learning-real-word.png`](learning-real-word.png) |
+| 暗色 | [`learning-real-dark.png`](learning-real-dark.png) |
+
+实测高度：单字 **76 pt**、词组 **76 pt**（同构两行）；展开「逐字 ▸」后最高 428 pt（原有上限不变）。
+
+数据路径：`Contents/Resources/B0-runtime.tsv` → 命中则用结构化提示（简码/识别码/占位）；
+未命中退回 `ime_wubi_learning`（D14）显示完整码 + 字根 + 规则文本；两者都没有则整块隐藏。

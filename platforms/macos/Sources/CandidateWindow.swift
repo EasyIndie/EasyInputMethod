@@ -382,7 +382,8 @@ final class WubiLearningView: NSView {
     }
 
     private func button(_ title: String, x: CGFloat, y: CGFloat, width: CGFloat,
-                        in parent: NSView, action: Selector, tag: Int = 0) {
+                        in parent: NSView, action: Selector, tag: Int = 0,
+                        showsChevron: Bool = true) {
         let isCharacter = action == #selector(toggleCharacter(_:))
         let cacheKey = isCharacter ? "character-\(tag)" : "summary"
         let button = buttons[cacheKey] ?? NSButton()
@@ -396,8 +397,13 @@ final class WubiLearningView: NSView {
         button.tag = tag
         button.alignment = isCharacter ? .left : .right
         let open = isCharacter ? expandedCharacters.contains(tag) : expanded
-        button.image = NSImage(systemSymbolName: open ? "chevron.down" : "chevron.right", accessibilityDescription: nil)
-        button.imagePosition = .imageLeading
+        if showsChevron {
+            button.image = NSImage(systemSymbolName: open ? "chevron.down" : "chevron.right",
+                                   accessibilityDescription: nil)
+            button.imagePosition = .imageLeading
+        } else {
+            button.image = nil
+        }
         button.imageScaling = .scaleProportionallyDown
         button.setAccessibilityValue(open ? "已展开" : "已收起")
         button.setAccessibilityLabel(title)
@@ -405,92 +411,188 @@ final class WubiLearningView: NSView {
         parent.addSubview(button)
     }
 
+    /// 词组按"实际输入码对应到字"取格子：2 字各占 2 码、3 字第 3 字占 2 码、4 字以上第 4 位归末字。
+    private func wordCells(_ model: WubiLearning) -> [(glyph: String, key: String)] {
+        let characters = model.characters.map(\.text)
+        guard let code = model.code?.uppercased(), code.count >= 2 else { return [] }
+        let letters = Array(code)
+        func letter(_ index: Int) -> String { index < letters.count ? String(letters[index]) : "" }
+        switch characters.count {
+        case 0:
+            return []
+        case 1:
+            return [(characters[0], code)]
+        case 2:
+            guard letters.count >= 4 else { return [(characters[0], code)] }
+            return [(characters[0], letter(0) + letter(1)), (characters[1], letter(2) + letter(3))]
+        case 3:
+            guard letters.count >= 4 else { return [(characters[0], code)] }
+            return [(characters[0], letter(0)), (characters[1], letter(1)),
+                    (characters[2], letter(2) + letter(3))]
+        default:
+            guard letters.count >= 4 else { return [(characters[0], code)] }
+            return [(characters[0], letter(0)), (characters[1], letter(1)),
+                    (characters[2], letter(2)), (characters[characters.count - 1], letter(3))]
+        }
+    }
+
+    /// 两行布局（`docs/design/l3-hint.md`）：第一行"完整码 + 简码"，第二行"字根格 + 识别码两行"。
+    /// 单字与词组同构，保证学习区高度稳定；候选窗本身零改动。
     func arrange(width: CGFloat, maxHeight: CGFloat) -> CGFloat {
         if let detailScroll { detailOrigin = detailScroll.contentView.bounds.origin }
         clearContent(dropButtons: false)
-        guard let model, maxHeight >= 62 else { isHidden = true; return 0 }
+        guard let model, maxHeight >= 56 else { isHidden = true; return 0 }
         isHidden = false
+
+        let single = model.characters.count == 1 ? model.characters.first : nil
+        let hint = single.flatMap { LearningHints.hint(for: $0.text) }
+        let code = hint?.code ?? model.code?.uppercased()
+        let isWord = model.characters.count > 1
+        let height: CGFloat = 76
+
         let separator = NSBox(frame: NSRect(x: 0, y: 0, width: width, height: 1))
         separator.boxType = .separator
         addSubview(separator)
-        var rule = model.rule
-        if model.characters.count == 1, let item = model.characters.first {
-            if let recognition = item.recognition { rule = "\(recognition.key)识别码：\(recognition.text)" }
-            else if item.category == "key_name" { rule = "键名字：所在键连打四次" }
+
+        // ── 第一行：完整码（左）＋ 简码 / 拆解待核验 / 逐字（右）
+        let codeLabel = NSTextField(labelWithString: "完整码")
+        codeLabel.font = .systemFont(ofSize: 11)
+        codeLabel.textColor = ImeAppearance.secondaryText
+        codeLabel.frame = NSRect(x: 0, y: 8, width: 44, height: 18)
+        addSubview(codeLabel)
+
+        let codeField = NSTextField(labelWithString: code ?? (queryUnavailable ? "学习说明暂缺" : "五笔编码暂缺"))
+        codeField.font = NSFont.monospacedSystemFont(ofSize: 12.5, weight: .medium)
+        codeField.textColor = ImeAppearance.secondaryText
+        codeField.frame = NSRect(x: 46, y: 7, width: max(1, width - 150), height: 18)
+        codeField.setAccessibilityLabel("完整码 " + (code ?? "暂缺"))
+        addSubview(codeField)
+
+        if isWord {
+            button("逐字 ▸", x: max(0, width - 62), y: 4, width: 62, in: self,
+                   action: #selector(toggleDetails), showsChevron: false)
+        } else if let hint, hint.isPartial {
+            let pending = NSTextField(labelWithString: "拆解待核验")
+            pending.font = .systemFont(ofSize: 10)
+            pending.textColor = .systemOrange
+            pending.alignment = .right
+            pending.frame = NSRect(x: max(0, width - 86), y: 9, width: 86, height: 16)
+            pending.setAccessibilityLabel("拆解待核验")
+            addSubview(pending)
+        } else if let short = (hint?.short1 ?? hint?.short2) {
+            let label = NSTextField(labelWithString: "简码 " + short)
+            label.font = .systemFont(ofSize: 10.5, weight: .medium)
+            label.textColor = ImeAppearance.secondaryText
+            label.alignment = .right
+            label.frame = NSRect(x: max(0, width - 86), y: 9, width: 86, height: 16)
+            label.setAccessibilityLabel("简码 \(short)")
+            addSubview(label)
         }
-        let summary = NSTextField(wrappingLabelWithString: "")
-        let codeText = model.code.map { "完整码 \($0.uppercased())   " } ?? (queryUnavailable ? "学习说明暂缺" : "五笔编码暂缺")
-        let text = NSMutableAttributedString(string: codeText, attributes: [
-            .font: NSFont.monospacedSystemFont(ofSize: 13, weight: .medium),
-            .foregroundColor: ImeAppearance.secondaryText])
-        if model.code != nil { text.append(NSAttributedString(string: rule, attributes: [
-            .font: NSFont.systemFont(ofSize: 11), .foregroundColor: ImeAppearance.secondaryText])) }
-        summary.attributedStringValue = text
-        summary.preferredMaxLayoutWidth = width
-        let summaryHeight = ceil(text.boundingRect(with: NSSize(width: width, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading]).height) + 4
-        summary.frame = NSRect(x: 0, y: 9, width: width, height: summaryHeight)
-        summary.setAccessibilityLabel(text.string)
-        summary.toolTip = model.rule
-        summary.setAccessibilityHelp(model.rule)
-        addSubview(summary)
-        var y = 9 + summaryHeight + 5
-        guard model.code != nil else { return min(maxHeight, y + 6) }
-        if model.characters.count == 1, let item = model.characters.first {
-            if !item.roots.isEmpty {
-                // Recognition explanation stays in the summary, separate from real roots.
-                y += rootRow(item.roots, in: self, y: y, width: width)
-            }
+
+        // ── 第二行：字根格子 + 识别码 / 规则
+        let y: CGFloat = 34
+        let cells: [(glyph: String, key: String)]
+        if isWord {
+            cells = wordCells(model)
+        } else if let hint, !hint.roots.isEmpty {
+            cells = hint.roots.map { ($0.glyph, $0.key) }
         } else {
-            let count = model.characters.count
-            let indexes = count <= 3 ? Array(0..<count) : [0, 1, 2, count - 1]
-            let roots: [WubiLearning.Root] = indexes.map { index in
-                let item = model.characters[index]
-                let length = count == 2 || (count == 3 && index == 2) ? 2 : 1
-                return WubiLearning.Root(text: item.text, key: item.code.map { String($0.prefix(length)).uppercased() } ?? "?")
-            }
-            y += rootRow(roots, in: self, y: y, width: max(1, width - 86))
-            button(expanded ? "收起逐字拆分" : "逐字拆分", x: max(0, width - 86), y: y - 32,
-                width: 86, in: self, action: #selector(toggleDetails))
-            if expanded {
-                let scroll = NSScrollView()
-                scroll.drawsBackground = false
-                scroll.hasVerticalScroller = true
-                scroll.autohidesScrollers = true
-                let document = LearningDetailsView()
-                var offset: CGFloat = 0
-                let inner = max(1, width - 16)
-                for (index, item) in model.characters.enumerated() {
-                    let open = expandedCharacters.contains(index)
-                    let heading = "\(item.text)" + (open ? "" : "  \(item.code?.uppercased() ?? "编码暂缺")")
-                    button(heading, x: 0, y: offset, width: inner, in: document,
-                        action: #selector(toggleCharacter(_:)), tag: index)
-                    offset += 27
-                    if open {
-                        offset += label("完整码 \(item.code?.uppercased() ?? "暂缺")   \(item.rule ?? "拆字说明暂缺")",
-                            in: document, x: 12, y: offset, width: inner - 12)
-                        if item.roots.isEmpty {
-                            offset += label("拆字说明暂缺", in: document, x: 12, y: offset, width: inner - 12)
-                        } else {
-                            offset += rootRow(item.roots, in: document, y: offset, width: inner)
-                        }
-                        offset += 5
+            cells = (single?.roots ?? []).map { ($0.text, $0.key.uppercased()) }
+        }
+
+        let cellWidth: CGFloat = 46
+        var cellX: CGFloat = 2
+        for cell in cells.prefix(6) {
+            let column = NSView(frame: NSRect(x: cellX, y: y, width: cellWidth, height: 40))
+            column.setAccessibilityElement(true)
+            column.setAccessibilityRole(.group)
+            column.setAccessibilityLabel("\(cell.glyph)，键 \(cell.key)")
+            let upper = NSTextField(labelWithString: cell.glyph)
+            upper.font = .systemFont(ofSize: 15)
+            upper.textColor = ImeAppearance.secondaryText
+            upper.alignment = .center
+            upper.frame = NSRect(x: 0, y: 18, width: cellWidth, height: 21)
+            let lower = NSTextField(labelWithString: cell.key)
+            lower.font = .monospacedSystemFont(ofSize: 10.5, weight: .regular)
+            lower.textColor = ImeAppearance.secondaryText.withAlphaComponent(0.75)
+            lower.alignment = .center
+            lower.frame = NSRect(x: 0, y: 1, width: cellWidth, height: 16)
+            upper.setAccessibilityElement(false); lower.setAccessibilityElement(false)
+            column.setAccessibilityChildren([])
+            column.addSubview(upper); column.addSubview(lower)
+            addSubview(column)
+            cellX += cellWidth
+        }
+
+        // 识别码两行（字母大写）；旧数据退化为规则文本
+        let detailX = min(max(cellX + 8, width * 0.52), max(0, width - 120))
+        if let recognition = hint?.recognition {
+            let prefix = (hint?.isPartial ?? false) ? "参考识别码：" : "识别码："
+            let line1 = NSTextField(labelWithString: prefix + recognition.stroke + "·" + recognition.structure + "结构")
+            line1.font = .systemFont(ofSize: 10.5)
+            line1.textColor = ImeAppearance.secondaryText
+            line1.frame = NSRect(x: detailX, y: y + 1, width: max(60, width - detailX), height: 16)
+            line1.setAccessibilityLabel(prefix + recognition.stroke + "·" + recognition.structure + "结构")
+            addSubview(line1)
+            let line2 = NSTextField(labelWithString: recognition.letter)
+            line2.font = NSFont.monospacedSystemFont(ofSize: 11.5, weight: .medium)
+            line2.textColor = ImeAppearance.secondaryText
+            line2.frame = NSRect(x: detailX, y: y + 17, width: 40, height: 16)
+            line2.setAccessibilityLabel("识别码字母 " + recognition.letter)
+            addSubview(line2)
+        } else if let single, let rule = single.rule, !isWord {
+            let text = NSTextField(labelWithString: rule)
+            text.font = .systemFont(ofSize: 10.5)
+            text.textColor = ImeAppearance.secondaryText
+            text.usesSingleLineMode = true
+            text.lineBreakMode = .byTruncatingTail
+            text.frame = NSRect(x: detailX, y: y + 6, width: max(60, width - detailX), height: 16)
+            text.setAccessibilityLabel(rule)
+            addSubview(text)
+        }
+
+        // 词的"逐字拆分"展开区（保持原行为，位置在第二行下方）
+        if isWord, expanded {
+            var offset: CGFloat = 0
+            let inner = max(1, width - 16)
+            let scroll = NSScrollView()
+            scroll.drawsBackground = false
+            scroll.hasVerticalScroller = true
+            scroll.autohidesScrollers = true
+            let document = LearningDetailsView()
+            for (index, item) in model.characters.enumerated() {
+                let open = expandedCharacters.contains(index)
+                let heading = "\(item.text)" + (open ? "" : "  \(item.code?.uppercased() ?? "编码暂缺")")
+                button(heading, x: 0, y: offset, width: inner, in: document,
+                       action: #selector(toggleCharacter(_:)), tag: index)
+                offset += 27
+                if open {
+                    offset += label("完整码 \(item.code?.uppercased() ?? "暂缺")   \(item.rule ?? "拆字说明暂缺")",
+                                    in: document, x: 12, y: offset, width: inner - 12)
+                    if item.roots.isEmpty {
+                        offset += label("拆字说明暂缺", in: document, x: 12, y: offset, width: inner - 12)
+                    } else {
+                        offset += rootRow(item.roots.map { WubiLearning.Root(text: $0.text, key: $0.key) },
+                                          in: document, y: offset, width: inner)
                     }
+                    offset += 5
                 }
-                let height = max(0, min(137, maxHeight - y - 8))
-                scroll.frame = NSRect(x: 0, y: y + 4, width: width, height: height)
+            }
+            let available = max(0, min(137, maxHeight - y - 44))
+            if available > 20 {
+                scroll.frame = NSRect(x: 0, y: y + 40, width: width, height: available)
                 document.frame = NSRect(x: 0, y: 0, width: inner, height: offset)
                 scroll.documentView = document
                 addSubview(scroll)
                 detailScroll = scroll
                 scroll.tile()
-                let origin = NSPoint(x: 0, y: max(0, min(detailOrigin.y, offset - height)))
+                let origin = NSPoint(x: 0, y: max(0, min(detailOrigin.y, offset - available)))
                 scroll.contentView.scroll(to: origin)
                 scroll.reflectScrolledClipView(scroll.contentView)
-                y += height + 4
+                return min(maxHeight, y + 40 + available + 4)
             }
         }
-        return min(maxHeight, y + 6)
+        return min(maxHeight, height)
     }
 
     @objc private func toggleDetails() { expanded.toggle(); onResize?() }
