@@ -53,6 +53,10 @@ guard let recognitionResult = recognitionSession.submitRecognition(stroke: expec
 require(recognitionResult.correct, "正确末笔/结构应判对")
 require(recognitionResult.explanation.contains(expected.letter), "说明应包含正确字母")
 require(recognitionResult.explanation.contains(expected.stroke), "说明应包含**正确**的末笔（不是用户选的）")
+// 练习字根行与学习区同样式：字形上、键位下（大写）。
+let rootRow = PracticeRootRowView(frame: NSRect(x: 0, y: 0, width: 400, height: 36))
+rootRow.show([("土", "F"), ("丿", "T"), ("匕", "X")])
+require(rootRow.roots.map(\.key) == ["F", "T", "X"], "字根行键位大写且顺序一致")
 // 输入视图只接受 a–y、退格与回车。
 let answer = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
 var submitted: String?

@@ -174,8 +174,7 @@ final class PracticeSession {
         guard let question else { return nil }
         let correct = Practice.judgeCode(answer, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
-        return Result(correct: correct,
-                      explanation: "完整码 \(question.code.uppercased()) · 字根 \(question.rootHint)")
+        return Result(correct: correct, explanation: "完整码 \(question.code.uppercased())")
     }
 
     /// 提交识别码选择；证据说明用**正确**的末笔与结构，而不是用户选的。
