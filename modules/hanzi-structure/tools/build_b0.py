@@ -544,11 +544,21 @@ def main() -> int:
         # 列：字 \t 全码 \t 质量 \t 字根(形:键 …) \t 识别码(字母|末笔|结构) \t 简码(一/二)
         rows = ['# ADR-311 学习区运行时资源 v2：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)']
         for entry in entries:
-            roots = ' '.join(f'{(c or "？")}:{k}' for c, k in zip(entry['components'], entry['keys']))
+            # 位次不符（D2 序列尾部不可靠）时，从第一个不符位次起截断：
+            # 宁可少显示，也不把"丶"标成 T 这种错误键位教给用户（报告 255）。
+            components, keys = entry['components'], entry['keys']
+            mismatch = entry.get('positionMismatch') or []
+            quality = entry['quality']
+            if mismatch:
+                cut = max(0, min(len(components), mismatch[0] - 1))
+                components, keys = components[:cut], keys[:cut]
+                # 截断后不再是"完整解释"：运行时按 partial 降级，宿主会显示「拆解待核验」。
+                quality = 'partial'
+            roots = ' '.join(f'{(c or "？")}:{k}' for c, k in zip(components, keys))
             rec = entry['recognition']
             recognition = f'{rec["key"].upper()}|{rec["stroke"]}|{rec["structure"]}' if rec else ''
             shorts = '/'.join(x for x in (entry['short1'], entry['short2']) if x)
-            rows.append('\t'.join([entry['char'], entry['code'] or '', entry['quality'],
+            rows.append('\t'.join([entry['char'], entry['code'] or '', quality,
                                     roots, recognition, shorts]))
         payload = '\n'.join(rows) + '\n'
         Path(args.runtime_out).write_text(payload, encoding='utf-8')
