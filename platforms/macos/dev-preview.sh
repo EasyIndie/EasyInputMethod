@@ -56,6 +56,7 @@ swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/Practice.swift" \
   "${SCRIPT_DIR}/Sources/PracticeWindow.swift" \
   "${SCRIPT_DIR}/Sources/PracticeAnswerView.swift" \
+  "${SCRIPT_DIR}/Sources/PracticeRootRowView.swift" \
   "${SCRIPT_DIR}/Sources/WubiHints.generated.swift" \
   "${ROOT}/target/debug/libime_ffi.a" \
   -framework AppKit -o "${BIN}"
