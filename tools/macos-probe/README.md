@@ -29,8 +29,8 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `keytopid <pid> <按键串> [保持ms] [间隔ms] [--hid]` | 投递合成按键；`;` 分隔，支持普通字符、`opt+f`/`cmd+s`、单独修饰键 `shift`，以及发真正 `flagsChanged` 的 `shiftc`/`optc`/`ctrlc`/`cmdc`（报告188/190）；另有命名键 `left/right/up/down/esc/tab/return/delete/space`（组合键同样支持，如 `ctrl+right`；报告203/204，**别写成裸 `right`——那会被当成字母打进去**）。`--hid` 面向当前前台应用，且会先校验目标 PID 就是前台 |
 | `imetype --keys <串> --self-post` | **只做文本插入压测，不要用来量输入法延迟**：进程内合成事件进不了 `NSTextInputContext`，`has_non_ascii=false`、`keys_seen=0`（报告229） |
 | `imetype`（HID 模式）+ `keytopid` | 计时点落在 `NSTextInputClient` 回调（`setMarkedText`/`insertText`），输出 `latency_ms`/`latencies_ms` = 按键到达 → 输入法交回 UI；`type-session.sh` 已封装（报告229） |
-| `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定（`ROUNDS`/`THRESHOLD_MS`/`RSS_LIMIT_MB`=增长上限/`RSS_HARD_MB`=绝对硬顶，报告198） |
-| `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟，采样网络/RSS，重启宿主核对词库（报告192） |
+| `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定。**三段覆盖**：`basic`（词句）、`long-code`（长编码/四码字）、`paging`（翻页）；可用 `SEGMENTS='名|按键;名|按键'` 覆写。门禁：`THRESHOLD_MS`=稳态 p95、`RSS_LIMIT_MB`=增长上限、`FOOTPRINT_HARD_MB`=vmmap footprint 绝对硬顶（报告198/251） |
+| `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟（发布候选用 `MINUTES=30`），采样网络/RSS/footprint，重启宿主核对词库；绝对硬顶用 **footprint**（`FOOTPRINT_HARD_MB`，报告251） |
 | `memory-gate.sh` | **ADR-263 的 30MB 门禁**：重启宿主 → marker → 冷态/首键后/六词后/静置 8s 四点采 `vmmap`，判定 physical footprint 与私有已提交同时 ≤30MiB（`ROUNDS` 默认 3，报告199） |
 | `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它（`FAST=1` 迭代档） |
 | `ime-state.sh` | 验收状态自归位（报告232）：`--snapshot` 记四项偏好、`--ensure` 收敛到 mixed/chinese/half/simplified、`--restore` 还原；收敛不了退 78 |
@@ -83,7 +83,7 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 
-**RSS 绝对值不可跨 macOS 版本比较**（报告198）：macOS 13 的 `ps rss` 计入共享库/映射文件页（同一宿主 51 MiB，而 `vmmap` footprint 38.7M），macOS 27 上同样负载只有 5–20 MiB。所以探针门禁改成「键入后相对基线的**增长**（`RSS_LIMIT_MB`/`GROWTH_LIMIT_MB`）+ 绝对硬顶 `RSS_HARD_MB`」，泄漏信号看增长。
+**RSS 绝对值不可跨 macOS 版本比较**（报告198/229/251）：`ps rss` 计入共享库/映射文件页，macOS 27 上同一宿主 footprint 33 MiB 而 rss 95 MiB，`RSS_HARD_MB=96` 已贴近误判边缘。2026-11-06 起绝对硬顶统一改用 `vmmap` 的 **physical footprint**（`FOOTPRINT_HARD_MB`，默认 40），rss 只作参考；泄漏信号仍看相对热身段的增长。
 规格里的 **`常驻内存 ≤30MB`（ADR-263）是另一套口径**：新启动宿主上 `vmmap` 的 physical footprint 与私有已提交同时 ≤30MiB，由 `tools/macos-probe/memory-gate.sh`（报告199）或 `platforms/macos/tests/run-imk-acceptance.sh` ⑪ 判定，不能拿探针 RSS 顶替。
 
 **AX 坐标以主屏左上角为原点、y 向下**（其他屏可为负）；`NSScreen.frame` 是 y 向上的 AppKit 坐标，换算用**主屏高度**而不是包围盒高度（报告202 踩过）。

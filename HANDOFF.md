@@ -2,17 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.1.0 候选（build 38）已装 air，等「自用 3 天 → tag/Release」；dev 已进 1.2.0 线（build 39），结构库 B0 走到 schema v5**。
-- 分支：`dev` @ 本轮提交；`main` = `e43ee55`（PR #224/#225 已合并），开放 PR **0 个**；`dev` 领先 main 未合并的提交均为结构库/文档工作。
-- 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；**1.1.0 的 tag 仍应打在冻结候选 `393318c`**；站点仍 `v1.0.2 · 构建 37`（1.1.0 未发布）。
-- 最近验证：`make verify` PASS（203 产物零网络符号）、`make macos-offline-tests` **61 文件 / 320 例 PASS（6 并发 ~70s）**。1.1.0 候选身份：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
+- 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.1.0 已发布并上线**（tag `v1.1.0` → `393318c`，站点 `v1.1.0 · 构建 38`，air 与 pro 同包 1.1.0/38）；下一站 **1.2.0**（dev 已含二级简码 598 条，Cargo 1.2.0 / build 39）。
+- 分支：`dev` @ 本轮提交；`main` = `730d894`（PR #226 已合并），开放 PR **0 个**。
+- 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag **`v1.1.0`**（Release + 站点已上线）。
+- 最近验证：`make verify` PASS（206 产物零网络符号）、`make macos-offline-tests` **61 文件 / 320 例 PASS**。1.1.0 发布身份：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.1.0 / build 38**（候选），宿主执行 `d3c5a2ef…`，宿主 PID 59867；输入源 `Lampyris.default` 在用 | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.0.0 / build 34**，宿主执行 `94394884…`（**未升到 1.1.0**） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
 
@@ -52,29 +52,31 @@
 
 ## 3. 未决
 
-- **corpus 第二阶段未开工（ADR-309/310，需求见 `docs/结构库第二阶段需求.md`）**：缺的是**许可干净的字根字形身份库**（N1，249 条占位的根因）与**真实笔顺**（N2）。现有数据已榨干：IDS 粒度粗（220 条叶数不等）、两款上游字体无许可、D2 自身对 8 个字漏拆。
-- **D3 只能作构建期 oracle（ADR-310）**：许可「未声明」，**不得**进发布产物、不得复用其字体；`pua-map.json` 也不随包分发。
-- **B0 体积会超标**：现 558 B/字，扩到 3,000 字约 1.6 MiB，超出 512 KiB 预算 → 第二阶段必须先定「运行包字段子集」（`ids`/`positionMismatch`/`notes` 不进包）。
-- **1.1.0 预检已过（报告 247）**：候选 `393318c` 身份零偏差（1.1.0/build 38、CI 双绿、ZIP `448d3170…` 逐字节一致、站点仍 `v1.0.2·37`、无 tag）；**自用 3 天已由用户 2026-11-06 显式豁免**（写进 `docs/releases/1.1.0.md` §3）；**tag/Release 已完成（报告 248）**：tag `v1.1.0` → `393318c`，run `42225134493` success，ZIP `448d3170…` 与候选逐字节一致、DMG staple+spctl 通过、appcast `sparkle:version=38`、包内执行 `d3c5a2ef…`。**只剩**：① dispatch Pages（站点仍 `v1.0.2·37`）② pro 用自带更新器升级——两项都需授权。
-- **pro 仍是 1.0.0/build 34**：等 1.1.0 Release 上线后用它自带更新器升级（一次验证同包 + 升级链）。
+- **1.2.0 未定候选**：dev 已含二级简码 598 条（报告 238），但**还没做过装机验收**；发版前要定验收范围、跑 `FAST=1 make macos-auto-acceptance` 与人工走查，tag 需单独授权。
+- ~~pro 本机实键入未确认~~ → **用户已在 pro 上确认：候选正常、切源顺手**（2026-11-06）。
+- **air 曾出现「输入菜单里没有萤火虫」**：根因是**输入源被移出启用列表**（系统设置里加/改输入源时删掉了），已由用户重新添加恢复；排查与恢复步骤写进 `docs/故障恢复.md` §4.1（含“TIS API 从后台会话启用不持久化”的实测结论）。
+- **B3 学习区已实现（报告 253）**：⌥L 学习区两行式（完整码+简码 / 字根格+识别码），候选窗零改动；词组按输入码对应到字；`LearningHints` 读 `B0-runtime.tsv`，缺失退回 D14。离屏实拍 `docs/design/learning-real-*.png`。**装机后的性能/内存实测仍待候选包**。
+- **B3 草图（已成历史）**（`docs/design/l3-hint.md` + `learning-area-mock.png`）：按用户裁定改为**候选窗零改动**，学习信息只放 ⌥L 学习区，学习区自己两行封顶（单字：字+码+简码 / 字根+识别码依据；词组：前 3 字 + 「逐字 ▸」）。`partial` 未知字根显示 `？`、标注「拆解待核验」；数据源优先 B0-runtime，未覆盖的字走 D14 兜底。**实现未开始，等评审三个细节**。
+- **B2 数据地基已出产物（报告 252 / ADR-311）**：`data/generated/B0-runtime.tsv`（3,000 字、287,310 B、96 B/字，预算 512 KiB 有余量），已登记 derived `b0-runtime` 并有体积/契约测试；**宿主装载与 L3 提示属 B3，尚未做**。
+- **corpus 第二阶段未开工（ADR-309/310）**：需求见 `docs/结构库第二阶段需求.md`；缺口是许可干净的字根字形身份库（N1，249 条占位的根因）与真实笔顺（N2）。B0 现 558 B/字，扩 3,000 字约 1.6 MiB，超 512 KiB 预算 → 必须先定运行包字段子集。
+- **D3 只能作构建期 oracle（ADR-310）**：许可「未声明」，不得进发布产物、不得复用其字体。
 - **客户端自动回读缺口**：Safari/Chrome/Xcode 在自动矩阵是 BLOCKED，需人工补（报告 229）。
-- **`ps rss` 口径**：macOS 27 计入共享页（同宿主 footprint 33 MiB / rss 95 MiB），`RSS_HARD_MB=96` 贴近误判边缘，建议改 `vmmap` footprint。
+- **发布加固项**：签名 tag 校验仍未启用（缺 `packaging/git-allowed-signers`），当前只警告不失败（报告 248 §5）。
+- ~~`ps rss` 口径~~ → **已改**（报告 251）：`perf-session.sh` 与 `soak-session.sh` 的绝对硬顶统一改用 `vmmap` physical footprint（`FOOTPRINT_HARD_MB=40`），rss 降为参考；延迟统计新增 long-code / paging 两段。
 
-## 4. 下一步（1.1.0 收尾，按顺序）
+## 4. 下一步（1.2.0，按 `docs/迭代计划-1.2.0.md` 逐批推进）
 
-1. **机器可判部分（air，无需换包；报告 230 起一套命令）**：
-   ```sh
-   make verify                      # 13s
-   make macos-offline-tests         # 56 文件/295 例，6 并发 ~34s（JOBS=N 可调）
-   FAST=1 make macos-auto-acceptance # 迭代档 4.7 分钟；发布门禁用默认档（~9 分钟）
-   python3 tools/check-level1-codes.py && make eval-candidates EVAL_JSON=/tmp/after.json
-   ```
-   判定：零诊断全绿；`jianma1` 命中/首选明显改善、其余类别 `hit%`/`first%`/`keys` 零劣化。
-2. ~~装机人工走查~~ **已完成（2026-11-06，报告 234）**：A 档 10 项 + IT-25 四项全部 PASS，无 FAIL/BLOCKED。用户同时定下新规矩：**验收只依赖系统自带应用**（VS Code / 微信等非默认安装的应用从清单移除，Chrome/Xcode 降为 optional），已由 `test-acceptance-portability.py` 强制。
-3. **三天自用**：1.1.0 装包后自用 3 天再 tag（计划 §4）；期间不换包，「换包后确认新二进制」必做（报告 220 教训：`lsof … | grep -c deleted` 必须为 0）。
-4. **发布（需用户明确授权）**：`git tag -a v1.1.0` 打在**验收候选提交** `393318c` → Release → 核对资产（ZIP `448d3170…` 逐字节一致、DMG staple/spctl、appcast `sparkle:version=38`）→ dispatch Pages → 写 `docs/releases/1.1.0.md` → 站点回读 `v1.1.0 · 构建 38`。
-5. **pro 升级**：Release 上线后让 pro 用自带更新程序 `1.0.0 → 1.1.0`（同包 + 升级链一次闭环），升级后核 `payloadSHA256`、执行 SHA `d3c5a2ef…`、config/词库保留。
-6. 之后：D 排序观察期（ADR-304 P2/P3，有证据才做）→ E 拼音深化 / F 平台扩展 / G 数据教学（`docs/MVP后执行计划.md`）。
+| 批次 | 内容 | 状态 |
+|---|---|---|
+| **B1 工程收口** | D2 CI 数据 bootstrap、D5 footprint、D6 站点版本行、D4 延迟覆盖、E2 soak | **可立即开始**（无需授权） |
+| **B2 数据地基** | B0→运行资源（3,000 字、字段子集、≤512 KiB）+ 三实测（先 ADR） | 等 B1 |
+| **B3 教学只读** | L3 候选窗提示（可关，不改排序） | 等 B2 |
+| **B4 教学练习** | L4 题库/练习窗/本地进度（先 ADR） | 等 B3 |
+| **B5 质量项** | A4 冷首键测量、A1 观察期判断、A2/A3/A5 **关闭并写触发条件** | 等评测数据 |
+| **B6 数据扩张** | C1 调研（**可与 B1 并行**）→ C2/C3/C4 | 看 C1 结论 |
+| **收口** | 装包一次 + 验收 + `tag 1.2.0` + 站点 + pro | 需单独授权 |
+
+> D1（签名 tag 校验）卡在你定签名方式（GPG / SSH key），定了 30 分钟接上。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -116,6 +118,14 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**B3 学习区实现（报告 253）**。`WubiLearningView` 改两行布局（完整码+简码 / 字根格+识别码两行），候选窗零改动；新增 `LearningHints`（读 `B0-runtime.tsv`，缺失退回 D14）；词组按输入码位置映射到字（KWWL → 中K 华W 人W 国L）。`wubi-learning.swift` 扩到可注入资源并生成亮/暗实拍；离线回归全绿。
+- 2026-11-06 / pi（air）：**B2 数据地基（报告 252 / ADR-311）**。B0 扩到 3,000 字并预渲染成 `B0-runtime.tsv`（287,310 B ≈ 96 B/字，预算 512 KiB 反而有余量；B0.json 同规模是 1.62 MiB），登记 derived `b0-runtime`，新增 `test-b0-runtime.py` 守体积/格式/无 PUA/消费契约。ADR-311 定装载方式（bundle 内只读文件、宿主查表、Rust 不参与）。
+- 2026-11-06 / pi（air）：**1.2.0 B1 批完成（报告 251）**。D1 签名 tag 改 SSH key（白名单 `packaging/git-allowed-signers`，本地已验签）；D2 CI 取 D2 拆字数据 + D17 简码表入库，B0 独立重算不再 skip；D5 perf/soak 绝对硬顶改 vmmap footprint；D6 站点改占位符 + `tools/stamp-site.py` + Pages 盖章；D4 延迟统计加 long-code/paging 两段；E2 soak 30 分钟档。未换包、未改输入行为；离线 61 文件 / 323 例 PASS。
+- 2026-11-06 / pi（air）：**1.2.0 迭代计划（`docs/迭代计划-1.2.0.md`）**。按"除平台扩张外全部收口"排成 6 批：B1 工程收口 → B2 数据地基 → B3 L3 提示 → B4 L4 练习 → B5 质量项（有证据才做）→ B6 数据扩张；只换一次包。原则：低风险先行、依赖链不打断、无证据的项明确关闭并写触发条件。可立即开始 B1 与 C1（互不阻塞）。
+- 2026-11-06 / pi（air）：**下一版积压梳理（`docs/待办与积压.md`）**。把 ROADMAP 未勾项、ADR 待定项、报告遗留与已知限制收成 A–G 七类，每项给证据/成本/依赖/授权；给出 1.2.0 三套套餐（A 工程收口+教学地基 / B 质量与门禁最小版 / C 平台扩张），推荐 A。需要用户拍三件事：套餐、签名 tag 是否启用、Windows spike 是否启动。
+- 2026-11-06 / pi（air）：**1.1.0 闭环 + air 输入源故障收尾**。用户在 pro 确认候选/切源正常；air 报「萤火虫不能用」经查是**被移出已启用输入源**（包、宿主、签名均健康），用户重新添加后恢复。把排查命令与「TIS 后台启用不持久化」写进 `docs/故障恢复.md` §4.1，HANDOFF 同步。
+- 2026-11-06 / pi（air）：**1.1.0 发布收口**。HANDOFF 发布列车改为「1.1.0 已发布 → 下一站 1.2.0」；ROADMAP 三条发布任务全部勾掉（自用豁免、tag/Release、站点、pro 升级），新增「1.2.0 候选」与「pro 本机实键入确认」。当前：main `730d894`、最新 tag `v1.1.0`、站点 `v1.1.0 · 构建 38`、air/pro 同包。
+- 2026-11-06 / pi（air）：**1.1.0 站点 + pro 升级（报告 250）**。站点版本行是硬编码，先改 `site/index.html` 再经 PR #226 合入 main（CI 前两次红灯：预览冒烟 `zz` 撞五笔通配、B0 测试在 CI 缺下载数据——都不是产品回归，已修并留报告 249/补 skip 逻辑），dispatch Pages 后回读 `v1.1.0 · 构建 38`。pro 经更新程序 1.0.0/34 → 1.1.0/38（执行 `d3c5a2ef…`），config 与 959 行词库未变，更新程序同步升到 1.1.0；`--verify-payload` 独立验签通过。
 - 2026-11-06 / pi（air）：**1.1.0 发布（报告 248）**。用户授权 tag → `git tag -a v1.1.0 393318c` 推送，Release run `42225134493` success；回读：ZIP `448d3170…` 逐字节一致、DMG staple+spctl 通过、appcast `sparkle:version=38`、更新程序 1.1.0 已公证、包内执行 `d3c5a2ef…`/universal/38 全对。站点未部署（等授权），pro 仍 1.0.0。
 - 2026-11-06 / pi（air）：**用户豁免 1.1.0 的「自用 3 天」**。豁免事实与替代证据（报告 229 久用、报告 234 人工走查）写进 `docs/releases/1.1.0.md` §3 与报告 247 §2；**尚未执行 tag/Release/Pages/换包**，等下一步授权。
 - 2026-11-06 / pi（air）：**1.1.0 发布预检（报告 247）**。候选 `393318c` 全项核对：版本/构建号、CI 双绿、ZIP 与本地逐字节一致、站点仍 v1.0.2·37、无 v1.1.0 tag、`release.yml` 会产出 ZIP/DMG/更新程序/appcast。**缺口：自用 3 天 0/3 + 四处授权**；发布稿两处「待补」确认就是 Release 产物，不是缺陷。未执行任何 tag/Release/Pages/换包动作。

@@ -1,0 +1,7 @@
+# 允许签名的身份（git tag -v 用；release 工作流在存在本文件时强制校验）
+# 生成方式：GitHub Actions 里执行
+#   git config gpg.format ssh
+#   git config gpg.ssh.allowedSignersFile packaging/git-allowed-signers
+#   git tag -v vX.Y.Z
+# 格式：<principal> <公钥类型> <公钥>；principal 必须等于 tag 的 tagger 邮箱。
+824219521@qq.com ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDKCqj61MJz/UWrB+TTreyZBLWKDkbqCnm084uSwKiCA joker@MacBook-Air.local
