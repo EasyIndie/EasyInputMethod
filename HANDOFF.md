@@ -11,7 +11,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.1.0 / build 38**（候选），宿主执行 `d3c5a2ef…`，宿主 PID 59867；输入源 `Lampyris.default` 在用 | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39**（候选，2026-11-07 装机），宿主执行 `b152a001…`；输入源 `Lampyris.default` 在用；回滚点 `updates/install-backup-20261107T063934Z/` | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -118,6 +118,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**1.2.0/build 39 装机 + 首轮体验数据（报告 254）**。PR #227 合并 → CI 验收包 → 装 air：版本/执行 SHA `b152a001…`/公证全部核对，config 与 1225 行词库未变。评测 ALL 命中 98.2%/首选 86.4%（jianma2 100%/100%）；三段延迟稳态 p95 6.7–8.3 ms；**冷首键 27–40 ms，比 1.1.0 的 16–26 ms 高**（待查是否学习区布局所致）；soak 3 分钟 17 轮 0 外联、footprint 38.5 MiB（比 1.1.0 高约 5 MiB，待单独归因）。
 - 2026-11-06 / pi（air）：**B3 学习区实现（报告 253）**。`WubiLearningView` 改两行布局（完整码+简码 / 字根格+识别码两行），候选窗零改动；新增 `LearningHints`（读 `B0-runtime.tsv`，缺失退回 D14）；词组按输入码位置映射到字（KWWL → 中K 华W 人W 国L）。`wubi-learning.swift` 扩到可注入资源并生成亮/暗实拍；离线回归全绿。
 - 2026-11-06 / pi（air）：**B2 数据地基（报告 252 / ADR-311）**。B0 扩到 3,000 字并预渲染成 `B0-runtime.tsv`（287,310 B ≈ 96 B/字，预算 512 KiB 反而有余量；B0.json 同规模是 1.62 MiB），登记 derived `b0-runtime`，新增 `test-b0-runtime.py` 守体积/格式/无 PUA/消费契约。ADR-311 定装载方式（bundle 内只读文件、宿主查表、Rust 不参与）。
 - 2026-11-06 / pi（air）：**1.2.0 B1 批完成（报告 251）**。D1 签名 tag 改 SSH key（白名单 `packaging/git-allowed-signers`，本地已验签）；D2 CI 取 D2 拆字数据 + D17 简码表入库，B0 独立重算不再 skip；D5 perf/soak 绝对硬顶改 vmmap footprint；D6 站点改占位符 + `tools/stamp-site.py` + Pages 盖章；D4 延迟统计加 long-code/paging 两段；E2 soak 30 分钟档。未换包、未改输入行为；离线 61 文件 / 323 例 PASS。
