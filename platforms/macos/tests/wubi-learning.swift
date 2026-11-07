@@ -31,6 +31,11 @@ require(Practice.judgeCode(sample.code.uppercased() + " ", question: sample), "�
 require(!Practice.judgeCode("zzzz", question: sample), "错误码判错")
 require(Practice.recognitionLetter(stroke: "横", structure: "左右") == "G", "识别码表 横/左右 → G")
 require(Practice.recognitionLetter(stroke: "折", structure: "杂合") == "V", "识别码表 折/杂合 → V")
+// ADR-313 练习窗口：版式自检（控件不越界、不与题型控件重叠）。
+for kind in [PracticeKind.code, PracticeKind.recognition] {
+    let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)
+    require(problems.isEmpty, "练习窗口版式问题：\(problems.joined(separator: "; "))")
+}
 let tmpProgress = PracticeProgress(url: URL(fileURLWithPath: NSTemporaryDirectory() + "lampyris-practice-test" + "/practice.tsv"))
 for index in 0..<3200 { tmpProgress.record(char: "字", kind: .code, correct: index % 2 == 0, now: index) }
 require(tmpProgress.rows.count <= PracticeProgress.maxRows, "进度行数有界")
