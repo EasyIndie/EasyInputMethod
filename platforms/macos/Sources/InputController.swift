@@ -534,6 +534,44 @@ final class LampyrisInputController: IMKInputController {
             }
             return false
         }
+        // 组合键必须在"拿得到客户端"之前处理：没有组合态、甚至焦点不在文本控件时，
+        // ⌥L/⌥P 这类热键仍要被输入法吃掉，否则系统会把它当字符（⌥L → ¬）插进文档。
+        if event.type == .keyDown, let session {
+            if session.matches("hotkey.open_settings", event) {
+                showSettings()
+                return true
+            }
+            if session.matches("hotkey.open_update", event) {
+                UpdateEntry.open()
+                return true
+            }
+            if session.matches("hotkey.open_about", event) {
+                showAbout()
+                return true
+            }
+            let modeBeforeShortcut = session.mode
+            let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
+            let shortcut = session.shortcut(event, persistMode: true)
+            if shortcut.consumed {
+                if session.mode != modeBeforeShortcut {
+                    showStateFeedback(StateFeedback.mode(session.mode))
+                } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
+                    showStateFeedback(StateFeedback.learning(
+                        ImeConfig.bool("candidate.show_wubi_learning")))
+                }
+                if shortcut == .failed { presentConfigError() }
+                if let client = activeClient ?? (sender as? IMKTextInput) {
+                    if session.isComposing {
+                        updateMarked(client, session.buffer)
+                        showCandidates(client, session: session)
+                    } else {
+                        clearMarked(client)
+                    }
+                }
+                if !session.isComposing { candidateWindow?.hide() }
+                return true
+            }
+        }
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
         }
@@ -544,38 +582,6 @@ final class LampyrisInputController: IMKInputController {
             candidateSelection.reset()
             clearMarked(client)
             candidateWindow?.hide()
-        }
-        if session.matches("hotkey.open_settings", event) {
-            showSettings()
-            return true
-        }
-        if session.matches("hotkey.open_update", event) {
-            UpdateEntry.open()
-            return true
-        }
-        if session.matches("hotkey.open_about", event) {
-            showAbout()
-            return true
-        }
-        let modeBeforeShortcut = session.mode
-        let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
-        let shortcut = session.shortcut(event, persistMode: true)
-        if shortcut.consumed {
-            if session.mode != modeBeforeShortcut {
-                showStateFeedback(StateFeedback.mode(session.mode))
-            } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
-                showStateFeedback(StateFeedback.learning(
-                    ImeConfig.bool("candidate.show_wubi_learning")))
-            }
-            if shortcut == .failed { presentConfigError() }
-            if session.isComposing {
-                updateMarked(client, session.buffer)
-                showCandidates(client, session: session)
-            } else {
-                clearMarked(client)
-                candidateWindow?.hide()
-            }
-            return true
         }
         // 放行带命令/控制/选项修饰键的按键（保住 Cmd+Z 等系统快捷键）
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
