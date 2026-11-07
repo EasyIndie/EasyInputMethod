@@ -540,15 +540,21 @@ def main() -> int:
     (out_dir / 'B0.json').write_text(json.dumps(entries, ensure_ascii=False, indent=1) + '\n', encoding='utf-8')
     (out_dir / 'B0-report.json').write_text(json.dumps(report, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     if args.runtime_out:
-        rows = ['# 教学运行时资源（ADR-311）：字\t全码\t质量\t讲解；由 build_b0.py 生成，勿手改']
+        # ADR-311（v2）：结构化紧凑 TSV —— 学习区要画"字根格子 + 键位"，预渲染文本不够用。
+        # 列：字 \t 全码 \t 质量 \t 字根(形:键 …) \t 识别码(字母|末笔|结构) \t 简码(一/二)
+        rows = ['# ADR-311 学习区运行时资源 v2：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)']
         for entry in entries:
-            text = render_explanation(entry).replace('\t', ' ')
-            rows.append('\t'.join([entry['char'], entry['code'] or '', entry['quality'], text]))
+            roots = ' '.join(f'{(c or "？")}:{k}' for c, k in zip(entry['components'], entry['keys']))
+            rec = entry['recognition']
+            recognition = f'{rec["key"].upper()}|{rec["stroke"]}|{rec["structure"]}' if rec else ''
+            shorts = '/'.join(x for x in (entry['short1'], entry['short2']) if x)
+            rows.append('\t'.join([entry['char'], entry['code'] or '', entry['quality'],
+                                    roots, recognition, shorts]))
         payload = '\n'.join(rows) + '\n'
         Path(args.runtime_out).write_text(payload, encoding='utf-8')
         size = len(payload.encode('utf-8'))
         print(f'写入 {args.runtime_out}（{len(entries)} 条，{size} 字节，约 {size / max(len(entries), 1):.1f} B/字）')
-        report['runtime'] = {'path': args.runtime_out, 'bytes': size,
+        report['runtime'] = {'path': args.runtime_out, 'bytes': size, 'version': 2,
                              'bytesPerEntry': round(size / max(len(entries), 1), 1)}
 
     print(f'写入 {out_dir}/B0.json（{len(entries)} 条）')
