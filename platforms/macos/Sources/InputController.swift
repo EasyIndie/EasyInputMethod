@@ -516,6 +516,10 @@ final class LampyrisInputController: IMKInputController {
             showAbout()
             return true
         }
+        if session.matches("hotkey.open_practice", event) {
+            PracticeWindow.shared.show()
+            return true
+        }
         let modeBeforeShortcut = session.mode
         let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
         let shortcut = session.shortcut(event, persistMode: true)

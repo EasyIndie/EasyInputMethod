@@ -30,12 +30,15 @@ enum LearningHints {
     /// 供测试与诊断：索引条目数（不等于已解析条数）。
     static var indexedCount: Int { store.indexedCount }
     static var materializedCount: Int { store.materializedCount }
+    /// 可出题的字（`quality == full`），按文件顺序（字频降序）。练习用，首次访问时扫描一次。
+    static var fullCharacters: [String] { store.fullCharacters }
 
     private final class Store {
         private let bytes: [UInt8]
         private let index: [String: Range<Int>]
         private var cache: [String: LearningHint] = [:]
         private let cacheLimit = 64
+        private var fullCache: [String]?
 
         init() {
             let candidates = [Bundle.main.url(forResource: "B0-runtime", withExtension: "tsv"),
@@ -71,6 +74,32 @@ enum LearningHints {
 
         var indexedCount: Int { index.count }
         var materializedCount: Int { cache.count }
+
+        /// 只读质量列判断是否 `full`，不解析整行。
+        var fullCharacters: [String] {
+            if let fullCache { return fullCache }
+            var out: [String] = []
+            out.reserveCapacity(index.count)
+            for (char, range) in index {
+                var field = 0
+                var start = range.lowerBound
+                var quality: ArraySlice<UInt8>?
+                for position in range {
+                    if bytes[position] == 0x09 {
+                        field += 1
+                        if field == 3 {
+                            quality = bytes[start..<position]
+                            break
+                        }
+                        start = position + 1
+                    }
+                }
+                if let quality, quality.elementsEqual("full".utf8) { out.append(char) }
+            }
+            out.sort(by: { (index[$0]?.lowerBound ?? 0) < (index[$1]?.lowerBound ?? 0) })
+            fullCache = out
+            return out
+        }
 
         func hint(for char: String) -> LearningHint? {
             if let cached = cache[char] { return cached }

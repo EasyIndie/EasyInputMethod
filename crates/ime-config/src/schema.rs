@@ -210,6 +210,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Hotkey,
     },
     OptionSpec {
+        key: "hotkey.open_practice",
+        value_type: ValueType::String,
+        enum_labels_zh: &[],
+        default: "\"alt+k\"",
+        title_zh: "练习",
+        doc_zh: "组合键如 alt+k（默认，K = 练习） | none = 关闭；打开离线练习窗口",
+        scope: Scope::Hotkey,
+    },
+    OptionSpec {
         key: "input.punctuation",
         value_type: ValueType::Enum {
             values: &["chinese", "english"],
