@@ -541,6 +541,10 @@ final class LampyrisInputController: IMKInputController {
     /// 没有组合态时，IMK 会把带 Option 的按键当"文本"直接交给默认实现（于是文档里出现 ¬）。
     /// 这里先拦热键，其它文本原样交给系统。
     override func inputText(_ string: String!, client sender: Any!) -> Bool {
+        if Self.hudDiagEnabled {
+            let event = NSApp.currentEvent
+            Self.hudDiag("inputText text=\(string ?? "-") event=\(event.map { "\($0.type.rawValue):\($0.characters ?? "-")" } ?? "nil")")
+        }
         if let event = NSApp.currentEvent, event.type == .keyDown, handleHotkey(event, sender: sender) {
             return true
         }
@@ -582,6 +586,11 @@ final class LampyrisInputController: IMKInputController {
                 finishComposition(activeClient ?? (sender as? IMKTextInput))
             }
             return false
+        }
+        if Self.hudDiagEnabled, event.type == .keyDown, event.modifierFlags.contains(.option) {
+            Self.hudDiag("keydown chars=\(event.characters ?? "-") ignore=\(event.charactersIgnoringModifiers ?? "-")"
+                + " flags=\(event.modifierFlags.rawValue) learning="
+                + "\(session?.matches("hotkey.toggle_wubi_learning", event) ?? false)")
         }
         if event.type == .keyDown, handleHotkey(event, sender: sender) { return true }
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
