@@ -498,6 +498,55 @@ final class LampyrisInputController: IMKInputController {
                 | NSEvent.EventTypeMask.leftMouseDown.rawValue)
     }
 
+    /// 组合键（设置/更新/关于/学习区/中英/全半角/标点/简繁/模式）。
+    ///
+    /// 两处入口共用：`handle`（组合态）与 `inputText`（没有组合态时系统把 ⌥L 当文本送进来）。
+    @discardableResult
+    private func handleHotkey(_ event: NSEvent, sender: Any!) -> Bool {
+        guard let session else { return false }
+        if session.matches("hotkey.open_settings", event) {
+            showSettings()
+            return true
+        }
+        if session.matches("hotkey.open_update", event) {
+            UpdateEntry.open()
+            return true
+        }
+        if session.matches("hotkey.open_about", event) {
+            showAbout()
+            return true
+        }
+        let modeBeforeShortcut = session.mode
+        let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
+        let shortcut = session.shortcut(event, persistMode: true)
+        guard shortcut.consumed else { return false }
+        if session.mode != modeBeforeShortcut {
+            showStateFeedback(StateFeedback.mode(session.mode))
+        } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
+            showStateFeedback(StateFeedback.learning(ImeConfig.bool("candidate.show_wubi_learning")))
+        }
+        if shortcut == .failed { presentConfigError() }
+        if let client = activeClient ?? (sender as? IMKTextInput) {
+            if session.isComposing {
+                updateMarked(client, session.buffer)
+                showCandidates(client, session: session)
+            } else {
+                clearMarked(client)
+            }
+        }
+        if !session.isComposing { candidateWindow?.hide() }
+        return true
+    }
+
+    /// 没有组合态时，IMK 会把带 Option 的按键当"文本"直接交给默认实现（于是文档里出现 ¬）。
+    /// 这里先拦热键，其它文本原样交给系统。
+    override func inputText(_ string: String!, client sender: Any!) -> Bool {
+        if let event = NSApp.currentEvent, event.type == .keyDown, handleHotkey(event, sender: sender) {
+            return true
+        }
+        return super.inputText(string, client: sender)
+    }
+
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
         guard let event else { return false }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
@@ -534,44 +583,7 @@ final class LampyrisInputController: IMKInputController {
             }
             return false
         }
-        // 组合键必须在"拿得到客户端"之前处理：没有组合态、甚至焦点不在文本控件时，
-        // ⌥L/⌥P 这类热键仍要被输入法吃掉，否则系统会把它当字符（⌥L → ¬）插进文档。
-        if event.type == .keyDown, let session {
-            if session.matches("hotkey.open_settings", event) {
-                showSettings()
-                return true
-            }
-            if session.matches("hotkey.open_update", event) {
-                UpdateEntry.open()
-                return true
-            }
-            if session.matches("hotkey.open_about", event) {
-                showAbout()
-                return true
-            }
-            let modeBeforeShortcut = session.mode
-            let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
-            let shortcut = session.shortcut(event, persistMode: true)
-            if shortcut.consumed {
-                if session.mode != modeBeforeShortcut {
-                    showStateFeedback(StateFeedback.mode(session.mode))
-                } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
-                    showStateFeedback(StateFeedback.learning(
-                        ImeConfig.bool("candidate.show_wubi_learning")))
-                }
-                if shortcut == .failed { presentConfigError() }
-                if let client = activeClient ?? (sender as? IMKTextInput) {
-                    if session.isComposing {
-                        updateMarked(client, session.buffer)
-                        showCandidates(client, session: session)
-                    } else {
-                        clearMarked(client)
-                    }
-                }
-                if !session.isComposing { candidateWindow?.hide() }
-                return true
-            }
-        }
+        if event.type == .keyDown, handleHotkey(event, sender: sender) { return true }
         guard event.type == .keyDown, let session, let client = sender as? IMKTextInput else {
             return false
         }
