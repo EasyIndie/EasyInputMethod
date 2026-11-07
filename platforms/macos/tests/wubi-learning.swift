@@ -14,6 +14,12 @@ require(me?.characters.first?.recognition == nil, "four-root code has no invente
 for text in ["我们", "我国", "特别", "特点", "突然", "投入"] {
     require(WubiLearning.lookup(text)?.characters.allSatisfy { !$0.roots.isEmpty } == true, "feedback phrase coverage " + text)
 }
+// ADR-311 v2：学习区资源按需解析（只建索引，不预先解析 3,000 条）。
+require(LearningHints.indexedCount >= 3000, "学习区索引应覆盖 3,000 字，实际 \(LearningHints.indexedCount)")
+require(LearningHints.materializedCount == 0, "加载时应零解析")
+require(LearningHints.hint(for: "和")?.recognition?.letter == "G", "按需解析能取到识别码")
+require(LearningHints.materializedCount == 1, "只解析被查询的那一条")
+require(LearningHints.hint(for: "我")?.roots.count == 3, "位次不符的条目已截断")
 let phrase = WubiLearning.lookup("中华人民共和国")
 require(phrase?.code == "kwwl" && phrase?.characters.count == 7, "long phrase summary and every character")
 require(phrase?.characters[3].code == "nav" && phrase?.characters[3].recognition?.key == "V", "verified long-word decomposition")
