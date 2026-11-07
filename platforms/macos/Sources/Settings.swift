@@ -657,7 +657,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         } else if scopes.contains(3) {
             groups = [("快捷键", ["hotkey.toggle_mode", "hotkey.toggle_english", "hotkey.toggle_width",
                 "hotkey.toggle_punctuation", "hotkey.toggle_variant",
-                "hotkey.open_settings", "hotkey.open_about", "hotkey.open_update",
+                "hotkey.open_settings", "hotkey.open_about", "hotkey.open_update", "hotkey.open_practice",
                 "hotkey.toggle_wubi_learning"])]
         } else {
             groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
