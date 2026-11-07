@@ -10,10 +10,15 @@ PROBE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$PROBE/bin"
 SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 ROUNDS="${ROUNDS:-3}"
+# ADR-312：默认配置（学习区关闭）守 30 MiB；学习区开启时放宽到 34 MiB（实测稳定差约 3 MiB，报告 256）。
+CALLER_LIMIT_MB="${LIMIT_MB:-}"
 LIMIT_MB="${LIMIT_MB:-30}"
 OUT="${OUT:-/tmp/lampyris-memory-gate-$(date -u +%Y%m%dT%H%M%SZ)}"
 SUPPORT="${SUPPORT:-$HOME/Library/Application Support/Lampyris}"
 APP="$HOME/Library/Input Methods/Lampyris.app"
+if [ -z "$CALLER_LIMIT_MB" ] && grep -qE '^show_wubi_learning[[:space:]]*=[[:space:]]*true' "$SUPPORT/config.toml" 2>/dev/null; then
+    LIMIT_MB=34
+fi
 mkdir -p "$OUT"
 
 host_pid() { pgrep -x Lampyris | head -1; }
