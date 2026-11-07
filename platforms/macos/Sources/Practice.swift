@@ -132,3 +132,60 @@ final class PracticeProgress {
         return "已练 \(rows.count) 字 · \(attempts) 次 · 正确率 \(correct * 100 / attempts)%"
     }
 }
+
+
+/// 一局练习的纯逻辑（无 AppKit），便于自动化测试跑通流程。
+final class PracticeSession {
+    struct Result {
+        let correct: Bool
+        let explanation: String
+    }
+
+    private(set) var kind: PracticeKind
+    private(set) var question: PracticeQuestion?
+    private let progress: PracticeProgress
+    private(set) var bank: [PracticeQuestion] = []
+
+    init(kind: PracticeKind, progress: PracticeProgress) {
+        self.kind = kind
+        self.progress = progress
+        reload()
+    }
+
+    func switchKind(_ kind: PracticeKind) {
+        self.kind = kind
+        reload()
+    }
+
+    func reload() {
+        bank = Practice.bank(kind: kind)
+        question = nil
+        next()
+    }
+
+    @discardableResult
+    func next() -> PracticeQuestion? {
+        question = bank.randomElement()
+        return question
+    }
+
+    /// 提交打字答案；`nil` 表示没有题目。
+    func submitCode(_ answer: String) -> Result? {
+        guard let question else { return nil }
+        let correct = Practice.judgeCode(answer, question: question)
+        progress.record(char: question.char, kind: kind, correct: correct)
+        return Result(correct: correct,
+                      explanation: "完整码 \(question.code.uppercased()) · 字根 \(question.rootHint)")
+    }
+
+    /// 提交识别码选择；证据说明用**正确**的末笔与结构，而不是用户选的。
+    func submitRecognition(stroke: String, structure: String) -> Result? {
+        guard let question, let expected = question.recognition else { return nil }
+        let correct = Practice.judgeRecognition(stroke: stroke, structure: structure, question: question)
+        progress.record(char: question.char, kind: kind, correct: correct)
+        return Result(correct: correct,
+                      explanation: "识别码 \(expected.letter)（\(expected.stroke)·\(expected.structure)）")
+    }
+
+    var summary: String { progress.summary }
+}
