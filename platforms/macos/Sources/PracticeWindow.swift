@@ -48,8 +48,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         kindControl.selectedSegment = 0
         applyKindVisibility()
         reload()
-        window?.makeKeyAndOrderFront(nil)
+        // 输入法宿主是 LSBackgroundOnly：普通窗口不一定能成为 key/前台，
+        // 这里按既有设置面板的做法补一次 orderFrontRegardless（报告 262）。
+        if NSApp.activationPolicy() == .prohibited { NSApp.setActivationPolicy(.accessory) }
         NSApp.activate(ignoringOtherApps: true)
+        window?.makeKeyAndOrderFront(nil)
+        window?.orderFrontRegardless()
         window?.makeFirstResponder(answerView)
     }
 
