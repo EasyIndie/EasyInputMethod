@@ -11,7 +11,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39**（候选，2026-11-07 装机），宿主执行 `b152a001…`；输入源 `Lampyris.default` 在用；回滚点 `updates/install-backup-20261107T063934Z/` | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39（B4+B5 候选，2026-11-07 装机）**，宿主执行 `28e24d26…`；输入源 `Lampyris.default` 在用；`show_wubi_learning=false` | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -61,6 +61,7 @@
 - **B3 学习区已实现（报告 253）**：⌥L 学习区两行式（完整码+简码 / 字根格+识别码），候选窗零改动；词组按输入码对应到字；`LearningHints` 读 `B0-runtime.tsv`，缺失退回 D14。离屏实拍 `docs/design/learning-real-*.png`。**装机后的性能/内存实测仍待候选包**。
 - **B3 草图（已成历史）**（`docs/design/l3-hint.md` + `learning-area-mock.png`）：按用户裁定改为**候选窗零改动**，学习信息只放 ⌥L 学习区，学习区自己两行封顶（单字：字+码+简码 / 字根+识别码依据；词组：前 3 字 + 「逐字 ▸」）。`partial` 未知字根显示 `？`、标注「拆解待核验」；数据源优先 B0-runtime，未覆盖的字走 D14 兜底。**实现未开始，等评审三个细节**。
 - **B5 已收口（ADR-314 / 报告 258）**：冷首键 ~28 ms（学习区关着也一样，用户不可感知）→ 不优化；A1/A2/A3/A5 全部关闭并写触发条件；内存按 ADR-312 双阈值（默认 30 / 学习区 34）。
+- **练习窗口版式已修正（报告 260）**：翻转坐标从顶部排、固定 460×336、题干居中、进度行不再被裁、A/C 共用纵向基准，并加了版式自检（控件不越界、不与题型控件重叠）。**待装包看真机**。
 - **B4 练习已实现（ADR-313 / 报告 257）**：只看 `full` 出题，题型 A（看字打码）+ C（识别码判断）；进度写 `~/Library/Application Support/Lampyris/practice.tsv`（有界 3,000 行 / 256 KiB、原子写、删除即重置）；快捷键 `hotkey.open_practice` 默认 **⌥K**，入口在设置页快捷键列表；**尚未装包实测**。
 
 - **B2 数据地基已出产物（报告 252 / ADR-311）**：`data/generated/B0-runtime.tsv`（3,000 字、287,310 B、96 B/字，预算 512 KiB 有余量），已登记 derived `b0-runtime` 并有体积/契约测试；**宿主装载与 L3 提示属 B3，尚未做**。
@@ -124,6 +125,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-06 / pi（air）：**1.2.0（B4+B5）候选装机（报告 259）**。PR #232 → CI 包（`exec 28e24d26…`）装 air；稳态 p95 **5.80 ms**（三段 5.12–5.97）、冷首键 28.86/33.39、0 外联、memory-gate 私有 **28.5–28.8 MiB**（限 30）PASS。待用户走查：⌥K 练习窗口（A/C 两种题型）、⌥L 学习区默认关、practice.tsv 生成与重置。
 - 2026-11-06 / pi（air）：**1.2.0/build 39 装机 + 首轮体验数据（报告 254）**。PR #227 合并 → CI 验收包 → 装 air：版本/执行 SHA `b152a001…`/公证全部核对，config 与 1225 行词库未变。评测 ALL 命中 98.2%/首选 86.4%（jianma2 100%/100%）；三段延迟稳态 p95 6.7–8.3 ms；**冷首键 27–40 ms，比 1.1.0 的 16–26 ms 高**（待查是否学习区布局所致）；soak 3 分钟 17 轮 0 外联、footprint 38.5 MiB（比 1.1.0 高约 5 MiB，待单独归因）。
 - 2026-11-06 / pi（air）：**B3 学习区实现（报告 253）**。`WubiLearningView` 改两行布局（完整码+简码 / 字根格+识别码两行），候选窗零改动；新增 `LearningHints`（读 `B0-runtime.tsv`，缺失退回 D14）；词组按输入码位置映射到字（KWWL → 中K 华W 人W 国L）。`wubi-learning.swift` 扩到可注入资源并生成亮/暗实拍；离线回归全绿。
 - 2026-11-06 / pi（air）：**B2 数据地基（报告 252 / ADR-311）**。B0 扩到 3,000 字并预渲染成 `B0-runtime.tsv`（287,310 B ≈ 96 B/字，预算 512 KiB 反而有余量；B0.json 同规模是 1.62 MiB），登记 derived `b0-runtime`，新增 `test-b0-runtime.py` 守体积/格式/无 PUA/消费契约。ADR-311 定装载方式（bundle 内只读文件、宿主查表、Rust 不参与）。
