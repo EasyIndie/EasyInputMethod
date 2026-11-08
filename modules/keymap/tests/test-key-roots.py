@@ -36,16 +36,17 @@ class KeyRootTableTest(unittest.TestCase):
         main_keys = set("QWERTYUIOPASDFGHJKLXCVBNM")
         self.assertTrue(main_keys <= set(letters), "必须覆盖 25 个主键")
         for row in table:
-            self.assertEqual(len(row), 6, f"应为 6 列（含口诀）：{row}")
+            self.assertEqual(len(row), 7, f"应为 7 列（区位 + 口诀）：{row}")
             self.assertEqual(row[0], "wubi86")
             self.assertIn(int(row[2]), {0, 1, 2, 3, 4, 5})
             # 键名通常是单字；万能键 Z 用"万能"两字说明，没有字根。
             self.assertIn(len(row[3]), (1, 2), "键名字根应为 1–2 字")
-            roots = row[4].split()
+            roots = row[5].split()
             self.assertEqual(len(roots), len(set(roots)), "字根不得重复")
-            self.assertNotIn(row[3], roots, "字根列表不应重复键名字根")
+            self.assertNotIn(row[4], roots, "字根列表不应重复键名字根")
             if row[1] != "Z":
-                self.assertTrue(row[5], f"键 {row[1]} 应有助记口诀")
+                self.assertTrue(row[6], f"键 {row[1]} 应有助记口诀")
+                self.assertEqual(int(row[3]) // 10, int(row[2]), "区位号的区应等于 zone")
             for root in roots:
                 self.assertNotEqual(root, "？", "不得含占位符")
                 self.assertFalse(0xF0000 <= ord(root[0]) <= 0xFFFFD, "不得含 PUA 码位")
@@ -54,7 +55,15 @@ class KeyRootTableTest(unittest.TestCase):
         for row in rows():
             if row[1] == "Z":
                 continue
-            self.assertTrue(row[4].split(), f"键 {row[1]} 应至少有一个字根")
+            self.assertTrue(row[5].split(), f"键 {row[1]} 应至少有一个字根")
+
+    def test_roots_follow_mnemonic_order(self):
+        """字根顺序必须跟随口诀顺序（口诀提到的先，未提到的按频次在后）。"""
+        for row in rows():
+            mnemonic = row[6]
+            positions = [mnemonic.find(root) for root in row[5].split()]
+            found = [p for p in positions if p >= 0]
+            self.assertEqual(found, sorted(found), f"键 {row[1]} 字根顺序应与口诀一致")
 
     def test_matches_generator(self):
         self.assertEqual(DATA.read_text(encoding="utf-8"), load_tool().build(RUNTIME),
@@ -64,7 +73,7 @@ class KeyRootTableTest(unittest.TestCase):
         """视图只画 CJK 汉字/部件（康熙部首、注音符号在系统字体里没有字形，会显示成 ?）。"""
         ranges = ((0x4E00, 0x9FFF), (0x3400, 0x4DBF), (0xF900, 0xFAFF))
         for row in rows():
-            for root in row[4].split():
+            for root in row[5].split():
                 code = ord(root[0])
                 self.assertTrue(any(low <= code <= high for low, high in ranges),
                                 f"字根 {root} 不在可渲染范围")

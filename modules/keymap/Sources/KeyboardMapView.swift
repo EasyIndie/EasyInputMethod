@@ -7,7 +7,7 @@ import AppKit
 final class KeyboardMapView: NSView {
     let layout: KeyRootLayout
 
-    static let keyHeight: CGFloat = 70
+    static let keyHeight: CGFloat = 78
     static let keyGap: CGFloat = 6
     static let rowGap: CGFloat = 6
     static var totalHeight: CGFloat { keyHeight * 3 + rowGap * 2 }
@@ -87,13 +87,14 @@ final class KeyboardMapView: NSView {
         let rootColor: NSColor = isPressed ? NSColor.white.withAlphaComponent(0.92) : .secondaryLabelColor
         NSGraphicsContext.saveGraphicsState()
         path.addClip()
-        // 字母突出：左上角大号加粗
-        drawText(String(letter), font: .monospacedSystemFont(ofSize: 13, weight: .bold),
+        // 左上角：编码字母（大写、加粗）；右上角：主字根；下方：其余字根（按口诀顺序）。
+        drawText(String(letter), font: .monospacedSystemFont(ofSize: 13.5, weight: .bold),
                  color: isPressed ? .white : .labelColor,
-                 in: NSRect(x: rect.minX + 5, y: rect.minY + 2, width: rect.width - 8, height: 16),
+                 in: NSRect(x: rect.minX + 7, y: rect.minY + 5, width: rect.width - 14, height: 17),
                  alignment: .left)
-        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 15, weight: .semibold), color: keyNameColor,
-                 in: NSRect(x: rect.minX, y: rect.minY + 16, width: rect.width, height: 18))
+        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 16, weight: .bold), color: keyNameColor,
+                 in: NSRect(x: rect.minX, y: rect.minY + 4, width: rect.width - 7, height: 19),
+                 alignment: .right)
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
         NSGraphicsContext.restoreGraphicsState()
     }
@@ -123,12 +124,12 @@ final class KeyboardMapView: NSView {
     }
 
     private func drawRoots(_ roots: [String], in rect: NSRect, color: NSColor) {
-        let font = NSFont.systemFont(ofSize: 9)
+        let font = NSFont.systemFont(ofSize: 9.5)
         let shown = Self.visibleRoots(roots)
         guard !shown.isEmpty else { return }
         let columns = Self.rootColumns
-        let top: CGFloat = 32
-        let lineHeight = (rect.height - top - 2) / CGFloat(Self.rootRows)
+        let top: CGFloat = 30
+        let lineHeight = (rect.height - top - 4) / CGFloat(Self.rootRows)
         let cellWidth = rect.width / CGFloat(columns)
         for (index, root) in shown.enumerated() {
             let column = index % columns
