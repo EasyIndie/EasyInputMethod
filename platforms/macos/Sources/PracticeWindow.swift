@@ -16,7 +16,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let questionHeight: CGFloat = 60
         static let afterQuestion: CGFloat = 4
         static let promptHeight: CGFloat = 18
-        static let afterPrompt: CGFloat = 12
+        static let afterPrompt: CGFloat = 16
+        static let cardPadding: CGFloat = 18
+        static let cardFooter: CGFloat = 30
         static let afterExplanation: CGFloat = 12
         static let codeAnswerHeight: CGFloat = 58
         static let recognitionAnswerHeight: CGFloat = 92
@@ -59,9 +61,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     /// 当前状态下的内容高度（题型 + 详情区 + 口诀共同决定）。
     private func contentHeight() -> CGFloat {
         var height = Gap.top + Gap.kindHeight + Gap.afterKind
-        height += Gap.questionHeight + Gap.afterQuestion + Gap.promptHeight + Gap.afterPrompt
+        height += Gap.questionHeight + Gap.afterQuestion
+        height += Gap.cardPadding + Gap.promptHeight + Gap.afterPrompt
         height += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
         height += PracticeExplanationView.height + Gap.afterExplanation
+        height += Gap.cardFooter + Gap.cardPadding
         height += Gap.feedbackHeight + Gap.afterFeedback
         height += Gap.actionsHeight + Gap.afterActions
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
@@ -279,11 +283,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         questionLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.questionHeight)
         y += Gap.questionHeight + Gap.afterQuestion
 
-        promptLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.promptHeight)
-        y += Gap.promptHeight + Gap.afterPrompt
-
-        // 作答区（输入框 / 末笔·结构）在题面下方，答案区在其下；两块共用一张卡片做视觉分组。
-        let answerTop = y
+        // 卡片：提示语 → 作答 → 讲解 → 开关，全都在同一张分组卡片里（识别码题型同构）。
+        let cardTop = y
+        promptLabel.frame = NSRect(x: margin + Gap.cardPadding, y: cardTop + Gap.cardPadding,
+                                   width: inner - Gap.cardPadding * 2, height: Gap.promptHeight)
+        y = cardTop + Gap.cardPadding + Gap.promptHeight + Gap.afterPrompt
         answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
         strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
         for (index, button) in strokeButtons.enumerated() {
@@ -297,38 +301,48 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
         explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
-        let cardHeight = answerHeight() + Gap.afterAnswer + PracticeExplanationView.height + 16
-        card.frame = NSRect(x: margin - 10, y: answerTop - 8, width: inner + 20, height: cardHeight)
         y += PracticeExplanationView.height + Gap.afterExplanation
+
+        // 卡片底部：键位图 / 口诀开关（右对齐，标签在左、开关在右）。
+        let footerY = y
+        let switchWidth: CGFloat = 36
+        let detailsRight = width - margin - Gap.cardPadding
+        detailsSwitch.frame = NSRect(x: detailsRight - switchWidth, y: footerY + 4,
+                                     width: switchWidth, height: 18)
+        detailsLabel.frame = NSRect(x: detailsRight - switchWidth - 8 - 44, y: footerY + 3,
+                                    width: 44, height: 18)
+        let mnemonicRight = detailsRight - switchWidth - 8 - 44 - 20
+        mnemonicSwitch.frame = NSRect(x: mnemonicRight - switchWidth, y: footerY + 4,
+                                      width: switchWidth, height: 18)
+        mnemonicLabel2.frame = NSRect(x: mnemonicRight - switchWidth - 8 - 24, y: footerY + 3,
+                                      width: 24, height: 18)
+        let cardHeight = footerY + Gap.cardFooter + Gap.cardPadding - cardTop
+        card.frame = NSRect(x: margin - 2, y: cardTop, width: inner + 4, height: cardHeight)
+        y = cardTop + cardHeight + Gap.afterExplanation
 
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
 
         let buttons = actionButtons
-        let buttonSize: CGFloat = 34
-        let buttonGap: CGFloat = 14
+        let buttonSize: CGFloat = 40
+        let buttonGap: CGFloat = 16
         let totalWidth = CGFloat(buttons.count) * buttonSize + CGFloat(max(0, buttons.count - 1)) * buttonGap
         var buttonX = (width - totalWidth) / 2
         for button in buttons {
-            button.frame = NSRect(x: buttonX, y: y - 3, width: buttonSize, height: buttonSize)
+            button.frame = NSRect(x: buttonX, y: y - 4, width: buttonSize, height: buttonSize)
             buttonX += buttonSize + buttonGap
         }
         y += Gap.actionsHeight + Gap.afterActions
 
-        // 进度行右侧常驻"键位图与口诀"开关；打开后才在下方展开详情区。
         let detailsShown = detailsSwitch.state == .on
-        progressLabel.frame = NSRect(x: margin, y: y, width: inner - 220, height: Gap.progressHeight)
+        progressLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.progressHeight)
         progressBar.frame = NSRect(x: margin, y: y + Gap.progressHeight + Gap.afterProgressLabel,
-                                   width: inner - 220, height: Gap.progressBarHeight)
-        // 尾部一行：统计 + 两个原生开关（标签在左、开关在右），右对齐且同基线。
-        detailsSwitch.frame = NSRect(x: width - margin - 36, y: y - 1, width: 36, height: 18)
-        detailsLabel.frame = NSRect(x: width - margin - 36 - 50, y: y, width: 44, height: 18)
-        mnemonicSwitch.frame = NSRect(x: width - margin - 36 - 50 - 68, y: y - 1, width: 36, height: 18)
-        mnemonicLabel2.frame = NSRect(x: width - margin - 36 - 50 - 68 - 30, y: y, width: 24, height: 18)
+                                   width: inner, height: Gap.progressBarHeight)
         y += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
 
         schemeLabel.isHidden = !detailsShown
         mnemonicSwitch.isHidden = !detailsShown
+        mnemonicLabel2.isHidden = !detailsShown
         keyboardMap.isHidden = !detailsShown
         mnemonicLabel.isHidden = !(detailsShown && mnemonicSwitch.state == .on)
         if detailsShown {
@@ -374,10 +388,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             button.image = image.withSymbolConfiguration(
                 NSImage.SymbolConfiguration(pointSize: 14, weight: .semibold)) ?? image
         } else {
-            button.bezelStyle = .texturedRounded
-            button.contentTintColor = .secondaryLabelColor
+            button.isBordered = false
+            button.wantsLayer = true
+            button.layer?.backgroundColor = NSColor.labelColor.withAlphaComponent(0.08).cgColor
+            button.layer?.cornerRadius = 9
+            button.contentTintColor = .labelColor
             button.image = image.withSymbolConfiguration(
-                NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)) ?? image
+                NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)) ?? image
         }
         button.imagePosition = .imageOnly
         button.toolTip = tooltip
@@ -470,6 +487,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             return
         }
         answerView.setActive(true)
+        answerView.capacity = {
+            switch kind {
+            case .code1: return 1
+            case .code2: return 2
+            case .code: return min(4, max(3, question.code.count))
+            case .recognition: return 4
+            }
+        }()
         questionLabel.stringValue = question.char
         promptLabel.stringValue = kind.prompt(for: question)
         if kind == .recognition {
