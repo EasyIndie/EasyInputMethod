@@ -240,7 +240,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     @objc private func revealAnswer() {
         guard let question = current else { return }
-        feedbackLabel.stringValue = "答案：\(question.code.uppercased()) · 字根 \(question.rootHint)"
+        // 字根已经在上面的字根行里（字形上、键位下），这里只给完整码，避免又变成行内交替写法。
+        rootRow.show(question.roots)
+        rootRow.isHidden = false
+        feedbackLabel.stringValue = "答案：\(question.code.uppercased())"
         feedbackLabel.textColor = .secondaryLabelColor
     }
 
