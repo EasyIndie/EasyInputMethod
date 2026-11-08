@@ -157,6 +157,11 @@ keyboard.flash("F")
 keyboard.markAnswer("ftxb")
 require(keyboard.pressedLetterForTesting == "F", "敲键后键位图应点亮该键")
 require(keyboard.markedLettersForTesting == Set(["F", "T", "X", "B"]), "答完应描出答案用到的键位")
+// 重复码位：同一个键要能显示多个位次，而不是把 4 位压成 1 个键
+keyboard.markAnswer("qqqq")
+require(keyboard.markedPositionsForTesting.map(\.position) == [1, 2, 3, 4],
+        "重复码位应保留四位位次")
+require(keyboard.markedLettersForTesting == Set(["Q"]), "四个 Q 只应点亮一个键")
 // 输入视图只接受 a–y、退格与回车。
 let answer = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
 var submitted: String?

@@ -105,9 +105,14 @@ final class KeymapPanelView: NSView {
     override func layout() {
         super.layout()
         let width = bounds.width
-        schemeLabel.frame = NSRect(x: 2, y: 0, width: max(0, width - 120), height: Self.headerHeight)
-        mnemonicSwitch.frame = NSRect(x: width - 36, y: 1, width: 36, height: 18)
-        mnemonicTitle.frame = NSRect(x: width - 36 - 8 - 24, y: 0, width: 24, height: 18)
+        // 头部三项按中线对齐：文字用 14pt 行高，开关按自身高度居中。
+        let textHeight: CGFloat = 14
+        let textY = (Self.headerHeight - textHeight) / 2
+        let switchHeight: CGFloat = 16
+        let switchY = (Self.headerHeight - switchHeight) / 2
+        schemeLabel.frame = NSRect(x: 2, y: textY, width: max(0, width - 120), height: textHeight)
+        mnemonicSwitch.frame = NSRect(x: width - 36, y: switchY, width: 36, height: switchHeight)
+        mnemonicTitle.frame = NSRect(x: width - 36 - 8 - 24, y: textY, width: 24, height: textHeight)
         map.frame = NSRect(x: 0, y: Self.headerHeight + Self.headerGap, width: width,
                            height: KeyboardMapView.totalHeight)
         if showsMnemonics {
