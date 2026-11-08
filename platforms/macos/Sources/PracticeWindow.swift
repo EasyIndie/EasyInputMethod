@@ -172,6 +172,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             button.action = #selector(pickStroke(_:))
             button.tag = index
             button.bezelStyle = .rounded
+            button.setButtonType(.pushOnPushOff)
             content.addSubview(button)
         }
         structureTitle.font = .systemFont(ofSize: 11)
@@ -182,6 +183,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             button.action = #selector(pickStructure(_:))
             button.tag = index
             button.bezelStyle = .rounded
+            button.setButtonType(.pushOnPushOff)
             content.addSubview(button)
         }
 
@@ -391,6 +393,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.stringValue = ""
         strokeTitle.stringValue = "末笔"
         structureTitle.stringValue = "结构"
+        for button in strokeButtons + structureButtons { button.state = .off }
         guard let question = current else {
             questionLabel.stringValue = "题库为空"
             promptLabel.stringValue = "当前没有可出题的完整条目（需要 quality=full）"
@@ -436,9 +439,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         evaluateRecognition()
     }
 
+    /// 选中态用按钮自身的高亮表示；左侧标题保持"末笔"/"结构"，避免被值挤到显示不全。
     private func updateSelectionTitle() {
-        if let stroke = pendingStroke { strokeTitle.stringValue = "末笔 \(stroke)" }
-        if let structure = pendingStructure { structureTitle.stringValue = "结构 \(structure)" }
+        for (index, button) in strokeButtons.enumerated() {
+            button.state = Practice.strokes[index] == pendingStroke ? .on : .off
+        }
+        for (index, button) in structureButtons.enumerated() {
+            button.state = Practice.structures[index] == pendingStructure ? .on : .off
+        }
     }
 
     private func evaluateRecognition() {
