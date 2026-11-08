@@ -293,6 +293,6 @@ id = "key-roots-wubi86"
 path = "modules/keymap/data/key-roots-wubi86.tsv"
 source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D19"]
 license = "CC-BY-SA-4.0"
-sha256 = "aac372cc3ae51f1134550302faabb58aa7b41eb9a47fbd092232c6e63acf1bac"
+sha256 = "daec86ab176e65c882f91d7b32b052ef2c611e551a0a5ddf9932a961bca884fd"
 generator = "modules/keymap/tools/build_key_roots.py"
 notes = "ADR-315 键位字根表：scheme\tletter\tzone\tkeyname\troots(频次降序)；25 键 + 万能键 Z；只做呈现，不参与判分"

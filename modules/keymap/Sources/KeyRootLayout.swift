@@ -13,6 +13,8 @@ struct KeyRootLayout: Equatable {
         let zone: Int
         /// 该键上的其它字根，按使用频次降序（不含键名本身）。
         let roots: [String]
+        /// 该键的助记口诀（可空）。
+        let mnemonic: String
     }
 
     let schemeID: String
@@ -39,7 +41,7 @@ struct KeyRootLayout: Equatable {
         ]
         var entries: [Character: Entry] = [:]
         for (letter, keyName, zone) in table {
-            entries[letter] = Entry(keyName: keyName, zone: zone, roots: [])
+            entries[letter] = Entry(keyName: keyName, zone: zone, roots: [], mnemonic: "")
         }
         return KeyRootLayout(schemeID: "wubi86", displayName: "五笔 86",
                              rows: standardRows, entries: entries)
@@ -55,11 +57,26 @@ struct KeyRootLayout: Equatable {
                   let letter = fields[1].first,
                   let zone = Int(fields[2]) else { continue }
             let roots = fields[4].split(separator: " ").map(String.init)
-            entries[letter] = Entry(keyName: String(fields[3]), zone: zone, roots: roots)
+            let mnemonic = fields.count >= 6 ? String(fields[5]) : ""
+            entries[letter] = Entry(keyName: String(fields[3]), zone: zone, roots: roots,
+                                    mnemonic: mnemonic)
         }
         guard entries.count >= 25 else { return nil }
         return KeyRootLayout(schemeID: schemeID, displayName: displayName,
                              rows: standardRows, entries: entries)
+    }
+
+    /// 按区整理的口诀（每个区分一行，便于界面展示）。
+    var mnemonicsByZone: [(zone: Int, name: String, text: String)] {
+        let names = [1: "横区", 2: "竖区", 3: "撇区", 4: "捺区", 5: "折区", 0: "其它"]
+        return (1...5).compactMap { zone in
+            let text = rows.joined()
+                .compactMap { entries[$0] }
+                .filter { $0.zone == zone && !$0.mnemonic.isEmpty }
+                .map(\.mnemonic)
+                .joined(separator: "，")
+            return text.isEmpty ? nil : (zone, names[zone] ?? "", text)
+        }
     }
 
     /// 从 bundle 内只读文件加载；缺失或损坏时回落到内置键名字根表。

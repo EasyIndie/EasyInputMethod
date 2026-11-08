@@ -13,6 +13,20 @@ import pathlib
 import sys
 
 SCHEME = "wubi86"
+
+# 五笔 86 传统助记口诀（每个键位一句，教学常识，随方案内置；不在口诀里做版权主张）。
+MNEMONIC = {
+    "G": "王旁青头戋五一", "F": "土士二干十寸雨", "D": "大犬三羊古石厂", "S": "木丁西",
+    "A": "工戈草头右框七", "H": "目具上止卜虎皮", "J": "日早两竖与虫依", "K": "口与川，字根稀",
+    "L": "田甲方框四车力", "M": "山由贝，下框几", "T": "禾竹一撇双人立，反文条头共三一",
+    "R": "白手看头三二斤", "E": "月彡乃用家衣底", "W": "人和八，三四里",
+    "Q": "金勺缺点无尾鱼，犬旁留叉儿一点夕", "Y": "言文方广在四一，高头一捺谁人去",
+    "U": "立辛两点六门疒", "I": "水旁兴头小倒立", "O": "火业头，四点米",
+    "P": "之宝盖，摘礻衤", "N": "已半巳满不出己，左框折尸心和羽", "B": "子耳了也框向上",
+    "V": "女刀九臼山朝西", "C": "又巴马，丢矢矣", "X": "慈母无心弓和匕，幼无力",
+    "Z": "",
+}
+ZONE_NAME = {1: "横", 2: "竖", 3: "撇", 4: "捺", 5: "折", 0: "万能"}
 # 只收录能被系统字体渲染成汉字的字根：康熙部首（⺈ ⺝）、注音符号（ㄅ ㄠ）、
 # 日文片假名部件（リ）等码位没有字形，画出来是 `?`，故从展示数据中剔除。
 RENDERABLE_RANGES = ((0x4E00, 0x9FFF), (0x3400, 0x4DBF), (0xF900, 0xFAFF))
@@ -46,7 +60,7 @@ def build(runtime_path: pathlib.Path) -> str:
             if glyph == "？" or key not in counts:
                 continue
             counts[key][glyph] = counts[key].get(glyph, 0) + 1
-    lines = ["# scheme\tletter\tzone\tkeyname\troots(按使用频次降序，空格分隔)",
+    lines = ["# scheme\tletter\tzone\tkeyname\troots(按使用频次降序，空格分隔)\tmnemonic(口诀)",
              "# 由 modules/keymap/tools/build_key_roots.py 生成，勿手改。",
              "# 只收录可渲染为汉字的字根；康熙部首/注音符号等无字形码位见文末注释。"]
     dropped: list[str] = []
@@ -58,7 +72,8 @@ def build(runtime_path: pathlib.Path) -> str:
         removed = [glyph for glyph in roots if not renderable(glyph)]
         if removed:
             dropped.append(f"{letter}:{' '.join(removed)}")
-        lines.append("\t".join([SCHEME, letter, str(zone), name, " ".join(kept)]))
+        lines.append("\t".join([SCHEME, letter, str(zone), name, " ".join(kept),
+                                 MNEMONIC.get(letter, "")]))
     if dropped:
         lines.append("# 未收录（系统字体无字形，显示为 ?）：" + "；".join(dropped))
     return "\n".join(lines) + "\n"

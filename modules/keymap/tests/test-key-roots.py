@@ -36,7 +36,7 @@ class KeyRootTableTest(unittest.TestCase):
         main_keys = set("QWERTYUIOPASDFGHJKLXCVBNM")
         self.assertTrue(main_keys <= set(letters), "必须覆盖 25 个主键")
         for row in table:
-            self.assertEqual(len(row), 5, f"应为 5 列：{row}")
+            self.assertEqual(len(row), 6, f"应为 6 列（含口诀）：{row}")
             self.assertEqual(row[0], "wubi86")
             self.assertIn(int(row[2]), {0, 1, 2, 3, 4, 5})
             # 键名通常是单字；万能键 Z 用"万能"两字说明，没有字根。
@@ -44,6 +44,8 @@ class KeyRootTableTest(unittest.TestCase):
             roots = row[4].split()
             self.assertEqual(len(roots), len(set(roots)), "字根不得重复")
             self.assertNotIn(row[3], roots, "字根列表不应重复键名字根")
+            if row[1] != "Z":
+                self.assertTrue(row[5], f"键 {row[1]} 应有助记口诀")
             for root in roots:
                 self.assertNotEqual(root, "？", "不得含占位符")
                 self.assertFalse(0xF0000 <= ord(root[0]) <= 0xFFFFD, "不得含 PUA 码位")
