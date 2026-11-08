@@ -91,6 +91,7 @@ build_arch() {
       -module-name Lampyris \
       -I "crates/ime-ffi/include" \
       platforms/macos/Sources/*.swift \
+      modules/keymap/Sources/*.swift \
       -Xlinker "${lib_dir}/libime_ffi.a" \
       -Xlinker -dead_strip \
       -framework AppKit \
@@ -124,6 +125,7 @@ printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
 cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP_DIR}/Contents/Resources/Lampyris.icns"
 cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
+cp "${ROOT}/modules/keymap/data/key-roots-wubi86.tsv" "${APP_DIR}/Contents/Resources/"
 for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
   [ -d "${lproj}" ] || continue
   cp -R "${lproj}" "${APP_DIR}/Contents/Resources/"

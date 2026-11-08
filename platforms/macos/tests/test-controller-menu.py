@@ -41,7 +41,9 @@ class ControllerMenuTests(unittest.TestCase):
                  "-import-objc-header", str(ROOT / "platforms/macos/tests/IMKMenuServiceProbe.h"),
                  str(root / "main.swift"),
                  *[str(p) for p in sorted((ROOT / "platforms/macos/Sources").glob("*.swift"))
-                   if p.name != "main.swift"], str(ROOT / "target/release/libime_ffi.a"),
+                   if p.name != "main.swift"],
+                 *[str(p) for p in sorted((ROOT / "modules/keymap/Sources").glob("*.swift"))],
+                 str(ROOT / "target/release/libime_ffi.a"),
                  str(root / "service-probe.o"),
                  "-framework", "AppKit", "-framework", "InputMethodKit", "-o", str(binary)],
                 [str(binary), str(root)],
