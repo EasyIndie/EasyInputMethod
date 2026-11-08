@@ -6,9 +6,48 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 720, height: 612)
-    /// 显示口诀时向下扩展的高度。
-    static let mnemonicExtraHeight: CGFloat = 104
+    static let contentWidth: CGFloat = 720
+    static let margin: CGFloat = 24
+    /// 行距常量：所有纵向间距集中在这里，高度由内容算出来（自适应）。
+    private enum Gap {
+        static let top: CGFloat = 16
+        static let kindHeight: CGFloat = 26
+        static let afterKind: CGFloat = 14
+        static let questionHeight: CGFloat = 60
+        static let afterQuestion: CGFloat = 4
+        static let promptHeight: CGFloat = 18
+        static let afterPrompt: CGFloat = 12
+        static let afterExplanation: CGFloat = 14
+        static let codeAnswerHeight: CGFloat = 30
+        static let recognitionAnswerHeight: CGFloat = 92
+        static let afterAnswer: CGFloat = 12
+        static let feedbackHeight: CGFloat = 30
+        static let afterFeedback: CGFloat = 10
+        static let actionsHeight: CGFloat = 28
+        static let afterActions: CGFloat = 10
+        static let progressHeight: CGFloat = 16
+        static let afterProgress: CGFloat = 8
+        static let schemeHeight: CGFloat = 18
+        static let afterScheme: CGFloat = 8
+        static let mnemonicHeight: CGFloat = 92
+        static let afterMnemonic: CGFloat = 8
+        static let bottom: CGFloat = 16
+    }
+
+    /// 当前状态下的内容高度（题型 + 口诀开关共同决定）。
+    private func contentHeight() -> CGFloat {
+        var height = Gap.top + Gap.kindHeight + Gap.afterKind
+        height += Gap.questionHeight + Gap.afterQuestion + Gap.promptHeight + Gap.afterPrompt
+        height += PracticeExplanationView.height + Gap.afterExplanation
+        height += (kind == .code ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
+        height += Gap.feedbackHeight + Gap.afterFeedback
+        height += Gap.actionsHeight + Gap.afterActions
+        height += Gap.progressHeight + Gap.afterProgress
+        height += Gap.schemeHeight + Gap.afterScheme
+        height += KeyboardMapView.totalHeight
+        if mnemonicToggle.state == .on { height += Gap.afterMnemonic + Gap.mnemonicHeight }
+        return height + Gap.bottom
+    }
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -22,8 +61,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let schemeLabel = NSTextField(labelWithString: "")
     private let mnemonicToggle = NSButton(checkboxWithTitle: "口诀", target: nil, action: nil)
     private let mnemonicLabel = NSTextField(labelWithString: "")
-    /// 口诀展开时同步内容视图高度（内容视图是固定尺寸的 flipped 容器）。
-    var contentViewHeight: ((CGFloat) -> Void)?
+    private var actionButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -66,7 +104,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     private func build() {
-        let window = NSWindow(contentRect: NSRect(origin: .zero, size: Self.contentSize),
+        let size = NSSize(width: Self.contentWidth, height: contentHeight())
+        let window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
                               styleMask: [.titled, .closable], backing: .buffered, defer: false)
         window.title = "萤火虫 · 练习"
         window.isReleasedWhenClosed = false
@@ -77,85 +116,69 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     private func buildContent() -> NSView {
-        let content = FlippedView(frame: NSRect(origin: .zero, size: Self.contentSize))
-        contentViewHeight = { [weak content] height in
-            content?.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentSize.width, height: height))
-        }
-        let width = Self.contentSize.width
-        let margin: CGFloat = 24
+        let content = FlippedView(frame: NSRect(origin: .zero,
+                                                size: NSSize(width: Self.contentWidth, height: contentHeight())))
+        self.content = content
 
-        kindControl.frame = NSRect(x: margin, y: 20, width: width - margin * 2, height: 26)
         kindControl.target = self
         kindControl.action = #selector(kindChanged)
         content.addSubview(kindControl)
 
         questionLabel.alignment = .center
         questionLabel.font = .systemFont(ofSize: 40, weight: .medium)
-        questionLabel.frame = NSRect(x: margin, y: 56, width: width - margin * 2, height: 60)
         content.addSubview(questionLabel)
 
         promptLabel.alignment = .center
         promptLabel.font = .systemFont(ofSize: 12)
         promptLabel.textColor = .secondaryLabelColor
-        promptLabel.frame = NSRect(x: margin, y: 110, width: width - margin * 2, height: 18)
         content.addSubview(promptLabel)
 
         // 拆解整体：字根格 + 识别码 + 完整码/简码
-        explanation.frame = NSRect(x: margin, y: 138, width: width - margin * 2,
-                                   height: PracticeExplanationView.height)
+        explanation.frame = NSRect(x: 0, y: 0, width: 0, height: PracticeExplanationView.height)
         content.addSubview(explanation)
 
-        answerView.frame = NSRect(x: margin, y: 204, width: width - margin * 2, height: 30)
         answerView.onLetter = { [weak self] letter in self?.keyboardMap.flash(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         content.addSubview(answerView)
 
-        // 识别码：两行带标题的按钮组
         strokeTitle.font = .systemFont(ofSize: 11)
         strokeTitle.textColor = .secondaryLabelColor
-        strokeTitle.frame = NSRect(x: margin, y: 206, width: 46, height: 18)
         content.addSubview(strokeTitle)
         for (index, button) in strokeButtons.enumerated() {
             button.target = self
             button.action = #selector(pickStroke(_:))
             button.tag = index
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 72, y: 200, width: 66, height: 28)
             content.addSubview(button)
         }
         structureTitle.font = .systemFont(ofSize: 11)
         structureTitle.textColor = .secondaryLabelColor
-        structureTitle.frame = NSRect(x: margin, y: 242, width: 46, height: 18)
         content.addSubview(structureTitle)
         for (index, button) in structureButtons.enumerated() {
             button.target = self
             button.action = #selector(pickStructure(_:))
             button.tag = index
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: 236, width: 108, height: 28)
             content.addSubview(button)
         }
 
         feedbackLabel.alignment = .center
         feedbackLabel.font = .systemFont(ofSize: 12)
-        feedbackLabel.frame = NSRect(x: margin, y: 274, width: width - margin * 2, height: 30)
         content.addSubview(feedbackLabel)
 
         let next = NSButton(title: "下一题", target: self, action: #selector(nextQuestion))
         let reveal = NSButton(title: "显示答案", target: self, action: #selector(revealAnswer))
         let export = NSButton(title: "打开进度文件", target: self, action: #selector(openProgress))
-        for (index, button) in [next, reveal, export].enumerated() {
+        for button in [next, reveal, export] {
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + CGFloat(index) * 130, y: 310, width: 120, height: 28)
             content.addSubview(button)
         }
+        actionButtons = [next, reveal, export]
 
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
-        progressLabel.frame = NSRect(x: margin, y: 344, width: width - margin * 2, height: 16)
+        content.addSubview(progressLabel)
 
-        // 编码方案名 + 25 键字根分布图
-        schemeLabel.frame = NSRect(x: margin, y: 360, width: width - margin * 2 - 84, height: 16)
         schemeLabel.font = .systemFont(ofSize: 10.5, weight: .medium)
         schemeLabel.textColor = .secondaryLabelColor
         schemeLabel.stringValue = "\(keyboardMap.layout.displayName) · 25 键字根分布"
@@ -163,15 +186,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         content.addSubview(schemeLabel)
 
         // 口诀开关：默认关闭，打开后在图下方展开五个区的助记口诀。
-        mnemonicToggle.frame = NSRect(x: width - margin - 76, y: 358, width: 76, height: 18)
         mnemonicToggle.target = self
         mnemonicToggle.action = #selector(toggleMnemonics)
         mnemonicToggle.state = .off
         mnemonicToggle.font = .systemFont(ofSize: 11)
         content.addSubview(mnemonicToggle)
 
-        mnemonicLabel.frame = NSRect(x: margin, y: 606, width: width - margin * 2,
-                                     height: Self.mnemonicExtraHeight - 8)
         mnemonicLabel.isHidden = true
         mnemonicLabel.maximumNumberOfLines = 0
         mnemonicLabel.cell?.wraps = true
@@ -181,11 +201,81 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             .map { "\($0.name)：\($0.text)" }.joined(separator: "\n")
         mnemonicLabel.setAccessibilityLabel("五笔助记口诀")
         content.addSubview(mnemonicLabel)
-        keyboardMap.frame = NSRect(x: margin, y: 380, width: width - margin * 2,
-                                   height: KeyboardMapView.totalHeight)
-        content.addSubview(progressLabel)
+
         content.addSubview(keyboardMap)
+        relayout()
         return content
+    }
+
+    /// 纵向排布：从顶部按当前题型与口诀开关逐段落下，窗口高度随之自适应。
+    private func relayout() {
+        guard content != nil else { return }
+        let width = Self.contentWidth
+        let margin = Self.margin
+        let inner = width - margin * 2
+        var y = Gap.top
+
+        kindControl.frame = NSRect(x: margin, y: y, width: inner, height: Gap.kindHeight)
+        y += Gap.kindHeight + Gap.afterKind
+
+        questionLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.questionHeight)
+        y += Gap.questionHeight + Gap.afterQuestion
+
+        promptLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.promptHeight)
+        y += Gap.promptHeight + Gap.afterPrompt
+
+        explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
+        y += PracticeExplanationView.height + Gap.afterExplanation
+
+        answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
+        strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
+        for (index, button) in strokeButtons.enumerated() {
+            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 72, y: y, width: 66, height: 28)
+        }
+        let structureY = y + 32
+        structureTitle.frame = NSRect(x: margin, y: structureY + 5, width: 46, height: 18)
+        for (index, button) in structureButtons.enumerated() {
+            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: structureY, width: 108, height: 28)
+        }
+        y += (kind == .code ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
+
+        feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
+        y += Gap.feedbackHeight + Gap.afterFeedback
+
+        let buttons = actionButtons
+        for (index, button) in buttons.enumerated() {
+            button.frame = NSRect(x: margin + CGFloat(index) * 130, y: y, width: 120, height: Gap.actionsHeight)
+        }
+        y += Gap.actionsHeight + Gap.afterActions
+
+        progressLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.progressHeight)
+        y += Gap.progressHeight + Gap.afterProgress
+
+        schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 84, height: Gap.schemeHeight - 2)
+        mnemonicToggle.frame = NSRect(x: width - margin - 76, y: y, width: 76, height: Gap.schemeHeight)
+        y += Gap.schemeHeight + Gap.afterScheme
+
+        keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
+        y += KeyboardMapView.totalHeight
+
+        if mnemonicToggle.state == .on {
+            y += Gap.afterMnemonic
+            mnemonicLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.mnemonicHeight)
+        }
+        resizeWindowToFit()
+    }
+
+    private func resizeWindowToFit() {
+        let height = contentHeight()
+        content?.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentWidth, height: height))
+        guard let window else { return }
+        var frame = window.frame
+        let delta = frame.height - (height + (frame.height - window.contentLayoutRect.height))
+        if abs(delta) > 0.5 {
+            frame.origin.y += frame.height - (height + (frame.height - window.contentLayoutRect.height))
+            frame.size.height = height + (frame.height - window.contentLayoutRect.height)
+            window.setFrame(frame, display: true, animate: false)
+        }
     }
 
     private func showExplanation(_ question: PracticeQuestion, revealsAnswer: Bool) {
@@ -208,6 +298,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     @objc private func kindChanged() {
         applyKindVisibility()
+        relayout()
         reload()
     }
 
@@ -217,15 +308,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     @objc private func toggleMnemonics() {
-        let shown = mnemonicToggle.state == .on
-        mnemonicLabel.isHidden = !shown
-        let height = Self.contentSize.height + (shown ? Self.mnemonicExtraHeight : 0)
-        guard let window else { return }
-        var frame = window.frame
-        frame.origin.y += frame.height - height
-        frame.size.height = height
-        window.setFrame(frame, display: true, animate: false)
-        contentViewHeight?(height)
+        mnemonicLabel.isHidden = mnemonicToggle.state != .on
+        relayout()
     }
 
     @objc private func nextQuestion() {
@@ -341,7 +425,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                                                       : "选一个末笔和一个结构"
         }
         progressLabel.stringValue = progress.summary
-        let host = NSWindow(contentRect: NSRect(origin: .zero, size: Self.contentSize),
+        let host = NSWindow(contentRect: view.frame,
                             styleMask: [.titled], backing: .buffered, defer: false)
         host.contentView = view
         if let appearance = NSAppearance(named: light ? .aqua : .darkAqua) { host.appearance = appearance }

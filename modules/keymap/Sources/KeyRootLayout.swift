@@ -11,6 +11,8 @@ struct KeyRootLayout: Equatable {
         let keyName: String
         /// 该键归属的区（1 横、2 竖、3 撇、4 捺、5 折；0 表示无分区，如万能键 Z）。
         let zone: Int
+        /// 区位号（11–55），口诀与字根都按它排序；万能键为 0。
+        let position: Int
         /// 该键上的其它字根，按使用频次降序（不含键名本身）。
         let roots: [String]
         /// 该键的助记口诀（可空）。
@@ -41,7 +43,7 @@ struct KeyRootLayout: Equatable {
         ]
         var entries: [Character: Entry] = [:]
         for (letter, keyName, zone) in table {
-            entries[letter] = Entry(keyName: keyName, zone: zone, roots: [], mnemonic: "")
+            entries[letter] = Entry(keyName: keyName, zone: zone, position: 0, roots: [], mnemonic: "")
         }
         return KeyRootLayout(schemeID: "wubi86", displayName: "五笔 86",
                              rows: standardRows, entries: entries)
@@ -53,13 +55,14 @@ struct KeyRootLayout: Equatable {
         for line in tsv.split(separator: "\n") {
             if line.hasPrefix("#") { continue }
             let fields = line.split(separator: "\t", omittingEmptySubsequences: false)
-            guard fields.count >= 5, fields[0] == Substring(schemeID),
+            guard fields.count >= 6, fields[0] == Substring(schemeID),
                   let letter = fields[1].first,
-                  let zone = Int(fields[2]) else { continue }
-            let roots = fields[4].split(separator: " ").map(String.init)
-            let mnemonic = fields.count >= 6 ? String(fields[5]) : ""
-            entries[letter] = Entry(keyName: String(fields[3]), zone: zone, roots: roots,
-                                    mnemonic: mnemonic)
+                  let zone = Int(fields[2]),
+                  let position = Int(fields[3]) else { continue }
+            let roots = fields[5].split(separator: " ").map(String.init)
+            let mnemonic = fields.count >= 7 ? String(fields[6]) : ""
+            entries[letter] = Entry(keyName: String(fields[4]), zone: zone, position: position,
+                                    roots: roots, mnemonic: mnemonic)
         }
         guard entries.count >= 25 else { return nil }
         return KeyRootLayout(schemeID: schemeID, displayName: displayName,
@@ -70,9 +73,10 @@ struct KeyRootLayout: Equatable {
     var mnemonicsByZone: [(zone: Int, name: String, text: String)] {
         let names = [1: "横区", 2: "竖区", 3: "撇区", 4: "捺区", 5: "折区", 0: "其它"]
         return (1...5).compactMap { zone in
-            let text = rows.joined()
-                .compactMap { entries[$0] }
+            // 按区位号排序（11→15、21→25…），与主流教程口诀顺序一致。
+            let text = entries.values
                 .filter { $0.zone == zone && !$0.mnemonic.isEmpty }
+                .sorted { $0.position < $1.position }
                 .map(\.mnemonic)
                 .joined(separator: "，")
             return text.isEmpty ? nil : (zone, names[zone] ?? "", text)

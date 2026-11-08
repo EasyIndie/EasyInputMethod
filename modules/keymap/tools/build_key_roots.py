@@ -16,15 +16,41 @@ SCHEME = "wubi86"
 
 # 五笔 86 传统助记口诀（每个键位一句，教学常识，随方案内置；不在口诀里做版权主张）。
 MNEMONIC = {
-    "G": "王旁青头戋五一", "F": "土士二干十寸雨", "D": "大犬三羊古石厂", "S": "木丁西",
-    "A": "工戈草头右框七", "H": "目具上止卜虎皮", "J": "日早两竖与虫依", "K": "口与川，字根稀",
-    "L": "田甲方框四车力", "M": "山由贝，下框几", "T": "禾竹一撇双人立，反文条头共三一",
-    "R": "白手看头三二斤", "E": "月彡乃用家衣底", "W": "人和八，三四里",
-    "Q": "金勺缺点无尾鱼，犬旁留叉儿一点夕", "Y": "言文方广在四一，高头一捺谁人去",
-    "U": "立辛两点六门疒", "I": "水旁兴头小倒立", "O": "火业头，四点米",
-    "P": "之宝盖，摘礻衤", "N": "已半巳满不出己，左框折尸心和羽", "B": "子耳了也框向上",
-    "V": "女刀九臼山朝西", "C": "又巴马，丢矢矣", "X": "慈母无心弓和匕，幼无力",
+    "G": "王旁青头戋（兼）五一",
+    "F": "土士二干十寸雨",
+    "D": "大犬三羊古石厂",
+    "S": "木丁西",
+    "A": "工戈草头右框七",
+    "H": "目具上止卜虎皮",
+    "J": "日早两竖与虫依",
+    "K": "口与川，字根稀",
+    "L": "田甲方框四车力",
+    "M": "山由贝，下框几",
+    "T": "禾竹一撇双人立，反文条头共三一",
+    "R": "白手看头三二斤",
+    "E": "月彡（衫）乃用家衣底",
+    "W": "人和八，三四里",
+    "Q": "金勺缺点无尾鱼，犬旁留叉儿一点夕，氏无七（妻）",
+    "Y": "言文方广在四一，高头一捺谁人去",
+    "U": "立辛两点六门疒",
+    "I": "水旁兴头小倒立",
+    "O": "火业头，四点米",
+    "P": "之宝盖，摘礻（示）衤（衣）",
+    "N": "已半巳满不出己，左框折尸心和羽",
+    "B": "子耳了也框向上",
+    "V": "女刀九臼山朝西",
+    "C": "又巴马，丢矢矣",
+    "X": "慈母无心弓和匕，幼无力",
     "Z": "",
+}
+# 区位号（11–55）：口诀与字根都按这个顺序排，和主流教程一致。
+POSITION = {
+    "G": 11, "F": 12, "D": 13, "S": 14, "A": 15,
+    "H": 21, "J": 22, "K": 23, "L": 24, "M": 25,
+    "T": 31, "R": 32, "E": 33, "W": 34, "Q": 35,
+    "Y": 41, "U": 42, "I": 43, "O": 44, "P": 45,
+    "N": 51, "B": 52, "V": 53, "C": 54, "X": 55,
+    "Z": 0,
 }
 ZONE_NAME = {1: "横", 2: "竖", 3: "撇", 4: "捺", 5: "折", 0: "万能"}
 # 只收录能被系统字体渲染成汉字的字根：康熙部首（⺈ ⺝）、注音符号（ㄅ ㄠ）、
@@ -60,7 +86,7 @@ def build(runtime_path: pathlib.Path) -> str:
             if glyph == "？" or key not in counts:
                 continue
             counts[key][glyph] = counts[key].get(glyph, 0) + 1
-    lines = ["# scheme\tletter\tzone\tkeyname\troots(按使用频次降序，空格分隔)\tmnemonic(口诀)",
+    lines = ["# scheme\tletter\tzone\tposition(区位)\tkeyname\troots(按口诀顺序，空格分隔)\tmnemonic(口诀)",
              "# 由 modules/keymap/tools/build_key_roots.py 生成，勿手改。",
              "# 只收录可渲染为汉字的字根；康熙部首/注音符号等无字形码位见文末注释。"]
     dropped: list[str] = []
@@ -70,10 +96,18 @@ def build(runtime_path: pathlib.Path) -> str:
         roots = [glyph for glyph, _ in ranked if glyph != name]
         kept = [glyph for glyph in roots if renderable(glyph)]
         removed = [glyph for glyph in roots if not renderable(glyph)]
+        # 字根顺序跟随口诀：先按在口诀里出现的先后，口诀没提到的按使用频次排在后面。
+        text = MNEMONIC.get(letter, "")
+
+        def order(glyph: str) -> tuple[int, int]:
+            index = text.find(glyph)
+            return (index if index >= 0 else len(text) + 1, -counts[letter].get(glyph, 0))
+
+        kept.sort(key=order)
         if removed:
             dropped.append(f"{letter}:{' '.join(removed)}")
-        lines.append("\t".join([SCHEME, letter, str(zone), name, " ".join(kept),
-                                 MNEMONIC.get(letter, "")]))
+        lines.append("\t".join([SCHEME, letter, str(zone), str(POSITION[letter]), name,
+                                 " ".join(kept), MNEMONIC.get(letter, "")]))
     if dropped:
         lines.append("# 未收录（系统字体无字形，显示为 ?）：" + "；".join(dropped))
     return "\n".join(lines) + "\n"

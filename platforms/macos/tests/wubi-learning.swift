@@ -75,7 +75,7 @@ require(keyboard.entries["Z"]?.zone == 0, "Z 是万能键，不属于五区")
 require(KeyRootLayout.wubi86.entries.values.allSatisfy { $0.mnemonic.isEmpty },
         "内置兜底表不含口诀（口诀来自数据文件）")
 let loadedLayout = KeyRootLayout.load()
-require(loadedLayout.entries["G"]?.mnemonic == "王旁青头戋五一", "G 键应带助记口诀")
+require(loadedLayout.entries["G"]?.mnemonic.hasPrefix("王旁青头戋") == true, "G 键应带助记口诀")
 require(loadedLayout.mnemonicsByZone.map(\.zone) == [1, 2, 3, 4, 5], "口诀应覆盖五个区")
 require(loadedLayout.mnemonicsByZone.allSatisfy { !$0.text.isEmpty }, "每个区都应有口诀")
 require(KeyRootLayout.wubi86.rows.map(\.count) == [10, 9, 7], "物理排布 10/9/7 键")
@@ -85,6 +85,15 @@ require(loaded.schemeID == "wubi86", "默认加载五笔 86 键位表")
 require((loaded.entries["G"]?.roots.count ?? 0) > 0, "数据文件应在时给出每键的真实字根分布")
 require(loaded.entries["G"]?.roots.contains("王") == false, "字根列表不重复键名字根")
 require(KeyRootLayout.parse(tsv: "bad", schemeID: "wubi86", displayName: "x") == nil, "残缺 TSV 应被拒绝")
+// 口诀与字根都按区位号排序（11→15 …），与主流教程一致
+let zones = loaded.mnemonicsByZone
+require(zones.first?.text.hasPrefix("王旁青头") == true, "横区口诀应从 11 G 开始")
+require(zones.last?.text.hasPrefix("已半巳满") == true, "折区口诀应从 51 N 开始")
+require(loaded.entries["G"]?.position == 11 && loaded.entries["A"]?.position == 15, "区位号 11/15")
+let gRoots = loaded.entries["G"]?.roots ?? []
+if let wu = gRoots.firstIndex(of: "五"), let yi = gRoots.firstIndex(of: "一") {
+    require(wu < yi, "字根顺序应跟随口诀（五在一前）")
+}
 for (row, expected) in zip(KeyRootLayout.wubi86.rows, [[10], [9], [7]]) {
     require(row.count == expected[0], "每排键数正确")
 }
