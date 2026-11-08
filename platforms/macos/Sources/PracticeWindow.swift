@@ -26,6 +26,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let actionsHeight: CGFloat = 28
         static let afterActions: CGFloat = 10
         static let progressHeight: CGFloat = 16
+        static let progressBarHeight: CGFloat = 6
+        static let afterProgressLabel: CGFloat = 5
         static let afterProgress: CGFloat = 8
         static let schemeHeight: CGFloat = 18
         static let afterScheme: CGFloat = 8
@@ -62,7 +64,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         height += PracticeExplanationView.height + Gap.afterExplanation
         height += Gap.feedbackHeight + Gap.afterFeedback
         height += Gap.actionsHeight + Gap.afterActions
-        height += Gap.progressHeight + Gap.afterProgress
+        height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
         if detailsToggle.state == .on {
             height += Gap.schemeHeight + Gap.afterScheme
             height += KeyboardMapView.totalHeight
@@ -83,9 +85,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let explanation = PracticeExplanationView()
     private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
     private let schemeLabel = NSTextField(labelWithString: "")
-    private let detailsToggle = NSButton(checkboxWithTitle: "键位图与口诀", target: nil, action: nil)
+    private let detailsToggle = NSButton(checkboxWithTitle: "键位图", target: nil, action: nil)
     private let mnemonicToggle = NSButton(checkboxWithTitle: "口诀", target: nil, action: nil)
     private let mnemonicLabel = NSTextField(labelWithString: "")
+    private let progressBar = NSProgressIndicator()
     private var actionButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
@@ -191,18 +194,24 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.font = .systemFont(ofSize: 12)
         content.addSubview(feedbackLabel)
 
-        let next = NSButton(title: "下一题", target: self, action: #selector(nextQuestion))
-        let reveal = NSButton(title: "显示答案", target: self, action: #selector(revealAnswer))
-        let export = NSButton(title: "打开进度文件", target: self, action: #selector(openProgress))
-        for button in [next, reveal, export] {
-            button.bezelStyle = .rounded
-            content.addSubview(button)
-        }
-        actionButtons = [next, reveal, export]
+        let next = iconButton("arrow.right.circle", tooltip: "下一题",
+                              action: #selector(nextQuestion))
+        let reveal = iconButton("eye", tooltip: "显示答案", action: #selector(revealAnswer))
+        let reset = iconButton("arrow.counterclockwise", tooltip: "重置练习进度",
+                               action: #selector(resetProgress))
+        let export = iconButton("doc.text", tooltip: "打开进度文件", action: #selector(openProgress))
+        actionButtons = [next, reveal, reset, export]
 
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
         content.addSubview(progressLabel)
+
+        progressBar.style = .bar
+        progressBar.isIndeterminate = false
+        progressBar.minValue = 0
+        progressBar.maxValue = 1
+        progressBar.controlSize = .small
+        content.addSubview(progressBar)
 
         schemeLabel.font = .systemFont(ofSize: 10.5, weight: .medium)
         schemeLabel.textColor = .secondaryLabelColor
@@ -276,21 +285,27 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         y += Gap.feedbackHeight + Gap.afterFeedback
 
         let buttons = actionButtons
-        for (index, button) in buttons.enumerated() {
-            button.frame = NSRect(x: margin + CGFloat(index) * 130, y: y, width: 120, height: Gap.actionsHeight)
+        let buttonSize: CGFloat = 34
+        let buttonGap: CGFloat = 14
+        let totalWidth = CGFloat(buttons.count) * buttonSize + CGFloat(max(0, buttons.count - 1)) * buttonGap
+        var buttonX = (width - totalWidth) / 2
+        for button in buttons {
+            button.frame = NSRect(x: buttonX, y: y - 3, width: buttonSize, height: buttonSize)
+            buttonX += buttonSize + buttonGap
         }
         y += Gap.actionsHeight + Gap.afterActions
 
         // 进度行右侧常驻"键位图与口诀"开关；打开后才在下方展开详情区。
         let detailsShown = detailsToggle.state == .on
         progressLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 200, height: Gap.progressHeight)
-        detailsToggle.frame = NSRect(x: width - margin - 118, y: y, width: 118, height: 18)
-        mnemonicToggle.frame = NSRect(x: width - margin - 118 - 74, y: y, width: 66, height: 18)
-        y += Gap.progressHeight + Gap.afterProgress
+        progressBar.frame = NSRect(x: margin, y: y + Gap.progressHeight + Gap.afterProgressLabel,
+                                   width: inner - 200, height: Gap.progressBarHeight)
+        detailsToggle.frame = NSRect(x: width - margin - 96, y: y - 1, width: 96, height: 18)
+        mnemonicToggle.frame = NSRect(x: width - margin - 96 - 64, y: y - 1, width: 60, height: 18)
+        y += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
 
         schemeLabel.isHidden = !detailsShown
-        mnemonicToggle.isHidden = false
-        mnemonicToggle.isEnabled = detailsShown
+        mnemonicToggle.isHidden = !detailsShown
         keyboardMap.isHidden = !detailsShown
         mnemonicLabel.isHidden = !(detailsShown && mnemonicToggle.state == .on)
         if detailsShown {
@@ -320,6 +335,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             frame.size.height = height + (frame.height - window.contentLayoutRect.height)
             window.setFrame(frame, display: true, animate: false)
         }
+    }
+
+    /// 图标按钮：悬浮提示代替文字标题。
+    private func iconButton(_ symbol: String, tooltip: String, action: Selector) -> NSButton {
+        let button = NSButton(image: NSImage(systemSymbolName: symbol, accessibilityDescription: tooltip)
+                                ?? NSImage(), target: self, action: action)
+        button.bezelStyle = .texturedRounded
+        button.imagePosition = .imageOnly
+        button.toolTip = tooltip
+        button.setAccessibilityLabel(tooltip)
+        content?.addSubview(button)
+        return button
     }
 
     private func showExplanation(_ question: PracticeQuestion, revealsAnswer: Bool) {
@@ -372,6 +399,17 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
+    /// 统计：题库字数、已练字数、次数、正确率、练习进度（沿用当前题型）。
+    private func updateStats() {
+        let bankSize = max(1, session.bank.count)
+        let stats = progress.stats(kind: kind)
+        let rate = stats.attempts > 0 ? stats.correct * 100 / stats.attempts : 0
+        let percent = Int((Double(stats.practiced) / Double(bankSize) * 100).rounded())
+        progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
+            + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
+        progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
+    }
+
     private func showCurrent() {
         answered = false
         answerView.clear()
@@ -398,7 +436,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             explanation.showPlaceholder("答题后在这里显示字根、识别码与完整码")
             explanation.isHidden = false
         }
-        progressLabel.stringValue = session.summary
+        updateStats()
         if kind.isTyping { window?.makeFirstResponder(answerView) }
     }
 
@@ -445,7 +483,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
             + (result.explanation.isEmpty ? "" : " · " + result.explanation)
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
-        progressLabel.stringValue = session.summary
+        updateStats()
     }
 
     @objc private func revealAnswer() {
@@ -455,6 +493,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         explanation.isHidden = false
         feedbackLabel.stringValue = ""
         feedbackLabel.textColor = .secondaryLabelColor
+    }
+
+    @objc private func resetProgress() {
+        let alert = NSAlert()
+        alert.messageText = "重置练习进度？"
+        alert.informativeText = "会删除本机的 practice.tsv（已练字数、次数、正确率归零）。此操作不可撤销。"
+        alert.addButton(withTitle: "重置")
+        alert.addButton(withTitle: "取消")
+        guard alert.runModal() == .alertFirstButtonReturn else { return }
+        progress.reset()
+        session.reload()
+        showCurrent()
     }
 
     @objc private func openProgress() {

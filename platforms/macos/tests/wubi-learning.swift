@@ -84,6 +84,25 @@ if let sample = Practice.bank(kind: .code2, limit: 200).first, let short = sampl
     require(Practice.judgeCode(short, question: sample), "二级简码应判对")
 }
 
+// 作答框：4 格上限、z 只点亮不入答案、退格/Esc 清空
+let answerField = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 300, height: 60))
+var lit: [Character] = []
+answerField.onLetter = { lit.append($0) }
+func type(_ text: String) {
+    for character in text {
+        let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [],
+                                     timestamp: 0, windowNumber: 0, context: nil,
+                                     characters: String(character), charactersIgnoringModifiers: String(character),
+                                     isARepeat: false, keyCode: 0)
+        if let event { answerField.keyDown(with: event) }
+    }
+}
+type("bnhyz")
+require(answerField.text == "bnhy", "最多 4 位，z 不进答案")
+require(lit.contains("Z"), "z 也应点亮键位图")
+answerField.clear()
+require(answerField.text.isEmpty, "clear 应清空")
+
 // 25 键字根分布图：数据来自方案、键名字根齐全、分区正确、敲键点亮、答完描边
 let keyboard = KeyboardMapView(layout: .wubi86)
 keyboard.frame = NSRect(x: 0, y: 0, width: 400, height: KeyboardMapView.totalHeight)
