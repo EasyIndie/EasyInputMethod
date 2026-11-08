@@ -14,7 +14,20 @@ final class PracticeExplanationView: NSView {
     private var short1: String?
     private var short2: String?
     private var revealsAnswer = true
+    private var placeholder: String?
     override var isFlipped: Bool { true }
+
+    func showPlaceholder(_ text: String) {
+        roots = []
+        recognition = nil
+        code = nil
+        short1 = nil
+        short2 = nil
+        revealsAnswer = false
+        placeholder = text
+        setAccessibilityLabel(text)
+        needsDisplay = true
+    }
 
     func show(char: String, roots: [(glyph: String, key: String)],
               recognition: (letter: String, stroke: String, structure: String)?,
@@ -25,6 +38,7 @@ final class PracticeExplanationView: NSView {
         self.short1 = short1
         self.short2 = short2
         self.revealsAnswer = revealsAnswer
+        self.placeholder = nil
         setAccessibilityLabel(accessibilityText(char: char))
         needsDisplay = true
     }
@@ -39,6 +53,16 @@ final class PracticeExplanationView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
+        if let placeholder {
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.alignment = .left
+            NSAttributedString(string: placeholder, attributes: [
+                .font: NSFont.systemFont(ofSize: 11),
+                .foregroundColor: NSColor.tertiaryLabelColor,
+                .paragraphStyle: paragraph])
+                .draw(at: NSPoint(x: 0, y: 18))
+            return
+        }
         var x: CGFloat = 0
         for root in roots {
             drawCentered(root.glyph, font: .systemFont(ofSize: 15), color: .labelColor,
