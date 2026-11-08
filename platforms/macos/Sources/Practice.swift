@@ -16,6 +16,8 @@ struct PracticeQuestion {
     let code: String
     let roots: [(glyph: String, key: String)]
     let recognition: (letter: String, stroke: String, structure: String)?
+    let short1: String?
+    let short2: String?
 
     /// 拆解提示：字根（带键位），未知字根显示 `？`。
     var rootHint: String {
@@ -43,7 +45,8 @@ enum Practice {
                   let code = hint.code, !hint.roots.isEmpty else { continue }
             if kind == .recognition, hint.recognition == nil { continue }
             out.append(PracticeQuestion(kind: kind, char: char, code: code,
-                                        roots: hint.roots, recognition: hint.recognition))
+                                        roots: hint.roots, recognition: hint.recognition,
+                                        short1: hint.short1, short2: hint.short2))
         }
         return out
     }
