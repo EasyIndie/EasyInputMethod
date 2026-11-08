@@ -387,6 +387,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         answerView.clear()
         keymapPanel.map.clearFlash()
         keymapPanel.map.markAnswer("")
+        keymapPanel.clearAnswerPositions()
         pendingStroke = nil
         pendingStructure = nil
         lastAnswer = nil
@@ -470,6 +471,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
         if let question = current, let expected = kind.answer(for: question) {
             keymapPanel.map.markAnswer(expected)
+            keymapPanel.showAnswerPositions(expected)
         }
         feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
             + (result.explanation.isEmpty ? "" : " · " + result.explanation)

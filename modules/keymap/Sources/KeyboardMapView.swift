@@ -101,11 +101,6 @@ final class KeyboardMapView: NSView {
                  in: NSRect(x: rect.minX, y: rect.minY + 4, width: rect.width - 7, height: 19),
                  alignment: .right)
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
-        // 答案位置角标：同一键多次出现时显示全部位次（如 3 位全是 N → 1,2,3）。
-        let positions = answerOrder.filter { $0.letter == letter }.map { $0.position }
-        if !positions.isEmpty, !isPressed {
-            badge(for: positions, in: rect, tint: tint)
-        }
         NSGraphicsContext.restoreGraphicsState()
     }
 
@@ -149,16 +144,6 @@ final class KeyboardMapView: NSView {
                               width: cellWidth, height: lineHeight)
             drawText(root, font: font, color: color, in: cell)
         }
-    }
-
-    private func badge(for positions: [Int], in rect: NSRect, tint: NSColor) {
-        let text = positions.map(String.init).joined(separator: ",")
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.monospacedSystemFont(ofSize: 8.5, weight: .bold),
-            .foregroundColor: tint.blended(withFraction: 0.35, of: .labelColor) ?? .labelColor]
-        let string = NSAttributedString(string: text, attributes: attributes)
-        let size = string.size()
-        string.draw(at: NSPoint(x: rect.maxX - size.width - 5, y: rect.minY + 4))
     }
 
     private func drawText(_ text: String, font: NSFont, color: NSColor, in rect: NSRect,
