@@ -62,6 +62,27 @@ let explanationLabel = explanationView.accessibilityLabel() ?? ""
 require(explanationLabel.contains("完整码 FTXB"), "整体展示应包含完整码")
 require(explanationLabel.contains("识别码 B"), "整体展示应包含识别码")
 
+// 题型：一级/二级简码只出有对应简码的字；答案取自简码而不是完整码
+for kind in [PracticeKind.code1, .code2, .code, .recognition] {
+    let bank = Practice.bank(kind: kind, limit: 300)
+    require(!bank.isEmpty, "\(kind.title) 应有题")
+    for question in bank.prefix(50) {
+        switch kind {
+        case .code1: require(question.short1?.count == 1, "一级简码题必须有一级简码")
+        case .code2: require(question.short2?.count == 2, "二级简码题必须有二级简码")
+        case .code: require(!question.code.isEmpty, "完整码题必须有码")
+        case .recognition: require(question.recognition != nil, "识别码题必须有识别码")
+        }
+    }
+}
+if let sample = Practice.bank(kind: .code1, limit: 200).first, let short = sample.short1 {
+    require(Practice.judgeCode(short.uppercased(), question: sample), "一级简码应判对")
+    require(!Practice.judgeCode(sample.code, question: sample), "完整码不应算作一级简码答案")
+}
+if let sample = Practice.bank(kind: .code2, limit: 200).first, let short = sample.short2 {
+    require(Practice.judgeCode(short, question: sample), "二级简码应判对")
+}
+
 // 25 键字根分布图：数据来自方案、键名字根齐全、分区正确、敲键点亮、答完描边
 let keyboard = KeyboardMapView(layout: .wubi86)
 keyboard.frame = NSRect(x: 0, y: 0, width: 400, height: KeyboardMapView.totalHeight)
