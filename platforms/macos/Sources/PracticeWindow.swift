@@ -6,7 +6,7 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 560, height: 514)
+    static let contentSize = NSSize(width: 720, height: 614)
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -17,6 +17,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let answerView = PracticeAnswerView()
     private let explanation = PracticeExplanationView()
     private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
+    private let schemeLabel = NSTextField(labelWithString: "")
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -144,8 +145,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressLabel.textColor = .secondaryLabelColor
         progressLabel.frame = NSRect(x: margin, y: 344, width: width - margin * 2, height: 16)
 
-        // 25 键字根分布图：练手时同步点亮
-        keyboardMap.frame = NSRect(x: margin, y: 372, width: width - margin * 2,
+        // 编码方案名 + 25 键字根分布图
+        schemeLabel.frame = NSRect(x: margin, y: 362, width: width - margin * 2, height: 14)
+        schemeLabel.font = .systemFont(ofSize: 10.5, weight: .medium)
+        schemeLabel.textColor = .secondaryLabelColor
+        schemeLabel.stringValue = "\(keyboardMap.layout.displayName) · 25 键字根分布"
+        schemeLabel.setAccessibilityLabel("当前编码方案：\(keyboardMap.layout.displayName)")
+        content.addSubview(schemeLabel)
+        keyboardMap.frame = NSRect(x: margin, y: 380, width: width - margin * 2,
                                    height: KeyboardMapView.totalHeight)
         content.addSubview(progressLabel)
         content.addSubview(keyboardMap)

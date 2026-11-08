@@ -58,6 +58,15 @@ class KeyRootTableTest(unittest.TestCase):
         self.assertEqual(DATA.read_text(encoding="utf-8"), load_tool().build(RUNTIME),
                          "数据文件必须与生成器输出一致（改完请重跑生成器）")
 
+    def test_display_roots_are_cjk_only(self):
+        """视图只画 CJK 汉字/部件（康熙部首、注音符号在系统字体里没有字形，会显示成 ?）。"""
+        ranges = ((0x4E00, 0x9FFF), (0x3400, 0x4DBF), (0xF900, 0xFAFF))
+        for row in rows():
+            for root in row[4].split():
+                code = ord(root[0])
+                self.assertTrue(any(low <= code <= high for low, high in ranges),
+                                f"字根 {root} 不在可渲染范围")
+
     def test_size_budget(self):
         self.assertLess(DATA.stat().st_size, 32 * 1024)
 

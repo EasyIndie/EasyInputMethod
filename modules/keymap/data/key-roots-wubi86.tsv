@@ -1,28 +1,30 @@
 # scheme	letter	zone	keyname	roots(按使用频次降序，空格分隔)
 # 由 modules/keymap/tools/build_key_roots.py 生成，勿手改。
-wubi86	Q	3	金	⺈ 勹 钅 乂 儿 夕 犭 ク ㄨ 亅 𱼀
+# 只收录可渲染为汉字的字根；康熙部首/注音符号等无字形码位见文末注释。
+wubi86	Q	3	金	勹 钅 乂 儿 夕 犭 亅
 wubi86	W	3	人	亻 八 癶
-wubi86	E	3	月	爫 用 彡 乃 豕 豸 𰀠 ⺝ 𧘇 𮯱
-wubi86	R	3	白	扌 斤 ⺁ 手 牛 龵
-wubi86	T	3	禾	丿 夂 ノ 𠂉 ⺮ 彳 攵 亅 乑
-wubi86	Y	4	言	丶 亠 讠 广 方 文 乀 ㄠ ㇈ 高
-wubi86	U	4	立	䒑 丷 冫 门 丬 辛 疒 六 ⺀ 母
-wubi86	I	4	水	氵 小 ⺌ 氺 𣥂 𭕄
+wubi86	E	3	月	爫 用 彡 乃 豕 豸
+wubi86	R	3	白	扌 斤 手 牛 龵
+wubi86	T	3	禾	丿 夂 彳 攵 亅 乑
+wubi86	Y	4	言	丶 亠 讠 广 方 文 乀 高
+wubi86	U	4	立	䒑 丷 冫 门 丬 辛 疒 六 母
+wubi86	I	4	水	氵 小 氺
 wubi86	O	4	火	米 灬
 wubi86	P	4	之	宀 辶 冖 礻 衤 廴
 wubi86	A	1	工	艹 廾 匚 廿 七 弋 戈 龷
 wubi86	S	1	木	丁 西 覀
-wubi86	D	1	大	三 厂 丆 石 古 犬 𠂇 亅 镸
-wubi86	F	1	土	二 十 寸 士 干 雨 𬺰 ㄇ
+wubi86	D	1	大	三 厂 丆 石 古 犬 亅 镸
+wubi86	F	1	土	二 十 寸 士 干 雨
 wubi86	G	1	王	一 主 丆 五 戋
-wubi86	H	2	目	丨 止 卜 亅 上 ⺊ 龰
-wubi86	J	2	日	刂 〢 虫 早 曰 リ 亅
-wubi86	K	2	口	川 〣 〇 亅
+wubi86	H	2	目	丨 止 卜 亅 上 龰
+wubi86	J	2	日	刂 虫 早 曰 亅
+wubi86	K	2	口	川 亅
 wubi86	L	2	田	力 车 囗 皿 罒 甲 四
 wubi86	Z	0	万能	
-wubi86	X	5	纟	匕 弓 ㄠ ヒ 母 彑 幺
-wubi86	C	5	又	厶 巴 ス 马
+wubi86	X	5	纟	匕 弓 母 彑 幺
+wubi86	C	5	又	厶 巴 马
 wubi86	V	5	女	彐 刀 九 臼 巛
-wubi86	B	5	子	阝 ⺋ 凵 耳 卩 孑 乛 了 也 ㄗ 亅
-wubi86	N	5	已	心 尸 忄 乚 ノ ㄅ 𠃌 巳 乛 ⺄ 己 羽 ユ ㄋ ㄥ 乙 ⺗ コ ㄠ 𠃜 𠄌 𠃊 𠃍
-wubi86	M	2	山	冂 贝 几 ㄇ 由 ⺆
+wubi86	B	5	子	阝 凵 耳 卩 孑 乛 了 也 亅
+wubi86	N	5	已	心 尸 忄 乚 巳 乛 己 羽 乙
+wubi86	M	2	山	冂 贝 几 由
+# 未收录（系统字体无字形，显示为 ?）：Q:⺈ ク ㄨ 𱼀；E:𰀠 ⺝ 𧘇 𮯱；R:⺁；T:ノ 𠂉 ⺮；Y:ㄠ ㇈；U:⺀；I:⺌ 𣥂 𭕄；D:𠂇；F:𬺰 ㄇ；H:⺊；J:〢 リ；K:〣 〇；X:ㄠ ヒ；C:ス；B:⺋ ㄗ；N:ノ ㄅ 𠃌 ⺄ ユ ㄋ ㄥ ⺗ コ ㄠ 𠃜 𠄌 𠃊 𠃍；M:ㄇ ⺆
