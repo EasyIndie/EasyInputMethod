@@ -14,6 +14,8 @@ final class PracticeAnswerView: NSView {
     private(set) var text = "" {
         didSet { needsDisplay = true }
     }
+    /// 提交后收起焦点描边，避免"答完了还停在格子上"的错觉。
+    private(set) var isActive = true
 
     override var acceptsFirstResponder: Bool { true }
     override var isFlipped: Bool { true }
@@ -48,24 +50,29 @@ final class PracticeAnswerView: NSView {
     }
 
     func clear() { text = "" }
+
+    func setActive(_ active: Bool) {
+        isActive = active
+        needsDisplay = true
+    }
     func setTextForTesting(_ value: String) { text = String(value.prefix(Self.maxLength)) }
 
     override func draw(_ dirtyRect: NSRect) {
         let count = CGFloat(Self.maxLength)
         let gap: CGFloat = 10
-        let cellWidth = min(52, (bounds.width - gap * (count - 1)) / count)
+        let cellWidth = min(46, (bounds.width - gap * (count - 1)) / count)
         let total = cellWidth * count + gap * (count - 1)
         var x = (bounds.width - total) / 2
         let letters = Array(text.uppercased())
         for index in 0..<Self.maxLength {
-            let rect = NSRect(x: x, y: (bounds.height - 52) / 2, width: cellWidth, height: 52)
+            let rect = NSRect(x: x, y: (bounds.height - 46) / 2, width: cellWidth, height: 46)
             let filled = index < letters.count
-            let active = index == letters.count && letters.count < Self.maxLength
-            let path = NSBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), xRadius: 8, yRadius: 8)
-            NSColor.textBackgroundColor.setFill()
+            let active = isActive && index == letters.count && letters.count < Self.maxLength
+            let path = NSBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), xRadius: 10, yRadius: 10)
+            (active ? NSColor.controlBackgroundColor : NSColor.quaternaryLabelColor.withAlphaComponent(0.10)).setFill()
             path.fill()
             if active {
-                NSColor.systemGreen.withAlphaComponent(0.95).setStroke()
+                NSColor.controlAccentColor.setStroke()
                 path.lineWidth = 2
             } else {
                 NSColor.separatorColor.withAlphaComponent(filled ? 0.9 : 0.6).setStroke()
@@ -74,7 +81,7 @@ final class PracticeAnswerView: NSView {
             path.stroke()
             if filled {
                 let attributes: [NSAttributedString.Key: Any] = [
-                    .font: NSFont.monospacedSystemFont(ofSize: 22, weight: .medium),
+                    .font: NSFont.monospacedSystemFont(ofSize: 20, weight: .semibold),
                     .foregroundColor: NSColor.labelColor]
                 let string = NSAttributedString(string: String(letters[index]), attributes: attributes)
                 let size = string.size()

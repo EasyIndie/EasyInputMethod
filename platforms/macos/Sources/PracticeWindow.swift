@@ -17,14 +17,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let afterQuestion: CGFloat = 4
         static let promptHeight: CGFloat = 18
         static let afterPrompt: CGFloat = 12
-        static let afterExplanation: CGFloat = 14
-        static let codeAnswerHeight: CGFloat = 30
+        static let afterExplanation: CGFloat = 12
+        static let codeAnswerHeight: CGFloat = 58
         static let recognitionAnswerHeight: CGFloat = 92
         static let afterAnswer: CGFloat = 12
-        static let feedbackHeight: CGFloat = 30
-        static let afterFeedback: CGFloat = 10
-        static let actionsHeight: CGFloat = 28
-        static let afterActions: CGFloat = 10
+        static let feedbackHeight: CGFloat = 24
+        static let afterFeedback: CGFloat = 14
+        static let actionsHeight: CGFloat = 32
+        static let afterActions: CGFloat = 16
         static let progressHeight: CGFloat = 16
         static let progressBarHeight: CGFloat = 6
         static let afterProgressLabel: CGFloat = 5
@@ -65,10 +65,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         height += Gap.feedbackHeight + Gap.afterFeedback
         height += Gap.actionsHeight + Gap.afterActions
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
-        if detailsToggle.state == .on {
+        if detailsSwitch.state == .on {
             height += Gap.schemeHeight + Gap.afterScheme
             height += KeyboardMapView.totalHeight
-            if mnemonicToggle.state == .on {
+            if mnemonicSwitch.state == .on {
                 height += Gap.afterMnemonic + mnemonicHeight(width: Self.contentWidth - Self.margin * 2)
             }
         }
@@ -85,10 +85,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let explanation = PracticeExplanationView()
     private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
     private let schemeLabel = NSTextField(labelWithString: "")
-    private let detailsToggle = NSButton(checkboxWithTitle: "键位图", target: nil, action: nil)
-    private let mnemonicToggle = NSButton(checkboxWithTitle: "口诀", target: nil, action: nil)
+    private let detailsSwitch = NSSwitch()
+    private let detailsLabel = NSTextField(labelWithString: "键位图")
+    private let mnemonicSwitch = NSSwitch()
+    private let mnemonicLabel2 = NSTextField(labelWithString: "口诀")
     private let mnemonicLabel = NSTextField(labelWithString: "")
     private let progressBar = NSProgressIndicator()
+    private let card = NSBox()
     private var actionButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
@@ -165,6 +168,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         explanation.frame = NSRect(x: 0, y: 0, width: 0, height: PracticeExplanationView.height)
         content.addSubview(explanation)
 
+        card.boxType = .custom
+        card.titlePosition = .noTitle
+        card.cornerRadius = 16
+        card.fillColor = NSColor.controlBackgroundColor.withAlphaComponent(0.55)
+        card.borderColor = NSColor.separatorColor.withAlphaComponent(0.35)
+        card.borderWidth = 1
+        content.addSubview(card, positioned: .below, relativeTo: nil)
+
         answerView.onLetter = { [weak self] letter in self?.keyboardMap.flash(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         content.addSubview(answerView)
@@ -191,11 +202,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
 
         feedbackLabel.alignment = .center
-        feedbackLabel.font = .systemFont(ofSize: 12)
+        feedbackLabel.font = .systemFont(ofSize: 12.5, weight: .semibold)
         content.addSubview(feedbackLabel)
 
-        let next = iconButton("arrow.right.circle", tooltip: "下一题",
-                              action: #selector(nextQuestion))
+        let next = iconButton("arrow.right", tooltip: "下一题（回车）",
+                              action: #selector(nextQuestion), prominent: true)
         let reveal = iconButton("eye", tooltip: "显示答案", action: #selector(revealAnswer))
         let reset = iconButton("arrow.counterclockwise", tooltip: "重置练习进度",
                                action: #selector(resetProgress))
@@ -220,19 +231,25 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         content.addSubview(schemeLabel)
 
         // 详情区（键位图 + 口诀）整体可显隐：默认关闭，练习页以精简模式呈现。
-        detailsToggle.target = self
-        detailsToggle.action = #selector(toggleDetails)
-        detailsToggle.state = .off
-        detailsToggle.font = .systemFont(ofSize: 11)
-        detailsToggle.controlSize = .small
-        content.addSubview(detailsToggle)
+        detailsSwitch.target = self
+        detailsSwitch.action = #selector(toggleDetails)
+        detailsSwitch.state = .off
+        
+        
+        content.addSubview(detailsSwitch)
+        for label in [detailsLabel, mnemonicLabel2] {
+            label.font = .systemFont(ofSize: 11)
+            label.textColor = .secondaryLabelColor
+            content.addSubview(label)
+        }
 
-        mnemonicToggle.target = self
-        mnemonicToggle.action = #selector(toggleMnemonics)
-        mnemonicToggle.state = .off
-        mnemonicToggle.font = .systemFont(ofSize: 11)
-        mnemonicToggle.controlSize = .small
-        content.addSubview(mnemonicToggle)
+        mnemonicSwitch.target = self
+        mnemonicSwitch.action = #selector(toggleMnemonics)
+        mnemonicSwitch.state = .off
+        mnemonicSwitch.controlSize = .small
+        mnemonicSwitch.toolTip = "显示五个区的助记口诀"
+        content.addSubview(mnemonicSwitch)
+        content.addSubview(mnemonicLabel2)
 
         mnemonicLabel.isHidden = true
         mnemonicLabel.maximumNumberOfLines = 0
@@ -265,7 +282,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         promptLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.promptHeight)
         y += Gap.promptHeight + Gap.afterPrompt
 
-        // 作答区（输入框 / 末笔·结构）在题面下方，答案区在其下。
+        // 作答区（输入框 / 末笔·结构）在题面下方，答案区在其下；两块共用一张卡片做视觉分组。
+        let answerTop = y
         answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
         strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
         for (index, button) in strokeButtons.enumerated() {
@@ -279,6 +297,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
         explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
+        let cardHeight = answerHeight() + Gap.afterAnswer + PracticeExplanationView.height + 16
+        card.frame = NSRect(x: margin - 10, y: answerTop - 8, width: inner + 20, height: cardHeight)
         y += PracticeExplanationView.height + Gap.afterExplanation
 
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
@@ -296,18 +316,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         y += Gap.actionsHeight + Gap.afterActions
 
         // 进度行右侧常驻"键位图与口诀"开关；打开后才在下方展开详情区。
-        let detailsShown = detailsToggle.state == .on
-        progressLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 200, height: Gap.progressHeight)
+        let detailsShown = detailsSwitch.state == .on
+        progressLabel.frame = NSRect(x: margin, y: y, width: inner - 220, height: Gap.progressHeight)
         progressBar.frame = NSRect(x: margin, y: y + Gap.progressHeight + Gap.afterProgressLabel,
-                                   width: inner - 200, height: Gap.progressBarHeight)
-        detailsToggle.frame = NSRect(x: width - margin - 96, y: y - 1, width: 96, height: 18)
-        mnemonicToggle.frame = NSRect(x: width - margin - 96 - 64, y: y - 1, width: 60, height: 18)
+                                   width: inner - 220, height: Gap.progressBarHeight)
+        // 尾部一行：统计 + 两个原生开关（标签在左、开关在右），右对齐且同基线。
+        detailsSwitch.frame = NSRect(x: width - margin - 36, y: y - 1, width: 36, height: 18)
+        detailsLabel.frame = NSRect(x: width - margin - 36 - 50, y: y, width: 44, height: 18)
+        mnemonicSwitch.frame = NSRect(x: width - margin - 36 - 50 - 68, y: y - 1, width: 36, height: 18)
+        mnemonicLabel2.frame = NSRect(x: width - margin - 36 - 50 - 68 - 30, y: y, width: 24, height: 18)
         y += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
 
         schemeLabel.isHidden = !detailsShown
-        mnemonicToggle.isHidden = !detailsShown
+        mnemonicSwitch.isHidden = !detailsShown
         keyboardMap.isHidden = !detailsShown
-        mnemonicLabel.isHidden = !(detailsShown && mnemonicToggle.state == .on)
+        mnemonicLabel.isHidden = !(detailsShown && mnemonicSwitch.state == .on)
         if detailsShown {
             schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner, height: Gap.schemeHeight - 2)
             y += Gap.schemeHeight + Gap.afterScheme
@@ -315,7 +338,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
             y += KeyboardMapView.totalHeight
 
-            if mnemonicToggle.state == .on {
+            if mnemonicSwitch.state == .on {
                 y += Gap.afterMnemonic
                 mnemonicLabel.frame = NSRect(x: margin, y: y, width: inner,
                                              height: mnemonicHeight(width: inner))
@@ -338,15 +361,34 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     /// 图标按钮：悬浮提示代替文字标题。
-    private func iconButton(_ symbol: String, tooltip: String, action: Selector) -> NSButton {
-        let button = NSButton(image: NSImage(systemSymbolName: symbol, accessibilityDescription: tooltip)
-                                ?? NSImage(), target: self, action: action)
-        button.bezelStyle = .texturedRounded
+    private func iconButton(_ symbol: String, tooltip: String, action: Selector,
+                            prominent: Bool = false) -> NSButton {
+        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: tooltip) ?? NSImage()
+        let button = NSButton(image: image, target: self, action: action)
+        if prominent {
+            button.isBordered = false
+            button.wantsLayer = true
+            button.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
+            button.layer?.cornerRadius = 9
+            button.contentTintColor = .white
+            button.image = image.withSymbolConfiguration(
+                NSImage.SymbolConfiguration(pointSize: 14, weight: .semibold)) ?? image
+        } else {
+            button.bezelStyle = .texturedRounded
+            button.contentTintColor = .secondaryLabelColor
+            button.image = image.withSymbolConfiguration(
+                NSImage.SymbolConfiguration(pointSize: 13, weight: .regular)) ?? image
+        }
         button.imagePosition = .imageOnly
         button.toolTip = tooltip
         button.setAccessibilityLabel(tooltip)
+        button.refusesFirstResponder = true
         content?.addSubview(button)
         return button
+    }
+
+    private func answerHeight() -> CGFloat {
+        kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight
     }
 
     private func showExplanation(_ question: PracticeQuestion, revealsAnswer: Bool) {
@@ -427,6 +469,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             progressLabel.stringValue = session.summary
             return
         }
+        answerView.setActive(true)
         questionLabel.stringValue = question.char
         promptLabel.stringValue = kind.prompt(for: question)
         if kind == .recognition {
@@ -475,6 +518,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private func finish(_ result: PracticeSession.Result) {
         answered = true
         keyboardMap.clearFlash()
+        answerView.setActive(false)
         if let question = current {
             showExplanation(question, revealsAnswer: true)
             explanation.isHidden = false
@@ -531,12 +575,32 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressLabel.stringValue = progress.summary
         let host = NSWindow(contentRect: view.frame,
                             styleMask: [.titled], backing: .buffered, defer: false)
-        host.contentView = view
         if let appearance = NSAppearance(named: light ? .aqua : .darkAqua) { host.appearance = appearance }
+        host.backgroundColor = .windowBackgroundColor
+        host.contentView = view
+        view.appearance = host.effectiveAppearance
+        host.orderFrontRegardless()
         view.layoutSubtreeIfNeeded()
+        view.displayIfNeeded()
         guard let rep = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return nil }
         view.cacheDisplay(in: view.bounds, to: rep)
         return rep
+    }
+
+    /// 测试用：返回构建好的内容视图（用于离屏或真实窗口截图）。
+    func contentViewForTesting(kind: PracticeKind, revealed: Bool = false) -> NSView? {
+        let view = buildContent()
+        kindControl.selectedSegment = PracticeKind.allCases.firstIndex(of: kind) ?? 0
+        applyKindVisibility()
+        showCurrent()
+        updateStats()
+        if revealed, let question = current {
+            showExplanation(question, revealsAnswer: true)
+            explanation.isHidden = false
+            feedbackLabel.stringValue = "✓ 正确"
+            feedbackLabel.textColor = .systemGreen
+        }
+        return view
     }
 
     /// 版式自检（测试用）：所有控件必须落在内容区里，且不与顶部题型控件重叠。
@@ -551,7 +615,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                 problems.append("\(type(of: sub)) 越界 \(sub.frame)")
             }
             if sub !== kindControl, sub.frame.intersects(kindControl.frame.insetBy(dx: 0, dy: -4)) {
-                problems.append("\(type(of: sub)) 与题型控件重叠")
+                problems.append("\(type(of: sub)) 与题型控件重叠 \(sub.frame)")
             }
         }
         return problems
