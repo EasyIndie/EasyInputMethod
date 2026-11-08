@@ -11,7 +11,7 @@ import unittest
 from local_acceptance_support import output_directory, record_probe
 
 ROOT = Path(__file__).resolve().parents[3]
-KEYMAP_SOURCES = ["KeyboardMapView.swift", "KeyRootLayout.swift"]
+KEYMAP_SOURCES = ["KeyboardMapView.swift", "KeymapPanelView.swift", "KeyRootLayout.swift"]
 
 
 def stamp(path):
@@ -44,7 +44,7 @@ class PreviewMenuTests(unittest.TestCase):
                 (['swiftc', '-warnings-as-errors', '-I', str(ROOT / 'crates/ime-ffi/include'),
                   str(temporary / 'main.swift'),
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
-                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'CaretPlacement.swift', 'LearningHints.swift', 'Practice.swift', 'PracticeWindow.swift', 'PracticeAnswerView.swift', 'PracticeRootRowView.swift', 'PracticeExplanationView.swift', *KEYMAP_SOURCES, 'InputMenu.swift']],
+                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'CaretPlacement.swift', 'LearningHints.swift', 'Practice.swift', 'PracticeWindow.swift', 'PracticeAnswerView.swift', 'PracticeRootRowView.swift', 'PracticeExplanationView.swift', *KEYMAP_SOURCES, 'InputMenu.swift']],
                   str(ROOT / 'platforms/macos/Preview/InputMenuPreview.swift'),
                   str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 45),
                 ([str(temporary / 'probe'), str(temporary), str(ROOT / 'data/generated')], 10),

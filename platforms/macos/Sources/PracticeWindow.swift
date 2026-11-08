@@ -25,8 +25,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let afterAnswer: CGFloat = 12
         static let feedbackHeight: CGFloat = 24
         static let afterFeedback: CGFloat = 14
-        static let actionsHeight: CGFloat = 32
-        static let afterActions: CGFloat = 16
         static let progressHeight: CGFloat = 16
         static let progressBarHeight: CGFloat = 6
         static let afterProgressLabel: CGFloat = 5
@@ -37,27 +35,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let bottom: CGFloat = 16
     }
 
-    /// 口诀文本（区名一列 + 说明一列，制表位对齐）。
-    private func mnemonicText(width: CGFloat) -> NSAttributedString {
-        let style = NSMutableParagraphStyle()
-        style.tabStops = [NSTextTab(textAlignment: .left, location: 52)]
-        style.headIndent = 52
-        style.lineSpacing = 4
-        return NSAttributedString(
-            string: keyboardMap.layout.mnemonicsByZone
-                .map { "\($0.name)\t\($0.text)" }.joined(separator: "\n"),
-            attributes: [.font: NSFont.systemFont(ofSize: 10.5),
-                         .foregroundColor: NSColor.secondaryLabelColor,
-                         .paragraphStyle: style])
-    }
-
-    private func mnemonicHeight(width: CGFloat) -> CGFloat {
-        let bounds = mnemonicText(width: width).boundingRect(
-            with: NSSize(width: width, height: .greatestFiniteMagnitude),
-            options: [.usesLineFragmentOrigin, .usesFontLeading])
-        return ceil(bounds.height) + 6
-    }
-
     /// 当前状态下的内容高度（题型 + 详情区 + 口诀共同决定）。
     private func contentHeight() -> CGFloat {
         var height = Gap.top + Gap.kindHeight + Gap.afterKind
@@ -65,16 +42,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         height += Gap.cardPadding + Gap.promptHeight + Gap.afterPrompt
         height += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
         height += PracticeExplanationView.height + Gap.afterExplanation
-        height += Gap.cardFooter + Gap.cardPadding
+        height += Gap.cardPadding
         height += Gap.feedbackHeight + Gap.afterFeedback
-        height += Gap.actionsHeight + Gap.afterActions
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
-        if detailsSwitch.state == .on {
-            height += Gap.schemeHeight + Gap.afterScheme
-            height += KeyboardMapView.totalHeight
-            if mnemonicSwitch.state == .on {
-                height += Gap.afterMnemonic + mnemonicHeight(width: Self.contentWidth - Self.margin * 2)
-            }
+        if showsKeymap {
+            height += Gap.afterScheme + keymapPanel.height(forWidth: Self.contentWidth - Self.margin * 2)
         }
         return height + Gap.bottom
     }
@@ -87,16 +59,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressLabel = NSTextField(labelWithString: "")
     private let answerView = PracticeAnswerView()
     private let explanation = PracticeExplanationView()
-    private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
-    private let schemeLabel = NSTextField(labelWithString: "")
-    private let detailsSwitch = NSSwitch()
-    private let detailsLabel = NSTextField(labelWithString: "键位图")
-    private let mnemonicSwitch = NSSwitch()
-    private let mnemonicLabel2 = NSTextField(labelWithString: "口诀")
-    private let mnemonicLabel = NSTextField(labelWithString: "")
+    private let keymapPanel = KeymapPanelView(layout: KeyRootLayout.load())
+    /// 键位图面板是否显示（由顶部工具栏的「键位图」按钮切换）。
+    private var showsKeymap = false
     private let progressBar = NSProgressIndicator()
     private let card = NSBox()
-    private var actionButtons: [NSButton] = []
+    private var toolbarButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -146,6 +114,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         window.isReleasedWhenClosed = false
         window.delegate = self
         window.contentView = buildContent()
+        let toolbar = NSToolbar(identifier: "Lampyris.Practice")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconOnly
+        toolbar.allowsUserCustomization = false
+        window.toolbar = toolbar
+        if #available(macOS 11.0, *) { window.toolbarStyle = .unified }
         window.center()
         self.window = window
     }
@@ -180,7 +154,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         card.borderWidth = 1
         content.addSubview(card, positioned: .below, relativeTo: nil)
 
-        answerView.onLetter = { [weak self] letter in self?.keyboardMap.flash(letter) }
+        answerView.onLetter = { [weak self] letter in self?.keymapPanel.map.flash(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         content.addSubview(answerView)
 
@@ -209,14 +183,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.font = .systemFont(ofSize: 12.5, weight: .semibold)
         content.addSubview(feedbackLabel)
 
-        let next = iconButton("arrow.right", tooltip: "下一题（回车）",
-                              action: #selector(nextQuestion), prominent: true)
-        let reveal = iconButton("eye", tooltip: "显示答案", action: #selector(revealAnswer))
-        let reset = iconButton("arrow.counterclockwise", tooltip: "重置练习进度",
-                               action: #selector(resetProgress))
-        let export = iconButton("doc.text", tooltip: "打开进度文件", action: #selector(openProgress))
-        actionButtons = [next, reveal, reset, export]
-
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
         content.addSubview(progressLabel)
@@ -228,43 +194,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressBar.controlSize = .small
         content.addSubview(progressBar)
 
-        schemeLabel.font = .systemFont(ofSize: 10.5, weight: .medium)
-        schemeLabel.textColor = .secondaryLabelColor
-        schemeLabel.stringValue = "\(keyboardMap.layout.displayName) · 25 键字根分布"
-        schemeLabel.setAccessibilityLabel("当前编码方案：\(keyboardMap.layout.displayName)")
-        content.addSubview(schemeLabel)
-
-        // 详情区（键位图 + 口诀）整体可显隐：默认关闭，练习页以精简模式呈现。
-        detailsSwitch.target = self
-        detailsSwitch.action = #selector(toggleDetails)
-        detailsSwitch.state = .off
-        
-        
-        content.addSubview(detailsSwitch)
-        for label in [detailsLabel, mnemonicLabel2] {
-            label.font = .systemFont(ofSize: 11)
-            label.textColor = .secondaryLabelColor
-            content.addSubview(label)
-        }
-
-        mnemonicSwitch.target = self
-        mnemonicSwitch.action = #selector(toggleMnemonics)
-        mnemonicSwitch.state = .off
-        mnemonicSwitch.controlSize = .small
-        mnemonicSwitch.toolTip = "显示五个区的助记口诀"
-        content.addSubview(mnemonicSwitch)
-        content.addSubview(mnemonicLabel2)
-
-        mnemonicLabel.isHidden = true
-        mnemonicLabel.maximumNumberOfLines = 0
-        mnemonicLabel.cell?.wraps = true
-        mnemonicLabel.font = .systemFont(ofSize: 10.5)
-        mnemonicLabel.textColor = .secondaryLabelColor
-        mnemonicLabel.attributedStringValue = mnemonicText(width: Self.contentWidth - Self.margin * 2)
-        mnemonicLabel.setAccessibilityLabel("五笔助记口诀")
-        content.addSubview(mnemonicLabel)
-
-        content.addSubview(keyboardMap)
+        // 键位图面板（含方案名与口诀开关）自包含；是否显示由顶部工具栏决定。
+        keymapPanel.onHeightChange = { [weak self] in self?.relayout() }
+        keymapPanel.isHidden = !showsKeymap
+        content.addSubview(keymapPanel)
         relayout()
         return content
     }
@@ -303,60 +236,22 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
         y += PracticeExplanationView.height + Gap.afterExplanation
 
-        // 卡片底部：键位图 / 口诀开关（右对齐，标签在左、开关在右）。
-        let footerY = y
-        let switchWidth: CGFloat = 36
-        let detailsRight = width - margin - Gap.cardPadding
-        detailsSwitch.frame = NSRect(x: detailsRight - switchWidth, y: footerY + 4,
-                                     width: switchWidth, height: 18)
-        detailsLabel.frame = NSRect(x: detailsRight - switchWidth - 8 - 44, y: footerY + 3,
-                                    width: 44, height: 18)
-        let mnemonicRight = detailsRight - switchWidth - 8 - 44 - 20
-        mnemonicSwitch.frame = NSRect(x: mnemonicRight - switchWidth, y: footerY + 4,
-                                      width: switchWidth, height: 18)
-        mnemonicLabel2.frame = NSRect(x: mnemonicRight - switchWidth - 8 - 24, y: footerY + 3,
-                                      width: 24, height: 18)
-        let cardHeight = footerY + Gap.cardFooter + Gap.cardPadding - cardTop
+        let cardHeight = y + Gap.cardPadding - cardTop
         card.frame = NSRect(x: margin - 2, y: cardTop, width: inner + 4, height: cardHeight)
         y = cardTop + cardHeight + Gap.afterExplanation
 
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
 
-        let buttons = actionButtons
-        let buttonSize: CGFloat = 40
-        let buttonGap: CGFloat = 16
-        let totalWidth = CGFloat(buttons.count) * buttonSize + CGFloat(max(0, buttons.count - 1)) * buttonGap
-        var buttonX = (width - totalWidth) / 2
-        for button in buttons {
-            button.frame = NSRect(x: buttonX, y: y - 4, width: buttonSize, height: buttonSize)
-            buttonX += buttonSize + buttonGap
-        }
-        y += Gap.actionsHeight + Gap.afterActions
-
-        let detailsShown = detailsSwitch.state == .on
         progressLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.progressHeight)
         progressBar.frame = NSRect(x: margin, y: y + Gap.progressHeight + Gap.afterProgressLabel,
                                    width: inner, height: Gap.progressBarHeight)
         y += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
 
-        schemeLabel.isHidden = !detailsShown
-        mnemonicSwitch.isHidden = !detailsShown
-        mnemonicLabel2.isHidden = !detailsShown
-        keyboardMap.isHidden = !detailsShown
-        mnemonicLabel.isHidden = !(detailsShown && mnemonicSwitch.state == .on)
-        if detailsShown {
-            schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner, height: Gap.schemeHeight - 2)
-            y += Gap.schemeHeight + Gap.afterScheme
-
-            keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
-            y += KeyboardMapView.totalHeight
-
-            if mnemonicSwitch.state == .on {
-                y += Gap.afterMnemonic
-                mnemonicLabel.frame = NSRect(x: margin, y: y, width: inner,
-                                             height: mnemonicHeight(width: inner))
-            }
+        keymapPanel.isHidden = !showsKeymap
+        if showsKeymap {
+            let panelHeight = keymapPanel.height(forWidth: inner)
+            keymapPanel.frame = NSRect(x: margin, y: y, width: inner, height: panelHeight)
         }
         resizeWindowToFit()
     }
@@ -445,11 +340,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
-    @objc private func toggleMnemonics() {
-        relayout()
-    }
 
-    @objc private func toggleDetails() {
+
+    @objc private func toggleKeymap(_ sender: Any?) {
+        showsKeymap.toggle()
+        (sender as? NSButton)?.state = showsKeymap ? .on : .off
         relayout()
     }
 
@@ -472,8 +367,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private func showCurrent() {
         answered = false
         answerView.clear()
-        keyboardMap.clearFlash()
-        keyboardMap.markAnswer("")
+        keymapPanel.map.clearFlash()
+        keymapPanel.map.markAnswer("")
         pendingStroke = nil
         pendingStructure = nil
         lastAnswer = nil
@@ -542,13 +437,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func finish(_ result: PracticeSession.Result) {
         answered = true
-        keyboardMap.clearFlash()
+        keymapPanel.map.clearFlash()
         answerView.setActive(false)
         if let question = current {
             showExplanation(question, revealsAnswer: true)
             explanation.isHidden = false
         }
-        if let question = current { keyboardMap.markAnswer(question.code) }
+        if let question = current { keymapPanel.map.markAnswer(question.code) }
         feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
             + (result.explanation.isEmpty ? "" : " · " + result.explanation)
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
@@ -628,6 +523,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         return view
     }
 
+    /// 测试用：显示/隐藏键位图面板（等同工具栏「键位图」）。
+    func setKeymapVisibleForTesting(_ visible: Bool) {
+        showsKeymap = visible
+        relayout()
+    }
+
+    /// 测试用：把工具栏挂到给定窗口（复现真实外观）。
+    func attachToolbarForTesting(to window: NSWindow) {
+        let toolbar = NSToolbar(identifier: "Lampyris.Practice.Testing")
+        toolbar.delegate = self
+        toolbar.displayMode = .iconOnly
+        window.toolbar = toolbar
+        if #available(macOS 11.0, *) { window.toolbarStyle = .unified }
+    }
+
     /// 版式自检（测试用）：所有控件必须落在内容区里，且不与顶部题型控件重叠。
     func layoutProblemsForTesting(kind: PracticeKind) -> [String] {
         let view = buildContent()
@@ -644,6 +554,68 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             }
         }
         return problems
+    }
+}
+
+// MARK: - 工具栏（五个动作统一放窗口顶部）
+
+extension PracticeWindow: NSToolbarDelegate {
+    private enum ToolbarID {
+        static let next = NSToolbarItem.Identifier("practice.next")
+        static let reveal = NSToolbarItem.Identifier("practice.reveal")
+        static let reset = NSToolbarItem.Identifier("practice.reset")
+        static let export = NSToolbarItem.Identifier("practice.export")
+        static let keymap = NSToolbarItem.Identifier("practice.keymap")
+    }
+
+    func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        [ToolbarID.next, ToolbarID.reveal, .flexibleSpace, ToolbarID.keymap,
+         ToolbarID.reset, ToolbarID.export]
+    }
+
+    func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
+        toolbarDefaultItemIdentifiers(toolbar)
+    }
+
+    func toolbar(_ toolbar: NSToolbar, itemForItemIdentifier identifier: NSToolbarItem.Identifier,
+                 willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
+        let item = NSToolbarItem(itemIdentifier: identifier)
+        switch identifier {
+        case ToolbarID.next:
+            item.label = "下一题"
+            item.toolTip = "下一题（回车）"
+            item.image = NSImage(systemSymbolName: "arrow.right", accessibilityDescription: "下一题")
+            item.target = self
+            item.action = #selector(nextQuestion)
+        case ToolbarID.reveal:
+            item.label = "显示答案"
+            item.toolTip = "显示答案"
+            item.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "显示答案")
+            item.target = self
+            item.action = #selector(revealAnswer)
+        case ToolbarID.reset:
+            item.label = "重置进度"
+            item.toolTip = "重置练习进度"
+            item.image = NSImage(systemSymbolName: "arrow.counterclockwise",
+                                 accessibilityDescription: "重置练习进度")
+            item.target = self
+            item.action = #selector(resetProgress)
+        case ToolbarID.export:
+            item.label = "进度文件"
+            item.toolTip = "打开进度文件"
+            item.image = NSImage(systemSymbolName: "doc.text", accessibilityDescription: "打开进度文件")
+            item.target = self
+            item.action = #selector(openProgress)
+        case ToolbarID.keymap:
+            item.label = "键位图"
+            item.toolTip = "显示或隐藏键位字根图"
+            item.image = NSImage(systemSymbolName: "keyboard", accessibilityDescription: "键位图")
+            item.target = self
+            item.action = #selector(toggleKeymap(_:))
+        default:
+            return nil
+        }
+        return item
     }
 }
 

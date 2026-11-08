@@ -8,7 +8,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
-KEYMAP_SOURCES = ["KeyboardMapView.swift", "KeyRootLayout.swift"]
+KEYMAP_SOURCES = ["KeyboardMapView.swift", "KeymapPanelView.swift", "KeyRootLayout.swift"]
 
 
 @unittest.skipUnless(sys.platform == "darwin", "requires AppKit")
@@ -25,7 +25,7 @@ class AppearanceContractTests(unittest.TestCase):
                 (["cargo", "build", "--release", "-p", "ime-ffi"], 60),
                 (["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
                   str(temporary / "main.swift"),
-                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
+                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeRootRowView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES, "Settings.swift", "Feedback.swift", "InfoWindow.swift",
                      "UserDictionary.swift", "Lookup.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
