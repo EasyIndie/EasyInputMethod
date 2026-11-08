@@ -216,9 +216,8 @@ final class PracticeSession {
         guard let question else { return nil }
         let correct = Practice.judgeCode(answer, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
-        let expected = kind.answer(for: question)?.uppercased() ?? question.code.uppercased()
-        let label = kind == .code ? "完整码" : (kind == .code1 ? "一级简码" : "二级简码")
-        return Result(correct: correct, explanation: "\(label) \(expected) · 完整码 \(question.code.uppercased())")
+        // 码值统一在答案区展示，这里只回对错，避免同一信息出现两次。
+        return Result(correct: correct, explanation: "")
     }
 
     /// 提交识别码选择；证据说明用**正确**的末笔与结构，而不是用户选的。
@@ -226,8 +225,8 @@ final class PracticeSession {
         guard let question, let expected = question.recognition else { return nil }
         let correct = Practice.judgeRecognition(stroke: stroke, structure: structure, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
-        return Result(correct: correct,
-                      explanation: "识别码 \(expected.letter)（\(expected.stroke)·\(expected.structure)）")
+        _ = expected
+        return Result(correct: correct, explanation: "")
     }
 
     var summary: String { progress.summary }

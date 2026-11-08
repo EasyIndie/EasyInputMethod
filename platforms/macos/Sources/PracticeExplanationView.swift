@@ -13,6 +13,7 @@ final class PracticeExplanationView: NSView {
     private var code: String?
     private var short1: String?
     private var short2: String?
+    private var target: String?
     private var revealsAnswer = true
     private var placeholder: String?
     override var isFlipped: Bool { true }
@@ -31,13 +32,15 @@ final class PracticeExplanationView: NSView {
 
     func show(char: String, roots: [(glyph: String, key: String)],
               recognition: (letter: String, stroke: String, structure: String)?,
-              code: String, short1: String?, short2: String?, revealsAnswer: Bool) {
+              code: String, short1: String?, short2: String?, target: String? = nil,
+              revealsAnswer: Bool) {
         self.roots = Array(roots.prefix(6))
         self.recognition = recognition
         self.code = code
         self.short1 = short1
         self.short2 = short2
         self.revealsAnswer = revealsAnswer
+        self.target = target
         self.placeholder = nil
         setAccessibilityLabel(accessibilityText(char: char))
         needsDisplay = true
