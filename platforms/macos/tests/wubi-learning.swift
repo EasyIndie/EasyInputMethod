@@ -102,6 +102,14 @@ require(answerField.text == "bnhy", "最多 4 位，z 不进答案")
 require(lit.contains("Z"), "z 也应点亮键位图")
 answerField.clear()
 require(answerField.text.isEmpty, "clear 应清空")
+// 位数跟随题型：一级 1 格、二级 2 格
+answerField.capacity = 1
+type("bn")
+require(answerField.text == "b", "一级简码只接受 1 位")
+answerField.capacity = 2
+answerField.clear()
+type("bnhy")
+require(answerField.text.count == 2, "二级简码只接受 2 位")
 
 // 25 键字根分布图：数据来自方案、键名字根齐全、分区正确、敲键点亮、答完描边
 let keyboard = KeyboardMapView(layout: .wubi86)
