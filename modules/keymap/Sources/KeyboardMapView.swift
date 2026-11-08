@@ -16,7 +16,9 @@ final class KeyboardMapView: NSView {
     static let rootRows = 3
 
     private var pressed: Character?
-    private var answerKeys: Set<Character> = []
+    /// 答案键位（含第几位）：同一个键可以出现多次，用来还原"4 位码用了哪些键、分别第几位"。
+    private var answerOrder: [(letter: Character, position: Int)] = []
+    private var answerKeys: Set<Character> { Set(answerOrder.map(\.letter)) }
 
     init(layout: KeyRootLayout = .wubi86) {
         self.layout = layout
@@ -33,6 +35,8 @@ final class KeyboardMapView: NSView {
     var schemeID: String { layout.schemeID }
     var pressedLetterForTesting: String? { pressed.map(String.init) }
     var markedLettersForTesting: Set<Character> { answerKeys }
+    /// 测试用：答案键位与位次（同一个键可能出现多次）。
+    var markedPositionsForTesting: [(letter: Character, position: Int)] { answerOrder }
 
     override var isFlipped: Bool { true }
 
@@ -47,9 +51,10 @@ final class KeyboardMapView: NSView {
         needsDisplay = true
     }
 
-    /// 答完后把答案用到的键位持久描边；传空串清除。
+    /// 答完后把答案用到的键位持久描边，并在键角标出第几位；传空串清除。
     func markAnswer(_ code: String) {
-        answerKeys = Set(code.uppercased().compactMap { $0 })
+        answerOrder = code.uppercased().compactMap { $0 }.enumerated()
+            .map { (letter: $0.element, position: $0.offset + 1) }
         needsDisplay = true
     }
 
@@ -96,6 +101,11 @@ final class KeyboardMapView: NSView {
                  in: NSRect(x: rect.minX, y: rect.minY + 4, width: rect.width - 7, height: 19),
                  alignment: .right)
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
+        // 答案位置角标：同一键多次出现时显示全部位次（如 3 位全是 N → 1,2,3）。
+        let positions = answerOrder.filter { $0.letter == letter }.map { $0.position }
+        if !positions.isEmpty, !isPressed {
+            badge(for: positions, in: rect, tint: tint)
+        }
         NSGraphicsContext.restoreGraphicsState()
     }
 
@@ -139,6 +149,16 @@ final class KeyboardMapView: NSView {
                               width: cellWidth, height: lineHeight)
             drawText(root, font: font, color: color, in: cell)
         }
+    }
+
+    private func badge(for positions: [Int], in rect: NSRect, tint: NSColor) {
+        let text = positions.map(String.init).joined(separator: ",")
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.monospacedSystemFont(ofSize: 8.5, weight: .bold),
+            .foregroundColor: tint.blended(withFraction: 0.35, of: .labelColor) ?? .labelColor]
+        let string = NSAttributedString(string: text, attributes: attributes)
+        let size = string.size()
+        string.draw(at: NSPoint(x: rect.maxX - size.width - 5, y: rect.minY + 4))
     }
 
     private func drawText(_ text: String, font: NSFont, color: NSColor, in rect: NSRect,

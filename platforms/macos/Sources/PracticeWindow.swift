@@ -20,7 +20,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let cardPadding: CGFloat = 20
         static let afterExplanation: CGFloat = 14
         static let codeAnswerHeight: CGFloat = 52
-        static let recognitionAnswerHeight: CGFloat = 92
+        static let recognitionAnswerHeight: CGFloat = 64
         static let afterAnswer: CGFloat = 14
         static let feedbackHeight: CGFloat = 24
         static let afterFeedback: CGFloat = 12
@@ -172,6 +172,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             button.action = #selector(pickStroke(_:))
             button.tag = index
             button.bezelStyle = .rounded
+            button.setButtonType(.pushOnPushOff)
             content.addSubview(button)
         }
         structureTitle.font = .systemFont(ofSize: 11)
@@ -182,6 +183,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             button.action = #selector(pickStructure(_:))
             button.tag = index
             button.bezelStyle = .rounded
+            button.setButtonType(.pushOnPushOff)
             content.addSubview(button)
         }
 
@@ -227,6 +229,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         promptLabel.frame = NSRect(x: margin + Gap.cardPadding, y: cardTop + Gap.cardPadding,
                                    width: inner - Gap.cardPadding * 2, height: Gap.promptHeight)
         y = cardTop + Gap.cardPadding + Gap.promptHeight + Gap.afterPrompt
+        // 识别码题：字根是判断依据，必须排在"末笔 / 结构"选择之前；打码题则先作答再看讲解。
+        if kind == .recognition {
+            explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
+            y += PracticeExplanationView.height + Gap.afterExplanation
+        }
+
         answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
         strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
         for (index, button) in strokeButtons.enumerated() {
@@ -239,8 +247,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
-        explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
-        y += PracticeExplanationView.height + Gap.afterExplanation
+        if kind != .recognition {
+            explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
+            y += PracticeExplanationView.height + Gap.afterExplanation
+        }
 
         let cardHeight = y + Gap.cardPadding - cardTop
         card.frame = NSRect(x: margin - 2, y: cardTop, width: inner + 4, height: cardHeight)
@@ -351,6 +361,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     @objc private func toggleKeymap(_ sender: Any?) {
         showsKeymap.toggle()
         (sender as? NSButton)?.state = showsKeymap ? .on : .off
+        // 提示语可能引用"上面的字根与键位"，需要跟着显隐改口。
+        if let question = current { promptLabel.stringValue = promptText(for: question) }
         relayout()
     }
 
@@ -381,6 +393,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.stringValue = ""
         strokeTitle.stringValue = "末笔"
         structureTitle.stringValue = "结构"
+        for button in strokeButtons + structureButtons { button.state = .off }
         guard let question = current else {
             questionLabel.stringValue = "题库为空"
             promptLabel.stringValue = "当前没有可出题的完整条目（需要 quality=full）"
@@ -397,7 +410,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             }
         }()
         questionLabel.stringValue = question.char
-        promptLabel.stringValue = kind.prompt(for: question)
+        promptLabel.stringValue = promptText(for: question)
         if kind == .recognition {
             showExplanation(question, revealsAnswer: false)
             explanation.isHidden = false
@@ -426,9 +439,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         evaluateRecognition()
     }
 
+    /// 选中态用按钮自身的高亮表示；左侧标题保持"末笔"/"结构"，避免被值挤到显示不全。
     private func updateSelectionTitle() {
-        if let stroke = pendingStroke { strokeTitle.stringValue = "末笔 \(stroke)" }
-        if let structure = pendingStructure { structureTitle.stringValue = "结构 \(structure)" }
+        for (index, button) in strokeButtons.enumerated() {
+            button.state = Practice.strokes[index] == pendingStroke ? .on : .off
+        }
+        for (index, button) in structureButtons.enumerated() {
+            button.state = Practice.structures[index] == pendingStructure ? .on : .off
+        }
     }
 
     private func evaluateRecognition() {
@@ -449,7 +467,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             showExplanation(question, revealsAnswer: true)
             explanation.isHidden = false
         }
-        if let question = current { keymapPanel.map.markAnswer(question.code) }
+        // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
+        if let question = current, let expected = kind.answer(for: question) {
+            keymapPanel.map.markAnswer(expected)
+        }
         feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
             + (result.explanation.isEmpty ? "" : " · " + result.explanation)
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
@@ -493,7 +514,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         applyKindVisibility()
         if let question = current {
             questionLabel.stringValue = question.char
-            promptLabel.stringValue = kind.prompt(for: question)
+            promptLabel.stringValue = promptText(for: question)
             feedbackLabel.stringValue = kind.isTyping
                 ? "✓ 正确 · \(kind.title) \(kind.answer(for: question)?.uppercased() ?? "")"
                 : "选一个末笔和一个结构"
@@ -527,6 +548,19 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             feedbackLabel.textColor = .systemGreen
         }
         return view
+    }
+
+    /// 提示语随「键位图是否展开」自适应，避免让用户去看一块没显示的区域。
+    private func promptText(for question: PracticeQuestion) -> String {
+        switch kind {
+        case .recognition:
+            return showsKeymap
+                ? "按上面的字根与键位，判断末笔与结构"
+                : "看拆解出的字根，判断末笔与结构"
+        case .code1: return "打出它的一级简码（1 位）"
+        case .code2: return "打出它的二级简码（2 位）"
+        case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
+        }
     }
 
     /// 测试用：显示/隐藏键位图面板（等同工具栏「键位图」）。
