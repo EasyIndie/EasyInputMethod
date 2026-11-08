@@ -61,6 +61,24 @@ explanationView.show(char: "老", roots: [("土", "F"), ("丿", "T"), ("匕", "X
 let explanationLabel = explanationView.accessibilityLabel() ?? ""
 require(explanationLabel.contains("完整码 FTXB"), "整体展示应包含完整码")
 require(explanationLabel.contains("识别码 B"), "整体展示应包含识别码")
+
+// 25 键字根分布图：数据来自方案、键名字根齐全、分区正确、敲键点亮、答完描边
+let keyboard = WubiKeyboardMapView(layout: .wubi86)
+keyboard.frame = NSRect(x: 0, y: 0, width: 400, height: WubiKeyboardMapView.totalHeight)
+require(keyboard.schemeID == "wubi86", "默认方案为五笔 86")
+require(keyboard.entries.count == 26, "25 个键名 + 万能键 Z")
+for (letter, root) in [("G", "王"), ("F", "土"), ("K", "口"), ("W", "人"), ("X", "纟"), ("N", "已")] {
+    require(keyboard.entries[Character(letter)]?.keyName == root, "键 \(letter) 应挂在字根 \(root)")
+}
+require(keyboard.entries["Z"]?.zone == 0, "Z 是万能键，不属于五区")
+require(KeyRootLayout.wubi86.rows.map(\.count) == [10, 9, 7], "物理排布 10/9/7 键")
+for (row, expected) in zip(KeyRootLayout.wubi86.rows, [[10], [9], [7]]) {
+    require(row.count == expected[0], "每排键数正确")
+}
+keyboard.flash("F")
+keyboard.markAnswer("ftxb")
+require(keyboard.pressedLetterForTesting == "F", "敲键后键位图应点亮该键")
+require(keyboard.markedLettersForTesting == Set(["F", "T", "X", "B"]), "答完应描出答案用到的键位")
 // 输入视图只接受 a–y、退格与回车。
 let answer = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
 var submitted: String?
