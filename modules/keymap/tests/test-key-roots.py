@@ -10,6 +10,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[3]
 DATA = ROOT / "modules/keymap/data/key-roots-wubi86.tsv"
 TOOL = ROOT / "modules/keymap/tools/build_key_roots.py"
 RUNTIME = ROOT / "data/generated/B0-runtime.tsv"
+AUDIT = ROOT / "modules/keymap/data/key-roots-wubi86-audit.md"
 
 
 def load_tool():
@@ -66,8 +67,29 @@ class KeyRootTableTest(unittest.TestCase):
             self.assertEqual(found, sorted(found), f"键 {row[1]} 字根顺序应与口诀一致")
 
     def test_matches_generator(self):
-        self.assertEqual(DATA.read_text(encoding="utf-8"), load_tool().build(RUNTIME),
+        tool = load_tool()
+        self.assertEqual(DATA.read_text(encoding="utf-8"), tool.build(RUNTIME),
                          "数据文件必须与生成器输出一致（改完请重跑生成器）")
+        self.assertEqual(AUDIT.read_text(encoding="utf-8"), tool.audit(RUNTIME),
+                         "审计报告必须与生成器输出一致")
+
+    def test_roots_are_canonical_only(self):
+        """每个键只允许标准字根表里的字根，不允许语料里多出来的部件。"""
+        tool = load_tool()
+        for row in rows():
+            canonical = set(tool.CANONICAL[row[1]])
+            canonical.discard(row[4])
+            roots = row[5].split()
+            extras = [root for root in roots if root not in canonical]
+            self.assertEqual(extras, [], f"键 {row[1]} 含非标准字根：{extras}")
+            missing = [root for root in canonical
+                       if root not in roots and tool.renderable(root)]
+            self.assertEqual(missing, [], f"键 {row[1]} 缺少标准字根：{missing}")
+
+    def test_audit_covers_every_key(self):
+        text = AUDIT.read_text(encoding="utf-8")
+        for letter in "QWERTYUIOPASDFGHJKLZXCVBNM":
+            self.assertIn(f"| {letter} |", text, f"审计应覆盖键 {letter}")
 
     def test_display_roots_are_cjk_only(self):
         """视图只画 CJK 汉字/部件（康熙部首、注音符号在系统字体里没有字形，会显示成 ?）。"""

@@ -6,7 +6,8 @@
 keymap/
 ├── Sources/KeyRootLayout.swift    # 数据模型 + TSV 解析 + bundle 加载（仅 Foundation）
 ├── Sources/KeyboardMapView.swift  # AppKit 视图（键名字根 + 其它字根 + 分区着色 + 高亮）
-├── data/key-roots-wubi86.tsv      # 生成物：五笔 86 的键位字根分布
+├── data/key-roots-wubi86.tsv      # 生成物：五笔 86 的键位字根分布（标准字根表）
+├── data/key-roots-wubi86-audit.md # 生成物：逐键审计（语料 vs 标准表）
 ├── tools/build_key_roots.py       # 从 B0 运行时资源派生
 ├── spec/keymap-schema.md          # TSV schema 与加方案步骤
 └── tests/test-key-roots.py        # 契约测试（schema/覆盖/幂等/体积）

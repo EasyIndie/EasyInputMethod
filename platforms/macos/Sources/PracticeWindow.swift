@@ -29,23 +29,47 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let afterProgress: CGFloat = 8
         static let schemeHeight: CGFloat = 18
         static let afterScheme: CGFloat = 8
-        static let mnemonicHeight: CGFloat = 92
         static let afterMnemonic: CGFloat = 8
         static let bottom: CGFloat = 16
     }
 
-    /// 当前状态下的内容高度（题型 + 口诀开关共同决定）。
+    /// 口诀文本（区名一列 + 说明一列，制表位对齐）。
+    private func mnemonicText(width: CGFloat) -> NSAttributedString {
+        let style = NSMutableParagraphStyle()
+        style.tabStops = [NSTextTab(textAlignment: .left, location: 52)]
+        style.headIndent = 52
+        style.lineSpacing = 4
+        return NSAttributedString(
+            string: keyboardMap.layout.mnemonicsByZone
+                .map { "\($0.name)\t\($0.text)" }.joined(separator: "\n"),
+            attributes: [.font: NSFont.systemFont(ofSize: 10.5),
+                         .foregroundColor: NSColor.secondaryLabelColor,
+                         .paragraphStyle: style])
+    }
+
+    private func mnemonicHeight(width: CGFloat) -> CGFloat {
+        let bounds = mnemonicText(width: width).boundingRect(
+            with: NSSize(width: width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin, .usesFontLeading])
+        return ceil(bounds.height) + 6
+    }
+
+    /// 当前状态下的内容高度（题型 + 详情区 + 口诀共同决定）。
     private func contentHeight() -> CGFloat {
         var height = Gap.top + Gap.kindHeight + Gap.afterKind
         height += Gap.questionHeight + Gap.afterQuestion + Gap.promptHeight + Gap.afterPrompt
         height += PracticeExplanationView.height + Gap.afterExplanation
-        height += (kind == .code ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
+        height += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
         height += Gap.feedbackHeight + Gap.afterFeedback
         height += Gap.actionsHeight + Gap.afterActions
         height += Gap.progressHeight + Gap.afterProgress
-        height += Gap.schemeHeight + Gap.afterScheme
-        height += KeyboardMapView.totalHeight
-        if mnemonicToggle.state == .on { height += Gap.afterMnemonic + Gap.mnemonicHeight }
+        if detailsToggle.state == .on {
+            height += Gap.schemeHeight + Gap.afterScheme
+            height += KeyboardMapView.totalHeight
+            if mnemonicToggle.state == .on {
+                height += Gap.afterMnemonic + mnemonicHeight(width: Self.contentWidth - Self.margin * 2)
+            }
+        }
         return height + Gap.bottom
     }
 
@@ -59,6 +83,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let explanation = PracticeExplanationView()
     private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
     private let schemeLabel = NSTextField(labelWithString: "")
+    private let detailsToggle = NSButton(checkboxWithTitle: "键位图与口诀", target: nil, action: nil)
     private let mnemonicToggle = NSButton(checkboxWithTitle: "口诀", target: nil, action: nil)
     private let mnemonicLabel = NSTextField(labelWithString: "")
     private var actionButtons: [NSButton] = []
@@ -185,7 +210,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         schemeLabel.setAccessibilityLabel("当前编码方案：\(keyboardMap.layout.displayName)")
         content.addSubview(schemeLabel)
 
-        // 口诀开关：默认关闭，打开后在图下方展开五个区的助记口诀。
+        // 详情区（键位图 + 口诀）整体可显隐：默认关闭，练习页以精简模式呈现。
+        detailsToggle.target = self
+        detailsToggle.action = #selector(toggleDetails)
+        detailsToggle.state = .off
+        detailsToggle.font = .systemFont(ofSize: 11)
+        content.addSubview(detailsToggle)
+
         mnemonicToggle.target = self
         mnemonicToggle.action = #selector(toggleMnemonics)
         mnemonicToggle.state = .off
@@ -197,8 +228,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         mnemonicLabel.cell?.wraps = true
         mnemonicLabel.font = .systemFont(ofSize: 10.5)
         mnemonicLabel.textColor = .secondaryLabelColor
-        mnemonicLabel.stringValue = keyboardMap.layout.mnemonicsByZone
-            .map { "\($0.name)：\($0.text)" }.joined(separator: "\n")
+        mnemonicLabel.attributedStringValue = mnemonicText(width: Self.contentWidth - Self.margin * 2)
         mnemonicLabel.setAccessibilityLabel("五笔助记口诀")
         content.addSubview(mnemonicLabel)
 
@@ -237,7 +267,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         for (index, button) in structureButtons.enumerated() {
             button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: structureY, width: 108, height: 28)
         }
-        y += (kind == .code ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
+        y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
@@ -248,19 +278,29 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         y += Gap.actionsHeight + Gap.afterActions
 
-        progressLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.progressHeight)
+        // 进度行右侧常驻"键位图与口诀"开关；打开后才在下方展开详情区。
+        let detailsShown = detailsToggle.state == .on
+        progressLabel.frame = NSRect(x: margin, y: y, width: inner - 132, height: Gap.progressHeight)
+        detailsToggle.frame = NSRect(x: width - margin - 124, y: y - 3, width: 124, height: Gap.progressHeight + 4)
         y += Gap.progressHeight + Gap.afterProgress
 
-        schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 84, height: Gap.schemeHeight - 2)
-        mnemonicToggle.frame = NSRect(x: width - margin - 76, y: y, width: 76, height: Gap.schemeHeight)
-        y += Gap.schemeHeight + Gap.afterScheme
+        schemeLabel.isHidden = !detailsShown
+        mnemonicToggle.isHidden = !detailsShown
+        keyboardMap.isHidden = !detailsShown
+        mnemonicLabel.isHidden = !(detailsShown && mnemonicToggle.state == .on)
+        if detailsShown {
+            schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 168, height: Gap.schemeHeight - 2)
+            mnemonicToggle.frame = NSRect(x: width - margin - 76, y: y, width: 76, height: Gap.schemeHeight)
+            y += Gap.schemeHeight + Gap.afterScheme
 
-        keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
-        y += KeyboardMapView.totalHeight
+            keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
+            y += KeyboardMapView.totalHeight
 
-        if mnemonicToggle.state == .on {
-            y += Gap.afterMnemonic
-            mnemonicLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.mnemonicHeight)
+            if mnemonicToggle.state == .on {
+                y += Gap.afterMnemonic
+                mnemonicLabel.frame = NSRect(x: margin, y: y, width: inner,
+                                             height: mnemonicHeight(width: inner))
+            }
         }
         resizeWindowToFit()
     }
@@ -286,12 +326,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     private func applyKindVisibility() {
-        let isCode = kind == .code
-        answerView.isHidden = !isCode
+        let isTyping = kind.isTyping
+        answerView.isHidden = !isTyping
         explanation.isHidden = !(kind == .recognition || answered)
-        strokeTitle.isHidden = isCode
-        structureTitle.isHidden = isCode
-        for button in strokeButtons + structureButtons { button.isHidden = isCode }
+        strokeTitle.isHidden = isTyping
+        structureTitle.isHidden = isTyping
+        for button in strokeButtons + structureButtons { button.isHidden = isTyping }
     }
 
     // MARK: 交互
@@ -308,7 +348,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     @objc private func toggleMnemonics() {
-        mnemonicLabel.isHidden = mnemonicToggle.state != .on
+        relayout()
+    }
+
+    @objc private func toggleDetails() {
         relayout()
     }
 
@@ -346,7 +389,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             explanation.isHidden = false
         }
         progressLabel.stringValue = session.summary
-        if kind == .code { window?.makeFirstResponder(answerView) }
+        if kind.isTyping { window?.makeFirstResponder(answerView) }
     }
 
     @objc private func submitCode(_ text: String) {
@@ -418,11 +461,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         applyKindVisibility()
         if let question = current {
             questionLabel.stringValue = question.char
-            promptLabel.stringValue = kind == .code
-                ? "打出它的完整五笔码(\(question.code.count) 位)"
-                : "拆解：\(question.rootHint)"
-            feedbackLabel.stringValue = kind == .code ? "✓ 正确 · 完整码 \(question.code.uppercased())"
-                                                      : "选一个末笔和一个结构"
+            promptLabel.stringValue = kind.prompt(for: question)
+            feedbackLabel.stringValue = kind.isTyping
+                ? "✓ 正确 · \(kind.title) \(kind.answer(for: question)?.uppercased() ?? "")"
+                : "选一个末笔和一个结构"
         }
         progressLabel.stringValue = progress.summary
         let host = NSWindow(contentRect: view.frame,

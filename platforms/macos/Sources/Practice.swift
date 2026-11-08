@@ -2,12 +2,47 @@ import Foundation
 
 /// 离线练习（ADR-313）：只从 `full` 条目出题，本地判分，进度写本地有界 TSV。
 ///
-/// 题型：`code`（看字打码）、`recognition`（识别码判断）。数据复用 `LearningHints`（ADR-311）。
+/// 题型：一级简码 / 二级简码 / 完整码 / 识别码。数据复用 `LearningHints`（ADR-311）。
+///
+/// 三级简码需要"哪些字真有三级简码"的码表（引擎侧至今没收录，ADR-314 关闭），此处不提供，
+/// 否则会把"前 3 码"当成三级简码教错。
 enum PracticeKind: String, CaseIterable {
+    case code1 = "code1"
+    case code2 = "code2"
     case code = "code"
     case recognition = "recognition"
 
-    var title: String { self == .code ? "看字打码" : "识别码判断" }
+    var title: String {
+        switch self {
+        case .code1: return "一级简码"
+        case .code2: return "二级简码"
+        case .code: return "完整码"
+        case .recognition: return "识别码"
+        }
+    }
+
+    /// 需要用户敲字母的题型。
+    var isTyping: Bool { self != .recognition }
+
+    /// 该题型要求的答案（字母）；识别码题型没有字母答案。
+    func answer(for question: PracticeQuestion) -> String? {
+        switch self {
+        case .code1: return question.short1
+        case .code2: return question.short2
+        case .code: return question.code
+        case .recognition: return nil
+        }
+    }
+
+    /// 提示语。
+    func prompt(for question: PracticeQuestion) -> String {
+        switch self {
+        case .code1: return "打出它的一级简码（1 位）"
+        case .code2: return "打出它的二级简码（2 位）"
+        case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
+        case .recognition: return "按上面的字根与键位，判断末笔与结构"
+        }
+    }
 }
 
 struct PracticeQuestion {
@@ -44,6 +79,8 @@ enum Practice {
             guard let hint = LearningHints.hint(for: char), hint.quality == "full",
                   let code = hint.code, !hint.roots.isEmpty else { continue }
             if kind == .recognition, hint.recognition == nil { continue }
+            if kind == .code1, hint.short1?.count != 1 { continue }
+            if kind == .code2, hint.short2?.count != 2 { continue }
             out.append(PracticeQuestion(kind: kind, char: char, code: code,
                                         roots: hint.roots, recognition: hint.recognition,
                                         short1: hint.short1, short2: hint.short2))
@@ -51,9 +88,11 @@ enum Practice {
         return out
     }
 
-    /// 判分：看字打码（大小写与空白不敏感）。
+    /// 判分：敲码类题型（大小写与空白不敏感）。
     static func judgeCode(_ answer: String, question: PracticeQuestion) -> Bool {
-        answer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == question.code.lowercased()
+        guard let expected = question.kind.answer(for: question) else { return false }
+        return answer.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+            == expected.lowercased()
     }
 
     /// 判分：识别码（末笔 + 结构 → 字母）。
@@ -177,7 +216,9 @@ final class PracticeSession {
         guard let question else { return nil }
         let correct = Practice.judgeCode(answer, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
-        return Result(correct: correct, explanation: "完整码 \(question.code.uppercased())")
+        let expected = kind.answer(for: question)?.uppercased() ?? question.code.uppercased()
+        let label = kind == .code ? "完整码" : (kind == .code1 ? "一级简码" : "二级简码")
+        return Result(correct: correct, explanation: "\(label) \(expected) · 完整码 \(question.code.uppercased())")
     }
 
     /// 提交识别码选择；证据说明用**正确**的末笔与结构，而不是用户选的。
