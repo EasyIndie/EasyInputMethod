@@ -8,12 +8,15 @@ final class KeymapPanelView: NSView {
     static let headerHeight: CGFloat = 20
     static let headerGap: CGFloat = 10
     static let mnemonicGap: CGFloat = 10
+    static let answerHintHeight: CGFloat = 18
 
     let map: KeyboardMapView
     private let schemeLabel = NSTextField(labelWithString: "")
     private let mnemonicLabel = NSTextField(labelWithString: "")
     private let mnemonicSwitch = NSSwitch()
     private let mnemonicTitle = NSTextField(labelWithString: "口诀")
+    /// 本题答案用到的键位（含位次），画在图下方，避免压在键名/字根上。
+    private let answerHint = NSTextField(labelWithString: "")
 
     /// 口诀显隐（面板内部状态）。
     var showsMnemonics: Bool {
@@ -44,6 +47,11 @@ final class KeymapPanelView: NSView {
         mnemonicTitle.font = .systemFont(ofSize: 11)
         mnemonicTitle.textColor = .secondaryLabelColor
         addSubview(mnemonicTitle)
+
+        answerHint.font = .systemFont(ofSize: 11)
+        answerHint.textColor = .secondaryLabelColor
+        answerHint.lineBreakMode = .byTruncatingTail
+        addSubview(answerHint)
 
         mnemonicLabel.maximumNumberOfLines = 0
         mnemonicLabel.cell?.wraps = true
@@ -86,9 +94,40 @@ final class KeymapPanelView: NSView {
                          .paragraphStyle: style])
     }
 
+    /// 答完/揭晓后展示本题用到的键位与位次，例如 `F 1 · K 2 · U 3 · N 4`。
+    func showAnswerPositions(_ code: String) {
+        let letters = code.uppercased().filter { $0.isLetter }
+        guard !letters.isEmpty else {
+            answerHint.stringValue = ""
+            return
+        }
+        var order: [Character] = []
+        var positions: [Character: [Int]] = [:]
+        for (index, letter) in letters.enumerated() {
+            if positions[letter] == nil { order.append(letter) }
+            positions[letter, default: []].append(index + 1)
+        }
+        let marks = ["①", "②", "③", "④", "⑤", "⑥"]
+        let parts = order.map { letter -> String in
+            let numbers = (positions[letter] ?? []).map { $0 <= marks.count ? marks[$0 - 1] : String($0) }
+            return "\(letter) \(numbers.joined(separator: ""))"
+        }
+        answerHint.stringValue = "本题键位：" + parts.joined(separator: " · ")
+        needsLayout = true
+        invalidateIntrinsicContentSize()
+    }
+
+    var answerHintForTesting: String { answerHint.stringValue }
+
+    func clearAnswerPositions() {
+        answerHint.stringValue = ""
+        needsLayout = true
+    }
+
     /// 面板在给定宽度下的期望高度（宿主据此排版）。
     func height(forWidth width: CGFloat) -> CGFloat {
         var total = Self.headerHeight + Self.headerGap + KeyboardMapView.totalHeight
+        if !answerHint.stringValue.isEmpty { total += Self.answerHintHeight }
         if showsMnemonics {
             total += Self.mnemonicGap + mnemonicHeight(width: width)
         }
@@ -115,8 +154,13 @@ final class KeymapPanelView: NSView {
         mnemonicTitle.frame = NSRect(x: width - 36 - 8 - 24, y: textY, width: 24, height: textHeight)
         map.frame = NSRect(x: 0, y: Self.headerHeight + Self.headerGap, width: width,
                            height: KeyboardMapView.totalHeight)
+        var cursor = map.frame.maxY
+        if !answerHint.stringValue.isEmpty {
+            answerHint.frame = NSRect(x: 2, y: cursor + 6, width: width - 4, height: Self.answerHintHeight - 2)
+            cursor += 6 + Self.answerHintHeight - 2
+        }
         if showsMnemonics {
-            mnemonicLabel.frame = NSRect(x: 0, y: map.frame.maxY + Self.mnemonicGap,
+            mnemonicLabel.frame = NSRect(x: 0, y: cursor + Self.mnemonicGap,
                                          width: width, height: mnemonicHeight(width: width - 2))
             mnemonicLabel.attributedStringValue = mnemonicText(width: width - 2)
         }
