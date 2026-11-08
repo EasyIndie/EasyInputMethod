@@ -6,7 +6,9 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 720, height: 614)
+    static let contentSize = NSSize(width: 720, height: 612)
+    /// 显示口诀时向下扩展的高度。
+    static let mnemonicExtraHeight: CGFloat = 104
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -18,6 +20,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let explanation = PracticeExplanationView()
     private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
     private let schemeLabel = NSTextField(labelWithString: "")
+    private let mnemonicToggle = NSButton(checkboxWithTitle: "口诀", target: nil, action: nil)
+    private let mnemonicLabel = NSTextField(labelWithString: "")
+    /// 口诀展开时同步内容视图高度（内容视图是固定尺寸的 flipped 容器）。
+    var contentViewHeight: ((CGFloat) -> Void)?
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -72,6 +78,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func buildContent() -> NSView {
         let content = FlippedView(frame: NSRect(origin: .zero, size: Self.contentSize))
+        contentViewHeight = { [weak content] height in
+            content?.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentSize.width, height: height))
+        }
         let width = Self.contentSize.width
         let margin: CGFloat = 24
 
@@ -146,12 +155,32 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressLabel.frame = NSRect(x: margin, y: 344, width: width - margin * 2, height: 16)
 
         // 编码方案名 + 25 键字根分布图
-        schemeLabel.frame = NSRect(x: margin, y: 362, width: width - margin * 2, height: 14)
+        schemeLabel.frame = NSRect(x: margin, y: 360, width: width - margin * 2 - 84, height: 16)
         schemeLabel.font = .systemFont(ofSize: 10.5, weight: .medium)
         schemeLabel.textColor = .secondaryLabelColor
         schemeLabel.stringValue = "\(keyboardMap.layout.displayName) · 25 键字根分布"
         schemeLabel.setAccessibilityLabel("当前编码方案：\(keyboardMap.layout.displayName)")
         content.addSubview(schemeLabel)
+
+        // 口诀开关：默认关闭，打开后在图下方展开五个区的助记口诀。
+        mnemonicToggle.frame = NSRect(x: width - margin - 76, y: 358, width: 76, height: 18)
+        mnemonicToggle.target = self
+        mnemonicToggle.action = #selector(toggleMnemonics)
+        mnemonicToggle.state = .off
+        mnemonicToggle.font = .systemFont(ofSize: 11)
+        content.addSubview(mnemonicToggle)
+
+        mnemonicLabel.frame = NSRect(x: margin, y: 606, width: width - margin * 2,
+                                     height: Self.mnemonicExtraHeight - 8)
+        mnemonicLabel.isHidden = true
+        mnemonicLabel.maximumNumberOfLines = 0
+        mnemonicLabel.cell?.wraps = true
+        mnemonicLabel.font = .systemFont(ofSize: 10.5)
+        mnemonicLabel.textColor = .secondaryLabelColor
+        mnemonicLabel.stringValue = keyboardMap.layout.mnemonicsByZone
+            .map { "\($0.name)：\($0.text)" }.joined(separator: "\n")
+        mnemonicLabel.setAccessibilityLabel("五笔助记口诀")
+        content.addSubview(mnemonicLabel)
         keyboardMap.frame = NSRect(x: margin, y: 380, width: width - margin * 2,
                                    height: KeyboardMapView.totalHeight)
         content.addSubview(progressLabel)
@@ -185,6 +214,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private func reload() {
         session.switchKind(kind)
         showCurrent()
+    }
+
+    @objc private func toggleMnemonics() {
+        let shown = mnemonicToggle.state == .on
+        mnemonicLabel.isHidden = !shown
+        let height = Self.contentSize.height + (shown ? Self.mnemonicExtraHeight : 0)
+        guard let window else { return }
+        var frame = window.frame
+        frame.origin.y += frame.height - height
+        frame.size.height = height
+        window.setFrame(frame, display: true, animate: false)
+        contentViewHeight?(height)
     }
 
     @objc private func nextQuestion() {

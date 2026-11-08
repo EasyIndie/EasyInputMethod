@@ -71,6 +71,13 @@ for (letter, root) in [("G", "王"), ("F", "土"), ("K", "口"), ("W", "人"), (
     require(keyboard.entries[Character(letter)]?.keyName == root, "键 \(letter) 应挂在字根 \(root)")
 }
 require(keyboard.entries["Z"]?.zone == 0, "Z 是万能键，不属于五区")
+// 口诀：默认不显示，数据按五个区整理
+require(KeyRootLayout.wubi86.entries.values.allSatisfy { $0.mnemonic.isEmpty },
+        "内置兜底表不含口诀（口诀来自数据文件）")
+let loadedLayout = KeyRootLayout.load()
+require(loadedLayout.entries["G"]?.mnemonic == "王旁青头戋五一", "G 键应带助记口诀")
+require(loadedLayout.mnemonicsByZone.map(\.zone) == [1, 2, 3, 4, 5], "口诀应覆盖五个区")
+require(loadedLayout.mnemonicsByZone.allSatisfy { !$0.text.isEmpty }, "每个区都应有口诀")
 require(KeyRootLayout.wubi86.rows.map(\.count) == [10, 9, 7], "物理排布 10/9/7 键")
 // 数据化：真实字根分布来自 TSV，缺失时回落到只有键名
 let loaded = KeyRootLayout.load()

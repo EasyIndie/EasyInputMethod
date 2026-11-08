@@ -7,12 +7,12 @@ import AppKit
 final class KeyboardMapView: NSView {
     let layout: KeyRootLayout
 
-    static let keyHeight: CGFloat = 72
-    static let keyGap: CGFloat = 5
-    static let rowGap: CGFloat = 5
+    static let keyHeight: CGFloat = 70
+    static let keyGap: CGFloat = 6
+    static let rowGap: CGFloat = 6
     static var totalHeight: CGFloat { keyHeight * 3 + rowGap * 2 }
-    /// 字根网格：5 列 × 3 行（每键最多显示 15 个，超出以省略号收尾）。
-    static let rootColumns = 5
+    /// 字根网格：3 列 × 3 行（每键最多显示 9 个，超出以省略号收尾）。
+    static let rootColumns = 3
     static let rootRows = 3
 
     private var pressed: Character?
@@ -56,10 +56,10 @@ final class KeyboardMapView: NSView {
     override func draw(_ dirtyRect: NSRect) {
         let gap = Self.keyGap
         let keyWidth = (bounds.width - gap * 9) / 10
-        // 真实键盘的错位：第二排右移约 1/4 键宽，第三排约 5/8 键宽。
-        let indents: [CGFloat] = [0, 0.28, 0.62]
         for (rowIndex, row) in layout.rows.enumerated() {
-            let indent = indents[min(rowIndex, indents.count - 1)] * (keyWidth + gap)
+            // 每排按真实键盘错位：键数少的排整体居中，自然形成阶梯。
+            let rowWidth = CGFloat(row.count) * keyWidth + CGFloat(row.count - 1) * gap
+            let indent = (bounds.width - rowWidth) / 2
             let y = CGFloat(rowIndex) * (Self.keyHeight + Self.rowGap)
             for (index, letter) in row.enumerated() {
                 let rect = NSRect(x: indent + CGFloat(index) * (keyWidth + gap), y: y,
@@ -74,7 +74,7 @@ final class KeyboardMapView: NSView {
         let isPressed = pressed == letter
         let isAnswer = answerKeys.contains(letter)
         let tint = Self.zoneColor(entry?.zone ?? 0)
-        let path = NSBezierPath(roundedRect: rect, xRadius: 5, yRadius: 5)
+        let path = NSBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5), xRadius: 7, yRadius: 7)
         (isPressed ? tint.withAlphaComponent(0.9) : tint.withAlphaComponent(0.12)).setFill()
         path.fill()
         if isAnswer && !isPressed {
@@ -92,8 +92,8 @@ final class KeyboardMapView: NSView {
                  color: isPressed ? .white : .labelColor,
                  in: NSRect(x: rect.minX + 5, y: rect.minY + 2, width: rect.width - 8, height: 16),
                  alignment: .left)
-        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 14.5, weight: .semibold), color: keyNameColor,
-                 in: NSRect(x: rect.minX, y: rect.minY + 17, width: rect.width, height: 18))
+        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 15, weight: .semibold), color: keyNameColor,
+                 in: NSRect(x: rect.minX, y: rect.minY + 16, width: rect.width, height: 18))
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
         NSGraphicsContext.restoreGraphicsState()
     }
@@ -123,11 +123,11 @@ final class KeyboardMapView: NSView {
     }
 
     private func drawRoots(_ roots: [String], in rect: NSRect, color: NSColor) {
-        let font = NSFont.systemFont(ofSize: 8)
+        let font = NSFont.systemFont(ofSize: 9)
         let shown = Self.visibleRoots(roots)
         guard !shown.isEmpty else { return }
         let columns = Self.rootColumns
-        let top: CGFloat = 34
+        let top: CGFloat = 32
         let lineHeight = (rect.height - top - 2) / CGFloat(Self.rootRows)
         let cellWidth = rect.width / CGFloat(columns)
         for (index, root) in shown.enumerated() {
