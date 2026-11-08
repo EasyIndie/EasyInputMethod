@@ -517,6 +517,7 @@ final class LampyrisInputController: IMKInputController {
             return true
         }
         if session.matches("hotkey.open_practice", event) {
+            if Self.hudDiagEnabled { Self.hudDiag("practice open") }
             PracticeWindow.shared.show()
             return true
         }

@@ -104,6 +104,15 @@ let output = URL(fileURLWithPath: CommandLine.arguments[2])
 require(ime_config_init(privateRoot.appendingPathComponent("config.toml").path) == IME_OK, "private config")
 require(!ImeConfig.bool("candidate.show_wubi_learning"), "collapsed default from schema")
 require(ImeConfig.string("hotkey.toggle_wubi_learning") == "alt+l", "learning shortcut default from schema")
+require(ImeConfig.string("hotkey.open_practice") == "alt+k", "practice shortcut default from schema, actual=\(ImeConfig.string("hotkey.open_practice") ?? "nil")")
+let practiceHotkey = ImeConfig.hotkey("hotkey.open_practice")
+require(practiceHotkey.kind == 2, "practice hotkey parsed as chord")
+if let optionK = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [.option],
+                                  timestamp: 0, windowNumber: 0, context: nil,
+                                  characters: "\u{2DA}", charactersIgnoringModifiers: "k",
+                                  isARepeat: false, keyCode: 40) {
+    require(practiceHotkey.matches(optionK), "⌥K 必须匹配练习热键（实际配置 \(ImeConfig.string("hotkey.open_practice") ?? "nil")）")
+}
 LocalAcceptanceEvidence.record("learning.defaults", expected: "Schema默认收起，学习快捷键alt+l", actual: ["shown": ImeConfig.bool("candidate.show_wubi_learning"), "shortcut": ImeConfig.string("hotkey.toggle_wubi_learning") ?? ""])
 require(ImeConfig.setToml("candidate.show_wubi_learning", "true"), "save display preference")
 let window = CandidateWindow()
