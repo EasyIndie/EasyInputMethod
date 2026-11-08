@@ -4,6 +4,8 @@ import AppKit
 /// 只接受 a–y 小写字母、退格与回车；其余按键忽略。
 final class PracticeAnswerView: NSView {
     var onReturn: ((String) -> Void)?
+    /// 每次接受一个字母时回调，用于点亮键位图。
+    var onLetter: ((Character) -> Void)?
     private(set) var text = "" {
         didSet { needsDisplay = true }
     }
@@ -24,7 +26,9 @@ final class PracticeAnswerView: NSView {
                 let value = Int(scalar.value)
                 if (65...89).contains(value) || (97...121).contains(value),
                    let letter = UnicodeScalar(value) {
+                    let typed = Character(String(letter).uppercased())
                     text.append(Character(String(letter).lowercased()))
+                    onLetter?(typed)
                 }
             }
         }

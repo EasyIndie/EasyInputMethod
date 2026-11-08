@@ -6,7 +6,7 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 460, height: 366)
+    static let contentSize = NSSize(width: 460, height: 490)
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -16,6 +16,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressLabel = NSTextField(labelWithString: "")
     private let answerView = PracticeAnswerView()
     private let explanation = PracticeExplanationView()
+    private let keyboardMap = WubiKeyboardMapView(layout: .wubi86)
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -141,7 +142,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
         progressLabel.frame = NSRect(x: margin, y: 344, width: width - margin * 2, height: 16)
+
+        // 25 键字根分布图：练手时同步点亮
+        keyboardMap.frame = NSRect(x: margin, y: 372, width: width - margin * 2,
+                                   height: WubiKeyboardMapView.totalHeight)
         content.addSubview(progressLabel)
+        content.addSubview(keyboardMap)
         return content
     }
 
@@ -181,6 +187,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private func showCurrent() {
         answered = false
         answerView.clear()
+        keyboardMap.clearFlash()
+        keyboardMap.markAnswer("")
         pendingStroke = nil
         pendingStructure = nil
         lastAnswer = nil
@@ -246,6 +254,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             showExplanation(question, revealsAnswer: true)
             explanation.isHidden = false
         }
+        if let question = current { keyboardMap.markAnswer(question.code) }
         feedbackLabel.stringValue = (result.correct ? "✓ 正确 · " : "✗ 再想想 · ") + result.explanation
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
         progressLabel.stringValue = session.summary
