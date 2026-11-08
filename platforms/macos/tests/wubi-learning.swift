@@ -51,8 +51,9 @@ guard let recognitionQuestion = recognitionSession.question, let expected = reco
 guard let recognitionResult = recognitionSession.submitRecognition(stroke: expected.stroke,
                                                                   structure: expected.structure) else { exit(1) }
 require(recognitionResult.correct, "正确末笔/结构应判对")
-require(recognitionResult.explanation.contains(expected.letter), "说明应包含正确字母")
-require(recognitionResult.explanation.contains(expected.stroke), "说明应包含**正确**的末笔（不是用户选的）")
+// 码值/识别码统一在答案区展示，判分结果只回对错
+require(recognitionResult.explanation.isEmpty, "判分说明不再重复答案（答案区展示）")
+
 // 练习字根行与学习区同样式：字形上、键位下（大写）。
 let explanationView = PracticeExplanationView(frame: NSRect(x: 0, y: 0, width: 400, height: PracticeExplanationView.height))
 explanationView.show(char: "老", roots: [("土", "F"), ("丿", "T"), ("匕", "X")],

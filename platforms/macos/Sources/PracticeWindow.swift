@@ -58,8 +58,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private func contentHeight() -> CGFloat {
         var height = Gap.top + Gap.kindHeight + Gap.afterKind
         height += Gap.questionHeight + Gap.afterQuestion + Gap.promptHeight + Gap.afterPrompt
-        height += PracticeExplanationView.height + Gap.afterExplanation
         height += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
+        height += PracticeExplanationView.height + Gap.afterExplanation
         height += Gap.feedbackHeight + Gap.afterFeedback
         height += Gap.actionsHeight + Gap.afterActions
         height += Gap.progressHeight + Gap.afterProgress
@@ -215,12 +215,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         detailsToggle.action = #selector(toggleDetails)
         detailsToggle.state = .off
         detailsToggle.font = .systemFont(ofSize: 11)
+        detailsToggle.controlSize = .small
         content.addSubview(detailsToggle)
 
         mnemonicToggle.target = self
         mnemonicToggle.action = #selector(toggleMnemonics)
         mnemonicToggle.state = .off
         mnemonicToggle.font = .systemFont(ofSize: 11)
+        mnemonicToggle.controlSize = .small
         content.addSubview(mnemonicToggle)
 
         mnemonicLabel.isHidden = true
@@ -254,9 +256,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         promptLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.promptHeight)
         y += Gap.promptHeight + Gap.afterPrompt
 
-        explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
-        y += PracticeExplanationView.height + Gap.afterExplanation
-
+        // 作答区（输入框 / 末笔·结构）在题面下方，答案区在其下。
         answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
         strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
         for (index, button) in strokeButtons.enumerated() {
@@ -269,6 +269,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
+        explanation.frame = NSRect(x: margin, y: y, width: inner, height: PracticeExplanationView.height)
+        y += PracticeExplanationView.height + Gap.afterExplanation
+
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
 
@@ -280,17 +283,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
         // 进度行右侧常驻"键位图与口诀"开关；打开后才在下方展开详情区。
         let detailsShown = detailsToggle.state == .on
-        progressLabel.frame = NSRect(x: margin, y: y, width: inner - 132, height: Gap.progressHeight)
-        detailsToggle.frame = NSRect(x: width - margin - 124, y: y - 3, width: 124, height: Gap.progressHeight + 4)
+        progressLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 200, height: Gap.progressHeight)
+        detailsToggle.frame = NSRect(x: width - margin - 118, y: y, width: 118, height: 18)
+        mnemonicToggle.frame = NSRect(x: width - margin - 118 - 74, y: y, width: 66, height: 18)
         y += Gap.progressHeight + Gap.afterProgress
 
         schemeLabel.isHidden = !detailsShown
-        mnemonicToggle.isHidden = !detailsShown
+        mnemonicToggle.isHidden = false
+        mnemonicToggle.isEnabled = detailsShown
         keyboardMap.isHidden = !detailsShown
         mnemonicLabel.isHidden = !(detailsShown && mnemonicToggle.state == .on)
         if detailsShown {
-            schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner - 168, height: Gap.schemeHeight - 2)
-            mnemonicToggle.frame = NSRect(x: width - margin - 76, y: y, width: 76, height: Gap.schemeHeight)
+            schemeLabel.frame = NSRect(x: margin, y: y + 2, width: inner, height: Gap.schemeHeight - 2)
             y += Gap.schemeHeight + Gap.afterScheme
 
             keyboardMap.frame = NSRect(x: margin, y: y, width: inner, height: KeyboardMapView.totalHeight)
@@ -319,10 +323,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     private func showExplanation(_ question: PracticeQuestion, revealsAnswer: Bool) {
+        // 本题目要求的那一项排在最前，完整码与两个简码随后——一块讲完，不再另起一行重复。
+        let target: String? = {
+            switch kind {
+            case .code1: return question.short1.map { "一级 \($0.uppercased())" }
+            case .code2: return question.short2.map { "二级 \($0.uppercased())" }
+            default: return "完整码 \(question.code.uppercased())"
+            }
+        }()
         explanation.show(char: question.char, roots: question.roots,
                          recognition: question.recognition, code: question.code,
                          short1: question.short1, short2: question.short2,
-                         revealsAnswer: revealsAnswer)
+                         target: target, revealsAnswer: revealsAnswer)
     }
 
     private func applyKindVisibility() {
@@ -378,9 +390,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             return
         }
         questionLabel.stringValue = question.char
-        promptLabel.stringValue = kind == .code
-            ? "打出它的完整五笔码（\(question.code.count) 位）"
-            : "按上面的字根与键位，判断末笔与结构"
+        promptLabel.stringValue = kind.prompt(for: question)
         if kind == .recognition {
             showExplanation(question, revealsAnswer: false)
             explanation.isHidden = false
@@ -426,12 +436,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func finish(_ result: PracticeSession.Result) {
         answered = true
+        keyboardMap.clearFlash()
         if let question = current {
             showExplanation(question, revealsAnswer: true)
             explanation.isHidden = false
         }
         if let question = current { keyboardMap.markAnswer(question.code) }
-        feedbackLabel.stringValue = (result.correct ? "✓ 正确 · " : "✗ 再想想 · ") + result.explanation
+        feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
+            + (result.explanation.isEmpty ? "" : " · " + result.explanation)
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
         progressLabel.stringValue = session.summary
     }
