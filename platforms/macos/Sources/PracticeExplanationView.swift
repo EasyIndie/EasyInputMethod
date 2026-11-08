@@ -6,7 +6,7 @@ import AppKit
 /// 下排：完整码，有简码时一并给出。未揭晓答案时只画字根格，不泄题。
 final class PracticeExplanationView: NSView {
     static let cellWidth: CGFloat = 46
-    static let height: CGFloat = 58
+    static let height: CGFloat = 54
 
     private var roots: [(glyph: String, key: String)] = []
     private var recognition: (letter: String, stroke: String, structure: String)?
@@ -63,7 +63,9 @@ final class PracticeExplanationView: NSView {
                 .font: NSFont.systemFont(ofSize: 11),
                 .foregroundColor: NSColor.tertiaryLabelColor,
                 .paragraphStyle: paragraph])
-            text.draw(at: NSPoint(x: max(0, (bounds.width - text.size().width) / 2), y: 18))
+            let size = text.size()
+            text.draw(at: NSPoint(x: max(0, (bounds.width - size.width) / 2),
+                                  y: max(0, (bounds.height - size.height) / 2)))
             return
         }
         // 整块内容水平居中：先算总宽（字根格 + 识别码块），再从中线起画。

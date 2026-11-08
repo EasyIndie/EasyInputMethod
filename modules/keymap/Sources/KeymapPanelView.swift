@@ -6,8 +6,8 @@ import AppKit
 /// 这样这块区域可以直接搬到其它窗口或项目里复用。
 final class KeymapPanelView: NSView {
     static let headerHeight: CGFloat = 20
-    static let headerGap: CGFloat = 8
-    static let mnemonicGap: CGFloat = 8
+    static let headerGap: CGFloat = 10
+    static let mnemonicGap: CGFloat = 10
 
     let map: KeyboardMapView
     private let schemeLabel = NSTextField(labelWithString: "")
@@ -74,8 +74,9 @@ final class KeymapPanelView: NSView {
 
     private func mnemonicText(width: CGFloat) -> NSAttributedString {
         let style = NSMutableParagraphStyle()
-        style.tabStops = [NSTextTab(textAlignment: .left, location: 52)]
-        style.headIndent = 52
+        style.tabStops = [NSTextTab(textAlignment: .left, location: 58)]
+        style.headIndent = 58
+        style.firstLineHeadIndent = 2
         style.lineSpacing = 4
         return NSAttributedString(
             string: map.layout.mnemonicsByZone
@@ -104,15 +105,15 @@ final class KeymapPanelView: NSView {
     override func layout() {
         super.layout()
         let width = bounds.width
-        schemeLabel.frame = NSRect(x: 0, y: 0, width: max(0, width - 120), height: Self.headerHeight)
+        schemeLabel.frame = NSRect(x: 2, y: 0, width: max(0, width - 120), height: Self.headerHeight)
         mnemonicSwitch.frame = NSRect(x: width - 36, y: 1, width: 36, height: 18)
         mnemonicTitle.frame = NSRect(x: width - 36 - 8 - 24, y: 0, width: 24, height: 18)
         map.frame = NSRect(x: 0, y: Self.headerHeight + Self.headerGap, width: width,
                            height: KeyboardMapView.totalHeight)
         if showsMnemonics {
             mnemonicLabel.frame = NSRect(x: 0, y: map.frame.maxY + Self.mnemonicGap,
-                                         width: width, height: mnemonicHeight(width: width))
-            mnemonicLabel.attributedStringValue = mnemonicText(width: width)
+                                         width: width, height: mnemonicHeight(width: width - 2))
+            mnemonicLabel.attributedStringValue = mnemonicText(width: width - 2)
         }
     }
 }

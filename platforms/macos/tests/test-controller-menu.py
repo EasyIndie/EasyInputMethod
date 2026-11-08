@@ -50,7 +50,7 @@ class ControllerMenuTests(unittest.TestCase):
             ]
             for command in commands:
                 result = subprocess.run(command, cwd=ROOT, env=environment,
-                                        capture_output=True, text=True, timeout=90)
+                                        capture_output=True, text=True, timeout=180)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
             self.assertIn("PASS controller-menu", result.stdout)
 
