@@ -63,8 +63,8 @@ require(explanationLabel.contains("完整码 FTXB"), "整体展示应包含完�
 require(explanationLabel.contains("识别码 B"), "整体展示应包含识别码")
 
 // 25 键字根分布图：数据来自方案、键名字根齐全、分区正确、敲键点亮、答完描边
-let keyboard = WubiKeyboardMapView(layout: .wubi86)
-keyboard.frame = NSRect(x: 0, y: 0, width: 400, height: WubiKeyboardMapView.totalHeight)
+let keyboard = KeyboardMapView(layout: .wubi86)
+keyboard.frame = NSRect(x: 0, y: 0, width: 400, height: KeyboardMapView.totalHeight)
 require(keyboard.schemeID == "wubi86", "默认方案为五笔 86")
 require(keyboard.entries.count == 26, "25 个键名 + 万能键 Z")
 for (letter, root) in [("G", "王"), ("F", "土"), ("K", "口"), ("W", "人"), ("X", "纟"), ("N", "已")] {
@@ -72,6 +72,12 @@ for (letter, root) in [("G", "王"), ("F", "土"), ("K", "口"), ("W", "人"), (
 }
 require(keyboard.entries["Z"]?.zone == 0, "Z 是万能键，不属于五区")
 require(KeyRootLayout.wubi86.rows.map(\.count) == [10, 9, 7], "物理排布 10/9/7 键")
+// 数据化：真实字根分布来自 TSV，缺失时回落到只有键名
+let loaded = KeyRootLayout.load()
+require(loaded.schemeID == "wubi86", "默认加载五笔 86 键位表")
+require((loaded.entries["G"]?.roots.count ?? 0) > 0, "数据文件应在时给出每键的真实字根分布")
+require(loaded.entries["G"]?.roots.contains("王") == false, "字根列表不重复键名字根")
+require(KeyRootLayout.parse(tsv: "bad", schemeID: "wubi86", displayName: "x") == nil, "残缺 TSV 应被拒绝")
 for (row, expected) in zip(KeyRootLayout.wubi86.rows, [[10], [9], [7]]) {
     require(row.count == expected[0], "每排键数正确")
 }

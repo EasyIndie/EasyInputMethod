@@ -8,6 +8,7 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
+KEYMAP_SOURCES = ["KeyboardMapView.swift", "KeyRootLayout.swift"]
 
 
 @unittest.skipUnless(sys.platform == "darwin", "requires macOS NSEvent")
@@ -23,8 +24,8 @@ class CompositionNavigationTests(unittest.TestCase):
                 (["cargo", "build", "--release", "-p", "ime-ffi"], 60),
                 (["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
                   str(temporary / "main.swift"),
-                  *[str(ROOT / "platforms/macos/Sources" / name) for name in
-                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeRootRowView.swift", "PracticeExplanationView.swift", "WubiKeyboardMapView.swift", "KeyRootLayout.swift"]],
+                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
+                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeRootRowView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 45),
                 ([str(temporary / "probe"), str(temporary)], 10),

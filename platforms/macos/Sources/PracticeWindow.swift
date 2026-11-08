@@ -6,7 +6,7 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 460, height: 490)
+    static let contentSize = NSSize(width: 560, height: 514)
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -16,7 +16,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressLabel = NSTextField(labelWithString: "")
     private let answerView = PracticeAnswerView()
     private let explanation = PracticeExplanationView()
-    private let keyboardMap = WubiKeyboardMapView(layout: .wubi86)
+    private let keyboardMap = KeyboardMapView(layout: KeyRootLayout.load())
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -96,6 +96,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         content.addSubview(explanation)
 
         answerView.frame = NSRect(x: margin, y: 204, width: width - margin * 2, height: 30)
+        answerView.onLetter = { [weak self] letter in self?.keyboardMap.flash(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         content.addSubview(answerView)
 
@@ -145,7 +146,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
         // 25 键字根分布图：练手时同步点亮
         keyboardMap.frame = NSRect(x: margin, y: 372, width: width - margin * 2,
-                                   height: WubiKeyboardMapView.totalHeight)
+                                   height: KeyboardMapView.totalHeight)
         content.addSubview(progressLabel)
         content.addSubview(keyboardMap)
         return content

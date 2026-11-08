@@ -286,3 +286,13 @@ license = "CC-BY-SA-4.0"
 sha256 = "cf945098f7d69ff42105a05621e7a25c7e842013cb664454400180b10b0c0a93"
 generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out"
 notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 123 KB（40 B/字，预算 512 KiB）；无 PUA；只读提示，不改候选顺序"
+
+# 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
+[[derived]]
+id = "key-roots-wubi86"
+path = "modules/keymap/data/key-roots-wubi86.tsv"
+source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D19"]
+license = "CC-BY-SA-4.0"
+sha256 = "9c96f1e2ebe5079cc5d91e46c0b136a22ba8d5c6ffe3aeb9bb8308ceb3b54371"
+generator = "modules/keymap/tools/build_key_roots.py"
+notes = "ADR-315 键位字根表：scheme\tletter\tzone\tkeyname\troots(频次降序)；25 键 + 万能键 Z；只做呈现，不参与判分"
