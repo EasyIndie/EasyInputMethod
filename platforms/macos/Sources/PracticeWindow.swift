@@ -14,24 +14,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let kindHeight: CGFloat = 26
         static let afterKind: CGFloat = 14
         static let questionHeight: CGFloat = 60
-        static let afterQuestion: CGFloat = 4
+        static let afterQuestion: CGFloat = 8
         static let promptHeight: CGFloat = 18
-        static let afterPrompt: CGFloat = 16
-        static let cardPadding: CGFloat = 18
-        static let cardFooter: CGFloat = 30
-        static let afterExplanation: CGFloat = 12
-        static let codeAnswerHeight: CGFloat = 58
+        static let afterPrompt: CGFloat = 14
+        static let cardPadding: CGFloat = 20
+        static let afterExplanation: CGFloat = 14
+        static let codeAnswerHeight: CGFloat = 52
         static let recognitionAnswerHeight: CGFloat = 92
-        static let afterAnswer: CGFloat = 12
+        static let afterAnswer: CGFloat = 14
         static let feedbackHeight: CGFloat = 24
-        static let afterFeedback: CGFloat = 14
+        static let afterFeedback: CGFloat = 12
         static let progressHeight: CGFloat = 16
         static let progressBarHeight: CGFloat = 6
         static let afterProgressLabel: CGFloat = 5
-        static let afterProgress: CGFloat = 8
-        static let schemeHeight: CGFloat = 18
-        static let afterScheme: CGFloat = 8
-        static let afterMnemonic: CGFloat = 8
+        static let afterProgress: CGFloat = 12
+        static let afterScheme: CGFloat = 12
         static let bottom: CGFloat = 16
     }
 
@@ -149,8 +146,17 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         card.boxType = .custom
         card.titlePosition = .noTitle
         card.cornerRadius = 16
-        card.fillColor = NSColor.controlBackgroundColor.withAlphaComponent(0.55)
-        card.borderColor = NSColor.separatorColor.withAlphaComponent(0.35)
+        // 动态语义色：亮色用极浅黑、暗色用极浅白，两种外观都能看出"分组但不抢戏"。
+        card.fillColor = NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? NSColor.white.withAlphaComponent(0.06)
+                : NSColor.black.withAlphaComponent(0.045)
+        }
+        card.borderColor = NSColor(name: nil) { appearance in
+            appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
+                ? NSColor.white.withAlphaComponent(0.10)
+                : NSColor.black.withAlphaComponent(0.08)
+        }
         card.borderWidth = 1
         content.addSubview(card, positioned: .below, relativeTo: nil)
 

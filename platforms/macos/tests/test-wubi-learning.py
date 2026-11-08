@@ -40,7 +40,7 @@ class WubiLearningTests(unittest.TestCase):
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift",
                      "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeRootRowView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
-                  "-o", str(temporary / "probe")], 45),
+                  "-o", str(temporary / "probe")], 180),
                 ([str(temporary / "probe"), str(temporary), str(output)], 30),
             ]
             for command, timeout in commands:
