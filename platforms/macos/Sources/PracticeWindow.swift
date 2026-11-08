@@ -6,7 +6,7 @@ import AppKit
 /// 题型切换 → 题干 → 提示 → 作答区 → 反馈 → 按钮 → 进度。
 final class PracticeWindow: NSObject, NSWindowDelegate {
     static let shared = PracticeWindow()
-    static let contentSize = NSSize(width: 460, height: 356)
+    static let contentSize = NSSize(width: 460, height: 366)
 
     private var window: NSWindow?
     private var content: FlippedView?
@@ -86,47 +86,47 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         promptLabel.alignment = .center
         promptLabel.font = .systemFont(ofSize: 12)
         promptLabel.textColor = .secondaryLabelColor
-        promptLabel.frame = NSRect(x: margin, y: 116, width: width - margin * 2, height: 18)
+        promptLabel.frame = NSRect(x: margin, y: 110, width: width - margin * 2, height: 18)
         content.addSubview(promptLabel)
 
         // 拆解整体：字根格 + 识别码 + 完整码/简码
-        explanation.frame = NSRect(x: margin, y: 132, width: width - margin * 2,
+        explanation.frame = NSRect(x: margin, y: 138, width: width - margin * 2,
                                    height: PracticeExplanationView.height)
         content.addSubview(explanation)
 
-        answerView.frame = NSRect(x: margin, y: 198, width: width - margin * 2, height: 30)
+        answerView.frame = NSRect(x: margin, y: 204, width: width - margin * 2, height: 30)
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         content.addSubview(answerView)
 
         // 识别码：两行带标题的按钮组
         strokeTitle.font = .systemFont(ofSize: 11)
         strokeTitle.textColor = .secondaryLabelColor
-        strokeTitle.frame = NSRect(x: margin, y: 200, width: 46, height: 18)
+        strokeTitle.frame = NSRect(x: margin, y: 206, width: 46, height: 18)
         content.addSubview(strokeTitle)
         for (index, button) in strokeButtons.enumerated() {
             button.target = self
             button.action = #selector(pickStroke(_:))
             button.tag = index
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 72, y: 194, width: 66, height: 28)
+            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 72, y: 200, width: 66, height: 28)
             content.addSubview(button)
         }
         structureTitle.font = .systemFont(ofSize: 11)
         structureTitle.textColor = .secondaryLabelColor
-        structureTitle.frame = NSRect(x: margin, y: 236, width: 46, height: 18)
+        structureTitle.frame = NSRect(x: margin, y: 242, width: 46, height: 18)
         content.addSubview(structureTitle)
         for (index, button) in structureButtons.enumerated() {
             button.target = self
             button.action = #selector(pickStructure(_:))
             button.tag = index
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: 230, width: 108, height: 28)
+            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: 236, width: 108, height: 28)
             content.addSubview(button)
         }
 
         feedbackLabel.alignment = .center
         feedbackLabel.font = .systemFont(ofSize: 12)
-        feedbackLabel.frame = NSRect(x: margin, y: 266, width: width - margin * 2, height: 34)
+        feedbackLabel.frame = NSRect(x: margin, y: 274, width: width - margin * 2, height: 30)
         content.addSubview(feedbackLabel)
 
         let next = NSButton(title: "下一题", target: self, action: #selector(nextQuestion))
@@ -134,13 +134,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let export = NSButton(title: "打开进度文件", target: self, action: #selector(openProgress))
         for (index, button) in [next, reveal, export].enumerated() {
             button.bezelStyle = .rounded
-            button.frame = NSRect(x: margin + CGFloat(index) * 130, y: 302, width: 120, height: 28)
+            button.frame = NSRect(x: margin + CGFloat(index) * 130, y: 310, width: 120, height: 28)
             content.addSubview(button)
         }
 
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
-        progressLabel.frame = NSRect(x: margin, y: 334, width: width - margin * 2, height: 16)
+        progressLabel.frame = NSRect(x: margin, y: 344, width: width - margin * 2, height: 16)
         content.addSubview(progressLabel)
         return content
     }
@@ -197,8 +197,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         promptLabel.stringValue = kind == .code
             ? "打出它的完整五笔码（\(question.code.count) 位）"
             : "按上面的字根与键位，判断末笔与结构"
-        showExplanation(question, revealsAnswer: false)
-        explanation.isHidden = kind != .recognition
+        if kind == .recognition {
+            showExplanation(question, revealsAnswer: false)
+            explanation.isHidden = false
+        } else {
+            explanation.showPlaceholder("答题后在这里显示字根、识别码与完整码")
+            explanation.isHidden = false
+        }
         progressLabel.stringValue = session.summary
         if kind == .code { window?.makeFirstResponder(answerView) }
     }
