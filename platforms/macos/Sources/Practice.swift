@@ -167,6 +167,25 @@ final class PracticeProgress {
         }
     }
 
+    /// 某个题型的统计：已练字数、总次数、正确次数。
+    func stats(kind: PracticeKind) -> (practiced: Int, attempts: Int, correct: Int) {
+        var practiced = 0, attempts = 0, correct = 0
+        for (key, row) in rows {
+            let fields = key.split(separator: "\t")
+            guard fields.count == 2, fields[1] == Substring(kind.rawValue) else { continue }
+            practiced += 1
+            attempts += row.attempts
+            correct += row.correct
+        }
+        return (practiced, attempts, correct)
+    }
+
+    /// 删除全部进度（重置）。
+    func reset() {
+        rows = [:]
+        try? FileManager.default.removeItem(at: url)
+    }
+
     var summary: String {
         let attempts = rows.values.reduce(0) { $0 + $1.attempts }
         let correct = rows.values.reduce(0) { $0 + $1.correct }

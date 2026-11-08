@@ -59,14 +59,19 @@ final class PracticeExplanationView: NSView {
         if let placeholder {
             let paragraph = NSMutableParagraphStyle()
             paragraph.alignment = .left
-            NSAttributedString(string: placeholder, attributes: [
+            let text = NSAttributedString(string: placeholder, attributes: [
                 .font: NSFont.systemFont(ofSize: 11),
                 .foregroundColor: NSColor.tertiaryLabelColor,
                 .paragraphStyle: paragraph])
-                .draw(at: NSPoint(x: 0, y: 18))
+            text.draw(at: NSPoint(x: max(0, (bounds.width - text.size().width) / 2), y: 18))
             return
         }
-        var x: CGFloat = 0
+        // 整块内容水平居中：先算总宽（字根格 + 识别码块），再从中线起画。
+        let rootsWidth = CGFloat(roots.count) * Self.cellWidth
+        let hasRecognition = revealsAnswer && recognition != nil
+        let recognitionWidth: CGFloat = hasRecognition ? 170 : 0
+        let totalWidth = rootsWidth + recognitionWidth
+        var x = max(0, (bounds.width - totalWidth) / 2)
         for root in roots {
             drawCentered(root.glyph, font: .systemFont(ofSize: 15), color: .labelColor,
                          rect: NSRect(x: x, y: 0, width: Self.cellWidth, height: 21))
@@ -76,9 +81,8 @@ final class PracticeExplanationView: NSView {
             x += Self.cellWidth
         }
 
-        var recognitionWidth: CGFloat = 0
         if revealsAnswer, let recognition {
-            let blockX = x + 12
+            let blockX = x + 14
             let line1 = "识别码：\(recognition.stroke)·\(recognition.structure)结构"
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: NSFont.systemFont(ofSize: 10.5),
@@ -88,7 +92,6 @@ final class PracticeExplanationView: NSView {
             drawCentered(recognition.letter, font: .monospacedSystemFont(ofSize: 11.5, weight: .medium),
                          color: .secondaryLabelColor,
                          rect: NSRect(x: blockX, y: 18, width: 40, height: 16), alignLeft: true)
-            recognitionWidth = 150
         }
 
         if revealsAnswer, let code {
@@ -97,10 +100,10 @@ final class PracticeExplanationView: NSView {
             let attributes: [NSAttributedString.Key: Any] = [
                 .font: NSFont.monospacedSystemFont(ofSize: 11, weight: .regular),
                 .foregroundColor: NSColor.secondaryLabelColor]
-            NSAttributedString(string: summary, attributes: attributes)
-                .draw(at: NSPoint(x: 0, y: 40))
+            let summaryString = NSAttributedString(string: summary, attributes: attributes)
+            let width = summaryString.size().width
+            summaryString.draw(at: NSPoint(x: max(0, (bounds.width - width) / 2), y: 40))
         }
-        _ = recognitionWidth
     }
 
     private func drawCentered(_ text: String, font: NSFont, color: NSColor, rect: NSRect,
