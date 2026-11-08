@@ -81,6 +81,13 @@ require(KeyRootLayout.parse(tsv: "bad", schemeID: "wubi86", displayName: "x") ==
 for (row, expected) in zip(KeyRootLayout.wubi86.rows, [[10], [9], [7]]) {
     require(row.count == expected[0], "每排键数正确")
 }
+// 字根显示：过滤字体缺字形（否则渲染成 ?），并受网格容量约束
+let mixedRoots = ["一", "\u{2E88}", "\u{3105}", "二"]
+require(KeyboardMapView.displayableRoots(mixedRoots) == ["一", "二"], "康熙部首与注音符号应被筛掉")
+let many = Array(repeating: "一", count: 30)
+require(KeyboardMapView.visibleRoots(many).count == KeyboardMapView.rootColumns * KeyboardMapView.rootRows,
+        "字根网格容量应封顶")
+require(KeyboardMapView.visibleRoots(many).last == "…", "超出容量的字根以省略号收尾")
 keyboard.flash("F")
 keyboard.markAnswer("ftxb")
 require(keyboard.pressedLetterForTesting == "F", "敲键后键位图应点亮该键")

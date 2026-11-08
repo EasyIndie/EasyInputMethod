@@ -13,6 +13,13 @@ import pathlib
 import sys
 
 SCHEME = "wubi86"
+# 只收录能被系统字体渲染成汉字的字根：康熙部首（⺈ ⺝）、注音符号（ㄅ ㄠ）、
+# 日文片假名部件（リ）等码位没有字形，画出来是 `?`，故从展示数据中剔除。
+RENDERABLE_RANGES = ((0x4E00, 0x9FFF), (0x3400, 0x4DBF), (0xF900, 0xFAFF))
+
+
+def renderable(glyph: str) -> bool:
+    return all(any(low <= ord(ch) <= high for low, high in RENDERABLE_RANGES) for ch in glyph)
 KEYNAME = {
     "G": ("王", 1), "F": ("土", 1), "D": ("大", 1), "S": ("木", 1), "A": ("工", 1),
     "H": ("目", 2), "J": ("日", 2), "K": ("口", 2), "L": ("田", 2), "M": ("山", 2),
@@ -40,12 +47,20 @@ def build(runtime_path: pathlib.Path) -> str:
                 continue
             counts[key][glyph] = counts[key].get(glyph, 0) + 1
     lines = ["# scheme\tletter\tzone\tkeyname\troots(按使用频次降序，空格分隔)",
-             "# 由 modules/keymap/tools/build_key_roots.py 生成，勿手改。"]
+             "# 由 modules/keymap/tools/build_key_roots.py 生成，勿手改。",
+             "# 只收录可渲染为汉字的字根；康熙部首/注音符号等无字形码位见文末注释。"]
+    dropped: list[str] = []
     for letter in "QWERTYUIOPASDFGHJKLZXCVBNM":
         name, zone = KEYNAME[letter]
         ranked = sorted(counts[letter].items(), key=lambda kv: (-kv[1], kv[0]))
         roots = [glyph for glyph, _ in ranked if glyph != name]
-        lines.append("\t".join([SCHEME, letter, str(zone), name, " ".join(roots)]))
+        kept = [glyph for glyph in roots if renderable(glyph)]
+        removed = [glyph for glyph in roots if not renderable(glyph)]
+        if removed:
+            dropped.append(f"{letter}:{' '.join(removed)}")
+        lines.append("\t".join([SCHEME, letter, str(zone), name, " ".join(kept)]))
+    if dropped:
+        lines.append("# 未收录（系统字体无字形，显示为 ?）：" + "；".join(dropped))
     return "\n".join(lines) + "\n"
 
 

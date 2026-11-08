@@ -7,9 +7,13 @@ import AppKit
 final class KeyboardMapView: NSView {
     let layout: KeyRootLayout
 
-    static let keyHeight: CGFloat = 42
-    static let rowGap: CGFloat = 4
+    static let keyHeight: CGFloat = 72
+    static let keyGap: CGFloat = 5
+    static let rowGap: CGFloat = 5
     static var totalHeight: CGFloat { keyHeight * 3 + rowGap * 2 }
+    /// 字根网格：5 列 × 3 行（每键最多显示 15 个，超出以省略号收尾）。
+    static let rootColumns = 5
+    static let rootRows = 3
 
     private var pressed: Character?
     private var answerKeys: Set<Character> = []
@@ -50,10 +54,12 @@ final class KeyboardMapView: NSView {
     }
 
     override func draw(_ dirtyRect: NSRect) {
-        let gap: CGFloat = 3.5
+        let gap = Self.keyGap
         let keyWidth = (bounds.width - gap * 9) / 10
+        // 真实键盘的错位：第二排右移约 1/4 键宽，第三排约 5/8 键宽。
+        let indents: [CGFloat] = [0, 0.28, 0.62]
         for (rowIndex, row) in layout.rows.enumerated() {
-            let indent = CGFloat(rowIndex) * (keyWidth + gap) * 0.35
+            let indent = indents[min(rowIndex, indents.count - 1)] * (keyWidth + gap)
             let y = CGFloat(rowIndex) * (Self.keyHeight + Self.rowGap)
             for (index, letter) in row.enumerated() {
                 let rect = NSRect(x: indent + CGFloat(index) * (keyWidth + gap), y: y,
@@ -79,39 +85,66 @@ final class KeyboardMapView: NSView {
 
         let keyNameColor: NSColor = isPressed ? .white : .labelColor
         let rootColor: NSColor = isPressed ? NSColor.white.withAlphaComponent(0.92) : .secondaryLabelColor
-        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 12.5, weight: .semibold), color: keyNameColor,
-                 in: NSRect(x: rect.minX, y: rect.minY + 2, width: rect.width, height: 15))
+        NSGraphicsContext.saveGraphicsState()
+        path.addClip()
+        // 字母突出：左上角大号加粗
+        drawText(String(letter), font: .monospacedSystemFont(ofSize: 13, weight: .bold),
+                 color: isPressed ? .white : .labelColor,
+                 in: NSRect(x: rect.minX + 5, y: rect.minY + 2, width: rect.width - 8, height: 16),
+                 alignment: .left)
+        drawText(entry?.keyName ?? "", font: .systemFont(ofSize: 14.5, weight: .semibold), color: keyNameColor,
+                 in: NSRect(x: rect.minX, y: rect.minY + 17, width: rect.width, height: 18))
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
-        drawText(String(letter), font: .monospacedSystemFont(ofSize: 7.5, weight: .medium),
-                 color: isPressed ? NSColor.white.withAlphaComponent(0.85) : .tertiaryLabelColor,
-                 in: NSRect(x: rect.minX, y: rect.maxY - 10, width: rect.width, height: 9))
+        NSGraphicsContext.restoreGraphicsState()
     }
 
-    /// 字根按 3 列铺排，超过 9 个时用省略号收尾（练手够用，完整表见方案文档）。
+    /// 只显示能稳定渲染成汉字的字根。
+    ///
+    /// 语料里的键位字根混有康熙部首（⺈ ⺝）、注音符号（ㄅ ㄠ）、日文片假名部件（リ）以及扩展区生僻码位，
+    /// 这些在系统字体里没有字形，直接画会变成 `?`。这里按"是否为 CJK 汉字/部件"筛掉，
+    /// 而不是依赖字体探测——字体探测在无 GUI 的测试进程里不可靠。
+    static func displayableRoots(_ roots: [String]) -> [String] {
+        roots.filter { root in
+            root.unicodeScalars.allSatisfy { scalar in
+                switch scalar.value {
+                case 0x4E00...0x9FFF, 0x3400...0x4DBF, 0xF900...0xFAFF: return true
+                default: return false
+                }
+            }
+        }
+    }
+
+    /// 网格能容纳的字根（超出部分以省略号收尾）。
+    static func visibleRoots(_ roots: [String]) -> [String] {
+        let capacity = rootColumns * rootRows
+        let usable = displayableRoots(roots)
+        guard usable.count > capacity else { return usable }
+        return Array(usable.prefix(capacity - 1)) + ["…"]
+    }
+
     private func drawRoots(_ roots: [String], in rect: NSRect, color: NSColor) {
-        guard !roots.isEmpty else { return }
-        let columns = 3
-        let lineHeight: CGFloat = 8.2
+        let font = NSFont.systemFont(ofSize: 8)
+        let shown = Self.visibleRoots(roots)
+        guard !shown.isEmpty else { return }
+        let columns = Self.rootColumns
+        let top: CGFloat = 34
+        let lineHeight = (rect.height - top - 2) / CGFloat(Self.rootRows)
         let cellWidth = rect.width / CGFloat(columns)
-        let available = rect.height - 15 - 8
-        let maxLines = max(1, Int(available / lineHeight))
-        let capacity = columns * maxLines
-        var shown = Array(roots.prefix(capacity))
-        if roots.count > capacity, !shown.isEmpty { shown[shown.count - 1] = "…" }
         for (index, root) in shown.enumerated() {
             let column = index % columns
             let line = index / columns
             let cell = NSRect(x: rect.minX + CGFloat(column) * cellWidth,
-                              y: rect.minY + 16 + CGFloat(line) * lineHeight,
-                              width: cellWidth, height: lineHeight + 1.5)
-            drawText(root, font: .systemFont(ofSize: 7.5), color: color, in: cell)
+                              y: rect.minY + top + CGFloat(line) * lineHeight,
+                              width: cellWidth, height: lineHeight)
+            drawText(root, font: font, color: color, in: cell)
         }
     }
 
-    private func drawText(_ text: String, font: NSFont, color: NSColor, in rect: NSRect) {
+    private func drawText(_ text: String, font: NSFont, color: NSColor, in rect: NSRect,
+                          alignment: NSTextAlignment = .center) {
         guard !text.isEmpty else { return }
         let paragraph = NSMutableParagraphStyle()
-        paragraph.alignment = .center
+        paragraph.alignment = alignment
         paragraph.lineBreakMode = .byTruncatingTail
         NSAttributedString(string: text, attributes: [
             .font: font, .foregroundColor: color, .paragraphStyle: paragraph]).draw(in: rect)
