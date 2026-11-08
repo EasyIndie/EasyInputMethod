@@ -75,6 +75,15 @@ if ! codesign --verify --strict "${DEST}"; then
   [ -n "${BACKUP}" ] && mv "${BACKUP}" "${DEST}"
   echo "安装后签名校验失败，已回滚" >&2; exit 1
 fi
+# 覆盖安装后让 LaunchServices 重新登记：否则系统可能仍按旧记录启动（表现为"装了但样式/版本没变"）。
+LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
+[ -x "${LSREGISTER}" ] && "${LSREGISTER}" -f "${DEST}" >/dev/null 2>&1 || true
+# 旧宿主若还跑在被移走的备份 inode 上，界面会是旧代码；这里只提示，不替用户杀掉进程。
+STALE_HOSTS="$(pgrep -f "${HOME}/Library/Application Support/Lampyris/updates/install-backup-.*/Lampyris.app/Contents/MacOS/Lampyris" 2>/dev/null || true)"
+if [ -n "${STALE_HOSTS}" ]; then
+  echo "⚠️  仍有旧宿主在运行（pid $(echo "${STALE_HOSTS}" | tr '\n' ' ')），它加载的是备份里的旧程序；" >&2
+  echo "    重新登录或重启后才会用上新安装的版本。" >&2
+fi
 # ADR-295：包内自带更新程序时一并安装（与 DMG 安装器、更新器同一套校验与备份语义）。
 install_updater() {
   local source="${SCRIPT_DIR}/../LampyrisUpdateCheck.app"
