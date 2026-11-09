@@ -51,4 +51,4 @@
 
 ## 6. 关联
 
-ADR-311、`docs/design/l3-hint.md`、`docs/迭代计划-1.2.0.md`、报告 252。
+ADR-311、`docs/design/l3-hint.md`、`docs/archive/迭代计划-1.2.0.md`、报告 252。
