@@ -101,6 +101,7 @@ final class KeyboardMapView: NSView {
                  in: NSRect(x: rect.minX, y: rect.minY + 4, width: rect.width - 7, height: 19),
                  alignment: .right)
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
+        drawPositionBadge(for: letter, in: rect, tint: tint, isPressed: isPressed)
         NSGraphicsContext.restoreGraphicsState()
     }
 
@@ -126,6 +127,32 @@ final class KeyboardMapView: NSView {
         let usable = displayableRoots(roots)
         guard usable.count > capacity else { return usable }
         return Array(usable.prefix(capacity - 1)) + ["…"]
+    }
+
+    /// 位次角标：画在键位右下角（那里通常是空的），带底色胶囊，压在字根上也读得清。
+    private func drawPositionBadge(for letter: Character, in rect: NSRect, tint: NSColor, isPressed: Bool) {
+        let marks = positionMarks(for: letter)
+        guard !marks.isEmpty, !isPressed else { return }
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: 9, weight: .bold),
+            .foregroundColor: NSColor.white]
+        let string = NSAttributedString(string: marks, attributes: attributes)
+        let size = string.size()
+        let inset: CGFloat = 3
+        let chip = NSRect(x: rect.maxX - size.width - inset * 2, y: rect.maxY - size.height - inset * 2,
+                          width: size.width + inset * 2, height: size.height + inset * 2)
+        let path = NSBezierPath(roundedRect: chip, xRadius: chip.height / 2, yRadius: chip.height / 2)
+        tint.blended(withFraction: 0.25, of: .black)?.withAlphaComponent(0.92).setFill()
+        path.fill()
+        string.draw(at: NSPoint(x: chip.minX + inset, y: chip.minY + inset - 1))
+    }
+
+    /// 当前答案里这个键的位次标记（①②③④），同一键多次出现会合并。
+    func positionMarks(for letter: Character) -> String {
+        let marks = ["①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧"]
+        let positions = answerOrder.filter { $0.letter == letter }.map { $0.position }
+        guard !positions.isEmpty else { return "" }
+        return positions.map { $0 <= marks.count ? marks[$0 - 1] : String($0) }.joined()
     }
 
     private func drawRoots(_ roots: [String], in rect: NSRect, color: NSColor) {
