@@ -29,7 +29,7 @@ spctl --assess --type execute --verbose=2 "${APP}"
 DEST="${DOMAIN}/Lampyris.app"
 [ ! -L "${DOMAIN}" ] && [ ! -L "${DEST}" ] || { echo "拒绝通过符号链接安装" >&2; exit 1; }
 if [ -e "${DEST}" ]; then
-  if [ -x "${DEST}/Contents/MacOS/Lampyris" ] && [ ! -L "${DEST}/Contents/MacOS/Lampyris" ] && diff -qr "${APP}" "${DEST}" >/dev/null; then echo "已安装相同版本"; exit 0; fi
+  if [ "${LAMPYRIS_FORCE_INSTALL:-0}" != "1" ] && [ -x "${DEST}/Contents/MacOS/Lampyris" ] && [ ! -L "${DEST}/Contents/MacOS/Lampyris" ] && diff -qr "${APP}" "${DEST}" >/dev/null; then echo "已安装相同版本（LAMPYRIS_FORCE_INSTALL=1 可强制覆盖）"; exit 0; fi
   # ADR-295：与 DMG 安装器/更新器同一语义——允许覆盖，先备份，失败回滚。
   if pgrep -x Lampyris >/dev/null; then
     echo "宿主仍在运行；请切到 ABC、注销后再试，或用更新程序升级（不热替换）" >&2
