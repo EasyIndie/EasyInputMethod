@@ -93,7 +93,7 @@ deny: check-workspace ## 依赖许可 / 漏洞 / 重复依赖检查（零诊断�
 	$(CLEAN) $(CARGO) deny check
 
 bootstrap: ## 安装开发依赖（版本固定，见 MVP 审计 SEC-07）
-	cargo install cargo-deny --version 0.20.2 --locked
+	./scripts/install-cargo-deny.sh
 	cargo install cargo-fuzz --version 0.13.2 --locked
 
 EVAL_SAMPLES ?= tools/eval/samples.tsv
