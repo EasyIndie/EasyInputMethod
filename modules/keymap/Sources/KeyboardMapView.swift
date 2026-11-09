@@ -10,7 +10,10 @@ final class KeyboardMapView: NSView {
     static let keyHeight: CGFloat = 68
     static let keyGap: CGFloat = 6
     static let rowGap: CGFloat = 6
-    static var totalHeight: CGFloat { keyHeight * 3 + rowGap * 2 }
+    /// 键位下方的序号带高度：位次写在键外，绝不和键名/字根抢位置。
+    static let captionHeight: CGFloat = 14
+    static var rowPitch: CGFloat { keyHeight + captionHeight }
+    static var totalHeight: CGFloat { rowPitch * 3 + rowGap * 2 }
     /// 字根网格：3 列 × 3 行（每键最多显示 9 个，超出以省略号收尾）。
     static let rootColumns = 3
     static let rootRows = 3
@@ -65,7 +68,7 @@ final class KeyboardMapView: NSView {
             // 每排按真实键盘错位：键数少的排整体居中，自然形成阶梯。
             let rowWidth = CGFloat(row.count) * keyWidth + CGFloat(row.count - 1) * gap
             let indent = (bounds.width - rowWidth) / 2
-            let y = CGFloat(rowIndex) * (Self.keyHeight + Self.rowGap)
+            let y = CGFloat(rowIndex) * (Self.rowPitch + Self.rowGap)
             for (index, letter) in row.enumerated() {
                 let rect = NSRect(x: indent + CGFloat(index) * (keyWidth + gap), y: y,
                                   width: keyWidth, height: Self.keyHeight)
@@ -101,8 +104,9 @@ final class KeyboardMapView: NSView {
                  in: NSRect(x: rect.minX, y: rect.minY + 4, width: rect.width - 7, height: 19),
                  alignment: .right)
         drawRoots(entry?.roots ?? [], in: rect, color: rootColor)
-        drawPositionBadge(for: letter, in: rect, tint: tint, isPressed: isPressed)
         NSGraphicsContext.restoreGraphicsState()
+        // 序号画在键位下方的序号带里，必须在裁切之外绘制。
+        drawPositionBadge(for: letter, in: rect, tint: tint, isPressed: isPressed)
     }
 
     /// 只显示能稳定渲染成汉字的字根。
@@ -129,22 +133,16 @@ final class KeyboardMapView: NSView {
         return Array(usable.prefix(capacity - 1)) + ["…"]
     }
 
-    /// 位次角标：画在键位右下角（那里通常是空的），带底色胶囊，压在字根上也读得清。
+    /// 位次标注：写在键位**下方**的序号带里（居中），不覆盖键名与字根。
     private func drawPositionBadge(for letter: Character, in rect: NSRect, tint: NSColor, isPressed: Bool) {
         let marks = positionMarks(for: letter)
         guard !marks.isEmpty, !isPressed else { return }
-        let attributes: [NSAttributedString.Key: Any] = [
-            .font: NSFont.systemFont(ofSize: 9, weight: .bold),
-            .foregroundColor: NSColor.white]
-        let string = NSAttributedString(string: marks, attributes: attributes)
+        let string = NSAttributedString(string: marks, attributes: [
+            .font: NSFont.systemFont(ofSize: 9.5, weight: .bold),
+            .foregroundColor: tint.blended(withFraction: 0.25, of: .labelColor) ?? .labelColor])
         let size = string.size()
-        let inset: CGFloat = 3
-        let chip = NSRect(x: rect.maxX - size.width - inset * 2, y: rect.maxY - size.height - inset * 2,
-                          width: size.width + inset * 2, height: size.height + inset * 2)
-        let path = NSBezierPath(roundedRect: chip, xRadius: chip.height / 2, yRadius: chip.height / 2)
-        tint.blended(withFraction: 0.25, of: .black)?.withAlphaComponent(0.92).setFill()
-        path.fill()
-        string.draw(at: NSPoint(x: chip.minX + inset, y: chip.minY + inset - 1))
+        string.draw(at: NSPoint(x: rect.midX - size.width / 2,
+                                y: rect.maxY + (Self.captionHeight - size.height) / 2))
     }
 
     /// 当前答案里这个键的位次标记（①②③④），同一键多次出现会合并。
