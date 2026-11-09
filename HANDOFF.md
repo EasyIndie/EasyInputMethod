@@ -5,7 +5,8 @@
 - 更新：2026-11-09 / pi（**air 本机**）。阶段：**1.2.0 已发布并上线**（tag `v1.2.0` → `31fdbcd`，站点 `v1.2.0 · 构建 39`，air 与 pro 同包 1.2.0/39）。
 - 分支：`dev` = `main` = `31fdbcd`（1.2.0 候选提交）；开放 PR **0 个**。
 - 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag **`v1.2.0`**（Release 已发布）。
-- 最近验证：`make verify` PASS（232 产物零网络符号）、`make macos-offline-tests` **62 文件 / 328 例 PASS**、`modules/keymap/tests/test-key-roots.py` **8 例 PASS**。
+- 最近验证：`make verify` PASS（325 产物零网络符号）、`make macos-offline-tests` **62 文件 / 328 例 PASS**、`modules/keymap/tests/test-key-roots.py` **8 例 PASS**。
+- 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
 ## 1. 设备与数据
@@ -55,7 +56,7 @@
 
 剩余待办已重排到 **`docs/待办与积压.md`**（2026-11-09 版），分四档：
 
-- **P0 · 1.2.1 补丁档**：覆盖安装丢输入源（安装器交互化）、旧宿主跑备份 inode（安装器主动重启确认）、练习页无障碍走查、Terminal ⌥L 冲突写入用户文档、回归编译超时治理。
+- **P0 · 1.2.1 已完成并发布**：安装器交互（`LAMPYRIS_RESTART_HOST`/`LAMPYRIS_OPEN_SETTINGS`/`LAMPYRIS_FORCE_INSTALL`）、旧宿主检测、练习页 VoiceOver、Terminal ⌥L 文档、回归并发与超时治理；附带零引用代码/资源清理与 CI 去 `install-action`。剩余交接项见 `docs/待办与积压.md`。
 - **P1 · 1.3.0 教学/数据**：三级简码专项（需引擎 + ADR）、corpus M2-1 调研、字根字形身份库、真笔顺/结构标注、拆字说明扩充、多方案码表。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（都写了触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
@@ -66,11 +67,12 @@
 
 | 步骤 | 内容 | 授权 |
 |---|---|---|
-| 1 | ~~打 SSH 签名 tag `v1.2.0` → Release~~ | ✅ 2026-11-09（tag 验签通过；Release run `42558833917` success） |
+| 1 | ~~打 SSH 签名 tag `v1.2.1` → Release~~ | ✅ 2026-11-09（tag 验签通过；Release run `42583547089` success） |
 | 2 | ~~回读 Release 资产并回填~~ | ✅ ZIP `64eeb90f…` 与候选逐字节一致、DMG 公证、appcast `39`、更新程序 1.2.0 已公证 |
 | 3 | ~~dispatch Pages → 回读站点~~ | ✅ `v1.2.0 · 构建 39`（run `42560197671`） |
 | 4 | ~~pro 升级到 1.2.0~~ | ✅ payload `64eeb90f…` 验签通过、执行 `ef25e92b…`、config `b8c7a351…` 与 962 行词库未变；旧包备份在 `updates/upgrade-20261109T121300-9c1061c4/`（宿主已重启） |
-| 5 | 后续小版本：安装器交互（lsregister + 提示用户重加输入源）、三级简码数据（需 ADR）、练习深色/无障碍走查 | 排 1.2.1 |
+| 5 | pro 升级到 1.2.1 | **用户自行执行**（`packaging/macos/upgrade.py`） |
+| 6 | 下一站 1.3.0：三级简码（需引擎 + ADR）、corpus M2-1 调研 | 见 `docs/待办与积压.md` P1 |
 
 ## 4.1 换到 air 后怎么开工
 
@@ -112,6 +114,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-09 / pi（air）：**1.2.1 发布完成（报告 263）**。P0 三项（安装器旧宿主/输入源、练习页 VoiceOver、回归并发）、零引用代码与资源清理、文档状态标注一并入 `168115e`；期间 `main` 两次 CI 红灯查为 `install-action` 下载 `cargo-deny` 资产 504，改自建 `scripts/install-cargo-deny.sh`（重试 + crates.io 回退）。`git tag -s v1.2.1` → Release `42583547089` success，ZIP `102f4928…` 与验收包逐字节一致、DMG `a6f4bdbd…` 公证、更新程序 1.2.1、appcast `40`；air 用发布包覆盖安装（执行 `3eeeb0aa…`，安装器回读「已注册到输入源」，无需重加输入源）；Pages `v1.2.1 · 构建 40`。**pro 由用户自行升级。**
 - 2026-11-09 / pi（air）：**1.2.0 发布完成**。`git tag -s v1.2.0 31fdbcd`（SSH 验签通过）→ 首次 Release 失败于"checkout 把 tag 建成轻量引用"，补 `git fetch --force` 后 `workflow_dispatch` 重跑成功。回读：ZIP `64eeb90f…`（与候选逐字节一致）、源码 `3dc6f717…`、DMG `ffa1a65c…`（staple+spctl Notarized）、更新程序 `332d98b1…`（1.2.0 已公证）、appcast `sparkle:version=39`；包内执行 `ef25e92b…` = 已装机版本。随后完成 Pages 部署（站点回读 `v1.2.0 · 构建 39`）与 pro 升级（1.1.0/38 → 1.2.0/39，验签通过、config 与 962 行词库未变、旧包已备份、宿主重启）。**1.2.0 发布闭环完成。**
 - 2026-11-09 / pi（air）：**1.2.0 候选通过验收 + 发版材料**。候选 `31fdbcd`（执行 `ef25e92b…`）全绿（`make verify` 232 产物零网络、离线 62 文件 / 328 例、CI 四项）；用户确认练习页四题型/四位输入格/键位点亮与位次/口诀/工具栏/亮暗外观均可。写 `docs/releases/1.2.0.md`（候选身份、行为变更=二级简码 598 条、学习区与练习、键位图与口诀、工程项、已知限制），ROADMAP/HANDOFF 对账。**等待用户授权 tag/Release/Pages/pro 升级**。
 - 2026-11-06 / pi（air）：**1.2.0（B4+B5）候选装机（报告 259）**。PR #232 → CI 包（`exec 28e24d26…`）装 air；稳态 p95 **5.80 ms**（三段 5.12–5.97）、冷首键 28.86/33.39、0 外联、memory-gate 私有 **28.5–28.8 MiB**（限 30）PASS。待用户走查：⌥K 练习窗口（A/C 两种题型）、⌥L 学习区默认关、practice.tsv 生成与重置。
