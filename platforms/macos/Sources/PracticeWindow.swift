@@ -387,7 +387,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         answerView.clear()
         keymapPanel.map.clearFlash()
         keymapPanel.map.markAnswer("")
-        keymapPanel.clearAnswerPositions()
         pendingStroke = nil
         pendingStructure = nil
         lastAnswer = nil
@@ -471,7 +470,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
         if let question = current, let expected = kind.answer(for: question) {
             keymapPanel.map.markAnswer(expected)
-            keymapPanel.showAnswerPositions(expected)
         }
         feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
             + (result.explanation.isEmpty ? "" : " · " + result.explanation)
@@ -563,6 +561,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         case .code2: return "打出它的二级简码（2 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
         }
+    }
+
+    /// 测试用：模拟答完后高亮答案键位。
+    func markAnswerForTesting(_ code: String) {
+        keymapPanel.map.markAnswer(code)
     }
 
     /// 测试用：显示/隐藏键位图面板（等同工具栏「键位图」）。
