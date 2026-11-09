@@ -20,7 +20,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let cardPadding: CGFloat = 20
         static let afterExplanation: CGFloat = 14
         static let codeAnswerHeight: CGFloat = 52
-        static let recognitionAnswerHeight: CGFloat = 64
+        static let recognitionAnswerHeight: CGFloat = 60
         static let afterAnswer: CGFloat = 14
         static let feedbackHeight: CGFloat = 24
         static let afterFeedback: CGFloat = 12
@@ -236,14 +236,34 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
 
         answerView.frame = NSRect(x: margin, y: y, width: inner, height: Gap.codeAnswerHeight)
-        strokeTitle.frame = NSRect(x: margin, y: y + 5, width: 46, height: 18)
-        for (index, button) in strokeButtons.enumerated() {
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 72, y: y, width: 66, height: 28)
+        // 末笔 / 结构两行在卡片内**水平居中**：标题 + 按钮作为一个整体算宽度再定起点。
+        let titleWidth: CGFloat = 46
+        let titleGap: CGFloat = 10
+        let strokeButtonWidth: CGFloat = 66
+        let strokeButtonGap: CGFloat = 8
+        let strokeRowWidth = titleWidth + titleGap
+            + CGFloat(strokeButtons.count) * strokeButtonWidth
+            + CGFloat(max(0, strokeButtons.count - 1)) * strokeButtonGap
+        var strokeX = margin + max(0, (inner - strokeRowWidth) / 2)
+        strokeTitle.frame = NSRect(x: strokeX, y: y + 5, width: titleWidth, height: 18)
+        strokeX += titleWidth + titleGap
+        for button in strokeButtons {
+            button.frame = NSRect(x: strokeX, y: y, width: strokeButtonWidth, height: 28)
+            strokeX += strokeButtonWidth + strokeButtonGap
         }
+
         let structureY = y + 32
-        structureTitle.frame = NSRect(x: margin, y: structureY + 5, width: 46, height: 18)
-        for (index, button) in structureButtons.enumerated() {
-            button.frame = NSRect(x: margin + 52 + CGFloat(index) * 116, y: structureY, width: 108, height: 28)
+        let structureButtonWidth: CGFloat = 108
+        let structureButtonGap: CGFloat = 8
+        let structureRowWidth = titleWidth + titleGap
+            + CGFloat(structureButtons.count) * structureButtonWidth
+            + CGFloat(max(0, structureButtons.count - 1)) * structureButtonGap
+        var structureX = margin + max(0, (inner - structureRowWidth) / 2)
+        structureTitle.frame = NSRect(x: structureX, y: structureY + 5, width: titleWidth, height: 18)
+        structureX += titleWidth + titleGap
+        for button in structureButtons {
+            button.frame = NSRect(x: structureX, y: structureY, width: structureButtonWidth, height: 28)
+            structureX += structureButtonWidth + structureButtonGap
         }
         y += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
 
