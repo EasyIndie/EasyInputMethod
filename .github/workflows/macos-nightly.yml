@@ -33,7 +33,8 @@ jobs:
           components: rustfmt, clippy
           targets: aarch64-apple-darwin, x86_64-apple-darwin
       - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2
-      - uses: taiki-e/install-action@5d880190e41a7608c29a5c91c6b5d24561d53850 # cargo-deny
+      - name: Install cargo-deny (retry + crates.io 回退)
+        run: ./scripts/install-cargo-deny.sh
       - name: Repository gates
         run: make verify
       - name: Offline macOS and packaging regressions

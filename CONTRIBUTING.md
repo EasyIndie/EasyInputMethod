@@ -92,6 +92,15 @@ Signed-off-by: Your Name <you@example.com>
 - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 ```
 
+**工具安装**（`cargo-deny` 等）统一走仓库脚本，不直接用 `install-action`：该 action 从 GitHub Release
+资产下载，2026-11-09 连续两次 504 让 `main` 的 macOS 任务假红。`scripts/install-cargo-deny.sh`
+自己下载并重试，失败退回 crates.io 源码编译，两条路都固定同一版本（`CARGO_DENY_VERSION`）：
+
+```yaml
+- name: Install cargo-deny (retry + crates.io 回退)
+  run: ./scripts/install-cargo-deny.sh
+```
+
 **升级步骤**（单独一个 `ci: bump ...` 提交，说明里附来源）：
 
 1. 在**官方仓库**查该 tag/branch 当前指向的 commit：
