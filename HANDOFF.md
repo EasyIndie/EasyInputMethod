@@ -2,7 +2,7 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-09 / pi（**air 本机**）。阶段：**1.2.0 已发布（tag `v1.2.0` → Release，候选 `31fdbcd` / 执行 `ef25e92b…`）**；站点与 pro 升级待办。
+- 更新：2026-11-09 / pi（**air 本机**）。阶段：**1.2.0 已发布并上线**（tag `v1.2.0` → `31fdbcd`，站点 `v1.2.0 · 构建 39`，air 与 pro 同包 1.2.0/39）。
 - 分支：`dev` = `main` = `31fdbcd`（1.2.0 候选提交）；开放 PR **0 个**。
 - 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag **`v1.2.0`**（Release 已发布）。
 - 最近验证：`make verify` PASS（232 产物零网络符号）、`make macos-offline-tests` **62 文件 / 328 例 PASS**、`modules/keymap/tests/test-key-roots.py` **8 例 PASS**。
@@ -13,7 +13,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39（候选 `31fdbcd`，2026-11-09 装机）**，宿主执行 `ef25e92b…`；输入源 `Lampyris.default` 已启用（覆盖安装后常需手动再选一次，见 `docs/故障恢复.md` §4.2/§4.3） | config 与词库沿用（练习进度 `practice.tsv` 新增） | `uninstalled/`、`updates/` 可回滚 |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.2.0 / build 39**，宿主执行 `ef25e92b…`（2026-11-09 经 `upgrade.py --apply` 升级，旧包 `updates/upgrade-20261109T121300-9c1061c4/backup/`） | config `b8c7a351…`、词库 962 行，升级前后未变（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
 
@@ -81,8 +81,8 @@
 |---|---|---|
 | 1 | ~~打 SSH 签名 tag `v1.2.0` → Release~~ | ✅ 2026-11-09（tag 验签通过；Release run `42558833917` success） |
 | 2 | ~~回读 Release 资产并回填~~ | ✅ ZIP `64eeb90f…` 与候选逐字节一致、DMG 公证、appcast `39`、更新程序 1.2.0 已公证 |
-| 3 | dispatch Pages → 回读站点 `v1.2.0 · 构建 39` | **需用户授权** |
-| 4 | pro（Intel / 1.1.0-38）用更新程序升级到 1.2.0，核 payload/执行 SHA/config 与词库保留 | **需用户授权** |
+| 3 | ~~dispatch Pages → 回读站点~~ | ✅ `v1.2.0 · 构建 39`（run `42560197671`） |
+| 4 | ~~pro 升级到 1.2.0~~ | ✅ payload `64eeb90f…` 验签通过、执行 `ef25e92b…`、config `b8c7a351…` 与 962 行词库未变；旧包备份在 `updates/upgrade-20261109T121300-9c1061c4/`（宿主已重启） |
 | 5 | 后续小版本：安装器交互（lsregister + 提示用户重加输入源）、三级简码数据（需 ADR）、练习深色/无障碍走查 | 排 1.2.1 |
 
 ## 4.1 换到 air 后怎么开工
@@ -125,7 +125,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
-- 2026-11-09 / pi（air）：**1.2.0 发布完成**。`git tag -s v1.2.0 31fdbcd`（SSH 验签通过）→ 首次 Release 失败于"checkout 把 tag 建成轻量引用"，补 `git fetch --force` 后 `workflow_dispatch` 重跑成功。回读：ZIP `64eeb90f…`（与候选逐字节一致）、源码 `3dc6f717…`、DMG `ffa1a65c…`（staple+spctl Notarized）、更新程序 `332d98b1…`（1.2.0 已公证）、appcast `sparkle:version=39`；包内执行 `ef25e92b…` = 已装机版本。**剩 Pages 部署与 pro 升级待授权**。
+- 2026-11-09 / pi（air）：**1.2.0 发布完成**。`git tag -s v1.2.0 31fdbcd`（SSH 验签通过）→ 首次 Release 失败于"checkout 把 tag 建成轻量引用"，补 `git fetch --force` 后 `workflow_dispatch` 重跑成功。回读：ZIP `64eeb90f…`（与候选逐字节一致）、源码 `3dc6f717…`、DMG `ffa1a65c…`（staple+spctl Notarized）、更新程序 `332d98b1…`（1.2.0 已公证）、appcast `sparkle:version=39`；包内执行 `ef25e92b…` = 已装机版本。随后完成 Pages 部署（站点回读 `v1.2.0 · 构建 39`）与 pro 升级（1.1.0/38 → 1.2.0/39，验签通过、config 与 962 行词库未变、旧包已备份、宿主重启）。**1.2.0 发布闭环完成。**
 - 2026-11-09 / pi（air）：**1.2.0 候选通过验收 + 发版材料**。候选 `31fdbcd`（执行 `ef25e92b…`）全绿（`make verify` 232 产物零网络、离线 62 文件 / 328 例、CI 四项）；用户确认练习页四题型/四位输入格/键位点亮与位次/口诀/工具栏/亮暗外观均可。写 `docs/releases/1.2.0.md`（候选身份、行为变更=二级简码 598 条、学习区与练习、键位图与口诀、工程项、已知限制），ROADMAP/HANDOFF 对账。**等待用户授权 tag/Release/Pages/pro 升级**。
 - 2026-11-06 / pi（air）：**1.2.0（B4+B5）候选装机（报告 259）**。PR #232 → CI 包（`exec 28e24d26…`）装 air；稳态 p95 **5.80 ms**（三段 5.12–5.97）、冷首键 28.86/33.39、0 外联、memory-gate 私有 **28.5–28.8 MiB**（限 30）PASS。待用户走查：⌥K 练习窗口（A/C 两种题型）、⌥L 学习区默认关、practice.tsv 生成与重置。
 - 2026-11-06 / pi（air）：**1.2.0/build 39 装机 + 首轮体验数据（报告 254）**。PR #227 合并 → CI 验收包 → 装 air：版本/执行 SHA `b152a001…`/公证全部核对，config 与 1225 行词库未变。评测 ALL 命中 98.2%/首选 86.4%（jianma2 100%/100%）；三段延迟稳态 p95 6.7–8.3 ms；**冷首键 27–40 ms，比 1.1.0 的 16–26 ms 高**（待查是否学习区布局所致）；soak 3 分钟 17 轮 0 外联、footprint 38.5 MiB（比 1.1.0 高约 5 MiB，待单独归因）。
