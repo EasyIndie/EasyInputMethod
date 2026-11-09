@@ -7,7 +7,7 @@ import AppKit
 final class KeyboardMapView: NSView {
     let layout: KeyRootLayout
 
-    static let keyHeight: CGFloat = 78
+    static let keyHeight: CGFloat = 68
     static let keyGap: CGFloat = 6
     static let rowGap: CGFloat = 6
     static var totalHeight: CGFloat { keyHeight * 3 + rowGap * 2 }
