@@ -55,6 +55,9 @@ class UpdatePublicKeyTests(unittest.TestCase):
             if not raw:
                 continue
             path = ROOT / raw.decode()
+            # 已从工作树删除但尚未提交的文件仍会出现在 ls-files 里，跳过即可。
+            if not path.exists():
+                continue
             if path == Path(__file__).resolve() or path.stat().st_size > 4096:
                 continue
             try:

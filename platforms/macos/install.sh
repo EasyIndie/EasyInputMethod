@@ -78,12 +78,28 @@ fi
 # 覆盖安装后让 LaunchServices 重新登记：否则系统可能仍按旧记录启动（表现为"装了但样式/版本没变"）。
 LSREGISTER="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 [ -x "${LSREGISTER}" ] && "${LSREGISTER}" -f "${DEST}" >/dev/null 2>&1 || true
-# 旧宿主若还跑在被移走的备份 inode 上，界面会是旧代码；这里只提示，不替用户杀掉进程。
+# 旧宿主若还跑在被移走的备份 inode 上，界面会是旧代码：默认只提示，交互式安装会问一次要不要重启。
 STALE_HOSTS="$(pgrep -f "${HOME}/Library/Application Support/Lampyris/updates/install-backup-.*/Lampyris.app/Contents/MacOS/Lampyris" 2>/dev/null || true)"
+restart_host() {
+  local pid
+  for pid in $(pgrep -f "MacOS/Lampyris" 2>/dev/null || true); do kill "${pid}" 2>/dev/null || true; done
+  sleep 1
+  open "${DEST}" 2>/dev/null || true
+  echo "已重启宿主（新包）"
+}
 if [ -n "${STALE_HOSTS}" ]; then
-  echo "⚠️  仍有旧宿主在运行（pid $(echo "${STALE_HOSTS}" | tr '\n' ' ')），它加载的是备份里的旧程序；" >&2
-  echo "    重新登录或重启后才会用上新安装的版本。" >&2
+  echo "⚠️  仍有旧宿主在运行（pid $(echo "${STALE_HOSTS}" | tr '\n' ' ')），它加载的是备份里的旧程序。" >&2
+  if [ "${LAMPYRIS_RESTART_HOST:-0}" = "1" ]; then
+    restart_host
+  elif [ -t 0 ] && [ -t 1 ]; then
+    printf "现在重启宿主以使用新版本？[y/N] " >&2
+    read -r answer || answer=""
+    case "${answer}" in [yY]*) restart_host ;; *) echo "    稍后可重新登录，或手动：pkill -f 'MacOS/Lampyris'; open '${DEST}'" >&2 ;; esac
+  else
+    echo "    非交互安装：设 LAMPYRIS_RESTART_HOST=1 可自动重启，或稍后重新登录。" >&2
+  fi
 fi
+
 # ADR-295：包内自带更新程序时一并安装（与 DMG 安装器、更新器同一套校验与备份语义）。
 install_updater() {
   local source="${SCRIPT_DIR}/../LampyrisUpdateCheck.app"
@@ -147,6 +163,19 @@ HELPER="${DEST}/Contents/Helpers/LampyrisTIS"
 # 不能只看 `enable` 的返回值：macOS 13 上 `TISEnableInputSource` 会返回 0 但源并未进入启用列表
 # （报告201/207 两次实测），所以回读一次再决定措辞。
 READBACK="${SCRIPT_DIR}/tools/input-source-enabled.sh"
+open_keyboard_settings() {
+  # 只把用户送到设置页，不写系统偏好（TIS 后台启用不持久化，见 docs/故障恢复.md §4.1）。
+  if [ "${LAMPYRIS_OPEN_SETTINGS:-0}" = "1" ] || { [ -t 0 ] && [ -t 1 ]; }; then
+    open "x-apple.systempreferences:com.apple.Keyboard-Settings.extension" 2>/dev/null || true
+  fi
+}
+add_source_help() {
+  cat >&2 <<TEXT
+   恢复：系统设置 → 键盘 → 文字输入 → 输入法 → 编辑 /「+」→ 中文（简体）→ 萤火虫 → 添加
+   添加后切过去：${HELPER} select ${IDENTIFIER}
+TEXT
+  open_keyboard_settings
+}
 if [ -x "${HELPER}" ]; then
   "${HELPER}" register "${DEST}" >/dev/null 2>&1 || true
   "${HELPER}" enable "${IDENTIFIER}" >/dev/null 2>&1 || true
@@ -154,11 +183,12 @@ if [ -x "${HELPER}" ]; then
     echo "安装完成。请用 ⌃Space 或输入法菜单确认「萤火虫」；若菜单里还没有，重新登录一次或手动添加。"
   elif "${READBACK}" "${HELPER}" "${IDENTIFIER}"; then
     echo "安装完成，已注册到输入源。"
-    echo "现在用 ⌃Space 或输入法菜单选中「萤火虫」即可；若菜单里还没出现，重启登录一次。"
+    echo "现在用 ⌃Space 或输入法菜单选中「萤火虫」即可；若菜单里还没出现，重新登录一次。"
   else
-    echo "安装完成，但系统没有接受自动注册（macOS 13 上的已知行为）。"
-    echo "请在系统设置 → 键盘 → 文字输入 → ＋ → 中文（简体）添加「萤火虫」。"
+    echo "安装完成，但系统没有接受自动注册（macOS 13 上的已知行为）。" >&2
+    add_source_help
   fi
 else
   echo "安装完成。请注销/重新登录，再在系统设置 → 键盘 → 文字输入添加萤火虫。"
+  add_source_help
 fi

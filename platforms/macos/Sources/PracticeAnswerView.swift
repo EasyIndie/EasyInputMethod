@@ -26,6 +26,18 @@ final class PracticeAnswerView: NSView {
     private(set) var isActive = true
 
     override var acceptsFirstResponder: Bool { true }
+
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        setAccessibilityElement(true)
+        setAccessibilityRole(.textField)
+        setAccessibilityLabel("编码输入")
+        setAccessibilityHelp("输入字母，回车提交；Esc 或 ⌘⌫ 清空")
+    }
+
+    override func accessibilityValue() -> Any? {
+        text.isEmpty ? "空（\(capacity) 位）" : text.uppercased()
+    }
     override var isFlipped: Bool { true }
     override var focusRingMaskBounds: NSRect { bounds }
 
@@ -63,7 +75,6 @@ final class PracticeAnswerView: NSView {
         isActive = active
         needsDisplay = true
     }
-    func setTextForTesting(_ value: String) { text = String(value.prefix(capacity)) }
 
     override func draw(_ dirtyRect: NSRect) {
         let count = CGFloat(capacity)

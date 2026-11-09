@@ -29,7 +29,7 @@ class SettingsPresentationTests(unittest.TestCase):
                   str(temporary / "main.swift"),
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
-                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeRootRowView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES, "Settings.swift", "Feedback.swift", "InfoWindow.swift",
+                    ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES, "Settings.swift", "Feedback.swift", "InfoWindow.swift",
                      "UserDictionary.swift", "Lookup.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 180),

@@ -54,10 +54,6 @@ struct PracticeQuestion {
     let short1: String?
     let short2: String?
 
-    /// 拆解提示：字根（带键位），未知字根显示 `？`。
-    var rootHint: String {
-        roots.map { "\($0.glyph)\($0.key)" }.joined(separator: " ")
-    }
 }
 
 enum Practice {

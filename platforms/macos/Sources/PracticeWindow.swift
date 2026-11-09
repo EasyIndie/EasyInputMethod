@@ -62,7 +62,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressBar = NSProgressIndicator()
     private let card = NSBox()
     private let scrollView = NSScrollView()
-    private var toolbarButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -207,6 +206,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressBar.minValue = 0
         progressBar.maxValue = 1
         progressBar.controlSize = .small
+        progressBar.setAccessibilityLabel("练习进度")
+        progressBar.setAccessibilityHelp("已练字数占题库的比例")
         content.addSubview(progressBar)
 
         // 键位图面板（含方案名与口诀开关）自包含；是否显示由顶部工具栏决定。
@@ -317,40 +318,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         scrollView.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentWidth, height: windowHeight))
     }
 
-    /// 图标按钮：悬浮提示代替文字标题。
-    private func iconButton(_ symbol: String, tooltip: String, action: Selector,
-                            prominent: Bool = false) -> NSButton {
-        let image = NSImage(systemSymbolName: symbol, accessibilityDescription: tooltip) ?? NSImage()
-        let button = NSButton(image: image, target: self, action: action)
-        if prominent {
-            button.isBordered = false
-            button.wantsLayer = true
-            button.layer?.backgroundColor = NSColor.controlAccentColor.cgColor
-            button.layer?.cornerRadius = 9
-            button.contentTintColor = .white
-            button.image = image.withSymbolConfiguration(
-                NSImage.SymbolConfiguration(pointSize: 14, weight: .semibold)) ?? image
-        } else {
-            button.isBordered = false
-            button.wantsLayer = true
-            button.layer?.backgroundColor = NSColor.labelColor.withAlphaComponent(0.08).cgColor
-            button.layer?.cornerRadius = 9
-            button.contentTintColor = .labelColor
-            button.image = image.withSymbolConfiguration(
-                NSImage.SymbolConfiguration(pointSize: 14, weight: .medium)) ?? image
-        }
-        button.imagePosition = .imageOnly
-        button.toolTip = tooltip
-        button.setAccessibilityLabel(tooltip)
-        button.refusesFirstResponder = true
-        content?.addSubview(button)
-        return button
-    }
-
-    private func answerHeight() -> CGFloat {
-        kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight
-    }
-
     private func showExplanation(_ question: PracticeQuestion, revealsAnswer: Bool) {
         // 本题目要求的那一项排在最前，完整码与两个简码随后——一块讲完，不再另起一行重复。
         let target: String? = {
@@ -412,6 +379,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
             + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
+        progressBar.setAccessibilityValue("\(percent)%")
     }
 
     private func showCurrent() {
@@ -503,8 +471,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         if let question = current, let expected = kind.answer(for: question) {
             keymapPanel.map.markAnswer(expected)
         }
-        feedbackLabel.stringValue = (result.correct ? "✓ 正确" : "✗ 再想想")
-            + (result.explanation.isEmpty ? "" : " · " + result.explanation)
+        let headline = result.correct ? "✓ 正确" : "✗ 再想想"
+        feedbackLabel.stringValue = headline + (result.explanation.isEmpty ? "" : " · " + result.explanation)
+        // VoiceOver：判分结果直接播报，不必移动光标。
+        NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested,
+                             userInfo: [.announcement: feedbackLabel.stringValue,
+                                         .priority: NSAccessibilityPriorityLevel.medium.rawValue])
         feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
         updateStats()
     }
