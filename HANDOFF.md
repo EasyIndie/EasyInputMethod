@@ -2,16 +2,17 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-06 / pi（**air 本机**）。阶段：**1.1.0 已发布并上线**（tag `v1.1.0` → `393318c`，站点 `v1.1.0 · 构建 38`，air 与 pro 同包 1.1.0/38）；下一站 **1.2.0**（dev 已含二级简码 598 条，Cargo 1.2.0 / build 39）。
-- 分支：`dev` @ 本轮提交；`main` = `730d894`（PR #226 已合并），开放 PR **0 个**。
-- 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag **`v1.1.0`**（Release + 站点已上线）。
-- 最近验证：`make verify` PASS（206 产物零网络符号）、`make macos-offline-tests` **61 文件 / 320 例 PASS**。1.1.0 发布身份：ZIP `448d3170fdcb…`、源码 `e0b9536b2994…`、宿主执行 `d3c5a2efd1ae…`。
+- 更新：2026-11-09 / pi（**air 本机**）。阶段：**1.2.0 候选已通过用户验收，待 tag/Release/站点**（候选 `31fdbcd`、执行 `ef25e92b…`；1.1.0 仍是线上版本）。
+- 分支：`dev` = `main` = `31fdbcd`（1.2.0 候选提交）；开放 PR **0 个**。
+- 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag 仍是 **`v1.1.0`**（线上版本）。
+- 最近验证：`make verify` PASS（232 产物零网络符号）、`make macos-offline-tests` **62 文件 / 328 例 PASS**、`modules/keymap/tests/test-key-roots.py` **8 例 PASS**。
+- 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39（B4+B5 候选，2026-11-07 装机）**，宿主执行 `28e24d26…`；输入源 `Lampyris.default` 在用；`show_wubi_learning=false` | config `5d4271fb…`（`full_width=half` 已是 ADR-305 枚举形态）、词库 1139 行（用户在用，行数会变） | `uninstalled/`、`updates/` 可回滚到 1.0.0…1.0.2 |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39（候选 `31fdbcd`，2026-11-09 装机）**，宿主执行 `ef25e92b…`；输入源 `Lampyris.default` 已启用（覆盖安装后常需手动再选一次，见 `docs/故障恢复.md` §4.2/§4.3） | config 与词库沿用（练习进度 `practice.tsv` 新增） | `uninstalled/`、`updates/` 可回滚 |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.1.0 / build 38**，宿主执行 `d3c5a2ef…`（2026-11-06 经更新程序升级，旧版备份在 `updates/upgrade-2026-11-06T14-27-15Z/backup/`） | config 与词库保持 1.0.0 基线（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -52,7 +53,8 @@
 
 ## 3. 未决
 
-- **1.2.0 未定候选**：dev 已含二级简码 598 条（报告 238），但**还没做过装机验收**；发版前要定验收范围、跑 `FAST=1 make macos-auto-acceptance` 与人工走查，tag 需单独授权。
+- **1.2.0 已验收待发布**：候选 `31fdbcd`（执行 `ef25e92b…`）经用户 2026-11-09 人工验收通过（四题型、四位输入格、键位点亮/描边/位次、口诀、工具栏、亮暗外观）；发版材料 `docs/releases/1.2.0.md`。
+  **发布动作（tag/Release/Pages/pro 升级）需要用户单独授权**；正式验收批次（热键/五客户端/延迟/内存）以 1.1.0 结论为基线，UI-only 改动未重跑全套。
 - ~~pro 本机实键入未确认~~ → **用户已在 pro 上确认：候选正常、切源顺手**（2026-11-06）。
 - **air 曾出现「输入菜单里没有萤火虫」**：根因是**输入源被移出启用列表**（系统设置里加/改输入源时删掉了），已由用户重新添加恢复；排查与恢复步骤写进 `docs/故障恢复.md` §4.1（含“TIS API 从后台会话启用不持久化”的实测结论）。
 - **⌥L 已定案（报告 255 §7）**：加了 Option 键诊断日志后确认——处理器收到并消费了 ⌥L（`learning=true`、HUD 切换、`inputText` 0 次），用户此前是在 **Ghostty** 里测的，Ghostty 自己把 ⌥L 映射成 `¬` 送进 pty；**TextEdit / Terminal 实测正常**。诊断开关：`~/Library/Application Support/Lampyris/hud-diag` 存在时才写日志，删掉即静默。
@@ -73,19 +75,15 @@
 - **发布加固项**：签名 tag 校验仍未启用（缺 `packaging/git-allowed-signers`），当前只警告不失败（报告 248 §5）。
 - ~~`ps rss` 口径~~ → **已改**（报告 251）：`perf-session.sh` 与 `soak-session.sh` 的绝对硬顶统一改用 `vmmap` physical footprint（`FOOTPRINT_HARD_MB=40`），rss 降为参考；延迟统计新增 long-code / paging 两段。
 
-## 4. 下一步（1.2.0，按 `docs/迭代计划-1.2.0.md` 逐批推进）
+## 4. 下一步（1.2.0 发布清单）
 
-| 批次 | 内容 | 状态 |
+| 步骤 | 内容 | 授权 |
 |---|---|---|
-| **B1 工程收口** | D2 CI 数据 bootstrap、D5 footprint、D6 站点版本行、D4 延迟覆盖、E2 soak | **可立即开始**（无需授权） |
-| **B2 数据地基** | B0→运行资源（3,000 字、字段子集、≤512 KiB）+ 三实测（先 ADR） | 等 B1 |
-| **B3 教学只读** | L3 候选窗提示（可关，不改排序） | 等 B2 |
-| **B4 教学练习** | L4 题库/练习窗/本地进度（先 ADR） | 等 B3 |
-| **B5 质量项** | A4 冷首键测量、A1 观察期判断、A2/A3/A5 **关闭并写触发条件** | 等评测数据 |
-| **B6 数据扩张** | C1 调研（**可与 B1 并行**）→ C2/C3/C4 | 看 C1 结论 |
-| **收口** | 装包一次 + 验收 + `tag 1.2.0` + 站点 + pro | 需单独授权 |
-
-> D1（签名 tag 校验）卡在你定签名方式（GPG / SSH key），定了 30 分钟接上。
+| 1 | 打 **SSH 签名 tag** `v1.2.0` 到 `31fdbcd`（候选提交）→ 推 tag 触发 Release | **需用户授权** |
+| 2 | 回读 Release 资产：ZIP `64eeb90f…`、DMG staple+spctl、`LampyrisUpdateCheck-1.2.0.zip`、appcast 版本号，回填 `docs/releases/1.2.0.md` §1 | 随 tag |
+| 3 | dispatch Pages → 回读站点 `v1.2.0 · 构建 39` | 需授权 |
+| 4 | pro（Intel / 1.1.0-38）用更新程序升级到 1.2.0，核 payload/执行 SHA/config 与词库保留 | 需授权 |
+| 5 | 后续小版本：安装器交互（lsregister + 提示用户重加输入源）、三级简码数据（需 ADR）、练习深色/无障碍走查 | 排 1.2.1 |
 
 ## 4.1 换到 air 后怎么开工
 
@@ -127,6 +125,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-09 / pi（air）：**1.2.0 候选通过验收 + 发版材料**。候选 `31fdbcd`（执行 `ef25e92b…`）全绿（`make verify` 232 产物零网络、离线 62 文件 / 328 例、CI 四项）；用户确认练习页四题型/四位输入格/键位点亮与位次/口诀/工具栏/亮暗外观均可。写 `docs/releases/1.2.0.md`（候选身份、行为变更=二级简码 598 条、学习区与练习、键位图与口诀、工程项、已知限制），ROADMAP/HANDOFF 对账。**等待用户授权 tag/Release/Pages/pro 升级**。
 - 2026-11-06 / pi（air）：**1.2.0（B4+B5）候选装机（报告 259）**。PR #232 → CI 包（`exec 28e24d26…`）装 air；稳态 p95 **5.80 ms**（三段 5.12–5.97）、冷首键 28.86/33.39、0 外联、memory-gate 私有 **28.5–28.8 MiB**（限 30）PASS。待用户走查：⌥K 练习窗口（A/C 两种题型）、⌥L 学习区默认关、practice.tsv 生成与重置。
 - 2026-11-06 / pi（air）：**1.2.0/build 39 装机 + 首轮体验数据（报告 254）**。PR #227 合并 → CI 验收包 → 装 air：版本/执行 SHA `b152a001…`/公证全部核对，config 与 1225 行词库未变。评测 ALL 命中 98.2%/首选 86.4%（jianma2 100%/100%）；三段延迟稳态 p95 6.7–8.3 ms；**冷首键 27–40 ms，比 1.1.0 的 16–26 ms 高**（待查是否学习区布局所致）；soak 3 分钟 17 轮 0 外联、footprint 38.5 MiB（比 1.1.0 高约 5 MiB，待单独归因）。
 - 2026-11-06 / pi（air）：**B3 学习区实现（报告 253）**。`WubiLearningView` 改两行布局（完整码+简码 / 字根格+识别码两行），候选窗零改动；新增 `LearningHints`（读 `B0-runtime.tsv`，缺失退回 D14）；词组按输入码位置映射到字（KWWL → 中K 华W 人W 国L）。`wubi-learning.swift` 扩到可注入资源并生成亮/暗实拍；离线回归全绿。
