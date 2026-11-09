@@ -13,21 +13,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let top: CGFloat = 16
         static let kindHeight: CGFloat = 26
         static let afterKind: CGFloat = 14
-        static let questionHeight: CGFloat = 60
-        static let afterQuestion: CGFloat = 8
+        static let questionHeight: CGFloat = 48
+        static let afterQuestion: CGFloat = 6
         static let promptHeight: CGFloat = 18
-        static let afterPrompt: CGFloat = 14
-        static let cardPadding: CGFloat = 20
+        static let afterPrompt: CGFloat = 12
+        static let cardPadding: CGFloat = 14
         static let afterExplanation: CGFloat = 14
         static let codeAnswerHeight: CGFloat = 52
         static let recognitionAnswerHeight: CGFloat = 60
-        static let afterAnswer: CGFloat = 14
-        static let feedbackHeight: CGFloat = 24
-        static let afterFeedback: CGFloat = 12
+        static let afterAnswer: CGFloat = 12
+        static let feedbackHeight: CGFloat = 22
+        static let afterFeedback: CGFloat = 10
         static let progressHeight: CGFloat = 16
         static let progressBarHeight: CGFloat = 6
         static let afterProgressLabel: CGFloat = 5
-        static let afterProgress: CGFloat = 12
+        static let afterProgress: CGFloat = 10
         static let afterScheme: CGFloat = 12
         static let bottom: CGFloat = 16
     }
@@ -61,6 +61,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private var showsKeymap = false
     private let progressBar = NSProgressIndicator()
     private let card = NSBox()
+    private let scrollView = NSScrollView()
     private var toolbarButtons: [NSButton] = []
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
@@ -110,7 +111,13 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         window.title = "萤火虫 · 练习"
         window.isReleasedWhenClosed = false
         window.delegate = self
-        window.contentView = buildContent()
+        // 内容放进滚动视图：窗口不超过屏幕可用高度，键位图+口诀展开时改为滚动。
+        scrollView.drawsBackground = false
+        scrollView.borderType = .noBorder
+        scrollView.hasVerticalScroller = true
+        scrollView.autohidesScrollers = true
+        scrollView.documentView = buildContent()
+        window.contentView = scrollView
         let toolbar = NSToolbar(identifier: "Lampyris.Practice")
         toolbar.delegate = self
         toolbar.displayMode = .iconOnly
@@ -296,13 +303,18 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let height = contentHeight()
         content?.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentWidth, height: height))
         guard let window else { return }
-        var frame = window.frame
-        let delta = frame.height - (height + (frame.height - window.contentLayoutRect.height))
-        if abs(delta) > 0.5 {
-            frame.origin.y += frame.height - (height + (frame.height - window.contentLayoutRect.height))
-            frame.size.height = height + (frame.height - window.contentLayoutRect.height)
+        // 窗口高度不超过屏幕可用区域；超出部分交给滚动，避免"顶满屏幕"。
+        let available = (window.screen ?? NSScreen.main)?.visibleFrame.height ?? 900
+        let limit = max(360, available - 80)
+        let windowHeight = min(height, limit)
+        if abs(window.contentLayoutRect.height - windowHeight) > 0.5 {
+            var frame = window.frame
+            let titleBar = frame.height - window.contentLayoutRect.height
+            frame.origin.y += frame.height - (windowHeight + titleBar)
+            frame.size.height = windowHeight + titleBar
             window.setFrame(frame, display: true, animate: false)
         }
+        scrollView.frame = NSRect(origin: .zero, size: NSSize(width: Self.contentWidth, height: windowHeight))
     }
 
     /// 图标按钮：悬浮提示代替文字标题。
@@ -586,6 +598,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     /// 测试用：模拟答完后高亮答案键位。
     func markAnswerForTesting(_ code: String) {
         keymapPanel.map.markAnswer(code)
+    }
+
+    /// 测试用：展开面板里的口诀。
+    func showMnemonicsForTesting(_ visible: Bool) {
+        keymapPanel.showsMnemonics = visible
+        relayout()
     }
 
     /// 测试用：显示/隐藏键位图面板（等同工具栏「键位图」）。

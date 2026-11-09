@@ -6,7 +6,7 @@ import AppKit
 /// 下排：本题目要求的那一项排最前，随后是完整码与一/二级简码。未揭晓答案时只画字根格，不泄题。
 final class PracticeExplanationView: NSView {
     static let cellWidth: CGFloat = 46
-    static let height: CGFloat = 54
+    static let height: CGFloat = 46
 
     private var roots: [(glyph: String, key: String)] = []
     private var recognition: (letter: String, stroke: String, structure: String)?

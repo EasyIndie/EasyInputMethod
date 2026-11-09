@@ -5,8 +5,8 @@ import AppKit
 /// 面板自己管口诀的显隐与高度，宿主只需要给宽度、决定是否显示面板；
 /// 这样这块区域可以直接搬到其它窗口或项目里复用。
 final class KeymapPanelView: NSView {
-    static let headerHeight: CGFloat = 20
-    static let headerGap: CGFloat = 10
+    static let headerHeight: CGFloat = 18
+    static let headerGap: CGFloat = 8
     static let mnemonicGap: CGFloat = 10
 
     let map: KeyboardMapView
@@ -78,11 +78,11 @@ final class KeymapPanelView: NSView {
         style.tabStops = [NSTextTab(textAlignment: .left, location: 58)]
         style.headIndent = 58
         style.firstLineHeadIndent = 2
-        style.lineSpacing = 4
+        style.lineSpacing = 1
         return NSAttributedString(
             string: map.layout.mnemonicsByZone
                 .map { "\($0.name)\t\($0.text)" }.joined(separator: "\n"),
-            attributes: [.font: NSFont.systemFont(ofSize: 10.5),
+            attributes: [.font: NSFont.systemFont(ofSize: 9.5),
                          .foregroundColor: NSColor.secondaryLabelColor,
                          .paragraphStyle: style])
     }
