@@ -29,6 +29,7 @@ final class KeyboardMapView: NSView {
         setAccessibilityElement(true)
         setAccessibilityRole(.group)
         setAccessibilityLabel("\(layout.displayName) 字根键位图")
+        setAccessibilityHelp("每题答案用到的键位会描边，位次以圈号标在键位下方")
     }
 
     @available(*, unavailable)
@@ -192,8 +193,4 @@ final class KeyboardMapView: NSView {
         }
     }
 
-    func accessibilitySummary() -> String {
-        "\(layout.displayName) 字根键位图：" + layout.entries.sorted { $0.key < $1.key }
-            .map { "\($0.key)=\($0.value.keyName)" }.joined(separator: "，")
-    }
 }
