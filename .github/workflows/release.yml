@@ -55,6 +55,9 @@ jobs:
             echo "::warning::签名 tag 校验尚未启用（缺少 ${signers}）；提交允许的签名者公钥后自动生效。"
             exit 0
           fi
+          # actions/checkout 在 tag push 上会把 refs/tags/<tag> 直接指向提交（轻量引用），
+          # 这样 git tag -v 会报 "cannot verify a non-tag object of type commit"。先取回注解 tag 对象。
+          git fetch --force origin "+refs/tags/${tag}:refs/tags/${tag}"
           git config gpg.format ssh
           git config gpg.ssh.allowedSignersFile "$signers"
           git tag -v "$tag"
