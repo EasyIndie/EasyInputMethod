@@ -115,7 +115,7 @@ run "撤销回到空态"            'wqiy;cmd+z'                            'emp
 run "长文本不丢字"            'nihao nihao nihao nihao wqiy '         'contains:你好你好'
 
 # —— 1.2.1 之后的输入体验（ADR-325…336） ——
-# 限制：按键串用分号分段，探针打不出字面的 `;` 与 `:`，所以「; 选第二候选」「12:30」只有单测覆盖。
+# 字面的 `;` 用命名键 semicolon，冒号是 shift+semicolon（按键串本身以分号分段）。
 ensure_cn >/dev/null 2>&1
 run "数字后句点保持半角"       '3.14'                                  'exact:3.14'
 run "数字后逗号仍是中文"       '3,'                                    'exact:3，'
@@ -124,6 +124,16 @@ run "以词定字取首字"           'nihao['                                'e
 run "以词定字取末字"           'nihao]'                                'exact:好'
 # 选走前半段（第二候选「你好」只覆盖 nihao）后回车：已选文字 + 余码原文一起上屏。
 run "分段选词后回车"           'nihaoshijie2;return'                   'exact:你好shijie'
+# 冒号没有样本：合成的 Shift+; 到宿主时仍是 `;`（报告265），`12:30` 只有单测覆盖。
+# `;` 选第二候选：第二候选是什么取决于用户词库（学过的词会排上来），所以只断言「不是首选、也不是首选+；」。
+case_semicolon_second() {
+    TOTAL=$((TOTAL + 1))
+    got=$(type_read 'nihao;semicolon;return')
+    if [ -n "$got" ] && [ "$got" != "你好" ] && [ "$got" != "你好；" ] && check 'unicode:' "$got"; then
+        printf '%-26s PASS  %s\n' "分号选第二候选" "$got"
+    else printf '%-26s FAIL  应是第二候选，实得 %s\n' "分号选第二候选" "$got"; FAILED=$((FAILED + 1)); fi
+}
+case_semicolon_second
 
 # 改配置只走 ime-config 的写路径（ime-cli :set），用完还原；缺 ime-cli 就记 BLOCKED，不手改 config.toml。
 ROOT="$(cd "$PROBE/../.." && pwd)"
@@ -170,6 +180,8 @@ case_remember_english() {
     if check 'exact:nihao' "$got"; then printf '%-26s PASS  %s\n' "按应用记住英文状态" "$got"
     else printf '%-26s FAIL  期望 nihao，实得 %s\n' "按应用记住英文状态" "$got"; FAILED=$((FAILED + 1)); fi
 }
+
+# 五笔码浮层（ADR-331）没有样本：浮层不在 AX 树里，窗口列表也看不到它是否可见（报告265），需目视。
 
 case_double_pinyin
 case_weak_chars

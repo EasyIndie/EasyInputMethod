@@ -13,7 +13,7 @@
 
 | IT-22 条目 | 覆盖手段 | 怎么跑 |
 |---|---|---|
-| 1.1–1.3、1.7–1.12 上屏/标点/全角/简繁/模式/中英 | 热键探针 + 质量样本 | `make macos-auto-acceptance`（7 项）、`tools/macos-probe/quality-samples.sh`（22 项） |
+| 1.1–1.3、1.7–1.12 上屏/标点/全角/简繁/模式/中英 | 热键探针 + 质量样本 | `make macos-auto-acceptance`（7 项）、`tools/macos-probe/quality-samples.sh`（23 项） |
 | 1.4 翻页、1.5 方向键选择 | 组合导航单测 + 质量样本「翻页键不破坏输入」 | `make test`、`quality-samples.sh` |
 | 2.1 长组合不丢字 | 质量样本「长文本不丢字」 | `quality-samples.sh` |
 | 2.2–2.6 退格/Esc/Home/End/Delete/Tab | 核心与 FFI 单测（ADR-164） | `make test`（`ime-core`/`ime-ffi`） |
@@ -77,7 +77,7 @@ make macos-acceptance-full       # ~5 分钟：preflight → 热键/上屏 → �
 ## 4. 与旧清单的差异（为什么能砍掉 47 项）
 
 0. **只依赖系统自带应用**（报告234）：TextEdit / Safari / Terminal 之外的一律 optional（装了才测、没装 SKIP），由 `test-acceptance-portability.py` 强制。
-1. **同一件事此前被写了三遍**：`quality-samples.sh`（16 项）、`acceptance-auto.sh`（8 项）、IT-22 手工表（12 项重叠）。报告 230 之后两份脚本**按行为分工**：`quality-samples.sh` 断言打字产物（22 项；报告264 起含 ADR-325…336 的 9 条：数字后标点、拼音补全、以词定字、分段选词、双拼、薄弱字、按应用记住英文），`acceptance-auto.sh` 断言热键状态语义（7 项），重复项已删并由 `test-acceptance-map.py` 守住不再回流。
+1. **同一件事此前被写了三遍**：`quality-samples.sh`（16 项）、`acceptance-auto.sh`（8 项）、IT-22 手工表（12 项重叠）。报告 230 之后两份脚本**按行为分工**：`quality-samples.sh` 断言打字产物（23 项；报告264/265 起含 ADR-325…336 的 10 条：数字后标点、拼音补全、分号选词、以词定字、分段选词、双拼、薄弱字、按应用记住英文），`acceptance-auto.sh` 断言热键状态语义（7 项），重复项已删并由 `test-acceptance-map.py` 守住不再回流。
 2. **离屏单测已经断言了 GUI 结构**：候选/设置/关于/学习的布局与文案由 `test-*-presentation.py` 断言，手工"看一眼分组是否连续"不再重复。
 3. **几何/落点类**（多屏、边缘、翻页位置）已有 `CaretPlacement` 与离屏快照对比度自动判定（ADR-301、报告 197）。
 4. **安装类**从"每次走查"降为"每版一次"，因为它们只在换包时才有意义。

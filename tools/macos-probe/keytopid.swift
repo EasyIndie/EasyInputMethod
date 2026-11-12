@@ -40,6 +40,8 @@ let source = CGEventSource(stateID: .hidSystemState)
 let named: [String: CGKeyCode] = [
     "left": 123, "right": 124, "down": 125, "up": 126,
     "esc": 53, "tab": 48, "return": 36, "delete": 51, "space": 49,
+    // 报告265：按键串以分号分段，字面的 `;` 打不出来；用命名键 semicolon（`shift+semicolon` 即冒号）。
+    "semicolon": 41,
 ]
 let modifiers: [String: (CGKeyCode, CGEventFlags)] = [
     "shift": (56, .maskShift), "opt": (58, .maskAlternate), "ctrl": (59, .maskControl),
