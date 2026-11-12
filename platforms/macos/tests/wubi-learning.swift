@@ -46,6 +46,29 @@ require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 1, "应记录
 require(flowProgress.rows.values.reduce(0) { $0 + $1.correct } == 1, "应记录 1 次正确")
 _ = flow.submitCode("zzzz")
 require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 2, "错误作答也应计数")
+// ADR-328：出题按错题加权——没练过 2、错一次 9、错一次后连对两次回到 1；且不连出同一个字。
+typealias Row = PracticeProgress.Row
+require(PracticeSession.weight(for: nil) == 2, "没练过的字权重 2")
+require(PracticeSession.weight(for: Row(attempts: 3, correct: 3, lastSeen: 0)) == 1, "全对的字权重 1")
+require(PracticeSession.weight(for: Row(attempts: 1, correct: 0, lastSeen: 0)) == 9, "错一次权重 9")
+require(PracticeSession.weight(for: Row(attempts: 3, correct: 2, lastSeen: 0)) == 1, "错一次后连对两次还清")
+require(PracticeSession.weight(for: Row(attempts: 9, correct: 0, lastSeen: 0)) == 17, "欠账封顶")
+let weightedProgress = PracticeProgress(url: flowDir.appendingPathComponent("weighted.tsv"))
+let weighted = PracticeSession(kind: .code, progress: weightedProgress)
+require(weighted.bank.count > 10, "加权测试需要真实题库")
+let missed = weighted.bank[5].char
+weightedProgress.record(char: missed, kind: .code, correct: false)
+// 权重轴：前 5 个没练过的字各占 2（0..<10），错过的第 6 个字占 9（10..<19），第 7 个字从 19 开始。
+for offset in 10..<19 {
+    _ = weighted.next(pick: { $0 - 1 })   // 先跳到题库末尾，避免「不连出同一个字」把目标排除
+    require(weighted.next(pick: { _ in offset })?.char == missed, "权重轴 \(offset) 应落在错题上")
+}
+_ = weighted.next(pick: { $0 - 1 })
+require(weighted.next(pick: { _ in 19 })?.char == weighted.bank[6].char, "错题之后是下一个字")
+// 不连出同一个字：上一题是错题时，同一位置抽到的是别的字。
+_ = weighted.next(pick: { _ in 10 })
+require(weighted.question?.char == missed, "回到错题")
+require(weighted.next(pick: { _ in 10 })?.char != missed, "不应连出同一个字")
 let recognitionSession = PracticeSession(kind: .recognition, progress: flowProgress)
 guard let recognitionQuestion = recognitionSession.question, let expected = recognitionQuestion.recognition else { exit(1) }
 guard let recognitionResult = recognitionSession.submitRecognition(stroke: expected.stroke,
