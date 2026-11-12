@@ -470,6 +470,8 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
             cfg.get("input.full_width").and_then(|v| v.as_str()) == Some("full"),
             cfg.get("input.punctuation").and_then(|v| v.as_str()) == Some("chinese"),
         );
+        s.session
+            .set_digit_punctuation(boolean("input.digit_punctuation"));
         let changed = s.session.configure_engines(&ime_core::EngineOptions {
             auto_commit: boolean("wubi.auto_commit"),
             fuzzy: boolean("pinyin.fuzzy"),

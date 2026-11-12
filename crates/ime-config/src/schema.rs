@@ -252,6 +252,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "input.digit_punctuation",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "true",
+        title_zh: "数字后的 . 和 : 保持半角",
+        doc_zh: "数字后紧跟的 . 和 : 不转成中文标点，便于输入小数、版本号与时间（如 3.14、12:30）",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "update.feed_url",
         value_type: ValueType::Url,
         enum_labels_zh: &[],

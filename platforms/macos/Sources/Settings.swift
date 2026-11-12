@@ -650,7 +650,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         let options = SettingsSchema.options().filter { scopes.contains($0.scope) }
         let groups: [(String, [String])]
         if scopes == [0] {
-            groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width"]),
+            groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width",
+                              "input.digit_punctuation"]),
                 ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
         } else if scopes == [4] {
             groups = [("更新来源", ["update.feed_url"])]

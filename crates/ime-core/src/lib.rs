@@ -170,6 +170,10 @@ pub struct Session {
     chinese_punctuation: bool,
     double_quote_open: bool,
     single_quote_open: bool,
+    /// Keep `.` / `:` ASCII right after a digit (ADR-325).
+    digit_punctuation: bool,
+    /// The previous key was a digit typed outside a composition.
+    after_digit: bool,
     engine_options: Option<EngineOptions>,
 }
 
@@ -199,6 +203,10 @@ impl Session {
         self.full_width = full_width;
         self.chinese_punctuation = chinese_punctuation;
     }
+    /// 数字后紧跟的 `.` / `:` 是否保持半角（`3.14`、`12:30`，ADR-325）。
+    pub fn set_digit_punctuation(&mut self, enabled: bool) {
+        self.digit_punctuation = enabled;
+    }
     pub fn english(&self) -> bool {
         self.english
     }
@@ -217,7 +225,12 @@ impl Session {
         self.width_override.unwrap_or(self.full_width)
     }
     fn translate(&mut self, key: char) -> Option<String> {
-        if !self.english && self.chinese_punctuation {
+        self.translate_with(key, true)
+    }
+
+    /// `chinese = false` skips the Chinese punctuation table and keeps only width handling.
+    fn translate_with(&mut self, key: char, chinese: bool) -> Option<String> {
+        if chinese && !self.english && self.chinese_punctuation {
             let mapped = match key {
                 '.' => Some('。'),
                 ',' => Some('，'),
@@ -493,6 +506,8 @@ impl Session {
 
     /// 处理一个按键。
     pub fn handle_key(&mut self, key: char) -> KeyOutcome {
+        // 只对「紧跟」生效：任何按键都会消耗这个标记（ADR-325）。
+        let after_digit = std::mem::take(&mut self.after_digit);
         if self.english {
             if let Some(text) = self.translate(key) {
                 self.commit(&text);
@@ -507,7 +522,10 @@ impl Session {
                 self.buffer.push(key);
                 return self.recompute();
             }
-            if let Some(text) = self.translate(key) {
+            // 组合外直接上屏的数字才算数；组合内的数字是选词键，不走到这里。
+            self.after_digit = key.is_ascii_digit();
+            let keep_ascii = after_digit && self.digit_punctuation && matches!(key, '.' | ':');
+            if let Some(text) = self.translate_with(key, !keep_ascii) {
                 self.commit(&text);
                 return KeyOutcome::Committed(text);
             }
@@ -611,6 +629,7 @@ impl Session {
     /// End an input context while retaining its mode and transient preferences.
     pub fn focus_out(&mut self) {
         self.cancel();
+        self.after_digit = false;
         self.double_quote_open = false;
         self.single_quote_open = false;
     }
@@ -1205,6 +1224,46 @@ mod tests {
         assert_eq!(calls.load(Ordering::SeqCst), 2);
         assert_eq!(s.buffer(), "abcd");
         assert!(s.candidates().is_empty());
+    }
+
+    #[test]
+    fn punctuation_right_after_a_digit_stays_ascii_when_enabled() {
+        let mut s = session_with_wubi(InputMode::Mixed);
+        s.set_input_options(false, true);
+        // Off: the historical behaviour (3.14 -> 3。14) is unchanged.
+        assert_eq!(s.handle_key('3'), KeyOutcome::PassThrough);
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
+
+        s.set_digit_punctuation(true);
+        for (key, expected) in [
+            ('3', KeyOutcome::PassThrough),
+            ('.', KeyOutcome::PassThrough),
+            ('1', KeyOutcome::PassThrough),
+            (':', KeyOutcome::PassThrough),
+            // Only `.` and `:` are kept; a comma after a digit is still Chinese.
+            ('4', KeyOutcome::PassThrough),
+            (',', KeyOutcome::Committed("，".into())),
+            // Not immediately after a digit any more.
+            ('.', KeyOutcome::Committed("。".into())),
+        ] {
+            assert_eq!(s.handle_key(key), expected, "key {key:?}");
+        }
+        // The marker is consumed by any key and by losing focus.
+        s.handle_key('5');
+        s.handle_key(' ');
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
+        s.handle_key('5');
+        s.focus_out();
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
+        // A digit that selects a candidate is not a typed number.
+        s.handle_key('a');
+        assert!(matches!(s.handle_key('1'), KeyOutcome::Committed(_)));
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
+        // Full width keeps the width conversion but not the Chinese mapping.
+        s.set_input_options(true, true);
+        assert_eq!(s.handle_key('3'), KeyOutcome::Committed("３".into()));
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("．".into()));
+        assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
     }
 
     #[test]

@@ -117,6 +117,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-12 / Claude Code（air）：**U1-1 数字后标点（ADR-325）代码完成**。组合外数字后紧跟的 `.` / `:` 保持半角（`3.14`、`12:30`），新增 `input.digit_punctuation`（默认开，Schema 23→24）；核心单测覆盖开/关、全角、标记消耗、选词数字。`make verify` PASS、离线 62 文件 / 328 例 PASS。**未提交、未换包；装机实键待复验。** 已知限制：数字后用方向键/鼠标移光标不消耗标记。
 - 2026-11-12 / Claude Code（air）：**「学·练·用一站式」差距分析 + ADR-324（已采纳）**。只读实测（`ime-cli` + 打包同源码表）：不完整拼音无候选、长拼音仅 1 条且不能分段选、打包词量各 2 万、混输 `wo` 的「我」在第 6 位、`.` 无数字上下文（代码推断未实键）、练习纯随机出题、「是」拆解为 partial。用户批准五条：定位扩为核心输入 + 本地学练闭环、「打字统计」边界、拼音升为可主用、可选资源不动默认门禁、仅约束 macOS。积压新增 P1-U 15 项；AGENTS §1/§3/§11、README、技术方案定位句同步。**仅文档，未改代码、未换包、未提交。**
 - 2026-11-09 / pi（air）：**1.2.1 发布完成（报告 263）**。P0 三项（安装器旧宿主/输入源、练习页 VoiceOver、回归并发）、零引用代码与资源清理、文档状态标注一并入 `168115e`；期间 `main` 两次 CI 红灯查为 `install-action` 下载 `cargo-deny` 资产 504，改自建 `scripts/install-cargo-deny.sh`（重试 + crates.io 回退）。`git tag -s v1.2.1` → Release `42583547089` success，ZIP `102f4928…` 与验收包逐字节一致、DMG `a6f4bdbd…` 公证、更新程序 1.2.1、appcast `40`；air 用发布包覆盖安装（执行 `3eeeb0aa…`，安装器回读「已注册到输入源」，无需重加输入源）；Pages `v1.2.1 · 构建 40`。**pro 由用户自行升级。**
 - 2026-11-09 / pi（air）：**1.2.0 发布完成**。`git tag -s v1.2.0 31fdbcd`（SSH 验签通过）→ 首次 Release 失败于"checkout 把 tag 建成轻量引用"，补 `git fetch --force` 后 `workflow_dispatch` 重跑成功。回读：ZIP `64eeb90f…`（与候选逐字节一致）、源码 `3dc6f717…`、DMG `ffa1a65c…`（staple+spctl Notarized）、更新程序 `332d98b1…`（1.2.0 已公证）、appcast `sparkle:version=39`；包内执行 `ef25e92b…` = 已装机版本。随后完成 Pages 部署（站点回读 `v1.2.0 · 构建 39`）与 pro 升级（1.1.0/38 → 1.2.0/39，验签通过、config 与 962 行词库未变、旧包已备份、宿主重启）。**1.2.0 发布闭环完成。**
