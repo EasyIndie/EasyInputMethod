@@ -211,12 +211,15 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
     private var busy = false
     private var installed = false
 
+    /// 安装完成后的上手提示；写默认快捷键，因为安装器不读用户配置。
+    static let gettingStarted = "上手：切到萤火虫后，⌥K 练五笔，⌥L 边打边看拆字，⌥, 打开设置。"
+
     private var bundleDirectory: URL { Bundle.main.bundleURL.deletingLastPathComponent() }
     private var payloadURL: URL { bundleDirectory.appendingPathComponent("Lampyris.app") }
     private var updaterPayloadURL: URL { bundleDirectory.appendingPathComponent(updaterBundleName) }
 
     func show() {
-        let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 300),
+        let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 340),
                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
         panel.title = "安装萤火虫"
         panel.delegate = self
@@ -284,7 +287,7 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
         stack.spacing = 12
         stack.edgeInsets = NSEdgeInsets(top: 22, left: 24, bottom: 20, right: 24)
         stack.translatesAutoresizingMaskIntoConstraints = true
-        stack.frame = NSRect(x: 0, y: 0, width: 520, height: 286)
+        stack.frame = NSRect(x: 0, y: 0, width: 520, height: 326)
         content.addSubview(stack)
         NSLayoutConstraint.activate([
             separator.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -48),
@@ -372,6 +375,8 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
                 lines.append("旧位置已迁移：\(removed)")
             }
             if outcome.backup != nil { lines.append("旧版本已备份到 Application Support/Lampyris/updates。") }
+            // ADR-329：装完告诉用户学、练、用的三个入口（默认快捷键，可在设置里改）。
+            lines.append(Self.gettingStarted)
             detail.stringValue = lines.joined(separator: "\n")
             installButton.title = "完成"
             installButton.isEnabled = true
