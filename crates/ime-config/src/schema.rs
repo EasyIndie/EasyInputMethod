@@ -145,6 +145,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
+        key: "practice.collect_weak_chars",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "false",
+        title_zh: "记录薄弱字用于练习",
+        doc_zh: "混输模式下把靠拼音打出的单字记到本机 weak-chars.tsv，练习「完整码」时多出这些字；不上传、不影响候选排序，重置练习进度时一并清空",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
         key: "appearance.theme",
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],

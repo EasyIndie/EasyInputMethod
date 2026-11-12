@@ -663,7 +663,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         } else {
             groups = [("候选显示", ["candidate.count", "candidate.page_with_comma",
                               "candidate.select_with_semicolon", "candidate.pick_char_with_brackets"]),
-                ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning", "candidate.hint_wubi_code"])]
+                ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning", "candidate.hint_wubi_code", "practice.collect_weak_chars"])]
         }
         let known = Set(groups.flatMap { $0.1 })
         let allGroups = groups + [("其他", options.filter { !known.contains($0.key) }.map(\.key))]

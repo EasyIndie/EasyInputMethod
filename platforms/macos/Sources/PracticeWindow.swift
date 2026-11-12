@@ -70,7 +70,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let strokeButtons = Practice.strokes.map { NSButton(title: $0, target: nil, action: nil) }
     private let structureButtons = Practice.structures.map { NSButton(title: $0, target: nil, action: nil) }
     private var practiceProgress: PracticeProgress?
-    private lazy var session = PracticeSession(kind: .code, progress: progress)
+    private lazy var session = PracticeSession(kind: .code, progress: progress, weak: WeakChars.shared)
     private var current: PracticeQuestion? { session.question }
     private var pendingStroke: String?
     private var pendingStructure: String?
@@ -499,11 +499,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     @objc private func resetProgress() {
         let alert = NSAlert()
         alert.messageText = "重置练习进度？"
-        alert.informativeText = "会删除本机的 practice.tsv（已练字数、次数、正确率归零）。此操作不可撤销。"
+        alert.informativeText = "会删除本机的 practice.tsv（已练字数、次数、正确率归零）和薄弱字清单 weak-chars.tsv。此操作不可撤销。"
         alert.addButton(withTitle: "重置")
         alert.addButton(withTitle: "取消")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         progress.reset()
+        WeakChars.shared.reset()
         session.reload()
         showCurrent()
     }

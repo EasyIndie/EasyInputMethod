@@ -278,6 +278,70 @@ final class PracticeProgress {
 }
 
 
+/// 薄弱字清单（ADR-335）：混输下靠拼音兜底打出来的单字，说明它的五笔码还没记住。
+///
+/// **默认不记**（`practice.collect_weak_chars` 关）；只存本机一个有界 TSV，删除即清空；
+/// 只用来让「完整码」练习多出这些字，**不参与候选排序、不上报**。
+final class WeakChars {
+    static let shared = WeakChars(url: defaultURL())
+    static let maxRows = 500
+    private(set) var rows: [String: (count: Int, lastSeen: Int)] = [:]
+    let url: URL
+
+    init(url: URL) {
+        self.url = url
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return }
+        for line in text.split(separator: "\n") where !line.hasPrefix("#") {
+            let fields = line.split(separator: "\t").map(String.init)
+            guard fields.count == 3, fields[0].count == 1, let count = Int(fields[1]), let last = Int(fields[2])
+            else { continue }
+            rows[fields[0]] = (count, last)
+        }
+    }
+
+    static func defaultURL() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return base.appendingPathComponent("Lampyris/weak-chars.tsv")
+    }
+
+    func contains(_ char: String) -> Bool { rows[char] != nil }
+
+    /// 记一次；只收单个汉字。超过上限时丢掉次数最少、最久没出现的。
+    func record(_ char: String, now: Int = Int(Date().timeIntervalSince1970)) {
+        guard char.count == 1, char.unicodeScalars.allSatisfy({ $0.value >= 0x3400 }) else { return }
+        rows[char] = ((rows[char]?.count ?? 0) + 1, now)
+        if rows.count > Self.maxRows {
+            let drop = rows.sorted { ($0.value.count, $0.value.lastSeen) < ($1.value.count, $1.value.lastSeen) }
+                .prefix(rows.count - Self.maxRows)
+            for item in drop { rows[item.key] = nil }
+        }
+        save()
+    }
+
+    /// 原子写：先写临时文件再替换；失败保留旧文件。
+    private func save() {
+        var lines = ["# 萤火虫薄弱字清单 v1：字\t拼音兜底次数\t最近时间（离线，可删除清空）"]
+        for (char, row) in rows.sorted(by: { $0.key < $1.key }) {
+            lines.append("\(char)\t\(row.count)\t\(row.lastSeen)")
+        }
+        let directory = url.deletingLastPathComponent()
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let temporary = directory.appendingPathComponent(".weak-chars.tsv.\(UUID().uuidString)")
+        do {
+            try (lines.joined(separator: "\n") + "\n").write(to: temporary, atomically: false, encoding: .utf8)
+            _ = try FileManager.default.replaceItemAt(url, withItemAt: temporary)
+        } catch {
+            try? FileManager.default.removeItem(at: temporary)
+        }
+    }
+
+    /// 清空并删除文件。
+    func reset() {
+        rows = [:]
+        try? FileManager.default.removeItem(at: url)
+    }
+}
+
 /// 一局练习的纯逻辑（无 AppKit），便于自动化测试跑通流程。
 final class PracticeSession {
     struct Result {
@@ -290,9 +354,15 @@ final class PracticeSession {
     private let progress: PracticeProgress
     private(set) var bank: [PracticeQuestion] = []
 
-    init(kind: PracticeKind, progress: PracticeProgress) {
+    /// 薄弱字清单：「完整码」题型里这些字额外加权（ADR-335）；`nil` = 不用。
+    private let weak: WeakChars?
+    /// 薄弱字的额外权重：相当于「错过一次」。
+    static let weakBonus = 8
+
+    init(kind: PracticeKind, progress: PracticeProgress, weak: WeakChars? = nil) {
         self.kind = kind
         self.progress = progress
+        self.weak = weak
         reload()
     }
 
@@ -323,7 +393,10 @@ final class PracticeSession {
     func next(pick: (Int) -> Int = { Int.random(in: 0..<$0) }) -> PracticeQuestion? {
         let previous = question?.char
         let pool = bank.count > 1 ? bank.filter { $0.char != previous } : bank
-        let weights = pool.map { Self.weight(for: progress.row(char: $0.char, kind: kind)) }
+        let weights = pool.map { question -> Int in
+            let bonus = kind == .code && weak?.contains(question.char) == true ? Self.weakBonus : 0
+            return Self.weight(for: progress.row(char: question.char, kind: kind)) + bonus
+        }
         let total = weights.reduce(0, +)
         guard total > 0 else {
             question = nil

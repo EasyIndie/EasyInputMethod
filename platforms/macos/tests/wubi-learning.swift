@@ -69,6 +69,36 @@ require(Practice.phraseParts(word: "计算机", code: "yygk").map(\.key) == ["Y"
 require(Practice.phraseParts(word: "从众如流", code: "wwwl").map(\.key) == ["W", "W", "W", "L"], "四字词各取首码")
 require(Practice.phraseParts(word: "中华人民共和国", code: "kwwl").isEmpty, "规则外的长度不乱讲")
 require(Practice.bank(kind: .phrase).count == Practice.phraseLimit, "随包码表应出满词组题：\(Practice.bank(kind: .phrase).count)")
+// ADR-335：薄弱字清单——只收单个汉字、有界、可重载、可清空；只给「完整码」题型加权。
+let weakURL = flowDir.appendingPathComponent("weak-chars.tsv")
+try? FileManager.default.removeItem(at: weakURL)
+let weakChars = WeakChars(url: weakURL)
+for rejected in ["你好", "a", "", "1"] { weakChars.record(rejected) }
+require(weakChars.rows.isEmpty, "只收单个汉字")
+weakChars.record("慧", now: 10)
+weakChars.record("慧", now: 20)
+require(weakChars.rows["慧"]?.count == 2 && weakChars.contains("慧") && !weakChars.contains("你"), "计数与查询")
+require(WeakChars(url: weakURL).rows["慧"]?.count == 2, "可重载")
+for scalar in 0x4E00..<(0x4E00 + WeakChars.maxRows + 20) {
+    weakChars.record(String(UnicodeScalar(scalar)!), now: scalar)
+}
+require(weakChars.rows.count == WeakChars.maxRows && weakChars.contains("慧"), "有界，且次数多的留下")
+weakChars.reset()
+require(weakChars.rows.isEmpty && !FileManager.default.fileExists(atPath: weakURL.path), "清空即删文件")
+let weakTarget = Practice.bank(kind: .code)[3].char
+weakChars.record(weakTarget)
+let weakProgress = PracticeProgress(url: flowDir.appendingPathComponent("weak-progress.tsv"))
+let weakSession = PracticeSession(kind: .code, progress: weakProgress, weak: weakChars)
+// 权重轴：前 3 个字各占 2（0..<6），薄弱字占 2 + 8（6..<16）。
+_ = weakSession.next(pick: { $0 - 1 })
+require(weakSession.next(pick: { _ in 15 })?.char == weakTarget, "薄弱字在完整码题型里加权")
+weakSession.switchKind(.code2)
+_ = weakSession.next(pick: { $0 - 1 })
+let secondBank = weakSession.bank
+if let index = secondBank.firstIndex(where: { $0.char == weakTarget }), index > 0 {
+    require(weakSession.next(pick: { _ in index * 2 + 2 })?.char != weakTarget, "其它题型不加权")
+}
+weakChars.reset()
 // ADR-328：出题按错题加权——没练过 2、错一次 9、错一次后连对两次回到 1；且不连出同一个字。
 typealias Row = PracticeProgress.Row
 require(PracticeSession.weight(for: nil) == 2, "没练过的字权重 2")

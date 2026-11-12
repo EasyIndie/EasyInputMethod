@@ -761,10 +761,14 @@ final class LampyrisInputController: IMKInputController {
     private func hintWubiCode(for text: String) {
         let shown = shownCandidates
         shownCandidates = []
-        guard !text.isEmpty, session?.mode == "mixed", ImeConfig.bool("candidate.hint_wubi_code"),
-              shown.contains(where: { $0.text == text && $0.source == .pinyin }),
-              let message = StateFeedback.wubiHint(text: text, code: WubiLearning.lookup(text)?.code)
-        else { return }
+        guard !text.isEmpty, session?.mode == "mixed",
+              shown.contains(where: { $0.text == text && $0.source == .pinyin }) else { return }
+        let hint = ImeConfig.bool("candidate.hint_wubi_code")
+        let collect = text.count == 1 && ImeConfig.bool("practice.collect_weak_chars")
+        guard hint || collect, let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return }
+        // 薄弱字清单（ADR-335，默认关）：有五笔码却靠拼音打出来的单字，留给练习多出几次。
+        if collect { WeakChars.shared.record(text) }
+        guard hint, let message = StateFeedback.wubiHint(text: text, code: code) else { return }
         StateHUDController.shared.show(message, caret: hudCaretRect())
     }
 
