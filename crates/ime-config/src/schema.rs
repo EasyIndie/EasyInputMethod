@@ -288,6 +288,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "input.remember_english_per_app",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "true",
+        title_zh: "按应用记住中英状态",
+        doc_zh: "在某个应用里切到英文后，回到该应用时保持英文；只记在内存里，退出输入法即清空",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "update.feed_url",
         value_type: ValueType::Url,
         enum_labels_zh: &[],

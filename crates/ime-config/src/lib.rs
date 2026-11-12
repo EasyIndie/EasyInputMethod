@@ -866,7 +866,7 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 27);
+        assert_eq!(schema().len(), 28);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -896,6 +896,7 @@ mod tests {
                 "input.full_width",
                 "input.chinese_variant",
                 "input.digit_punctuation",
+                "input.remember_english_per_app",
                 "update.feed_url",
                 "update.feed_mirrors",
             ]
