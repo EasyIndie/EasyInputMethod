@@ -124,7 +124,10 @@ run "以词定字取首字"           'nihao['                                'e
 run "以词定字取末字"           'nihao]'                                'exact:好'
 # 选走前半段（第二候选「你好」只覆盖 nihao）后回车：已选文字 + 余码原文一起上屏。
 run "分段选词后回车"           'nihaoshijie2;return'                   'exact:你好shijie'
-# 冒号没有样本：合成的 Shift+; 到宿主时仍是 `;`（报告265），`12:30` 只有单测覆盖。
+# 带 Shift 的标点（ADR-337）：宿主按键码 + Shift 重新计算字符，合成事件与真实按键走同一条路。
+run "数字后冒号保持半角"       '12;shift+semicolon;30'                 'exact:12:30'
+run "Shift 标点（问号）"        'shift+/'                               'exact:？'
+run "Shift 标点（冒号）"        'shift+semicolon'                       'exact:：'
 # `;` 选第二候选：第二候选是什么取决于用户词库（学过的词会排上来），所以只断言「不是首选、也不是首选+；」。
 case_semicolon_second() {
     TOTAL=$((TOTAL + 1))

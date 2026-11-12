@@ -120,6 +120,18 @@ print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service 
 
 require(StateFeedback.language(true) == "英文" && StateFeedback.language(false) == "中文", "language feedback")
 require(StateFeedback.width(true) == "全角" && StateFeedback.width(false) == "半角", "width feedback")
+// ADR-337：带 Shift 的标点取「按了 Shift 之后」的字符，即使事件自带的 charactersIgnoringModifiers 是未加 Shift 的。
+func keyEvent(_ code: UInt16, shift: Bool, ignoring: String) -> NSEvent {
+    NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: shift ? [.shift] : [], timestamp: 0,
+                     windowNumber: 0, context: nil, characters: ignoring, charactersIgnoringModifiers: ignoring,
+                     isARepeat: false, keyCode: code)!
+}
+require(LampyrisInputController.typedScalar(keyEvent(41, shift: true, ignoring: ";")) == ":", "Shift+; is a colon")
+require(LampyrisInputController.typedScalar(keyEvent(41, shift: false, ignoring: ";")) == ";", "plain ; stays a semicolon")
+require(LampyrisInputController.typedScalar(keyEvent(44, shift: true, ignoring: "/")) == "?", "Shift+/ is a question mark")
+require(LampyrisInputController.typedScalar(keyEvent(43, shift: true, ignoring: ",")) == "<", "Shift+, is a less-than sign")
+require(LampyrisInputController.typedScalar(keyEvent(47, shift: false, ignoring: ".")) == ".", "plain period")
+require(LampyrisInputController.typedScalar(keyEvent(0, shift: true, ignoring: "a")) == "A", "letters keep their shifted form; the caller lowercases")
 // ADR-333：按应用记住中英状态——没记过不表态、能覆盖、有界、空标识不记。
 var languageMemory = AppLanguageMemory()
 require(languageMemory.english(for: "com.apple.Terminal") == nil, "unknown app has no remembered state")
