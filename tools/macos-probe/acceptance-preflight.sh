@@ -34,6 +34,13 @@ done
 front=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)
 [ -n "$front" ] && check gui_session ok "" || check gui_session fail "无图形会话（无法取前台应用）"
 [ -x "$BIN/imetype" ] && check probe_built ok "" || check probe_built fail "探针未构建"
+# 报告264：调用方进程没有「辅助功能/事件投递」权限时，按键被系统静默丢弃、AX 也读不到窗口，
+# 所有键入项会连环 BLOCKED 却看不出原因。退出码 4 = 无权限；其它（旧二进制不认识该参数）不判。
+if [ -x "$BIN/keytopid" ]; then
+    "$BIN/keytopid" --check-access >/dev/null 2>&1
+    [ "$?" -eq 4 ] && check event_access fail "当前进程没有辅助功能/事件投递权限：请在已授权的终端里运行" \
+        || check event_access ok ""
+fi
 if [ -x "$BIN/imetype" ] && [ ! -x "$BIN/axfocus" ]; then check ax_probe fail "缺少 axfocus"; fi
 # 报告199：只在目录缺失时重建会留下旧二进制（改完 imetype 后仍跑旧的），所以二进制更新时也重建。
 STALE=0

@@ -11,6 +11,14 @@ let keys: [Character: CGKeyCode] = [
 ]
 
 let args = CommandLine.arguments
+// 报告264：发键与 AX 回读都要求「调用方进程」被系统信任（辅助功能 / 事件投递）。
+// 没有权限时事件会被静默丢弃，表现成「按键发了、文档是空的」；这里提供一个只读自检给 preflight。
+if args.contains("--check-access") {
+    let trusted = AXIsProcessTrusted()
+    let post = CGPreflightPostEventAccess()
+    print("{\"ax_trusted\":\(trusted),\"post_event\":\(post)}")
+    exit(trusted && post ? 0 : 4)
+}
 guard args.count >= 3, let pid = pid_t(args[1]) else {
     print("usage: keytopid <pid> <keys>")
     exit(2)

@@ -2,9 +2,9 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-12 / Claude Code（**air 本机**，仅文档：ADR-324）。上次实质更新 2026-11-09 / pi。阶段：**1.2.0 已发布并上线**（tag `v1.2.0` → `31fdbcd`，站点 `v1.2.0 · 构建 39`，air 与 pro 同包 1.2.0/39）。
-- 分支：`dev` = `main` = `31fdbcd`（1.2.0 候选提交）；开放 PR **0 个**。
-- 版本：`Cargo.toml` = **1.2.0**、`packaging/build-number` = **39**；最新 tag **`v1.2.0`**（Release 已发布）。
+- 更新：2026-11-12 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40**；`main` 已合入 P1-U 三批（ADR-324…336，PR #269/#270/#271），**尚未发版、版本号未升**。air 已装 `main` 候选 `3e428b7`（报告 264）。
+- 分支：`main` = `3e428b7`；`dev` 在其上有复验工具与报告 264 的提交（见 §9 首条）。
+- 版本：`Cargo.toml` = **1.2.1**、`packaging/build-number` = **40**；最新 tag **`v1.2.1`**。**`main` 上的候选与发布版同号不同内容，发版前必须升版本号。**
 - 最近验证：`make verify` PASS（325 产物零网络符号）、`make macos-offline-tests` **62 文件 / 328 例 PASS**、`modules/keymap/tests/test-key-roots.py` **8 例 PASS**。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -13,7 +13,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；pi 跑在 Background 会话，驱动不了 GUI 点击） | **1.2.0 / build 39（候选 `31fdbcd`，2026-11-09 装机）**，宿主执行 `ef25e92b…`；输入源 `Lampyris.default` 已启用（覆盖安装后常需手动再选一次，见 `docs/故障恢复.md` §4.2/§4.3） | config 与词库沿用（练习进度 `practice.tsv` 新增） | `uninstalled/`、`updates/` 可回滚 |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；Claude 桌面应用会话**没有辅助功能/事件投递权限**，键入类探针要在已授权的终端如 ghostty 里跑） | **`main` 候选 `3e428b7`（1.2.1 / build 40 同号，2026-11-12 装机，报告 264）**，ZIP `8e7aece7…`，宿主执行 `f38e4e1a238e38249de5f8b195454bc6e48e4da37272b879b58b6b57971ee82f`；输入源 `Lampyris.default` 已启用并选中 | config `88651507…`、词库 1713 行 `bffc9d1a…`、`practice.tsv` `90530ef7…`，装机前后未变 | 旧包（1.2.1 发布版 `3eeeb0aa…`）在 `updates/install-backup-20261112T060612Z/`；用户数据备份在 `platforms/macos/build/acceptance-air-p1u-3e428b7/userdata-before/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.2.0 / build 39**，宿主执行 `ef25e92b…`（2026-11-09 经 `upgrade.py --apply` 升级，旧包 `updates/upgrade-20261109T121300-9c1061c4/backup/`） | config `b8c7a351…`、词库 962 行，升级前后未变（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -117,6 +117,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-12 / Claude Code（air）：**P1-U 候选 `3e428b7` 装机 PASS、真机键入复验 BLOCKED（报告 264）**。PR #271 已合并；从 CI 验收包（run `43163118879`，ZIP `8e7aece7…`，Notarized）覆盖安装：切 ABC → 停宿主 → `install.sh`，装后执行 `f38e4e1a…` = 包内，config/词库/练习进度 SHA 不变，宿主跑新二进制。**键入复验一条都没跑成**：本会话进程 `AXIsProcessTrusted=false`，合成按键被系统丢弃。已给 `quality-samples.sh` 加 9 条 ADR-325…336 样本，并让 preflight 能识别「无事件投递权限」（`keytopid --check-access`）。**下一步：用户在已授权终端跑报告 264 §4 的一条命令，再按 §5 目视 5 类项**；通过后才谈升版本号与发版。
 - 2026-11-12 / Claude Code（air）：**P1-U 第三批（ADR-333…336）+ 前两档已合入 main**。PR [#269](https://github.com/EasyIndie/EasyInputMethod/pull/269)（第一档）与 [#270](https://github.com/EasyIndie/EasyInputMethod/pull/270)（第二档）均已用合并提交并入（`c882c06`、`2f8ee06`），**下面一条日志里「第二档未推送」已过时**。第三批：按应用记住中英状态（仅内存）、练习「词组」题型（随包码表前 800 词）、薄弱字清单（`practice.collect_weak_chars` 默认关，`weak-chars.tsv`）、小鹤双拼（`pinyin.scheme`，仅拼音模式；425 个音节 419 个可达）。Schema 27→30。四道检查全绿、评测 98.2%/86.4% 与基线一致。**三批改动全部未装机**，复验清单见 `docs/待办与积压.md` P1-U；P1-U 剩余 8 项都需用户先定口径或授权取数据（同处有表）。仓库已开启 auto-merge。
 - 2026-11-12 / Claude Code（air）：**P1-U 第二档可直接做的部分完成（ADR-330…332）**。U2-1 拼音分段选词（`Candidate.consumed`、`Session::preedit`、`IME_SELECT_PARTIAL`，整句学成用户拼音词）；U2-4 混输下拼音上屏后提示五笔码（`candidate.hint_wubi_code`，Schema 26→27）；U2-5 练习新增「字根」题型并排最前。第一档 PR [#269](https://github.com/EasyIndie/EasyInputMethod/pull/269) 已开（首跑 `macos` 红：预览冒烟写死设置项 23 → `7e37dba` 修）。**第二档提交只在本地 `dev`，未推送**——同一个 `dev → main` 只能有一个 PR，要等 #269 合并后再推并开第二档 PR。四道检查全绿（`make verify`、离线 62/328、预览冒烟、`build.sh --strict`），**均未装机**。教训：离线回归不含预览冒烟与宿主编译，改设置项数量或 `InputController.swift` 后必须另跑这两项。剩余 U2-2 五笔造词 / U2-3 扩展词库 / U2-5 分阶段与跟打都需用户先定口径。
 - 2026-11-12 / Claude Code（air）：**P1-U 第一档全部完成（ADR-326…329）**。U1-2 拼音没打完给补全（`nih`→你好，补全不拦五笔自动上屏，评测与基线一致 98.2%/86.4%）；U1-3 `;`/`'` 选二三候选、`[`/`]` 以词定字（两个开关默认开，Schema 24→26）；U1-5 练习按错题加权出题（文件格式不变）；U1-4 安装完成页加上手提示（窗口高 300→340，**版式未目视确认**）。`dev` 领先 `main` 7 个提交（`df2019c`…），`make verify` PASS、离线 62 文件 / 328 例 PASS。**未推送、未开 PR、未换包；六项行为都待装机实键复验**（清单见 `docs/待办与积压.md` P1-U 末尾）。下一步：第二档 U2-1 → U2-4 → U2-2。
