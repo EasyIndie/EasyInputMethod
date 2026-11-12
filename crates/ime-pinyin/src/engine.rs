@@ -10,6 +10,8 @@ pub struct PinyinEngine {
     backend: Arc<dyn PinyinBackend>,
     max_code_len: usize,
     fuzzy: bool,
+    /// 把输入按小鹤双拼解释（ADR-336）。
+    double: bool,
 }
 
 impl PinyinEngine {
@@ -23,6 +25,44 @@ impl PinyinEngine {
             backend,
             max_code_len,
             fuzzy: false,
+            double: false,
+        }
+    }
+}
+
+impl PinyinEngine {
+    /// 双拼：把按键展开成全拼再查；分段候选的覆盖长度从「全拼字节」换算回「按键数」。
+    ///
+    /// 展开不出合法音节就不出候选（不猜）；双拼下不叠加模糊音。
+    fn convert_double(&self, input: &str, max: usize) -> ConvertResult {
+        let valid = |s: &str| self.backend.segment(s).as_slice() == [s.to_string()];
+        let Some(expanded) = crate::double::expand(input, &valid) else {
+            return ConvertResult::default();
+        };
+        let candidates = self
+            .backend
+            .convert(&expanded.full, max)
+            .into_iter()
+            .filter_map(|pc| {
+                let consumed = match pc.consumed {
+                    0 => 0,
+                    bytes => expanded.keys_for(bytes)?,
+                };
+                Some(Candidate {
+                    text: pc.text,
+                    code: pc.pinyin,
+                    weight: pc.weight,
+                    source: CandidateSource::Pinyin,
+                    comment: None,
+                    is_prefix: pc.is_completion,
+                    is_fuzzy: false,
+                    consumed,
+                })
+            })
+            .collect();
+        ConvertResult {
+            candidates,
+            should_commit: None,
         }
     }
 }
@@ -33,8 +73,12 @@ impl Engine for PinyinEngine {
     }
     fn configure(&mut self, options: &ime_core::EngineOptions) {
         self.fuzzy = options.fuzzy;
+        self.double = options.double_pinyin;
     }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
+        if self.double {
+            return self.convert_double(input, max);
+        }
         let mut forms = vec![input.to_string()];
         if self.fuzzy && input.len() <= 32 && input.bytes().all(|c| c.is_ascii_lowercase()) {
             let segmented = self.backend.segment(input);
@@ -147,6 +191,7 @@ mod tests {
             fuzzy: true,
             auto_commit: false,
             z_wildcard: false,
+            double_pinyin: false,
         });
         engine.convert(&"na".repeat(16), 9);
         assert!(calls.load(Ordering::Relaxed) <= 32);
@@ -173,6 +218,7 @@ mod tests {
             auto_commit: false,
             z_wildcard: false,
             fuzzy: true,
+            double_pinyin: false,
         });
         assert_eq!(e.convert("zhang", 9).candidates[0].text, "脏");
     }
@@ -190,6 +236,7 @@ mod tests {
             fuzzy: true,
             auto_commit: false,
             z_wildcard: false,
+            double_pinyin: false,
         });
         let single = engine.convert("zhang", 9).candidates;
         assert_eq!(single[0].text, "张");
@@ -201,6 +248,39 @@ mod tests {
         assert!(phrase.iter().any(|c| c.text == "脏桑" && c.is_fuzzy));
         assert_eq!(engine.convert("zhang", 1).candidates[0].text, "张");
         assert!(engine.convert("🙂", 9).candidates.is_empty());
+    }
+
+    #[test]
+    fn double_pinyin_expands_keys_and_reports_partials_in_keys() {
+        let backend = TablePinyinBackend::from_tsv(
+            "ni\t你\t900\nhao\t好\t700\nshi\t是\t950\njie\t界\t600\n",
+            "ni hao\t你好\t50\nshi jie\t世界\t60\n",
+            "double",
+        )
+        .unwrap();
+        let mut e = PinyinEngine::new(Box::new(backend), 32);
+        // 关着的时候 `nihc` 不是合法全拼：没有覆盖整串的候选。
+        assert!(e
+            .convert("nihc", 9)
+            .candidates
+            .iter()
+            .all(|c| c.consumed > 0));
+        e.configure(&ime_core::EngineOptions {
+            fuzzy: true,
+            auto_commit: false,
+            z_wildcard: false,
+            double_pinyin: true,
+        });
+        assert_eq!(e.convert("nihc", 9).candidates[0].text, "你好");
+        let long = e.convert("nihcuijp", 9).candidates;
+        assert_eq!(long[0].text, "你好世界");
+        // 「你好」覆盖 2 个音节 = 4 个按键（全拼上是 5 个字节）。
+        let front = long.iter().find(|c| c.text == "你好").unwrap();
+        assert_eq!(front.consumed, 4);
+        assert_eq!(long.iter().find(|c| c.text == "你").unwrap().consumed, 2);
+        // 拼不出合法音节：不出候选，也不回退成全拼解释。
+        assert!(e.convert("nihao", 9).candidates.is_empty());
+        assert_eq!(e.convert("nihc", 9).should_commit, None);
     }
 
     #[test]

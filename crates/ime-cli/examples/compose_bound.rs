@@ -28,6 +28,7 @@ fn build(data_dir: &str) -> Session {
         auto_commit: false,
         fuzzy: false,
         z_wildcard: false,
+        double_pinyin: false,
     });
     session.set_wubi_engine(Box::new(CodeTableEngine::new(wubi, 4)));
     session.set_pinyin_engine(Box::new(PinyinEngine::new(Box::new(pinyin), 32)));

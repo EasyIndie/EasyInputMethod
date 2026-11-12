@@ -577,6 +577,7 @@ mod tests {
             auto_commit: false,
             z_wildcard: true,
             fuzzy: false,
+            double_pinyin: false,
         });
         assert_eq!(
             engine
@@ -600,6 +601,7 @@ mod tests {
             auto_commit: false,
             z_wildcard: true,
             fuzzy: false,
+            double_pinyin: false,
         });
         assert_eq!(e.convert("abcd", 9).should_commit, None);
         let r = e.convert("abcz", 9);
@@ -609,6 +611,7 @@ mod tests {
             auto_commit: true,
             z_wildcard: false,
             fuzzy: false,
+            double_pinyin: false,
         });
         assert_eq!(e.convert("abcd", 9).should_commit, Some("甲".into()));
         assert!(e.convert("abcz", 9).candidates.is_empty());
@@ -678,6 +681,7 @@ mod tests {
                 auto_commit: false,
                 z_wildcard: wildcard,
                 fuzzy: false,
+                double_pinyin: false,
             });
             for input in [
                 "a", "ab", "az", "za", "zz", "azb", "zbz", "aaa", "bbb", "zzz",

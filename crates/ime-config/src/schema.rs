@@ -91,6 +91,17 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "pinyin.scheme",
+        value_type: ValueType::Enum {
+            values: &["full", "xiaohe"],
+        },
+        enum_labels_zh: &["全拼", "小鹤双拼"],
+        default: "\"full\"",
+        title_zh: "拼音方案",
+        doc_zh: "全拼，或小鹤双拼（两键一个音节）；双拼只在「拼音」模式下生效，混输模式仍按全拼兜底",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "candidate.count",
         value_type: ValueType::Int { min: 3, max: 9 },
         enum_labels_zh: &[],

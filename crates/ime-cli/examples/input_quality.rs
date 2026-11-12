@@ -41,6 +41,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         auto_commit: false,
         fuzzy: true,
         z_wildcard: false,
+        double_pinyin: false,
     });
     eprintln!("load_ms={:.3}", start.elapsed().as_secs_f64() * 1000.0);
     // Measure resident memory before allocating full reference dictionaries.

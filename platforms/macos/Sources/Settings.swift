@@ -652,7 +652,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         if scopes == [0] {
             groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width",
                               "input.digit_punctuation", "input.remember_english_per_app"]),
-                ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
+                ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"])]
         } else if scopes == [4] {
             groups = [("更新来源", ["update.feed_url"])]
         } else if scopes.contains(3) {

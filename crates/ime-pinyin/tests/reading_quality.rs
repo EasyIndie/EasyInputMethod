@@ -14,6 +14,7 @@ fn shipped_common_readings_stay_on_first_page() {
         fuzzy: true,
         auto_commit: false,
         z_wildcard: false,
+        double_pinyin: false,
     });
     // Common alternative readings must remain reachable while weak readings
     // no longer displace the ordinary targets for xian and xing.

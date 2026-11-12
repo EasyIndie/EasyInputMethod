@@ -11,12 +11,12 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 29,
+guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 30,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
 panel.selectSectionForTesting(0)
-guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"] else { fail("design input grouping and order") }
+guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"] else { fail("design input grouping and order") }
 
 // ADR-305：宽度项从复选框改为下拉，与「标点风格」「输出字形」同构
 // （模式仍用分段控件，因为它只有三个互斥项且要一眼看全，属既有设计，不在本 ADR 范围）。
@@ -132,7 +132,7 @@ LocalAcceptanceEvidence.record("settings.dictionary-session", expected: "绑定�
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 29, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 30, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
 LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，19项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

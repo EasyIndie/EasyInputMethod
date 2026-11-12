@@ -186,6 +186,7 @@ mod tests {
             fuzzy: true,
             auto_commit: true,
             z_wildcard: false,
+            double_pinyin: false,
         });
         assert!(!fuzzy.convert("zong", 9).candidates.is_empty());
         assert!(exact.convert("zong", 9).candidates.is_empty());
