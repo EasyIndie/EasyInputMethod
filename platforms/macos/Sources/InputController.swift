@@ -655,7 +655,7 @@ final class LampyrisInputController: IMKInputController {
         {
             commit(text, to: client)
             candidateSelection.reset()
-            candidateWindow?.hide()
+            refreshAfterSelection(client, session: session)
             return true
         }
 
@@ -730,6 +730,16 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow?.announceCommitted(text)
     }
 
+    /// 选词之后：分段候选（ADR-330）只选走了前半段，组合还在，刷新预编辑与候选；否则收起候选窗。
+    private func refreshAfterSelection(_ client: IMKTextInput, session: ImeSession) {
+        if session.isComposing {
+            updateMarked(client, session.buffer)
+            showCandidates(client, session: session)
+        } else {
+            candidateWindow?.hide()
+        }
+    }
+
     @discardableResult
     private func showCandidates(
         _ client: IMKTextInput, session: ImeSession, trace: PerfTrace.Marks? = nil
@@ -749,7 +759,7 @@ final class LampyrisInputController: IMKInputController {
                 self.commit(text, to: client)
             }
             self.candidateSelection.reset()
-            self.candidateWindow?.hide()
+            self.refreshAfterSelection(client, session: session)
         }
         window.onPage = { [weak self] delta in
             guard let self, let client = self.activeClient, let session = self.session else { return }

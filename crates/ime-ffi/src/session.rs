@@ -29,6 +29,8 @@ pub const IME_KEY_CONSUMED: i32 = 0;
 pub const IME_KEY_COMMITTED: i32 = 1;
 /// 键与本输入法无关，宿主应透传给系统。
 pub const IME_KEY_PASS_THROUGH: i32 = 2;
+/// [`ime_session_select`] 选中了分段候选：没有上屏，组合继续（ADR-330）。
+pub const IME_SELECT_PARTIAL: i32 = 1;
 
 /// 候选来源（与 C 头文件 `IME_SOURCE_*` 一致）。
 const SOURCE_CODE_TABLE: i32 = 0;
@@ -284,6 +286,21 @@ impl ImeSession {
         self.dictionary_error = if result.is_ok() { IME_OK } else { IME_ERR_IO };
     }
 
+    /// 把分段拼出来的整句学成用户拼音词（ADR-330）：下次打同一串拼音直接出整句。
+    fn learn_assembled(&mut self) {
+        let Some((code, text)) = self.session.take_assembled() else {
+            return;
+        };
+        // 太长的句子不是「词」；只学 2–8 个字。
+        if !(2..=8).contains(&text.chars().count()) {
+            return;
+        }
+        if let Some(store) = self.dictionary.as_mut() {
+            let result = store.learn("pinyin", &code, &text);
+            self.dictionary_error = if result.is_ok() { IME_OK } else { IME_ERR_IO };
+        }
+    }
+
     /// 由核心候选重建 FFI 视图（指针借用核心 `Candidate` 的字符串缓冲）。
     fn refresh(&mut self) {
         let traditional = self.traditional;
@@ -315,7 +332,8 @@ impl ImeSession {
             });
         }
         self.ffi_candidates = view;
-        self.ffi_buffer = CString::new(self.session.buffer()).ok();
+        // 宿主看到的是预编辑（分段选词已选定的文字 + 余码，ADR-330）。
+        self.ffi_buffer = CString::new(self.session.preedit()).ok();
     }
 }
 
@@ -440,10 +458,15 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
         let preferred = (matches!(ch, ';' | '\'') && selected.is_some())
             || (matches!(ch, '1'..='9') && (ch != '1' || s.session.page_index() > 0))
             || (ch == ' ' && s.session.page_index() > 0);
+        // 分段候选选中后不上屏，但同样是一次明确的选择，要学。
+        let partial = selected
+            .as_ref()
+            .is_some_and(|c| c.consumed > 0 && c.consumed < input.len());
         let outcome = s.session.handle_key(ch);
-        if matches!(outcome, KeyOutcome::Committed(_)) {
+        if matches!(outcome, KeyOutcome::Committed(_)) || partial {
             s.learn(selected, preferred, &input);
         }
+        s.learn_assembled();
         s.personalize();
         s.refresh();
         Ok(match outcome {
@@ -625,8 +648,14 @@ pub extern "C" fn ime_session_select(session: *mut ImeSession, index: i32) -> i3
             return Err(IME_ERR_INVALID_INPUT);
         }
         s.learn(selected, preferred, &input);
+        s.learn_assembled();
+        // 分段候选：还在组合中，重排余码的候选并告诉宿主「没有上屏」。
+        let partial = s.session.composing();
+        if partial {
+            s.personalize();
+        }
         s.refresh();
-        Ok(IME_OK)
+        Ok(if partial { IME_SELECT_PARTIAL } else { IME_OK })
     })
 }
 
@@ -1131,6 +1160,85 @@ mod tests {
             assert_eq!(s.dictionary_error, IME_OK);
             std::fs::remove_dir_all(dir).unwrap();
         }
+    }
+
+    #[test]
+    fn partial_choices_keep_composing_then_commit_and_learn_the_assembled_phrase() {
+        let dir =
+            std::env::temp_dir().join(format!("lampyris-partial-choice-{}", std::process::id()));
+        std::fs::create_dir_all(&dir).unwrap();
+        let mut s = ImeSession::new();
+        let backend = ime_pinyin::TablePinyinBackend::from_tsv(
+            "ni\t你\t900\nhao\t好\t700\nshi\t是\t950\njie\t界\t600\n",
+            "ni hao\t你好\t50\nshi jie\t世界\t60\nshi jie\t视界\t10\n",
+            "partial",
+        )
+        .unwrap();
+        s.session
+            .set_pinyin_engine(Box::new(ime_pinyin::PinyinEngine::new(
+                Box::new(backend),
+                32,
+            )));
+        s.session.set_mode(ime_core::InputMode::PinyinOnly);
+        s.dictionary = Some(ime_dict::Store::load(dir.join("user.tsv")).unwrap());
+        let raw: *mut ImeSession = &mut *s;
+        for ch in "nihaoshijie".chars() {
+            assert_eq!(ime_session_key(raw, ch as u32), IME_KEY_CONSUMED);
+        }
+        let texts = |s: &ImeSession| -> Vec<String> {
+            s.session
+                .candidates()
+                .iter()
+                .map(|c| c.text.clone())
+                .collect()
+        };
+        assert_eq!(texts(&s)[..2], ["你好世界", "你好"]);
+        // 选走前半段：不上屏，预编辑变成「已选文字 + 余码」，候选换成余码的。
+        assert_eq!(ime_session_key(raw, '2' as u32), IME_KEY_CONSUMED);
+        assert_eq!(s.session.preedit(), "你好shijie");
+        assert_eq!(s.session.buffer(), "shijie");
+        assert_eq!(texts(&s)[..2], ["世界", "视界"]);
+        // 鼠标点选走同一条路：返回「分段」而不是「已上屏」时组合仍在。
+        assert_eq!(ime_session_key(raw, 0x8), IME_KEY_CONSUMED);
+        assert_eq!(s.session.preedit(), "你好shiji");
+        assert_eq!(ime_session_key(raw, 'e' as u32), IME_KEY_CONSUMED);
+        // 选完后半段：整句一起上屏。
+        assert_eq!(ime_session_key(raw, '2' as u32), IME_KEY_COMMITTED);
+        assert_eq!(s.session.committed(), "你好视界");
+        assert!(!s.session.composing());
+        let entries = s.dictionary.as_ref().unwrap().entries();
+        // 每一段各学一次，整句学成一个用户拼音词。
+        assert_eq!(
+            entries[&("pinyin".into(), "nihao".into(), "你好".into())],
+            1
+        );
+        assert_eq!(
+            entries[&("pinyin".into(), "shijie".into(), "视界".into())],
+            1
+        );
+        assert_eq!(
+            entries[&("pinyin".into(), "nihaoshijie".into(), "你好视界".into())],
+            1
+        );
+        // 下次打同一串拼音，学到的整句直接是首选。
+        for ch in "nihaoshijie".chars() {
+            ime_session_key(raw, ch as u32);
+        }
+        assert_eq!(texts(&s)[0], "你好视界");
+        // Esc 丢弃全部；退格删光余码则把已选的前半段上屏，不丢字。
+        assert_eq!(ime_session_key(raw, 0x1b), IME_KEY_CONSUMED);
+        assert!(!s.session.composing());
+        for ch in "nihaos".chars() {
+            ime_session_key(raw, ch as u32);
+        }
+        // 刚学会的整句此时作为补全排在最前（符合预期）；这里按文字找到只覆盖前半段的「你好」。
+        assert_eq!(texts(&s)[0], "你好视界");
+        let front = texts(&s).iter().position(|t| t == "你好").unwrap() as i32;
+        assert_eq!(ime_session_select(raw, front), IME_SELECT_PARTIAL);
+        assert_eq!(s.session.preedit(), "你好s");
+        assert_eq!(ime_session_key(raw, 0x8), IME_KEY_COMMITTED);
+        assert_eq!(s.session.committed(), "你好");
+        std::fs::remove_dir_all(dir).unwrap();
     }
 
     #[test]

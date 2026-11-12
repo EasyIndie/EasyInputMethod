@@ -383,7 +383,10 @@ final class ImeSession {
     @discardableResult
     func select(_ index: Int) -> String? {
         guard let handle else { return nil }
-        guard ime_session_select(handle, Int32(index)) == IME_OK else { return nil }
+        let code = ime_session_select(handle, Int32(index))
+        // 分段候选（ADR-330）：没有上屏、组合继续；返回空串，调用方按 `isComposing` 刷新。
+        if code == IME_SELECT_PARTIAL { return "" }
+        guard code == IME_OK else { return nil }
         return commit()
     }
 

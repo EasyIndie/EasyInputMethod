@@ -353,6 +353,62 @@ impl TablePinyinBackend {
         Some((path.texts.concat(), path.score))
     }
 
+    /// 分段候选数上限。
+    const PARTIAL_LIMIT: usize = 24;
+
+    /// 分段候选：`nihaoshijie` → 你好（覆盖 `nihao`）、你（覆盖 `ni`）…
+    ///
+    /// 先取能切分成音节的最长前缀（整串能切就用整串），再从长到短给出前 k 个音节对应的词，
+    /// 最后给第一个音节的单字。长的在前——用户多半想一次选走尽量多的字。
+    fn partials(&self, input: &str, out: &mut Vec<PinyinCandidate>) {
+        if input.len() < 3 || input.contains('\'') {
+            return;
+        }
+        let syllables = (1..=input.len())
+            .rev()
+            .map(|end| self.segment(&input[..end]))
+            .find(|parts| !parts.is_empty())
+            .unwrap_or_default();
+        let covered: usize = syllables.iter().map(String::len).sum();
+        // 只有一个音节且已是整串：没有「前半段」可言。
+        if syllables.is_empty() || (syllables.len() == 1 && covered == input.len()) {
+            return;
+        }
+        let mut found: Vec<PinyinCandidate> = Vec::new();
+        for count in (1..=syllables.len()).rev() {
+            let consumed: usize = syllables[..count].iter().map(String::len).sum();
+            if consumed >= input.len() {
+                continue; // 覆盖整串的是普通候选，前面已经给过。
+            }
+            let key = syllables[..count].join(" ");
+            if let Some(words) = self.words.get(&key) {
+                for (word, weight) in words.iter().take(4) {
+                    found.push(
+                        PinyinCandidate::new(word.to_string(), key.clone(), *weight, false)
+                            .partial(consumed),
+                    );
+                }
+            }
+            if count == 1 {
+                if let Some(chars) = self.chars.get(&syllables[0]) {
+                    for (ch, weight) in chars.iter().take(9) {
+                        found.push(
+                            PinyinCandidate::new(ch.to_string(), key.clone(), *weight, false)
+                                .partial(consumed),
+                        );
+                    }
+                }
+            }
+        }
+        found.truncate(Self::PARTIAL_LIMIT);
+        // 与补全同理：把「长的在前」的次序写成递减的小权重，上层按权重重排时次序不变。
+        let count = found.len();
+        for (index, candidate) in found.iter_mut().enumerate() {
+            candidate.weight = (count - index) as i32;
+        }
+        out.extend(found);
+    }
+
     /// 补全候选数上限：补全是「猜下文」，只取权重最高的一小批。
     const COMPLETION_LIMIT: usize = 32;
     /// 单次补全最多扫描的词条数（`full_spellings` 有序，前缀区间连续）。
@@ -513,13 +569,16 @@ impl PinyinBackend for TablePinyinBackend {
             }
         }
 
-        // 3) 补全：拼音没打完时，给出拼写以当前输入开头的词与字（ADR-326）。
+        // 3) 分段：长拼音给出只覆盖前几个音节的词与字，选了前半段再接着选后半段（ADR-330）。
+        self.partials(input, &mut out);
+
+        // 4) 补全：拼音没打完时，给出拼写以当前输入开头的词与字（ADR-326）。
         self.complete(input, max, &mut out);
 
         // 去重（同 text 保留权重高者，全拼优先于简拼），再按权重降序截断；补全永远排在已打完的候选之后。
         out.sort_by(|a, b| {
-            a.is_completion
-                .cmp(&b.is_completion)
+            a.class()
+                .cmp(&b.class())
                 .then(b.weight.cmp(&a.weight))
                 .then(a.is_initial.cmp(&b.is_initial))
                 .then(a.text.cmp(&b.text))
@@ -624,8 +683,8 @@ mod tests {
         assert!(b.convert("reng'ong'zhi'neng", 9).is_empty());
         // 没打完的整词现在给出补全（ADR-326），但必须带补全标记、不冒充精确命中。
         let unfinished = b.convert("rengongzhinen", 9);
-        assert_eq!(unfinished.len(), 1);
         assert!(unfinished[0].is_completion && unfinished[0].text == "人工智能");
+        assert!(unfinished.iter().all(|c| c.is_completion || c.consumed > 0));
     }
 
     #[test]
@@ -663,10 +722,12 @@ mod tests {
             "completion",
         )
         .unwrap();
+        // 分段候选（ADR-330）另有测试，这里只看覆盖整串的候选。
         let texts = |input: &str| -> Vec<(String, bool)> {
             backend
                 .convert(input, 9)
                 .into_iter()
+                .filter(|c| c.consumed == 0)
                 .map(|c| (c.text, c.is_completion))
                 .collect()
         };
@@ -688,12 +749,46 @@ mod tests {
                 ("年轻".to_string(), true),
             ]
         );
+        // 补全排在分段候选之前：`nih` 的首选是「你好」而不是只覆盖 `ni` 的「你」。
+        assert_eq!(backend.convert("nih", 9)[0].text, "你好");
         // 一个字母、带分隔符、无匹配：都不补全。
         assert!(backend.convert("n", 9).iter().all(|c| !c.is_completion));
         assert!(backend.convert("ni'h", 9).is_empty());
-        assert!(backend.convert("nix", 9).is_empty());
+        assert!(texts("nix").is_empty());
         // 补全的 pinyin 字段是完整读音，学习与反查用得上。
         assert_eq!(backend.convert("nih", 9)[0].pinyin, "ni hao");
+    }
+
+    #[test]
+    fn long_input_offers_partial_candidates_longest_first() {
+        let backend = TablePinyinBackend::from_tsv(
+            "ni\t你\t900\nni\t呢\t800\nhao\t好\t700\nshi\t是\t950\njie\t界\t600\n",
+            "ni hao\t你好\t50\nshi jie\t世界\t60\n",
+            "partial",
+        )
+        .unwrap();
+        let view = |input: &str| -> Vec<(String, usize)> {
+            backend
+                .convert(input, 9)
+                .into_iter()
+                .map(|c| (c.text, c.consumed))
+                .collect()
+        };
+        // 整句拼接在前；然后是覆盖 `nihao` 的词、覆盖 `ni` 的字。
+        assert_eq!(
+            view("nihaoshijie"),
+            [
+                ("你好世界".to_string(), 0),
+                ("你好".to_string(), 5),
+                ("你".to_string(), 2),
+                ("呢".to_string(), 2),
+            ]
+        );
+        // 末尾半个音节：整句拼不出来，仍能先选走前半段。
+        assert_eq!(view("nihaosh")[0], ("你好".to_string(), 5));
+        // 单音节、带分隔符：没有分段候选。
+        assert!(view("ni").iter().all(|(_, consumed)| *consumed == 0));
+        assert!(view("ni'hao").iter().all(|(_, consumed)| *consumed == 0));
     }
 
     #[test]
@@ -740,7 +835,8 @@ mod tests {
     fn convert_composition_respects_segment_limit() {
         // 9 个单音节段超过上限（8），宁可不出候选
         let b = sample();
-        assert!(b.convert(&"ni".repeat(9), 9).is_empty());
+        // 整句不出；但仍可分段选（ADR-330），所以只断言没有覆盖整串的候选。
+        assert!(b.convert(&"ni".repeat(9), 9).iter().all(|c| c.consumed > 0));
     }
 
     #[test]
