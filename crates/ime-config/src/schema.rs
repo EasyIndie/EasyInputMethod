@@ -115,7 +115,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         default: "true",
         title_zh: "分号/引号选第二、三候选",
         doc_zh: "组合态下 ; 选第二候选；纯五笔模式下 ' 选第三候选（混输/拼音下 ' 仍是音节分隔符）",
-        scope: Scope::Engine,
+        scope: Scope::CandidateWindow,
     },
     OptionSpec {
         key: "candidate.pick_char_with_brackets",
@@ -124,7 +124,7 @@ pub static SCHEMA: &[OptionSpec] = &[
         default: "true",
         title_zh: "方括号以词定字",
         doc_zh: "组合态下 [ 取首选词的第一个字、] 取最后一个字；首选是单字时仍输出标点",
-        scope: Scope::Engine,
+        scope: Scope::CandidateWindow,
     },
     OptionSpec {
         key: "candidate.show_wubi_learning",
