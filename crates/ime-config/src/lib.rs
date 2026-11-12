@@ -866,7 +866,7 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 23);
+        assert_eq!(schema().len(), 26);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -877,6 +877,8 @@ mod tests {
                 "pinyin.fuzzy",
                 "candidate.count",
                 "candidate.page_with_comma",
+                "candidate.select_with_semicolon",
+                "candidate.pick_char_with_brackets",
                 "candidate.show_wubi_learning",
                 "appearance.theme",
                 "hotkey.toggle_wubi_learning",
@@ -892,6 +894,7 @@ mod tests {
                 "input.punctuation",
                 "input.full_width",
                 "input.chinese_variant",
+                "input.digit_punctuation",
                 "update.feed_url",
                 "update.feed_mirrors",
             ]

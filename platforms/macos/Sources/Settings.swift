@@ -650,7 +650,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         let options = SettingsSchema.options().filter { scopes.contains($0.scope) }
         let groups: [(String, [String])]
         if scopes == [0] {
-            groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width"]),
+            groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width",
+                              "input.digit_punctuation"]),
                 ("五笔与拼音", ["wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy"])]
         } else if scopes == [4] {
             groups = [("更新来源", ["update.feed_url"])]
@@ -660,7 +661,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
                 "hotkey.open_settings", "hotkey.open_about", "hotkey.open_update", "hotkey.open_practice",
                 "hotkey.toggle_wubi_learning"])]
         } else {
-            groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
+            groups = [("候选显示", ["candidate.count", "candidate.page_with_comma",
+                              "candidate.select_with_semicolon", "candidate.pick_char_with_brackets"]),
                 ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning"])]
         }
         let known = Set(groups.flatMap { $0.1 })

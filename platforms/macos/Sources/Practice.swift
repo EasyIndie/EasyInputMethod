@@ -119,6 +119,9 @@ final class PracticeProgress {
 
     private func key(_ char: String, _ kind: PracticeKind) -> String { "\(char)\t\(kind.rawValue)" }
 
+    /// 某个字在某题型下的记录；没练过返回 `nil`。出题加权用（ADR-328）。
+    func row(char: String, kind: PracticeKind) -> Row? { rows[key(char, kind)] }
+
     private func load() {
         guard let text = try? String(contentsOf: url, encoding: .utf8) else { return }
         for line in text.split(separator: "\n") where !line.hasPrefix("#") {
@@ -220,9 +223,37 @@ final class PracticeSession {
         next()
     }
 
+    /// 出题权重（ADR-328）：错过的字多出、没练过的字优先于已掌握的字。
+    ///
+    /// 「欠账」= 错 1 次记 2、对 1 次还 1，封顶 4；即错一次要连对两次才回到基准。
+    /// 只读 `practice.tsv` 已有的三列，不新增落盘内容，也不参与候选排序。
+    static func weight(for row: PracticeProgress.Row?) -> Int {
+        guard let row, row.attempts > 0 else { return 2 }
+        let wrong = max(0, row.attempts - row.correct)
+        let debt = min(4, max(0, wrong * 2 - row.correct))
+        return 1 + debt * 4
+    }
+
+    /// 按权重抽下一题；题库多于一题时不连出同一个字。`pick` 仅供测试注入（参数为总权重，返回 `0..<总权重`）。
     @discardableResult
-    func next() -> PracticeQuestion? {
-        question = bank.randomElement()
+    func next(pick: (Int) -> Int = { Int.random(in: 0..<$0) }) -> PracticeQuestion? {
+        let previous = question?.char
+        let pool = bank.count > 1 ? bank.filter { $0.char != previous } : bank
+        let weights = pool.map { Self.weight(for: progress.row(char: $0.char, kind: kind)) }
+        let total = weights.reduce(0, +)
+        guard total > 0 else {
+            question = nil
+            return nil
+        }
+        var remaining = min(max(0, pick(total)), total - 1)
+        question = pool.last
+        for (candidate, weight) in zip(pool, weights) {
+            if remaining < weight {
+                question = candidate
+                break
+            }
+            remaining -= weight
+        }
         return question
     }
 
