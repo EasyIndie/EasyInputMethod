@@ -136,6 +136,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
+        key: "candidate.hint_wubi_code",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "true",
+        title_zh: "拼音上屏后提示五笔码",
+        doc_zh: "混输模式下用拼音打出字词后，在光标旁短暂提示它的五笔码，帮助下次直接用五笔",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
         key: "appearance.theme",
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],

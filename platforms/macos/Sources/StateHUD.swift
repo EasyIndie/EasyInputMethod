@@ -20,6 +20,12 @@ enum StateFeedback {
     static func punctuation(_ chinese: Bool) -> String { chinese ? "中文标点" : "英文标点" }
     static func variant(_ traditional: Bool) -> String { traditional ? "繁体" : "简体" }
     static func learning(_ shown: Bool) -> String { shown ? "学习区：开" : "学习区：关" }
+
+    /// 用拼音打出的字词的五笔码提示（ADR-331）；没有码或超过 4 个字（不是常用词）时不提示。
+    static func wubiHint(text: String, code: String?) -> String? {
+        guard let code, !code.isEmpty, (1...4).contains(text.count) else { return nil }
+        return "\(text) 五笔 \(code.uppercased())"
+    }
 }
 
 /// 供离屏快照与正式浮层共用的胶囊视图。

@@ -120,6 +120,9 @@ print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service 
 
 require(StateFeedback.language(true) == "英文" && StateFeedback.language(false) == "中文", "language feedback")
 require(StateFeedback.width(true) == "全角" && StateFeedback.width(false) == "半角", "width feedback")
+require(StateFeedback.wubiHint(text: "你好", code: "wqvb") == "你好 五笔 WQVB", "wubi code hint")
+require(StateFeedback.wubiHint(text: "你好", code: nil) == nil && StateFeedback.wubiHint(text: "中华人民共和国", code: "kwwl") == nil,
+        "no hint without a code or for long phrases")
 require(StateFeedback.punctuation(true) == "中文标点" && StateFeedback.punctuation(false) == "英文标点", "punctuation feedback")
 require(StateFeedback.variant(true) == "繁体" && StateFeedback.variant(false) == "简体", "variant feedback")
 require(StateFeedback.mode("mixed") == "混输模式" && StateFeedback.mode("wubi") == "五笔模式"
