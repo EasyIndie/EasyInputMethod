@@ -60,6 +60,15 @@ if let rootQuestion = rootBank.first {
     require(Practice.judgeCode(rootQuestion.code.uppercased(), question: rootQuestion), "字根题大小写不敏感")
     require(!Practice.judgeCode("z", question: rootQuestion), "错键判错")
 }
+// ADR-334：词组题——取随包码表最常用的 2–4 字词，讲解按取码规则拆到每个字。
+let phraseSample = "# c\nwqvb\t你好\t50\nwqvb\t你好\t40\nkwwl\t中华人民共和国\t99\nwgkl\t全国\t70\nabc\t短码\t90\nyygk\t计算机\t60\nwwwl\t从众如流\t5\nggll\t一\t999\n"
+let phrases = Practice.phraseBank(tsv: phraseSample, limit: 3)
+require(phrases.map(\.char) == ["全国", "计算机", "你好"], "按权重取前 3 个 2–4 字词，去重、跳过单字/长词/短码：\(phrases.map(\.char))")
+require(Practice.phraseParts(word: "你好", code: "wqvb").map { "\($0.glyph)\($0.key)" } == ["你WQ", "好VB"], "两字词各取前两码")
+require(Practice.phraseParts(word: "计算机", code: "yygk").map(\.key) == ["Y", "Y", "GK"], "三字词 1+1+2")
+require(Practice.phraseParts(word: "从众如流", code: "wwwl").map(\.key) == ["W", "W", "W", "L"], "四字词各取首码")
+require(Practice.phraseParts(word: "中华人民共和国", code: "kwwl").isEmpty, "规则外的长度不乱讲")
+require(Practice.bank(kind: .phrase).count == Practice.phraseLimit, "随包码表应出满词组题：\(Practice.bank(kind: .phrase).count)")
 // ADR-328：出题按错题加权——没练过 2、错一次 9、错一次后连对两次回到 1；且不连出同一个字。
 typealias Row = PracticeProgress.Row
 require(PracticeSession.weight(for: nil) == 2, "没练过的字权重 2")
@@ -110,6 +119,7 @@ for kind in PracticeKind.allCases {
         case .code1: require(question.short1?.count == 1, "一级简码题必须有一级简码")
         case .code2: require(question.short2?.count == 2, "二级简码题必须有二级简码")
         case .code: require(!question.code.isEmpty, "完整码题必须有码")
+        case .phrase: require(question.code.count == 4 && (2...4).contains(question.char.count), "词组题是 2–4 字、4 位码")
         case .recognition: require(question.recognition != nil, "识别码题必须有识别码")
         }
     }
@@ -233,7 +243,11 @@ for light in [true, false] {
         try? data.write(to: flowDir.appendingPathComponent("practice-roots-\(light ? "light" : "dark").png"))
     }
 }
-for kind in [PracticeKind.roots, .code, .recognition] {
+if let image = PracticeWindow.shared.renderForTesting(kind: .phrase, progressURL: flowDir.appendingPathComponent("render.tsv"), light: true),
+   let data = image.representation(using: .png, properties: [:]) {
+    try? data.write(to: flowDir.appendingPathComponent("practice-phrase-light.png"))
+}
+for kind in [PracticeKind.roots, .code, .phrase, .recognition] {
     let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)
     require(problems.isEmpty, "练习窗口版式问题：\(problems.joined(separator: "; "))")
 }

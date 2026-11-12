@@ -29,6 +29,8 @@ class WubiLearningTests(unittest.TestCase):
             # 键位字根分布（modules/keymap 生成物）：与 bundle 内同名资源一致
             shutil.copyfile(ROOT / "modules/keymap/data/key-roots-wubi86.tsv",
                             resources / "key-roots-wubi86.tsv")
+            # 词组题库（ADR-334）读随包码表
+            shutil.copyfile(ROOT / "data/generated/wubi86-core.tsv", resources / "wubi86-core.tsv")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
                            "CLANG_MODULE_CACHE_PATH": str(temporary / "module-cache")}
             commands = [
