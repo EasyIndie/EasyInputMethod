@@ -120,6 +120,21 @@ print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service 
 
 require(StateFeedback.language(true) == "英文" && StateFeedback.language(false) == "中文", "language feedback")
 require(StateFeedback.width(true) == "全角" && StateFeedback.width(false) == "半角", "width feedback")
+// ADR-333：按应用记住中英状态——没记过不表态、能覆盖、有界、空标识不记。
+var languageMemory = AppLanguageMemory()
+require(languageMemory.english(for: "com.apple.Terminal") == nil, "unknown app has no remembered state")
+languageMemory.remember(true, for: "com.apple.Terminal")
+languageMemory.remember(false, for: "com.apple.TextEdit")
+require(languageMemory.english(for: "com.apple.Terminal") == true && languageMemory.english(for: "com.apple.TextEdit") == false,
+        "per-app state")
+languageMemory.remember(false, for: "com.apple.Terminal")
+require(languageMemory.english(for: "com.apple.Terminal") == false, "latest state wins")
+languageMemory.remember(true, for: nil)
+languageMemory.remember(true, for: "")
+require(languageMemory.count == 2, "missing bundle ids are ignored")
+for index in 0..<(AppLanguageMemory.capacity + 5) { languageMemory.remember(true, for: "app.\(index)") }
+require(languageMemory.count == AppLanguageMemory.capacity && languageMemory.english(for: "com.apple.TextEdit") == nil,
+        "bounded: the stalest apps are dropped")
 require(StateFeedback.wubiHint(text: "你好", code: "wqvb") == "你好 五笔 WQVB", "wubi code hint")
 require(StateFeedback.wubiHint(text: "你好", code: nil) == nil && StateFeedback.wubiHint(text: "中华人民共和国", code: "kwwl") == nil,
         "no hint without a code or for long phrases")

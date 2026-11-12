@@ -23,6 +23,7 @@ fn common_input_terms_are_reachable_and_submit_the_displayed_candidate() {
         auto_commit: false,
         fuzzy: true,
         z_wildcard: false,
+        double_pinyin: false,
     });
     for mode in [InputMode::WubiOnly, InputMode::PinyinOnly, InputMode::Mixed] {
         session.set_mode(mode);

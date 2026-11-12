@@ -91,6 +91,17 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "pinyin.scheme",
+        value_type: ValueType::Enum {
+            values: &["full", "xiaohe"],
+        },
+        enum_labels_zh: &["全拼", "小鹤双拼"],
+        default: "\"full\"",
+        title_zh: "拼音方案",
+        doc_zh: "全拼，或小鹤双拼（两键一个音节）；双拼只在「拼音」模式下生效，混输模式仍按全拼兜底",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "candidate.count",
         value_type: ValueType::Int { min: 3, max: 9 },
         enum_labels_zh: &[],
@@ -142,6 +153,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         default: "true",
         title_zh: "拼音上屏后提示五笔码",
         doc_zh: "混输模式下用拼音打出字词后，在光标旁短暂提示它的五笔码，帮助下次直接用五笔",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
+        key: "practice.collect_weak_chars",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "false",
+        title_zh: "记录薄弱字用于练习",
+        doc_zh: "混输模式下把靠拼音打出的单字记到本机 weak-chars.tsv，练习「完整码」时多出这些字；不上传、不影响候选排序，重置练习进度时一并清空",
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
@@ -285,6 +305,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         default: "true",
         title_zh: "数字后的 . 和 : 保持半角",
         doc_zh: "数字后紧跟的 . 和 : 不转成中文标点，便于输入小数、版本号与时间（如 3.14、12:30）",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
+        key: "input.remember_english_per_app",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "true",
+        title_zh: "按应用记住中英状态",
+        doc_zh: "在某个应用里切到英文后，回到该应用时保持英文；只记在内存里，退出输入法即清空",
         scope: Scope::Engine,
     },
     OptionSpec {

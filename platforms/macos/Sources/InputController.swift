@@ -18,6 +18,8 @@ final class LampyrisInputController: IMKInputController {
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
     private var dataLoadError: String?
+    /// 各应用上次的中英状态（ADR-333）。所有控制器共享，只在内存里。
+    private static var languageMemory = AppLanguageMemory()
 
     // MARK: - 生命周期
 
@@ -39,6 +41,7 @@ final class LampyrisInputController: IMKInputController {
             session = makeSession()
         }
         if candidateWindow == nil { candidateWindow = CandidateWindow() }
+        restoreLanguage()
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in
             self?.configChanged(key)
         }
@@ -48,6 +51,7 @@ final class LampyrisInputController: IMKInputController {
     }
 
     override func deactivateServer(_ sender: Any!) {
+        rememberLanguage()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
         ConfigWatcher.shared.clear(owner: self)
         activeClient = nil
@@ -58,6 +62,20 @@ final class LampyrisInputController: IMKInputController {
         if let workspaceObserver {
             NSWorkspace.shared.notificationCenter.removeObserver(workspaceObserver)
         }
+    }
+
+    /// 记下当前应用的中英状态（ADR-333）。
+    private func rememberLanguage() {
+        guard let session, ImeConfig.bool("input.remember_english_per_app") else { return }
+        Self.languageMemory.remember(session.isEnglish, for: activeClient?.bundleIdentifier())
+    }
+
+    /// 回到一个应用时恢复它上次的中英状态；没记过就不动。静默恢复，不弹提示。
+    private func restoreLanguage() {
+        guard let session, ImeConfig.bool("input.remember_english_per_app"),
+              let english = Self.languageMemory.english(for: activeClient?.bundleIdentifier()),
+              session.isEnglish != english else { return }
+        session.toggleEnglish()
     }
 
     override func commitComposition(_ sender: Any!) {
@@ -262,6 +280,7 @@ final class LampyrisInputController: IMKInputController {
             session.reset()
         }
         session?.toggleEnglish()
+        rememberLanguage()
         showStateFeedback(StateFeedback.language(session?.isEnglish ?? false))
         refreshAfterStateChange()
     }
@@ -527,6 +546,7 @@ final class LampyrisInputController: IMKInputController {
         let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
         let shortcut = session.shortcut(event, persistMode: true)
         guard shortcut.consumed else { return false }
+        rememberLanguage()
         if session.mode != modeBeforeShortcut {
             showStateFeedback(StateFeedback.mode(session.mode))
         } else if ImeConfig.bool("candidate.show_wubi_learning") != learningBeforeShortcut {
@@ -581,6 +601,7 @@ final class LampyrisInputController: IMKInputController {
                         if Self.hudDiagEnabled { Self.hudDiag("shift committed raw=\(raw)") }
                     }
                     candidateWindow?.hide()
+                    rememberLanguage()
                     // 键盘单独 Shift 与菜单/快捷键走同一提示：候选窗已隐藏，这里应弹 HUD。
                     showStateFeedback(StateFeedback.language(session.isEnglish))
                 }
@@ -740,10 +761,14 @@ final class LampyrisInputController: IMKInputController {
     private func hintWubiCode(for text: String) {
         let shown = shownCandidates
         shownCandidates = []
-        guard !text.isEmpty, session?.mode == "mixed", ImeConfig.bool("candidate.hint_wubi_code"),
-              shown.contains(where: { $0.text == text && $0.source == .pinyin }),
-              let message = StateFeedback.wubiHint(text: text, code: WubiLearning.lookup(text)?.code)
-        else { return }
+        guard !text.isEmpty, session?.mode == "mixed",
+              shown.contains(where: { $0.text == text && $0.source == .pinyin }) else { return }
+        let hint = ImeConfig.bool("candidate.hint_wubi_code")
+        let collect = text.count == 1 && ImeConfig.bool("practice.collect_weak_chars")
+        guard hint || collect, let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return }
+        // 薄弱字清单（ADR-335，默认关）：有五笔码却靠拼音打出来的单字，留给练习多出几次。
+        if collect { WeakChars.shared.record(text) }
+        guard hint, let message = StateFeedback.wubiHint(text: text, code: code) else { return }
         StateHUDController.shared.show(message, caret: hudCaretRect())
     }
 

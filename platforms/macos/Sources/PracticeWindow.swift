@@ -70,7 +70,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let strokeButtons = Practice.strokes.map { NSButton(title: $0, target: nil, action: nil) }
     private let structureButtons = Practice.structures.map { NSButton(title: $0, target: nil, action: nil) }
     private var practiceProgress: PracticeProgress?
-    private lazy var session = PracticeSession(kind: .code, progress: progress)
+    private lazy var session = PracticeSession(kind: .code, progress: progress, weak: WeakChars.shared)
     private var current: PracticeQuestion? { session.question }
     private var pendingStroke: String?
     private var pendingStructure: String?
@@ -323,14 +323,15 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let target: String? = {
             switch kind {
             case .roots: return "键位 \(question.code.uppercased())"
+            case .phrase: return "词组码 \(question.code.uppercased())"
             case .code1: return question.short1.map { "一级 \($0.uppercased())" }
             case .code2: return question.short2.map { "二级 \($0.uppercased())" }
             default: return "完整码 \(question.code.uppercased())"
             }
         }()
-        // 字根题的「码」只是所在键，不是这个字根作为汉字的完整码，不能当完整码展示（否则教错）。
+        // 字根题的「码」只是所在键、词组题的码是词组码，都不是单字的完整码，不能当「完整码」展示（否则教错）。
         explanation.show(char: question.char, roots: question.roots,
-                         recognition: question.recognition, code: kind == .roots ? "" : question.code,
+                         recognition: question.recognition, code: kind == .roots || kind == .phrase ? "" : question.code,
                          short1: question.short1, short2: question.short2,
                          target: target, revealsAnswer: revealsAnswer)
     }
@@ -410,6 +411,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             case .roots, .code1: return 1
             case .code2: return 2
             case .code: return min(4, max(3, question.code.count))
+            case .phrase: return 4
             case .recognition: return 4
             }
         }()
@@ -497,11 +499,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     @objc private func resetProgress() {
         let alert = NSAlert()
         alert.messageText = "重置练习进度？"
-        alert.informativeText = "会删除本机的 practice.tsv（已练字数、次数、正确率归零）。此操作不可撤销。"
+        alert.informativeText = "会删除本机的 practice.tsv（已练字数、次数、正确率归零）和薄弱字清单 weak-chars.tsv。此操作不可撤销。"
         alert.addButton(withTitle: "重置")
         alert.addButton(withTitle: "取消")
         guard alert.runModal() == .alertFirstButtonReturn else { return }
         progress.reset()
+        WeakChars.shared.reset()
         session.reload()
         showCurrent()
     }
@@ -572,6 +575,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         case .code1: return "打出它的一级简码（1 位）"
         case .code2: return "打出它的二级简码（2 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
+        case .phrase: return "打出这个词的词组码（4 位）"
         }
     }
 

@@ -500,6 +500,9 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
             auto_commit: boolean("wubi.auto_commit"),
             fuzzy: boolean("pinyin.fuzzy"),
             z_wildcard: cfg.get("wubi.z_key").and_then(|v| v.as_str()) == Some("wildcard"),
+            // 双拼键与五笔码无法共存：只在纯拼音模式下启用（ADR-336）。
+            double_pinyin: s.session.mode() == InputMode::PinyinOnly
+                && cfg.get("pinyin.scheme").and_then(|v| v.as_str()) == Some("xiaohe"),
         });
         let traditional =
             cfg.get("input.chinese_variant").and_then(|v| v.as_str()) == Some("traditional");

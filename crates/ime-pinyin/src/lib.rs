@@ -12,11 +12,13 @@
 #![forbid(unsafe_code)]
 
 mod backend;
+mod double;
 mod engine;
 mod syllable;
 mod table;
 
 pub use backend::{PinyinBackend, PinyinCandidate};
+pub use double::{expand as expand_double_pinyin, Expanded};
 pub use engine::PinyinEngine;
 pub use syllable::{segment, strip_tones, tone_base, MAX_SYLLABLE_LEN};
 pub use table::{TablePinyinBackend, TsvError};

@@ -139,6 +139,8 @@ pub struct EngineOptions {
     pub auto_commit: bool,
     pub z_wildcard: bool,
     pub fuzzy: bool,
+    /// Interpret pinyin input as double pinyin (two keys per syllable, ADR-336).
+    pub double_pinyin: bool,
 }
 
 pub trait Engine: Send {
@@ -1148,6 +1150,7 @@ mod tests {
             auto_commit: false,
             z_wildcard: true,
             fuzzy: false,
+            double_pinyin: false,
         };
         for session in [&mut first, &mut second] {
             session.set_pinyin_engine(Box::new(ChangingEngine(false)));

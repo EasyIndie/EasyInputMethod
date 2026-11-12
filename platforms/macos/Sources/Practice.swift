@@ -2,7 +2,7 @@ import Foundation
 
 /// 离线练习（ADR-313）：只从 `full` 条目出题，本地判分，进度写本地有界 TSV。
 ///
-/// 题型：字根 / 一级简码 / 二级简码 / 完整码 / 识别码，按入门到熟练的顺序排（ADR-332）。
+/// 题型：字根 / 一级简码 / 二级简码 / 完整码 / 词组 / 识别码，按入门到熟练的顺序排（ADR-332/334）。
 /// 字根题取自键位字根表（`KeyRootLayout`），其余复用 `LearningHints`（ADR-311）。
 ///
 /// 三级简码需要"哪些字真有三级简码"的码表（引擎侧至今没收录，ADR-314 关闭），此处不提供，
@@ -12,6 +12,7 @@ enum PracticeKind: String, CaseIterable {
     case code1 = "code1"
     case code2 = "code2"
     case code = "code"
+    case phrase = "phrase"
     case recognition = "recognition"
 
     var title: String {
@@ -20,6 +21,7 @@ enum PracticeKind: String, CaseIterable {
         case .code1: return "一级简码"
         case .code2: return "二级简码"
         case .code: return "完整码"
+        case .phrase: return "词组"
         case .recognition: return "识别码"
         }
     }
@@ -33,7 +35,7 @@ enum PracticeKind: String, CaseIterable {
         case .roots: return question.code
         case .code1: return question.short1
         case .code2: return question.short2
-        case .code: return question.code
+        case .code, .phrase: return question.code
         case .recognition: return nil
         }
     }
@@ -45,6 +47,7 @@ enum PracticeKind: String, CaseIterable {
         case .code1: return "打出它的一级简码（1 位）"
         case .code2: return "打出它的二级简码（2 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
+        case .phrase: return "打出这个词的词组码（4 位）"
         case .recognition: return "按上面的字根与键位，判断末笔与结构"
         }
     }
@@ -76,6 +79,7 @@ enum Practice {
     /// 出题范围：`full` 且带完整码与字根（可判分）。
     static func bank(kind: PracticeKind, limit: Int = 3000) -> [PracticeQuestion] {
         if kind == .roots { return rootBank(layout: KeyRootLayout.load()) }
+        if kind == .phrase { return phraseBank }
         var out: [PracticeQuestion] = []
         for char in LearningHints.fullCharacters.prefix(limit) {
             guard let hint = LearningHints.hint(for: char), hint.quality == "full",
@@ -106,6 +110,62 @@ enum Practice {
             }
         }
         return out
+    }
+
+    /// 词组题库上限：只取最常用的一批，练的是取码规则而不是背词表。
+    static let phraseLimit = 800
+
+    /// 词组题库（ADR-334）：随包码表里最常用的 2–4 字词，答案是 4 位词组码。首次用到时读一次。
+    static let phraseBank: [PracticeQuestion] = {
+        let name = "wubi86-core.tsv"
+        let bundle = Bundle.main
+        let candidates = [bundle.resourceURL?.appendingPathComponent(name),
+                          bundle.bundleURL.appendingPathComponent("Resources/\(name)"),
+                          bundle.bundleURL.deletingLastPathComponent().appendingPathComponent("Resources/\(name)")]
+        guard let url = candidates.compactMap({ $0 }).first(where: { FileManager.default.fileExists(atPath: $0.path) }),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return [] }
+        return phraseBank(tsv: text, limit: phraseLimit)
+    }()
+
+    /// 从码表文本挑词组题：2–4 个字、4 位码，按权重降序（同权重按码、词排，结果确定）。
+    static func phraseBank(tsv: String, limit: Int) -> [PracticeQuestion] {
+        var rows: [(code: Substring, text: Substring, weight: Int)] = []
+        for line in tsv.split(separator: "\n") where !line.hasPrefix("#") {
+            let fields = line.split(separator: "\t")
+            guard fields.count >= 3, fields[0].count == 4, (2...4).contains(fields[1].count),
+                  let weight = Int(fields[2]) else { continue }
+            rows.append((fields[0], fields[1], weight))
+        }
+        rows.sort { ($1.weight, $0.code, $0.text) < ($0.weight, $1.code, $1.text) }
+        var seen = Set<Substring>()
+        var out: [PracticeQuestion] = []
+        for row in rows where seen.insert(row.text).inserted {
+            let word = String(row.text), code = String(row.code)
+            out.append(PracticeQuestion(kind: .phrase, char: word, code: code,
+                                        roots: phraseParts(word: word, code: code), recognition: nil,
+                                        short1: nil, short2: nil))
+            if out.count >= limit { break }
+        }
+        return out
+    }
+
+    /// 词组取码规则：两字词各取前两码；三字词前两字各取首码、末字取前两码；四字词各取首码。
+    /// 返回「每个字 → 它贡献的码」，供答后讲解；长度对不上规则时返回空（不乱讲）。
+    static func phraseParts(word: String, code: String) -> [(glyph: String, key: String)] {
+        let chars = word.map(String.init), letters = Array(code.uppercased())
+        let spans: [Int]
+        switch chars.count {
+        case 2: spans = [2, 2]
+        case 3: spans = [1, 1, 2]
+        case 4: spans = [1, 1, 1, 1]
+        default: return []
+        }
+        guard letters.count == 4 else { return [] }
+        var index = 0
+        return zip(chars, spans).map { glyph, span in
+            defer { index += span }
+            return (glyph: glyph, key: String(letters[index..<(index + span)]))
+        }
     }
 
     /// 判分：敲码类题型（大小写与空白不敏感）。
@@ -218,6 +278,70 @@ final class PracticeProgress {
 }
 
 
+/// 薄弱字清单（ADR-335）：混输下靠拼音兜底打出来的单字，说明它的五笔码还没记住。
+///
+/// **默认不记**（`practice.collect_weak_chars` 关）；只存本机一个有界 TSV，删除即清空；
+/// 只用来让「完整码」练习多出这些字，**不参与候选排序、不上报**。
+final class WeakChars {
+    static let shared = WeakChars(url: defaultURL())
+    static let maxRows = 500
+    private(set) var rows: [String: (count: Int, lastSeen: Int)] = [:]
+    let url: URL
+
+    init(url: URL) {
+        self.url = url
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return }
+        for line in text.split(separator: "\n") where !line.hasPrefix("#") {
+            let fields = line.split(separator: "\t").map(String.init)
+            guard fields.count == 3, fields[0].count == 1, let count = Int(fields[1]), let last = Int(fields[2])
+            else { continue }
+            rows[fields[0]] = (count, last)
+        }
+    }
+
+    static func defaultURL() -> URL {
+        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return base.appendingPathComponent("Lampyris/weak-chars.tsv")
+    }
+
+    func contains(_ char: String) -> Bool { rows[char] != nil }
+
+    /// 记一次；只收单个汉字。超过上限时丢掉次数最少、最久没出现的。
+    func record(_ char: String, now: Int = Int(Date().timeIntervalSince1970)) {
+        guard char.count == 1, char.unicodeScalars.allSatisfy({ $0.value >= 0x3400 }) else { return }
+        rows[char] = ((rows[char]?.count ?? 0) + 1, now)
+        if rows.count > Self.maxRows {
+            let drop = rows.sorted { ($0.value.count, $0.value.lastSeen) < ($1.value.count, $1.value.lastSeen) }
+                .prefix(rows.count - Self.maxRows)
+            for item in drop { rows[item.key] = nil }
+        }
+        save()
+    }
+
+    /// 原子写：先写临时文件再替换；失败保留旧文件。
+    private func save() {
+        var lines = ["# 萤火虫薄弱字清单 v1：字\t拼音兜底次数\t最近时间（离线，可删除清空）"]
+        for (char, row) in rows.sorted(by: { $0.key < $1.key }) {
+            lines.append("\(char)\t\(row.count)\t\(row.lastSeen)")
+        }
+        let directory = url.deletingLastPathComponent()
+        try? FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        let temporary = directory.appendingPathComponent(".weak-chars.tsv.\(UUID().uuidString)")
+        do {
+            try (lines.joined(separator: "\n") + "\n").write(to: temporary, atomically: false, encoding: .utf8)
+            _ = try FileManager.default.replaceItemAt(url, withItemAt: temporary)
+        } catch {
+            try? FileManager.default.removeItem(at: temporary)
+        }
+    }
+
+    /// 清空并删除文件。
+    func reset() {
+        rows = [:]
+        try? FileManager.default.removeItem(at: url)
+    }
+}
+
 /// 一局练习的纯逻辑（无 AppKit），便于自动化测试跑通流程。
 final class PracticeSession {
     struct Result {
@@ -230,9 +354,15 @@ final class PracticeSession {
     private let progress: PracticeProgress
     private(set) var bank: [PracticeQuestion] = []
 
-    init(kind: PracticeKind, progress: PracticeProgress) {
+    /// 薄弱字清单：「完整码」题型里这些字额外加权（ADR-335）；`nil` = 不用。
+    private let weak: WeakChars?
+    /// 薄弱字的额外权重：相当于「错过一次」。
+    static let weakBonus = 8
+
+    init(kind: PracticeKind, progress: PracticeProgress, weak: WeakChars? = nil) {
         self.kind = kind
         self.progress = progress
+        self.weak = weak
         reload()
     }
 
@@ -263,7 +393,10 @@ final class PracticeSession {
     func next(pick: (Int) -> Int = { Int.random(in: 0..<$0) }) -> PracticeQuestion? {
         let previous = question?.char
         let pool = bank.count > 1 ? bank.filter { $0.char != previous } : bank
-        let weights = pool.map { Self.weight(for: progress.row(char: $0.char, kind: kind)) }
+        let weights = pool.map { question -> Int in
+            let bonus = kind == .code && weak?.contains(question.char) == true ? Self.weakBonus : 0
+            return Self.weight(for: progress.row(char: question.char, kind: kind)) + bonus
+        }
         let total = weights.reduce(0, +)
         guard total > 0 else {
             question = nil
