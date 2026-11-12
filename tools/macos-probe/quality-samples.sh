@@ -114,6 +114,68 @@ run "翻页键不破坏输入"         'nihao ,,,'                             '
 run "撤销回到空态"            'wqiy;cmd+z'                            'empty:'
 run "长文本不丢字"            'nihao nihao nihao nihao wqiy '         'contains:你好你好'
 
+# —— 1.2.1 之后的输入体验（ADR-325…336） ——
+# 限制：按键串用分号分段，探针打不出字面的 `;` 与 `:`，所以「; 选第二候选」「12:30」只有单测覆盖。
+ensure_cn >/dev/null 2>&1
+run "数字后句点保持半角"       '3.14'                                  'exact:3.14'
+run "数字后逗号仍是中文"       '3,'                                    'exact:3，'
+run "拼音没打完给补全"         'nih '                                  'exact:你好'
+run "以词定字取首字"           'nihao['                                'exact:你'
+run "以词定字取末字"           'nihao]'                                'exact:好'
+# 选走前半段（第二候选「你好」只覆盖 nihao）后回车：已选文字 + 余码原文一起上屏。
+run "分段选词后回车"           'nihaoshijie2;return'                   'exact:你好shijie'
+
+# 改配置只走 ime-config 的写路径（ime-cli :set），用完还原；缺 ime-cli 就记 BLOCKED，不手改 config.toml。
+ROOT="$(cd "$PROBE/../.." && pwd)"
+IME_CLI="$ROOT/target/release/ime-cli"
+CONFIG_FILE="$HOME/Library/Application Support/Lampyris/config.toml"
+cfg_set() { printf ':set %s %s\n:quit\n' "$1" "$2" | "$IME_CLI" --config "$CONFIG_FILE" >/dev/null 2>&1; sleep 1.2; }
+
+case_double_pinyin() {
+    TOTAL=$((TOTAL + 1))
+    [ -x "$IME_CLI" ] || { blocked "双拼（小鹤）" "缺 target/release/ime-cli（先 cargo build --release -p ime-cli）"; return; }
+    cfg_set mode '"pinyin"'; cfg_set pinyin.scheme '"xiaohe"'
+    got=$(type_read 'nihc ')
+    cfg_set pinyin.scheme '"full"'; cfg_set mode '"mixed"'
+    if check 'exact:你好' "$got"; then printf '%-26s PASS  %s\n' "双拼（小鹤）" "$got"
+    else printf '%-26s FAIL  期望 你好，实得 %s\n' "双拼（小鹤）" "$got"; FAILED=$((FAILED + 1)); fi
+}
+
+case_weak_chars() {
+    TOTAL=$((TOTAL + 1))
+    [ -x "$IME_CLI" ] || { blocked "薄弱字清单" "缺 target/release/ime-cli"; return; }
+    weak="$HOME/Library/Application Support/Lampyris/weak-chars.tsv"
+    existed=0; [ -f "$weak" ] && { existed=1; cp "$weak" "$OUT/weak-chars.before.tsv"; }
+    cfg_set practice.collect_weak_chars true
+    # zhuang 超过 4 码，五笔不参与；首选是拼音单字。
+    got=$(type_read 'zhuang ')
+    sleep 0.5
+    recorded=0
+    [ -n "$got" ] && [ -f "$weak" ] && grep -q "^${got}	" "$weak" && recorded=1
+    cfg_set practice.collect_weak_chars false
+    # 还原：本用例造出来的文件删掉；原来就有的恢复原样。
+    if [ "$existed" -eq 1 ]; then cp "$OUT/weak-chars.before.tsv" "$weak"; else rm -f "$weak"; fi
+    if [ "$recorded" -eq 1 ]; then printf '%-26s PASS  %s 已记入\n' "薄弱字清单" "$got"
+    else printf '%-26s FAIL  上屏 %s，未见于 weak-chars.tsv\n' "薄弱字清单" "$got"; FAILED=$((FAILED + 1)); fi
+}
+
+case_remember_english() {
+    TOTAL=$((TOTAL + 1))
+    ensure_cn >/dev/null 2>&1
+    pid=$(front_pid); "$BIN/keytopid" "$pid" 'shiftc' 200 600 --hid >/dev/null 2>&1
+    # 同一应用里新建文档（新的输入上下文）：应仍是英文，字母原样上屏。
+    new_doc
+    got=$(type_read 'nihao')
+    ensure_cn >/dev/null 2>&1
+    if check 'exact:nihao' "$got"; then printf '%-26s PASS  %s\n' "按应用记住英文状态" "$got"
+    else printf '%-26s FAIL  期望 nihao，实得 %s\n' "按应用记住英文状态" "$got"; FAILED=$((FAILED + 1)); fi
+}
+
+case_double_pinyin
+case_weak_chars
+case_remember_english
+ensure_cn >/dev/null 2>&1
+
 # —— 切换与焦点（MVP「日常可用」条目） ——
 # 注意：用 TIS 切回输入源后，已开文档的输入上下文不会立即跟随；新建文档才会取到当前源。
 
