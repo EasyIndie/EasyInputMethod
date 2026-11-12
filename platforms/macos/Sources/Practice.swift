@@ -2,11 +2,13 @@ import Foundation
 
 /// 离线练习（ADR-313）：只从 `full` 条目出题，本地判分，进度写本地有界 TSV。
 ///
-/// 题型：一级简码 / 二级简码 / 完整码 / 识别码。数据复用 `LearningHints`（ADR-311）。
+/// 题型：字根 / 一级简码 / 二级简码 / 完整码 / 识别码，按入门到熟练的顺序排（ADR-332）。
+/// 字根题取自键位字根表（`KeyRootLayout`），其余复用 `LearningHints`（ADR-311）。
 ///
 /// 三级简码需要"哪些字真有三级简码"的码表（引擎侧至今没收录，ADR-314 关闭），此处不提供，
 /// 否则会把"前 3 码"当成三级简码教错。
 enum PracticeKind: String, CaseIterable {
+    case roots = "roots"
     case code1 = "code1"
     case code2 = "code2"
     case code = "code"
@@ -14,6 +16,7 @@ enum PracticeKind: String, CaseIterable {
 
     var title: String {
         switch self {
+        case .roots: return "字根"
         case .code1: return "一级简码"
         case .code2: return "二级简码"
         case .code: return "完整码"
@@ -27,6 +30,7 @@ enum PracticeKind: String, CaseIterable {
     /// 该题型要求的答案（字母）；识别码题型没有字母答案。
     func answer(for question: PracticeQuestion) -> String? {
         switch self {
+        case .roots: return question.code
         case .code1: return question.short1
         case .code2: return question.short2
         case .code: return question.code
@@ -37,6 +41,7 @@ enum PracticeKind: String, CaseIterable {
     /// 提示语。
     func prompt(for question: PracticeQuestion) -> String {
         switch self {
+        case .roots: return "这个字根在哪个键上？（1 位）"
         case .code1: return "打出它的一级简码（1 位）"
         case .code2: return "打出它的二级简码（2 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
@@ -70,6 +75,7 @@ enum Practice {
 
     /// 出题范围：`full` 且带完整码与字根（可判分）。
     static func bank(kind: PracticeKind, limit: Int = 3000) -> [PracticeQuestion] {
+        if kind == .roots { return rootBank(layout: KeyRootLayout.load()) }
         var out: [PracticeQuestion] = []
         for char in LearningHints.fullCharacters.prefix(limit) {
             guard let hint = LearningHints.hint(for: char), hint.quality == "full",
@@ -80,6 +86,24 @@ enum Practice {
             out.append(PracticeQuestion(kind: kind, char: char, code: code,
                                         roots: hint.roots, recognition: hint.recognition,
                                         short1: hint.short1, short2: hint.short2))
+        }
+        return out
+    }
+
+    /// 字根题库：每个键的键名字根与其余字根各出一题，答案是所在键（ADR-332）。
+    ///
+    /// 按键盘行序、口诀顺序排列，结果确定；Z 是万能键，没有字根，不出题。
+    static func rootBank(layout: KeyRootLayout) -> [PracticeQuestion] {
+        var out: [PracticeQuestion] = []
+        var seen = Set<String>()
+        for letter in layout.rows.joined() where letter != "Z" {
+            guard let entry = layout.entries[letter] else { continue }
+            let key = String(letter)
+            for glyph in [entry.keyName] + entry.roots where !glyph.isEmpty && seen.insert(glyph).inserted {
+                out.append(PracticeQuestion(kind: .roots, char: glyph, code: key.lowercased(),
+                                            roots: [(glyph: glyph, key: key)], recognition: nil,
+                                            short1: nil, short2: nil))
+            }
         }
         return out
     }

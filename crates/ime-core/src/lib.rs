@@ -82,6 +82,11 @@ pub struct Candidate {
     pub is_prefix: bool,
     /// A spelling approximation; exact matches rank first within the source.
     pub is_fuzzy: bool,
+    /// Bytes of the input this candidate stands for; `0` means the whole input.
+    ///
+    /// A non-zero value smaller than the input marks a *partial* candidate: choosing it keeps the
+    /// rest of the input in composition (ADR-330).
+    pub consumed: usize,
 }
 
 impl Candidate {
@@ -99,6 +104,21 @@ impl Candidate {
             comment: None,
             is_prefix: false,
             is_fuzzy: false,
+            consumed: 0,
+        }
+    }
+
+    /// Ordering class within one source: finished match, completion, then partial match.
+    ///
+    /// A completion still stands for everything typed so far, so it outranks a candidate that
+    /// only covers the front of the input (`nih` → 你好 before 你).
+    pub fn class(&self) -> u8 {
+        if self.is_prefix {
+            1
+        } else if self.consumed > 0 {
+            2
+        } else {
+            0
         }
     }
 }
@@ -162,6 +182,12 @@ pub struct Session {
     buffer: String,
     candidates: Vec<Candidate>,
     committed: String,
+    /// Text already chosen from the front of a long pinyin input, not yet committed (ADR-330).
+    pending: String,
+    /// Spelling consumed by `pending` (letters only), for learning the assembled phrase.
+    pending_code: String,
+    /// `(spelling, text)` of the last commit assembled from several choices.
+    assembled: Option<(String, String)>,
     page: usize,
     page_size: usize,
     english: bool,
@@ -359,6 +385,16 @@ impl Session {
         &self.buffer
     }
 
+    /// 预编辑文本：已分段选定的文字 + 还没转换的编码（ADR-330）。没有分段选词时等于 [`Session::buffer`]。
+    pub fn preedit(&self) -> String {
+        format!("{}{}", self.pending, self.buffer)
+    }
+
+    /// 取走最近一次「分段拼出来」的整句（拼写, 文字），供宿主层学成用户词；只能取一次。
+    pub fn take_assembled(&mut self) -> Option<(String, String)> {
+        self.assembled.take()
+    }
+
     pub fn candidates(&self) -> &[Candidate] {
         let size = self.page_size.max(1);
         let start = (self.page * size).min(self.candidates.len());
@@ -400,7 +436,7 @@ impl Session {
         scored.sort_by(|(a, a_score, _), (b, b_score, _)| {
             rank(a)
                 .cmp(&rank(b))
-                .then_with(|| a.is_prefix.cmp(&b.is_prefix))
+                .then_with(|| a.class().cmp(&b.class()))
                 .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b_score.cmp(a_score))
                 .then_with(|| b.weight.cmp(&a.weight))
@@ -514,6 +550,11 @@ impl Session {
     /// 按当前模式返回活跃引擎（M0：Mixed 只走五笔；拼音兜底 M2 接入）。
     fn active_engines(&self) -> Vec<&dyn Engine> {
         let mut engines: Vec<&dyn Engine> = Vec::new();
+        // 分段选词进行中：剩下的编码只按拼音解释，五笔不再插进来（也就不会四码自动上屏）。
+        if !self.pending.is_empty() {
+            engines.extend(self.pinyin.as_deref());
+            return engines;
+        }
         match self.mode {
             InputMode::Mixed => {
                 if let Some(e) = self.wubi.as_deref() {
@@ -539,6 +580,15 @@ impl Session {
 
     /// 处理一个按键。
     pub fn handle_key(&mut self, key: char) -> KeyOutcome {
+        self.assembled = None;
+        match self.handle_key_inner(key) {
+            // 上屏文本以 `commit` 写入的为准：它带上了分段选词已选定的前半段。
+            KeyOutcome::Committed(_) => KeyOutcome::Committed(self.committed.clone()),
+            other => other,
+        }
+    }
+
+    fn handle_key_inner(&mut self, key: char) -> KeyOutcome {
         // 只对「紧跟」生效：任何按键都会消耗这个标记（ADR-325）。
         let after_digit = std::mem::take(&mut self.after_digit);
         if self.english {
@@ -589,10 +639,8 @@ impl Session {
                 self.recompute()
             }
             ' ' => {
-                if let Some(first) = self.candidates().first() {
-                    let text = first.text.clone();
-                    self.commit(&text);
-                    KeyOutcome::Committed(text)
+                if let Some(outcome) = self.choose(0) {
+                    outcome
                 } else {
                     let text = self.buffer.clone();
                     self.commit(&text);
@@ -606,13 +654,7 @@ impl Session {
             }
             '1'..='9' => {
                 let idx = (key as u8 - b'1') as usize;
-                if let Some(c) = self.candidates().get(idx) {
-                    let text = c.text.clone();
-                    self.commit(&text);
-                    KeyOutcome::Committed(text)
-                } else {
-                    KeyOutcome::Consumed
-                }
+                self.choose(idx).unwrap_or(KeyOutcome::Consumed)
             }
             '-' | '+' | '=' => {
                 self.page(if key == '-' { -1 } else { 1 });
@@ -621,7 +663,11 @@ impl Session {
             '\u{8}' | '\u{7f}' => {
                 // 退格
                 self.buffer.pop();
-                if self.buffer.is_empty() {
+                if self.buffer.is_empty() && !self.pending.is_empty() {
+                    // 余码删光了：已选定的前半段照常上屏，不丢字。
+                    self.commit("");
+                    KeyOutcome::Committed(String::new())
+                } else if self.buffer.is_empty() {
                     self.cancel();
                     KeyOutcome::Consumed
                 } else {
@@ -633,15 +679,10 @@ impl Session {
                 self.cancel();
                 KeyOutcome::Consumed
             }
-            ';' | '\'' if self.selection_index(key).is_some() => {
-                let text = self
-                    .selection_index(key)
-                    .and_then(|index| self.candidates().get(index))
-                    .map(|c| c.text.clone())
-                    .unwrap_or_default();
-                self.commit(&text);
-                KeyOutcome::Committed(text)
-            }
+            ';' | '\'' if self.selection_index(key).is_some() => self
+                .selection_index(key)
+                .and_then(|index| self.choose(index))
+                .unwrap_or(KeyOutcome::Consumed),
             '[' | ']'
                 if self.pick_char_with_brackets
                     && self
@@ -682,9 +723,51 @@ impl Session {
 
     /// 选择第 `index` 个候选并上屏，返回上屏文本。
     pub fn select(&mut self, index: usize) -> Option<String> {
-        let text = self.candidates().get(index)?.text.clone();
-        self.commit(&text);
-        Some(text)
+        self.assembled = None;
+        match self.choose(index)? {
+            KeyOutcome::Committed(_) => Some(self.committed.clone()),
+            // 分段选词：还没上屏，返回空串；调用方应按 `composing()` 刷新预编辑。
+            _ => Some(String::new()),
+        }
+    }
+
+    /// 选定本页第 `index` 个候选。
+    ///
+    /// 普通候选直接上屏；**分段候选**（只代表输入的前一段，ADR-330）先记入预编辑，
+    /// 余下的编码留在组合里继续选，全部选完才一起上屏。
+    fn choose(&mut self, index: usize) -> Option<KeyOutcome> {
+        let candidate = self.candidates().get(index)?.clone();
+        let partial = candidate.consumed > 0
+            && candidate.consumed < self.buffer.len()
+            && self.buffer.is_char_boundary(candidate.consumed);
+        let letters =
+            |code: &str| -> String { code.chars().filter(char::is_ascii_lowercase).collect() };
+        if partial {
+            self.pending.push_str(&candidate.text);
+            self.pending_code.push_str(&letters(&candidate.code));
+            self.buffer.drain(..candidate.consumed);
+            let rest = self.buffer.trim_start_matches('\'').to_owned();
+            self.buffer = rest;
+            if self.buffer.is_empty() {
+                self.commit("");
+                return Some(KeyOutcome::Committed(String::new()));
+            }
+            self.page = 0;
+            let _ = self.recompute_with_commit(false);
+            return Some(KeyOutcome::Consumed);
+        }
+        let assembled = (!self.pending.is_empty()
+            && candidate.source == CandidateSource::Pinyin
+            && !candidate.is_prefix)
+            .then(|| {
+                (
+                    format!("{}{}", self.pending_code, letters(&candidate.code)),
+                    format!("{}{}", self.pending, candidate.text),
+                )
+            });
+        self.commit(&candidate.text);
+        self.assembled = assembled;
+        Some(KeyOutcome::Committed(String::new()))
     }
 
     /// End an input context while retaining its mode and transient preferences.
@@ -700,11 +783,15 @@ impl Session {
         self.composing = false;
         self.buffer.clear();
         self.candidates.clear();
+        self.pending.clear();
+        self.pending_code.clear();
         self.page = 0;
     }
 
+    /// 上屏：分段选词已选定的前半段（若有）+ `text`。
     fn commit(&mut self, text: &str) {
         self.committed.clear();
+        self.committed.push_str(&self.pending);
         self.committed.push_str(text);
         self.cancel();
     }
@@ -744,7 +831,7 @@ impl Session {
         merged.sort_by(|a, b| {
             usize::from(a.source == CandidateSource::Pinyin)
                 .cmp(&usize::from(b.source == CandidateSource::Pinyin))
-                .then_with(|| a.is_prefix.cmp(&b.is_prefix))
+                .then_with(|| a.class().cmp(&b.class()))
                 .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))

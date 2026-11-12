@@ -41,6 +41,9 @@ uint32_t ime_abi_version(void);
 #define IME_KEY_COMMITTED    1  /* 已上屏，随后取 ime_session_commit */
 #define IME_KEY_PASS_THROUGH 2  /* 与本输入法无关，宿主应透传 */
 
+/* ime_session_select 的额外返回值：选中了分段候选，没有上屏，组合继续（ADR-330） */
+#define IME_SELECT_PARTIAL 1
+
 /* ── 不透明句柄 ─────────────────────────────────────── */
 typedef struct ImeSession ImeSession;
 typedef struct ImeConfig ImeConfig;

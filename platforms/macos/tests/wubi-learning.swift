@@ -46,6 +46,20 @@ require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 1, "应记录
 require(flowProgress.rows.values.reduce(0) { $0 + $1.correct } == 1, "应记录 1 次正确")
 _ = flow.submitCode("zzzz")
 require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 2, "错误作答也应计数")
+// ADR-332：字根题——看字根打所在键；键名与其余字根各一题，Z 不出题，答案是 1 位键位。
+let rootBank = Practice.bank(kind: .roots)
+require(rootBank.count > 100, "应读到完整字根表而不是只有键名的兜底：\(rootBank.count)")
+require(Practice.rootBank(layout: .wubi86).count == 25, "资源缺失时退回 25 个键名字根")
+require(rootBank.count >= 25, "字根题库至少覆盖 25 个键名字根：\(rootBank.count)")
+require(rootBank.allSatisfy { $0.code.count == 1 && $0.code != "z" && $0.roots.count == 1 }, "字根题答案是 1 位键位且不含 Z")
+require(Set(rootBank.map(\.char)).count == rootBank.count, "同一个字根只出一题")
+require(rootBank.first(where: { $0.char == "金" })?.code == "q", "键名字根 金 在 Q")
+require(PracticeKind.allCases.first == .roots, "字根排在题型最前（入门第一步）")
+if let rootQuestion = rootBank.first {
+    require(PracticeKind.roots.answer(for: rootQuestion) == rootQuestion.code, "字根题答案取键位")
+    require(Practice.judgeCode(rootQuestion.code.uppercased(), question: rootQuestion), "字根题大小写不敏感")
+    require(!Practice.judgeCode("z", question: rootQuestion), "错键判错")
+}
 // ADR-328：出题按错题加权——没练过 2、错一次 9、错一次后连对两次回到 1；且不连出同一个字。
 typealias Row = PracticeProgress.Row
 require(PracticeSession.weight(for: nil) == 2, "没练过的字权重 2")
@@ -87,11 +101,12 @@ require(explanationLabel.contains("完整码 FTXB"), "整体展示应包含完�
 require(explanationLabel.contains("识别码 B"), "整体展示应包含识别码")
 
 // 题型：一级/二级简码只出有对应简码的字；答案取自简码而不是完整码
-for kind in [PracticeKind.code1, .code2, .code, .recognition] {
+for kind in PracticeKind.allCases {
     let bank = Practice.bank(kind: kind, limit: 300)
     require(!bank.isEmpty, "\(kind.title) 应有题")
     for question in bank.prefix(50) {
         switch kind {
+        case .roots: require(question.code.count == 1, "字根题答案是 1 位键位")
         case .code1: require(question.short1?.count == 1, "一级简码题必须有一级简码")
         case .code2: require(question.short2?.count == 2, "二级简码题必须有二级简码")
         case .code: require(!question.code.isEmpty, "完整码题必须有码")
@@ -210,7 +225,15 @@ require(answer.text == "gcf", "z 不接受")
 if let event = key("\r") { answer.keyDown(with: event) }
 require(submitted == "gcf", "回车提交")
 // ADR-313 练习窗口：版式自检（控件不越界、不与题型控件重叠）。
-for kind in [PracticeKind.code, PracticeKind.recognition] {
+// 字根题型的实拍（ADR-332）：亮/暗各一张，供人工目视。
+for light in [true, false] {
+    let progressURL = flowDir.appendingPathComponent("render.tsv")
+    if let image = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: progressURL, light: light),
+       let data = image.representation(using: .png, properties: [:]) {
+        try? data.write(to: flowDir.appendingPathComponent("practice-roots-\(light ? "light" : "dark").png"))
+    }
+}
+for kind in [PracticeKind.roots, .code, .recognition] {
     let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)
     require(problems.isEmpty, "练习窗口版式问题：\(problems.joined(separator: "; "))")
 }

@@ -74,6 +74,8 @@ impl Engine for PinyinEngine {
                     .into_iter()
                     .map(move |candidate| (candidate, form != input))
             })
+            // 模糊音改写后的拼写与用户输入不等长，分段候选的字节偏移对不上，丢弃。
+            .filter(|(candidate, is_fuzzy)| !(*is_fuzzy && candidate.consumed > 0))
             .map(|(pc, is_fuzzy)| Candidate {
                 text: pc.text,
                 code: pc.pinyin,
@@ -81,12 +83,13 @@ impl Engine for PinyinEngine {
                 source: CandidateSource::Pinyin,
                 comment: None,
                 is_prefix: pc.is_completion,
+                consumed: pc.consumed,
                 is_fuzzy,
             })
             .collect();
         candidates.sort_by(|a, b| {
-            a.is_prefix
-                .cmp(&b.is_prefix)
+            a.class()
+                .cmp(&b.class())
                 .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))

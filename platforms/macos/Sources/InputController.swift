@@ -13,6 +13,8 @@ final class LampyrisInputController: IMKInputController {
     private var candidateWindow: CandidateWindow?
     private var candidateSelection = CandidateSelectionState()
     private var candidateCount = 7
+    /// 候选窗当前显示的候选：上屏后用它判断「刚才选的是不是拼音候选」（ADR-331），不为此多取一次数据。
+    private var shownCandidates: [ImeCandidate] = []
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
     private var dataLoadError: String?
@@ -655,7 +657,8 @@ final class LampyrisInputController: IMKInputController {
         {
             commit(text, to: client)
             candidateSelection.reset()
-            candidateWindow?.hide()
+            refreshAfterSelection(client, session: session)
+            hintWubiCode(for: text)
             return true
         }
 
@@ -682,6 +685,7 @@ final class LampyrisInputController: IMKInputController {
                 candidateWindow?.hide()
             }
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
+            hintWubiCode(for: text)
             return true
         case .passThrough:
             return false
@@ -730,6 +734,29 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow?.announceCommitted(text)
     }
 
+    /// 混输下用拼音打出一个字/词后，在光标旁提示它的五笔码（ADR-331）。
+    ///
+    /// 只在「刚上屏的文本正是候选窗里的一个拼音候选」时提示：五笔打出来的不提示，分段拼出的整句也不提示。
+    private func hintWubiCode(for text: String) {
+        let shown = shownCandidates
+        shownCandidates = []
+        guard !text.isEmpty, session?.mode == "mixed", ImeConfig.bool("candidate.hint_wubi_code"),
+              shown.contains(where: { $0.text == text && $0.source == .pinyin }),
+              let message = StateFeedback.wubiHint(text: text, code: WubiLearning.lookup(text)?.code)
+        else { return }
+        StateHUDController.shared.show(message, caret: hudCaretRect())
+    }
+
+    /// 选词之后：分段候选（ADR-330）只选走了前半段，组合还在，刷新预编辑与候选；否则收起候选窗。
+    private func refreshAfterSelection(_ client: IMKTextInput, session: ImeSession) {
+        if session.isComposing {
+            updateMarked(client, session.buffer)
+            showCandidates(client, session: session)
+        } else {
+            candidateWindow?.hide()
+        }
+    }
+
     @discardableResult
     private func showCandidates(
         _ client: IMKTextInput, session: ImeSession, trace: PerfTrace.Marks? = nil
@@ -737,6 +764,7 @@ final class LampyrisInputController: IMKInputController {
         let candidates = PerfTrace.shared.measure(trace, phase: .candidateData) {
             session.candidates(limit: candidateCount)
         }
+        shownCandidates = candidates
         guard !candidates.isEmpty else {
             candidateWindow?.hide()
             return 0
@@ -745,11 +773,13 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow = window
         window.onSelect = { [weak self] index in
             guard let self, let client = self.activeClient, let session = self.session else { return }
-            if let text = session.select(index) {
+            let text = session.select(index)
+            if let text {
                 self.commit(text, to: client)
             }
             self.candidateSelection.reset()
-            self.candidateWindow?.hide()
+            self.refreshAfterSelection(client, session: session)
+            if let text { self.hintWubiCode(for: text) }
         }
         window.onPage = { [weak self] delta in
             guard let self, let client = self.activeClient, let session = self.session else { return }

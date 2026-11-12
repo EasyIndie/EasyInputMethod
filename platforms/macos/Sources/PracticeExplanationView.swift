@@ -52,7 +52,7 @@ final class PracticeExplanationView: NSView {
     private var summaryParts: [String] {
         var parts: [String] = []
         if let target, !target.isEmpty { parts.append(target) }
-        if let code {
+        if let code, !code.isEmpty {
             let full = "完整码 " + code.uppercased()
             if !parts.contains(full) { parts.append(full) }
         }

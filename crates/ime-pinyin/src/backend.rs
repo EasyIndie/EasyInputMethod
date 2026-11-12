@@ -13,6 +13,8 @@ pub struct PinyinCandidate {
     pub is_initial: bool,
     /// 是否为「拼音没打完」的补全候选（`nih` → 你好，ADR-326）。
     pub is_completion: bool,
+    /// 该候选只代表输入的前 `consumed` 个字节（分段候选，ADR-330）；`0` = 整串。
+    pub consumed: usize,
 }
 
 impl PinyinCandidate {
@@ -28,6 +30,7 @@ impl PinyinCandidate {
             weight,
             is_initial,
             is_completion: false,
+            consumed: 0,
         }
     }
 
@@ -35,6 +38,23 @@ impl PinyinCandidate {
     pub fn completion(mut self) -> Self {
         self.is_completion = true;
         self
+    }
+
+    /// Mark a candidate that covers only the first `consumed` bytes of the input.
+    pub fn partial(mut self, consumed: usize) -> Self {
+        self.consumed = consumed;
+        self
+    }
+
+    /// Ordering class: finished match, completion, then partial match.
+    pub fn class(&self) -> u8 {
+        if self.is_completion {
+            1
+        } else if self.consumed > 0 {
+            2
+        } else {
+            0
+        }
     }
 }
 
