@@ -1,24 +1,23 @@
 #!/bin/sh
-# ADR-263/292「常驻内存 ≤30MB」口径复测：新启动宿主 → marker 先行 → 四个固定时点采样 → 至少 3 个独立轮次。
-# 判定：稳态时点的「私有已提交」（Writable regions resident + swapped_out）≤ LIMIT_MB —— 这是进程自己持有的量。
-# footprint 仍然采样并打印，但只作参考：它含共享只读库页，随 macOS 版本变化（报告209：同一份 0.1.13 与 0.1.14
-# 在 macOS 27 上 footprint 29–34M、私有 26–29M；在 macOS 13 上 footprint 20.6–20.9M），跨版本不可比。
-# 注意：这也不是探针 RSS 口径（报告198）。
-# 用法：memory-gate.sh [ROUNDS=3]；输出 JSON 摘要 + 每轮 vmmap 全文到 OUT。
+# 常驻内存门禁（ADR-338）：新启动宿主 → marker 先行 → 四个固定时点采样 → 至少 3 个独立轮次。
+# 判定：稳态时点的**存活堆**（vmmap 的 MALLOC ZONE 表里 DefaultMallocZone 的已分配字节）≤ LIMIT_MB（默认 24 MiB）。
+# 这是进程此刻真正持有的数据量，不随系统内存压力变化。
+# 「私有已提交」（Writable regions resident + swapped_out）与 footprint 仍然采样并打印，但**只作参考**：
+# 它们含分配器已释放、系统尚未回收的页，swap 用满时偏低、swap 为空时偏高（报告265 §4.3：同一份包 31–34 对 35–37.6 MiB），
+# footprint 还含共享只读库页、随 macOS 版本变化（报告209）。两者都不是探针 RSS 口径（报告198）。
+# 用法：ROUNDS=3 memory-gate.sh；输出 JSON 摘要 + 每轮 vmmap 全文到 OUT。
+#       ANALYZE_ONLY=1 OUT=<已有目录> ROUNDS=<轮数> memory-gate.sh  只对已有快照重新判定，不重启宿主、不发键。
 set -u
 PROBE="$(cd "$(dirname "$0")" && pwd)"
 BIN="$PROBE/bin"
 SOURCE="${SOURCE:-cn.jokerhub.inputmethod.Lampyris.default}"
 ROUNDS="${ROUNDS:-3}"
-# ADR-312：默认配置（学习区关闭）守 30 MiB；学习区开启时放宽到 34 MiB（实测稳定差约 3 MiB，报告 256）。
-CALLER_LIMIT_MB="${LIMIT_MB:-}"
-LIMIT_MB="${LIMIT_MB:-30}"
+# ADR-338：存活堆实测约 20–21 MiB（学习区开启、新旧包一致），门槛 24 MiB，不再按学习区开关分档。
+LIMIT_MB="${LIMIT_MB:-24}"
+ANALYZE_ONLY="${ANALYZE_ONLY:-0}"
 OUT="${OUT:-/tmp/lampyris-memory-gate-$(date -u +%Y%m%dT%H%M%SZ)}"
 SUPPORT="${SUPPORT:-$HOME/Library/Application Support/Lampyris}"
 APP="$HOME/Library/Input Methods/Lampyris.app"
-if [ -z "$CALLER_LIMIT_MB" ] && grep -qE '^show_wubi_learning[[:space:]]*=[[:space:]]*true' "$SUPPORT/config.toml" 2>/dev/null; then
-    LIMIT_MB=34
-fi
 mkdir -p "$OUT"
 
 host_pid() { pgrep -x Lampyris | head -1; }
@@ -38,6 +37,7 @@ restart_host() {
 type_keys() { "$PROBE/type-session.sh" "$1" --settle 2 >/dev/null 2>&1; }
 
 ROUND=1
+[ "$ANALYZE_ONLY" = "1" ] && ROUND=$((ROUNDS + 1))
 while [ "$ROUND" -le "$ROUNDS" ]; do
     restart_host
     sleep 2
@@ -52,7 +52,7 @@ while [ "$ROUND" -le "$ROUNDS" ]; do
     { date -u +%FT%TZ; uptime; vm_stat | head -1; sysctl -n vm.swapusage; } > "$OUT/round-$ROUND-env.txt"
     ROUND=$((ROUND + 1))
 done
-"$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
+[ "$ANALYZE_ONLY" = "1" ] || "$BIN/tissrc" select com.apple.keylayout.ABC >/dev/null 2>&1
 
 python3 - "$OUT" "$ROUNDS" "$LIMIT_MB" "$(shasum -a 256 "$APP/Contents/MacOS/Lampyris" | awk '{print $1}')" \
     "$(shasum -a 256 "$SUPPORT/config.toml" 2>/dev/null | awk '{print $1}')" <<'PY'
@@ -76,8 +76,7 @@ def parse(path):
     if not footprint or not writable:
         return None
     resident, swapped = to_mb(writable.group(1)), to_mb(writable.group(2))
-    # 报告265：「私有已提交」含分配器已释放但未归还的页，受采样时机影响很大；
-    # 同时记下 MALLOC ZONE 表里的存活分配（字节与个数），用来区分「数据真变多了」与「分配器残留」。只作参考，不参与判定。
+    # ADR-338：判定用 MALLOC ZONE 表里的存活分配（字节）；「私有已提交」含分配器已释放但未归还的页，只作参考。
     zone = re.search(r"^DefaultMallocZone\S*\s+\S+\s+\S+\s+\S+\s+\S+\s+(\d+)\s+([0-9.]+[KMG]?)", text, re.M)
     return {
         "physical_footprint_mb": round(to_mb(footprint.group(1)), 1),
@@ -107,12 +106,16 @@ steady = [point for point in POINTS if point in ("six-words", "idle-8s")]
 for row in results.values():
     for point in steady:
         sample = row.get(point)
-        if not sample or sample["private_committed_mb"] > limit:
+        live = sample.get("heap_live_mb") if sample else None
+        # 读不到存活堆（vmmap 输出格式变了）按失败处理，不退回旧口径——宁可红也不要用一个不可信的数放行。
+        if live is None or live > limit:
             failed = True
 summary = {
     "rounds": rounds,
     "limit_mb": limit,
+    "metric": "heap_live_mb",
     "footprint_is_informational": True,
+    "private_committed_is_informational": True,
     "steady_points": steady,
     "exec_sha": exec_sha,
     "config_sha": config_sha,

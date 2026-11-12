@@ -28,7 +28,7 @@ ITEMS = {
     "hotkeys": ("快捷键", "热键", "shift 切", "⌥p", "⌥f", "⌥t", "⌥m"),
     "clients": ("客户端", "client matrix", "文本编辑/safari", "safari"),
     "quality": ("质量样本", "quality-samples"),
-    "memory": ("内存门禁", "memory-gate", "adr-263", "adr-292"),
+    "memory": ("内存门禁", "memory-gate", "adr-263", "adr-292", "adr-338"),
     "soak": ("久用", "soak"),
     "network": ("零外联", "外联", "tcp/udp", "0 条"),
     "voiceover": ("voiceover", "播报", "axannouncementrequested"),
