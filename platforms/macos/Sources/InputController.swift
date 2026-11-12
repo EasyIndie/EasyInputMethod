@@ -13,8 +13,6 @@ final class LampyrisInputController: IMKInputController {
     private var candidateWindow: CandidateWindow?
     private var candidateSelection = CandidateSelectionState()
     private var candidateCount = 7
-    /// 候选窗当前显示的候选：上屏后用它判断「刚才选的是不是拼音候选」（ADR-331），不为此多取一次数据。
-    private var shownCandidates: [ImeCandidate] = []
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
     private var dataLoadError: String?
@@ -650,8 +648,7 @@ final class LampyrisInputController: IMKInputController {
             showCandidates(client, session: session)
             return true
         }
-        guard let chars = event.charactersIgnoringModifiers, let scalar = chars.unicodeScalars.first
-        else { return false }
+        guard let scalar = Self.typedScalar(event) else { return false }
 
         if let count = ImeConfig.int("candidate.count") {
             candidateCount = count
@@ -673,20 +670,25 @@ final class LampyrisInputController: IMKInputController {
             return true
         }
 
-        if session.isComposing, event.keyCode == 49, candidateSelection.index > 0,
-            let text = session.select(candidateSelection.index)
-        {
-            commit(text, to: client)
-            candidateSelection.reset()
-            refreshAfterSelection(client, session: session)
-            hintWubiCode(for: text)
-            return true
+        if session.isComposing, event.keyCode == 49, candidateSelection.index > 0 {
+            let offered = session.candidates(limit: candidateCount)
+            if let text = session.select(candidateSelection.index) {
+                commit(text, to: client)
+                candidateSelection.reset()
+                refreshAfterSelection(client, session: session)
+                hintWubiCode(for: text, offered: offered)
+                return true
+            }
         }
 
         let codepoint = feedCodepoint(scalar, shift: flags.contains(.shift), session: session)
         guard let codepoint else { return false }
 
         candidateSelection.reset()
+        // 上屏前先记下「此刻给出的候选」：上屏后据此判断选中的是不是拼音候选（ADR-331 / 337）。
+        // 字母键只会继续组合、不会选词，不取；其余键才可能上屏，此时多取一次本页候选（至多 9 条）。
+        let isLetter = scalar.isASCII && scalar.properties.isAlphabetic
+        let offered = session.isComposing && !isLetter ? session.candidates(limit: candidateCount) : []
         let trace = PerfTrace.shared.begin()
         let outcome = session.feed(codepoint)
         let engineStamp = PerfTrace.shared.stamp()
@@ -706,7 +708,7 @@ final class LampyrisInputController: IMKInputController {
                 candidateWindow?.hide()
             }
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
-            hintWubiCode(for: text)
+            hintWubiCode(for: text, offered: offered)
             return true
         case .passThrough:
             return false
@@ -757,19 +759,42 @@ final class LampyrisInputController: IMKInputController {
 
     /// 混输下用拼音打出一个字/词后，在光标旁提示它的五笔码（ADR-331）。
     ///
-    /// 只在「刚上屏的文本正是候选窗里的一个拼音候选」时提示：五笔打出来的不提示，分段拼出的整句也不提示。
-    private func hintWubiCode(for text: String) {
-        let shown = shownCandidates
-        shownCandidates = []
-        guard !text.isEmpty, session?.mode == "mixed",
-              shown.contains(where: { $0.text == text && $0.source == .pinyin }) else { return }
+    /// `offered` 是**上屏前**取到的本页候选：只在「刚上屏的文本正是其中一个拼音候选」时提示——
+    /// 五笔打出来的不提示，分段拼出的整句也不提示。每一步为什么没提示都写进诊断日志（ADR-337）。
+    private func hintWubiCode(for text: String, offered: [ImeCandidate]) {
+        let diag = Self.hudDiagEnabled
+        func skip(_ reason: String) {
+            if diag { Self.hudDiag("hint skip=\(reason) text=\(text) offered=\(offered.count)") }
+        }
+        guard !text.isEmpty else { return }
+        guard session?.mode == "mixed" else { return skip("mode=\(session?.mode ?? "nil")") }
+        guard offered.contains(where: { $0.text == text && $0.source == .pinyin }) else {
+            return skip("not-a-pinyin-candidate")
+        }
         let hint = ImeConfig.bool("candidate.hint_wubi_code")
         let collect = text.count == 1 && ImeConfig.bool("practice.collect_weak_chars")
-        guard hint || collect, let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return }
+        guard hint || collect else { return skip("options-off") }
+        guard let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return skip("no-wubi-code") }
         // 薄弱字清单（ADR-335，默认关）：有五笔码却靠拼音打出来的单字，留给练习多出几次。
         if collect { WeakChars.shared.record(text) }
-        guard hint, let message = StateFeedback.wubiHint(text: text, code: code) else { return }
-        StateHUDController.shared.show(message, caret: hudCaretRect())
+        guard hint, let message = StateFeedback.wubiHint(text: text, code: code) else {
+            return skip(hint ? "too-long" : "hint-off")
+        }
+        let caret = hudCaretRect()
+        if diag { Self.hudDiag("hint show=\(message) caret=\(caret.map(NSStringFromRect) ?? "nil")") }
+        StateHUDController.shared.show(message, caret: caret)
+    }
+
+    /// 本次按键打出的字符。
+    ///
+    /// 带 Shift 的标点必须取「按了 Shift 之后」的字符（`:`、`?`、`<`…），否则核心收到的是 `;`、`/`、`,`，
+    /// 中文标点会出错（`12:30` 变成 `12；30`，ADR-337）。这里按键码与当前键盘布局重新计算，
+    /// 不依赖 `charactersIgnoringModifiers` 在不同事件来源下对 Shift 的处理；字母大小写由调用方统一。
+    static func typedScalar(_ event: NSEvent) -> Unicode.Scalar? {
+        let shift = event.modifierFlags.intersection(.deviceIndependentFlagsMask).contains(.shift)
+        let computed = event.characters(byApplyingModifiers: shift ? [.shift] : [])
+        let chars = (computed?.isEmpty == false ? computed : nil) ?? event.charactersIgnoringModifiers
+        return chars?.unicodeScalars.first
     }
 
     /// 选词之后：分段候选（ADR-330）只选走了前半段，组合还在，刷新预编辑与候选；否则收起候选窗。
@@ -789,7 +814,6 @@ final class LampyrisInputController: IMKInputController {
         let candidates = PerfTrace.shared.measure(trace, phase: .candidateData) {
             session.candidates(limit: candidateCount)
         }
-        shownCandidates = candidates
         guard !candidates.isEmpty else {
             candidateWindow?.hide()
             return 0
@@ -798,13 +822,14 @@ final class LampyrisInputController: IMKInputController {
         candidateWindow = window
         window.onSelect = { [weak self] index in
             guard let self, let client = self.activeClient, let session = self.session else { return }
+            let offered = session.candidates(limit: self.candidateCount)
             let text = session.select(index)
             if let text {
                 self.commit(text, to: client)
             }
             self.candidateSelection.reset()
             self.refreshAfterSelection(client, session: session)
-            if let text { self.hintWubiCode(for: text) }
+            if let text { self.hintWubiCode(for: text, offered: offered) }
         }
         window.onPage = { [weak self] delta in
             guard let self, let client = self.activeClient, let session = self.session else { return }
