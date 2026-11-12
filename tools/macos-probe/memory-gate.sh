@@ -76,10 +76,15 @@ def parse(path):
     if not footprint or not writable:
         return None
     resident, swapped = to_mb(writable.group(1)), to_mb(writable.group(2))
+    # 报告265：「私有已提交」含分配器已释放但未归还的页，受采样时机影响很大；
+    # 同时记下 MALLOC ZONE 表里的存活分配（字节与个数），用来区分「数据真变多了」与「分配器残留」。只作参考，不参与判定。
+    zone = re.search(r"^DefaultMallocZone\S*\s+\S+\s+\S+\s+\S+\s+\S+\s+(\d+)\s+([0-9.]+[KMG]?)", text, re.M)
     return {
         "physical_footprint_mb": round(to_mb(footprint.group(1)), 1),
         "physical_footprint_peak_mb": round(to_mb(peak.group(1)), 1) if peak else None,
         "private_committed_mb": round(resident + swapped, 1),
+        "heap_live_mb": round(to_mb(zone.group(2)), 1) if zone else None,
+        "heap_allocations": int(zone.group(1)) if zone else None,
     }
 
 results, missing, failed = {}, [], False
