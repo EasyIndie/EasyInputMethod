@@ -322,13 +322,15 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 本题目要求的那一项排在最前，完整码与两个简码随后——一块讲完，不再另起一行重复。
         let target: String? = {
             switch kind {
+            case .roots: return "键位 \(question.code.uppercased())"
             case .code1: return question.short1.map { "一级 \($0.uppercased())" }
             case .code2: return question.short2.map { "二级 \($0.uppercased())" }
             default: return "完整码 \(question.code.uppercased())"
             }
         }()
+        // 字根题的「码」只是所在键，不是这个字根作为汉字的完整码，不能当完整码展示（否则教错）。
         explanation.show(char: question.char, roots: question.roots,
-                         recognition: question.recognition, code: question.code,
+                         recognition: question.recognition, code: kind == .roots ? "" : question.code,
                          short1: question.short1, short2: question.short2,
                          target: target, revealsAnswer: revealsAnswer)
     }
@@ -396,14 +398,16 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         for button in strokeButtons + structureButtons { button.state = .off }
         guard let question = current else {
             questionLabel.stringValue = "题库为空"
-            promptLabel.stringValue = "当前没有可出题的完整条目（需要 quality=full）"
+            promptLabel.stringValue = kind == .roots
+                ? "缺少键位字根表，无法出字根题"
+                : "当前没有可出题的完整条目（需要 quality=full）"
             progressLabel.stringValue = session.summary
             return
         }
         answerView.setActive(true)
         answerView.capacity = {
             switch kind {
-            case .code1: return 1
+            case .roots, .code1: return 1
             case .code2: return 2
             case .code: return min(4, max(3, question.code.count))
             case .recognition: return 4
@@ -561,6 +565,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             return showsKeymap
                 ? "按上面的字根与键位，判断末笔与结构"
                 : "看拆解出的字根，判断末笔与结构"
+        case .roots:
+            return showsKeymap
+                ? "这个字根在哪个键上？（可先对照键位图，熟了再收起）"
+                : "这个字根在哪个键上？（1 位）"
         case .code1: return "打出它的一级简码（1 位）"
         case .code2: return "打出它的二级简码（2 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
