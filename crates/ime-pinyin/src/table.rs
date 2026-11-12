@@ -353,6 +353,69 @@ impl TablePinyinBackend {
         Some((path.texts.concat(), path.score))
     }
 
+    /// 补全候选数上限：补全是「猜下文」，只取权重最高的一小批。
+    const COMPLETION_LIMIT: usize = 32;
+    /// 单次补全最多扫描的词条数（`full_spellings` 有序，前缀区间连续）。
+    const COMPLETION_SCAN_LIMIT: usize = 4096;
+
+    /// 拼写前缀补全：`nih` → 你好、`zhongg` → 中国、`zhon` → 中。
+    ///
+    /// 只查词表与字表里已有的条目，不做拼接；一个字母太宽泛（简拼已覆盖），不补全。
+    fn complete(&self, input: &str, max: usize, out: &mut Vec<PinyinCandidate>) {
+        if input.len() < 2 || input.contains('\'') {
+            return;
+        }
+        let limit = max.min(Self::COMPLETION_LIMIT);
+        let mut found: Vec<PinyinCandidate> = Vec::new();
+        let start = self
+            .full_spellings
+            .partition_point(|(spelling, _)| spelling.as_str() < input);
+        for (spelling, canonical) in self.full_spellings[start..]
+            .iter()
+            .take(Self::COMPLETION_SCAN_LIMIT)
+            .take_while(|(spelling, _)| spelling.starts_with(input))
+        {
+            if spelling.len() == input.len() {
+                continue;
+            }
+            if let Some(words) = self.words.get(canonical) {
+                // 每个拼写只取最常用的两个词，避免同音词刷屏。
+                for (word, weight) in words.iter().take(2) {
+                    found.push(
+                        PinyinCandidate::new(word.to_string(), canonical.clone(), *weight, false)
+                            .completion(),
+                    );
+                }
+            }
+        }
+        // 单音节没打完（`zhon`）：补出以它开头的音节的首选字。整串已能切分时不补，避免 `ni` 混进 `nian` 的字。
+        if self.segment(input).is_empty() {
+            for syllable in self.syllables.iter().filter(|s| s.starts_with(input)) {
+                if let Some((ch, weight)) = self.chars.get(syllable).and_then(|list| list.first()) {
+                    found.push(
+                        PinyinCandidate::new(ch.to_string(), syllable.clone(), *weight, false)
+                            .completion(),
+                    );
+                }
+            }
+        }
+        // 词在前、字在后：没打完时用户多半在打词；组内按权重。单字权重远高于词，混排会把词全挤掉。
+        found.sort_by(|a, b| {
+            (a.text.chars().count() == 1)
+                .cmp(&(b.text.chars().count() == 1))
+                .then(b.weight.cmp(&a.weight))
+                .then(a.text.cmp(&b.text))
+        });
+        found.truncate(limit);
+        // 上层（引擎、会话）都会按权重重排；把这里定好的次序写成递减的小权重，次序才保得住。
+        // 补全恒排在已打完的候选之后，所以权重的绝对值不与它们比较。
+        let count = found.len();
+        for (index, candidate) in found.iter_mut().enumerate() {
+            candidate.weight = (count - index) as i32;
+        }
+        out.extend(found);
+    }
+
     pub fn syllable_count(&self) -> usize {
         self.syllables.len()
     }
@@ -450,10 +513,14 @@ impl PinyinBackend for TablePinyinBackend {
             }
         }
 
-        // 去重（同 text 保留权重高者，全拼优先于简拼），再按权重降序截断。
+        // 3) 补全：拼音没打完时，给出拼写以当前输入开头的词与字（ADR-326）。
+        self.complete(input, max, &mut out);
+
+        // 去重（同 text 保留权重高者，全拼优先于简拼），再按权重降序截断；补全永远排在已打完的候选之后。
         out.sort_by(|a, b| {
-            b.weight
-                .cmp(&a.weight)
+            a.is_completion
+                .cmp(&b.is_completion)
+                .then(b.weight.cmp(&a.weight))
                 .then(a.is_initial.cmp(&b.is_initial))
                 .then(a.text.cmp(&b.text))
         });
@@ -555,7 +622,10 @@ mod tests {
             assert_eq!(candidates[0].pinyin, "ren gong zhi neng");
         }
         assert!(b.convert("reng'ong'zhi'neng", 9).is_empty());
-        assert!(b.convert("rengongzhinen", 9).is_empty());
+        // 没打完的整词现在给出补全（ADR-326），但必须带补全标记、不冒充精确命中。
+        let unfinished = b.convert("rengongzhinen", 9);
+        assert_eq!(unfinished.len(), 1);
+        assert!(unfinished[0].is_completion && unfinished[0].text == "人工智能");
     }
 
     #[test]
@@ -583,6 +653,47 @@ mod tests {
         let c = b.convert("nh", 9);
         assert_eq!(c.first().unwrap().text, "你好");
         assert!(c.first().unwrap().is_initial);
+    }
+
+    #[test]
+    fn unfinished_spelling_completes_words_then_characters_after_exact_matches() {
+        let backend = TablePinyinBackend::from_tsv(
+            "ni\t你\t900\nnian\t年\t800\nhao\t好\t700\nzhong\t中\t950\nguo\t国\t600\n",
+            "ni hao\t你好\t50\nni men\t你们\t40\nzhong guo\t中国\t60\nnian qing\t年轻\t30\n",
+            "completion",
+        )
+        .unwrap();
+        let texts = |input: &str| -> Vec<(String, bool)> {
+            backend
+                .convert(input, 9)
+                .into_iter()
+                .map(|c| (c.text, c.is_completion))
+                .collect()
+        };
+        // 音节没打完：以前是空的。
+        assert_eq!(texts("nih"), [("你好".to_string(), true)]);
+        assert_eq!(texts("zhongg"), [("中国".to_string(), true)]);
+        // 单音节没打完：词在前、字在后。
+        assert_eq!(
+            texts("zhon"),
+            [("中国".to_string(), true), ("中".to_string(), true)]
+        );
+        // 已打完的候选恒在补全之前；能切分时不补别的音节的单字（年）。
+        assert_eq!(
+            texts("ni"),
+            [
+                ("你".to_string(), false),
+                ("你好".to_string(), true),
+                ("你们".to_string(), true),
+                ("年轻".to_string(), true),
+            ]
+        );
+        // 一个字母、带分隔符、无匹配：都不补全。
+        assert!(backend.convert("n", 9).iter().all(|c| !c.is_completion));
+        assert!(backend.convert("ni'h", 9).is_empty());
+        assert!(backend.convert("nix", 9).is_empty());
+        // 补全的 pinyin 字段是完整读音，学习与反查用得上。
+        assert_eq!(backend.convert("nih", 9)[0].pinyin, "ni hao");
     }
 
     #[test]

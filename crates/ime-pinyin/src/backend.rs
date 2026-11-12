@@ -11,6 +11,8 @@ pub struct PinyinCandidate {
     pub weight: i32,
     /// 是否为简拼（首字母）命中。
     pub is_initial: bool,
+    /// 是否为「拼音没打完」的补全候选（`nih` → 你好，ADR-326）。
+    pub is_completion: bool,
 }
 
 impl PinyinCandidate {
@@ -25,7 +27,14 @@ impl PinyinCandidate {
             pinyin: pinyin.into(),
             weight,
             is_initial,
+            is_completion: false,
         }
+    }
+
+    /// Mark a candidate whose spelling is longer than what was typed.
+    pub fn completion(mut self) -> Self {
+        self.is_completion = true;
+        self
     }
 }
 

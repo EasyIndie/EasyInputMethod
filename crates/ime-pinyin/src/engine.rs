@@ -80,13 +80,14 @@ impl Engine for PinyinEngine {
                 weight: pc.weight,
                 source: CandidateSource::Pinyin,
                 comment: None,
-                is_prefix: false,
+                is_prefix: pc.is_completion,
                 is_fuzzy,
             })
             .collect();
         candidates.sort_by(|a, b| {
-            a.is_fuzzy
-                .cmp(&b.is_fuzzy)
+            a.is_prefix
+                .cmp(&b.is_prefix)
+                .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
         });

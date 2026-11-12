@@ -674,7 +674,10 @@ impl Session {
         let auto = auto.filter(|text| {
             self.mode != InputMode::Mixed
                 || !merged.iter().any(|candidate| {
-                    candidate.source == CandidateSource::Pinyin && candidate.text != *text
+                    // 拼音补全只是「猜下文」，不能拦住五笔四码唯一上屏（ADR-326）。
+                    candidate.source == CandidateSource::Pinyin
+                        && !candidate.is_prefix
+                        && candidate.text != *text
                 })
         });
         merged.sort_by(|a, b| {
@@ -752,6 +755,38 @@ mod tests {
                 _ => assert_eq!(s.buffer(), "wanga"),
             }
         }
+    }
+
+    #[test]
+    fn pinyin_completions_do_not_block_unique_wubi_auto_commit() {
+        struct CompletionOnly;
+        impl Engine for CompletionOnly {
+            fn convert(&self, input: &str, _: usize) -> ConvertResult {
+                let mut guess = Candidate::new("王国", "wang guo", 1, CandidateSource::Pinyin);
+                guess.is_prefix = true;
+                ConvertResult {
+                    candidates: if input == "wang" {
+                        vec![guess]
+                    } else {
+                        Vec::new()
+                    },
+                    should_commit: None,
+                }
+            }
+            fn engine_type(&self) -> EngineType {
+                EngineType::Pinyin
+            }
+            fn max_code_length(&self) -> usize {
+                32
+            }
+        }
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_wubi_engine(Box::new(AutoConflictEngine(EngineType::CodeTable, "佢")));
+        s.set_pinyin_engine(Box::new(CompletionOnly));
+        for ch in "wan".chars() {
+            assert_eq!(s.handle_key(ch), KeyOutcome::Consumed);
+        }
+        assert_eq!(s.handle_key('g'), KeyOutcome::Committed("佢".into()));
     }
 
     #[test]
