@@ -661,7 +661,8 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
                 "hotkey.open_settings", "hotkey.open_about", "hotkey.open_update", "hotkey.open_practice",
                 "hotkey.toggle_wubi_learning"])]
         } else {
-            groups = [("候选显示", ["candidate.count", "candidate.page_with_comma"]),
+            groups = [("候选显示", ["candidate.count", "candidate.page_with_comma",
+                              "candidate.select_with_semicolon", "candidate.pick_char_with_brackets"]),
                 ("外观", ["appearance.theme"]), ("五笔学习", ["candidate.show_wubi_learning"])]
         }
         let known = Set(groups.flatMap { $0.1 })

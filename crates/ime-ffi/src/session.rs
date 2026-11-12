@@ -431,17 +431,14 @@ pub extern "C" fn ime_session_key(session: *mut ImeSession, codepoint: u32) -> i
         // SAFETY：契约见模块注释（仅单线程使用）。
         let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
         let ch = char::from_u32(codepoint).ok_or(IME_ERR_INVALID_INPUT)?;
-        let selected = match ch {
-            ' ' => s.session.candidates().first().cloned(),
-            '1'..='9' => s
-                .session
-                .candidates()
-                .get((ch as u8 - b'1') as usize)
-                .cloned(),
-            _ => None,
-        };
+        // 选词键的判定与核心同源（含 `;` / `'`，ADR-327），学到的才是用户真正选的那个。
+        let selected = s
+            .session
+            .selection_index(ch)
+            .and_then(|index| s.session.candidates().get(index).cloned());
         let input = s.session.buffer().to_owned();
-        let preferred = (matches!(ch, '1'..='9') && (ch != '1' || s.session.page_index() > 0))
+        let preferred = (matches!(ch, ';' | '\'') && selected.is_some())
+            || (matches!(ch, '1'..='9') && (ch != '1' || s.session.page_index() > 0))
             || (ch == ' ' && s.session.page_index() > 0);
         let outcome = s.session.handle_key(ch);
         if matches!(outcome, KeyOutcome::Committed(_)) {
@@ -472,6 +469,10 @@ pub extern "C" fn ime_session_configure(session: *mut ImeSession) -> i32 {
         );
         s.session
             .set_digit_punctuation(boolean("input.digit_punctuation"));
+        s.session.set_selection_keys(
+            boolean("candidate.select_with_semicolon"),
+            boolean("candidate.pick_char_with_brackets"),
+        );
         let changed = s.session.configure_engines(&ime_core::EngineOptions {
             auto_commit: boolean("wubi.auto_commit"),
             fuzzy: boolean("pinyin.fuzzy"),

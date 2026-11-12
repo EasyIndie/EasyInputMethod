@@ -174,6 +174,10 @@ pub struct Session {
     digit_punctuation: bool,
     /// The previous key was a digit typed outside a composition.
     after_digit: bool,
+    /// `;` / `'` pick the second / third candidate (ADR-327).
+    select_with_semicolon: bool,
+    /// `[` / `]` commit the first / last character of the first candidate (ADR-327).
+    pick_char_with_brackets: bool,
     engine_options: Option<EngineOptions>,
 }
 
@@ -207,6 +211,35 @@ impl Session {
     pub fn set_digit_punctuation(&mut self, enabled: bool) {
         self.digit_punctuation = enabled;
     }
+    /// 组合态选词键：`;` / `'` 选二三候选，`[` / `]` 以词定字（ADR-327）。
+    pub fn set_selection_keys(&mut self, semicolon: bool, brackets: bool) {
+        self.select_with_semicolon = semicolon;
+        self.pick_char_with_brackets = brackets;
+    }
+
+    /// 当前按键若是「选第 N 个候选」，返回它在本页的下标；否则 `None`。
+    ///
+    /// 宿主层（FFI）用它决定学习哪个候选，必须与 [`Session::handle_key`] 的判定同源。
+    /// `'` 在混输/拼音下是音节分隔符，只在纯五笔下选第三候选。
+    pub fn selection_index(&self, key: char) -> Option<usize> {
+        if !self.composing || self.english {
+            return None;
+        }
+        let index = match key {
+            ' ' => 0,
+            '1'..='9' => (key as u8 - b'1') as usize,
+            ';' if self.select_with_semicolon => 1,
+            '\'' if self.select_with_semicolon
+                && (self.mode == InputMode::WubiOnly || self.pinyin.is_none()) =>
+            {
+                2
+            }
+            _ => return None,
+        };
+        // 没有第二/第三候选时，`;` / `'` 退回原来的标点行为。
+        (index < self.candidates().len() || matches!(key, ' ' | '1'..='9')).then_some(index)
+    }
+
     pub fn english(&self) -> bool {
         self.english
     }
@@ -599,6 +632,34 @@ impl Session {
                 // Esc
                 self.cancel();
                 KeyOutcome::Consumed
+            }
+            ';' | '\'' if self.selection_index(key).is_some() => {
+                let text = self
+                    .selection_index(key)
+                    .and_then(|index| self.candidates().get(index))
+                    .map(|c| c.text.clone())
+                    .unwrap_or_default();
+                self.commit(&text);
+                KeyOutcome::Committed(text)
+            }
+            '[' | ']'
+                if self.pick_char_with_brackets
+                    && self
+                        .candidates()
+                        .first()
+                        .is_some_and(|c| c.text.chars().count() > 1) =>
+            {
+                // 以词定字：只取首选词的首字或末字；单字候选时 `[` `]` 仍是标点。
+                let picked = self.candidates().first().and_then(|c| {
+                    if key == '[' {
+                        c.text.chars().next()
+                    } else {
+                        c.text.chars().last()
+                    }
+                });
+                let text = picked.map(String::from).unwrap_or_default();
+                self.commit(&text);
+                KeyOutcome::Committed(text)
             }
             _ => {
                 if let Some(punctuation) = self.translate(key) {
@@ -1299,6 +1360,78 @@ mod tests {
         assert_eq!(s.handle_key('3'), KeyOutcome::Committed("３".into()));
         assert_eq!(s.handle_key('.'), KeyOutcome::Committed("．".into()));
         assert_eq!(s.handle_key('.'), KeyOutcome::Committed("。".into()));
+    }
+
+    #[test]
+    fn semicolon_quote_and_brackets_select_only_when_enabled_and_meaningful() {
+        struct Words;
+        impl Engine for Words {
+            fn convert(&self, input: &str, _: usize) -> ConvertResult {
+                let texts: &[&str] = match input {
+                    "ab" => &["你好", "世界", "我们"],
+                    "a" => &["工"],
+                    _ => &[],
+                };
+                ConvertResult {
+                    candidates: texts
+                        .iter()
+                        .enumerate()
+                        .map(|(i, t)| {
+                            Candidate::new(*t, input, 100 - i as i32, CandidateSource::CodeTable)
+                        })
+                        .collect(),
+                    should_commit: None,
+                }
+            }
+            fn engine_type(&self) -> EngineType {
+                EngineType::CodeTable
+            }
+            fn max_code_length(&self) -> usize {
+                4
+            }
+        }
+        let typed = |mode: InputMode, enabled: bool, keys: &str| -> KeyOutcome {
+            let mut s = Session::new(mode);
+            s.set_wubi_engine(Box::new(Words));
+            s.set_input_options(false, true);
+            s.set_selection_keys(enabled, enabled);
+            let mut last = KeyOutcome::Consumed;
+            for key in keys.chars() {
+                last = s.handle_key(key);
+            }
+            last
+        };
+        let committed = |text: &str| KeyOutcome::Committed(text.into());
+        // Off: unchanged punctuation behaviour.
+        assert_eq!(
+            typed(InputMode::WubiOnly, false, "ab;"),
+            committed("你好；")
+        );
+        assert_eq!(
+            typed(InputMode::WubiOnly, false, "ab["),
+            committed("你好「")
+        );
+        // On: second / third candidate, first / last character.
+        assert_eq!(typed(InputMode::WubiOnly, true, "ab;"), committed("世界"));
+        assert_eq!(typed(InputMode::WubiOnly, true, "ab'"), committed("我们"));
+        assert_eq!(typed(InputMode::WubiOnly, true, "ab["), committed("你"));
+        assert_eq!(typed(InputMode::WubiOnly, true, "ab]"), committed("好"));
+        // Nothing to pick: fall back to punctuation instead of swallowing the key.
+        assert_eq!(typed(InputMode::WubiOnly, true, "a;"), committed("工；"));
+        assert_eq!(typed(InputMode::WubiOnly, true, "a["), committed("工「"));
+        // Outside a composition the keys are plain punctuation.
+        assert_eq!(typed(InputMode::WubiOnly, true, ";"), committed("；"));
+        // With a pinyin engine in play `'` stays the syllable separator.
+        let mut s = Session::new(InputMode::Mixed);
+        s.set_wubi_engine(Box::new(Words));
+        s.set_pinyin_engine(Box::new(Words));
+        s.set_selection_keys(true, true);
+        s.handle_key('a');
+        s.handle_key('b');
+        assert_eq!(s.selection_index('\''), None);
+        assert_eq!(s.handle_key('\''), KeyOutcome::Consumed);
+        assert_eq!(s.buffer(), "ab'");
+        assert_eq!(s.selection_index(';'), None, "no candidates for ab'");
     }
 
     #[test]
