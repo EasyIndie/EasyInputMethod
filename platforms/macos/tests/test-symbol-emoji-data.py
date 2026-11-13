@@ -38,10 +38,11 @@ class SymbolEmojiDataTests(unittest.TestCase):
         self.assertEqual(len(data), 3781)
         self.assertEqual(len({row[0] for row in data}), len(data), "emoji 重复")
         self.assertTrue(all(row[4] and row[5] for row in data), "emoji 缺中/英文名")
+        self.assertTrue(all(len(row) >= 9 and row[8] for row in data), "emoji 缺拼音搜索词")
         groups = {row[1] for row in data}
         self.assertEqual(len(groups), 9)
         text = "\n".join("\t".join(row) for row in data)
-        for term in ("笑", "heart", "牵手", "美国"):
+        for term in ("笑", "heart", "牵手", "美国", "xiao", "lian"):
             self.assertIn(term, text, f"缺少搜索词 {term}")
         symbols = (SYMBOLS).read_text(encoding="utf-8")
         for term in ("逗号", "douhao", "箭头"):

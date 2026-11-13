@@ -46,6 +46,57 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         panel?.orderOut(nil)
     }
 
+    var isVisible: Bool { panel?.isVisible == true }
+
+    /// 面板是非激活窗口，键盘事件仍由当前输入法控制器接收；这里把按键转成
+    /// 搜索/选择/插入操作，客户端保持焦点，插入不会丢到别的应用。
+    func handleKey(_ event: NSEvent) -> Bool {
+        guard isVisible, event.type == .keyDown else { return false }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags.contains(.command) {
+            if event.charactersIgnoringModifiers?.lowercased() == "v" {
+                let text = NSPasteboard.general.string(forType: .string) ?? ""
+                setSearch(text)
+                return true
+            }
+            return false
+        }
+        if flags.contains(.control) || flags.contains(.option) { return false }
+        if event.keyCode == 53 { close(); return true }
+        if event.keyCode == 36 || event.keyCode == 76 { insertSelected(); return true }
+        if event.keyCode == 125 { moveSelection(1); return true }
+        if event.keyCode == 126 { moveSelection(-1); return true }
+        if event.keyCode == 51 || event.keyCode == 117 { dropLastSearch(); return true }
+        if let characters = event.charactersIgnoringModifiers, !characters.isEmpty,
+           characters.unicodeScalars.allSatisfy({ !CharacterSet.controlCharacters.contains($0) }) {
+            appendSearch(characters)
+            return true
+        }
+        return true
+    }
+
+    private func appendSearch(_ text: String) {
+        setSearch((search?.stringValue ?? "") + text)
+    }
+
+    private func dropLastSearch() {
+        guard let current = search?.stringValue, !current.isEmpty else { return }
+        setSearch(String(current.dropLast()))
+    }
+
+    private func setSearch(_ text: String) {
+        search?.stringValue = text
+        reload()
+    }
+
+    private func moveSelection(_ delta: Int) {
+        guard !items.isEmpty, let table else { return }
+        let current = table.selectedRow < 0 ? 0 : table.selectedRow
+        let next = min(max(0, current + delta), items.count - 1)
+        table.selectRowIndexes(IndexSet(integer: next), byExtendingSelection: false)
+        table.scrollRowToVisible(next)
+    }
+
     // MARK: - 构建
 
     private func prepare() {
@@ -170,7 +221,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         panel?.makeFirstResponder(table)
     }
 
-    @objc private func insertSelected() {
+    @objc func insertSelected() {
         let row = table?.selectedRow ?? -1
         guard items.indices.contains(row) else { return }
         let item = items[row]
@@ -216,10 +267,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
     func prepareForTesting() { prepare() }
     var itemCountForTesting: Int { items.count }
     var currentItemsForTesting: [PickerItem] { items }
-    func setSearchForTesting(_ text: String) {
-        search?.stringValue = text
-        reload()
-    }
+    func setSearchForTesting(_ text: String) { setSearch(text) }
     func selectCategoryForTesting(_ id: String) -> Bool {
         guard let index = categories.firstIndex(where: { $0.id == id }) else { return false }
         categoryPopup?.selectItem(at: index)

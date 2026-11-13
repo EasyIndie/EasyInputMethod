@@ -6,6 +6,7 @@
   data/sources/cldr-annotations-zh.xml   CLDR release-47 中文标注（Unicode License V3）
   data/sources/cldr-annotations-en.xml   CLDR release-47 英文标注
   data/sources/cldr-main-zh.xml          CLDR release-47 中文地区名（旗帜 emoji）
+  data/generated/pinyin-chars.tsv        已有 D5 单字读音（用于生成拼音搜索词）
 
 输出：
   data/generated/emoji.tsv
@@ -26,6 +27,7 @@ EMOJI_TEST = SOURCES / "emoji-test-16.0.txt"
 CLDR_ZH = SOURCES / "cldr-annotations-zh.xml"
 CLDR_EN = SOURCES / "cldr-annotations-en.xml"
 CLDR_MAIN_ZH = SOURCES / "cldr-main-zh.xml"
+PINYIN_CHARS = GENERATED / "pinyin-chars.tsv"
 OUT = GENERATED / "emoji.tsv"
 REPORT = GENERATED / "emoji-report.json"
 
@@ -160,6 +162,35 @@ def flag_region(emoji):
     return "".join(chr(p - 0x1F1E6 + ord("A")) for p in points)
 
 
+def load_readings(path):
+    """字 → 首选拼音；取权重最大的读音。"""
+    best = {}
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line or line.startswith("# "):
+            continue
+        fields = line.split("\t")
+        if len(fields) != 3:
+            continue
+        syllable, char, weight = fields
+        try:
+            score = int(weight)
+        except ValueError:
+            continue
+        if score > best.get(char, (0, ""))[0]:
+            best[char] = (score, syllable)
+    return {char: syllable for char, (_, syllable) in best.items()}
+
+
+def pinyin_for(text, readings):
+    parts = []
+    for char in text:
+        if "一" <= char <= "鿿":
+            syllable = readings.get(char)
+            if syllable:
+                parts.append(syllable)
+    return " ".join(parts)
+
+
 def load_territories(path):
     root = ET.parse(path).getroot()
     out = {}
@@ -179,6 +210,7 @@ def main():
     zh_norm = {strip_vs(key): value for key, value in zh.items()}
     en_norm = {strip_vs(key): value for key, value in en.items()}
     territories = load_territories(CLDR_MAIN_ZH)
+    readings = load_readings(PINYIN_CHARS)
     rows = []
     group = ""
     subgroup = ""
@@ -255,6 +287,7 @@ def main():
                 name_en,
                 keywords_zh,
                 keywords_en,
+                pinyin_for(name_zh + " " + keywords_zh, readings),
             )
         )
     if not rows:
@@ -269,7 +302,7 @@ def main():
                 raise SystemExit(f"字段含制表符/换行：{row!r}")
     lines = [
         "# 项目派生 emoji 数据；CC-BY-SA-4.0；D21/D22/ADR-349。",
-        "# emoji\tgroup_id\tgroup_zh\torder\tname_zh\tname_en\tkeywords_zh\tkeywords_en",
+        "# emoji\tgroup_id\tgroup_zh\torder\tname_zh\tname_en\tkeywords_zh\tkeywords_en\tpinyin",
     ]
     lines.extend("\t".join(map(str, row)) for row in rows)
     OUT.parent.mkdir(parents=True, exist_ok=True)

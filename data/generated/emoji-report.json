@@ -3,8 +3,8 @@
   "cldr_zh_sha256": "06b289e1b563199df2e2c51ab93ca8a3780a57a7ee82f4600828936c8323af0d",
   "cldr_en_sha256": "b33e2e88ed2fb8c438c1efa9747b9d845e8d7d74ef0c32342a805c0f46fdd7ec",
   "cldr_main_zh_sha256": "97fea2cfdb7bfe59a4e0ce712ca2e6ccba67ef211957296f60365c9f84b24d52",
-  "output_sha256": "1953cff0e0b3af17e816fa779c1fbdadfe02cbe7121b53455e4a86d73bcf09af",
-  "output_bytes": 675757,
+  "output_sha256": "2ae32e9da84fb347aabba9f4672a187399b77262916129b5d9c71dc914454c80",
+  "output_bytes": 1003444,
   "entries": 3781,
   "missing_zh_short_name": 0,
   "groups": [
