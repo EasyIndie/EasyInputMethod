@@ -17,6 +17,9 @@ final class LampyrisInputController: IMKInputController {
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
     private var dataLoadError: String?
+    /// 扩展词库（U2-3）：记录配置期望的档位，避免文件缺失时反复重试；实际切换延迟到空闲按键。
+    private var requestedExtendedDictionary = false
+    private var dictionaryReloadPending = false
     /// 各应用上次的中英状态（ADR-333）。所有控制器共享，只在内存里。
     private static var languageMemory = AppLanguageMemory()
 
@@ -38,6 +41,8 @@ final class LampyrisInputController: IMKInputController {
         }
         if session == nil {
             session = makeSession()
+        } else {
+            reloadDictionaryIfNeeded()
         }
         if candidateWindow == nil { candidateWindow = CandidateWindow() }
         restoreLanguage()
@@ -97,28 +102,43 @@ final class LampyrisInputController: IMKInputController {
     }
 
     /// 装配会话：优先真实数据文件，失败回退内置样本；再套用配置（ADR-063）。
+    /// 扩展词库（U2-3）只在开关打开且两份扩展文件都存在时整体替换核心档，避免半套数据。
     private func makeSession() -> ImeSession? {
         var session: ImeSession?
         var failure: String?
+        var tierError: String?
+        let extended = ImeConfig.bool("dict.extended")
+        requestedExtendedDictionary = extended
         if let resources = Bundle.main.resourceURL {
-            let wubi = resources.appendingPathComponent("wubi86-core.tsv").path
-            let chars = resources.appendingPathComponent("pinyin-chars.tsv").path
-            let words = resources.appendingPathComponent("pinyin-core.tsv").path
             let fm = FileManager.default
-            if fm.fileExists(atPath: wubi) {
-                let charsPath = fm.fileExists(atPath: chars) ? chars : nil
-                let wordsPath = (charsPath != nil && fm.fileExists(atPath: words)) ? words : nil
+            var wubi = resources.appendingPathComponent("wubi86-core.tsv")
+            var words = resources.appendingPathComponent("pinyin-core.tsv")
+            if extended {
+                let extWubi = resources.appendingPathComponent("wubi86-extended.tsv")
+                let extWords = resources.appendingPathComponent("pinyin-extended.tsv")
+                if fm.fileExists(atPath: extWubi.path), fm.fileExists(atPath: extWords.path) {
+                    wubi = extWubi
+                    words = extWords
+                } else {
+                    tierError = "扩展词库文件缺失，已回退核心词库：\(extWubi.path) / \(extWords.path)"
+                }
+            }
+            let chars = resources.appendingPathComponent("pinyin-chars.tsv")
+            if fm.fileExists(atPath: wubi.path) {
+                let charsPath = fm.fileExists(atPath: chars.path) ? chars.path : nil
+                let wordsPath =
+                    (charsPath != nil && fm.fileExists(atPath: words.path)) ? words.path : nil
                 session = ImeSession(
-                    wubiPath: wubi, pinyinCharsPath: charsPath, pinyinWordsPath: wordsPath)
+                    wubiPath: wubi.path, pinyinCharsPath: charsPath, pinyinWordsPath: wordsPath)
                 if session == nil {
                     failure = "码表或拼音数据损坏、为空或无法读取，请重新安装完整包：\(resources.path)"
                 } else if charsPath == nil {
-                    failure = "缺少拼音字表，混输的拼音兜底不可用：\(chars)"
+                    failure = "缺少拼音字表，混输的拼音兜底不可用：\(chars.path)"
                 } else if wordsPath == nil {
-                    failure = "缺少拼音词表，拼音词组及简拼不可用：\(words)"
+                    failure = "缺少拼音词表，拼音词组及简拼不可用：\(words.path)"
                 }
             } else {
-                failure = "缺少码表：\(wubi)"
+                failure = "缺少码表：\(wubi.path)"
             }
             let variant = resources.appendingPathComponent("variant-s2t.tsv").path
             if let s = session {
@@ -127,7 +147,7 @@ final class LampyrisInputController: IMKInputController {
         } else {
             failure = "找不到应用资源目录，无法加载数据文件"
         }
-        dataLoadError = failure
+        dataLoadError = failure ?? tierError
         if session == nil {
             NSLog("萤火虫：\(failure ?? "数据加载失败")，回退内置样本引擎")
             session = ImeSession.sample()
@@ -143,9 +163,31 @@ final class LampyrisInputController: IMKInputController {
 
     // MARK: - 输入菜单（模式切换；正式交互属 P1-M4）
 
+    /// 切换扩展词库（U2-3）：不在组合中立即换会话，否则等当前组合结束后的下一个空闲按键。
+    private func reloadDictionaryIfNeeded() {
+        let wanted = ImeConfig.bool("dict.extended")
+        guard wanted != requestedExtendedDictionary else {
+            dictionaryReloadPending = false
+            return
+        }
+        guard session?.isComposing != true else {
+            dictionaryReloadPending = true
+            return
+        }
+        dictionaryReloadPending = false
+        session = makeSession()
+        SettingsPanel.shared.rebindSession(session)
+        candidateSelection.reset()
+        autoPhrase.reset()
+        candidateWindow?.hide()
+        refreshStateMenu()
+        presentDataError()
+    }
+
     /// 配置在无按键时变更（外部编辑或菜单写入）后，即时应用到会话与候选窗（ADR-058）。
     func configChanged(_ key: String) {
         presentConfigError()
+        if key == "dict.extended" { reloadDictionaryIfNeeded() }
         guard let session else { return }
         session.prepare()
         presentDataError()
@@ -584,6 +626,9 @@ final class LampyrisInputController: IMKInputController {
     }
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+        if dictionaryReloadPending, session?.isComposing != true {
+            reloadDictionaryIfNeeded()
+        }
         guard let event else { return false }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
         if event.type == .flagsChanged {

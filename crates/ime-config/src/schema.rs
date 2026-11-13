@@ -111,6 +111,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "dict.extended",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "false",
+        title_zh: "扩展词库",
+        doc_zh: "加载随包提供的扩展码表（约 33.7 万五笔词组、5 万拼音词）；默认关闭。开启后常驻内存约增加 25 MiB，在下一次空闲按键时切换，不打断当前组合",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "candidate.count",
         value_type: ValueType::Int { min: 3, max: 9 },
         enum_labels_zh: &[],

@@ -99,6 +99,15 @@ sha256 = "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb"
 generator = "tools/prepare-pinyin-core.py"
 notes = "ADR-227/237；前20000条基础词加D15训练词+D16自编组合词，保留集不参与生成，原始词频不变，TSV预算800000字节"
 
+[[derived]]
+id = "pinyin-extended-v1"
+path = "data/generated/pinyin-extended.tsv"
+source_ids = ["D4", "D5", "D10", "D15", "D16"]
+license = "CC-BY-SA-4.0"
+sha256 = "718f98badafa0d1bf1e91b7e159b680dd12e28fe8f605b1501dc48101e10828e"
+generator = "tools/prepare-pinyin-core.py（limit=50000，budget=2000000）"
+notes = "U2-3 可选扩展包；全量词表按词频取前50000条加D15训练词+D16组合词（50,162条，1,105,067字节）；仅 dict.extended=true 时装载；全量341k仍不默认装载（ADR-031/348）"
+
 [[source]]
 id = "D11"
 name = "OpenCC 简→繁 单字表（STCharacters）"
@@ -221,9 +230,18 @@ id = "wubi-core-v2"
 path = "data/generated/wubi86-core.tsv"
 source_ids = ["D3", "D10", "D15", "D16", "D17"]
 license = "CC-BY-SA-4.0"
-sha256 = "20779afb4e8c8f89c8d195a009b64a7f9e6aca2fcd245a7c369b4ad79b359425"
+sha256 = "342d034bf7cfb0f1e20817696695dab5f72239f68af684ce320a9a9c65b17756"
 generator = "crates/wubi-encoder/examples/generate_core.rs"
-notes = "ADR-227/237/304；全量单字+前20000条基础词组+D15训练词+D16自编组合词；保留集不参与生成，TSV预算800000字节；含一级简码 25 条（D17）"
+notes = "ADR-227/237/304/345；全量单字+前20000条基础词组+D15训练词+D16自编组合词；保留集不参与生成，TSV预算800000字节；含一级简码 25 条、二级 598 条、三级 3,362 条（D17/D17-bis/D17-ter）"
+
+[[derived]]
+id = "wubi-extended-v1"
+path = "data/generated/wubi86-extended.tsv"
+source_ids = ["D3", "D10", "D15", "D16", "D17"]
+license = "CC-BY-SA-4.0"
+sha256 = "8f9d37a9c0a00503192168843d31b9189a2a513ee3bce23aa74f32ad96ca1e39"
+generator = "crates/wubi-encoder/examples/generate_core.rs（词组上限 0 = 全量，预算不限）"
+notes = "U2-3 可选扩展包；全量单字 27,823 加全量词组 337,344（365,167 行，6,209,535 字节）；仅 dict.extended=true 时装载；含 D17 三级简码"
 
 [[source]]
 id = "D16"

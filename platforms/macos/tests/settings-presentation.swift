@@ -11,12 +11,12 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 31,
+guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 32,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
 panel.selectSectionForTesting(0)
-guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.auto_phrase", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"] else { fail("design input grouping and order") }
+guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.auto_phrase", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme", "dict.extended"] else { fail("design input grouping and order") }
 
 // ADR-305：宽度项从复选框改为下拉，与「标点风格」「输出字形」同构
 // （模式仍用分段控件，因为它只有三个互斥项且要一眼看全，属既有设计，不在本 ADR 范围）。
@@ -36,7 +36,7 @@ LocalAcceptanceEvidence.record("settings.state_rows",
     })
 panel.selectSectionForTesting(1)
 guard panel.visibleOptionKeysForTesting == ["candidate.count", "candidate.page_with_comma", "candidate.select_with_semicolon", "candidate.pick_char_with_brackets", "appearance.theme", "candidate.show_wubi_learning", "candidate.hint_wubi_code", "practice.collect_weak_chars"] else { fail("candidate design group order") }
-LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有22项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
+LocalAcceptanceEvidence.record("settings.groups", expected: "输入/候选按Schema分组，所有选项都有入口", actual: ["count": panel.rowCount, "candidate_keys": panel.visibleOptionKeysForTesting])
 guard let countOption = options.first(where: { $0.key == "candidate.count" }) else { fail("count schema") }
 let numberRow = SettingRow(option: countOption)
 numberRow.reload()
@@ -132,7 +132,7 @@ LocalAcceptanceEvidence.record("settings.dictionary-session", expected: "绑定�
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 31, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 32, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
-LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，19项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
+LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，所有行不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")
