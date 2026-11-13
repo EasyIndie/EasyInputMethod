@@ -23,7 +23,9 @@
 //!
 //! 用法（仓库根目录）：
 //!   cargo run -p wubi-encoder --example generate_core
-//! 可选位置参数覆盖路径：`... -- <单字> <词组> <core 输出> <报告输出>`。
+//! 可选位置参数覆盖路径与裁剪规模：
+//!   `... -- <单字> <词组> <输出> <报告> [词组上限|0=全量] [字节预算|0=不限]`。
+//! 默认输出内置核心；`0` 上限用于生成可选扩展包（U2-3，`wubi86-extended.tsv`）。
 
 use std::error::Error;
 use std::fmt::Write as _;
@@ -88,6 +90,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         .next()
         .map(PathBuf::from)
         .unwrap_or_else(|| root.join("data/generated/wubi86-core-report.txt"));
+    let phrase_limit = args
+        .next()
+        .map(|value| value.to_string_lossy().parse::<usize>())
+        .transpose()
+        .map_err(|e| format!("词组上限必须是整数：{e}"))?
+        .unwrap_or(CORE_PHRASE_LIMIT);
+    let budget_bytes = args
+        .next()
+        .map(|value| value.to_string_lossy().parse::<usize>())
+        .transpose()
+        .map_err(|e| format!("字节预算必须是整数：{e}"))?
+        .unwrap_or(BUDGET_BYTES);
 
     let single_text = fs::read_to_string(&single_path)
         .map_err(|e| format!("读取单字码表失败（{}）：{e}", single_path.display()))?;
@@ -115,14 +129,14 @@ fn main() -> Result<(), Box<dyn Error>> {
                 (fields.len() == 3 && fields[1] == "train").then(|| fields[2].to_string())
             }),
     );
-    let kept_phrases = top_phrases(&phrases, CORE_PHRASE_LIMIT, &selected);
+    let kept_phrases = top_phrases(&phrases, phrase_limit, &selected);
     verify_required(&singles, &kept_phrases)?;
 
     let core_tsv = render_core(&singles, &kept_phrases, &level1, &level2, &level3);
     let core_bytes = core_tsv.len();
-    if core_bytes > BUDGET_BYTES {
+    if budget_bytes > 0 && core_bytes > budget_bytes {
         return Err(
-            format!("内置核心超出体积预算：{core_bytes} 字节 > {BUDGET_BYTES} 字节").into(),
+            format!("内置核心超出体积预算：{core_bytes} 字节 > {budget_bytes} 字节").into(),
         );
     }
     write_file(&core_path, &core_tsv)?;
@@ -136,11 +150,18 @@ fn main() -> Result<(), Box<dyn Error>> {
         &phrases,
         &kept_phrases,
         core_bytes,
+        phrase_limit,
+        budget_bytes,
     );
     write_file(&report_path, &report)?;
 
     print!("{report}");
-    println!("\n→ 内置核心码表已写入 {}", core_path.display());
+    let label = if phrase_limit == 0 {
+        "扩展"
+    } else {
+        "内置核心"
+    };
+    println!("\n→ {label}码表已写入 {}", core_path.display());
     println!("→ 报告已写入 {}", report_path.display());
     Ok(())
 }
@@ -322,7 +343,7 @@ fn top_phrases(
     sorted
         .into_iter()
         .enumerate()
-        .filter(|(index, row)| *index < limit || selected.contains(row.text.as_str()))
+        .filter(|(index, row)| limit == 0 || *index < limit || selected.contains(row.text.as_str()))
         .map(|(_, r)| Row {
             code: r.code.clone(),
             text: r.text.clone(),
@@ -468,9 +489,16 @@ fn render_report(
     phrases: &[Row],
     kept_phrases: &[Row],
     core_bytes: usize,
+    phrase_limit: usize,
+    budget_bytes: usize,
 ) -> String {
+    let extended = phrase_limit == 0;
     let mut out = String::new();
-    let _ = writeln!(out, "# 五笔86 内置核心码表报告（T-M1-09）");
+    if extended {
+        let _ = writeln!(out, "# 五笔86 可选扩展码表报告（U2-3）");
+    } else {
+        let _ = writeln!(out, "# 五笔86 内置核心码表报告（T-M1-09）");
+    }
     let _ = writeln!(out, "#");
     let _ = writeln!(
         out,
@@ -479,8 +507,9 @@ fn render_report(
     );
     let _ = writeln!(
         out,
-        "# 词组码表：{}（裁剪，并补充data/domain-vocabulary.tsv）",
-        display_path(root, phrases_path)
+        "# 词组码表：{}（{}，并补充data/domain-vocabulary.tsv）",
+        display_path(root, phrases_path),
+        if extended { "全量" } else { "裁剪" }
     );
     let _ = writeln!(out, "# 输出：{}", display_path(root, core_path));
     let _ = writeln!(out);
@@ -490,7 +519,7 @@ fn render_report(
     let _ = writeln!(out, "phrase_rows_full = {}（含D16新组合）", phrases.len());
     let _ = writeln!(
         out,
-        "phrase_limit = {CORE_PHRASE_LIMIT}（前 N 基础词+D15训练词+D16组合词；新词权重1，等权按 code/text 升序）"
+        "phrase_limit = {phrase_limit}（0 = 全量；否则前 N 基础词+D15训练词+D16组合词；新词权重1，等权按 code/text 升序）"
     );
     let _ = writeln!(out, "phrase_rows_kept = {}", kept_phrases.len());
     let _ = writeln!(out);
@@ -498,11 +527,11 @@ fn render_report(
     let _ = writeln!(out, "[size]");
     let _ = writeln!(out, "core_rows = {}", singles.len() + kept_phrases.len());
     let _ = writeln!(out, "core_bytes = {core_bytes}");
-    let _ = writeln!(out, "budget_bytes = {BUDGET_BYTES}（0.8 MB）");
+    let _ = writeln!(out, "budget_bytes = {budget_bytes}（0 = 不限）");
     let _ = writeln!(
         out,
         "within_budget = {}",
-        if core_bytes <= BUDGET_BYTES {
+        if budget_bytes == 0 || core_bytes <= budget_bytes {
             "yes"
         } else {
             "no"

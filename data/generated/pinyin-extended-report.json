@@ -1,0 +1,20 @@
+{
+  "source_sha256": "96f310a83c26d51cd8cdc13ea99c6232824ec0cff3276ba96ef5f636b77d931f",
+  "output_sha256": "718f98badafa0d1bf1e91b7e159b680dd12e28fe8f605b1501dc48101e10828e",
+  "limit": 50000,
+  "budget_bytes": 2000000,
+  "output_bytes": 1105067,
+  "entries": 50162,
+  "order": "top 50000 plus D15 train and frozen D16; new words weight 1",
+  "selection_sha256": "50961e6925cdd0748e2004acab81d9a88f9d3827854c6e8a8fa3770ae40a5a5d",
+  "domain_sha256": "46000fd6c78629f9402f2dbbb449350be137db1a8b03ddeb9194aa9c3fdedbe6",
+  "domain_entries": 132,
+  "sources": [
+    "D4",
+    "D5",
+    "D10",
+    "D15",
+    "D16"
+  ],
+  "license": "CC-BY-SA-4.0"
+}
