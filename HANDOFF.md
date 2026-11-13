@@ -4,7 +4,7 @@
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `f4fbea0`（PR #286 合并文档对账）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
+- 分支：`main` = `a725fff`（PR #287 合并 U2-3 扩展词库）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（502 产物零网络符号）、`make macos-offline-tests` **63 文件 / 337 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -15,7 +15,8 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `9cb738c9f1fbc9cda2b0fe52d3b7ec9a42b45609efce243507a28643fa12aba8`（发版产物，2026-11-13 重装）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `01f32c51bf7185ee4966232442b7b9e40ef6d11cdbf31a40a6d573dfc4ae140a`（U2-3 验收候选 `a725fff`，2026-11-13 装机；
+发版产物 `9cb738c9…` 备份在 `updates/install-backup-20261113T140802Z/`）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -59,8 +60,8 @@
 剩余待办见 **`docs/待办与积压.md`**（2026-11-13 按 1.3.0 发布后对账）：
 
 - **P0 · 已清零**：pro 升级与实键入确认均已由用户完成（2026-11-13，实打候选与切源正常）。
-- **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 12 项已完成并真机复验；
-  **U2-3 扩展词库代码与数据已完成（ADR-348，报告 273），待授权换包复验**（扩展档 `LIMIT_MB=64`）；
+- **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 13 项已完成并真机复验；
+  **U2-3 扩展词库真机 PASS**（ADR-348，报告 273：`ybkl` 开→离别、关→原样字母；扩展档 48.0–48.2 MiB、核心档 20.8–21.0 MiB）；
   剩 U2-5 分阶段解锁（需口径）、U3-1 整句模型（语料许可）、U3-5 符号 / emoji（触发方式）、
   U3-4 高频字拆解（字根字形来源）、宿主内完整引导（是否做）。
 - **P1 · 数据与方案**：corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表（TBD-2）、客户端自动回读缺口。
@@ -77,10 +78,10 @@
 | 2 | ~~tag v1.3.0 / Release / 站点部署~~ | ✅ 2026-11-13（报告 272；站点回读 `v1.3.0 · 构建 43`） |
 | 3 | ~~pro 升级到 1.3.0~~ | ✅ 2026-11-13（用户手动执行，执行 `9cb738c9…`） |
 | 4 | 文档对账 + `dev → main` PR | ✅ 2026-11-13（PR #286） |
-| 5 | **U2-3 扩展词库真机复验**：换包装机 → 打开 `dict.extended` → 打扩展词组 → 关闭恢复 → 扩展档 `LIMIT_MB=64` | 需换包授权 |
+| 5 | ~~U2-3 扩展词库真机复验~~：候选 `a725fff` 已装；`ybkl` 开→离别、关→原样；扩展档 48.0–48.2 MiB / 核心档 20.8–21.0 MiB | ✅ 2026-11-13（报告 273） |
 
 剩余开发项：高频字拆解受阻（报告 268 §2，等字根字形许可来源）；整句模型、符号 / emoji、多方案码表
-（依赖外部数据/许可或触发方式）。扩展词库（U2-3）代码已完成，待换包复验。
+（依赖外部数据/许可或触发方式）。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -122,10 +123,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
-- 2026-11-13 / Claude Code（air）：**U2-3 扩展词库代码与数据完成（ADR-348，报告 273），未换包**。
-  新增 `dict.extended`（默认关）：开启整包切换全量五笔词组（337,344）+ 前 50k 拼音词；关闭行为不变。
-  实测存活堆 核心 13.6 / 扩展 40.4 MiB，全量拼音 160 MiB 仍不随包（ADR-031）。`make verify`、离线 63 文件/337 例、
-  `build.sh --strict` 全绿；`test-extended-dictionary.py` 守体积/覆盖/SHA。**待授权换包做真机切换与 `LIMIT_MB=64` 门禁。**
+- 2026-11-13 / Claude Code（air）：**U2-3 扩展词库完成并真机复验（ADR-348，报告 273）**。PR #287 合并（`main` = `a725fff`）→
+  CI 验收包 ZIP `1b0ab3c7…`、执行 `01f32c51…` 装 air。`dict.extended` 开：`ybkl` → 离别；关：恢复原样字母。
+  扩展档 3 轮稳态存活堆 **48.0–48.2 MiB**（`LIMIT_MB=64` PASS），核心档 **20.8–21.0 MiB**（`LIMIT_MB=24` PASS）；
+  真实 config/词库/练习 SHA 未变。全量 341k 拼音仍不随包（ADR-031）。
 - 2026-11-13 / Claude Code（air）：**1.3.0 发布后文档对账 + pro 核验**。用户手动把 pro 升到 1.3.0/43
   （执行 `9cb738c9…`，config `b8c7a351…` 未变、词库 962→963）并确认实键入正常；更新 `docs/待办与积压.md`（版本抬头、P0/P1-U 完成项、下一版套餐）、
   `ROADMAP.md`（1.3.0 发布与 pro 升级勾选）、`docs/README.md`；文章跟打任务卡归档到 `docs/archive/tasks/`。
