@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40**；`main` = `6a9c587`（PR #277 已合并），
+- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40，开发中的 1.3.0 / build 41**；`main` = `6a9c587`（PR #277 已合并），
   `dev` 在 `4bfea1a` 之后追加本条交接提交，含批次 B（ADR-341…346）**待开 PR**；**尚未发版、版本号未升**。air 已装 `main` 候选 `2610d1f`（报告 266）。
 - 分支：`main` = `6a9c587`；`dev` 领先 `main` 6 个功能/文档提交（批次 B，见 §9），再加本条交接；批次 A（报告 267）已合并。
-- 版本：`Cargo.toml` = **1.2.1**、`packaging/build-number` = **40**；最新 tag **`v1.2.1`**。**`main` 上的候选与发布版同号不同内容，发版前必须升版本号。**
+- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **41**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**`main` 上的候选与发布版同号不同内容，发版前必须升版本号。**
 - 最近验证：`make verify` PASS（375 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
