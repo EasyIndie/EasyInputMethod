@@ -4,7 +4,7 @@
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `f4fbea0`（PR #286 合并文档对账）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
+- 分支：`main` = `a725fff`（PR #287 合并 U2-3 扩展词库）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（502 产物零网络符号）、`make macos-offline-tests` **63 文件 / 337 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -122,7 +122,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
-- 2026-11-13 / Claude Code（air）：**U2-3 扩展词库代码与数据完成（ADR-348，报告 273），未换包**。
+- 2026-11-13 / Claude Code（air）：**U2-3 扩展词库代码与数据完成（ADR-348，报告 273），PR #287 已合并（`main` = `a725fff`），未换包**。
   新增 `dict.extended`（默认关）：开启整包切换全量五笔词组（337,344）+ 前 50k 拼音词；关闭行为不变。
   实测存活堆 核心 13.6 / 扩展 40.4 MiB，全量拼音 160 MiB 仍不随包（ADR-031）。`make verify`、离线 63 文件/337 例、
   `build.sh --strict` 全绿；`test-extended-dictionary.py` 守体积/覆盖/SHA。**待授权换包做真机切换与 `LIMIT_MB=64` 门禁。**
