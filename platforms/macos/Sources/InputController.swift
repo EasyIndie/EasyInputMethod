@@ -47,6 +47,7 @@ final class LampyrisInputController: IMKInputController {
         // The observer is removed while inactive. Reapply mode as well as options
         // when a previously created client session becomes active again.
         configChanged("mode")
+        DispatchQueue.main.async { Onboarding.presentIfNeeded() }
     }
 
     override func deactivateServer(_ sender: Any!) {
