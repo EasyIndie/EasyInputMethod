@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；开发中的 1.3.0 / build 42**；
+- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；开发中的 1.3.0 / build 43**；
   `main` = `938eeb0`（PR #278 已合并）；air 已装 **1.3.0 / build 41 候选**（执行 `aa040adc…`）做复验，
-  发现练习/薄弱字未跟随私有根 → 已修，**待 build 42 出包重装**。**尚未发版。**
-- 分支：`main` = `938eeb0`；`dev` 在合并后继续追加修复与 build 42（见 §9）。
+  发现练习/薄弱字未跟随私有根 → 已修，**待 build 43 出包重装**。**尚未发版。**
+- 分支：`main` = `938eeb0`；`dev` 在合并后继续追加修复与 build 43（见 §9）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **42**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（375 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -74,7 +74,7 @@
 | 步骤 | 内容 | 授权 |
 |---|---|---|
 | 1 | 批次 B（ADR-341…346）推 `dev` → 开 PR → CI 绿后合并 | 已授权 |
-| 2 | 修复练习/薄弱字私有根 → build 42，从已合并 main 出候选包 | 换包 |
+| 2 | 修复练习/薄弱字私有根 → build 43，从已合并 main 出候选包 | 换包 |
 | 3 | 真机复验批次 A/B：造词、日期候选、首次引导、进阶提示、三级简码、私有数据根、以词定字高亮、安装器测试 | 换包 |
 | 4 | IT-22 A 档人工走查 + DMG 完成页目视 | 换包/人工 |
 | 5 | tag / Release / 站点部署 | 单独授权 |
@@ -127,7 +127,7 @@ make macos-offline-tests
 - 2026-11-13 / Claude Code（air）：**1.3.0/build 41 装机复验：27/30 PASS，抓到 1 个真实隔离缺陷**。双拼、薄弱字、失焦三项 FAIL：
   双拼手动复跑 PASS（样本配置写入太快）；失焦疑似抖动；**薄弱字/练习进度路径没有跟随 `LAMPYRIS_SUPPORT_DIR`**，私有根复验仍写真实目录，
   导致样本判定失败且用户词库 `pinyin zhuang 装` 计数 +1。已修 `PracticeProgress.defaultURL` / `WeakChars.defaultURL`，
-  `quality-samples.sh` 改为停全部宿主、逐进程校验私有根、配置写入后加延迟；**build 42 待出包重装**。
+  `quality-samples.sh` 改为停全部宿主、逐进程校验私有根、配置写入后加延迟；**build 43 待出包重装**。
 - 2026-11-13 / Claude Code（air）：**批次 C + 1.3.0 版本号（报告 269，PR #278）**。练习「文章跟打」：100 条自编短句、
   独立窗口、逐字判定、会话内统计（ADR-347）；`Cargo.toml` 升 1.3.0（build 41 → 42），ROADMAP 发布列车与 `docs/releases/1.3.0.md` 草稿同步。
   CI 首次红是 `wubi.auto_phrase` 未进设置页「五笔与拼音」分组、离屏 UI 探针的固定 Swift 源列表缺 PassageBank/PassageWindow，

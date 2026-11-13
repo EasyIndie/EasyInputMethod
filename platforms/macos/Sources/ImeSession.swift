@@ -408,6 +408,9 @@ final class ImeSession {
     func setMode(_ mode: String) {
         guard let handle else { return }
         _ = mode.withCString { ime_session_set_mode(handle, $0) }
+        // 双拼开关依赖当前模式（ADR-336）：切到拼音后必须重建引擎选项，
+        // 否则配置里的 pinyin.scheme 要等下一次配置变更才生效（报告 270）。
+        prepare()
     }
 
     /// 取消当前组合。
