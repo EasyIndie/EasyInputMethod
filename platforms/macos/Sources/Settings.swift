@@ -544,6 +544,9 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         dictionaryButtons.forEach { $0.isEnabled = value != nil }
     }
 
+    /// 会话重建（切换扩展词库等）后重新绑定；弱引用失效时词库按钮会随之禁用。
+    func rebindSession(_ value: ImeSession?) { bindSessionForTesting(value) }
+
     private func selectSection(_ index: Int) {
         guard let host = contentHost, sectionViews.indices.contains(index) else { return }
         if window?.isVisible == true { _ = window?.makeFirstResponder(nil) }
@@ -652,7 +655,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         if scopes == [0] {
             groups = [("默认输入", ["mode", "input.chinese_variant", "input.punctuation", "input.full_width",
                               "input.digit_punctuation", "input.remember_english_per_app"]),
-                ("五笔与拼音", ["wubi.auto_commit", "wubi.auto_phrase", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"])]
+                ("五笔与拼音", ["wubi.auto_commit", "wubi.auto_phrase", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme", "dict.extended"])]
         } else if scopes == [4] {
             groups = [("更新来源", ["update.feed_url"])]
         } else if scopes.contains(3) {
