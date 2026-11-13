@@ -514,6 +514,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
+    @objc private func openPassage() {
+        PassageWindow.shared.show()
+    }
+
     @objc private func openProgress() {
         progress.save()
         NSWorkspace.shared.activateFileViewerSelecting([progress.url])
@@ -638,10 +642,11 @@ extension PracticeWindow: NSToolbarDelegate {
         static let reset = NSToolbarItem.Identifier("practice.reset")
         static let export = NSToolbarItem.Identifier("practice.export")
         static let keymap = NSToolbarItem.Identifier("practice.keymap")
+        static let passage = NSToolbarItem.Identifier("practice.passage")
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [ToolbarID.next, ToolbarID.reveal, .flexibleSpace, ToolbarID.keymap,
+        [ToolbarID.next, ToolbarID.reveal, ToolbarID.passage, .flexibleSpace, ToolbarID.keymap,
          ToolbarID.reset, ToolbarID.export]
     }
 
@@ -678,6 +683,12 @@ extension PracticeWindow: NSToolbarDelegate {
             item.image = NSImage(systemSymbolName: "doc.text", accessibilityDescription: "打开进度文件")
             item.target = self
             item.action = #selector(openProgress)
+        case ToolbarID.passage:
+            item.label = "文章跟打"
+            item.toolTip = "打开文章跟打窗口"
+            item.image = NSImage(systemSymbolName: "text.book.closed", accessibilityDescription: "文章跟打")
+            item.target = self
+            item.action = #selector(openPassage)
         case ToolbarID.keymap:
             item.label = "键位图"
             item.toolTip = "显示或隐藏键位字根图"
