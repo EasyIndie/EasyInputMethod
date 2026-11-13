@@ -16,7 +16,7 @@ guard panel.sectionCount == 5, panel.rowCount == options.count, options.count ==
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
 panel.selectSectionForTesting(0)
-guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"] else { fail("design input grouping and order") }
+guard panel.visibleOptionKeysForTesting == ["mode", "input.chinese_variant", "input.punctuation", "input.full_width", "input.digit_punctuation", "input.remember_english_per_app", "wubi.auto_commit", "wubi.auto_phrase", "wubi.z_key", "pinyin.fuzzy", "pinyin.scheme"] else { fail("design input grouping and order") }
 
 // ADR-305：宽度项从复选框改为下拉，与「标点风格」「输出字形」同构
 // （模式仍用分段控件，因为它只有三个互斥项且要一眼看全，属既有设计，不在本 ADR 范围）。
