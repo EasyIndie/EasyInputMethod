@@ -13,7 +13,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；Claude 桌面应用会话**没有辅助功能/事件投递权限**，键入类探针要在已授权的终端如 ghostty 里跑） | **`main` 候选 `3e428b7`（1.2.1 / build 40 同号，2026-11-12 装机，报告 264）**，ZIP `8e7aece7…`，宿主执行 `f38e4e1a238e38249de5f8b195454bc6e48e4da37272b879b58b6b57971ee82f`；输入源 `Lampyris.default` 已启用并选中 | 装机前后未变；键入复验后 config `52af2b90…`（取值同前，多两行显式默认值）、词库 1715 行、`practice.tsv` `90530ef7…` | 旧包（1.2.1 发布版 `3eeeb0aa…`）在 `updates/install-backup-20261112T060612Z/`；用户数据备份在 `platforms/macos/build/acceptance-air-p1u-3e428b7/userdata-before/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；Claude 桌面应用会话**没有辅助功能/事件投递权限**，键入类探针要在已授权的终端如 ghostty 里跑） | **`main` 候选 `2610d1f`（1.2.1 / build 40 同号，2026-11-13 装机，报告 266）**，ZIP `a4b56509…`，宿主执行 `975a4b0420664455c1e97dc3dbfebe387bcce542f2ec43f7d739b42e8e6a8551`；输入源 `Lampyris.default` 已启用并选中；**用户当前 `mode=wubi`** | 装机前后未变；键入复验后 config `52af2b90…`（取值同前，多两行显式默认值）、词库 1715 行、`practice.tsv` `90530ef7…` | 旧包（1.2.1 发布版 `3eeeb0aa…`）在 `updates/install-backup-20261112T060612Z/`；用户数据备份在 `platforms/macos/build/acceptance-air-p1u-3e428b7/userdata-before/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.2.0 / build 39**，宿主执行 `ef25e92b…`（2026-11-09 经 `upgrade.py --apply` 升级，旧包 `updates/upgrade-20261109T121300-9c1061c4/backup/`） | config `b8c7a351…`、词库 962 行，升级前后未变（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -117,6 +117,7 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**ADR-337 候选 `2610d1f` 装机复验全 PASS（报告 266）**。CI 打包前两次排队 15 分钟未分到 macOS arm64 运行机被取消（GitHub 容量），第 3 次成功；ZIP `a4b56509…`、执行 `975a4b04…`，装机后用户数据不变。`12:30`/`？`/`：` 真机正确；五笔码提示在混输下真机出现（148×36 浮层，外接屏），**用户当前 `mode=wubi`（21:26 本地自行切换），五笔/拼音模式按设计不提示**。26/26 样本 PASS；内存 ADR-338 口径稳态存活堆 21.0–21.2 MiB PASS。已装 `2610d1f`，`mode` 已恢复 `wubi`。剩余：升版本号 1.3.0 → 再出包复跑 → IT-22 A 档 → DMG 完成页 → tag/Release（需授权）。
 - 2026-11-13 / Claude Code（air）：**内存口径已定（ADR-338）**。`memory-gate.sh` 改以稳态存活堆 `heap_live_mb` 判定，门槛 24 MiB，不再按学习区分档；「私有已提交」与 footprint 只作参考；新增 `ANALYZE_ONLY=1` 复核旧快照。对报告 265 的 5 组快照（23 轮）重判全部 PASS（20.1–21.2 MiB）。取代 ADR-263/292/312 的口径与门槛。**发版阻塞里的内存一项已解除**；剩余：PR #274（ADR-337）未合并、其两项修复未实机确认，升版本号，DMG 完成页。本条与上一条文档提交都在本地 `dev`，等 #274 合并后再推。
 - 2026-11-13 / Claude Code（air）：**重启后内存重测（报告 265 §4.3）：无回归，门禁口径失效**。swap 0、负载 1–4，新旧包各 5 轮：稳态「私有已提交」新 37.4 / 37.3、旧（1.2.1 发布版）37.5 / 37.3，两者都 5 轮全超 34 MiB；存活堆都是 20.1–20.2 MiB。该口径随内存压力反向变化（swap 满时 31–34，swap 空时 35–37.6），量的是系统状态。**待用户裁定**：把判定口径换成 `heap_live_mb`（需 ADR）。已装回新包 `3e428b7`。PR #274（ADR-337）CI 全绿（首跑 `macos` 是没分到运行机被取消，重跑通过），**未合并、等用户授权**；本条文档提交暂留本地，等 #274 合并后再推，免得重跑 CI。
 - 2026-11-12 / Claude Code（air）：**用户实机反馈两处缺陷 → ADR-337**。① `12:30` 得到 `12；30`：带 Shift 的标点到核心时是未加 Shift 的字符 → 宿主改用 `typedScalar`（按键码 + Shift 重算）。② 拼音上屏后五笔码提示不出现：探针复现属实（宿主无浮层变化、诊断日志无取光标记录），进程内重放逻辑通过，**根因未定位**；改为上屏前候选快照并给提示路径每个分支加诊断日志。用户确认练习「字根」「词组」题型正常。四道检查全绿，新增 3 条真机样本（共 26 条）。**两项修复都未在真机确认**：等本批 PR 合并出包后装机，先看 `lampyris-hud-diag.log` 里的 `hint skip=/show=`。内存门槛按用户决定：重启电脑后重测再定。DMG 完成页仍未验证。
