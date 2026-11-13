@@ -17,8 +17,8 @@ class CompositionNavigationTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="lampyris-event-boundary-") as folder:
             temporary = Path(folder)
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
-                           "CLANG_MODULE_CACHE_PATH": str(temporary / "module-cache"),
-                           "SWIFT_MODULECACHE_PATH": str(temporary / "module-cache")}
+                           "CLANG_MODULE_CACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache')),
+                           "SWIFT_MODULECACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             shutil.copyfile(ROOT / "platforms/macos/tests/composition-navigation.swift", temporary / "main.swift")
             commands = [
                 (["cargo", "build", "--release", "-p", "ime-ffi"], 60),
@@ -27,7 +27,7 @@ class CompositionNavigationTests(unittest.TestCase):
                   *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
-                  "-o", str(temporary / "probe")], 180),
+                  "-o", str(temporary / "probe")], 90),
                 ([str(temporary / "probe"), str(temporary)], 10),
             ]
             for command, timeout in commands:

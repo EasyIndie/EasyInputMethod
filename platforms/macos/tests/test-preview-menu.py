@@ -38,7 +38,7 @@ class PreviewMenuTests(unittest.TestCase):
             temporary = Path(folder)
             shutil.copyfile(ROOT / 'platforms/macos/tests/preview-menu.swift', temporary / 'main.swift')
             environment = {**os.environ, 'CARGO_NET_OFFLINE': 'true',
-                           'CLANG_MODULE_CACHE_PATH': str(temporary / 'module-cache')}
+                           'CLANG_MODULE_CACHE_PATH': (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             commands = [
                 (['cargo', 'build', '--release', '-p', 'ime-ffi'], 60),
                 (['swiftc', '-warnings-as-errors', '-I', str(ROOT / 'crates/ime-ffi/include'),
@@ -46,7 +46,7 @@ class PreviewMenuTests(unittest.TestCase):
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'CaretPlacement.swift', 'LearningHints.swift', 'Practice.swift', 'PracticeWindow.swift', 'PracticeAnswerView.swift', 'PracticeExplanationView.swift', *KEYMAP_SOURCES, 'InputMenu.swift']],
                   str(ROOT / 'platforms/macos/Preview/InputMenuPreview.swift'),
-                  str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 180),
+                  str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 90),
                 ([str(temporary / 'probe'), str(temporary), str(ROOT / 'data/generated')], 30),
             ]
             try:

@@ -23,7 +23,7 @@ def main():
     isolated.require_owned(root)
     app = root / "LampyrisIMKTest.app"
     helper = root / "source-state"
-    subprocess.run(["swiftc", "-O", "-warnings-as-errors", "-module-cache-path", str(root / "module-cache"),
+    subprocess.run(["swiftc", "-O", "-warnings-as-errors", "-module-cache-path", (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(root / 'module-cache')),
                     str(isolated.ROOT / "platforms/macos/tests/isolated-imk/source-state.swift"), "-o", str(helper)], check=True)
 
     def state(action):

@@ -44,7 +44,7 @@ def main():
     helper_source = root / 'physical-state.swift'
     helper_source.write_text(source)
     helper = root / 'physical-state'
-    subprocess.run(['swiftc', '-O', '-warnings-as-errors', '-module-cache-path', str(root/'module-cache'),
+    subprocess.run(['swiftc', '-O', '-warnings-as-errors', '-module-cache-path', (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(root / 'module-cache')),
                     str(helper_source), '-o', str(helper)], check=True)
 
     def state(action):

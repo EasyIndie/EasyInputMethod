@@ -32,7 +32,7 @@ class WubiLearningTests(unittest.TestCase):
             # 词组题库（ADR-334）读随包码表
             shutil.copyfile(ROOT / "data/generated/wubi86-core.tsv", resources / "wubi86-core.tsv")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
-                           "CLANG_MODULE_CACHE_PATH": str(temporary / "module-cache")}
+                           "CLANG_MODULE_CACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             commands = [
                 (["cargo", "build", "--release", "-p", "ime-ffi"], 60),
                 (["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
@@ -42,7 +42,7 @@ class WubiLearningTests(unittest.TestCase):
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift",
                      "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
-                  "-o", str(temporary / "probe")], 180),
+                  "-o", str(temporary / "probe")], 90),
                 ([str(temporary / "probe"), str(temporary), str(output)], 30),
             ]
             for command, timeout in commands:

@@ -20,7 +20,7 @@ class AppearanceContractTests(unittest.TestCase):
             output.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(ROOT / "platforms/macos/tests/appearance-contract.swift", temporary / "main.swift")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
-                           "CLANG_MODULE_CACHE_PATH": str(temporary / "module-cache")}
+                           "CLANG_MODULE_CACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             commands = [
                 (["cargo", "build", "--release", "-p", "ime-ffi"], 60),
                 (["swiftc", "-warnings-as-errors", "-I", str(ROOT / "crates/ime-ffi/include"),
@@ -29,7 +29,7 @@ class AppearanceContractTests(unittest.TestCase):
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "CaretPlacement.swift", "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES, "Settings.swift", "Feedback.swift", "InfoWindow.swift",
                      "UserDictionary.swift", "Lookup.swift"]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
-                  "-o", str(temporary / "probe")], 180),
+                  "-o", str(temporary / "probe")], 90),
                 ([str(temporary / "probe"), str(temporary), str(output)], 30),
             ]
             for command, timeout in commands:

@@ -18,7 +18,7 @@ class InputMenuTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix='lampyris-menu-') as folder:
             temporary = Path(folder)
             shutil.copyfile(ROOT / 'platforms/macos/tests/input-menu.swift', temporary / 'main.swift')
-            environment = {**os.environ, 'CLANG_MODULE_CACHE_PATH': str(temporary / 'module-cache')}
+            environment = {**os.environ, 'CLANG_MODULE_CACHE_PATH': (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             commands = [
                 ['swiftc', '-warnings-as-errors', str(temporary / 'main.swift'),
                  str(ROOT / 'platforms/macos/tests/LocalAcceptanceEvidence.swift'),
