@@ -17,7 +17,6 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
     private var categories: [SymbolCategory] = []
     private var currentCategory: SymbolCategory?
     private var onInsert: ((String) -> Void)?
-    private var previousApp: NSRunningApplication?
 
     private let cellIdentifier = NSUserInterfaceItemIdentifier("SymbolPickerCell")
 
@@ -34,8 +33,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         }
         search?.stringValue = ""
         reload()
-        previousApp = NSWorkspace.shared.frontmostApplication
-        NSApp.activate(ignoringOtherApps: true)
+        // 非激活面板：不把宿主 App 切到前台，原客户端保持焦点，插入仍落到原插入点。
         panel?.makeKeyAndOrderFront(nil)
         panel?.makeFirstResponder(search)
     }
@@ -46,12 +44,6 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
 
     func close() {
         panel?.orderOut(nil)
-        restorePreviousApp()
-    }
-
-    private func restorePreviousApp() {
-        previousApp?.activate(options: [])
-        previousApp = nil
     }
 
     // MARK: - 构建
@@ -61,7 +53,8 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         categories = SymbolCatalog.shared.allCategories
         let panel = SymbolPanel(
             contentRect: NSRect(x: 0, y: 0, width: 620, height: 440),
-            styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+            styleMask: [.titled, .closable, .resizable, .nonactivatingPanel],
+            backing: .buffered, defer: false)
         panel.title = "符号与 emoji — 萤火虫"
         panel.isFloatingPanel = true
         panel.hidesOnDeactivate = false
@@ -215,7 +208,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
     // MARK: - 窗口
 
     func windowWillClose(_ notification: Notification) {
-        restorePreviousApp()
+        // 非激活面板关闭后原客户端仍在焦点，无需恢复应用。
     }
 
     // MARK: - 测试
@@ -247,6 +240,8 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
 /// Esc 关闭；其余按键交给 AppKit。
 private final class SymbolPanel: NSPanel {
     var onEscape: (() -> Void)?
+    override var canBecomeKey: Bool { true }
+    override var canBecomeMain: Bool { false }
     override func cancelOperation(_ sender: Any?) { onEscape?() }
 }
 
