@@ -3,9 +3,9 @@
 ## 0. 元信息
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
-  `main` = `d9ca1b4`；air 已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、人工走查全部 PASS。
-- 分支：`main` = `d9ca1b4`；`dev` 有发布后探针修复（`9edd9e7`）待开 PR（不影响 1.3.0 产物）。
-- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**正式发版前必须重新绑定候选身份。**
+  air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
+- 分支：`main` = `2fc6c0a`；`dev` = 本批文档对账提交（`待办与积压` / `ROADMAP` / `HANDOFF` / 任务卡归档），经 `dev → main` PR 合入。
+- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
@@ -15,8 +15,8 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `3f4f1f557328fa5b0c8a8300ebdd3518b566a2c143f108fcba80df4f2e3103fd`；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.2.0 / build 39**，宿主执行 `ef25e92b…`（2026-11-09 经 `upgrade.py --apply` 升级，旧包 `updates/upgrade-20261109T121300-9c1061c4/backup/`） | config `b8c7a351…`、词库 962 行，升级前后未变（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `9cb738c9f1fbc9cda2b0fe52d3b7ec9a42b45609efce243507a28643fa12aba8`（发版产物，2026-11-13 重装）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
 
@@ -56,29 +56,29 @@
 
 ## 3. 未决
 
-剩余待办见 **`docs/待办与积压.md`**（2026-11-09 重排版，1.2.1 发布后）：
+剩余待办见 **`docs/待办与积压.md`**（2026-11-13 按 1.3.0 发布后对账）：
 
-- **P0 · 立即（验证不开发）**：练习页 VoiceOver 实机走查、安装器三条新分支的回归测试、离线回归编译共享缓存、
-  pro 升级与实键入、IT-22 清单按 1.2.1 复跑。除非抓出缺陷，否则并进 1.3.0 的 B0，不单出 1.2.2。
-- **P1-U · 输入体验与学练闭环（ADR-324，2026-11-12 已采纳）**：15 项分三档（拼音可主用、日常输入细节、扩展词库、学练闭环）；
-  方向已批准，每项开工前仍各写落地 ADR / 任务卡。**ADR-325…336 共 12 项代码已完成并（前两档）合入 main，全部未换包、待装机复验**；剩余 8 项待用户定口径/授权，见积压文档 P1-U 末尾的表。
-- **P1 · 1.3.0**：三级简码专项（需引擎 + ADR）、corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表、客户端自动回读缺口。
+- **P0 · 立即（验证不开发）**：只剩 **pro 实键入确认**（升级已完成，用户手打几个字）；其余 P0 已随 1.3.0 完成。
+- **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 12 项已完成并真机复验；剩 U2-3 扩展词库（需授权实测内存）、
+  U2-5 分阶段解锁（需口径）、U3-1 整句模型（语料许可）、U3-5 符号 / emoji（触发方式）、U3-4 高频字拆解（字根字形来源）、
+  宿主内完整引导（是否做）。每项开工前各写落地 ADR / 任务卡。
+- **P1 · 数据与方案**：corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表（TBD-2）、客户端自动回读缺口。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
 
-建议：先做 P0 套餐（1 天），再在「教学闭环 B」与「数据地基 C」之间选一条主线。
+建议：先在「产品可感 B」（U2-3 扩展词库 / U3-5 符号）与「数据地基 C」（P1-2 调研）之间选一条主线。
 
-## 4. 下一步（1.3.0）
+## 4. 下一步
 
 | 步骤 | 内容 | 授权 |
 |---|---|---|
-| 1 | ~~批次 B/C、build 43、真机 30/30、性能/内存、人工走查、DMG 完成页~~ | ✅ 2026-11-13 |
+| 1 | ~~批次 A/B/C、build 43、真机 30/30、性能/内存、人工走查、DMG 完成页~~ | ✅ 2026-11-13 |
 | 2 | ~~tag v1.3.0 / Release / 站点部署~~ | ✅ 2026-11-13（报告 272；站点回读 `v1.3.0 · 构建 43`） |
-| 3 | **pro 升级到 1.3.0** | 用户自行执行（`packaging/macos/upgrade.py`） |
-| 4 | 发布后探针修复（`dev` `9edd9e7`）开 PR 合入 main | 已授权 |
+| 3 | ~~pro 升级到 1.3.0~~ | ✅ 2026-11-13（用户手动执行，执行 `9cb738c9…`） |
+| 4 | 文档对账 + `dev → main` PR | 已授权（本批） |
 
-剩余开发项：文章跟打（`docs/tasks/T-PASSAGE-follow-typing.md`）；高频字拆解受阻（报告 268 §2，等字根字形许可来源）；
-扩展词库、整句模型、多方案码表（依赖外部数据/许可）。
+剩余开发项：高频字拆解受阻（报告 268 §2，等字根字形许可来源）；扩展词库、整句模型、符号 / emoji、
+多方案码表（依赖外部数据/许可或触发方式）。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -86,8 +86,8 @@
 |---|---|
 | 系统 / 架构 | macOS 27.2 / arm64，用户 `joker`，SSH 别名 `air` |
 | 仓库 | `~/Documents/EasyInputMethod`（先 `git fetch origin --prune && git switch dev && git merge --ff-only origin/main`） |
-| 已装包 | **1.1.0 / build 38**（候选，宿主执行 `d3c5a2ef…`），输入源在用，不要重装 |
-| 证据目录 | `platforms/macos/build/acceptance-air-1.1.0-b38/`（候选 ZIP/源码 + 安装记录）；旧候选目录已按用户决定清理 |
+| 已装包 | **1.3.0 / build 43**（发版产物，宿主执行 `9cb738c9…`），输入源在用，不要重装 |
+| 证据目录 | `platforms/macos/build/acceptance-air-1.3.0-release/`（发版产物与安装记录）；更早候选目录保留作历史 |
 
 ```sh
 cd ~/Documents/EasyInputMethod && git fetch origin --prune && git switch dev && git merge --ff-only origin/main
@@ -120,6 +120,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**1.3.0 发布后文档对账 + pro 核验**。用户手动把 pro 升到 1.3.0/43
+  （执行 `9cb738c9…`，config `b8c7a351…` 未变、词库 962→963）；更新 `docs/待办与积压.md`（版本抬头、P0/P1-U 完成项、下一版套餐）、
+  `ROADMAP.md`（1.3.0 发布与 pro 升级勾选）、`docs/README.md`；文章跟打任务卡归档到 `docs/archive/tasks/`。
+  本批经 `dev → main` PR 合入后 `dev` 与 `main` 同步。
 - 2026-11-13 / Claude Code（air）：**1.3.0 发布完成（报告 272）**。tag `v1.3.0`（`d9ca1b4`）→ Release run `43413483494` success；
   ZIP `66b01c64…`、源码 `9f068f18…`、DMG `fef49e86…`（公证）、更新程序 `28e4a327…` 1.3.0、appcast `43`；
   Pages `43414150031` → 站点回读 `v1.3.0 · 构建 43`。发版产物 `9cb738c9…` 与早先候选 SHA 不同，已重新装机并重跑 30/30 样本、性能/内存 PASS。
