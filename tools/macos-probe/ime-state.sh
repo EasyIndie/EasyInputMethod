@@ -38,7 +38,7 @@ converge() { # field hotkey target
     done
     got=$(field "$name")
     if [ "$got" != "$want" ]; then
-        echo "BLOCKED $name=$got（目标 $want，试了 $n 次）" >&2
+        echo "BLOCKED $name=$got（目标 ${want}，试了 ${n} 次）" >&2
         return 1
     fi
     return 0
@@ -59,7 +59,7 @@ case "${1:---ensure}" in
         echo "RESTORED $(state)"
         ;;
     --ensure|*)
-        ensure_source || { echo "BLOCKED 无法选中输入源（$SOURCE）" >&2; exit 78; }
+        ensure_source || { echo "BLOCKED 无法选中输入源（${SOURCE}）" >&2; exit 78; }
         converge punctuation opt+p chinese || exit 78
         converge full_width opt+f half || exit 78
         converge chinese_variant opt+t simplified || exit 78

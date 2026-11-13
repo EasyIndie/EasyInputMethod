@@ -11,6 +11,8 @@ SETTLE=1.5
 
 OUT="${OUT:-/tmp/lampyris-quality-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
+# LAMPYRIS_SUPPORT_DIR 只接受绝对路径（ADR-215）；OUT 相对时私有根会静默失效（报告 270）。
+case "$OUT" in /*) ;; *) OUT="$(cd "$OUT" && pwd)" ;; esac
 # 报告267：键入样本默认在私有数据根里跑（ADR-215），不再往用户的 config/词库/薄弱字清单留痕。
 # 进出私有根各要重启一次宿主；ISOLATE=0 可退回旧行为（直接写真实数据目录）。
 ISOLATE="${ISOLATE:-1}"
@@ -30,6 +32,10 @@ restart_host() {
 start_isolation() {
     [ "$ISOLATE" = 1 ] || return 0
     [ -d "$HOST_APP" ] || { echo "BLOCKED 未安装宿主，无法进入私有数据根" >&2; return 1; }
+    case "$PRIVATE_SUPPORT" in
+        /*) ;;
+        *) echo "BLOCKED 私有数据根不是绝对路径：$PRIVATE_SUPPORT" >&2; return 1 ;;
+    esac
     mkdir -p "$PRIVATE_SUPPORT"
     ORIGINAL_SUPPORT_ENV=$(launchctl getenv LAMPYRIS_SUPPORT_DIR 2>/dev/null || true)
     launchctl setenv LAMPYRIS_SUPPORT_DIR "$PRIVATE_SUPPORT" || return 1
@@ -103,6 +109,11 @@ blocked() { BLOCKED_CASES=$((BLOCKED_CASES + 1)); printf '%-26s BLOCKED  %s\n' "
 type_read() {
     keys="$1"
     open -a TextEdit >/dev/null 2>&1
+    # 首轮 TextEdit 刚启动时可能还没有 AX 窗口（报告 270：前两条样本读到 NO_WINDOW）。
+    for _ in 1 2 3 4 5; do
+        [ "$("$BIN/axtext" 2>/dev/null | head -1)" = "NO_WINDOW" ] || break
+        new_doc; sleep 0.8
+    done
     for _ in 1 2 3 4 5; do
         name=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)
         [ "$name" = "TextEdit" ] || [ "$name" = "文本编辑" ] && break
@@ -211,7 +222,8 @@ case_double_pinyin() {
     [ -x "$IME_CLI" ] || { blocked "双拼（小鹤）" "缺 target/release/ime-cli（先 cargo build --release -p ime-cli）"; return; }
     cfg_set mode '"pinyin"'; cfg_set pinyin.scheme '"xiaohe"'
     # 两次配置写入后宿主需要一拍才重建双拼引擎；太紧会测到全拼（报告 270）。
-    sleep 1.5
+    sleep 2.5
+    { echo "== double-pinyin diagnostics"; echo "config=$CONFIG_FILE"; grep -E '^(mode|scheme)' "$CONFIG_FILE" 2>/dev/null; pgrep -x Lampyris | while read -r p; do ps eww -o command= -p "$p" | grep -o 'LAMPYRIS_SUPPORT_DIR=[^ ]*'; done; } > "$OUT/dp-diag.txt" 2>&1 || true
     got=$(type_read 'nihc ')
     cfg_set pinyin.scheme '"full"'; cfg_set mode '"mixed"'
     if check 'exact:你好' "$got"; then printf '%-26s PASS  %s\n' "双拼（小鹤）" "$got"
@@ -226,6 +238,7 @@ case_weak_chars() {
     cfg_set practice.collect_weak_chars true
     # 配置写入到宿主重建引擎有一拍延迟（报告 270）。
     sleep 1.5
+    { echo "== weak-chars diagnostics"; grep -E '^(mode|collect_weak_chars)' "$CONFIG_FILE" 2>/dev/null; ls -la "$SUPPORT_DIR" 2>/dev/null; } > "$OUT/weak-diag-before.txt" 2>&1 || true
     # zhuang 超过 4 码，五笔不参与；首选是拼音单字。
     got=$(type_read 'zhuang ')
     sleep 0.5

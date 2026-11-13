@@ -134,14 +134,14 @@ PY
 while read -r index name x y_tl w h scale; do
     # 窗口摆在屏内一块稳定区域（避开菜单栏与底边），左右各留 60。
     wx=$((x + 60)); wy=$((y_tl + 60)); ww=$((w - 120)); wh=$((h - 220))
-    [ "$ww" -gt 300 ] || { report "屏 $index（$name）" "SKIP 屏太小"; continue; }
+    [ "$ww" -gt 300 ] || { report "屏 ${index}（${name}）" "SKIP 屏太小"; continue; }
     # 键盘焦点只给 TextEdit：每批发键前都过 guard-focus（报告099/189）。
     reset_textedit
     osascript -e "tell application \"TextEdit\" to activate" >/dev/null 2>&1
     set_window "$wx" "$wy" "$ww" "$wh"
     sleep 0.8
     if ! "$PROBE/guard-focus.sh" TextEdit >/dev/null 2>&1; then
-        report "屏 $index（$name）" "BLOCKED 前台不是文本编辑（当前：$(front_name)）"
+        report "屏 ${index}（${name}）" "BLOCKED 前台不是文本编辑（当前：$(front_name)）"
         FAILED=1
         continue
     fi
