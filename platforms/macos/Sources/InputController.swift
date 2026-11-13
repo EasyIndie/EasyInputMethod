@@ -699,6 +699,10 @@ final class LampyrisInputController: IMKInputController {
         let trace = PerfTrace.shared.begin()
         // 方向键移动过高亮时，`[` / `]` 要按高亮项取字（ADR-327）。
         session.setHighlight(candidateSelection.index)
+        // 日期/时间候选需要当下的本地时间；双拼与五笔模式不生成（ADR-342）。
+        if session.mode != "wubi" {
+            session.setNow(Int64(Date().timeIntervalSince1970 + Double(TimeZone.current.secondsFromGMT())))
+        }
         let outcome = session.feed(codepoint)
         let engineStamp = PerfTrace.shared.stamp()
         switch outcome {

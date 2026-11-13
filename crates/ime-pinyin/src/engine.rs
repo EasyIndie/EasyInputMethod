@@ -12,6 +12,8 @@ pub struct PinyinEngine {
     fuzzy: bool,
     /// 把输入按小鹤双拼解释（ADR-336）。
     double: bool,
+    /// 本地时间（自 epoch 起的本地秒）；用于日期/时间候选（ADR-342）。
+    now: Option<i64>,
 }
 
 impl PinyinEngine {
@@ -26,6 +28,7 @@ impl PinyinEngine {
             max_code_len,
             fuzzy: false,
             double: false,
+            now: None,
         }
     }
 }
@@ -67,6 +70,51 @@ impl PinyinEngine {
     }
 }
 
+impl PinyinEngine {
+    /// 日期 / 时间 / 星期候选（ADR-342）：只响应全拼的精确键名，双拼与模糊音都不参与。
+    fn dynamic_candidates(&self, input: &str, max: usize) -> Option<Vec<Candidate>> {
+        let now = self.now?;
+        let text = match input {
+            "riqi" => {
+                let (year, month, day) = civil_from_days(now.div_euclid(86_400));
+                format!("{year}年{month}月{day}日")
+            }
+            "shijian" => {
+                let seconds = now.rem_euclid(86_400);
+                format!("{:02}:{:02}", seconds / 3_600, seconds % 3_600 / 60)
+            }
+            "xingqi" => {
+                let weekday = (now.div_euclid(86_400) + 4).rem_euclid(7) as usize;
+                let names = ["日", "一", "二", "三", "四", "五", "六"];
+                format!("星期{}", names[weekday])
+            }
+            _ => return None,
+        };
+        (max > 0).then(|| {
+            vec![Candidate::new(
+                text,
+                input,
+                10_000,
+                CandidateSource::Dynamic,
+            )]
+        })
+    }
+}
+
+/// 把「自 1970-01-01 起的天数」换算成年月日（Howard Hinnant 的 civil_from_days）。
+fn civil_from_days(days: i64) -> (i64, i64, i64) {
+    let z = days + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = z - era * 146_097;
+    let yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365;
+    let year = yoe + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = mp + if mp < 10 { 3 } else { -9 };
+    (year + i64::from(month <= 2), month, day)
+}
+
 impl Engine for PinyinEngine {
     fn reverse_lookup(&self, text: &str) -> Option<String> {
         self.backend.reverse_lookup(text)
@@ -74,6 +122,9 @@ impl Engine for PinyinEngine {
     fn configure(&mut self, options: &ime_core::EngineOptions) {
         self.fuzzy = options.fuzzy;
         self.double = options.double_pinyin;
+    }
+    fn set_now(&mut self, local_seconds: Option<i64>) {
+        self.now = local_seconds;
     }
     fn convert(&self, input: &str, max: usize) -> ConvertResult {
         if self.double {
@@ -138,6 +189,16 @@ impl Engine for PinyinEngine {
                 .then_with(|| b.weight.cmp(&a.weight))
                 .then_with(|| a.text.cmp(&b.text))
         });
+        if let Some(dynamic) = self.dynamic_candidates(input, max) {
+            candidates.extend(dynamic);
+            candidates.sort_by(|a, b| {
+                a.class()
+                    .cmp(&b.class())
+                    .then_with(|| a.is_fuzzy.cmp(&b.is_fuzzy))
+                    .then_with(|| b.weight.cmp(&a.weight))
+                    .then_with(|| a.text.cmp(&b.text))
+            });
+        }
         let mut seen = std::collections::HashSet::new();
         candidates.retain(|c| seen.insert(c.text.clone()));
         candidates.truncate(max);
@@ -207,6 +268,31 @@ mod tests {
             Box::new(TablePinyinBackend::from_tsv(chars, words, "t").unwrap()),
             32,
         )
+    }
+
+    #[test]
+    fn dynamic_date_time_and_weekday_candidates_come_from_the_supplied_clock() {
+        let mut e = engine();
+        assert!(
+            e.convert("riqi", 9).candidates.is_empty(),
+            "no clock, no dynamic candidate"
+        );
+        e.set_now(Some(1_794_573_240)); // 2026-11-13 12:34:00 UTC
+        let date = e.convert("riqi", 9).candidates;
+        assert_eq!(date[0].text, "2026年11月13日");
+        assert_eq!(date[0].source, CandidateSource::Dynamic);
+        assert_eq!(e.convert("shijian", 9).candidates[0].text, "12:34");
+        assert_eq!(e.convert("xingqi", 9).candidates[0].text, "星期五");
+        // 双拼按键不按全拼解释，不生成环境候选。
+        let mut double = engine();
+        double.configure(&ime_core::EngineOptions {
+            auto_commit: false,
+            z_wildcard: false,
+            fuzzy: false,
+            double_pinyin: true,
+        });
+        double.set_now(Some(1_794_573_240));
+        assert!(double.convert("riqi", 9).candidates.is_empty());
     }
 
     #[test]

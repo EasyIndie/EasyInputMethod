@@ -36,6 +36,7 @@ pub const IME_SELECT_PARTIAL: i32 = 1;
 const SOURCE_CODE_TABLE: i32 = 0;
 const SOURCE_PINYIN: i32 = 1;
 const SOURCE_PHRASE: i32 = 2;
+const SOURCE_DYNAMIC: i32 = 3;
 
 /// 库所有的 UTF-8 字符串（调用方负责 [`ime_string_free`]）。
 #[repr(C)]
@@ -97,6 +98,7 @@ fn source_to_int(source: CandidateSource) -> i32 {
         CandidateSource::CodeTable => SOURCE_CODE_TABLE,
         CandidateSource::Pinyin => SOURCE_PINYIN,
         CandidateSource::Phrase => SOURCE_PHRASE,
+        CandidateSource::Dynamic => SOURCE_DYNAMIC,
     }
 }
 
@@ -269,6 +271,10 @@ impl ImeSession {
         let Some(c) = candidate else {
             return;
         };
+        // 日期/时间候选来自环境而不是用户选择，学进词库只会污染（ADR-342）。
+        if c.source == CandidateSource::Dynamic {
+            return;
+        }
         let Some(store) = self.dictionary.as_mut() else {
             return;
         };
@@ -672,6 +678,18 @@ pub extern "C" fn ime_session_set_highlight(session: *mut ImeSession, index: i32
             return Err(IME_ERR_INVALID_INPUT);
         }
         s.session.set_highlight(index as usize);
+        Ok(IME_OK)
+    })
+}
+
+/// 宿主本地时间（自 epoch 起的「本地秒」，已加时区偏移）；`local_seconds < 0` 表示不可用。
+#[no_mangle]
+pub extern "C" fn ime_session_set_now(session: *mut ImeSession, local_seconds: i64) -> i32 {
+    catch_status(|| {
+        // SAFETY：契约见模块注释。
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        s.session
+            .set_now((local_seconds >= 0).then_some(local_seconds));
         Ok(IME_OK)
     })
 }
