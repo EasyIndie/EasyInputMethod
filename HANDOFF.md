@@ -3,7 +3,7 @@
 ## 0. 元信息
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40，开发中的 1.3.0 / build 41**；`main` = `6a9c587`（PR #277 已合并），
-  `dev` = `451bc60` + 本条交接，PR **#278** 含批次 B/C（ADR-341…347）与 1.3.0 / build 41 **待合并**；**尚未发版、版本号未升**。air 已装 `main` 候选 `2610d1f`（报告 266）。
+  `dev` = `451bc60` + 本条交接，PR **#278** 已合并（`938eeb0`）；1.3.0 / build 41 候选已出（ZIP `1eb480e3…`、执行 `aa040adc…`），**待装机复验**；**尚未发版、版本号未升**。air 已装 `main` 候选 `2610d1f`（报告 266）。
 - 分支：`main` = `6a9c587`；`dev` 领先 `main` 批次 B/C + 版本号共 9 个提交（见 §9），批次 A（报告 267）已合并。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **41**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**`main` 上的候选与发布版同号不同内容，发版前必须升版本号。**
 - 最近验证：`make verify` PASS（375 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
@@ -121,6 +121,9 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**PR #278 合并 + 1.3.0 候选出包**。main = `938eeb0`（批次 B/C、版本号 1.3.0/41）；
+  候选 run `43362795540` success：ZIP `1eb480e3…`、源码 `a5887a10…`、执行 `aa040adc…`，universal、Developer ID 公证通过。
+  **未装机**——换包、重启宿主与键入样本需要你单独授权。
 - 2026-11-13 / Claude Code（air）：**批次 C + 1.3.0 版本号（报告 269，PR #278）**。练习「文章跟打」：100 条自编短句、
   独立窗口、逐字判定、会话内统计（ADR-347）；`Cargo.toml` 升 1.3.0 / build 41，ROADMAP 发布列车与 `docs/releases/1.3.0.md` 草稿同步。
   CI 首次红是 `wubi.auto_phrase` 未进设置页「五笔与拼音」分组、离屏 UI 探针的固定 Swift 源列表缺 PassageBank/PassageWindow，
