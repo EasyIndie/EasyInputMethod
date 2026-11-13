@@ -1,6 +1,7 @@
 # 274 — 符号 / emoji 输入（U3-5，ADR-349）
 
-> 2026-11-13，air（arm64 / macOS 27.2）。代码与数据完成，**未换包**；真机复验待授权。
+> 2026-11-13，air（arm64 / macOS 27.2）。代码与数据完成；候选 `1c6eddb`（ZIP `8b611c24…`，执行 `57ffaa9c…`）
+> 已装 air，但复验时**屏幕已锁定**（`CGSSessionScreenIsLocked=Yes`），键入窗口无法取得前台 → GUI 项 **BLOCKED**，待解锁后补跑。
 
 ## 1. 做了什么
 
@@ -32,7 +33,9 @@
 | 预览冒烟 | PASS（设置项数量 33） |
 | `test-symbol-emoji-data.py` | 4 例 PASS：分类/覆盖/搜索词/许可/SHA |
 | `test-symbol-picker.py` | PASS：目录、搜索「笑」「heart」「牵手」、面板分类、插入回调、前缀状态 |
-| 真机 ⌥S / 反引号 | **待授权换包后执行** |
+| 安装 | 候选 `1c6eddb` 已装 air：执行 `57ffaa9c…`、1.3.0/43、universal、公证；`emoji.tsv`/`symbols.tsv` 在 Resources |
+| 数据未改用户文件 | 真实 `config.toml` `3aea2bca…`、词库 `8fa18a7d…`、练习 `2512f4…` 前后不变；备份 `updates/install-backup-20261113T155602Z/` |
+| 真机 ⌥S / 反引号 | **BLOCKED**：复验时屏幕已锁定（`CGSSessionScreenIsLocked=Yes`），键入窗口无法取得前台；解锁后重跑 |
 
 ## 4. 已知限制
 
@@ -42,9 +45,9 @@
 - emoji 渲染依赖系统字体；肤色组合使用生成的中文名（如「握手（浅肤色、中等肤色）」）。
 - 面板首次打开才读取 emoji TSV（约 660 KB / 3,781 行），不进入核心常驻内存。
 
-## 5. 真机复验清单（待授权）
+## 5. 真机复验清单（装包已完成，GUI 项待解锁）
 
-1. 换包装机；⌥S 打开面板，分类切换、搜索「笑」「heart」、双击/回车插入。
+1. ⌥S 打开面板，分类切换、搜索「笑」「heart」、双击/回车插入。
 2. 反引号打开候选分类，数字选择、翻页、Esc 取消；选 emoji 跳转面板。
 3. 关闭 `hotkey.open_symbols` 后热键无行为；反引号仍可用。
 4. 核心五笔/拼音候选顺序与简码不变；零外联。
