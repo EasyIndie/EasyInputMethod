@@ -66,12 +66,14 @@ stop_isolation() {
 cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
 # 报告232：记住用户状态，跑完还原；开始前归位到 mixed/chinese/half/simplified。
 STATE_BEFORE="$OUT/state-before.txt"
-restore_state() { [ -f "$STATE_BEFORE" ] && "$PROBE/ime-state.sh" --restore "$STATE_BEFORE" >&2 || true; }
+# 状态工具必须读宿主的同一个数据根：私有根生效时不能再看真实 config（报告 270）。
+state_tool() { SUPPORT="$SUPPORT_DIR" "$PROBE/ime-state.sh" "$@"; }
+restore_state() { [ -f "$STATE_BEFORE" ] && state_tool --restore "$STATE_BEFORE" >&2 || true; }
 finish() { restore_state; cleanup_run; stop_isolation; }
 trap finish EXIT INT TERM
 start_isolation || { echo "BLOCKED 无法进入私有数据根（见上）"; exit 78; }
-"$PROBE/ime-state.sh" --snapshot "$STATE_BEFORE" 2>/dev/null || true
-"$PROBE/ime-state.sh" --ensure >&2 || { echo "BLOCKED 输入法状态无法归位"; exit 78; }
+state_tool --snapshot "$STATE_BEFORE" 2>/dev/null || true
+state_tool --ensure >&2 || { echo "BLOCKED 输入法状态无法归位"; exit 78; }
 
 "$PROBE/acceptance-preflight.sh" > "$OUT/preflight.json" 2>&1 || {
     code=$?
