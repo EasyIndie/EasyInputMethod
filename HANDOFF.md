@@ -3,8 +3,8 @@
 ## 0. 元信息
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；1.3.0 / build 43 已装机复验 30/30 PASS**；
-  `main` = `3595913`（PR #280 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
-- 分支：`main` = `3595913`；`dev` 追平后仅有本次报告/探针文档改动（见 §9）。
+  `main` = `054b6c8`（PR #280/#281 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
+- 分支：`main` = `054b6c8`；`dev` 已追平（无未合并提交）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
