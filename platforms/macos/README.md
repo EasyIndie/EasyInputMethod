@@ -65,6 +65,8 @@ platforms/macos/
 | `data/generated/wubi86-core.tsv` | ✅ 已入库 | 宿主回退内置样本引擎 |
 | `data/generated/pinyin-chars.tsv` | ✅ 已入库 | 不启用拼音 |
 | `data/generated/pinyin-core.tsv` | ✅ 已入库（20k基础词及场景训练词，ADR-227） | 拼音降级为单音节 |
+| `data/generated/wubi86-extended.tsv` / `pinyin-extended.tsv` | ✅ 已入库（可选扩展档，ADR-348） | `dict.extended` 回退核心档 |
+| `data/generated/emoji.tsv` / `data/symbols.tsv` | ✅ 已入库（U3-5，ADR-349） | 符号/emoji 面板与反引号前缀不可用 |
 
 复现大文件：
 

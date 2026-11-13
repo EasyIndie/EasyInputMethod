@@ -1,0 +1,279 @@
+# 项目自编符号表；CC-BY-SA-4.0；D23/ADR-349。
+# category	char	name_zh	keywords（空格分隔，中英文搜索词）
+punctuation	，	逗号	douhao comma
+punctuation	。	句号	juhao period
+punctuation	、	顿号	dunhao
+punctuation	；	分号	fenhao semicolon
+punctuation	：	冒号	maohao colon
+punctuation	？	问号	wenhao question
+punctuation	！	感叹号	gantanhao exclamation
+punctuation	“	左双引号	yinqhao quote
+punctuation	”	右双引号	yinqhao quote
+punctuation	‘	左单引号	danyinqhao quote
+punctuation	’	右单引号	danyinqhao quote
+punctuation	（	左圆括号	kuohao bracket
+punctuation	）	右圆括号	kuohao bracket
+punctuation	【	左方括号	fangkuohao bracket
+punctuation	】	右方括号	fangkuohao bracket
+punctuation	《	左书名号	shuminghao
+punctuation	》	右书名号	shuminghao
+punctuation	〈	左尖括号	jiankuohao
+punctuation	〉	右尖括号	jiankuohao
+punctuation	「	左直角引号	zhijiao yinqhao
+punctuation	」	右直角引号	zhijiao yinqhao
+punctuation	『	左双直角引号	zhijiao yinqhao
+punctuation	』	右双直角引号	zhijiao yinqhao
+punctuation	…	省略号	shengluehao ellipsis
+punctuation	—	破折号	pozhehao dash
+punctuation	～	波浪号	bolanghao tilde
+punctuation	·	间隔号	jiangehao middle dot
+punctuation	,	英文逗号	comma
+punctuation	.	英文句号	period dot
+punctuation	;	英文分号	semicolon
+punctuation	:	英文冒号	colon
+punctuation	?	英文问号	question
+punctuation	!	英文感叹号	exclamation
+punctuation	"	英文双引号	quote
+punctuation	'	英文单引号	apostrophe
+punctuation	(	英文左括号	paren
+punctuation	)	英文右括号	paren
+punctuation	[	英文左方括号	bracket
+punctuation	]	英文右方括号	bracket
+punctuation	{	英文左花括号	brace
+punctuation	}	英文右花括号	brace
+punctuation	/	斜杠	slash
+punctuation	\	反斜杠	backslash
+punctuation	|	竖线	pipe
+punctuation	&	和号	ampersand
+punctuation	@	at 符号	at
+punctuation	#	井号	hash
+punctuation	%	百分号	percent
+punctuation	^	脱字符	caret
+punctuation	~	波浪线	tilde
+punctuation	_	下划线	underscore
+punctuation	<	小于号	less
+punctuation	>	大于号	greater
+punctuation	=	等号	equal
+punctuation	+	加号	plus
+punctuation	*	星号	asterisk
+math	±	正负号	zhengfu plus minus
+math	×	乘号	cheng multiply
+math	÷	除号	chu divide
+math	−	减号	jian minus
+math	≠	不等于	budengyu not equal
+math	≈	约等于	yuedengyu approx
+math	≤	小于等于	xiaoyudengyu
+math	≥	大于等于	dayudengyu
+math	∞	无穷	wuqiong infinity
+math	√	根号	genhao sqrt
+math	∑	求和	qiuhe sum
+math	∏	连乘	liancheng product
+math	∫	积分	jifen integral
+math	∂	偏导	piandao partial
+math	∆	增量	zengliang delta
+math	∇	梯度	tidu nabla
+math	∈	属于	shuyu in
+math	∉	不属于	bushuyu not in
+math	⊂	包含于	baohanyu subset
+math	⊃	包含	baohan superset
+math	⊆	子集	ziji subset
+math	⊇	超集	chaoji superset
+math	∪	并集	bingji union
+math	∩	交集	jiaoji intersection
+math	∅	空集	kongji empty set
+math	∀	任意	renyi forall
+math	∃	存在	cunzai exists
+math	¬	非	fei not
+math	∧	且	qie and
+math	∨	或	huo or
+math	⊕	异或	yihuo xor
+math	⊗	张量积	zhangliang tensor
+math	∴	所以	suoyi therefore
+math	∵	因为	yinwei because
+math	∝	正比	zhengbi proportional
+math	°	度	du degree
+math	′	分	fen minute
+math	″	秒	miao second
+math	‰	千分号	qianfenhao permille
+math	‱	万分号	wanfenhao
+math	½	二分之一	erfenzhiyi half
+math	⅓	三分之一	sanfenzhiyi third
+math	¼	四分之一	sifenzhiyi quarter
+math	¾	四分之三	sifenzhisan three quarters
+math	⅔	三分之二	sanfenzhier
+math	⅛	八分之一	bafenzhiyi
+math	²	平方	pingfang squared
+math	³	立方	lifang cubed
+math	µ	微	wei micro
+math	π	圆周率	yuanzhoulv pi
+currency	¥	人民币	renminbi yuan
+currency	$	美元	meiyuan dollar
+currency	€	欧元	ouyuan euro
+currency	£	英镑	yingbang pound
+currency	₩	韩元	hanyuan won
+currency	₹	印度卢比	lubi rupee
+currency	₽	俄罗斯卢布	lubu ruble
+currency	₿	比特币	bitebi bitcoin
+currency	¢	美分	meifen cent
+currency	₫	越南盾	yuenandun dong
+currency	₪	以色列谢克尔	xiekeer shekel
+currency	₺	土耳其里拉	tuerqi lira
+currency	₴	乌克兰格里夫纳	gelifuna hryvnia
+currency	₦	尼日利亚奈拉	naila naira
+currency	₱	菲律宾比索	bisu peso
+currency	₡	哥斯达黎加科朗	kelang colon
+currency	₲	巴拉圭瓜拉尼	gualani guarani
+currency	₵	加纳塞地	saidi cedi
+currency	₭	老挝基普	jipu kip
+currency	₮	蒙古图格里克	tugeliek tugrik
+currency	₾	格鲁吉亚拉里	lali lari
+currency	₼	阿塞拜疆马纳特	manate manat
+currency	﷼	里亚尔	liyaer rial
+currency	¤	通用货币	tongyong huobi currency
+arrow	←	左箭头	zuo left
+arrow	→	右箭头	you right
+arrow	↑	上箭头	shang up
+arrow	↓	下箭头	xia down
+arrow	↔	左右箭头	zuoyou left right
+arrow	↕	上下箭头	shangxia up down
+arrow	⇐	左双箭头	zuo double left
+arrow	⇒	右双箭头	you double right
+arrow	⇑	上双箭头	shang double up
+arrow	⇓	下双箭头	xia double down
+arrow	⇔	左右双箭头	zuoyou double
+arrow	⇕	上下双箭头	shangxia double
+arrow	↖	左上箭头	zuoshang
+arrow	↗	右上箭头	youshang
+arrow	↘	右下箭头	youxia
+arrow	↙	左下箭头	zuoxia
+arrow	↩	左回车	zuo return
+arrow	↪	右回车	you return
+arrow	⤴	上弯箭头	shangwan
+arrow	⤵	下弯箭头	xiawan
+arrow	➡	右黑箭头	you black
+arrow	⬅	左黑箭头	zuo black
+arrow	⬆	上黑箭头	shang black
+arrow	⬇	下黑箭头	xia black
+arrow	➜	右粗箭头	you heavy
+arrow	➤	右三角箭头	you triangle
+arrow	↺	逆时针	nishizhen
+arrow	↻	顺时针	shunshizhen
+number	①	圈1	quan 1 circled
+number	②	圈2	quan 2 circled
+number	③	圈3	quan 3 circled
+number	④	圈4	quan 4 circled
+number	⑤	圈5	quan 5 circled
+number	⑥	圈6	quan 6 circled
+number	⑦	圈7	quan 7 circled
+number	⑧	圈8	quan 8 circled
+number	⑨	圈9	quan 9 circled
+number	⑩	圈10	quan 10 circled
+number	⑴	括号1	kuohao 1 parenthesized
+number	⑵	括号2	kuohao 2 parenthesized
+number	⑶	括号3	kuohao 3 parenthesized
+number	⑷	括号4	kuohao 4 parenthesized
+number	⑸	括号5	kuohao 5 parenthesized
+number	⑹	括号6	kuohao 6 parenthesized
+number	⑺	括号7	kuohao 7 parenthesized
+number	⑻	括号8	kuohao 8 parenthesized
+number	⑼	括号9	kuohao 9 parenthesized
+number	⑽	括号10	kuohao 10 parenthesized
+number	⒈	点1	dian 1 number
+number	⒉	点2	dian 2 number
+number	⒊	点3	dian 3 number
+number	⒋	点4	dian 4 number
+number	⒌	点5	dian 5 number
+number	⒍	点6	dian 6 number
+number	⒎	点7	dian 7 number
+number	⒏	点8	dian 8 number
+number	⒐	点9	dian 9 number
+number	⒑	点10	dian 10 number
+number	Ⅰ	罗马1	luoma 1 roman
+number	Ⅱ	罗马2	luoma 2 roman
+number	Ⅲ	罗马3	luoma 3 roman
+number	Ⅳ	罗马4	luoma 4 roman
+number	Ⅴ	罗马5	luoma 5 roman
+number	Ⅵ	罗马6	luoma 6 roman
+number	Ⅶ	罗马7	luoma 7 roman
+number	Ⅷ	罗马8	luoma 8 roman
+number	Ⅸ	罗马9	luoma 9 roman
+number	Ⅹ	罗马10	luoma 10 roman
+number	Ⅺ	罗马11	luoma 11 roman
+number	Ⅻ	罗马12	luoma 12 roman
+number	㈠	括号汉字1	hanzi 1
+number	㈡	括号汉字2	hanzi 2
+number	㈢	括号汉字3	hanzi 3
+number	㈣	括号汉字4	hanzi 4
+number	㈤	括号汉字5	hanzi 5
+number	㈥	括号汉字6	hanzi 6
+number	㈦	括号汉字7	hanzi 7
+number	㈧	括号汉字8	hanzi 8
+number	㈨	括号汉字9	hanzi 9
+number	㈩	括号汉字10	hanzi 10
+number	❶	黑圈1	heiquan 1 black circled
+number	❷	黑圈2	heiquan 2 black circled
+number	❸	黑圈3	heiquan 3 black circled
+number	❹	黑圈4	heiquan 4 black circled
+number	❺	黑圈5	heiquan 5 black circled
+number	❻	黑圈6	heiquan 6 black circled
+number	❼	黑圈7	heiquan 7 black circled
+number	❽	黑圈8	heiquan 8 black circled
+number	❾	黑圈9	heiquan 9 black circled
+number	❿	黑圈10	heiquan 10 black circled
+misc	℃	摄氏度	sheshidu celsius
+misc	℉	华氏度	huashidu fahrenheit
+misc	™	商标	shangbiao trademark
+misc	©	版权	banquan copyright
+misc	®	注册商标	zhuce trademark
+misc	§	章节	zhangjie section
+misc	¶	段落	duanluo paragraph
+misc	†	剑号	jianhao dagger
+misc	‡	双剑号	shuangjian dagger
+misc	•	项目符号	xiangmu bullet
+misc	※	参考号	cankao reference
+misc	☆	空心星	kongxin star
+misc	★	实心星	shixin star
+misc	○	空心圆	kongxin circle
+misc	●	实心圆	shixin circle
+misc	◎	同心圆	tongxin circle
+misc	◇	空心菱形	kongxin diamond
+misc	◆	实心菱形	shixin diamond
+misc	□	空心方框	kongxin square
+misc	■	实心方框	shixin square
+misc	△	空心三角	kongxin triangle
+misc	▲	实心三角	shixin triangle
+misc	▽	空心倒三角	kongxin down triangle
+misc	▼	实心倒三角	shixin down triangle
+misc	♠	黑桃	heitao spade
+misc	♣	梅花	meihua club
+misc	♥	红心	hongxin heart
+misc	♦	方块	fangkuai diamond
+misc	♪	音符	yinfu note
+misc	♫	双音符	shuang yinfu notes
+misc	☀	太阳	taiyang sun
+misc	☁	云	yun cloud
+misc	☂	雨伞	yusan umbrella
+misc	☃	雪人	xueren snowman
+misc	☎	电话	dianhua telephone
+misc	☏	电话机	dianhuaji
+misc	✈	飞机	feiji airplane
+misc	✉	信封	xinfeng envelope
+misc	✎	铅笔	qianbi pencil
+misc	✏	铅笔	qianbi pencil
+misc	✓	对勾	duigou check
+misc	✔	粗对勾	cu duigou check
+misc	✗	叉号	chahao cross
+misc	✘	粗叉号	cu chahao cross
+misc	☑	勾选框	gouxuan checkbox
+misc	☒	叉选框	chaxuan checkbox
+misc	⌘	Command 键	command
+misc	⌥	Option 键	option
+misc	⌃	Control 键	control
+misc	⇧	Shift 键	shift
+misc	⏎	回车键	huiche return
+misc	⌫	删除键	shanchu delete
+misc	⎋	退出键	tuichu escape
+misc	⇥	制表键	zhibiao tab
+misc	␣	空格键	kongge space
+misc	№	编号	bianhao numero
+misc	℡	电话	dianhua tel

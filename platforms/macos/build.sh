@@ -146,6 +146,8 @@ copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
 copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
 copy_data "${GENERATED}/wubi86-extended.tsv" "wubi86-extended.tsv"
 copy_data "${GENERATED}/pinyin-extended.tsv" "pinyin-extended.tsv"
+copy_data "${GENERATED}/emoji.tsv" "emoji.tsv"
+copy_data "${ROOT}/data/symbols.tsv" "symbols.tsv"
 copy_data "${GENERATED}/B0-runtime.tsv" "B0-runtime.tsv"
 copy_data "${GENERATED}/variant-s2t.tsv" "variant-s2t.tsv"
 if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then

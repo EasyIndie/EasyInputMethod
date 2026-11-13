@@ -29,6 +29,8 @@ enum CandidateSource: Int32 {
     case pinyin = 1
     case phrase = 2
     case dynamic = 3
+    /// 宿主侧符号 / emoji 候选（U3-5），不经过核心引擎。
+    case symbol = 4
 
     /// 混输来源标签（中文）。
     var label: String {
@@ -37,6 +39,7 @@ enum CandidateSource: Int32 {
         case .pinyin: return "拼"
         case .phrase: return "词"
         case .dynamic: return "常"
+        case .symbol: return "符"
         }
     }
 }

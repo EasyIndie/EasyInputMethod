@@ -20,6 +20,8 @@ final class LampyrisInputController: IMKInputController {
     /// 扩展词库（U2-3）：记录配置期望的档位，避免文件缺失时反复重试；实际切换延迟到空闲按键。
     private var requestedExtendedDictionary = false
     private var dictionaryReloadPending = false
+    /// 反引号前缀的宿主侧符号候选（U3-5）；不经过核心引擎。
+    private var symbolComposition = SymbolCompositionState()
     /// 各应用上次的中英状态（ADR-333）。所有控制器共享，只在内存里。
     private static var languageMemory = AppLanguageMemory()
 
@@ -58,6 +60,7 @@ final class LampyrisInputController: IMKInputController {
     override func deactivateServer(_ sender: Any!) {
         rememberLanguage()
         autoPhrase.reset()
+        endSymbolComposition()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
         ConfigWatcher.shared.clear(owner: self)
         activeClient = nil
@@ -589,6 +592,14 @@ final class LampyrisInputController: IMKInputController {
             PracticeWindow.shared.show()
             return true
         }
+        if session.matches("hotkey.open_symbols", event) {
+            guard let client = activeClient ?? (sender as? IMKTextInput) else { return true }
+            commitForSymbolPanel(client, session: session)
+            SymbolPickerWindow.shared.show { [weak client] text in
+                client?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+            }
+            return true
+        }
         let modeBeforeShortcut = session.mode
         let learningBeforeShortcut = ImeConfig.bool("candidate.show_wubi_learning")
         let shortcut = session.shortcut(event, persistMode: true)
@@ -625,9 +636,197 @@ final class LampyrisInputController: IMKInputController {
         return super.inputText(string, client: sender)
     }
 
+    // MARK: - 符号 / emoji（U3-5）
+
+    /// 打开符号面板前提交当前组合，避免插入点时还挂着 marked text。
+    private func commitForSymbolPanel(_ client: IMKTextInput, session: ImeSession) {
+        guard session.isComposing else { return }
+        let text = session.select(candidateSelection.index)
+        clearMarked(client)
+        if let text, !text.isEmpty {
+            client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+        } else {
+            session.reset()
+        }
+        candidateSelection.reset()
+        candidateWindow?.hide()
+    }
+
+    /// 反引号前缀：进入宿主侧符号候选。
+    private func startSymbolComposition(_ client: IMKTextInput) -> Bool {
+        guard SymbolCatalog.shared.isAvailable else { return false }
+        symbolComposition.phase = .categories
+        symbolComposition.page = 0
+        symbolComposition.selected = 0
+        showSymbolCandidates(client)
+        return true
+    }
+
+    private func endSymbolComposition() {
+        symbolComposition.reset()
+        candidateWindow?.hide()
+    }
+
+    private func symbolCandidates() -> ([ImeCandidate], Int) {
+        let pageSize = max(1, candidateCount)
+        switch symbolComposition.phase {
+        case .categories:
+            let categories = SymbolCatalog.shared.prefixCategories
+            let start = symbolComposition.page * pageSize
+            let slice = Array(categories.dropFirst(start).prefix(pageSize))
+            let items = slice.map {
+                ImeCandidate(text: $0.title, code: "", source: .symbol, isPrefix: false)
+            }
+            let pages = max(1, (categories.count + pageSize - 1) / pageSize)
+            return (items, pages)
+        case .items(let category):
+            let entries = SymbolCatalog.shared.items(in: category)
+            let start = symbolComposition.page * pageSize
+            let slice = Array(entries.dropFirst(start).prefix(pageSize))
+            let items = slice.map {
+                ImeCandidate(text: $0.text, code: $0.name, source: .symbol, isPrefix: false)
+            }
+            let pages = max(1, (entries.count + pageSize - 1) / pageSize)
+            return (items, pages)
+        case nil:
+            return ([], 1)
+        }
+    }
+
+    private func symbolInputLabel() -> String? {
+        switch symbolComposition.phase {
+        case .categories: return "符号"
+        case .items(let category): return category.title
+        case nil: return nil
+        }
+    }
+
+    private func showSymbolCandidates(_ client: IMKTextInput) {
+        guard symbolComposition.isActive else { endSymbolComposition(); return }
+        let (candidates, pages) = symbolCandidates()
+        guard !candidates.isEmpty else { endSymbolComposition(); return }
+        symbolComposition.page = min(symbolComposition.page, pages - 1)
+        let window = candidateWindow ?? CandidateWindow()
+        candidateWindow = window
+        window.onSelect = { [weak self] index in
+            guard let self, let client = self.activeClient else { return }
+            self.selectSymbolCandidate(index, client: client)
+        }
+        window.onPage = { [weak self] delta in
+            guard let self, let client = self.activeClient else { return }
+            self.pageSymbol(delta, client: client)
+        }
+        window.updateStatus(candidateStatus(), relayout: false)
+        window.update(
+            candidates: candidates, pageIndex: symbolComposition.page, pageCount: pages,
+            selectedIndex: symbolComposition.selected,
+            input: symbolInputLabel() ?? "", showsNavigationHint: true, warning: nil)
+        window.show(at: caretRect(client))
+    }
+
+    private func selectSymbolCandidate(_ index: Int, client: IMKTextInput) {
+        let pageSize = max(1, candidateCount)
+        switch symbolComposition.phase {
+        case .categories:
+            let categories = SymbolCatalog.shared.prefixCategories
+            let absolute = symbolComposition.page * pageSize + index
+            guard categories.indices.contains(absolute) else { return }
+            let category = categories[absolute]
+            if category.isEmoji {
+                endSymbolComposition()
+                SymbolPickerWindow.shared.showEmoji { [weak client] text in
+                    client?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+                }
+            } else {
+                symbolComposition.phase = .items(category)
+                symbolComposition.page = 0
+                symbolComposition.selected = 0
+                showSymbolCandidates(client)
+            }
+        case .items(let category):
+            let entries = SymbolCatalog.shared.items(in: category)
+            let absolute = symbolComposition.page * pageSize + index
+            guard entries.indices.contains(absolute) else { return }
+            let text = entries[absolute].text
+            candidateWindow?.announceCommitted(text)
+            endSymbolComposition()
+            client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+        case nil:
+            break
+        }
+    }
+
+    private func pageSymbol(_ delta: Int, client: IMKTextInput) {
+        let (_, pages) = symbolCandidates()
+        let next = symbolComposition.page + delta
+        symbolComposition.page = min(max(0, next), pages - 1)
+        symbolComposition.selected = 0
+        showSymbolCandidates(client)
+    }
+
+    private func moveSymbolSelection(_ delta: Int, client: IMKTextInput) {
+        let (candidates, _) = symbolCandidates()
+        guard !candidates.isEmpty else { return }
+        symbolComposition.selected = min(max(0, symbolComposition.selected + delta), candidates.count - 1)
+        showSymbolCandidates(client)
+    }
+
+    private func handleSymbolEvent(_ event: NSEvent, client: IMKTextInput) -> Bool {
+        guard event.type == .keyDown else { return false }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
+            return false
+        }
+        if event.keyCode == 53 { // Esc
+            endSymbolComposition()
+            return true
+        }
+        if event.keyCode == 36 || event.keyCode == 76 || event.keyCode == 49 { // Return/Enter/Space
+            selectSymbolCandidate(symbolComposition.selected, client: client)
+            return true
+        }
+        if event.keyCode == 123 || event.keyCode == 126 { // left/up
+            moveSymbolSelection(-1, client: client)
+            return true
+        }
+        if event.keyCode == 124 || event.keyCode == 125 { // right/down
+            moveSymbolSelection(1, client: client)
+            return true
+        }
+        if let characters = event.charactersIgnoringModifiers {
+            if let digit = Int(characters), (1...9).contains(digit) {
+                selectSymbolCandidate(digit - 1, client: client)
+                return true
+            }
+            if ["-", "[", ","].contains(characters) {
+                pageSymbol(-1, client: client)
+                return true
+            }
+            if ["=", "]", "."].contains(characters) {
+                pageSymbol(1, client: client)
+                return true
+            }
+            if characters == "`" {
+                endSymbolComposition()
+                return true
+            }
+        }
+        // 其它键：退出符号模式，并把该键交回正常输入路径。
+        endSymbolComposition()
+        return false
+    }
+
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
         if dictionaryReloadPending, session?.isComposing != true {
             reloadDictionaryIfNeeded()
+        }
+        if symbolComposition.isActive, let event, event.type == .keyDown,
+           let client = (sender as? IMKTextInput) ?? activeClient,
+           handleSymbolEvent(event, client: client) {
+            return true
+        }
+        if symbolComposition.isActive, event?.type != .keyDown {
+            endSymbolComposition()
         }
         guard let event else { return false }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
@@ -687,6 +886,12 @@ final class LampyrisInputController: IMKInputController {
         let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
         if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) {
             return false
+        }
+        // U3-5：反引号在非组合、中文状态下打开符号候选；不占用五笔/拼音键位。
+        let symbolModifiers = event.modifierFlags.intersection([.command, .control, .option, .shift])
+        if !session.isComposing, !session.isEnglish, symbolModifiers.isEmpty,
+           Self.typedScalar(event) == "`", startSymbolComposition(client) {
+            return true
         }
         if session.isComposing, let delta = candidateWindow?.navigationDelta(for: event) {
             let count = session.candidates(limit: candidateCount).count

@@ -1,0 +1,22 @@
+{
+  "emoji_test_sha256": "24f0c534e86cf142e2496953e8f0e46a3e702392911eddcd29c6cced85139697",
+  "cldr_zh_sha256": "06b289e1b563199df2e2c51ab93ca8a3780a57a7ee82f4600828936c8323af0d",
+  "cldr_en_sha256": "b33e2e88ed2fb8c438c1efa9747b9d845e8d7d74ef0c32342a805c0f46fdd7ec",
+  "cldr_main_zh_sha256": "97fea2cfdb7bfe59a4e0ce712ca2e6ccba67ef211957296f60365c9f84b24d52",
+  "output_sha256": "1953cff0e0b3af17e816fa779c1fbdadfe02cbe7121b53455e4a86d73bcf09af",
+  "output_bytes": 675757,
+  "entries": 3781,
+  "missing_zh_short_name": 0,
+  "groups": [
+    "Activities",
+    "Animals & Nature",
+    "Flags",
+    "Food & Drink",
+    "Objects",
+    "People & Body",
+    "Smileys & Emotion",
+    "Symbols",
+    "Travel & Places"
+  ],
+  "license": "Unicode License V3（数据文件）/ CC-BY-SA-4.0（本编排）"
+}
