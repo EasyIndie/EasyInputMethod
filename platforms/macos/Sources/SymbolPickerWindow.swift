@@ -66,6 +66,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         if event.keyCode == 36 || event.keyCode == 76 { insertSelected(); return true }
         if event.keyCode == 125 { moveSelection(1); return true }
         if event.keyCode == 126 { moveSelection(-1); return true }
+        if event.keyCode == 123 || event.keyCode == 124 { return true }
         if event.keyCode == 51 || event.keyCode == 117 { dropLastSearch(); return true }
         if let characters = event.charactersIgnoringModifiers, !characters.isEmpty,
            characters.unicodeScalars.allSatisfy({ !CharacterSet.controlCharacters.contains($0) }) {
