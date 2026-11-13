@@ -2,10 +2,10 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；1.3.0 / build 43 已装机复验 30/30 PASS**；
-  `main` = `458a0ae`（PR #280–#282 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
-- 分支：`main` = `458a0ae`；`dev` 已追平（无未合并提交）。IT-22 A 档执行单见 `docs/reviews/271-1.3.0-walkthrough.md`。
-- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
+- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
+  `main` = `d9ca1b4`；air 已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、人工走查全部 PASS。
+- 分支：`main` = `d9ca1b4`；`dev` 有发布后探针修复（`9edd9e7`）待开 PR（不影响 1.3.0 产物）。
+- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
@@ -72,10 +72,10 @@
 
 | 步骤 | 内容 | 授权 |
 |---|---|---|
-| 1 | ~~批次 B/C、build 43、真机 30/30、性能/内存~~ | ✅ 2026-11-13 |
-| 2 | ~~IT-22 A 档 + 新增行为人工走查~~ | ✅ 2026-11-13 全部 PASS（报告 271） |
-| 3 | ~~DMG 完成页~~ | ✅ 2026-11-13 本地 build 43 安装器实装验证 PASS（报告 270） |
-| 4 | **tag v1.3.0 / Release / 站点部署** | ✅ 已授权（用户选择「先本地验 DMG，再发版」） |
+| 1 | ~~批次 B/C、build 43、真机 30/30、性能/内存、人工走查、DMG 完成页~~ | ✅ 2026-11-13 |
+| 2 | ~~tag v1.3.0 / Release / 站点部署~~ | ✅ 2026-11-13（报告 272；站点回读 `v1.3.0 · 构建 43`） |
+| 3 | **pro 升级到 1.3.0** | 用户自行执行（`packaging/macos/upgrade.py`） |
+| 4 | 发布后探针修复（`dev` `9edd9e7`）开 PR 合入 main | 已授权 |
 
 剩余开发项：文章跟打（`docs/tasks/T-PASSAGE-follow-typing.md`）；高频字拆解受阻（报告 268 §2，等字根字形许可来源）；
 扩展词库、整句模型、多方案码表（依赖外部数据/许可）。
@@ -120,6 +120,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**1.3.0 发布完成（报告 272）**。tag `v1.3.0`（`d9ca1b4`）→ Release run `43413483494` success；
+  ZIP `66b01c64…`、源码 `9f068f18…`、DMG `fef49e86…`（公证）、更新程序 `28e4a327…` 1.3.0、appcast `43`；
+  Pages `43414150031` → 站点回读 `v1.3.0 · 构建 43`。发版产物 `9cb738c9…` 与早先候选 SHA 不同，已重新装机并重跑 30/30 样本、性能/内存 PASS。
+  期间 Apple 公证因协议过期 403，用户签署后恢复。air 已装发版产物；pro 由用户升级。
 - 2026-11-13 / Claude Code（air）：**人工验收全部 PASS**。用户口述 IT-22 A 档 10/10、可选 Chrome、1.3.0 新增行为 N1–N5 全通过（报告 271）；
   剩余只有 DMG 完成页目视与 tag/Release/站点（需单独授权）。
 - 2026-11-13 / Claude Code（air）：**1.3.0/build 43 装机复验 30/30 PASS（报告 270）**。build 41→42→43 修掉三个真实缺陷：
