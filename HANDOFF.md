@@ -4,7 +4,7 @@
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `2fc6c0a`；`dev` = 本批文档对账提交（`待办与积压` / `ROADMAP` / `HANDOFF` / 任务卡归档），经 `dev → main` PR 合入。
+- 分支：`main` = `f4fbea0`（PR #286 合并文档对账）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -123,7 +123,7 @@ make macos-offline-tests
 - 2026-11-13 / Claude Code（air）：**1.3.0 发布后文档对账 + pro 核验**。用户手动把 pro 升到 1.3.0/43
   （执行 `9cb738c9…`，config `b8c7a351…` 未变、词库 962→963）；更新 `docs/待办与积压.md`（版本抬头、P0/P1-U 完成项、下一版套餐）、
   `ROADMAP.md`（1.3.0 发布与 pro 升级勾选）、`docs/README.md`；文章跟打任务卡归档到 `docs/archive/tasks/`。
-  本批经 `dev → main` PR 合入后 `dev` 与 `main` 同步。
+  PR #286 已合并（`main` = `f4fbea0`），`dev` 已快进同步。
 - 2026-11-13 / Claude Code（air）：**1.3.0 发布完成（报告 272）**。tag `v1.3.0`（`d9ca1b4`）→ Release run `43413483494` success；
   ZIP `66b01c64…`、源码 `9f068f18…`、DMG `fef49e86…`（公证）、更新程序 `28e4a327…` 1.3.0、appcast `43`；
   Pages `43414150031` → 站点回读 `v1.3.0 · 构建 43`。发版产物 `9cb738c9…` 与早先候选 SHA 不同，已重新装机并重跑 30/30 样本、性能/内存 PASS。
