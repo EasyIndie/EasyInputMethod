@@ -32,6 +32,8 @@ docs/experiments/runs/sessions/
 # D17/D17-bis 自编简码表（CC-BY-SA-4.0，体积极小）：入库以便 CI 复算 B0（报告 251）
 !/data/sources/wubi86-level1-codes.tsv
 !/data/sources/wubi86-level2-codes.tsv
+# D17-ter 三级简码（D9 衍生筛选，LGPL-3.0，约 40 KB）：入库以便 CI 复算核心表（ADR-345）
+!/data/sources/wubi86-level3-codes.tsv
 
 # 派生数据（可由 examples/oracle.rs 复现；PROVISIONAL，不入库，见 ADR-017）
 /data/generated/wubi86-structure-laststroke.tsv
