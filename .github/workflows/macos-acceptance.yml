@@ -15,6 +15,11 @@ on:
       - "tools/release_version.py"
       - ".github/workflows/macos-acceptance.yml"
   workflow_dispatch:
+    inputs:
+      runner:
+        description: "运行机型号（分不到 macos-latest 时可改，如 macos-15 / macos-15-xlarge；默认 macos-latest）"
+        required: false
+        default: macos-latest
 # 第三方 Actions 固定到审定 commit（见 CONTRIBUTING.md「CI Actions 升级」）；本工作流只读。
 permissions:
   contents: read
@@ -24,7 +29,7 @@ concurrency:
 jobs:
   acceptance:
     if: github.ref == 'refs/heads/main'
-    runs-on: macos-latest
+    runs-on: ${{ inputs.runner || 'macos-latest' }}
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4

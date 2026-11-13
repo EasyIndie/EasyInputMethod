@@ -13,6 +13,10 @@ on:
         description: "只演练：下载产物并校验附件，不创建 Release"
         type: boolean
         default: false
+      runner:
+        description: "运行机型号（分不到 macos-latest 时可改，默认 macos-latest）"
+        required: false
+        default: macos-latest
 
 # 仅本工作流需要写权限（创建 Release）；其余工作流保持 contents: read。
 permissions:
@@ -25,7 +29,7 @@ concurrency:
 jobs:
   publish:
     # 需要 macOS 构建更新程序并用同一公钥自校验签名。
-    runs-on: macos-latest
+    runs-on: ${{ inputs.runner || 'macos-latest' }}
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
