@@ -1,6 +1,7 @@
 {
   "source_sha256": "96f310a83c26d51cd8cdc13ea99c6232824ec0cff3276ba96ef5f636b77d931f",
   "output_sha256": "c9541cf4d15d0c2217b03e402127a8c6ec64976f1494556d35e943a3fe978ebb",
+  "limit": 20000,
   "budget_bytes": 800000,
   "output_bytes": 436115,
   "entries": 20192,
