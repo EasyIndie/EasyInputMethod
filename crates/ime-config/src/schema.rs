@@ -71,6 +71,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::Engine,
     },
     OptionSpec {
+        key: "wubi.auto_phrase",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "false",
+        title_zh: "连续单字自动造词",
+        doc_zh: "纯五笔模式下连续上屏 2–4 个单字（间隔小于 2 秒、中间没有标点），同样的组合出现 3 次后收进用户词库；默认关闭",
+        scope: Scope::Engine,
+    },
+    OptionSpec {
         key: "wubi.z_key",
         value_type: ValueType::Enum {
             values: &["wildcard", "none"],

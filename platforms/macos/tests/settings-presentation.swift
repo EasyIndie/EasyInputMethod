@@ -11,7 +11,7 @@ guard ime_config_init(root.appendingPathComponent("config.toml").path) == IME_OK
 let panel = SettingsPanel.shared
 panel.prepare()
 let options = SettingsSchema.options()
-guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 30,
+guard panel.sectionCount == 5, panel.rowCount == options.count, options.count == 31,
       Set(panel.displayedOptionKeys) == Set(options.map(\.key)), !panel.isVisibleForTesting,
       !panel.dictionaryActionsEnabledForTesting, panel.navigationIsNativeForTesting
 else { fail("schema/native toolbar/session availability") }
@@ -132,7 +132,7 @@ LocalAcceptanceEvidence.record("settings.dictionary-session", expected: "绑定�
 panel.selectSectionForTesting(2)
 panel.windowWillClose(Notification(name: NSWindow.willCloseNotification))
 panel.prepare()
-guard panel.selectedSectionForTesting == 2, panel.rowCount == 30, panel.navigationIsNativeForTesting,
+guard panel.selectedSectionForTesting == 2, panel.rowCount == 31, panel.navigationIsNativeForTesting,
       !panel.isVisibleForTesting else { fail("rebuild with transient pane retention") }
 LocalAcceptanceEvidence.record("settings.reopen", expected: "关闭重建保留分区，19项不丢失，窗口不显示", actual: ["section": panel.selectedSectionForTesting, "rows": panel.rowCount, "visible": panel.isVisibleForTesting])
 print("PASS settings-presentation: schema/panes, native toolbar, private config, errors, disabled operations, light/dark/minimum, offscreen rebuild")

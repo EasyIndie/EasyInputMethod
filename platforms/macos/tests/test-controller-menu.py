@@ -25,7 +25,7 @@ class ControllerMenuTests(unittest.TestCase):
                 "CFBundleIdentifier": "cn.jokerhub.lampyris.controllerprobe",
                 "CFBundleExecutable": "Probe", "CFBundlePackageType": "APPL",
             }))
-            for name in ["wubi86-core.tsv", "pinyin-chars.tsv", "pinyin-core.tsv", "variant-s2t.tsv"]:
+            for name in ["wubi86-core.tsv", "pinyin-chars.tsv", "pinyin-core.tsv", "variant-s2t.tsv", "B0-runtime.tsv"]:
                 shutil.copyfile(ROOT / "data/generated" / name, resources / name)
             shutil.copyfile(ROOT / "platforms/macos/tests/controller-menu.swift", root / "main.swift")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",

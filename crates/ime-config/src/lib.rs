@@ -866,13 +866,14 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 30);
+        assert_eq!(schema().len(), 31);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
             [
                 "mode",
                 "wubi.auto_commit",
+                "wubi.auto_phrase",
                 "wubi.z_key",
                 "pinyin.fuzzy",
                 "pinyin.scheme",
