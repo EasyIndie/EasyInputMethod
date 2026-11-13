@@ -3,8 +3,8 @@
 ## 0. 元信息
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；1.3.0 / build 43 已装机复验 30/30 PASS**；
-  `main` = `054b6c8`（PR #280/#281 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
-- 分支：`main` = `054b6c8`；`dev` 已追平（无未合并提交）。
+  `main` = `458a0ae`（PR #280–#282 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
+- 分支：`main` = `458a0ae`；`dev` 已追平（无未合并提交）。IT-22 A 档执行单见 `docs/reviews/271-1.3.0-walkthrough.md`。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -73,8 +73,8 @@
 | 步骤 | 内容 | 授权 |
 |---|---|---|
 | 1 | ~~批次 B/C、build 43、真机 30/30、性能/内存~~ | ✅ 2026-11-13 |
-| 2 | **IT-22 A 档人工走查**（13 项，约 12 分钟） | 人工 |
-| 3 | **DMG 完成页**目视（发版出 DMG 时） | 发版 |
+| 2 | ~~IT-22 A 档 + 新增行为人工走查~~ | ✅ 2026-11-13 全部 PASS（报告 271） |
+| 3 | **DMG 完成页**目视（发版出 DMG 时，可与 tag 同一步） | 发版 |
 | 4 | **tag / Release / 站点部署** | 单独授权 |
 
 剩余开发项：文章跟打（`docs/tasks/T-PASSAGE-follow-typing.md`）；高频字拆解受阻（报告 268 §2，等字根字形许可来源）；
@@ -120,6 +120,8 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**人工验收全部 PASS**。用户口述 IT-22 A 档 10/10、可选 Chrome、1.3.0 新增行为 N1–N5 全通过（报告 271）；
+  剩余只有 DMG 完成页目视与 tag/Release/站点（需单独授权）。
 - 2026-11-13 / Claude Code（air）：**1.3.0/build 43 装机复验 30/30 PASS（报告 270）**。build 41→42→43 修掉三个真实缺陷：
   私有根相对路径被忽略（宿主仍用真实数据）、练习/薄弱字路径不跟随私有根、切模式后未重建引擎（双拼/薄弱字连锁失败）。
   build 43：30 条隔离样本全 PASS，真实 config `3aea2bca…` / practice `2512f4…` 前后不变；性能 p95 6.28ms、0 外联；
