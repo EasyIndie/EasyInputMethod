@@ -2,12 +2,11 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；开发中的 1.3.0 / build 43**；
-  `main` = `938eeb0`（PR #278 已合并）；air 已装 **1.3.0 / build 41 候选**（执行 `aa040adc…`）做复验，
-  发现练习/薄弱字未跟随私有根 → 已修，**待 build 43 出包重装**。**尚未发版。**
-- 分支：`main` = `938eeb0`；`dev` 在合并后继续追加修复与 build 43（见 §9）。
-- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **42**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（375 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
+- 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**线上 1.2.1 / build 40；1.3.0 / build 43 已装机复验 30/30 PASS**；
+  `main` = `3595913`（PR #280 已合并）；air 已装 **1.3.0 / build 43**（执行 `3f4f1f55…`），性能/内存 PASS。**尚未发版。**
+- 分支：`main` = `3595913`；`dev` 追平后仅有本次报告/探针文档改动（见 §9）。
+- 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.2.1`**（线上仍是 1.2.1 / 40）。**正式发版前必须重新绑定候选身份。**
+- 最近验证：`make verify` PASS（474 产物零网络符号）、`make macos-offline-tests` **62 文件 / 332 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -16,7 +15,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 41 候选**（2026-11-13 装机，报告 270），ZIP `1eb480e3…`，宿主执行 `aa040adc5526b3d24f29b1b90365a8161ea0dbc1aa2764e3ebe58b243acefb3b`；输入源 `Lampyris.default` 已启用并选中；**用户 `mode=wubi`** | config `3aea2bca…`（装机前后未变）；词库 1786 行 `e9869ac7…`（含样本 `pinyin zhuang 装` 计数 +1 的痕迹）；`practice.tsv` `2512f4…` 未变 | 旧包（`main` 候选 `2610d1f`，执行 `975a4b04…`）在 `updates/install-backup-20261113T041111Z/`；更早发布版 `3eeeb0aa…` 在 `updates/install-backup-20261112T060612Z/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `3f4f1f557328fa5b0c8a8300ebdd3518b566a2c143f108fcba80df4f2e3103fd`；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.2.0 / build 39**，宿主执行 `ef25e92b…`（2026-11-09 经 `upgrade.py --apply` 升级，旧包 `updates/upgrade-20261109T121300-9c1061c4/backup/`） | config `b8c7a351…`、词库 962 行，升级前后未变（`show_wubi_learning=true` 是用户有意设置） | 升级前有 `uninstalled/bundle.*` |
 
 ## 2. 本轮完成
@@ -73,11 +72,10 @@
 
 | 步骤 | 内容 | 授权 |
 |---|---|---|
-| 1 | 批次 B（ADR-341…346）推 `dev` → 开 PR → CI 绿后合并 | 已授权 |
-| 2 | 修复练习/薄弱字私有根 → build 43，从已合并 main 出候选包 | 换包 |
-| 3 | 真机复验批次 A/B：造词、日期候选、首次引导、进阶提示、三级简码、私有数据根、以词定字高亮、安装器测试 | 换包 |
-| 4 | IT-22 A 档人工走查 + DMG 完成页目视 | 换包/人工 |
-| 5 | tag / Release / 站点部署 | 单独授权 |
+| 1 | ~~批次 B/C、build 43、真机 30/30、性能/内存~~ | ✅ 2026-11-13 |
+| 2 | **IT-22 A 档人工走查**（13 项，约 12 分钟） | 人工 |
+| 3 | **DMG 完成页**目视（发版出 DMG 时） | 发版 |
+| 4 | **tag / Release / 站点部署** | 单独授权 |
 
 剩余开发项：文章跟打（`docs/tasks/T-PASSAGE-follow-typing.md`）；高频字拆解受阻（报告 268 §2，等字根字形许可来源）；
 扩展词库、整句模型、多方案码表（依赖外部数据/许可）。
@@ -122,6 +120,11 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-13 / Claude Code（air）：**1.3.0/build 43 装机复验 30/30 PASS（报告 270）**。build 41→42→43 修掉三个真实缺陷：
+  私有根相对路径被忽略（宿主仍用真实数据）、练习/薄弱字路径不跟随私有根、切模式后未重建引擎（双拼/薄弱字连锁失败）。
+  build 43：30 条隔离样本全 PASS，真实 config `3aea2bca…` / practice `2512f4…` 前后不变；性能 p95 6.28ms、0 外联；
+  内存存活堆 19.5–19.6 MiB PASS。用户词库因早期隔离失效与门禁键入学习 1784→1838 行，mode 已恢复 `wubi`。
+  剩余：IT-22 A 档人工走查、DMG 完成页、tag/Release/站点（需授权）。
 - 2026-11-13 / Claude Code（air）：**PR #278 合并 + 1.3.0/build 41 候选**。`main` = `938eeb0`；
   run `43362795540` success：ZIP `1eb480e3…`、源码 `a5887a10…`、执行 `aa040adc…`，universal、公证通过；air 已覆盖安装并核对数据未变。
 - 2026-11-13 / Claude Code（air）：**1.3.0/build 41 装机复验：27/30 PASS，抓到 1 个真实隔离缺陷**。双拼、薄弱字、失焦三项 FAIL：
