@@ -38,7 +38,7 @@ converge() { # field hotkey target
     done
     got=$(field "$name")
     if [ "$got" != "$want" ]; then
-        echo "BLOCKED $name=$got（目标 ${want}，试了 ${n} 次）" >&2
+        echo "BLOCKED $name=${got}（目标 ${want}，试了 ${n} 次）" >&2
         return 1
     fi
     return 0
