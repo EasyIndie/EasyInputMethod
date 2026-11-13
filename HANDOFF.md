@@ -4,7 +4,7 @@
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `d4956a1`（PR #287 U2-3 实现 + PR #288 真机复验文档）；`dev` 已快进同步，本条交接提交在 `dev` 顶部（文档，未另开 PR）。
+- 分支：`main` = `1c6eddb`（PR #289 合并 U3-5）；`dev` 已快进同步，顶部另有安装/复验状态文档提交（未另开 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（504 产物零网络符号）、`make macos-offline-tests` **65 文件 / 342 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -15,8 +15,9 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `01f32c51bf7185ee4966232442b7b9e40ef6d11cdbf31a40a6d573dfc4ae140a`（U2-3 验收候选 `a725fff`，2026-11-13 装机；
-发版产物 `9cb738c9…` 备份在 `updates/install-backup-20261113T140802Z/`）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `57ffaa9c060aefab6fd0a56379fad2e054348505c947d5733900b7d8fb1a4d98`（U3-5 验收候选 `1c6eddb`，2026-11-13 装机；
+上一候选 `01f32c51…` 备份在 `updates/install-backup-20261113T155602Z/`）；输入源 `Lampyris.default` 已启用；
+**复验时屏幕已锁定，GUI 项 BLOCKED**；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -61,9 +62,9 @@
 
 - **P0 · 已清零**：pro 升级与实键入确认均已由用户完成（2026-11-13，实打候选与切源正常）。
 - **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 13 项已完成并真机复验；
-  **U2-3 扩展词库真机 PASS**（ADR-348，报告 273）；**U3-5 符号 / emoji 代码与数据完成（ADR-349，报告 274），待换包复验**
-  （⌥S 面板 + 反引号前缀、全量 3,781 emoji 中英文搜索）；剩 U2-5 分阶段解锁（需口径）、U3-1 整句模型（语料许可）、
-  U3-4 高频字拆解（字根字形来源）、宿主内完整引导（是否做）。
+  **U2-3 扩展词库真机 PASS**（ADR-348，报告 273）；**U3-5 符号 / emoji 已合并并装 air（ADR-349，报告 274），
+  GUI 复验 BLOCKED（屏幕锁定），待用户解锁后补跑**（⌥S 面板 + 反引号前缀、全量 3,781 emoji 中英文搜索）；
+  剩 U2-5 分阶段解锁（需口径）、U3-1 整句模型（语料许可）、U3-4 高频字拆解（字根字形来源）、宿主内完整引导（是否做）。
 - **P1 · 数据与方案**：corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表（TBD-2）、客户端自动回读缺口。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
@@ -79,7 +80,7 @@
 | 3 | ~~pro 升级到 1.3.0~~ | ✅ 2026-11-13（用户手动执行，执行 `9cb738c9…`） |
 | 4 | 文档对账 + `dev → main` PR | ✅ 2026-11-13（PR #286） |
 | 5 | ~~U2-3 扩展词库真机复验~~：候选 `a725fff` 已装；`ybkl` 开→离别、关→原样；扩展档 48.0–48.2 MiB / 核心档 20.8–21.0 MiB | ✅ 2026-11-13（报告 273） |
-| 6 | **U3-5 符号 / emoji 真机复验**：换包装机 → ⌥S 面板搜索/插入 → 反引号分类 → 关闭热键无行为 → 零外联 | 需换包授权 |
+| 6 | **U3-5 符号 / emoji 真机复验**：候选 `1c6eddb` 已装（执行 `57ffaa9c…`）；⌥S 面板搜索/插入 → 反引号分类 → 零外联 | 装包已完成；**屏幕解锁后补跑 GUI 项** |
 
 剩余开发项：高频字拆解受阻（报告 268 §2，等字根字形许可来源）；整句模型、多方案码表
 （依赖外部数据/许可）。符号 / emoji（U3-5）代码与数据完成，待换包复验。
@@ -124,7 +125,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
-- 2026-11-13 / Claude Code（air）：**U3-5 符号 / emoji 代码与数据完成（ADR-349，报告 274），未换包**。
+- 2026-11-13 / Claude Code（air）：**U3-5 已合并（PR #289，`main` = `1c6eddb`）并装 air**，验收包执行 `57ffaa9c…`、universal、公证；
+  真实 config/词库/练习 SHA 未变，备份 `updates/install-backup-20261113T155602Z/`。**GUI 复验 BLOCKED：屏幕已锁定**
+  （`CGSSessionScreenIsLocked=Yes`，键入窗口无法取得前台）；解锁后补跑 ⌥S / 反引号 / 零外联。
+- 2026-11-13 / Claude Code（air）：**U3-5 符号 / emoji 代码与数据完成（ADR-349，报告 274）**。
   ⌥S 面板（分类 + 中英文搜索 + 表格）+ 反引号候选前缀（7 类 → 分页；emoji 跳面板）；`fh` 因是「直」的码且有 304 条前缀被弃用。
   数据：项目自编 277 符号 + Unicode 16.0/CLDR-47 派生 3,781 emoji（缺中文名 0）；Unicode License V3。
   `make verify`（504 产物）、离线 65 文件/342 例、`build.sh --strict`、预览冒烟全绿；**待授权换包做真机插入与零外联复验。**

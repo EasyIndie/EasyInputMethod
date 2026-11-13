@@ -17,6 +17,8 @@ struct EmojiEntry {
     let nameEn: String
     let keywordsZh: String
     let keywordsEn: String
+    /// 中文名与关键词的拼音（用于在候选/面板里用拼音搜索中文 emoji）。
+    let pinyin: String
 }
 
 struct SymbolCategory {
@@ -57,7 +59,7 @@ enum PickerItem {
         case .symbol(let entry):
             return "\(entry.text) \(entry.name) \(entry.keywords)".lowercased()
         case .emoji(let entry):
-            return "\(entry.text) \(entry.nameZh) \(entry.nameEn) \(entry.keywordsZh) \(entry.keywordsEn)"
+            return "\(entry.text) \(entry.nameZh) \(entry.nameEn) \(entry.keywordsZh) \(entry.keywordsEn) \(entry.pinyin)"
                 .lowercased()
         }
     }
@@ -150,11 +152,11 @@ final class SymbolCatalog {
         var out: [EmojiEntry] = []
         for line in lines("emoji") where !line.isEmpty && line != "#" && !line.hasPrefix("# ") {
             let fields = line.split(separator: "\t", omittingEmptySubsequences: false).map(String.init)
-            guard fields.count >= 8, !fields[0].isEmpty else { continue }
+            guard fields.count >= 9, !fields[0].isEmpty else { continue }
             out.append(EmojiEntry(
                 text: fields[0], group: fields[1], groupZh: fields[2],
                 order: Int(fields[3]) ?? out.count, nameZh: fields[4], nameEn: fields[5],
-                keywordsZh: fields[6], keywordsEn: fields[7]))
+                keywordsZh: fields[6], keywordsEn: fields[7], pinyin: fields[8]))
         }
         return out
     }

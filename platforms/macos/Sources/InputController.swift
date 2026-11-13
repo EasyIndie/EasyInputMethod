@@ -60,6 +60,7 @@ final class LampyrisInputController: IMKInputController {
     override func deactivateServer(_ sender: Any!) {
         rememberLanguage()
         autoPhrase.reset()
+        SymbolPickerWindow.shared.close()
         endSymbolComposition()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
         ConfigWatcher.shared.clear(owner: self)
@@ -593,10 +594,14 @@ final class LampyrisInputController: IMKInputController {
             return true
         }
         if session.matches("hotkey.open_symbols", event) {
+            if SymbolPickerWindow.shared.isVisible {
+                SymbolPickerWindow.shared.close()
+                return true
+            }
             guard let client = activeClient ?? (sender as? IMKTextInput) else { return true }
             commitForSymbolPanel(client, session: session)
-            SymbolPickerWindow.shared.show { [weak client] text in
-                client?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+            SymbolPickerWindow.shared.show { [client] text in
+                client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
             }
             return true
         }
@@ -829,6 +834,13 @@ final class LampyrisInputController: IMKInputController {
             endSymbolComposition()
         }
         guard let event else { return false }
+        // 符号面板保持客户端焦点，键盘事件由这里转发给面板（搜索/选择/插入）。
+        if SymbolPickerWindow.shared.isVisible, SymbolPickerWindow.shared.handleKey(event) {
+            return true
+        }
+        if SymbolPickerWindow.shared.isVisible, event.type == .leftMouseDown {
+            SymbolPickerWindow.shared.close()
+        }
         // 单独 Shift 切换中英（flagsChanged，对齐搜狗/微信）。
         if event.type == .flagsChanged {
             let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)

@@ -367,11 +367,11 @@ notes = "277 个常用符号，六个分类（标点/数学/货币/箭头/序号
 [[derived]]
 id = "emoji-v1"
 path = "data/generated/emoji.tsv"
-source_ids = ["D21", "D22"]
+source_ids = ["D5", "D21", "D22"]
 license = "CC-BY-SA-4.0"
-sha256 = "1953cff0e0b3af17e816fa779c1fbdadfe02cbe7121b53455e4a86d73bcf09af"
+sha256 = "2ae32e9da84fb347aabba9f4672a187399b77262916129b5d9c71dc914454c80"
 generator = "tools/prepare-emoji.py"
-notes = "U3-5；3,781 个 fully-qualified emoji，含中文名、英文名与中英文搜索词；CLDR 未收录的肤色/发型组合由项目规则回退配名（缺中文名 0）；报告 data/generated/emoji-report.json；ADR-349"
+notes = "U3-5；3,781 个 fully-qualified emoji，含中文名、英文名、中英文搜索词与拼音搜索词（D5 单字读音）；CLDR 未收录的肤色/发型组合由项目规则回退配名（缺中文名 0）；报告 data/generated/emoji-report.json；ADR-349"
 
 [[derived]]
 id = "b0-runtime"

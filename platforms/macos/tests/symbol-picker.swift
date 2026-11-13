@@ -26,6 +26,10 @@ let heart = catalog.search("heart")
 guard heart.count >= 20, heart.contains(where: { $0.text == "❤️" }) else { fail("search heart") }
 let hands = catalog.search("牵手")
 guard hands.count >= 40 else { fail("search 牵手") }
+let pinyin = catalog.search("xiao")
+guard pinyin.count >= 20, pinyin.contains(where: { $0.text == "😀" || $0.text == "😄" }) else {
+    fail("search pinyin xiao")
+}
 guard catalog.search("逗号").contains(where: { $0.text == "，" }) else { fail("search symbol") }
 
 let picker = SymbolPickerWindow.shared
