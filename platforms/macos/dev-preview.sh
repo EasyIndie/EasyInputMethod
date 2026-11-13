@@ -55,6 +55,8 @@ swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/LearningHints.swift" \
   "${SCRIPT_DIR}/Sources/Practice.swift" \
   "${SCRIPT_DIR}/Sources/PracticeWindow.swift" \
+  "${SCRIPT_DIR}/Sources/PassageBank.swift" \
+  "${SCRIPT_DIR}/Sources/PassageWindow.swift" \
   "${SCRIPT_DIR}/Sources/PracticeAnswerView.swift" \
   "${SCRIPT_DIR}/Sources/PracticeExplanationView.swift" \
   "${ROOT}/modules/keymap/Sources/KeyboardMapView.swift" \

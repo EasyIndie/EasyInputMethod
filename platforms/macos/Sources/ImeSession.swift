@@ -28,6 +28,7 @@ enum CandidateSource: Int32 {
     case codeTable = 0
     case pinyin = 1
     case phrase = 2
+    case dynamic = 3
 
     /// 混输来源标签（中文）。
     var label: String {
@@ -35,6 +36,7 @@ enum CandidateSource: Int32 {
         case .codeTable: return "五笔"
         case .pinyin: return "拼"
         case .phrase: return "词"
+        case .dynamic: return "常"
         }
     }
 }
@@ -394,6 +396,12 @@ final class ImeSession {
     func setHighlight(_ index: Int) {
         guard let handle else { return }
         _ = ime_session_set_highlight(handle, Int32(index))
+    }
+
+    /// 把本地时间交给核心，用于日期/时间候选（ADR-342）。传 nil 表示不可用。
+    func setNow(_ localSeconds: Int64?) {
+        guard let handle else { return }
+        _ = ime_session_set_now(handle, localSeconds ?? -1)
     }
 
     /// 切换输入模式（"mixed" / "wubi" / "pinyin"）。

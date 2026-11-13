@@ -69,6 +69,8 @@ pub enum CandidateSource {
     CodeTable,
     Pinyin,
     Phrase,
+    /// 由宿主注入当前时间/日期等环境信息生成的候选；不参与学习（ADR-342）。
+    Dynamic,
 }
 
 /// 一个候选。
@@ -153,6 +155,10 @@ pub trait Engine: Send {
     fn engine_type(&self) -> EngineType;
     fn max_code_length(&self) -> usize;
     fn reset(&mut self) {}
+    /// 当前本地时间（自 epoch 起的「本地秒」，已由宿主加上时区偏移）；`None` 表示不可用。
+    ///
+    /// 只有需要生成日期/时间候选的引擎会用它（ADR-342）。
+    fn set_now(&mut self, _local_seconds: Option<i64>) {}
 }
 
 /// 单个按键的处理结果。
@@ -250,6 +256,16 @@ impl Session {
     /// 候选窗当前高亮项；`[` / `]` 以词定字按它取字（默认首选）。越界时退回首选。
     pub fn set_highlight(&mut self, index: usize) {
         self.highlight = index;
+    }
+
+    /// 把宿主的本地时间交给需要它的引擎（日期/时间候选，ADR-342）。
+    pub fn set_now(&mut self, local_seconds: Option<i64>) {
+        if let Some(engine) = self.wubi.as_mut() {
+            engine.set_now(local_seconds);
+        }
+        if let Some(engine) = self.pinyin.as_mut() {
+            engine.set_now(local_seconds);
+        }
     }
 
     /// 当前按键若是「选第 N 个候选」，返回它在本页的下标；否则 `None`。

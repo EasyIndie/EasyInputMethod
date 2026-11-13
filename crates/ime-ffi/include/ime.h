@@ -35,6 +35,7 @@ uint32_t ime_abi_version(void);
 #define IME_SOURCE_CODE_TABLE 0
 #define IME_SOURCE_PINYIN     1
 #define IME_SOURCE_PHRASE     2
+#define IME_SOURCE_DYNAMIC    3  /* 宿主注入的日期/时间等环境候选；不参与学习 */
 
 /* ── ime_session_key 成功时的按键结果 ───────────────── */
 #define IME_KEY_CONSUMED     0  /* 键被消费，候选已更新（== IME_OK） */
@@ -94,6 +95,8 @@ ImeCandidates ime_session_candidates(ImeSession* session);
 int32_t      ime_session_select(ImeSession* session, int32_t index);
 /* 候选窗当前高亮项：`[` / `]` 以词定字按它取字；负数返回错误码，越界按首选处理。 */
 int32_t      ime_session_set_highlight(ImeSession* session, int32_t index);
+/* 宿主本地时间（自 epoch 起的本地秒，已加时区偏移）；负数表示不可用。日期/时间候选用（ADR-342）。 */
+int32_t      ime_session_set_now(ImeSession* session, int64_t local_seconds);
 int32_t      ime_session_page(ImeSession* session, int32_t delta);
 int32_t      ime_session_set_page_size(ImeSession* session, int32_t size);
 int32_t      ime_session_page_index(ImeSession* session);

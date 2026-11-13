@@ -68,6 +68,15 @@ enum Practice {
     static let strokes = ["横", "竖", "撇", "捺", "折"]
     static let structures = ["左右", "上下", "杂合"]
 
+    /// 进阶提示（ADR-344）：某题型练过至少 30 个字、正确率不低于 90% 时，建议进入下一题型。
+    /// 不锁定、不强制，返回下一题型的标题；未达标或已是最后一档返回 `nil`。
+    static func nextHint(kind: PracticeKind, practiced: Int, attempts: Int, correct: Int) -> String? {
+        guard practiced >= 30, attempts > 0, correct * 10 >= attempts * 9 else { return nil }
+        let kinds = PracticeKind.allCases
+        guard let index = kinds.firstIndex(of: kind), index + 1 < kinds.count else { return nil }
+        return kinds[index + 1].title
+    }
+
     /// 识别码反查表（末笔 × 结构）。
     static func recognitionLetter(stroke: String, structure: String) -> String? {
         let rows = ["横": "GFD", "竖": "HJK", "撇": "TRE", "捺": "YUI", "折": "NBV"]

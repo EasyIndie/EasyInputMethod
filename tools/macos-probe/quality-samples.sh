@@ -181,6 +181,13 @@ case_semicolon_second() {
 }
 case_semicolon_second
 
+# —— 1.3.0 批次 B：日期候选与三级简码（ADR-342/345） ——
+ensure_cn >/dev/null 2>&1
+run "日期候选"                 'riqi '                                 'contains:年'
+run "时间候选"                 'shijian '                              'contains::'
+run "星期候选"                 'xingqi '                               'contains:星期'
+run "三级简码"                 'aah '                                  'exact:芽'
+
 # 改配置只走 ime-config 的写路径（ime-cli :set），用完还原；缺 ime-cli 就记 BLOCKED，不手改 config.toml。
 ROOT="$(cd "$PROBE/../.." && pwd)"
 IME_CLI="$ROOT/target/release/ime-cli"

@@ -116,6 +116,39 @@ require(LampyrisInputController.caretLookupIndex(selectionLocation: 0, length: 0
 require(LampyrisInputController.caretLookupIndex(selectionLocation: 1, length: 1) == 0, "end-of-text caret")
 require(LampyrisInputController.caretLookupIndex(selectionLocation: 3, length: 5) == 3, "mid-text caret")
 require(LampyrisInputController.caretLookupIndex(selectionLocation: NSNotFound, length: 5) == 0, "unknown selection")
+
+// ADR-347：文章跟打——短句库规模、逐字比对、标点算字、缺字/多字、顺序循环。
+require(PassageBank.sentences.count >= 100, "passage bank size")
+require(PassageBank.judge(target: "你好。", typed: "你好。").isExact, "exact passage")
+let punctuation = PassageBank.judge(target: "你好。", typed: "你好，")
+require(!punctuation.isExact && punctuation.firstMismatch == 2 && punctuation.expected == "。", "punctuation counts")
+let missing = PassageBank.judge(target: "你好。", typed: "你好")
+require(!missing.isExact && missing.firstMismatch == 2, "missing character")
+let extra = PassageBank.judge(target: "你好", typed: "你好吗")
+require(!extra.isExact && extra.firstMismatch == 2, "extra character")
+require(PassageBank.next(after: PassageBank.sentences.last) == PassageBank.sentences.first, "passage wraps")
+// ADR-344：练习进阶提示——30 字、90% 才建议，最后一档不提。
+require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 27) == "一级简码", "stage hint")
+require(Practice.nextHint(kind: .roots, practiced: 29, attempts: 29, correct: 29) == nil, "too few characters")
+require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 26) == nil, "below 90%")
+require(Practice.nextHint(kind: .recognition, practiced: 99, attempts: 100, correct: 100) == nil, "last stage")
+
+// ADR-341：五笔连续单字造词——2–4 字、2 秒窗口、3 次阈值、标点打断、词码推导。
+var phrase = AutoPhraseRule()
+let epoch = Date(timeIntervalSince1970: 0)
+var created: String?
+for round in 0..<3 {
+    _ = phrase.record("你", at: epoch.addingTimeInterval(Double(round * 5)))
+    created = phrase.record("好", at: epoch.addingTimeInterval(Double(round * 5) + 1))
+}
+require(created == "你好", "third repetition creates the auto phrase")
+require(AutoPhraseRule.phraseCode("你好") == "wqvb", "two-character phrase code")
+var broken = AutoPhraseRule()
+_ = broken.record("你", at: epoch)
+_ = broken.record("，", at: epoch.addingTimeInterval(1))
+require(broken.record("好", at: epoch.addingTimeInterval(2)) == nil, "punctuation breaks the run")
+require(AutoPhraseRule.phraseCode("中华人民共和国") == nil, "no code for five-character text")
+
 print("PASS controller-menu: flat menu, cold/warm cycle through the IMK service boundary, states and reactivation")
 
 require(StateFeedback.language(true) == "英文" && StateFeedback.language(false) == "中文", "language feedback")

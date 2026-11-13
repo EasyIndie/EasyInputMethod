@@ -12,6 +12,7 @@ final class LampyrisInputController: IMKInputController {
     private var session: ImeSession?
     private var candidateWindow: CandidateWindow?
     private var candidateSelection = CandidateSelectionState()
+    private var autoPhrase = AutoPhraseRule()
     private var candidateCount = 7
     private weak var activeClient: (any IMKTextInput)?
     private var workspaceObserver: NSObjectProtocol?
@@ -46,10 +47,12 @@ final class LampyrisInputController: IMKInputController {
         // The observer is removed while inactive. Reapply mode as well as options
         // when a previously created client session becomes active again.
         configChanged("mode")
+        DispatchQueue.main.async { Onboarding.presentIfNeeded() }
     }
 
     override func deactivateServer(_ sender: Any!) {
         rememberLanguage()
+        autoPhrase.reset()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
         ConfigWatcher.shared.clear(owner: self)
         activeClient = nil
@@ -88,6 +91,7 @@ final class LampyrisInputController: IMKInputController {
     private func finishComposition(_ textClient: (any IMKTextInput)?) {
         candidateWindow?.hide()
         candidateSelection.reset()
+        autoPhrase.reset()
         session?.focusOut()
         clearMarked(textClient)
     }
@@ -152,6 +156,7 @@ final class LampyrisInputController: IMKInputController {
         }
         if let mode = ImeConfig.string("mode"), session.mode != mode {
             candidateSelection.reset()
+            autoPhrase.reset()
             session.setMode(mode)
             if let client = activeClient { clearMarked(client) }
             candidateWindow?.hide()
@@ -278,6 +283,7 @@ final class LampyrisInputController: IMKInputController {
             session.reset()
         }
         session?.toggleEnglish()
+        autoPhrase.reset()
         rememberLanguage()
         showStateFeedback(StateFeedback.language(session?.isEnglish ?? false))
         refreshAfterStateChange()
@@ -503,6 +509,7 @@ final class LampyrisInputController: IMKInputController {
         guard session?.mode != next else { return }
         // ADR-302：组合中切模式保留编码，由核心按新模式重算候选（报告 222：这里原先会先取消组合）。
         session?.setMode(next)
+        autoPhrase.reset()
         showStateFeedback(StateFeedback.mode(next))
         refreshAfterStateChange()
     }
@@ -627,6 +634,7 @@ final class LampyrisInputController: IMKInputController {
         if let mode = ImeConfig.string("mode"), session.mode != mode {
             session.setMode(mode)
             candidateSelection.reset()
+            autoPhrase.reset()
             clearMarked(client)
             candidateWindow?.hide()
         }
@@ -692,6 +700,10 @@ final class LampyrisInputController: IMKInputController {
         let trace = PerfTrace.shared.begin()
         // 方向键移动过高亮时，`[` / `]` 要按高亮项取字（ADR-327）。
         session.setHighlight(candidateSelection.index)
+        // 日期/时间候选需要当下的本地时间；双拼与五笔模式不生成（ADR-342）。
+        if session.mode != "wubi" {
+            session.setNow(Int64(Date().timeIntervalSince1970 + Double(TimeZone.current.secondsFromGMT())))
+        }
         let outcome = session.feed(codepoint)
         let engineStamp = PerfTrace.shared.stamp()
         switch outcome {
@@ -757,6 +769,21 @@ final class LampyrisInputController: IMKInputController {
         client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
         // ADR-291：屏幕阅读器需要知道上屏结果（报告203 里按空格不播报）。
         candidateWindow?.announceCommitted(text)
+        noteAutoPhrase(text)
+    }
+
+    /// 五笔连续单字自动造词（ADR-341，默认关闭）：只观察纯五笔模式下的单字上屏。
+    private func noteAutoPhrase(_ text: String) {
+        guard ImeConfig.bool("wubi.auto_phrase"), session?.mode == "wubi" else {
+            autoPhrase.reset()
+            return
+        }
+        guard let word = autoPhrase.record(text, at: Date()) else { return }
+        guard let code = AutoPhraseRule.phraseCode(word), let session else { return }
+        let result = session.addWord(scheme: "wubi", code: code, text: word)
+        if result != IME_OK, Self.hudDiagEnabled {
+            Self.hudDiag("auto-phrase skip=\(result) word=\(word) code=\(code)")
+        }
     }
 
     /// 混输下用拼音打出一个字/词后，在光标旁提示它的五笔码（ADR-331）。

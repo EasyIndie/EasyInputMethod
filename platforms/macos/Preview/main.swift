@@ -904,7 +904,7 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard restored.candidates(limit: 1).first?.text == "离线测试词" else { exit(1) }
     // 设置面板（ADR-070）：Schema 驱动、界面零硬编码。
     let settingsOptions = SettingsSchema.options()
-    guard settingsOptions.count == 30 else {
+    guard settingsOptions.count == 31 else {
         fputs("设置项数量应为 30，实际 \(settingsOptions.count)。\n", stderr); exit(1)
     }
     guard settingsOptions.allSatisfy({ !$0.title.isEmpty && !$0.doc.isEmpty }) else {

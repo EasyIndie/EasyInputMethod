@@ -381,6 +381,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let percent = Int((Double(stats.practiced) / Double(bankSize) * 100).rounded())
         progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
             + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
+        // ADR-344：达标后建议下一题型，不锁定、不自动切换。
+        if let next = Practice.nextHint(kind: kind, practiced: stats.practiced,
+                                        attempts: stats.attempts, correct: stats.correct) {
+            progressLabel.stringValue += " · 可以试试「\(next)」了"
+        }
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
         progressBar.setAccessibilityValue("\(percent)%")
     }
@@ -509,6 +514,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
+    @objc private func openPassage() {
+        PassageWindow.shared.show()
+    }
+
     @objc private func openProgress() {
         progress.save()
         NSWorkspace.shared.activateFileViewerSelecting([progress.url])
@@ -633,10 +642,11 @@ extension PracticeWindow: NSToolbarDelegate {
         static let reset = NSToolbarItem.Identifier("practice.reset")
         static let export = NSToolbarItem.Identifier("practice.export")
         static let keymap = NSToolbarItem.Identifier("practice.keymap")
+        static let passage = NSToolbarItem.Identifier("practice.passage")
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [ToolbarID.next, ToolbarID.reveal, .flexibleSpace, ToolbarID.keymap,
+        [ToolbarID.next, ToolbarID.reveal, ToolbarID.passage, .flexibleSpace, ToolbarID.keymap,
          ToolbarID.reset, ToolbarID.export]
     }
 
@@ -673,6 +683,12 @@ extension PracticeWindow: NSToolbarDelegate {
             item.image = NSImage(systemSymbolName: "doc.text", accessibilityDescription: "打开进度文件")
             item.target = self
             item.action = #selector(openProgress)
+        case ToolbarID.passage:
+            item.label = "文章跟打"
+            item.toolTip = "打开文章跟打窗口"
+            item.image = NSImage(systemSymbolName: "text.book.closed", accessibilityDescription: "文章跟打")
+            item.target = self
+            item.action = #selector(openPassage)
         case ToolbarID.keymap:
             item.label = "键位图"
             item.toolTip = "显示或隐藏键位字根图"
