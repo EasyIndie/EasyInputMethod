@@ -11,13 +11,56 @@ SETTLE=1.5
 
 OUT="${OUT:-/tmp/lampyris-quality-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
+# 报告267：键入样本默认在私有数据根里跑（ADR-215），不再往用户的 config/词库/薄弱字清单留痕。
+# 进出私有根各要重启一次宿主；ISOLATE=0 可退回旧行为（直接写真实数据目录）。
+ISOLATE="${ISOLATE:-1}"
+SUPPORT_DIR="$HOME/Library/Application Support/Lampyris"
+PRIVATE_SUPPORT="$OUT/support"
+HOST_APP="$HOME/Library/Input Methods/Lampyris.app"
+host_pid() { pgrep -x Lampyris | head -1; }
+restart_host() {
+    p=$(host_pid); [ -n "$p" ] && kill -TERM "$p" 2>/dev/null
+    for _ in $(seq 1 15); do [ -z "$(host_pid)" ] && break; sleep 1; done
+    [ -z "$(host_pid)" ] || return 1
+    open "$HOST_APP" 2>/dev/null || return 1
+    for _ in $(seq 1 20); do [ -n "$(host_pid)" ] && return 0; sleep 1; done
+    return 1
+}
+start_isolation() {
+    [ "$ISOLATE" = 1 ] || return 0
+    [ -d "$HOST_APP" ] || { echo "BLOCKED 未安装宿主，无法进入私有数据根" >&2; return 1; }
+    mkdir -p "$PRIVATE_SUPPORT"
+    ORIGINAL_SUPPORT_ENV=$(launchctl getenv LAMPYRIS_SUPPORT_DIR 2>/dev/null || true)
+    launchctl setenv LAMPYRIS_SUPPORT_DIR "$PRIVATE_SUPPORT" || return 1
+    # 从这一刻起环境变量已改：无论后面哪一步失败，trap 都必须把它还原。
+    ISOLATION_ON=1
+    restart_host || return 1
+    # 必须回读宿主环境：没带上私有根就宁可不跑，也不能把样本写进真实词库。
+    if ! ps eww -o command= -p "$(host_pid)" 2>/dev/null | grep -q "LAMPYRIS_SUPPORT_DIR=$PRIVATE_SUPPORT"; then
+        echo "BLOCKED 宿主未接受 LAMPYRIS_SUPPORT_DIR（ps eww 里没有该变量）" >&2
+        return 1
+    fi
+    SUPPORT_DIR="$PRIVATE_SUPPORT"
+}
+stop_isolation() {
+    [ "${ISOLATION_ON:-0}" = 1 ] || return 0
+    if [ -n "${ORIGINAL_SUPPORT_ENV:-}" ]; then
+        launchctl setenv LAMPYRIS_SUPPORT_DIR "$ORIGINAL_SUPPORT_ENV"
+    else
+        launchctl unsetenv LAMPYRIS_SUPPORT_DIR
+    fi
+    ISOLATION_ON=0
+    # 让宿主回到真实数据根；失败只提示，不掩盖样本结果。
+    restart_host || echo "WARN 退出私有根后宿主未重启，下一次启动才会切回真实数据" >&2
+}
 # 报告231：清场用过的 TextEdit 文档与浏览器标签，失败也清。
 cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit >&2 || true; }
 # 报告232：记住用户状态，跑完还原；开始前归位到 mixed/chinese/half/simplified。
 STATE_BEFORE="$OUT/state-before.txt"
 restore_state() { [ -f "$STATE_BEFORE" ] && "$PROBE/ime-state.sh" --restore "$STATE_BEFORE" >&2 || true; }
-finish() { restore_state; cleanup_run; }
+finish() { restore_state; cleanup_run; stop_isolation; }
 trap finish EXIT INT TERM
+start_isolation || { echo "BLOCKED 无法进入私有数据根（见上）"; exit 78; }
 "$PROBE/ime-state.sh" --snapshot "$STATE_BEFORE" 2>/dev/null || true
 "$PROBE/ime-state.sh" --ensure >&2 || { echo "BLOCKED 输入法状态无法归位"; exit 78; }
 
@@ -141,7 +184,7 @@ case_semicolon_second
 # 改配置只走 ime-config 的写路径（ime-cli :set），用完还原；缺 ime-cli 就记 BLOCKED，不手改 config.toml。
 ROOT="$(cd "$PROBE/../.." && pwd)"
 IME_CLI="$ROOT/target/release/ime-cli"
-CONFIG_FILE="$HOME/Library/Application Support/Lampyris/config.toml"
+CONFIG_FILE="$SUPPORT_DIR/config.toml"
 cfg_set() { printf ':set %s %s\n:quit\n' "$1" "$2" | "$IME_CLI" --config "$CONFIG_FILE" >/dev/null 2>&1; sleep 1.2; }
 
 case_double_pinyin() {
@@ -157,7 +200,7 @@ case_double_pinyin() {
 case_weak_chars() {
     TOTAL=$((TOTAL + 1))
     [ -x "$IME_CLI" ] || { blocked "薄弱字清单" "缺 target/release/ime-cli"; return; }
-    weak="$HOME/Library/Application Support/Lampyris/weak-chars.tsv"
+    weak="$SUPPORT_DIR/weak-chars.tsv"
     existed=0; [ -f "$weak" ] && { existed=1; cp "$weak" "$OUT/weak-chars.before.tsv"; }
     cfg_set practice.collect_weak_chars true
     # zhuang 超过 4 码，五笔不参与；首选是拼音单字。

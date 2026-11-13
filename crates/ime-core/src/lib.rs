@@ -206,6 +206,8 @@ pub struct Session {
     select_with_semicolon: bool,
     /// `[` / `]` commit the first / last character of the first candidate (ADR-327).
     pick_char_with_brackets: bool,
+    /// Candidate highlighted in the window; `[` / `]` pick from it (ADR-327 extension).
+    highlight: usize,
     engine_options: Option<EngineOptions>,
 }
 
@@ -243,6 +245,11 @@ impl Session {
     pub fn set_selection_keys(&mut self, semicolon: bool, brackets: bool) {
         self.select_with_semicolon = semicolon;
         self.pick_char_with_brackets = brackets;
+    }
+
+    /// 候选窗当前高亮项；`[` / `]` 以词定字按它取字（默认首选）。越界时退回首选。
+    pub fn set_highlight(&mut self, index: usize) {
+        self.highlight = index;
     }
 
     /// 当前按键若是「选第 N 个候选」，返回它在本页的下标；否则 `None`。
@@ -689,17 +696,22 @@ impl Session {
                 if self.pick_char_with_brackets
                     && self
                         .candidates()
-                        .first()
+                        .get(self.highlight)
+                        .or_else(|| self.candidates().first())
                         .is_some_and(|c| c.text.chars().count() > 1) =>
             {
-                // 以词定字：只取首选词的首字或末字；单字候选时 `[` `]` 仍是标点。
-                let picked = self.candidates().first().and_then(|c| {
-                    if key == '[' {
-                        c.text.chars().next()
-                    } else {
-                        c.text.chars().last()
-                    }
-                });
+                // 以词定字：取高亮候选词的首字或末字（默认首选）；单字候选时 `[` `]` 仍是标点。
+                let picked = self
+                    .candidates()
+                    .get(self.highlight)
+                    .or_else(|| self.candidates().first())
+                    .and_then(|c| {
+                        if key == '[' {
+                            c.text.chars().next()
+                        } else {
+                            c.text.chars().last()
+                        }
+                    });
                 let text = picked.map(String::from).unwrap_or_default();
                 self.commit(&text);
                 KeyOutcome::Committed(text)
@@ -788,6 +800,7 @@ impl Session {
         self.pending.clear();
         self.pending_code.clear();
         self.page = 0;
+        self.highlight = 0;
     }
 
     /// 上屏：分段选词已选定的前半段（若有）+ `text`。
@@ -843,6 +856,7 @@ impl Session {
         self.candidates = merged;
         self.arrange_mixed_fallback();
         self.page = 0;
+        self.highlight = 0;
 
         if let Some(text) = auto.filter(|_| allow_commit) {
             self.commit(&text);
@@ -1506,6 +1520,34 @@ mod tests {
         assert_eq!(typed(InputMode::WubiOnly, true, "ab'"), committed("我们"));
         assert_eq!(typed(InputMode::WubiOnly, true, "ab["), committed("你"));
         assert_eq!(typed(InputMode::WubiOnly, true, "ab]"), committed("好"));
+        // Highlighted candidate drives `[` / `]`; out-of-range falls back to the first.
+        let typed_highlight = |index: usize, keys: &str| -> KeyOutcome {
+            let mut s = Session::new(InputMode::WubiOnly);
+            s.set_wubi_engine(Box::new(Words));
+            s.set_input_options(false, true);
+            s.set_selection_keys(true, true);
+            s.handle_key('a');
+            s.handle_key('b');
+            s.set_highlight(index);
+            let mut last = KeyOutcome::Consumed;
+            for key in keys.chars() {
+                last = s.handle_key(key);
+            }
+            last
+        };
+        assert_eq!(typed_highlight(1, "["), committed("世"));
+        assert_eq!(typed_highlight(1, "]"), committed("界"));
+        assert_eq!(typed_highlight(2, "["), committed("我"));
+        assert_eq!(typed_highlight(2, "]"), committed("们"));
+        assert_eq!(typed_highlight(99, "["), committed("你"));
+        // Highlighting a single-character candidate keeps the punctuation fallback.
+        let mut s = Session::new(InputMode::WubiOnly);
+        s.set_wubi_engine(Box::new(Words));
+        s.set_input_options(false, true);
+        s.set_selection_keys(true, true);
+        s.handle_key('a');
+        s.set_highlight(0);
+        assert_eq!(s.handle_key('['), committed("工「"));
         // Nothing to pick: fall back to punctuation instead of swallowing the key.
         assert_eq!(typed(InputMode::WubiOnly, true, "a;"), committed("工；"));
         assert_eq!(typed(InputMode::WubiOnly, true, "a["), committed("工「"));

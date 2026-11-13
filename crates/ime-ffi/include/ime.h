@@ -92,6 +92,8 @@ int32_t      ime_session_mode(ImeSession* session); /* mixed=0 wubi=1 pinyin=2 *
 int32_t      ime_session_set_mode(ImeSession* session, const char* mode);
 ImeCandidates ime_session_candidates(ImeSession* session);
 int32_t      ime_session_select(ImeSession* session, int32_t index);
+/* 候选窗当前高亮项：`[` / `]` 以词定字按它取字；负数返回错误码，越界按首选处理。 */
+int32_t      ime_session_set_highlight(ImeSession* session, int32_t index);
 int32_t      ime_session_page(ImeSession* session, int32_t delta);
 int32_t      ime_session_set_page_size(ImeSession* session, int32_t size);
 int32_t      ime_session_page_index(ImeSession* session);

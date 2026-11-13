@@ -85,12 +85,21 @@ echo "${STEADY_FP:-0M}" > "$OUT/steady-footprint"
 python3 - "$OUT" "$THRESHOLD_MS" "$RSS_LIMIT_MB" "$FOOTPRINT_HARD_MB" "$BASE_RSS" <<'PY'
 import glob, json, os, re, sys
 out, threshold, rss_limit, footprint_hard, base_kb = sys.argv[1], float(sys.argv[2]), float(sys.argv[3]), float(sys.argv[4]), int(sys.argv[5] or 0)
-latencies, cold, mismatched, invalid, missing_events = [], [], 0, 0, 0
+latencies, cold, mismatched, invalid, missing_events, unreadable = [], [], 0, 0, 0, 0
 by_segment = {}
-for path in sorted(glob.glob(out + "/round-*.json")):
+round_files = sorted(glob.glob(out + "/round-*.json"))
+total_rounds = len(round_files)
+for path in round_files:
     segment = re.match(r"round-(.+)-[0-9]+\.json$", os.path.basename(path))
     segment = segment.group(1) if segment else "unknown"
-    data = json.load(open(path, encoding="utf-8"))
+    # 报告267：失焦轮次里 type-session 写的是 `BLOCKED ...` 而不是 JSON。以前这里直接
+    # json.load 抛异常，整份汇总崩掉、连已有样本的判定都拿不到；现在把这类轮次记为
+    # unreadable 跳过，判定仍按读取成功的轮次给出。
+    try:
+        data = json.load(open(path, encoding="utf-8"))
+    except (OSError, ValueError):
+        unreadable += 1
+        continue
     if data.get("current_source", "").find("Lampyris") < 0:
         mismatched += 1
     # 报告229：输入上下文没接上 IME 时，测到的只是 ASCII 直通延迟，不是输入法往返；
@@ -154,9 +163,13 @@ summary = {
 ok = (bool(latencies) and summary["p95_ms"] <= threshold and len(cold) > 0
       and steady_fp > 0 and steady_fp <= footprint_hard and conns == 0 and mismatched == 0)
 summary["invalid_rounds"] = invalid
+summary["unreadable_rounds"] = unreadable
 if not latencies:
     summary["result"] = "BLOCKED"
-    summary["reason"] = "所有 round 都没有走 IME（has_non_ascii=false / keys_seen=0）"
+    if unreadable and unreadable + invalid >= total_rounds:
+        summary["reason"] = "所有 round 都未产出可判定结果（失焦或输入上下文未接上 IME）"
+    else:
+        summary["reason"] = "所有 round 都没有走 IME（has_non_ascii=false / keys_seen=0）"
     print(json.dumps(summary, ensure_ascii=False, sort_keys=True))
     raise SystemExit(78)
 summary["result"] = "PASS" if ok else "FAIL"

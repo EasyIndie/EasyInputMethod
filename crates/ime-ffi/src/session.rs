@@ -662,6 +662,20 @@ pub extern "C" fn ime_session_select(session: *mut ImeSession, index: i32) -> i3
     })
 }
 
+/// 候选窗当前高亮项：`[` / `]` 以词定字按它取字（ADR-327）。越界视为首选。
+#[no_mangle]
+pub extern "C" fn ime_session_set_highlight(session: *mut ImeSession, index: i32) -> i32 {
+    catch_status(|| {
+        // SAFETY：契约见模块注释。
+        let s = unsafe { session.as_mut().ok_or(IME_ERR_NULL)? };
+        if index < 0 {
+            return Err(IME_ERR_INVALID_INPUT);
+        }
+        s.session.set_highlight(index as usize);
+        Ok(IME_OK)
+    })
+}
+
 #[no_mangle]
 pub extern "C" fn ime_session_dictionary_error(session: *mut ImeSession) -> i32 {
     catch_value(

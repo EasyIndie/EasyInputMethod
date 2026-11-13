@@ -390,6 +390,12 @@ final class ImeSession {
         return commit()
     }
 
+    /// 候选窗当前高亮项：`[` / `]` 以词定字按它取字（ADR-327）。
+    func setHighlight(_ index: Int) {
+        guard let handle else { return }
+        _ = ime_session_set_highlight(handle, Int32(index))
+    }
+
     /// 切换输入模式（"mixed" / "wubi" / "pinyin"）。
     func setMode(_ mode: String) {
         guard let handle else { return }

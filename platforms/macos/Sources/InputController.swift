@@ -690,6 +690,8 @@ final class LampyrisInputController: IMKInputController {
         let isLetter = scalar.isASCII && scalar.properties.isAlphabetic
         let offered = session.isComposing && !isLetter ? session.candidates(limit: candidateCount) : []
         let trace = PerfTrace.shared.begin()
+        // 方向键移动过高亮时，`[` / `]` 要按高亮项取字（ADR-327）。
+        session.setHighlight(candidateSelection.index)
         let outcome = session.feed(codepoint)
         let engineStamp = PerfTrace.shared.stamp()
         switch outcome {

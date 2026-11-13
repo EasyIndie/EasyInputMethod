@@ -22,7 +22,7 @@ class InstallCoreTests(unittest.TestCase):
     def test_replace_backup_rollback_and_self_update(self):
         with tempfile.TemporaryDirectory(prefix='lampyris-install-core-') as folder:
             work = Path(folder)
-            environment = {**os.environ, 'CLANG_MODULE_CACHE_PATH': str(work / 'module-cache')}
+            environment = {**os.environ, 'CLANG_MODULE_CACHE_PATH': (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(work / 'module-cache'))}
             module = work / 'LampyrisInstallCore.swiftmodule'
             library = work / 'libLampyrisInstallCore.dylib'
             build_module = [

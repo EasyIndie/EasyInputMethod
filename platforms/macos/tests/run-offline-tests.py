@@ -32,12 +32,16 @@ def main():
     # 报告230：这 56 个文件互不共享状态（各自用临时目录/假 HOME），串行跑纯属浪费——
     # 改成并行后总时长由最慢的一个文件决定。JOBS=1 可退回串行做归因。
     try:
-        # 默认并发不超过 4：再高时 Swift 编译会互相抢资源导致假超时（2026-11-09 实测）。
-        jobs = int(os.environ.get('JOBS', '0')) or min(4, os.cpu_count() or 4)
+        # 共享 Swift/Clang 模块缓存后各文件不再各自重建 SDK 模块，并发可回到 6（报告 267）。
+        jobs = int(os.environ.get('JOBS', '0')) or min(6, os.cpu_count() or 6)
     except ValueError:
         jobs = 0
     if jobs <= 0:
-        jobs = min(4, os.cpu_count() or 4)
+        jobs = min(6, os.cpu_count() or 6)
+    # 所有测试共用一份模块缓存（clang 模块缓存自带文件锁，可并发读写）；放在 build 下，不入库。
+    cache = root / 'platforms/macos/build/swift-module-cache'
+    cache.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault('LAMPYRIS_SWIFT_MODULE_CACHE', str(cache))
     jobs = max(1, min(jobs, len(files)))
 
     def run_one(index, file):

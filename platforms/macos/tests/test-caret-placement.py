@@ -18,7 +18,7 @@ class CaretPlacementTests(unittest.TestCase):
             shutil.copyfile(ROOT / "platforms/macos/tests/caret-placement.swift",
                             temporary / "main.swift")
             environment = {**os.environ,
-                           "CLANG_MODULE_CACHE_PATH": str(temporary / "module-cache")}
+                           "CLANG_MODULE_CACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             result = subprocess.run(
                 ["swiftc", "-warnings-as-errors", str(temporary / "main.swift"),
                  str(ROOT / "platforms/macos/Sources/CaretPlacement.swift"),
