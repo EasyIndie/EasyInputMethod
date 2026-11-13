@@ -381,6 +381,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let percent = Int((Double(stats.practiced) / Double(bankSize) * 100).rounded())
         progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
             + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
+        // ADR-344：达标后建议下一题型，不锁定、不自动切换。
+        if let next = Practice.nextHint(kind: kind, practiced: stats.practiced,
+                                        attempts: stats.attempts, correct: stats.correct) {
+            progressLabel.stringValue += " · 可以试试「\(next)」了"
+        }
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
         progressBar.setAccessibilityValue("\(percent)%")
     }

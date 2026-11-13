@@ -117,6 +117,12 @@ require(LampyrisInputController.caretLookupIndex(selectionLocation: 1, length: 1
 require(LampyrisInputController.caretLookupIndex(selectionLocation: 3, length: 5) == 3, "mid-text caret")
 require(LampyrisInputController.caretLookupIndex(selectionLocation: NSNotFound, length: 5) == 0, "unknown selection")
 
+// ADR-344：练习进阶提示——30 字、90% 才建议，最后一档不提。
+require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 27) == "一级简码", "stage hint")
+require(Practice.nextHint(kind: .roots, practiced: 29, attempts: 29, correct: 29) == nil, "too few characters")
+require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 26) == nil, "below 90%")
+require(Practice.nextHint(kind: .recognition, practiced: 99, attempts: 100, correct: 100) == nil, "last stage")
+
 // ADR-341：五笔连续单字造词——2–4 字、2 秒窗口、3 次阈值、标点打断、词码推导。
 var phrase = AutoPhraseRule()
 let epoch = Date(timeIntervalSince1970: 0)
