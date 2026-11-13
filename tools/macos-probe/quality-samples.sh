@@ -19,7 +19,8 @@ PRIVATE_SUPPORT="$OUT/support"
 HOST_APP="$HOME/Library/Input Methods/Lampyris.app"
 host_pid() { pgrep -x Lampyris | head -1; }
 restart_host() {
-    p=$(host_pid); [ -n "$p" ] && kill -TERM "$p" 2>/dev/null
+    # IMK 可能按客户端拉起多个宿主实例；只停第一个会留下没带私有根的旧进程（报告 270）。
+    pkill -x Lampyris 2>/dev/null
     for _ in $(seq 1 15); do [ -z "$(host_pid)" ] && break; sleep 1; done
     [ -z "$(host_pid)" ] || return 1
     open "$HOST_APP" 2>/dev/null || return 1
@@ -36,10 +37,12 @@ start_isolation() {
     ISOLATION_ON=1
     restart_host || return 1
     # 必须回读宿主环境：没带上私有根就宁可不跑，也不能把样本写进真实词库。
-    if ! ps eww -o command= -p "$(host_pid)" 2>/dev/null | grep -q "LAMPYRIS_SUPPORT_DIR=$PRIVATE_SUPPORT"; then
-        echo "BLOCKED 宿主未接受 LAMPYRIS_SUPPORT_DIR（ps eww 里没有该变量）" >&2
-        return 1
-    fi
+    for p in $(pgrep -x Lampyris); do
+        if ! ps eww -o command= -p "$p" 2>/dev/null | grep -q "LAMPYRIS_SUPPORT_DIR=$PRIVATE_SUPPORT"; then
+            echo "BLOCKED 宿主 $p 未接受 LAMPYRIS_SUPPORT_DIR（ps eww 里没有该变量）" >&2
+            return 1
+        fi
+    done
     SUPPORT_DIR="$PRIVATE_SUPPORT"
 }
 stop_isolation() {
@@ -120,6 +123,15 @@ FAILED=0
 TOTAL=0
 run() { # 名称 按键 判定
     TOTAL=$((TOTAL + 1))
+    # 私有根失效时立刻停：宁可 BLOCKED，也不能把样本写进用户真实词库/练习进度。
+    if [ "${ISOLATION_ON:-0}" = 1 ]; then
+        for p in $(pgrep -x Lampyris); do
+            if ! ps eww -o command= -p "$p" 2>/dev/null | grep -q "LAMPYRIS_SUPPORT_DIR=$PRIVATE_SUPPORT"; then
+                echo "BLOCKED 私有数据根失效（宿主 $p 没有 LAMPYRIS_SUPPORT_DIR），已停止后续样本" >&2
+                exit 78
+            fi
+        done
+    fi
     got=$(type_read "$2")
     if check "$3" "$got"; then printf '%-26s PASS  %s\n' "$1" "$got"; else printf '%-26s FAIL  期望 %s，实得 %s\n' "$1" "$3" "$got"; FAILED=$((FAILED + 1)); fi
 }
@@ -198,6 +210,8 @@ case_double_pinyin() {
     TOTAL=$((TOTAL + 1))
     [ -x "$IME_CLI" ] || { blocked "双拼（小鹤）" "缺 target/release/ime-cli（先 cargo build --release -p ime-cli）"; return; }
     cfg_set mode '"pinyin"'; cfg_set pinyin.scheme '"xiaohe"'
+    # 两次配置写入后宿主需要一拍才重建双拼引擎；太紧会测到全拼（报告 270）。
+    sleep 1.5
     got=$(type_read 'nihc ')
     cfg_set pinyin.scheme '"full"'; cfg_set mode '"mixed"'
     if check 'exact:你好' "$got"; then printf '%-26s PASS  %s\n' "双拼（小鹤）" "$got"
@@ -210,6 +224,8 @@ case_weak_chars() {
     weak="$SUPPORT_DIR/weak-chars.tsv"
     existed=0; [ -f "$weak" ] && { existed=1; cp "$weak" "$OUT/weak-chars.before.tsv"; }
     cfg_set practice.collect_weak_chars true
+    # 配置写入到宿主重建引擎有一拍延迟（报告 270）。
+    sleep 1.5
     # zhuang 超过 4 码，五笔不参与；首选是拼音单字。
     got=$(type_read 'zhuang ')
     sleep 0.5

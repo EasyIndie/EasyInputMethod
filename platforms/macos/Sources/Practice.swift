@@ -205,9 +205,17 @@ final class PracticeProgress {
         load()
     }
 
-    static func defaultURL() -> URL {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return base.appendingPathComponent("Lampyris/practice.tsv")
+    /// 进度文件跟随 `LAMPYRIS_SUPPORT_DIR`（ADR-215/340）：私有根验收不得写用户真实目录。
+    static func defaultURL(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        applicationSupport: URL? = FileManager.default.urls(
+            for: .applicationSupportDirectory, in: .userDomainMask
+        ).first
+    ) -> URL {
+        let base = ImePaths.supportDirectory(environment: environment, applicationSupport: applicationSupport)
+            ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("Lampyris", isDirectory: true)
+        return base.appendingPathComponent("practice.tsv")
     }
 
     private func key(_ char: String, _ kind: PracticeKind) -> String { "\(char)\t\(kind.rawValue)" }
@@ -308,9 +316,17 @@ final class WeakChars {
         }
     }
 
-    static func defaultURL() -> URL {
-        let base = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
-        return base.appendingPathComponent("Lampyris/weak-chars.tsv")
+    /// 薄弱字文件同样跟随 `LAMPYRIS_SUPPORT_DIR`（ADR-215/340）。
+    static func defaultURL(
+        environment: [String: String] = ProcessInfo.processInfo.environment,
+        applicationSupport: URL? = FileManager.default.urls(
+            for: .applicationSupportDirectory, in: .userDomainMask
+        ).first
+    ) -> URL {
+        let base = ImePaths.supportDirectory(environment: environment, applicationSupport: applicationSupport)
+            ?? FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+                .appendingPathComponent("Lampyris", isDirectory: true)
+        return base.appendingPathComponent("weak-chars.tsv")
     }
 
     func contains(_ char: String) -> Bool { rows[char] != nil }

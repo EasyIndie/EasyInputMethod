@@ -117,6 +117,15 @@ require(LampyrisInputController.caretLookupIndex(selectionLocation: 1, length: 1
 require(LampyrisInputController.caretLookupIndex(selectionLocation: 3, length: 5) == 3, "mid-text caret")
 require(LampyrisInputController.caretLookupIndex(selectionLocation: NSNotFound, length: 5) == 0, "unknown selection")
 
+// ADR-340：练习/薄弱字路径必须跟随私有数据根，不能写用户真实目录。
+let envBase = URL(fileURLWithPath: "/Users/example/Library/Application Support", isDirectory: true)
+let privateRoot = "/tmp/lampyris-private-test"
+require(PracticeProgress.defaultURL(environment: ["LAMPYRIS_SUPPORT_DIR": privateRoot], applicationSupport: envBase).path
+    == privateRoot + "/practice.tsv", "practice path follows support root")
+require(WeakChars.defaultURL(environment: ["LAMPYRIS_SUPPORT_DIR": privateRoot], applicationSupport: envBase).path
+    == privateRoot + "/weak-chars.tsv", "weak-chars path follows support root")
+require(PracticeProgress.defaultURL(environment: [:], applicationSupport: envBase).path
+    == "/Users/example/Library/Application Support/Lampyris/practice.tsv", "practice default path")
 // ADR-347：文章跟打——短句库规模、逐字比对、标点算字、缺字/多字、顺序循环。
 require(PassageBank.sentences.count >= 100, "passage bank size")
 require(PassageBank.judge(target: "你好。", typed: "你好。").isExact, "exact passage")
