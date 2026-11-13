@@ -866,7 +866,7 @@ mod tests {
 
     #[test]
     fn schema_is_single_source_and_matches_v1() {
-        assert_eq!(schema().len(), 32);
+        assert_eq!(schema().len(), 33);
         let keys: Vec<&str> = schema().iter().map(|s| s.key).collect();
         assert_eq!(
             keys,
@@ -896,6 +896,7 @@ mod tests {
                 "hotkey.open_update",
                 "hotkey.open_about",
                 "hotkey.open_practice",
+                "hotkey.open_symbols",
                 "input.punctuation",
                 "input.full_width",
                 "input.chinese_variant",
