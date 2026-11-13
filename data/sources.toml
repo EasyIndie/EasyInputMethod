@@ -323,6 +323,56 @@ used_for = ["practice-passage-follow-typing"]
 added_at = "2026-11-13"
 notes = "ADR-347（报告 269）：100 条项目自编短句，嵌入宿主源码，无外部语料；只用于本机跟打，不联网、不上报、不参与候选排序。SHA-256 为登记时的源文件，内容变更需同步更新"
 
+[[source]]
+id = "D21"
+name = "Unicode Emoji 16.0 测试数据"
+path = "data/sources/emoji-test-16.0.txt"
+url = "https://unicode.org/Public/emoji/16.0/emoji-test.txt"
+upstream = "Unicode, Inc."
+license = "Unicode License V3"
+risk = "low"
+sha256 = "24f0c534e86cf142e2496953e8f0e46a3e702392911eddcd29c6cced85139697"
+used_for = ["emoji-picker-order", "emoji-groups"]
+fetch_script = "data/sources/fetch-emoji-data.sh"
+added_at = "2026-11-13"
+notes = "Unicode License V3（MIT 类许可，与 GPL-3 兼容）；只取 fully-qualified 条目，下载获取不入库；用于 U3-5 emoji 面板顺序与分类（ADR-349）"
+
+[[source]]
+id = "D22"
+name = "CLDR release-47 emoji 中英文标注与地区名"
+path = "data/sources/cldr-annotations-zh.xml"
+url = "https://github.com/unicode-org/cldr/tree/release-47/common"
+upstream = "unicode-org/cldr"
+license = "Unicode License V3"
+risk = "low"
+sha256 = "06b289e1b563199df2e2c51ab93ca8a3780a57a7ee82f4600828936c8323af0d"
+used_for = ["emoji-chinese-search", "emoji-english-search", "flag-names"]
+fetch_script = "data/sources/fetch-emoji-data.sh"
+added_at = "2026-11-13"
+notes = "zh/en annotations 与 main/zh.xml 三个文件：zh 06b289e1…、en b33e2e88…、main 97fea2cf…；Unicode License V3；只用于本机搜索与中文配名，不联网"
+
+[[source]]
+id = "D23"
+name = "项目自编常用符号表"
+path = "data/symbols.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/symbols.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "f79ab14d8f41cb7c39b48c2cedd9a1367b5c186e4fa75b7d0755a737eb715db3"
+used_for = ["symbol-picker", "symbol-prefix-candidates"]
+added_at = "2026-11-13"
+notes = "277 个常用符号，六个分类（标点/数学/货币/箭头/序号/其他）；项目自编中英文搜索词，无第三方词表；ADR-349"
+
+[[derived]]
+id = "emoji-v1"
+path = "data/generated/emoji.tsv"
+source_ids = ["D21", "D22"]
+license = "CC-BY-SA-4.0"
+sha256 = "1953cff0e0b3af17e816fa779c1fbdadfe02cbe7121b53455e4a86d73bcf09af"
+generator = "tools/prepare-emoji.py"
+notes = "U3-5；3,781 个 fully-qualified emoji，含中文名、英文名与中英文搜索词；CLDR 未收录的肤色/发型组合由项目规则回退配名（缺中文名 0）；报告 data/generated/emoji-report.json；ADR-349"
+
 [[derived]]
 id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
