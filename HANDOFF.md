@@ -4,7 +4,7 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `8d8fb27`（PR #310 覆盖扩量已合入）；`dev` = `eb15c20` + 后续文档。
+- 分支：`main` = `2887c87`（PR #311 D24 cjk-decomp 已合入）；`dev` = `b3d3105` + 后续文档。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **67 文件 / 335 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -132,6 +132,8 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-14 / Claude Code（air）：**PR #311 已合入 main（2887c87）**。D24 cjk-decomp（Apache-2.0）
+  覆盖拆字 64 条；B0 3,000 字 `full` 2,740、`unknown` 172；运行时 `full` 2,583。无付费数据。
 - 2026-11-14 / Claude Code（air）：**PR #310 已合入 main（8d8fb27）**。覆盖扩量后 B0 1,000 字
   `full` 955、3,000 字 2,676、运行时 2,519；剩余 220 unknown 多为繁体/生僻字，未用 D3 批量补数。
 - 2026-11-14 / Claude Code（air）：**PR #309 已合入 main（6aa8a91）**。N2/N3/N4 数据地基 CI 全绿后合并；
