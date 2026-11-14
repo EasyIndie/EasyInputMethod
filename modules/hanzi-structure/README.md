@@ -1,9 +1,9 @@
 # 汉字结构与五笔教学生成模块
 
-状态：**B0 试点已落地（2026-11-06，ADR-308 / 报告 240）**：`spec/B0-schema.md` 定义 schema v1，
-`tools/build_b0.py` 由已登记来源（D1/D2/D17/D17-bis/D5/D10）派生 1,000 高频字的可解释事实，
+状态：**B0 试点已落地并升到 schema v6（2026-11-14，ADR-355 / 报告 281）**：`spec/B0-schema.md` 定义 schema v6，
+`tools/build_b0.py` 由已登记来源（D1/D2/D17/D17-bis/D18/D19/D5/D10）派生 1,000 高频字的可解释事实，
 `corpus/B0.json` + `B0-report.json` 为产物，`tests/validate_b0.py` 独立重算复核，`provenance/B0.md` 记来源与 SHA。
-B0 只读：不进输入热路径、不改候选排序、不进安装包。笔画/笔顺、字根图形与几何资源仍属后续 `assets` 阶段。
+B0 只读：不进输入热路径、不改候选排序、不进安装包。N2 已接入 56 个成字字根的真实笔顺，N3 已给五笔结构，N4 已补 8 个 D2 漏拆字；字根图形与几何资源仍属后续 `assets` 阶段。
 
 ## 职责
 

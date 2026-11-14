@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 5  # v5：引入 IDS（D19）填占位字根并给结构参考（报告 245）
+SCHEMA_VERSION = 6  # v6：N2 真实笔顺 / N3 五笔结构 / N4 完整拆字（ADR-355）
 
 # 识别码反查表：末笔 × 结构（顺序：左右、上下、杂合）
 RECOGNITION = {
@@ -102,6 +102,28 @@ def load_pua_supplementary(path: Path) -> dict[tuple[str, str], str]:
         label = parts[2].strip()
         if label:
             out[(pua, key)] = label
+    return out
+
+
+def load_root_strokes(path: Path) -> dict[str, list[str]]:
+    """D18：成字字根真实笔顺（字 -> 笔画字形列表）。"""
+    out: dict[str, list[str]] = {}
+    for parts in read_rows(path, 3):
+        if len(parts) >= 2 and len(parts[0]) == 1:
+            strokes = [s for s in parts[1].split() if s]
+            if strokes:
+                out[parts[0]] = strokes
+    return out
+
+
+def load_manual_decomp(path: Path) -> dict[str, list[str]]:
+    """D18：D2 漏拆字的完整拆字（字 -> 可读组件列表）。"""
+    out: dict[str, list[str]] = {}
+    for parts in read_rows(path, 2):
+        if len(parts) >= 2 and len(parts[0]) == 1:
+            comps = [c for c in parts[1].split() if c]
+            if comps:
+                out[parts[0]] = comps
     return out
 
 
@@ -261,9 +283,13 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           rec_slot_pua: set[str] | None = None,
           readable_keys: dict[str, str] | None = None,
           ids: dict[str, str] | None = None,
-          supp_map: dict[tuple[str, str], str] | None = None) -> dict:
+          supp_map: dict[tuple[str, str], str] | None = None,
+          root_strokes: dict[str, list[str]] | None = None,
+          manual_decomp: dict[str, list[str]] | None = None) -> dict:
     pua_map = pua_map or {}
     supp_map = supp_map or {}
+    root_strokes = root_strokes or {}
+    manual_decomp = manual_decomp or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
     ids = ids or {}
@@ -277,6 +303,11 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'components': [],
         'keys': [],
         'strokes': None,
+        'strokesSource': None,
+        'strokesKind': None,
+        'structure': None,
+        'structureSource': None,
+        'structureConflict': False,
         'ids': ids.get(char),
         'idsStructure': ids_structure(ids.get(char, '')),
         'positionMismatch': [],
@@ -289,26 +320,51 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'notes': notes,
     }
 
+    def finish(record: dict) -> dict:
+        """N3：识别码结构优先，其次 IDS；记录两者的口径冲突。"""
+        rec = record.get('recognition')
+        ids_struct = record.get('idsStructure')
+        if rec:
+            record['structure'] = rec['structure']
+            record['structureSource'] = 'recognition'
+            record['structureConflict'] = bool(ids_struct and ids_struct != rec['structure'])
+        elif ids_struct:
+            record['structure'] = ids_struct
+            record['structureSource'] = 'IDS'
+        return record
+
     # 1) 键名字：四位同键
     if len(code) == 4 and len(set(code)) == 1:
         entry['class'] = 'key-name'
         entry['components'] = [char]
         entry['quality'] = 'full'
-        return entry
+        return finish(entry)
 
     # 2) 成字字根：D2 首位是它自己；笔画优先由全码推导（报户口 + 首/次/末笔）
     if glyphs and glyphs[0] == char:
         entry['class'] = 'radical-char'
         entry['components'] = [char]
+        if char in root_strokes:
+            entry['strokes'] = list(root_strokes[char])
+            entry['strokesSource'] = 'D18'
+            entry['strokesKind'] = 'writing'
+            entry['componentsSource'] = 'D18'
+            key = readable_keys.get(char)
+            entry['keys'] = [key] if key else []
+            notes.append('成字字根：真实笔顺（D18，Unihan 笔数校验）')
+            entry['quality'] = 'full'
+            return finish(entry)
         key = readable_keys.get(char)
         if key and len(code) == 4 and code[:2] == key * 2 and code[2:] == 'll':
             entry['componentsSource'] = 'D1'
             notes.append(f'单笔画：连打所在键 {key.upper()} 两次，再补 LL')
             entry['quality'] = 'full'
-            return entry
+            return finish(entry)
         if key and len(code) in (3, 4) and code[0] == key and all(c in STROKE_KEY for c in code[1:]):
             letters = code[1:]
             entry['strokes'] = [STROKE_GLYPH[c] for c in letters]
+            entry['strokesSource'] = 'code'
+            entry['strokesKind'] = 'code'
             entry['keys'] = [key, *letters]
             names = ['首笔', '次笔', '末笔'] if len(letters) == 3 else ['首笔', '次笔']
             notes.append('成字字根：报户口 ' + key.upper() + '，' +
@@ -317,21 +373,27 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
                          '（按五笔取码规则，非笔顺教学数据）')
             entry['componentsSource'] = 'D1'
             entry['quality'] = 'full'
-            return entry
+            return finish(entry)
         readable_strokes = ([g for g in decode(glyphs, pua_map)[0][1:]
                              if isinstance(g, str) and g in STROKES]
                             if glyphs[0] == char else [])
         if readable_strokes:
             entry['strokes'] = readable_strokes
+            entry['strokesSource'] = 'code'
+            entry['strokesKind'] = 'code'
             notes.append('成字字根：报户口 + ' +
                          '、'.join(STROKE_NAME[{'横':'g','竖':'h','撇':'t','捺':'y','折':'n'}[STROKES[g]]] + '笔（' + g + '）' for g in readable_strokes))
             entry['quality'] = 'full'
         else:
             notes.append('成字字根：笔画序列暂缺（既不在可读字根键表，也无法由全码推导）')
             entry['quality'] = 'partial'
-        return entry
+        return finish(entry)
 
     # 3) 合体字
+    manual = manual_decomp.get(char)
+    if manual:
+        glyphs = list(manual)
+        notes.append('使用 D18 完整拆字（补 D2 漏拆）')
     per_position = bool(glyphs) and len(code) >= 3 and len(glyphs) == len(code)
     keys2 = (list(code[: len(glyphs)])
              if glyphs and len(glyphs) in (len(code), len(code) - 1) else None)
@@ -341,7 +403,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
     # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
     # 解不出的字形保留占位，宁可 partial，也不把未许可来源写进产物。
-    source, readable, unknown_glyphs = 'D2', decoded2, unknown2
+    source, readable, unknown_glyphs = ('D18' if manual else 'D2'), decoded2, unknown2
 
     if readable and len(code) >= 2 and len(readable) > len(code):
         dropped = len(readable) - len(code)
@@ -354,7 +416,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
     if not readable:
         notes.append('缺可读拆字（PUA 解码失败）')
-        return entry
+        return finish(entry)
     entry['class'] = 'compound'
     entry['componentsSource'] = source
     entry['components'] = readable
@@ -392,7 +454,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     else:
         notes.append(f'字根数 {n} 与码长 {len(code)} 对不上，无法判定识别码')
         entry['quality'] = 'partial'
-    return entry
+    return finish(entry)
 
 
 
@@ -456,6 +518,10 @@ def main() -> int:
     parser.add_argument('--ids', help='IDS 分解（D19，MIT；填占位字根与结构参考，可选）')
     parser.add_argument('--pua-supplementary',
                         help='N1-d 补充区 PUA→字根核验表（ADR-353，可选；按 PUA+键位）')
+    parser.add_argument('--root-strokes',
+                        help='N2 成字字根真实笔顺（D18，可选）')
+    parser.add_argument('--manual-decomp',
+                        help='N4 D2 漏拆字的完整拆字（D18，可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
@@ -468,6 +534,10 @@ def main() -> int:
         paths['ids'] = Path(args.ids)
     if args.pua_supplementary:
         paths['pua_supplementary'] = Path(args.pua_supplementary)
+    if args.root_strokes:
+        paths['root_strokes'] = Path(args.root_strokes)
+    if args.manual_decomp:
+        paths['manual_decomp'] = Path(args.manual_decomp)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -488,6 +558,8 @@ def main() -> int:
     ids = load_ids(Path(args.ids)) if args.ids else {}
     supp_map = (load_pua_supplementary(Path(args.pua_supplementary))
                 if args.pua_supplementary else {})
+    root_strokes = load_root_strokes(Path(args.root_strokes)) if args.root_strokes else {}
+    manual_decomp = load_manual_decomp(Path(args.manual_decomp)) if args.manual_decomp else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -495,7 +567,9 @@ def main() -> int:
         code = codes.get(char)
         if not code:
             entries.append({'char': char, 'code': None, 'class': None, 'components': [],
-                            'keys': [], 'strokes': None, 'recognition': None, 'short1': short1.get(char), 'short2': short2.get(char),
+                            'keys': [], 'strokes': None, 'strokesSource': None, 'strokesKind': None,
+                            'structure': None, 'structureSource': None, 'structureConflict': False,
+                            'recognition': None, 'short1': short1.get(char), 'short2': short2.get(char),
                             'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
                             'quality': 'unknown', 'notes': ['缺全码']})
             continue
@@ -503,6 +577,8 @@ def main() -> int:
         if not glyphs:
             entries.append({'char': char, 'code': code, 'class': None, 'componentsSource': None,
                             'components': [], 'keys': [], 'strokes': None,
+                            'strokesSource': None, 'strokesKind': None,
+                            'structure': None, 'structureSource': None, 'structureConflict': False,
                             'ids': ids.get(char), 'idsStructure': ids_structure(ids.get(char, '')),
                             'positionMismatch': [], 'recognition': None,
                             'short1': short1.get(char), 'short2': short2.get(char),
@@ -512,7 +588,8 @@ def main() -> int:
         entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
                              pua_map=pua_map,
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
-                             ids=ids, supp_map=supp_map))
+                             ids=ids, supp_map=supp_map,
+                             root_strokes=root_strokes, manual_decomp=manual_decomp))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
@@ -537,6 +614,12 @@ def main() -> int:
         'placeholderComponents': sum(1 for e in entries for c in (e.get('components') or []) if c is None),
         'recognitionSlotPua': len(rec_slot_pua),
         'withStrokes': sum(1 for e in entries if e.get('strokes')),
+        'withWritingStrokes': sum(1 for e in entries if e.get('strokesKind') == 'writing'),
+        'structureCoverage': sum(1 for e in entries if e.get('structure')),
+        'structureSource': {s: sum(1 for e in entries if e.get('structureSource') == s)
+                            for s in ('recognition', 'IDS')},
+        'structureConflicts': sum(1 for e in entries if e.get('structureConflict')),
+        'manualDecomp': sum(1 for e in entries if e.get('componentsSource') == 'D18'),
         'withIds': sum(1 for e in entries if e.get('ids')),
         'idsFilled': sum(1 for e in entries if any('按 IDS' in n for n in e['notes'])),
         'positionMismatchEntries': sum(1 for e in entries if e.get('positionMismatch')),

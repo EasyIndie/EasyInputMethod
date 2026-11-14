@@ -1,0 +1,11 @@
+# D18 五笔86 D2 漏拆字的完整拆字（项目自编，CC-BY-SA-4.0）。
+# 只收 D2 只给 1 个字根的 8 个 B0 字；组件全部为可读字形，键位与全码逐位对齐。
+# char	components	code	source	evidence
+没	氵 几 又	imcy	D18	没=氵+几+又；IMCY 前三位 I/M/C，Y 为捺+左右识别码
+城	土 厂 𠃌	fdnt	D18	城=土+成；FDN，T 为撇+左右识别码
+余	人 禾	wtu	D18	余=人+禾；WT，U 为捺+上下识别码
+代	亻 弋	way	D18	代=亻+弋；WA，Y 为捺+左右识别码
+件	亻 牛 丨	wrhh	D18	件=亻+牛+丨；WRH，H 为竖+左右识别码
+凭	亻 丿 士 几	wtfm	D18	凭=亻+丿+士+几；WTFM 四位字根
+俄	亻 丿 扌	wtrt	D18	俄=亻+我；WTR，T 为撇+左右识别码
+浠	氵 乂 𠂇 丨	iqdh	D18	浠=氵+希；IQDH，希的上部拆分取 D 位

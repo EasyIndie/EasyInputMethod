@@ -12,8 +12,9 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 5  # v5：ids / idsStructure（D19）+ 用 IDS 填占位（报告 245）
+SCHEMA_VERSION = 6  # v6：N2 真实笔顺 / N3 五笔结构 / N4 完整拆字（ADR-355）
 FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'strokes',
+          'strokesSource', 'strokesKind', 'structure', 'structureSource', 'structureConflict',
           'ids', 'idsStructure', 'positionMismatch', 'recognition', 'short1', 'short2',
           'pinyin', 'frequency', 'quality', 'notes'}
 IDS_OPS = set('⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻')
@@ -127,6 +128,35 @@ def main() -> int:
                 problems.append(f'{char}: strokes 必须是笔画字形序列')
             elif entry['quality'] != 'full':
                 problems.append(f'{char}: 已有笔画序列却未判 full')
+            if entry.get('strokesKind') not in ('writing', 'code'):
+                problems.append(f'{char}: strokesKind 必须是 writing/code')
+            if entry.get('strokesSource') not in ('D18', 'code'):
+                problems.append(f'{char}: strokesSource 必须是 D18/code')
+            if entry.get('strokesKind') == 'writing' and entry.get('strokesSource') != 'D18':
+                problems.append(f'{char}: 真实笔顺必须来自 D18')
+            if entry.get('strokesKind') == 'code' and entry.get('strokesSource') != 'code':
+                problems.append(f'{char}: 取码笔顺必须标记为 code')
+        else:
+            if entry.get('strokesSource') is not None or entry.get('strokesKind') is not None:
+                problems.append(f'{char}: 无 strokes 却给了 strokesSource/Kind')
+        structure = entry.get('structure')
+        if structure is not None and structure not in ('左右', '上下', '杂合'):
+            problems.append(f'{char}: structure 非法 {structure}')
+        if entry.get('structureSource') not in (None, 'recognition', 'IDS'):
+            problems.append(f'{char}: structureSource 非法')
+        if entry.get('structureSource') == 'recognition':
+            rec = entry.get('recognition') or {}
+            if structure != rec.get('structure'):
+                problems.append(f'{char}: structure 与识别码结构不一致')
+        if entry.get('structureSource') == 'IDS':
+            if structure != entry.get('idsStructure'):
+                problems.append(f'{char}: structure 与 IDS 结构不一致')
+        conflict = entry.get('structureConflict')
+        if not isinstance(conflict, bool):
+            problems.append(f'{char}: structureConflict 必须是布尔值')
+        elif conflict and not (entry.get('recognition') and entry.get('idsStructure')
+                               and entry['recognition'].get('structure') != entry.get('idsStructure')):
+            problems.append(f'{char}: structureConflict 置真但两源并不冲突')
         if not isinstance(entry.get('positionMismatch'), list):
             problems.append(f'{char}: positionMismatch 必须是数组')
         ids_seq = entry.get('ids')

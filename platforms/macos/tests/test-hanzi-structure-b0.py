@@ -101,7 +101,7 @@ class B0CorpusTests(unittest.TestCase):
         entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
         report = json.loads((MODULE / 'corpus/B0-report.json').read_text(encoding='utf-8'))
         self.assertEqual(report['entries'], len(entries))
-        self.assertEqual(report['schemaVersion'], 5)
+        self.assertEqual(report['schemaVersion'], 6)
         recognition = {
             'g': ('横', '左右'), 'f': ('横', '上下'), 'd': ('横', '杂合'),
             'h': ('竖', '左右'), 'j': ('竖', '上下'), 'k': ('竖', '杂合'),
@@ -133,7 +133,7 @@ class B0CorpusTests(unittest.TestCase):
         entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
         sources = {e.get('componentsSource') for e in entries}
         self.assertNotIn('D3', sources)
-        self.assertTrue(sources <= {None, 'D1', 'D2'}, sources)
+        self.assertTrue(sources <= {None, 'D1', 'D2', 'D18'}, sources)
 
     def test_ids_structure_is_consistent(self):
         """v5：ids 必须是 IDS 序列，idsStructure 必须与根算子一致（报告 245）。"""
@@ -171,6 +171,50 @@ class B0CorpusTests(unittest.TestCase):
                 self.assertIsNotNone(glyph, f"{entry['char']}: 填过占位却残留 null")
                 if glyph in keys:
                     self.assertEqual(keys[glyph], key, f"{entry['char']}: {glyph} 的键位与码位不符")
+
+    def test_n2_writing_strokes_for_radical_chars(self):
+        """N2：B0 成字字根必须来自 D18 真实笔顺，不能是取码笔顺。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        radical_chars = [e for e in entries if e['class'] == 'radical-char']
+        self.assertTrue(radical_chars)
+        for entry in radical_chars:
+            self.assertEqual(entry.get('strokesKind'), 'writing', entry['char'])
+            self.assertEqual(entry.get('strokesSource'), 'D18', entry['char'])
+            self.assertTrue(entry.get('strokes'), entry['char'])
+            self.assertTrue(all(s in '一丨丿丶乙' for s in entry['strokes']), entry['char'])
+
+    def test_n3_structure_sources_are_consistent(self):
+        """N3：识别码结构优先；没有识别码时用 IDS，并记录口径冲突。"""
+        import json
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        with_structure = [e for e in entries if e.get('structure')]
+        self.assertGreaterEqual(len(with_structure), 950)
+        for entry in with_structure:
+            self.assertIn(entry['structure'], ('左右', '上下', '杂合'))
+            self.assertIn(entry['structureSource'], ('recognition', 'IDS'))
+            if entry['structureSource'] == 'recognition':
+                self.assertEqual(entry['structure'], entry['recognition']['structure'])
+            else:
+                self.assertEqual(entry['structure'], entry.get('idsStructure'))
+            if entry.get('structureConflict'):
+                self.assertTrue(entry.get('recognition') and entry.get('idsStructure'))
+                self.assertNotEqual(entry['recognition']['structure'], entry['idsStructure'])
+
+    def test_n4_d2_gaps_have_manual_decomposition(self):
+        """N4：8 个 D2 漏拆字必须由 D18 补成完整拆字。"""
+        import json
+        entries = {e['char']: e for e in json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))}
+        expected = {
+            '没': ['氵', '几', '又'], '城': ['土', '厂', '𠃌'], '余': ['人', '禾'],
+            '代': ['亻', '弋'], '件': ['亻', '牛', '丨'], '凭': ['亻', '丿', '士', '几'],
+            '俄': ['亻', '丿', '扌'], '浠': ['氵', '乂', '𠂇', '丨'],
+        }
+        for char, components in expected.items():
+            entry = entries[char]
+            self.assertEqual(entry['components'], components, char)
+            self.assertEqual(entry['componentsSource'], 'D18', char)
+            self.assertEqual(entry['quality'], 'full', char)
 
     def test_provenance_records_hashes(self):
         text = (MODULE / 'provenance/B0.md').read_text(encoding='utf-8')

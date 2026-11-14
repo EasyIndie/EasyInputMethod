@@ -52,7 +52,9 @@ def explain(entry: dict, as_json: bool) -> int:
             parts.append('键名字：连打该键四次')
         elif entry['class'] == 'radical-char':
             if entry.get('strokes'):
-                parts.append('成字字根（' + ''.join(entry['strokes']) + '）')
+                kind = '真实笔顺' if entry.get('strokesKind') == 'writing' else '取码笔顺'
+                source = '（D18）' if entry.get('strokesSource') == 'D18' else ''
+                parts.append(f'成字字根（{kind}{source}：' + ''.join(entry['strokes']) + '）')
             note = entry['notes'][0] if entry['notes'] else '报户口 + 笔画'
             note = note.split('：', 1)[1] if note.startswith('成字字根：') else note
             parts.append(note)
@@ -65,6 +67,9 @@ def explain(entry: dict, as_json: bool) -> int:
                 parts.append(recognition['because'])
             else:
                 parts.append('字根已够四码，无识别码')
+            if entry.get('structure'):
+                src = '识别码' if entry.get('structureSource') == 'recognition' else 'IDS 参考'
+                parts.append(f'结构 {entry["structure"]}（{src}）')
         if entry['short1']:
             parts.append(f'一级简码 {entry["short1"]}')
         if entry['short2']:
