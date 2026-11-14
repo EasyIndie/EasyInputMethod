@@ -14,6 +14,9 @@ final class PreviewInput: NSTextView {
     var persistModeChanges = false
     var onOpenSettings: (() -> Void)?
     var onOpenAbout: (() -> Void)?
+    var onOpenUpdate: (() -> Void)?
+    var onOpenPractice: (() -> Void)?
+    var onOpenSymbols: (() -> Void)?
 
     init(session: ImeSession) {
         self.session = session
@@ -50,6 +53,15 @@ final class PreviewInput: NSTextView {
         }
         if session.matches("hotkey.open_about", event), let onOpenAbout {
             cancelComposition(); onOpenAbout(); return true
+        }
+        if session.matches("hotkey.open_update", event), let onOpenUpdate {
+            cancelComposition(); onOpenUpdate(); return true
+        }
+        if session.matches("hotkey.open_practice", event), let onOpenPractice {
+            cancelComposition(); onOpenPractice(); return true
+        }
+        if session.matches("hotkey.open_symbols", event), let onOpenSymbols {
+            cancelComposition(); onOpenSymbols(); return true
         }
         let shortcut = session.shortcut(event, persistMode: persistModeChanges)
         if shortcut.consumed {
@@ -225,6 +237,15 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         input.persistModeChanges = isolated
         input.onOpenSettings = { [weak self] in self?.openSettings() }
         input.onOpenAbout = { AboutUI.show() }
+        input.onOpenUpdate = { UpdateEntry.open() }
+        input.onOpenPractice = { PracticeWindow.shared.show() }
+        let openSymbols: () -> Void = { [weak input] in
+            guard let input else { return }
+            SymbolPickerWindow.shared.show { [weak input] text in
+                input?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+            }
+        }
+        input.onOpenSymbols = openSymbols
         self.input = input
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
@@ -269,12 +290,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             }
             menu.onPractice = { PracticeWindow.shared.show() }
             menu.onGuide = { OnboardingWindow.shared.show() }
-            menu.onSymbols = { [weak self] in
-                guard let input = self?.input else { return }
-                SymbolPickerWindow.shared.show { [weak input] text in
-                    input?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
-                }
-            }
+            menu.onSymbols = openSymbols
             previewMenu = menu
             input.stateChanged = { [weak self] in self?.syncMenuControls() }
             let menuButton = NSButton(title: "输入法菜单", target: self, action: #selector(openInputMenu(_:)))
@@ -1093,6 +1109,18 @@ if CommandLine.arguments.contains("--smoke-test") {
         diagnostics.contains("架构：")
     else {
         fputs("诊断信息缺少版本/系统/架构。\n", stderr); exit(1)
+    }
+    // ADR-360：预览输入区必须与正式宿主一样消费打开类快捷键，不能把 ⌥C/⌥K/⌥G 当文本插入。
+    let shortcutProbe = PreviewInput(session: session)
+    var opened: [String] = []
+    shortcutProbe.onOpenUpdate = { opened.append("update") }
+    shortcutProbe.onOpenPractice = { opened.append("practice") }
+    shortcutProbe.onOpenSymbols = { opened.append("symbols") }
+    for (key, character) in [(UInt16(8), "c"), (UInt16(40), "k"), (UInt16(5), "g")] {
+        shortcutProbe.keyDown(with: navigationEvent(key, .option, characters: character))
+    }
+    guard opened == ["symbols", "practice", "update"] else {
+        fputs("预览未消费打开类快捷键：\(opened)\n", stderr); exit(1)
     }
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("视觉证据：\(qaDirectory.path)")

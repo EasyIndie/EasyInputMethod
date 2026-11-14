@@ -42,14 +42,27 @@
 - `wubi86-level3-codes.tsv` 随包分发；预览/隔离 App 也已带上；
 - 指南第 4 步的题型顺序同步。
 
-## 4. 验证
+## 4. 预览输入区不消费打开类快捷键
+
+**现象**：在 `make macos-dev` 的输入框里按 `⌥C`/`⌥K`/`⌥G`，快捷键不生效，反而把 Option 字符插入文本。
+
+**原因**：正式宿主在 `handleHotkey` 里先处理 `open_update/open_practice/open_symbols`，再交给
+`session.shortcut`；预览的 `PreviewInput.handleShortcut` 只处理了设置/关于，缺少这三个入口。
+
+**处理**：
+
+- 预览补齐 `onOpenUpdate` / `onOpenPractice` / `onOpenSymbols`，与菜单回调共用同一个符号插入闭包；
+- 预览冒烟新增断言：合成 `⌥C`/`⌥K`/`⌥G` 事件必须分别触发对应回调，不能被当作文本插入。
+
+## 5. 验证
 
 - `test-wubi-learning`：新增 `.code3` 答案 3 位与判分断言，题库非空；
 - `test-symbol-picker`、`test-ui-snapshots`、三处菜单探针 PASS；
 - `make macos-ui-snapshots`：新增指南快照（亮/暗 × 第 1/4 步）；
 - `make macos-offline-tests` 68 文件 / 337 例 PASS；`make verify` PASS。
 
-## 5. 关联
+## 6. 关联
 
 ADR-361、ADR-345/314、报告 288、`OnboardingWindow.swift`、`Practice.swift`、
-`PracticeWindow.swift`、`PracticeExplanationView.swift`、`run-panel-interactive.py`、`dev-preview.sh`。
+`PracticeWindow.swift`、`PracticeExplanationView.swift`、`Preview/main.swift`、
+`run-panel-interactive.py`、`dev-preview.sh`。
