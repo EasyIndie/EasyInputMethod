@@ -36,6 +36,17 @@ final class MenuOwner: NSObject {
         InputStateMenu.refresh(menu, state: snapshot)
     }
 }
+// ADR-360：动作区顺序固定，新增入口只能追加到所属组末尾。
+require(InputMenuAction.sections == [[.toggleLearning, .practice, .symbols, .guide],
+                                     [.update, .settings, .about]], "fixed action section order")
+require(InputMenuAction.ordered.map(\.title) == ["显示学习区", "练习…", "符号与表情…", "使用指南…",
+                                                 "检查更新…", "设置…", "关于"], "fixed action titles")
+require(InputMenuAction.ordered.filter { $0.hotkeyKey == nil } == [.guide], "only guide has no hotkey")
+require(InputMenuAction.toggleLearning.hotkeyKey == "hotkey.toggle_wubi_learning", "learning hotkey source")
+require(InputMenuAction.symbols.hotkeyKey == "hotkey.open_symbols", "symbols hotkey source")
+LocalAcceptanceEvidence.record("menu-view.order", expected: "动作区固定为学习区/练习/符号与表情/使用指南/检查更新/设置/关于",
+    actual: ["sections": InputMenuAction.sections.map { $0.map(\.title) }])
+
 let owner = MenuOwner()
 let menu = owner.menu
 let parent = menu.items[0]

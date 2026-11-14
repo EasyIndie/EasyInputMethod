@@ -48,7 +48,9 @@ build() {
     local sources=("$@")
     local stamp="$CACHE/$name.sha"
     local hash
-    hash=$(cat "$TMP/main.swift" "${sources[@]}" | shasum -a 256 | awk '{print $1}')
+    # 缓存键必须包含 FFI 静态库：Schema 默认值（如快捷键）变化只体现在 Rust 侧，
+    # 只哈希 Swift 源码会让快照继续复用旧二进制（2026-11-15 实测）。
+    hash=$(cat "$TMP/main.swift" "${sources[@]}" target/release/libime_ffi.a | shasum -a 256 | awk '{print $1}')
     if [[ -x "$CACHE/$name" && -f "$stamp" && "$(cat "$stamp")" == "$hash" ]]; then
         echo "▶ ${name}：源码未变，复用上次编译"
         return 0

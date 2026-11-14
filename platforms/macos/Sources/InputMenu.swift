@@ -67,6 +67,57 @@ enum UpdateEntry {
     }
 }
 
+/// 动作区条目与**固定顺序**（ADR-360）。
+///
+/// 状态区 5 行由 IMK 契约固定在最前；动作区分两组：
+/// 1. 学习与工具：学习区开关 → 练习 → 符号与表情 → 使用指南；
+/// 2. 应用：检查更新 → 设置 → 关于。
+///
+/// 新增入口只能追加到所属组末尾并更新 `input-menu.swift` 探针，不允许打乱既有相对顺序；
+/// 异常状态恒在最后且仅在出错时出现。
+enum InputMenuAction: Int, CaseIterable {
+    case toggleLearning = 10
+    case practice = 11
+    case symbols = 12
+    case guide = 13
+    case update = 14
+    case settings = 15
+    case about = 16
+
+    /// 组内顺序；空分隔线只加在两组之间。
+    static let sections: [[InputMenuAction]] = [
+        [.toggleLearning, .practice, .symbols, .guide],
+        [.update, .settings, .about],
+    ]
+
+    static var ordered: [InputMenuAction] { sections.flatMap { $0 } }
+
+    var title: String {
+        switch self {
+        case .toggleLearning: return "显示学习区"
+        case .practice: return "练习…"
+        case .symbols: return "符号与表情…"
+        case .guide: return "使用指南…"
+        case .update: return "检查更新…"
+        case .settings: return "设置…"
+        case .about: return "关于"
+        }
+    }
+
+    /// 与菜单项快捷键提示同源的配置键；`nil` 表示无快捷键。
+    var hotkeyKey: String? {
+        switch self {
+        case .toggleLearning: return "hotkey.toggle_wubi_learning"
+        case .practice: return "hotkey.open_practice"
+        case .symbols: return "hotkey.open_symbols"
+        case .guide: return nil
+        case .update: return "hotkey.open_update"
+        case .settings: return "hotkey.open_settings"
+        case .about: return "hotkey.open_about"
+        }
+    }
+}
+
 /// Public AppKit menu contract; callbacks also accept IMK command dictionaries.
 enum InputStateMenu {
     enum Command: Int {

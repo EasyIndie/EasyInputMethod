@@ -39,11 +39,18 @@ adapter.onChange = { changes += 1 }
 adapter.onFailure = { failures.append($0) }
 adapter.refresh()
 let menu = adapter.menu
-require(menu.delegate === adapter && menu.items.count == 9, "real shared flat menu")
-require(menu.items[6].title == "检查更新…" && menu.items[6].keyEquivalent == "g"
-    && menu.items[6].keyEquivalentModifierMask == [.option], "update entry shown with shortcut")
-require(menu.items[7].keyEquivalent == "," && menu.items[7].keyEquivalentModifierMask == [.option], "settings shortcut shown")
-require(menu.items[8].keyEquivalent == "a" && menu.items[8].keyEquivalentModifierMask == [.option], "about shortcut shown")
+require(menu.delegate === adapter && menu.items.count == 14, "real shared flat menu")
+require(menu.items[6].title == "显示学习区" && menu.items[6].keyEquivalent == "l"
+    && menu.items[6].keyEquivalentModifierMask == [.option] && menu.items[6].state == .off, "learning toggle with shortcut")
+require(menu.items[7].title == "练习…" && menu.items[7].keyEquivalent == "k"
+    && menu.items[7].keyEquivalentModifierMask == [.option], "practice entry shown with shortcut")
+require(menu.items[8].title == "符号与表情…" && menu.items[8].keyEquivalent == "e"
+    && menu.items[8].keyEquivalentModifierMask == [.control, .option], "symbols shortcut is ctrl+option+e")
+require(menu.items[9].title == "使用指南…" && menu.items[9].keyEquivalent.isEmpty, "guide entry without shortcut")
+require(menu.items[11].title == "检查更新…" && menu.items[11].keyEquivalent == "g"
+    && menu.items[11].keyEquivalentModifierMask == [.option], "update entry shown with shortcut")
+require(menu.items[12].keyEquivalent == "," && menu.items[12].keyEquivalentModifierMask == [.option], "settings shortcut shown")
+require(menu.items[13].keyEquivalent == "a" && menu.items[13].keyEquivalentModifierMask == [.option], "about shortcut shown")
 let parent = menu.items[0]
 require(parent.submenu == nil && parent.action == InputStateMenu.action && parent.tag == 1, "mode row is a clickable command")
 require(parent.title == "混输模式", "mode row title shows the current mode")
@@ -103,15 +110,30 @@ LocalAcceptanceEvidence.record("menu.recovery", expected: "解除私有锁后可
 var settings = 0
 var about = 0
 var updates = 0
+var learning = 0
+var practice = 0
+var symbols = 0
+var guide = 0
 adapter.onCheckUpdates = { updates += 1 }
 adapter.onSettings = { settings += 1 }
 adapter.onAbout = { about += 1 }
-menu.performActionForItem(at: 6)
-menu.performActionForItem(at: 7)
-menu.performActionForItem(at: 8)
+adapter.onToggleLearning = { learning += 1 }
+adapter.onPractice = { practice += 1 }
+adapter.onSymbols = { symbols += 1 }
+adapter.onGuide = { guide += 1 }
+for index in [6, 7, 8, 9, 11, 12, 13] { menu.performActionForItem(at: index) }
+require(learning == 1 && practice == 1 && symbols == 1 && guide == 1,
+        "learning, practice, symbols and guide route through preview callbacks")
 require(updates == 1 && settings == 1 && about == 1, "update, settings and about route through preview callbacks")
-require(menu.items[6].title == "检查更新…" && menu.items[7].title == "设置" && menu.items[8].title == "关于", "user action labels")
-LocalAcceptanceEvidence.record("menu.routes", expected: "更新/设置/关于各触发一次回调", actual: ["titles": [menu.items[6].title, menu.items[7].title, menu.items[8].title], "updates_calls": updates, "settings_calls": settings, "about_calls": about])
+require(menu.items[6].title == "显示学习区" && menu.items[7].title == "练习…"
+    && menu.items[8].title == "符号与表情…" && menu.items[9].title == "使用指南…"
+    && menu.items[11].title == "检查更新…" && menu.items[12].title == "设置…"
+    && menu.items[13].title == "关于", "fixed action labels and order")
+LocalAcceptanceEvidence.record("menu.routes", expected: "学习/练习/符号/指南/更新/设置/关于各触发一次回调",
+    actual: ["titles": [6, 7, 8, 9, 11, 12, 13].map { menu.items[$0].title },
+             "learning_calls": learning, "practice_calls": practice,
+             "symbols_calls": symbols, "guide_calls": guide,
+             "updates_calls": updates, "settings_calls": settings, "about_calls": about])
 require((try? Data(contentsOf: dictionary)) == dictionaryBefore, "no learned or committed text")
 LocalAcceptanceEvidence.record("menu.dictionary", expected: "模式/状态操作不增加私有词库学习", actual: ["unchanged": (try? Data(contentsOf: dictionary)) == dictionaryBefore])
 print("PASS preview-menu: real session/shared flat menu/private configuration, click cycle, state toggles, external preferences, keyboard, failure recovery and no learning")

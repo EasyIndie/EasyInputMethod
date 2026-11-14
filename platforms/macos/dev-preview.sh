@@ -33,6 +33,9 @@ PLIST
 cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Lampyris.icns"
 # 学习区结构化提示（ADR-311）：预览也需要，便于看真实渲染
 [ -f "${DATA}/B0-runtime.tsv" ] && cp "${DATA}/B0-runtime.tsv" "${APP}/Contents/Resources/B0-runtime.tsv"
+# 符号面板与正式包同源读取 Resources 下的 TSV，预览也要能打开。
+[ -f "${ROOT}/data/symbols.tsv" ] && cp "${ROOT}/data/symbols.tsv" "${APP}/Contents/Resources/symbols.tsv"
+[ -f "${DATA}/emoji.tsv" ] && cp "${DATA}/emoji.tsv" "${APP}/Contents/Resources/emoji.tsv"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
@@ -59,6 +62,10 @@ swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/PassageWindow.swift" \
   "${SCRIPT_DIR}/Sources/PracticeAnswerView.swift" \
   "${SCRIPT_DIR}/Sources/PracticeExplanationView.swift" \
+  "${SCRIPT_DIR}/Sources/Onboarding.swift" \
+  "${SCRIPT_DIR}/Sources/OnboardingWindow.swift" \
+  "${SCRIPT_DIR}/Sources/SymbolCatalog.swift" \
+  "${SCRIPT_DIR}/Sources/SymbolPickerWindow.swift" \
   "${ROOT}/modules/keymap/Sources/KeyboardMapView.swift" \
   "${ROOT}/modules/keymap/Sources/KeymapPanelView.swift" \
   "${ROOT}/modules/keymap/Sources/KeyRootLayout.swift" \
