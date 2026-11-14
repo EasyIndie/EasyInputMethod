@@ -136,6 +136,9 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**交互式面板验收修复（报告 287）**。`make macos-dev` 在 Claude Code 的
+  非 TTY stdin 下 `selectors.register` 崩溃；改为非 TTY 时只轮询子进程、关闭窗口即结束。交互会话中真实数据
+  变化降为 WARN（预览只写私有根）；测试期间真实词库 2,046→2,060 行属已装输入法正常学习，未回滚。
 - 2026-11-15 / Claude Code（air）：**快速 UI 回路修复（报告 286）**。`make macos-ui-snapshots` 因
   `CandidateWindow` 新增 `CaretPlacement`/`LearningHints` 依赖而编译失败；补全源码清单，新增
   `test-ui-snapshots.py` 防清单漂移。离线回归 68 文件/337 例 PASS；快照可重新产出（候选 6 / 面板 14 / HUD 6）。

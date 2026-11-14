@@ -16,6 +16,9 @@ description: 在已装 macOS 输入法上做「换包 → 验收 → 还原」�
 | 发布验收（用户正常卸载→安装→添加源） | 注销：`make macos-clean-install` | 一次注销（会终止 agent 会话） |
 | 只要看 UI 观感 | `make macos-ui-snapshots` / `make macos-dev` | 秒级，不碰安装目录 |
 
+> `make macos-dev` 使用私有配置/词库根，可在非 TTY（Claude Code `!`）下运行：**关闭窗口即结束**并清理临时目录；
+> 真实 `user-dictionary.tsv` 若在会话中变化，通常来自已装输入法在其它窗口的学习，不是预览越界（报告 287）。
+
 既有`macos-fast-reinstall`路径的前提只有三条，缺一就停：**输入源已移除**、**宿主已退出**、**包装前校验签名/公证**。
 
 ## 1. 不注销换包（推荐）
