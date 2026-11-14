@@ -4,10 +4,10 @@
   "allCodes": false,
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
-  "standardMismatchEntries": 81,
+  "standardMismatchEntries": 73,
   "quality": {
-    "full": 910,
-    "partial": 86,
+    "full": 916,
+    "partial": 80,
     "unknown": 4
   },
   "classes": {
@@ -37,7 +37,7 @@
   "manualDecomp": 50,
   "withIds": 990,
   "idsFilled": 1,
-  "positionMismatchEntries": 81,
+  "positionMismatchEntries": 73,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",
@@ -93,7 +93,7 @@
     },
     "root_inventory": {
       "path": "../../data/learning/wubi86-root-inventory.tsv",
-      "sha256": "c279d9944ce9f5cf6e5b49e47132adffa88b79a65706c29e0d3f892755dbb345"
+      "sha256": "e13254aa3b0e4c2829edf103b3acdaeb207a175f0cc33e30531ba6091e551074"
     }
   },
   "generator": "modules/hanzi-structure/tools/build_b0.py",
