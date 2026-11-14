@@ -54,7 +54,6 @@ final class LampyrisInputController: IMKInputController {
         // The observer is removed while inactive. Reapply mode as well as options
         // when a previously created client session becomes active again.
         configChanged("mode")
-        DispatchQueue.main.async { Onboarding.presentIfNeeded() }
     }
 
     override func deactivateServer(_ sender: Any!) {
@@ -842,6 +841,10 @@ final class LampyrisInputController: IMKInputController {
             endSymbolComposition()
         }
         guard let event else { return false }
+        // 首次输入的按键之后再弹指南：激活回调时窗口系统尚未就绪，直接 show 可能不出现。
+        if event.type == .keyDown {
+            DispatchQueue.main.async { Onboarding.presentIfNeeded() }
+        }
         // 符号面板保持客户端焦点，键盘事件由这里转发给面板（搜索/选择/插入）。
         if SymbolPickerWindow.shared.isVisible, SymbolPickerWindow.shared.handleKey(event) {
             return true
