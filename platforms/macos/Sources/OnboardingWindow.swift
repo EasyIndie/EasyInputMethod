@@ -160,6 +160,7 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
             bodyLabel.widthAnchor.constraint(equalTo: content.widthAnchor, constant: -48),
             bottom.widthAnchor.constraint(equalTo: content.widthAnchor, constant: -48),
         ])
+        panel.center()
         window = panel
     }
 
