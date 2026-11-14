@@ -4,7 +4,7 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `c404284`（PR #307 N1-d + 验收收敛已合入）；`dev` 顶部为本轮 N1-d/N2/N3/N4（N2/N3/N4 待提交 PR）。
+- 分支：`main` = `6aa8a91`（PR #309 N2/N3/N4 已合入）；`dev` = `186bfd5` + 后续文档。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **65 文件 / 330 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -132,6 +132,8 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-14 / Claude Code（air）：**PR #309 已合入 main（6aa8a91）**。N2/N3/N4 数据地基 CI 全绿后合并；
+  正式发版产物未变，下一次构建才会带上 schema v6 数据。
 - 2026-11-14 / Claude Code（air）：**N2/N3/N4 数据地基完成（ADR-355，报告 281）**。D18 新增 56 个 B0
   成字字根的真实笔顺（Unihan kTotalStrokes 校验笔数）与 8 个 D2 漏拆字的完整拆字；B0 schema 升 v6，
   新增 `strokesSource`/`strokesKind`/`structure`/`structureSource`/`structureConflict`。结果：1,000 字
