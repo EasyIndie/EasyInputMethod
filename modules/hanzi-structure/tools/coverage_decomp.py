@@ -151,14 +151,19 @@ def main() -> int:
         cut_any = False
         key_bad = False
         rec_bad = False
-        for want in (len(code), len(code) - 1):
-            if want < 2:
+        budget = max(8, len(code), len(code) - 1)
+        for leaves in all_cuts(tree, keys, char, budget):
+            if not leaves:
                 continue
-            for leaves in all_cuts(tree, keys, char, want):
-                if len(leaves) != want:
-                    continue
+            variants = []
+            if len(leaves) in (len(code), len(code) - 1):
+                variants.append(tuple(leaves))
+            # 五笔 4 根以上取「前 3 + 末根」
+            if len(code) == 4 and len(leaves) > 4:
+                variants.append(tuple(leaves[:3] + [leaves[-1]]))
+            for variant in variants:
                 cut_any = True
-                for perm in itertools.permutations(leaves):
+                for perm in itertools.permutations(variant):
                     norm = tuple(normalize_leaf(leaf) for leaf in perm)
                     if norm in candidates:
                         continue

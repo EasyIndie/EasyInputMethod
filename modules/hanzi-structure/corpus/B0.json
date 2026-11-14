@@ -31715,15 +31715,25 @@
  {
   "char": "槸",
   "code": "sfwy",
-  "class": null,
-  "componentsSource": null,
-  "components": [],
-  "keys": [],
+  "class": "compound",
+  "componentsSource": "D24",
+  "components": [
+   "木",
+   "土",
+   "八",
+   "丶"
+  ],
+  "keys": [
+   "s",
+   "f",
+   "w",
+   "y"
+  ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
-  "structure": null,
-  "structureSource": null,
+  "structure": "左右",
+  "structureSource": "IDS",
   "structureConflict": false,
   "ids": "⿰木埶",
   "idsStructure": "左右",
@@ -31733,9 +31743,10 @@
   "short2": null,
   "pinyin": "yi",
   "frequency": 3667,
-  "quality": "unknown",
+  "quality": "full",
   "notes": [
-   "缺拆字数据"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）",
+   "字根已够四码，无识别码"
   ]
  },
  {

@@ -4,7 +4,7 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `8d8fb27`（PR #310 覆盖扩量已合入）；`dev` = `eb15c20` + 后续文档。
+- 分支：`main` = `2887c87`（PR #311 D24 cjk-decomp 已合入）；`dev` = `b3d3105` + 后续文档。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **67 文件 / 335 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -33,7 +33,7 @@
 | **B0 schema v3（报告 243）** | 占位组件 `null` + 键位推断；修掉 D3 字根按字符解析（空格混入组件、BOM/CRLF）缺陷。 |
 | **13% 结构不一致归因（报告 242）** | 66/512 是两套**分类口径**差异（独体字判杂合、拆法不同、包围），不是数据错误；处置=五笔识别码为权威、IDS 只作校验、差异归档。 |
 | **corpus 数据来源调研（`docs/research/corpus-data-sources.md`）** | 主选 `yi-bai/ids`（MIT）+ Unihan 交叉校验；**不采用** Make Me a Hanzi 的 Arphic 图形、Hanzi Writer、KanjiVG、字典抓取。 |
-| **B0 现状（schema v6，2026-11-14）** | 1,000 字：`full` **964** / `partial` **31** / `unknown` **5**；含占位 23 条。3,000 字 B0：`full` **2,740** / `partial` **88** / `unknown` **172**；运行时 3,000 字：`full` **2,583** / `partial` **245** / `unknown` 220；120,754 B（≈40 B/字）。N1-d 见 ADR-353/356、N2/N3/N4 见 ADR-355、D24 见 ADR-357；报告 280–283。 |
+| **B0 现状（schema v6，2026-11-14）** | 1,000 字：`full` **965** / `partial` **31** / `unknown` **4**；含占位 23 条。3,000 字 B0：`full` **2,759** / `partial` **87** / `unknown` **154**；运行时 3,000 字：`full` **2,602** / `partial` **244** / `unknown` 154；N1-d 见 ADR-353/356、N2/N3/N4 见 ADR-355、D24 见 ADR-357；报告 280–283。 |
 
 ### 2.2 发布线（2026-11-05，1.0.0 → 1.1.0/build 38）
 
@@ -132,13 +132,15 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-14 / Claude Code（air）：**PR #311 已合入 main（2887c87）**。D24 cjk-decomp（Apache-2.0）
+  覆盖拆字 64 条；B0 3,000 字 `full` 2,740、`unknown` 172；运行时 `full` 2,583。无付费数据。
 - 2026-11-14 / Claude Code（air）：**PR #310 已合入 main（8d8fb27）**。覆盖扩量后 B0 1,000 字
   `full` 955、3,000 字 2,676、运行时 2,519；剩余 220 unknown 多为繁体/生僻字，未用 D3 批量补数。
 - 2026-11-14 / Claude Code（air）：**PR #309 已合入 main（6aa8a91）**。N2/N3/N4 数据地基 CI 全绿后合并；
   正式发版产物未变，下一次构建才会带上 schema v6 数据。
 - 2026-11-14 / Claude Code（air）：**D24 cjk-decomp 覆盖（ADR-357，报告 283）**。引入 Apache-2.0 的
-  cjk-decomp，树切分 + 码位键位/IDS 校验，生成 64 条覆盖拆字；B0 3,000 字 `full` 2,676→2,740、
-  `unknown` 220→172；运行时 `full` 2,519→2,583。未使用付费数据。
+  cjk-decomp，树切分 + 码位键位/IDS 校验，生成 64 条覆盖拆字；B0 3,000 字 `full` 2,676→2,759、
+  `unknown` 220→154；运行时 `full` 2,519→2,602。未使用付费数据。
 - 2026-11-14 / Claude Code（air）：**N1-d 覆盖扩量（ADR-356，报告 282）**。新增 62 条 `*` 兜底、3 条 D2 BMP PUA、
   34 条逐字语境；B0 1,000 字 `full` 927→955、`partial` 65→37；3,000 字 `full` 2,588→2,676；运行时 `full` 2,462→2,519。
   剩余 220 unknown 多为繁体/生僻字；未用 D3 作来源批量补数。

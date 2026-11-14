@@ -433,9 +433,9 @@ id = "wubi-cjkdecomp-coverage"
 path = "data/learning/wubi86-cjkdecomp-coverage.tsv"
 source_ids = ["D1", "D19", "D24"]
 license = "CC-BY-SA-4.0"
-sha256 = "22c439581feb938bf836340b05d70ad04d90c20226eb38290f909b81ed3fa88b"
+sha256 = "914425748261989073c17b2486185917005858889da7169d9cb8bb9e04fcf9d5"
 generator = "modules/hanzi-structure/tools/coverage_decomp.py"
-notes = "N4 覆盖扩量：cjk-decomp（Apache-2.0）树切分 + 码位键位 + IDS 结构校验；64 个非 full 字的完整拆字；源文件不随包分发；ADR-357/报告 283"
+notes = "N4 覆盖扩量：cjk-decomp（Apache-2.0）树切分 + 码位键位 + IDS 结构校验；83 个非 full 字的完整拆字；源文件不随包分发；ADR-357/报告 283"
 
 [[derived]]
 id = "pua-inventory"
@@ -451,9 +451,9 @@ id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
 source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D18", "D19", "D24"]
 license = "CC-BY-SA-4.0"
-sha256 = "e94e362073e381f32f186ecfa1550f6d54de8673f47c3e9f03d21a5a42c4b497"
+sha256 = "847c4be97783834b123cf13ec9b39df2cfaeddf9e6e8d2fe822bb44f44a9060e"
 generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out --pua-supplementary --manual-decomp"
-notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,583 / partial 245 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 补全（ADR-355）+ cjk-decomp 覆盖（ADR-357）"
+notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,602 / partial 244 / unknown 154；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 补全（ADR-355）+ cjk-decomp 覆盖（ADR-357）"
 
 # 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
 [[derived]]
