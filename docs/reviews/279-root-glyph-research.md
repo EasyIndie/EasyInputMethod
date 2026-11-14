@@ -28,3 +28,9 @@
 - 全文：`docs/research/root-glyph-sources.md`
 - ADR-309/310、报告 268 §2、`docs/结构库第二阶段需求.md`
 - 来源：Academia Sinica CDP、cjk-decomp、cjkvi-ids、Unihan、HNG、WindInput 论坛
+
+## 补充实测（2026-11-14）
+
+用 cjk-decomp（MIT，1.4 MB，临时目录）尝试「部件序列替代字形库」：D2 与递归展开等长对齐只有 8 个字，
+16 个 PUA 观测，按 ≥3 样本/≥90% 标准 **0 个可确认**。原因：cjk-decomp 分解粒度/部件变体与五笔字根序列不一致。
+结论不变：需 Academia Sinica 字根/部件身份或自绘；仅靠 IDS 部件序列不够。未入库、未改 B0/D2。

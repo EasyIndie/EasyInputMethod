@@ -62,3 +62,18 @@ B0 当前 1,000 字：`full` 735 / `partial` 257 / `unknown` 8；3,000 字里约
 - [Unicode Unihan](https://www.unicode.org/charts/unihan.html)
 - [HNG basic data](https://gitlab.nijl.ac.jp/HNG/hng-basic-data)
 - [WindInput 字根字体讨论（无明确许可）](https://forum.windinput.com/topic/401/)
+
+## 6. 本地对齐实测（cjk-decomp，未入库）
+
+2026-11-14 在 `/tmp` 用 cjk-decomp（MIT，1.4 MB）验证「部件序列替代字形库」是否够用：
+
+- D2 的 per-position 规则：`len(glyphs) == len(code)` 时末位是识别码槽，取前 `len(code)-1` 个组件；
+- 对每个字的 D2 组件序列与 cjk-decomp 的递归展开做等长对齐；
+- 结果：**只有 8 个字能等长对齐**，共 16 个 PUA 观测，按「≥3 样本、≥90% 主导」标准
+  **0 个可确认**。
+
+原因：cjk-decomp 的分解粒度与五笔字根序列不同（顶层 vs 递归、部件变体、包围/独体判定），
+且大多数 D2 序列长度与递归叶数不等。**结论：仅靠 cjk-decomp/IDS 的部件序列无法解掉 738 条；
+必须引入 Academia Sinica 的字根/部件字形身份（N1-a）或自绘字根。**
+
+本次只在 `/tmp` 操作，未下载数据入库、未改 B0/D2。
