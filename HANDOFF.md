@@ -4,9 +4,9 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `a196839`；`dev` = `09a424e`（PR #308 验收收敛已合入）。N1-d + 验收收敛的 `dev → main` **PR #307** 已更新、CI 全绿，待授权合并。
+- 分支：`main` = `c404284`（PR #307 N1-d + 验收收敛已合入）；`dev` 顶部为本轮 N1-d/N2/N3/N4（N2/N3/N4 待提交 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **64 文件 / 323 例 PASS**、`build.sh --strict` PASS、
+- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **65 文件 / 330 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -33,7 +33,7 @@
 | **B0 schema v3（报告 243）** | 占位组件 `null` + 键位推断；修掉 D3 字根按字符解析（空格混入组件、BOM/CRLF）缺陷。 |
 | **13% 结构不一致归因（报告 242）** | 66/512 是两套**分类口径**差异（独体字判杂合、拆法不同、包围），不是数据错误；处置=五笔识别码为权威、IDS 只作校验、差异归档。 |
 | **corpus 数据来源调研（`docs/research/corpus-data-sources.md`）** | 主选 `yi-bai/ids`（MIT）+ Unihan 交叉校验；**不采用** Make Me a Hanzi 的 Arphic 图形、Hanzi Writer、KanjiVG、字典抓取。 |
-| **B0 现状（schema v5，2026-11-14）** | 1,000 字：`full` **919** / `partial` **73** / `unknown` 8；含占位 55 条。运行时 3,000 字：`full` **2,454** / `partial` **326** / `unknown` 220；119,472 B（≈40 B/字）。N1-d 补充区映射见 ADR-353/报告 280。 |
+| **B0 现状（schema v6，2026-11-14）** | 1,000 字：`full` **927** / `partial` **65** / `unknown` 8；含占位 55 条。运行时 3,000 字：`full` **2,462** / `partial` **318** / `unknown` 220；119,352 B（≈40 B/字）。N1-d 补充区映射见 ADR-353/报告 280；N2/N3/N4 见 ADR-355/报告 281。 |
 
 ### 2.2 发布线（2026-11-05，1.0.0 → 1.1.0/build 38）
 
@@ -67,7 +67,7 @@
   初版清单误用 D3 BMP PUA，已更正为 D2 补充区；可定位 79 个 PUA，按 `(PUA, 键位)` 核验 66 条，
   状态 `verified 58 / partial 8 / unresolved 13`。B0 1,000 字 `full` 735→919；运行时 3,000 字 `full` 1,904→2,454；
   D3 不再作 `componentsSource`；未解决项仍以 `？:键` 占位，不猜。
-- **P1 · 数据与方案**：corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表（TBD-2）、客户端自动回读缺口。
+- **P1 · 数据与方案**：corpus M2-1 调研 ✅、N1-d ✅、N2/N3/N4 ✅（ADR-355）；余项是覆盖扩量（86.3%→98%）、13 个语境歧义 PUA、P1-5 拆字说明同步、多方案码表（TBD-2）。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
 
@@ -87,6 +87,7 @@
 | 8 | ~~宿主内完整引导真机目视~~：候选 `b8dd20f`（执行 `bda6f090…`）菜单入口/翻页/首次自动弹窗 PASS；标记恢复、探针窗口与临时文档已清理 | ✅ 2026-11-14（报告 276） |
 | 9 | ~~U3-1 整句模型~~：原型未达 +5pp，**已关闭**（ADR-352，报告 278）；不再投入 | ✅ 2026-11-14 关闭 |
 | 10 | ~~U3-4/N1-d~~：已更正数据源并接入 66 条 `(PUA, 键位)` 核验；运行时 `full` 1,904→2,454，`partial` 876→326；剩余 13 个 PUA 保持占位 | ✅ 2026-11-14（报告 280） |
+| 11 | ~~N2/N3/N4 数据地基~~：56 个成字字根真实笔顺、结构覆盖 2,766、8 个 D2 漏拆补齐；schema v6 | ✅ 2026-11-14（ADR-355，报告 281；待提交 PR） |
 
 剩余开发项：高频字拆解仅剩 13 个未解决 PUA（保持占位，后续才需要 Academia Sinica/自绘）；
 整句模型、多方案码表（依赖外部数据/许可）。符号 / emoji（U3-5）已真机 PASS。
@@ -131,6 +132,11 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-14 / Claude Code（air）：**N2/N3/N4 数据地基完成（ADR-355，报告 281）**。D18 新增 56 个 B0
+  成字字根的真实笔顺（Unihan kTotalStrokes 校验笔数）与 8 个 D2 漏拆字的完整拆字；B0 schema 升 v6，
+  新增 `strokesSource`/`strokesKind`/`structure`/`structureSource`/`structureConflict`。结果：1,000 字
+  `full` 919→927、`partial` 73→65；3,000 字 `full` 2,580→2,588；运行时 `full` 2,454→2,462；结构覆盖 2,766 条
+  （识别码 1,525 / IDS 1,241，冲突 146）。仍未达第二阶段 ≥98% 覆盖门槛。
 - 2026-11-14 / Claude Code（air）：**验收自闭环收敛**。按用户要求移除 Safari/Chrome/Xcode/VS Code/微信
   的自动化验收、探针、fixture 与 `client-matrix`；`acceptance-auto` 只保留热键/上屏 + 性能/网络，
   `cleanup-windows.sh` 只清 TextEdit/imetype，preflight 只查 TextEdit 多实例；正式验收 APPLICATIONS
