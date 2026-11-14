@@ -12,8 +12,7 @@ DOCS = ROOT / 'docs'
 
 # 冻结的过程/证据目录：允许内部链接失效，不要求被索引。
 FROZEN = ('archive', 'history', 'reviews', 'design', 'experiments', 'research')
-LIVE_CARD_ALLOWLIST = {'README.md', 'T-ITER-22.md', 'T-ITER-22-coverage.md', 'T-ITER-22-1.1.0-affected.md',
-                       'T-U3-5-symbol-emoji.md'}
+LIVE_CARD_ALLOWLIST = {'README.md', 'T-ITER-22.md', 'T-ITER-22-coverage.md', 'T-ITER-22-1.1.0-affected.md'}
 
 LINK_RE = re.compile(r'\[[^\]]*\]\(([^)#]+\.md)(?:#[^)]*)?\)')
 
