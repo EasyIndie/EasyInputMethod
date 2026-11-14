@@ -442,9 +442,18 @@ id = "wubi-root-inventory"
 path = "data/learning/wubi86-root-inventory.tsv"
 source_ids = ["D1", "D2", "D14"]
 license = "CC-BY-SA-4.0"
-sha256 = "e13254aa3b0e4c2829edf103b3acdaeb207a175f0cc33e30531ba6091e551074"
+sha256 = "ce091f95967c7a7c7486323550e8b9ad2abe2346fa4c1e678355bb4dbb797343"
 generator = "manual/standard v1（ADR-358/报告 284）"
-notes = "五笔86 统一拆字标准 v1 的标准字根清单：240 条 root/key（官方字根 + 标准变体）；full 必须逐组件键位匹配；98/新世纪需各自 profile，不能直接套用"
+notes = "五笔86 统一拆字标准 v1 的标准字根清单：241 条 root/key（官方字根 + 标准变体）；full 必须逐组件键位匹配；98/新世纪需各自 profile，不能直接套用"
+
+[[derived]]
+id = "wubi-d2-glyph-aliases"
+path = "modules/hanzi-structure/corpus/d2-glyph-aliases.tsv"
+source_ids = ["D2"]
+license = "CC-BY-SA-4.0"
+sha256 = "d9b33de7ac6c2087cbf172c07c47bcff35ed1457603cb507b97789cf84ef23cf"
+generator = "manual（ADR-359/报告 285）"
+notes = "D2 字形别名→标准字根：リ→刂(j)、ㄗ→卩(b)、ク→夕(q)；只做同形归一化，不新增字根/键位，归一化后仍须通过标准 v1 校验"
 
 [[derived]]
 id = "pua-inventory"
@@ -460,9 +469,9 @@ id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
 source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D18", "D19", "D24"]
 license = "CC-BY-SA-4.0"
-sha256 = "b41e61a9f6fbbd3a665c73e9155c1264623d2dc4564572d35c23267e04ab7659"
+sha256 = "148f41688186809525fa3c84f28d99427f3d1ca036f4744094b4de2bca21b258"
 generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out --pua-supplementary --manual-decomp"
-notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,578 / partial 268 / unknown 154；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 补全（ADR-355）+ cjk-decomp 覆盖（ADR-357）"
+notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 117.9 KB（40 B/字，预算 512 KiB）；full 2,614 / partial 232 / unknown 154；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 补全（ADR-355）+ cjk-decomp 覆盖（ADR-357）+ D2 字形别名（ADR-359）"
 
 # 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
 [[derived]]

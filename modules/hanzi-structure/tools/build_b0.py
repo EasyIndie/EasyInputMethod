@@ -34,7 +34,7 @@ RECOGNITION = {
 }
 # 单笔画可读字形（D2 的成字字根后续字形）
 # 注意：'〇' 在 D2 里是占位字形（不是笔画），不能算进首/次/末笔
-STROKES = {'一': '横', '丨': '竖', '丿': '撇', '丶': '捺', '乙': '折', '乛': '折', '亅': '竖'}
+STROKES = {'一': '横', '丨': '竖', '丿': '撇', 'ノ': '撇', '丶': '捺', '乙': '折', '乛': '折', '亅': '竖'}
 # 笔画键 ↔ 名称 ↔ 规范字形（成字字根取码用；这是"取码笔顺"，不是笔顺教学数据）
 STROKE_KEY = {'g': '横', 'h': '竖', 't': '撇', 'y': '捺', 'n': '折'}
 STROKE_GLYPH = {'g': '一', 'h': '丨', 't': '丿', 'y': '丶', 'n': '乙'}
@@ -130,6 +130,15 @@ def load_coverage_decomp(path: Path) -> dict[str, list[str]]:
     return load_manual_decomp(path)
 
 
+def load_glyph_aliases(path: Path) -> dict[str, str]:
+    """D2 字形别名 → 标准字根字形（ADR-359；同形归一化，不改键位）。"""
+    out: dict[str, str] = {}
+    for parts in read_rows(path, 3):
+        if len(parts) >= 2 and len(parts[0]) == 1 and len(parts[1]) == 1:
+            out[parts[0]] = parts[1]
+    return out
+
+
 def load_pua_context(path: Path) -> dict[tuple[str, str, str], str]:
     """PUA 语境表：字 + PUA + 键位 → 字根（同一 PUA 在不同字里指不同部件）。"""
     out: dict[tuple[str, str, str], str] = {}
@@ -193,7 +202,8 @@ def decode(glyphs: list[str], pua_map: dict[str, str],
            supp_map: dict[tuple[str, str], str] | None = None,
            d2_bmp_map: dict[tuple[str, str], str] | None = None,
            char: str | None = None,
-           context_map: dict[tuple[str, str, str], str] | None = None) -> tuple[list[str | None], int]:
+           context_map: dict[tuple[str, str, str], str] | None = None,
+           aliases: dict[str, str] | None = None) -> tuple[list[str | None], int]:
     """把一组字形解码成可读字形；解不出的私有区字形变成占位组件 None。
 
     - BMP 私有区（D3 字形）：查 ``pua_map``（D2/D3 对齐学出）。
@@ -231,7 +241,7 @@ def decode(glyphs: list[str], pua_map: dict[str, str],
                 out.append(None)  # 占位：不许把 PUA 写进产物
                 unknown += 1
         else:
-            out.append(g)
+            out.append(aliases.get(g, g) if aliases else g)
     return out, unknown
 
 
@@ -332,7 +342,8 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           d2_bmp_map: dict[tuple[str, str], str] | None = None,
           context_map: dict[tuple[str, str, str], str] | None = None,
           coverage_decomp: dict[str, list[str]] | None = None,
-          root_inventory: dict[str, set[str]] | None = None) -> dict:
+          root_inventory: dict[str, set[str]] | None = None,
+          aliases: dict[str, str] | None = None) -> dict:
     pua_map = pua_map or {}
     supp_map = supp_map or {}
     root_strokes = root_strokes or {}
@@ -427,7 +438,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             entry['componentsSource'] = 'D1'
             entry['quality'] = 'full'
             return finish(entry)
-        readable_strokes = ([g for g in decode(glyphs, pua_map)[0][1:]
+        readable_strokes = ([g for g in decode(glyphs, pua_map, aliases=aliases)[0][1:]
                              if isinstance(g, str) and g in STROKES]
                             if glyphs[0] == char else [])
         if readable_strokes:
@@ -461,7 +472,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         keys2 = None
     decoded2, unknown2 = (decode(glyphs, pua_map, drop_tail_pua=per_position,
                                  keys=keys2, supp_map=supp_map, d2_bmp_map=d2_bmp_map,
-                                 char=char, context_map=context_map)
+                                 char=char, context_map=context_map, aliases=aliases)
                           if glyphs else ([], 0))
 
     # 标准 v1：D2 与全码等长时，末位可能是「可读的识别码字形」（如 我 的末位 丶）。
@@ -631,6 +642,8 @@ def main() -> int:
                         help='D24 cjk-decomp 覆盖拆字（可选）')
     parser.add_argument('--root-inventory',
                         help='五笔86 标准字根清单（ADR-358，可选）')
+    parser.add_argument('--glyph-aliases',
+                        help='D2 字形别名→标准字根字形（ADR-359，可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--all-codes', action='store_true',
                         help='覆盖全码表全部字（27,823），忽略 --limit')
@@ -657,6 +670,8 @@ def main() -> int:
         paths['coverage_decomp'] = Path(args.coverage_decomp)
     if args.root_inventory:
         paths['root_inventory'] = Path(args.root_inventory)
+    if args.glyph_aliases:
+        paths['glyph_aliases'] = Path(args.glyph_aliases)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -683,6 +698,7 @@ def main() -> int:
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
     coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
     root_inventory = load_root_inventory(Path(args.root_inventory)) if args.root_inventory else {}
+    aliases = load_glyph_aliases(Path(args.glyph_aliases)) if args.glyph_aliases else {}
 
     if args.all_codes:
         ranked = sorted(((char, 0) for char in codes),
@@ -721,7 +737,7 @@ def main() -> int:
                              root_strokes=root_strokes, manual_decomp=manual_decomp,
                              d2_bmp_map=d2_bmp_map, context_map=context_map,
                              coverage_decomp=coverage_decomp,
-                             root_inventory=root_inventory))
+                             root_inventory=root_inventory, aliases=aliases))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
