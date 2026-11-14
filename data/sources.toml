@@ -391,27 +391,45 @@ id = "wubi-pua-supplementary"
 path = "modules/hanzi-structure/corpus/pua-supplementary.tsv"
 source_ids = ["D1", "D2", "D14"]
 license = "CC-BY-SA-4.0"
-sha256 = "e3cb2cb1a9eb6f2fbea61f8e1f38ec4c5ca01ae9eebe34f4dbaaa4220c1b810b"
+sha256 = "6d01786ad42e25734a448402f09ceefd323d82f7160fbb9903451ba9779f2e19"
 generator = "manual/N1-d（报告 280；D2 位序 + 标准86字根 + OFL 参考字形）"
-notes = "N1-d 补充区 PUA→五笔86 字根核验表；按 PUA+键位（同一 PUA 在不同码位可指不同部件）；只收可解释条目、不猜；参考字体（OFL 1.1 的 98WB-2）不随包分发、不进产物；ADR-353"
+notes = "N1-d 补充区 PUA→五笔86 字根核验表；66 条按键位 + 62 条 `*` 兜底（只对语境无歧义 PUA）；只收可解释条目、不猜；参考字体（OFL 1.1 的 98WB-2）不随包分发、不进产物；ADR-353/356"
+
+[[derived]]
+id = "wubi-pua-d2-bmp"
+path = "modules/hanzi-structure/corpus/pua-d2-bmp.tsv"
+source_ids = ["D1", "D2", "D14"]
+license = "CC-BY-SA-4.0"
+sha256 = "4457e7e9c0eaaa427e54daa521453352aadb826cd22af73f7592c9f32ef92393"
+generator = "manual/N1-d（报告 282；D2 BMP PUA 按 PUA+键位）"
+notes = "D2 里少数 BMP PUA（U+E816/E826）→ 可读字根；按 PUA+键位核验，不猜；ADR-356"
+
+[[derived]]
+id = "wubi-pua-context"
+path = "modules/hanzi-structure/corpus/pua-context.tsv"
+source_ids = ["D1", "D2", "D14"]
+license = "CC-BY-SA-4.0"
+sha256 = "3419271ee78bb60773014a79a79333000b8aeea78270d19437aa1756975538ea"
+generator = "manual/N1-d（报告 282；逐字语境）"
+notes = "同一 PUA 在不同字里指不同部件时的逐字核验（氏/卯、才、乚/匕、儿）；只收样本字+码位+标准字根表可解释条目；ADR-356"
 
 [[derived]]
 id = "pua-inventory"
 path = "modules/hanzi-structure/corpus/pua-inventory.tsv"
 source_ids = ["D1", "D2"]
 license = "CC-BY-SA-4.0"
-sha256 = "a26fe0cd5a80c523f3cf8f2b87aef6df0a6c788470014b381e9664237d0a30e7"
+sha256 = "3376b8fa28d10390f51390bc2d49be6e84b5b86e84293ae2ee5fc821a2848389"
 generator = "modules/hanzi-structure/tools/pua_inventory.py"
-notes = "N1-d 自绘清单：B0 3,000 字可定位补充区 PUA 79 个（verified 58 / partial 8 / unresolved 13）；unresolved 不填猜测 label；ADR-353"
+notes = "N1-d 自绘清单：B0 3,000 字可定位补充区 PUA 79 个（verified 64 / partial 2 / unresolved 13）；unresolved 不填猜测 label；ADR-353"
 
 [[derived]]
 id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
 source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D18", "D19"]
 license = "CC-BY-SA-4.0"
-sha256 = "8cc7d9905baae0f52dc0c87861870ca13a2f2cc904c33fa57872ab1fa1687a3a"
+sha256 = "8e7b4cc806a81271f24ba79d540de466e22b6a5ea81481895d0c0075411f5d61"
 generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out --pua-supplementary --manual-decomp"
-notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,462 / partial 318 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 完整拆字（ADR-355）"
+notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,519 / partial 261 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 完整拆字（ADR-355）"
 
 # 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
 [[derived]]

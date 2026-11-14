@@ -1,75 +1,75 @@
 # N1-d 自绘清单（ADR-353）：B0 3,000 字实际用到的 D2 补充区 PUA。
 # 源：data/sources/wubi-lex-86.txt（D2，MIT）；身份核验见 pua-supplementary.tsv。
 # pua	label	status	keys	occurrences	samples
-󰅎	𠂉	verified	r:39	39	氯掣窑朱缸殊缺迭
-󰁬	彐	verified	v:35	35	隶捷争铮妻健廉伊
-󰁺	龷	verified	a:35	35	爆碾碘洪昔错惜醋
-󰁸	亠	verified	y:25	25	掠敲凉哼墩镐高停
-󰅇	小	verified	i:25	25	藉刺未朱姝妹珠剌
-󰁐	乚	partial	n:22,a:1	23	饷饿拟望以鼠饼馋
-󰁷	隹	verified	y:21	21	准礁戳唯难瞧维惟
-󰀥	卜	verified	h:20	20	粘掉丐餐点胪罩站
-󰁚		unresolved	q:19,r:1	20	昏氏抵低柳聊昂卿
-󰁾	龰	verified	h:20	20	促起定趋陡越赵赶
-󰀞	一	partial	g:11,y:4,c:1,d:1,a:1,p:1	19	驴驿鲜骇骑鳞助或
-󰁃	コ	partial	n:17,h:1	18	鹿薛官渠所阜阜臣
-󰁻	マ	verified	c:18	18	诵矛序令豫领勇通
-󰀂	七	verified	a:17	17	芽既呀练降暨穿炼
-󰀯	刂	verified	j:17	17	芥乔费齐肃挤讲价
-󰁜	儿	partial	q:16,n:1	17	见沈现羌逸无兔瑰
-󰂃	乀	verified	y:17	17	丈尺养长迟极久仗
-󰁈	乛	verified	n:16	16	扭弓四甲虫贝丑由
-󰁦	丷	verified	u:16	16	於飞鼠抖冬科料终
-󰀐	月	verified	e:15	15	姐咀且粗租阻寡助
-󰀖		unresolved	e:15	15	限丧辱唇眼辰恨根
-󰁴	匕	verified	x:15	15	倾雌庇混昆毙毕比
-󰄃	乚	partial	n:13,g:1,i:1	15	赢继妄断泄世忙荒
-󰅊	业	verified	o:15	15	晋虚恶凿业普谱亚
-󰀣	具	verified	h:14	14	具置嗔滇镇俱惧颠
-󰁧		unresolved	u:12,g:2	14	补毒裤裕裙衫袍每
-󰀙	雨	verified	f:13	13	震灞需雪雷零露儒
-󰁶	丶	partial	y:12,g:1	13	祀礼社姆祠视祖祸
-󰁢	鱼	verified	q:12	12	鲜鳞渔鳍鲤鳄鳙鲁
-󰁤		unresolved	r:11	11	葱汤烫场扬忽吻肠
-󰁪	舟	verified	e:11	11	舱般舟盘艘舵艇航
-󰀊	马	verified	c:10	10	驴驿骇骂骑马驻骗
-󰅌	𠂇	verified	h:10	10	皮坡披婆彼被波皱
-󰀀	井	verified	f:8	8	赛骞蹇寒塞搴褰寨
-󰀛		unresolved	f:7,h:1	8	才于宇闭团财乎材
-󰀪		unresolved	q:5,i:3	8	脊挑率桃姚兆逃函
-󰀹	罒	verified	l:8	8	黔谏嘿柬黑默熏墨
-󰀼	冂	verified	m:8	8	周册册雕丹珊珊调
-󰀓	豕	partial	e:5,y:2	7	冢啄象缘遂毅篆
-󰀔	衣	verified	e:7	7	表浓农袁衣依哀
-󰀠	丰	verified	d:7	7	叛搓判槎羞差着
-󰅆	丰	verified	d:7	7	善洋痒羊膳样详
-󰅋	虍	verified	h:7	7	虚虎虑虏唬虞掳
-󰅏	小	verified	i:7	7	鳖肃憋萧瞥弊敝
-󰀜	革	verified	f:6	6	鞍鞋鞘革霸鞑
-󰀧	丷	verified	i:6	6	学誉敛觉搅剑
-󰀽	冂	partial	m:5,g:1	6	凹身射谢躺躲
-󰁖	亦	verified	o:6	6	赫赤迹亦赦奕
-󰁗	亦	verified	o:6	6	湾恋兼蛮弯变
-󰅍	斤	verified	r:6	6	滨岳浜兵宾丘
-󰀁	弋	verified	a:5	5	抵低贷底岱
-󰀟	聿	verified	f:5	5	健键肆奉建
-󰀩	水	verified	i:4	4	丞蒸承永
-󰀺	田	verified	l:4	4	增赠曾僧
-󰁓	乛	verified	n:4	4	专传砖转
-󰁭	彐	verified	v:4	4	氯剥绿录
-󰁯	癶	verified	w:4	4	祭察擦蔡
-󰅅		unresolved	n:3,x:1	4	我盛拽成
-󰀤	少	verified	i:3	3	涉频步
-󰁅	户	verified	n:3	3	声眉嵋
-󰁒		unresolved	n:2,h:1	3	武鹅心
+󰅎	𠂉	verified	r:39	39	掣珠朱氨遥卸失殊
+󰁬	彐	verified	v:35	35	铮键郡糖廉尹伊唐
+󰁺	龷	verified	a:35	35	潵粪烘澧碘殿散共
+󰁸	亠	verified	y:25	25	哀亮影谅蒿亨掠郭
+󰅇	小	verified	i:25	25	刺珠朱籍株枣味速
+󰁐	乚	verified	n:22,a:1	23	馔饿饼望饲以馋瓦
+󰁷	隹	verified	y:21	21	鹤谁携准瞧焦戳礁
+󰀥	卜	verified	h:20	20	粘罩掉店贴沾桌餐
+󰁚		unresolved	q:19,r:1	20	抑卿溜低氏聊抵仰
+󰁾	龰	verified	h:20	20	足蛋赴陡越题徒是
+󰀞	一	partial	g:11,y:4,d:1,c:1,p:1,a:1	19	或骇鳔鲤骗鳄鳙助
+󰁃	コ	partial	n:17,h:1	18	卧官柜巨鹿假追追
+󰁻	マ	verified	c:18	18	柔领诵勇通豫令茅
+󰀂	七	verified	a:17	17	降穿芽雅暨拣牙僭
+󰀯	刂	verified	j:17	17	界齐阶井进芥讲肃
+󰁜	儿	verified	q:16,n:1	17	现兔鬼免见逸芜庑
+󰂃	乀	verified	y:17	17	瓜吸久长级爬杖及
+󰁈	乛	verified	n:16	16	由四丑甲书敢弓尸
+󰁦	丷	verified	u:16	16	料於实冬买卖飞斗
+󰀐	月	verified	e:15	15	租敷且祖悬组咀缚
+󰀖		unresolved	e:15	15	良唇眼根辱退很辰
+󰁴	匕	verified	x:15	15	谐批毕顷倾屁毙皆
+󰄃	乚	verified	n:13,i:1,g:1	15	荒断栎继母亡泄芒
+󰅊	业	verified	o:15	15	严业湿哑恶凿亚晋
+󰀣	具	verified	h:14	14	镇直植填滇俱真具
+󰁧		unresolved	u:12,g:2	14	补裤裸袍每裕褐被
+󰀙	雨	verified	f:13	13	零霸灞需濡雷霜震
+󰁶	丶	verified	y:12,g:1	13	视神福祖祥祠祝社
+󰁢	鱼	verified	q:12	12	鱼鳔鲤鳄鳙鲢鳍鳃
+󰁤		unresolved	r:11	11	杨汤易吻忽肠葱扬
+󰁪	舟	verified	e:11	11	般航艘舰舵盘搬舱
+󰀊	马	verified	c:10	10	骂骇骗马骑驿驼驴
+󰅌	𠂇	verified	h:10	10	波彼皱破坡被颇婆
+󰀀	井	verified	f:8	8	褰骞塞寒赛蹇搴寨
+󰀛		unresolved	f:7,h:1	8	乎才于闭宇材团财
+󰀪		unresolved	q:5,i:3	8	函桃挑率逃脊姚兆
+󰀹	罒	verified	l:8	8	熏黑谏墨嘿默柬黔
+󰀼	冂	verified	m:8	8	册册丹调珊珊雕周
+󰀓	豕	verified	e:5,y:2	7	冢毅缘象啄遂篆
+󰀔	衣	verified	e:7	7	浓哀依袁衣农表
+󰀠	丰	verified	d:7	7	槎叛差判羞搓着
+󰅆	丰	verified	d:7	7	样善膳痒详洋羊
+󰅋	虍	verified	h:7	7	掳虎虑虏唬虞虚
+󰅏	小	verified	i:7	7	憋敝瞥鳖萧肃弊
+󰀜	革	verified	f:6	6	霸鞍鞋鞘革鞑
+󰀧	丷	verified	i:6	6	敛誉搅学剑觉
+󰀽	冂	verified	m:5,g:1	6	凹谢躲身躺射
+󰁖	亦	verified	o:6	6	赤亦赦迹奕赫
+󰁗	亦	verified	o:6	6	恋弯蛮变兼湾
+󰅍	斤	verified	r:6	6	宾兵丘浜岳滨
+󰀁	弋	verified	a:5	5	低抵底贷岱
+󰀟	聿	verified	f:5	5	键奉健建肆
+󰀩	水	verified	i:4	4	丞永蒸承
+󰀺	田	verified	l:4	4	赠增僧曾
+󰁓	乛	verified	n:4	4	转传砖专
+󰁭	彐	verified	v:4	4	剥绿录氯
+󰁯	癶	verified	w:4	4	蔡祭擦察
+󰅅		unresolved	n:3,x:1	4	我盛成拽
+󰀤	少	verified	i:3	3	步频涉
+󰁅	户	verified	n:3	3	声嵋眉
+󰁒		unresolved	n:2,h:1	3	鹅武心
 󰁡		unresolved	q:2,n:1	3	熬万鳌
-󰁥	丿	verified	t:3	3	狱犳获
+󰁥	丿	verified	t:3	3	犳获狱
 󰁲	纟	verified	x:3	3	乡丝丝
 󰅂	毌	verified	x:3	3	惯贯互
-󰀕	𠂢	verified	e:2	2	旅派
+󰀕	𠂢	verified	e:2	2	派旅
 󰀗	舁	verified	w:2	2	璺舆
-󰀾	骨	verified	m:2	2	滑骨
-󰁝	夕	verified	q:2	2	然燃
+󰀾	骨	verified	m:2	2	骨滑
+󰁝	夕	verified	q:2	2	燃然
 󰂞	镸	verified	d:2	2	套肆
 󰀌		unresolved	n:1	1	马
 󰀷	卌	verified	l:1	1	舞
