@@ -68,7 +68,9 @@ try:
               '不是预览写入）：' + '、'.join(path.name for path in changed), flush=True)
     if completed or process.returncode == 0:
         shutil.rmtree(work)
-        print('PASS interactive cleanup: owned process exited; real files unchanged', flush=True)
+        detail = ('preview used its private root; real files changed externally (see WARN)'
+                  if changed else 'real files unchanged')
+        print(f'PASS interactive cleanup: owned process exited; {detail}', flush=True)
     else:
         raise RuntimeError('interactive session timed out or failed')
 finally:
