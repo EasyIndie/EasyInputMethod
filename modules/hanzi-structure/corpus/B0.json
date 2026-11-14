@@ -6102,7 +6102,6 @@
   "ids": "⿸广⿱𭕄一",
   "idsStructure": "杂合",
   "positionMismatch": [
-   2,
    3
   ],
   "recognition": null,
@@ -6113,7 +6112,7 @@
   "quality": "partial",
   "notes": [
    "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 2 个（丷，键 i）、第 3 个（一，键 d）",
+   "标准字根/键位不符：第 3 个（一，键 d）",
    "字根已够四码，无识别码"
   ]
  },
@@ -8613,9 +8612,7 @@
   "structureConflict": false,
   "ids": "⿱𰃮子",
   "idsStructure": "上下",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "f",
    "stroke": "横",
@@ -8626,10 +8623,8 @@
   "short2": "ip",
   "pinyin": "xue",
   "frequency": 17482,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 1 个（丷，键 i）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "强",
@@ -11328,17 +11323,14 @@
   "structureConflict": false,
   "ids": "⿰佥刂",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "jian",
   "frequency": 12553,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 3 个（丷，键 i）",
    "字根已够四码，无识别码"
   ]
  },
@@ -16153,9 +16145,7 @@
   "structureConflict": false,
   "ids": "⿰𧾷兆",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
@@ -16163,7 +16153,6 @@
   "frequency": 8462,
   "quality": "partial",
   "notes": [
-   "标准字根/键位不符：第 3 个（儿，键 i）",
    "字根数 3 与码长 4 对不上，无法判定识别码"
   ]
  },
@@ -19779,9 +19768,7 @@
   "structureConflict": false,
   "ids": "⿱𰃮见",
   "idsStructure": "上下",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
@@ -19789,7 +19776,6 @@
   "frequency": 6705,
   "quality": "partial",
   "notes": [
-   "标准字根/键位不符：第 1 个（丷，键 i）",
    "字根数 3 与码长 4 对不上，无法判定识别码"
   ]
  },
@@ -20470,9 +20456,7 @@
   "structureConflict": true,
   "ids": "⿱兴𰀁",
   "idsStructure": "上下",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "h",
    "stroke": "竖",
@@ -20483,10 +20467,8 @@
   "short2": null,
   "pinyin": "ju",
   "frequency": 6506,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 1 个（丷，键 i）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "殿",
@@ -20708,8 +20690,7 @@
   "ids": "⿺⿻𬺰⿰冫⿱丿丶丶",
   "idsStructure": "杂合",
   "positionMismatch": [
-   1,
-   2
+   1
   ],
   "recognition": {
    "key": "i",
@@ -20723,7 +20704,7 @@
   "frequency": 6465,
   "quality": "partial",
   "notes": [
-   "标准字根/键位不符：第 1 个（一，键 f）、第 2 个（氺，键 i）"
+   "标准字根/键位不符：第 1 个（一，键 f）"
   ]
  },
  {
@@ -21328,8 +21309,7 @@
   "ids": "⿰求攵",
   "idsStructure": "左右",
   "positionMismatch": [
-   1,
-   2
+   1
   ],
   "recognition": null,
   "short1": null,
@@ -21338,7 +21318,7 @@
   "frequency": 6268,
   "quality": "partial",
   "notes": [
-   "标准字根/键位不符：第 1 个（一，键 f）、第 2 个（氺，键 i）",
+   "标准字根/键位不符：第 1 个（一，键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -23547,8 +23527,7 @@
   "ids": "⿰王求",
   "idsStructure": "左右",
   "positionMismatch": [
-   2,
-   3
+   2
   ],
   "recognition": null,
   "short1": null,
@@ -23557,7 +23536,7 @@
   "frequency": 5650,
   "quality": "partial",
   "notes": [
-   "标准字根/键位不符：第 2 个（一，键 f）、第 3 个（氺，键 i）",
+   "标准字根/键位不符：第 2 个（一，键 f）",
    "字根已够四码，无识别码"
   ]
  },
@@ -26773,9 +26752,7 @@
   "structureConflict": false,
   "ids": "⿺辶兆",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "v",
    "stroke": "折",
@@ -26786,10 +26763,8 @@
   "short2": null,
   "pinyin": "tao",
   "frequency": 4781,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 1 个（儿，键 i）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "唐",
@@ -29482,7 +29457,6 @@
   "ids": "⿱𭕄𬺢",
   "idsStructure": "上下",
   "positionMismatch": [
-   1,
    2,
    3
   ],
@@ -29494,7 +29468,7 @@
   "quality": "partial",
   "notes": [
    "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 1 个（丷，键 i）、第 2 个（一，键 w）、第 3 个（八，键 u）",
+   "标准字根/键位不符：第 2 个（一，键 w）、第 3 个（八，键 u）",
    "字根已够四码，无识别码"
   ]
  },
@@ -33481,9 +33455,7 @@
   "structureConflict": false,
   "ids": "⿰纟录",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "y",
    "stroke": "捺",
@@ -33494,10 +33466,8 @@
   "short2": "xv",
   "pinyin": "lv",
   "frequency": 3701,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 3 个（氺，键 i）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "痛",
@@ -37726,9 +37696,7 @@
   "structureConflict": false,
   "ids": "⿰木隶",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "y",
    "stroke": "捺",
@@ -37739,10 +37707,8 @@
   "short2": null,
   "pinyin": "di",
   "frequency": 3115,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 3 个（氺，键 i）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "哼",

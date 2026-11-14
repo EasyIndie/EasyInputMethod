@@ -14,7 +14,7 @@
 
 落地产物：
 
-- `data/learning/wubi86-root-inventory.tsv`：237 条 root/key（官方字根 + 标准变体）；
+- `data/learning/wubi86-root-inventory.tsv`：240 条 root/key（官方字根 + 标准变体）；
 - `build_b0.py --root-inventory`；
 - B0 schema **v7**：`scheme` / `standardVersion`；`positionMismatch` 成为标准诊断，`full` 必须为空；
 - `validate_b0.py` 强制上述契约。
@@ -23,14 +23,14 @@
 
 | 指标 | 标准前 | 标准后 |
 |---|---:|---:|
-| B0 1,000 字 `full` | 965 | **910** |
-| B0 1,000 字 `partial` | 31 | **86** |
+| B0 1,000 字 `full` | 965 | **916** |
+| B0 1,000 字 `partial` | 31 | **80** |
 | B0 1,000 字 `unknown` | 4 | 4 |
-| B0 3,000 字 `full` | 2,759 | **2,554** |
-| B0 3,000 字 `partial` | 87 | **292** |
+| B0 3,000 字 `full` | 2,759 | **2,578** |
+| B0 3,000 字 `partial` | 87 | **268** |
 | B0 3,000 字 `unknown` | 154 | 154 |
-| 运行时 `full` | 2,602 | **2,554** |
-| `standardMismatchEntries` | — | 267（3,000）/ 81（1,000） |
+| 运行时 `full` | 2,602 | **2,578** |
+| `standardMismatchEntries` | — | 240（3,000）/ 73（1,000） |
 
 减少的 `full` 不是数据丢失，而是把「D2 组件不在标准字根清单、末位识别码槽/键位不能自洽」的条目
 如实降为 `partial`；它们不再以完整解释展示。
