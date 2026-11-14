@@ -28,6 +28,13 @@ contents = app / 'Contents'
 (contents / 'Resources').mkdir()
 shutil.copy2(SOURCE, contents / 'MacOS/LampyrisIsolated')
 (contents / 'Resources/data').symlink_to(ROOT / 'data/generated', target_is_directory=True)
+# 预览窗口按正式包的方式从 Contents/Resources 读数据（符号、emoji、学习提示、码表、三级简码）。
+# 只建 data/ 软链会让这些面板报「缺少 xxx.tsv」；这里把预览包 Resources 里的数据文件全部软链过来。
+preview_resources = SOURCE.parents[1] / 'Resources'
+for item in sorted(preview_resources.iterdir()):
+    if item.name == 'data' or item.is_dir():
+        continue
+    (contents / 'Resources' / item.name).symlink_to(item)
 (contents / 'Info.plist').write_bytes(plistlib.dumps({
     'CFBundleIdentifier': bundle, 'CFBundleExecutable': 'LampyrisIsolated',
     'CFBundleName': 'LampyrisIsolated', 'CFBundlePackageType': 'APPL',

@@ -3,7 +3,7 @@ import AppKit
 /// 练习的「拆解 + 识别码 + 码/简码」整体展示（与学习区同一套视觉语言）。
 ///
 /// 上排：字根格（字形上、大写键位下）；右侧：识别码两行（说明 + 大写字母）；
-/// 下排：本题目要求的那一项排最前，随后是完整码与一/二级简码。未揭晓答案时只画字根格，不泄题。
+/// 下排：本题目要求的那一项排最前，随后是完整码与一/二/三级简码。未揭晓答案时只画字根格，不泄题。
 final class PracticeExplanationView: NSView {
     static let cellWidth: CGFloat = 46
     static let height: CGFloat = 46
@@ -13,6 +13,7 @@ final class PracticeExplanationView: NSView {
     private var code: String?
     private var short1: String?
     private var short2: String?
+    private var short3: String?
     private var target: String?
     private var placeholder: String?
     private var revealsAnswer = true
@@ -25,6 +26,7 @@ final class PracticeExplanationView: NSView {
         code = nil
         short1 = nil
         short2 = nil
+        short3 = nil
         target = nil
         revealsAnswer = false
         placeholder = text
@@ -34,13 +36,15 @@ final class PracticeExplanationView: NSView {
 
     func show(char: String, roots: [(glyph: String, key: String)],
               recognition: (letter: String, stroke: String, structure: String)?,
-              code: String, short1: String?, short2: String?, target: String? = nil,
+              code: String, short1: String?, short2: String?, short3: String? = nil,
+              target: String? = nil,
               revealsAnswer: Bool) {
         self.roots = Array(roots.prefix(6))
         self.recognition = recognition
         self.code = code
         self.short1 = short1
         self.short2 = short2
+        self.short3 = short3
         self.target = target
         self.revealsAnswer = revealsAnswer
         self.placeholder = nil
@@ -62,6 +66,10 @@ final class PracticeExplanationView: NSView {
         }
         if let short2 {
             let text = "二级 " + short2.uppercased()
+            if !parts.contains(text) { parts.append(text) }
+        }
+        if let short3 {
+            let text = "三级 " + short3.uppercased()
             if !parts.contains(text) { parts.append(text) }
         }
         return parts

@@ -148,6 +148,8 @@ copy_data "${GENERATED}/wubi86-extended.tsv" "wubi86-extended.tsv"
 copy_data "${GENERATED}/pinyin-extended.tsv" "pinyin-extended.tsv"
 copy_data "${GENERATED}/emoji.tsv" "emoji.tsv"
 copy_data "${ROOT}/data/symbols.tsv" "symbols.tsv"
+# 三级简码练习（ADR-345 表，ADR-361 进入练习）：只用于题型题库，不参与候选顺序。
+copy_data "${ROOT}/data/sources/wubi86-level3-codes.tsv" "wubi86-level3-codes.tsv"
 copy_data "${GENERATED}/B0-runtime.tsv" "B0-runtime.tsv"
 copy_data "${GENERATED}/variant-s2t.tsv" "variant-s2t.tsv"
 if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then

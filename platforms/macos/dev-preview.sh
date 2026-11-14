@@ -33,9 +33,12 @@ PLIST
 cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Lampyris.icns"
 # 学习区结构化提示（ADR-311）：预览也需要，便于看真实渲染
 [ -f "${DATA}/B0-runtime.tsv" ] && cp "${DATA}/B0-runtime.tsv" "${APP}/Contents/Resources/B0-runtime.tsv"
+# 练习的词组题库直接读 Resources 下的码表。
+[ -f "${DATA}/wubi86-core.tsv" ] && cp "${DATA}/wubi86-core.tsv" "${APP}/Contents/Resources/wubi86-core.tsv"
 # 符号面板与正式包同源读取 Resources 下的 TSV，预览也要能打开。
 [ -f "${ROOT}/data/symbols.tsv" ] && cp "${ROOT}/data/symbols.tsv" "${APP}/Contents/Resources/symbols.tsv"
 [ -f "${DATA}/emoji.tsv" ] && cp "${DATA}/emoji.tsv" "${APP}/Contents/Resources/emoji.tsv"
+[ -f "${ROOT}/data/sources/wubi86-level3-codes.tsv" ] && cp "${ROOT}/data/sources/wubi86-level3-codes.tsv" "${APP}/Contents/Resources/wubi86-level3-codes.tsv"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"

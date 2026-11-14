@@ -2,15 +2,14 @@ import Foundation
 
 /// 离线练习（ADR-313）：只从 `full` 条目出题，本地判分，进度写本地有界 TSV。
 ///
-/// 题型：字根 / 一级简码 / 二级简码 / 完整码 / 词组 / 识别码，按入门到熟练的顺序排（ADR-332/334）。
-/// 字根题取自键位字根表（`KeyRootLayout`），其余复用 `LearningHints`（ADR-311）。
-///
-/// 三级简码需要"哪些字真有三级简码"的码表（引擎侧至今没收录，ADR-314 关闭），此处不提供，
-/// 否则会把"前 3 码"当成三级简码教错。
+/// 题型：字根 / 一级简码 / 二级简码 / 三级简码 / 完整码 / 词组 / 识别码，按入门到熟练的顺序排（ADR-332/334/361）。
+/// 字根题取自键位字根表（`KeyRootLayout`），其余复用 `LearningHints`（ADR-311）；
+/// 三级简码用随包的 D17-ter 权威表（ADR-345），只对表里明确收录的字出题，不把"前 3 码"当简码。
 enum PracticeKind: String, CaseIterable {
     case roots = "roots"
     case code1 = "code1"
     case code2 = "code2"
+    case code3 = "code3"
     case code = "code"
     case phrase = "phrase"
     case recognition = "recognition"
@@ -20,6 +19,7 @@ enum PracticeKind: String, CaseIterable {
         case .roots: return "字根"
         case .code1: return "一级简码"
         case .code2: return "二级简码"
+        case .code3: return "三级简码"
         case .code: return "完整码"
         case .phrase: return "词组"
         case .recognition: return "识别码"
@@ -35,6 +35,7 @@ enum PracticeKind: String, CaseIterable {
         case .roots: return question.code
         case .code1: return question.short1
         case .code2: return question.short2
+        case .code3: return question.short3
         case .code, .phrase: return question.code
         case .recognition: return nil
         }
@@ -46,6 +47,7 @@ enum PracticeKind: String, CaseIterable {
         case .roots: return "这个字根在哪个键上？（1 位）"
         case .code1: return "打出它的一级简码（1 位）"
         case .code2: return "打出它的二级简码（2 位）"
+        case .code3: return "打出它的三级简码（3 位）"
         case .code: return "打出它的完整五笔码（\(question.code.count) 位）"
         case .phrase: return "打出这个词的词组码（4 位）"
         case .recognition: return "按上面的字根与键位，判断末笔与结构"
@@ -62,6 +64,8 @@ struct PracticeQuestion {
     let short1: String?
     let short2: String?
 
+    /// 三级简码（D17-ter 表）；表里没有该字时为 nil，出题会跳过。
+    var short3: String? { Practice.level3Codes[char] }
 }
 
 enum Practice {
@@ -121,6 +125,26 @@ enum Practice {
         return String(Array(row)[index])
     }
 
+    /// 三级简码表（D17-ter）：字 → 三码。首次用到时读一次；缺失时返回空表。
+    static let level3Codes: [String: String] = {
+        let name = "wubi86-level3-codes"
+        let bundle = Bundle.main
+        let candidates = [bundle.url(forResource: name, withExtension: "tsv"),
+                          bundle.resourceURL?.appendingPathComponent("\(name).tsv"),
+                          bundle.bundleURL.appendingPathComponent("Resources/\(name).tsv"),
+                          bundle.bundleURL.deletingLastPathComponent()
+                              .appendingPathComponent("Resources/\(name).tsv")]
+        guard let url = candidates.compactMap({ $0 }).first(where: { FileManager.default.fileExists(atPath: $0.path) }),
+              let text = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
+        var out: [String: String] = [:]
+        for line in text.split(separator: "\n") where !line.hasPrefix("#") {
+            let fields = line.split(separator: "\t")
+            guard fields.count >= 2, fields[0].count == 3, fields[1].count == 1 else { continue }
+            out[String(fields[1])] = String(fields[0])
+        }
+        return out
+    }()
+
     /// 出题范围：`full` 且带完整码与字根（可判分）。
     static func bank(kind: PracticeKind, limit: Int = 3000) -> [PracticeQuestion] {
         if kind == .roots { return rootBank(layout: KeyRootLayout.load()) }
@@ -132,6 +156,7 @@ enum Practice {
             if kind == .recognition, hint.recognition == nil { continue }
             if kind == .code1, hint.short1?.count != 1 { continue }
             if kind == .code2, hint.short2?.count != 2 { continue }
+            if kind == .code3, level3Codes[char] == nil { continue }
             out.append(PracticeQuestion(kind: kind, char: char, code: code,
                                         roots: hint.roots, recognition: hint.recognition,
                                         short1: hint.short1, short2: hint.short2))

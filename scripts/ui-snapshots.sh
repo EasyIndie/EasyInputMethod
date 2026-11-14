@@ -37,6 +37,8 @@ PANEL_SOURCES=(
     platforms/macos/Sources/UserDictionary.swift
     platforms/macos/Sources/Lookup.swift
     platforms/macos/Sources/StateHUD.swift
+    platforms/macos/Sources/Onboarding.swift
+    platforms/macos/Sources/OnboardingWindow.swift
 )
 
 cargo build --release -p ime-ffi >/dev/null

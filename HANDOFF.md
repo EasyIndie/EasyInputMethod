@@ -136,6 +136,9 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**人工验收三项修复（ADR-361，报告 289）**。指南窗口 380→260 并改两栏
+  （右侧步骤图示）+ 新增离屏快照；隔离预览补齐 `symbols/emoji/B0-runtime/wubi86-core/level3` 资源，符号面板可搜可插；
+  练习新增「三级简码」题型（只用 D17-ter 权威表，3 格作答）。离线回归 68 文件/337 例、`make verify` 全绿。
 - 2026-11-15 / Claude Code（air）：**输入法菜单固定顺序 + 符号快捷键（ADR-360，报告 288）**。菜单动作区固定为
   「学习区 → 练习 → 符号与表情 → 使用指南 → 检查更新 → 设置 → 关于」，正式/预览共用 `InputMenuAction.sections`；
   新增学习区/练习/符号入口；`hotkey.open_symbols` 默认 `alt+s` → `alt+c`（C = Character；保持单修饰键队形，已有显式配置不覆盖）。
