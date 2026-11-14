@@ -148,6 +148,7 @@ for kind in PracticeKind.allCases {
         case .roots: require(question.code.count == 1, "字根题答案是 1 位键位")
         case .code1: require(question.short1?.count == 1, "一级简码题必须有一级简码")
         case .code2: require(question.short2?.count == 2, "二级简码题必须有二级简码")
+        case .code3: require(question.short3?.count == 3, "三级简码题必须有三级简码")
         case .code: require(!question.code.isEmpty, "完整码题必须有码")
         case .phrase: require(question.code.count == 4 && (2...4).contains(question.char.count), "词组题是 2–4 字、4 位码")
         case .recognition: require(question.recognition != nil, "识别码题必须有识别码")
@@ -160,6 +161,10 @@ if let sample = Practice.bank(kind: .code1, limit: 200).first, let short = sampl
 }
 if let sample = Practice.bank(kind: .code2, limit: 200).first, let short = sample.short2 {
     require(Practice.judgeCode(short, question: sample), "二级简码应判对")
+}
+if let sample = Practice.bank(kind: .code3, limit: 200).first, let short = sample.short3 {
+    require(short.count == 3, "三级简码应为 3 位")
+    require(Practice.judgeCode(short, question: sample), "三级简码应判对")
 }
 
 // 作答框：4 格上限、z 只点亮不入答案、退格/Esc 清空

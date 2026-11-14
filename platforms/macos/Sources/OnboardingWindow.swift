@@ -33,7 +33,7 @@ enum OnboardingGuide {
             OnboardingStep(
                 symbol: "graduationcap",
                 title: "练习与跟打",
-                body: "\(hotkey("hotkey.open_practice")) 打开练习：字根 → 一级简码 → 二级简码 → 完整码 → 词组 → 识别码，\n"
+                body: "\(hotkey("hotkey.open_practice")) 打开练习：字根 → 一级简码 → 二级简码 → 三级简码 → 完整码 → 词组 → 识别码，\n"
                     + "按掌握度逐级解锁；练习窗口里也可以进入「文章跟打」。\n"
                     + "进度只写本机，可一键重置。"),
             OnboardingStep(
@@ -79,6 +79,8 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
     private var steps: [OnboardingStep] = []
     private var index = 0
     private let icon = NSImageView()
+    private let illustration = NSImageView()
+    private let illustrationBox = NSView()
     private let titleLabel = NSTextField(labelWithString: "")
     private let bodyLabel = NSTextField(wrappingLabelWithString: "")
     private let stepLabel = NSTextField(labelWithString: "")
@@ -107,10 +109,28 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
         window?.orderOut(nil)
     }
 
+    /// 离屏渲染指南（报告 289）：不显示窗口、不激活 App，供 UI 快照与布局回归使用。
+    func renderForTesting(appearance: NSAppearance, step: Int = 0) -> NSBitmapImageRep? {
+        prepare()
+        steps = OnboardingGuide.steps()
+        guard !steps.isEmpty, let panel = window, let view = panel.contentView else { return nil }
+        index = min(max(0, step), steps.count - 1)
+        update()
+        panel.appearance = appearance
+        var image: NSBitmapImageRep?
+        appearance.performAsCurrentDrawingAppearance {
+            view.layoutSubtreeIfNeeded()
+            guard let bitmap = view.bitmapImageRepForCachingDisplay(in: view.bounds) else { return }
+            view.cacheDisplay(in: view.bounds, to: bitmap)
+            image = ImeAppearance.opaqueSnapshot(bitmap, background: .windowBackgroundColor)
+        }
+        return image
+    }
+
     private func prepare() {
         guard window == nil else { return }
         let panel = OnboardingPanel(
-            contentRect: NSRect(x: 0, y: 0, width: 560, height: 380),
+            contentRect: NSRect(x: 0, y: 0, width: 560, height: 260),
             styleMask: [.titled, .closable], backing: .buffered, defer: false)
         panel.title = "萤火虫使用指南"
         panel.isReleasedWhenClosed = false
@@ -144,11 +164,34 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
         bottom.orientation = .horizontal
         bottom.alignment = .centerY
         bottom.spacing = 10
-        let content = NSStackView(views: [icon, titleLabel, bodyLabel, bottom])
+
+        // 左侧文字 + 右侧大图标：把原来窗口下半部分的空白变成有效信息区（报告 289）。
+        let header = NSStackView(views: [icon, titleLabel, bodyLabel])
+        header.orientation = .vertical
+        header.alignment = .leading
+        header.spacing = 12
+        header.translatesAutoresizingMaskIntoConstraints = false
+
+        illustrationBox.wantsLayer = true
+        illustrationBox.layer?.cornerRadius = 18
+        illustrationBox.layer?.backgroundColor = NSColor.controlAccentColor.withAlphaComponent(0.10).cgColor
+        illustrationBox.translatesAutoresizingMaskIntoConstraints = false
+        illustration.imageScaling = .scaleProportionallyUpOrDown
+        illustration.contentTintColor = .controlAccentColor
+        illustration.translatesAutoresizingMaskIntoConstraints = false
+        illustrationBox.addSubview(illustration)
+
+        let top = NSStackView(views: [header, illustrationBox])
+        top.orientation = .horizontal
+        top.alignment = .top
+        top.spacing = 24
+        top.translatesAutoresizingMaskIntoConstraints = false
+
+        let content = NSStackView(views: [top, NSView(), bottom])
         content.orientation = .vertical
         content.alignment = .leading
-        content.spacing = 14
-        content.edgeInsets = NSEdgeInsets(top: 22, left: 24, bottom: 18, right: 24)
+        content.spacing = 16
+        content.edgeInsets = NSEdgeInsets(top: 24, left: 24, bottom: 18, right: 24)
         content.translatesAutoresizingMaskIntoConstraints = false
         panel.contentView?.addSubview(content)
         guard let host = panel.contentView else { return }
@@ -157,8 +200,16 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
             content.leadingAnchor.constraint(equalTo: host.leadingAnchor),
             content.trailingAnchor.constraint(equalTo: host.trailingAnchor),
             content.bottomAnchor.constraint(equalTo: host.bottomAnchor),
-            bodyLabel.widthAnchor.constraint(equalTo: content.widthAnchor, constant: -48),
+            top.widthAnchor.constraint(equalTo: content.widthAnchor, constant: -48),
+            header.widthAnchor.constraint(equalTo: top.widthAnchor, constant: -156),
+            bodyLabel.widthAnchor.constraint(equalTo: header.widthAnchor),
             bottom.widthAnchor.constraint(equalTo: content.widthAnchor, constant: -48),
+            illustrationBox.widthAnchor.constraint(equalToConstant: 132),
+            illustrationBox.heightAnchor.constraint(equalToConstant: 132),
+            illustration.centerXAnchor.constraint(equalTo: illustrationBox.centerXAnchor),
+            illustration.centerYAnchor.constraint(equalTo: illustrationBox.centerYAnchor),
+            illustration.widthAnchor.constraint(equalToConstant: 64),
+            illustration.heightAnchor.constraint(equalToConstant: 64),
         ])
         panel.center()
         window = panel
@@ -168,6 +219,9 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
         guard steps.indices.contains(index) else { return }
         let step = steps[index]
         icon.image = NSImage(systemSymbolName: step.symbol, accessibilityDescription: step.title)
+        illustration.image = NSImage(systemSymbolName: step.symbol, accessibilityDescription: step.title)?
+            .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 56, weight: .regular))
+        illustrationBox.setAccessibilityLabel("步骤图示：\(step.title)")
         titleLabel.stringValue = step.title
         bodyLabel.stringValue = step.body
         stepLabel.stringValue = "\(index + 1) / \(steps.count)"

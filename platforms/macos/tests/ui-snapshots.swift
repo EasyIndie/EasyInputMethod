@@ -68,6 +68,15 @@ for (theme, appearance) in themes {
     }.joined(separator: " "))
 }
 
+print("使用指南")
+for (theme, appearance) in themes {
+    for step in [0, 3] {
+        save(OnboardingWindow.shared.renderForTesting(appearance: NSAppearance(named: appearance)!, step: step),
+             "guide-\(theme)-step\(step + 1)")
+    }
+    print("  ↳ guide/\(theme)：欢迎页与练习页（两栏布局，右侧步骤图示）")
+}
+
 print("诊断面板")
 InfoWindow.preparePresentationForTesting(title: "诊断信息", text: AboutUI.text(), allowsCopy: true,
     links: [InfoLink(title: "报告问题", url: FeedbackUI.issuesURL),

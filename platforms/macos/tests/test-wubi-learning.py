@@ -31,6 +31,9 @@ class WubiLearningTests(unittest.TestCase):
                             resources / "key-roots-wubi86.tsv")
             # 词组题库（ADR-334）读随包码表
             shutil.copyfile(ROOT / "data/generated/wubi86-core.tsv", resources / "wubi86-core.tsv")
+            # 三级简码题库（ADR-345/361）读随包权威表
+            shutil.copyfile(ROOT / "data/sources/wubi86-level3-codes.tsv",
+                            resources / "wubi86-level3-codes.tsv")
             environment = {**os.environ, "CARGO_NET_OFFLINE": "true",
                            "CLANG_MODULE_CACHE_PATH": (os.environ.get('LAMPYRIS_SWIFT_MODULE_CACHE') or str(temporary / 'module-cache'))}
             commands = [

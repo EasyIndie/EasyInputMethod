@@ -14,6 +14,9 @@ final class PreviewInput: NSTextView {
     var persistModeChanges = false
     var onOpenSettings: (() -> Void)?
     var onOpenAbout: (() -> Void)?
+    var onOpenUpdate: (() -> Void)?
+    var onOpenPractice: (() -> Void)?
+    var onOpenSymbols: (() -> Void)?
 
     init(session: ImeSession) {
         self.session = session
@@ -50,6 +53,15 @@ final class PreviewInput: NSTextView {
         }
         if session.matches("hotkey.open_about", event), let onOpenAbout {
             cancelComposition(); onOpenAbout(); return true
+        }
+        if session.matches("hotkey.open_update", event), let onOpenUpdate {
+            cancelComposition(); onOpenUpdate(); return true
+        }
+        if session.matches("hotkey.open_practice", event), let onOpenPractice {
+            cancelComposition(); onOpenPractice(); return true
+        }
+        if session.matches("hotkey.open_symbols", event), let onOpenSymbols {
+            cancelComposition(); onOpenSymbols(); return true
         }
         let shortcut = session.shortcut(event, persistMode: persistModeChanges)
         if shortcut.consumed {
@@ -225,6 +237,15 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         input.persistModeChanges = isolated
         input.onOpenSettings = { [weak self] in self?.openSettings() }
         input.onOpenAbout = { AboutUI.show() }
+        input.onOpenUpdate = { UpdateEntry.open() }
+        input.onOpenPractice = { PracticeWindow.shared.show() }
+        let openSymbols: () -> Void = { [weak input] in
+            guard let input else { return }
+            SymbolPickerWindow.shared.show { [weak input] text in
+                input?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+            }
+        }
+        input.onOpenSymbols = openSymbols
         self.input = input
         let scroll = NSScrollView()
         scroll.hasVerticalScroller = true
@@ -269,12 +290,7 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             }
             menu.onPractice = { PracticeWindow.shared.show() }
             menu.onGuide = { OnboardingWindow.shared.show() }
-            menu.onSymbols = { [weak self] in
-                guard let input = self?.input else { return }
-                SymbolPickerWindow.shared.show { [weak input] text in
-                    input?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
-                }
-            }
+            menu.onSymbols = openSymbols
             previewMenu = menu
             input.stateChanged = { [weak self] in self?.syncMenuControls() }
             let menuButton = NSButton(title: "输入法菜单", target: self, action: #selector(openInputMenu(_:)))
@@ -1094,6 +1110,36 @@ if CommandLine.arguments.contains("--smoke-test") {
     else {
         fputs("诊断信息缺少版本/系统/架构。\n", stderr); exit(1)
     }
+    // ADR-360：预览输入区必须与正式宿主一样消费打开类快捷键，不能把 ⌥C/⌥K/⌥G 当文本插入。
+    let shortcutProbe = PreviewInput(session: session)
+    var opened: [String] = []
+    shortcutProbe.onOpenUpdate = { opened.append("update") }
+    shortcutProbe.onOpenPractice = { opened.append("practice") }
+    shortcutProbe.onOpenSymbols = { opened.append("symbols") }
+    for (key, character) in [(UInt16(8), "c"), (UInt16(40), "k"), (UInt16(5), "g")] {
+        shortcutProbe.keyDown(with: navigationEvent(key, .option, characters: character))
+    }
+    guard opened == ["symbols", "practice", "update"] else {
+        fputs("预览未消费打开类快捷键：\(opened)\n", stderr); exit(1)
+    }
+    // 状态类快捷键必须真正改变会话（预览没有 HUD，用户只能从行为看到结果）。
+    // 前面的快捷键校验把 toggle_mode 改成了 none；恢复默认并测试持久化路径。
+    guard ImeConfig.setString("hotkey.toggle_mode", "alt+m") else { exit(1) }
+    shortcutProbe.persistModeChanges = true
+    session.setMode("mixed")
+    let mEvent = navigationEvent(46, .option, characters: "m")
+    shortcutProbe.keyDown(with: mEvent)
+    guard session.mode == "wubi" else { fputs("⌥M 未切换模式：\(session.mode)\n", stderr); exit(1) }
+    let widthBefore = session.isFullWidth
+    shortcutProbe.keyDown(with: navigationEvent(3, .option, characters: "f"))
+    guard session.isFullWidth != widthBefore else { fputs("⌥F 未切换全半角\n", stderr); exit(1) }
+    let shortcutPunctuationBefore = ImeConfig.string("input.punctuation")
+    shortcutProbe.keyDown(with: navigationEvent(35, .option, characters: "p"))
+    guard ImeConfig.string("input.punctuation") != shortcutPunctuationBefore else { fputs("⌥P 未切换标点\n", stderr); exit(1) }
+    let shortcutVariantBefore = session.isTraditional
+    shortcutProbe.keyDown(with: navigationEvent(17, .option, characters: "t"))
+    guard session.isTraditional != shortcutVariantBefore else { fputs("⌥T 未切换简繁\n", stderr); exit(1) }
+    session.setMode("mixed")
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("视觉证据：\(qaDirectory.path)")
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
