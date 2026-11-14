@@ -23,6 +23,7 @@ func describe(_ element: AXUIElement, depth: Int, maxDepth: Int) -> [[String: St
         "desc": text(element, kAXDescriptionAttribute),
         "help": text(element, kAXHelpAttribute),
         "selected": text(element, kAXSelectedAttribute),
+        "enabled": text(element, kAXEnabledAttribute),
     ]
     var rows = [row.filter { !$0.value.isEmpty }]
     guard depth < maxDepth else { return rows }

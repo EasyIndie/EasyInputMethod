@@ -78,6 +78,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 题库规模缓存：只有一级简码题库可能小于 30，其余题库均 >30（ADR-350）。
     private var bankSizeCache: [PracticeKind: Int] = [:]
+    /// 离屏测试在 `ime_config_init` 之前渲染时使用；宿主运行期为 nil。
+    private var stagedUnlockOverride: Bool?
 
     private func bankSizeFor(_ kind: PracticeKind) -> Int {
         if let cached = bankSizeCache[kind] { return cached }
@@ -103,9 +105,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                 practiced: row.practiced, attempts: row.attempts, correct: row.correct)
             sizes[kind] = bankSizeFor(kind)
         }
-        return Practice.unlockedKinds(
-            stats: stats, bankSizes: sizes,
-            staged: ImeConfig.bool("practice.staged_unlock"))
+        // 测试可显式覆盖；宿主里的显式 false 才关闭，未初始化时按默认开启。
+        let staged = stagedUnlockOverride
+            ?? ImeConfig.string("practice.staged_unlock").map { $0 == "true" } ?? true
+        return Practice.unlockedKinds(stats: stats, bankSizes: sizes, staged: staged)
     }
 
     /// 禁用未解锁题型；若当前题型被锁（例如刚重置），回到第一个可用题型。
@@ -598,10 +601,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 离屏渲染（测试用）：建一个不显示的窗口承载视图（AppKit 控件需要 window 才能绘制）。
     func renderForTesting(kind: PracticeKind, progressURL: URL, light: Bool) -> NSBitmapImageRep? {
+        stagedUnlockOverride = true
         practiceProgress = PracticeProgress(url: progressURL)
         session = PracticeSession(kind: kind, progress: practiceProgress!)
         let view = buildContent()
         kindControl.selectedSegment = PracticeKind.allCases.firstIndex(of: kind) ?? 0
+        applyStagedUnlock()
         applyKindVisibility()
         if let question = current {
             questionLabel.stringValue = question.char
@@ -638,6 +643,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     func contentViewForTesting(kind: PracticeKind, revealed: Bool = false) -> NSView? {
+        stagedUnlockOverride = true
         let view = buildContent()
         kindControl.selectedSegment = PracticeKind.allCases.firstIndex(of: kind) ?? 0
         applyStagedUnlock()

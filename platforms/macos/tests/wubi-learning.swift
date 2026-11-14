@@ -281,6 +281,25 @@ for kind in [PracticeKind.roots, .code, .phrase, .recognition] {
     let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)
     require(problems.isEmpty, "练习窗口版式问题：\(problems.joined(separator: "; "))")
 }
+// ADR-350：新进度只解锁字根；字根 30 字全对后解锁一级简码。
+let stagedDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("lampyris-staged-unlock")
+try? FileManager.default.createDirectory(at: stagedDir, withIntermediateDirectories: true)
+let freshURL = stagedDir.appendingPathComponent("fresh.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: freshURL, light: true)
+require(PracticeWindow.shared.unlockedKindsForTesting() == [.roots], "fresh progress unlocks roots only")
+require(PracticeWindow.shared.kindEnabledForTesting(.roots), "roots enabled")
+require(!PracticeWindow.shared.kindEnabledForTesting(.code1), "code1 locked")
+let seededURL = stagedDir.appendingPathComponent("seeded.tsv")
+let seeded = PracticeProgress(url: seededURL)
+let stagedChars = Array("一二三四五六七八九十人口手大小上下左右中日月水火木金土山石田禾").map(String.init)
+require(stagedChars.count >= 30, "staged fixture has 30 chars")
+for (index, char) in stagedChars.prefix(30).enumerated() {
+    seeded.record(char: char, kind: .roots, correct: true, now: index)
+}
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: seededURL, light: true)
+require(PracticeWindow.shared.unlockedKindsForTesting() == [.roots, .code1], "roots mastery unlocks code1")
+require(PracticeWindow.shared.kindEnabledForTesting(.code1), "code1 enabled after mastery")
+require(!PracticeWindow.shared.kindEnabledForTesting(.code2), "code2 still locked")
 let tmpProgress = PracticeProgress(url: URL(fileURLWithPath: NSTemporaryDirectory() + "lampyris-practice-test" + "/practice.tsv"))
 for index in 0..<3200 { tmpProgress.record(char: "字", kind: .code, correct: index % 2 == 0, now: index) }
 require(tmpProgress.rows.count <= PracticeProgress.maxRows, "进度行数有界")
