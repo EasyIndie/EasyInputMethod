@@ -310,6 +310,21 @@ added_at = "2026-11-14"
 notes = "ADR-355/报告 281：56 个 B0 成字字根 + 5 类基本笔画的真实书写笔顺（笔画用 一丨丿丶乙），另含 8 个 D2 漏拆字的完整拆字 data/learning/wubi86-complete-decomp.tsv（SHA 391052b5…）。笔数用 Unicode Unihan kTotalStrokes 校验（Unicode License V3，构建期临时下载、不入库）；不复制 Arphic/KanjiVG 字形数据；项目自编、可人工复核"
 
 [[source]]
+id = "D24"
+name = "CJK Decomposition Data（cjk-decomp，完整拆字）"
+path = "data/sources/cjk-decomp.txt"
+url = "https://github.com/amake/cjk-decomp/blob/c29b391fd6267e7a3541387e03a3dd60b1cd34d1/cjk-decomp.txt"
+upstream = "amake/cjk-decomp"
+license = "Apache-2.0"
+risk = "low"
+ship = false
+sha256 = "5accf5661dd509d4bc5966afaeb7f763231a39f23b00acda89d6c040740b8ab6"
+used_for = ["wubi86-cjkdecomp-coverage"]
+fetch_script = "data/sources/fetch-cjk-decomp.sh"
+added_at = "2026-11-14"
+notes = "ADR-357/报告 283：约 75,000 字的图形分解，固定提交 c29b391；仓库 README 提供 6 种许可、LICENSE 文件为 Apache-2.0（GPL-3 兼容）。仅构建期读取，源文件不提交；用它做树切分 + 码位键位/IDS 结构校验，生成 D18/D24 覆盖拆字，不直接复制其数据进发布产物"
+
+[[source]]
 id = "D19"
 name = "汉字 IDS 结构分解（yi-bai/ids）"
 path = "data/sources/ids_lv1.txt"
@@ -414,6 +429,15 @@ generator = "manual/N1-d（报告 282；逐字语境）"
 notes = "同一 PUA 在不同字里指不同部件时的逐字核验（氏/卯、才、乚/匕、儿）；只收样本字+码位+标准字根表可解释条目；ADR-356"
 
 [[derived]]
+id = "wubi-cjkdecomp-coverage"
+path = "data/learning/wubi86-cjkdecomp-coverage.tsv"
+source_ids = ["D1", "D19", "D24"]
+license = "CC-BY-SA-4.0"
+sha256 = "22c439581feb938bf836340b05d70ad04d90c20226eb38290f909b81ed3fa88b"
+generator = "modules/hanzi-structure/tools/coverage_decomp.py"
+notes = "N4 覆盖扩量：cjk-decomp（Apache-2.0）树切分 + 码位键位 + IDS 结构校验；64 个非 full 字的完整拆字；源文件不随包分发；ADR-357/报告 283"
+
+[[derived]]
 id = "pua-inventory"
 path = "modules/hanzi-structure/corpus/pua-inventory.tsv"
 source_ids = ["D1", "D2"]
@@ -425,11 +449,11 @@ notes = "N1-d 自绘清单：B0 3,000 字可定位补充区 PUA 79 个（verifie
 [[derived]]
 id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
-source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D18", "D19"]
+source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D18", "D19", "D24"]
 license = "CC-BY-SA-4.0"
-sha256 = "8e7b4cc806a81271f24ba79d540de466e22b6a5ea81481895d0c0075411f5d61"
+sha256 = "e94e362073e381f32f186ecfa1550f6d54de8673f47c3e9f03d21a5a42c4b497"
 generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out --pua-supplementary --manual-decomp"
-notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,519 / partial 261 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 完整拆字（ADR-355）"
+notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 116.6 KB（40 B/字，预算 512 KiB）；full 2,583 / partial 245 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）+ N4 补全（ADR-355）+ cjk-decomp 覆盖（ADR-357）"
 
 # 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
 [[derived]]

@@ -42,7 +42,7 @@ class B0CorpusTests(unittest.TestCase):
         self.assertEqual(full.returncode, 0, full.stderr)
         self.assertIn('识别码 g', full.stdout)
         # U3-4/N1-d 后「是」已 full；用一个仍有占位字根的字验证降级契约。
-        partial = subprocess.run(query + ['武'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        partial = subprocess.run(query + ['被'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(partial.returncode, 0, partial.stderr)
         self.assertIn('拆解待核验', partial.stdout)
 
@@ -133,7 +133,7 @@ class B0CorpusTests(unittest.TestCase):
         entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
         sources = {e.get('componentsSource') for e in entries}
         self.assertNotIn('D3', sources)
-        self.assertTrue(sources <= {None, 'D1', 'D2', 'D18'}, sources)
+        self.assertTrue(sources <= {None, 'D1', 'D2', 'D18', 'D24'}, sources)
 
     def test_ids_structure_is_consistent(self):
         """v5：ids 必须是 IDS 序列，idsStructure 必须与根算子一致（报告 245）。"""

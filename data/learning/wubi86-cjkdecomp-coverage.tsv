@@ -1,0 +1,67 @@
+# cjk-decomp（Apache-2.0）为 B0 非 full 字生成的完整拆字，项目自编编排 CC-BY-SA-4.0。
+# 每个叶子的五笔键位必须与码位一致；n-1 个叶子时识别码结构必须与 IDS 一致；歧义不猜。
+# char	components	code	keys	source	evidence
+紝	糹 丿 士	xtfg	xtf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+驻	马 丶 王	cygg	cyg	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+云	二 厶	fcu	fc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+武	一 弋 止	gahd	gah	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+冷	冫 人 丶 厶	uwyc	uwyc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+骑	马 大 丁 口	cdsk	cdsk	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+屽	山 干	mfh	mf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+簡	竹 門 日	tujf	tuj	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+岭	山 人 丶 厶	mwyc	mwyc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+鏈	金 車 辶	qlpy	qlp	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+屼	山 一 儿	mgqn	mgq	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+鈥	金 火	qoy	qo	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+岃	山 刀 丶	mvyu	mvy	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+零	雨 人 丶 厶	fwyc	fwyc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+傚	亻 六 乂 夂	wuqt	wuqt	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+仪	亻 丶 乂	wyqy	wyq	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+垜	土 乃 木	fesy	fes	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+諲	言 覀 土	ysfg	ysf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+垱	土 ⺌ 彐	fivg	fiv	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+綘	糹 夂 三 丨	xtdh	xtdh	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+驴	马 丶 尸	cynt	cyn	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+驰	马 也	cbn	cb	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+細	糹 田	xlg	xl	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+鐗	金 門 月	queg	que	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+伐	亻 戈	wat	wa	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+傗	亻 亠 幺 田	wyxl	wyxl	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+兘	二 儿 厶 口	fqck	fqck	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+闃	門 目 犬	uhdi	uhd	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+笂	竹 九 丶	tvyu	tvy	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+闄	門 覀 女	usvd	usv	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+驼	马 宀 匕	cpxn	cpx	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+岄	山 月	meg	me	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+鍘	金 貝 刂	qmjh	qmj	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+閮	門 丿 士 廴	utfp	utfp	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+驱	马 匚 乂	caqy	caq	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+梍	木 白 七	sran	sra	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+戝	貝 戈	mat	ma	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+夋	厶 八 夂	cwtu	cwt	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+锜	钅 大 丁 口	qdsk	qdsk	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+庢	广 一 厶 土	ygcf	ygcf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+啗	口 ⺈ 臼	kqvg	kqv	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+嶄	山 車 斤	mlrj	mlr	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+戜	戈 口 王	akgd	akg	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+拰	扌 亻 丿 士	rwtf	rwtf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+滀	氵 亠 幺 田	iyxl	iyxl	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+铃	钅 人 丶 厶	qwyc	qwyc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+劧	手 力	rln	rl	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+熶	火 日 耳 又	ojbc	ojbc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+紶	糹 土 厶	xfcy	xfc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+呰	止 匕 口	hxkf	hxk	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+鍓	金 口 耳	qkbg	qkb	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+婂	女 白 巾	vrmh	vrm	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+拎	扌 人 丶 厶	rwyc	rwyc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+夌	土 八 夂	fwtu	fwt	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 上下
+閫	門 囗 木	ulsi	uls	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+洺	氵 夕 口	iqkg	iqk	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+忓	忄 干	nfh	nf	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+珰	王 ⺌ 彐	givg	giv	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+驮	马 大	cdy	cd	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+楁	木 宀 夂 口	sptk	sptk	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+戠	立 戈 日	uajd	uaj	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 杂合
+鎷	金 馬	qcy	qc	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配 + IDS 结构 左右
+斿	方 丿 子 一	ytbg	ytbg	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
+煶	火 日 一 止	ojgh	ojgh	D24	cjk-decomp 树切分（Apache-2.0）+ 码位键位匹配
