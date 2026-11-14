@@ -54,14 +54,34 @@
 - 预览补齐 `onOpenUpdate` / `onOpenPractice` / `onOpenSymbols`，与菜单回调共用同一个符号插入闭包；
 - 预览冒烟新增断言：合成 `⌥C`/`⌥K`/`⌥G` 事件必须分别触发对应回调，不能被当作文本插入。
 
-## 5. 验证
+## 5. 预览里 ⌥M/⌥F/⌥P/⌥T 仍不生效
+
+**现象**：补齐预览的打开类快捷键后，`⌥C/⌥K/⌥G` 正常，但 `⌥M/⌥F/⌥P/⌥T` 仍无反应。
+
+**定位**：
+
+- 预览冒烟（合成事件 + 私有配置）里四个状态键**全部通过**：`⌥M` 切模式、`⌥F` 全半角、
+  `⌥P` 标点、`⌥T` 简繁；说明预览代码路径与持久化写入都正常。
+- 当前系统输入源是 `cn.jokerhub.inputmethod.Lampyris.default`（已装输入法）。IMK 会在系统层
+  先把这些 ⌥ 快捷键交给已装宿主；预览窗口收不到。会话期间真实 `config.toml` 被改成
+  `punctuation=english / full_width=full / chinese_variant=traditional`，正是这四个键的效果。
+- `⌥C` 之所以正常，是因为已装 1.3.0 的符号键还是 `⌥S`，不认识 `⌥C`，事件才落到预览。
+
+**处理**：
+
+- `make macos-dev` 启动时查询当前输入源；若是萤火虫，打印醒目提示：
+  「测快捷键前先按 ⌃Space 切到 ABC，关闭窗口后再切回萤火虫」；
+- 预览冒烟新增四个状态键的断言（模式/全半角/标点/简繁各切换一次），防止回归；
+- 这是输入法系统的预期行为，不是预览或产品的 bug；文档与验收说明写清。
+
+## 6. 验证
 
 - `test-wubi-learning`：新增 `.code3` 答案 3 位与判分断言，题库非空；
 - `test-symbol-picker`、`test-ui-snapshots`、三处菜单探针 PASS；
 - `make macos-ui-snapshots`：新增指南快照（亮/暗 × 第 1/4 步）；
-- `make macos-offline-tests` 68 文件 / 337 例 PASS；`make verify` PASS。
+- 预览冒烟新增状态快捷键断言；`make macos-offline-tests` 68 文件 / 337 例 PASS；`make verify` PASS。
 
-## 6. 关联
+## 7. 关联
 
 ADR-361、ADR-345/314、报告 288、`OnboardingWindow.swift`、`Practice.swift`、
 `PracticeWindow.swift`、`PracticeExplanationView.swift`、`Preview/main.swift`、

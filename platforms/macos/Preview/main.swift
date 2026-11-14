@@ -1122,6 +1122,24 @@ if CommandLine.arguments.contains("--smoke-test") {
     guard opened == ["symbols", "practice", "update"] else {
         fputs("预览未消费打开类快捷键：\(opened)\n", stderr); exit(1)
     }
+    // 状态类快捷键必须真正改变会话（预览没有 HUD，用户只能从行为看到结果）。
+    // 前面的快捷键校验把 toggle_mode 改成了 none；恢复默认并测试持久化路径。
+    guard ImeConfig.setString("hotkey.toggle_mode", "alt+m") else { exit(1) }
+    shortcutProbe.persistModeChanges = true
+    session.setMode("mixed")
+    let mEvent = navigationEvent(46, .option, characters: "m")
+    shortcutProbe.keyDown(with: mEvent)
+    guard session.mode == "wubi" else { fputs("⌥M 未切换模式：\(session.mode)\n", stderr); exit(1) }
+    let widthBefore = session.isFullWidth
+    shortcutProbe.keyDown(with: navigationEvent(3, .option, characters: "f"))
+    guard session.isFullWidth != widthBefore else { fputs("⌥F 未切换全半角\n", stderr); exit(1) }
+    let shortcutPunctuationBefore = ImeConfig.string("input.punctuation")
+    shortcutProbe.keyDown(with: navigationEvent(35, .option, characters: "p"))
+    guard ImeConfig.string("input.punctuation") != shortcutPunctuationBefore else { fputs("⌥P 未切换标点\n", stderr); exit(1) }
+    let shortcutVariantBefore = session.isTraditional
+    shortcutProbe.keyDown(with: navigationEvent(17, .option, characters: "t"))
+    guard session.isTraditional != shortcutVariantBefore else { fputs("⌥T 未切换简繁\n", stderr); exit(1) }
+    session.setMode("mixed")
     try? FileManager.default.removeItem(at: smokeDirectory)
     print("视觉证据：\(qaDirectory.path)")
     print("✅ 预览冒烟通过：文本渲染、候选、五笔/拼音、数字选字/回车字母、退格/Esc、清空。")
