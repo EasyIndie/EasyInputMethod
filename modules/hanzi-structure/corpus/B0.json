@@ -11345,27 +11345,40 @@
  {
   "char": "紝",
   "code": "xtfg",
-  "class": null,
-  "componentsSource": null,
-  "components": [],
-  "keys": [],
+  "class": "compound",
+  "componentsSource": "D24",
+  "components": [
+   "糹",
+   "丿",
+   "士"
+  ],
+  "keys": [
+   "x",
+   "t",
+   "f"
+  ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
-  "structure": null,
-  "structureSource": null,
+  "structure": "左右",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰糸壬",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "ren",
   "frequency": 11651,
-  "quality": "unknown",
+  "quality": "full",
   "notes": [
-   "缺拆字数据"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -18275,40 +18288,39 @@
   "char": "驻",
   "code": "cygg",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
    "马",
-   null,
    "丶",
    "王"
   ],
   "keys": [
    "c",
    "y",
-   "g",
    "g"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰马主",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "cy",
   "pinyin": "zhu",
   "frequency": 6848,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 y）",
-   "字根已够四码，无识别码"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -19662,37 +19674,37 @@
   "char": "云",
   "code": "fcu",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
    "二",
-   "厶",
-   null
+   "厶"
   ],
   "keys": [
    "f",
-   "c",
-   "u"
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱二厶",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "yun",
   "frequency": 6353,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 u）",
-   "字根已够四码，无识别码"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -23602,42 +23614,39 @@
   "char": "武",
   "code": "gahd",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
-   "二",
-   "止",
-   null,
-   "丶"
+   "一",
+   "弋",
+   "止"
   ],
   "keys": [
    "g",
    "a",
-   "h",
-   "d"
+   "h"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "杂合",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿹⿽弋一止",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   1,
-   2,
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "d",
+   "stroke": "横",
+   "structure": "杂合",
+   "because": "3 个字根不足四码：末笔横 + 结构杂合 ⇒ 识别码 d"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "wu",
   "frequency": 5241,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 3 个（键 h）",
-   "字根已够四码，无识别码"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -23860,16 +23869,18 @@
   "char": "冷",
   "code": "uwyc",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
    "冫",
    "人",
-   "丶"
+   "丶",
+   "厶"
   ],
   "keys": [
    "u",
    "w",
-   "y"
+   "y",
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
@@ -23885,9 +23896,10 @@
   "short2": null,
   "pinyin": "leng",
   "frequency": 5144,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 3 与码长 4 对不上，无法判定识别码"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -26799,11 +26811,11 @@
   "char": "骑",
   "code": "cdsk",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
    "马",
-   null,
    "大",
+   "丁",
    "口"
   ],
   "keys": [
@@ -26820,18 +26832,15 @@
   "structureConflict": false,
   "ids": "⿰马奇",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "qi",
   "frequency": 4437,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "占位字根：第 2 个（键 d）",
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）",
    "字根已够四码，无识别码"
   ]
  },
@@ -28701,27 +28710,38 @@
  {
   "char": "屽",
   "code": "mfh",
-  "class": null,
-  "componentsSource": null,
-  "components": [],
-  "keys": [],
+  "class": "compound",
+  "componentsSource": "D24",
+  "components": [
+   "山",
+   "干"
+  ],
+  "keys": [
+   "m",
+   "f"
+  ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
-  "structure": null,
-  "structureSource": null,
+  "structure": "左右",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰山干",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "h",
+   "stroke": "竖",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔竖 + 结构左右 ⇒ 识别码 h"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "han",
   "frequency": 4132,
-  "quality": "unknown",
+  "quality": "full",
   "notes": [
-   "缺拆字数据"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -34662,27 +34682,40 @@
  {
   "char": "簡",
   "code": "tujf",
-  "class": null,
-  "componentsSource": null,
-  "components": [],
-  "keys": [],
+  "class": "compound",
+  "componentsSource": "D24",
+  "components": [
+   "竹",
+   "門",
+   "日"
+  ],
+  "keys": [
+   "t",
+   "u",
+   "j"
+  ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
-  "structure": null,
-  "structureSource": null,
+  "structure": "上下",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱𥫗間",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "f",
+   "stroke": "横",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔横 + 结构上下 ⇒ 识别码 f"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "jian",
   "frequency": 3221,
-  "quality": "unknown",
+  "quality": "full",
   "notes": [
-   "缺拆字数据"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）"
   ]
  },
  {
@@ -34797,16 +34830,18 @@
   "char": "岭",
   "code": "mwyc",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D24",
   "components": [
    "山",
    "人",
-   "丶"
+   "丶",
+   "厶"
   ],
   "keys": [
    "m",
    "w",
-   "y"
+   "y",
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
@@ -34822,9 +34857,10 @@
   "short2": null,
   "pinyin": "ling",
   "frequency": 3212,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 3 与码长 4 对不上，无法判定识别码"
+   "使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）",
+   "字根已够四码，无识别码"
   ]
  },
  {

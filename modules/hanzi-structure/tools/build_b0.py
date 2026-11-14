@@ -116,6 +116,11 @@ def load_root_strokes(path: Path) -> dict[str, list[str]]:
     return out
 
 
+def load_coverage_decomp(path: Path) -> dict[str, list[str]]:
+    """D24：cjk-decomp 校验后的覆盖拆字（字 -> 可读组件）。"""
+    return load_manual_decomp(path)
+
+
 def load_pua_context(path: Path) -> dict[tuple[str, str, str], str]:
     """PUA 语境表：字 + PUA + 键位 → 字根（同一 PUA 在不同字里指不同部件）。"""
     out: dict[tuple[str, str, str], str] = {}
@@ -316,13 +321,15 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           root_strokes: dict[str, list[str]] | None = None,
           manual_decomp: dict[str, list[str]] | None = None,
           d2_bmp_map: dict[tuple[str, str], str] | None = None,
-          context_map: dict[tuple[str, str, str], str] | None = None) -> dict:
+          context_map: dict[tuple[str, str, str], str] | None = None,
+          coverage_decomp: dict[str, list[str]] | None = None) -> dict:
     pua_map = pua_map or {}
     supp_map = supp_map or {}
     root_strokes = root_strokes or {}
     manual_decomp = manual_decomp or {}
     d2_bmp_map = d2_bmp_map or {}
     context_map = context_map or {}
+    coverage_decomp = coverage_decomp or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
     ids = ids or {}
@@ -423,8 +430,12 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         return finish(entry)
 
     # 3) 合体字
+    coverage = coverage_decomp.get(char)
     manual = manual_decomp.get(char)
-    if manual:
+    if coverage:
+        glyphs = list(coverage)
+        notes.append('使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）')
+    elif manual:
         glyphs = list(manual)
         notes.append('使用 D18 完整拆字（补 D2 漏拆）')
     per_position = bool(glyphs) and len(code) >= 3 and len(glyphs) == len(code)
@@ -442,7 +453,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
     # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
     # 解不出的字形保留占位，宁可 partial，也不把未许可来源写进产物。
-    source, readable, unknown_glyphs = ('D18' if manual else 'D2'), decoded2, unknown2
+    source, readable, unknown_glyphs = ('D24' if coverage else ('D18' if manual else 'D2')), decoded2, unknown2
 
     if readable and len(code) >= 2 and len(readable) > len(code):
         dropped = len(readable) - len(code)
@@ -565,6 +576,8 @@ def main() -> int:
                         help='D2 BMP PUA→字根核验表（按 PUA+键位，可选）')
     parser.add_argument('--pua-context',
                         help='PUA 语境表（字+PUA+键位，可选）')
+    parser.add_argument('--coverage-decomp',
+                        help='D24 cjk-decomp 覆盖拆字（可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
@@ -585,6 +598,8 @@ def main() -> int:
         paths['pua_d2_bmp'] = Path(args.pua_d2_bmp)
     if args.pua_context:
         paths['pua_context'] = Path(args.pua_context)
+    if args.coverage_decomp:
+        paths['coverage_decomp'] = Path(args.coverage_decomp)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -609,6 +624,7 @@ def main() -> int:
     manual_decomp = load_manual_decomp(Path(args.manual_decomp)) if args.manual_decomp else {}
     d2_bmp_map = load_pua_d2_bmp(Path(args.pua_d2_bmp)) if args.pua_d2_bmp else {}
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
+    coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -622,8 +638,8 @@ def main() -> int:
                             'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
                             'quality': 'unknown', 'notes': ['缺全码']})
             continue
-        glyphs = radicals.get(char)
-        if not glyphs:
+        glyphs = radicals.get(char) or []
+        if not glyphs and char not in coverage_decomp and char not in manual_decomp:
             entries.append({'char': char, 'code': code, 'class': None, 'componentsSource': None,
                             'components': [], 'keys': [], 'strokes': None,
                             'strokesSource': None, 'strokesKind': None,
@@ -639,7 +655,8 @@ def main() -> int:
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
                              ids=ids, supp_map=supp_map,
                              root_strokes=root_strokes, manual_decomp=manual_decomp,
-                             d2_bmp_map=d2_bmp_map, context_map=context_map))
+                             d2_bmp_map=d2_bmp_map, context_map=context_map,
+                             coverage_decomp=coverage_decomp))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
