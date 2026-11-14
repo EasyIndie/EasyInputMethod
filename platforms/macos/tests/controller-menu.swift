@@ -141,6 +141,27 @@ require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 27
 require(Practice.nextHint(kind: .roots, practiced: 29, attempts: 29, correct: 29) == nil, "too few characters")
 require(Practice.nextHint(kind: .roots, practiced: 30, attempts: 30, correct: 26) == nil, "below 90%")
 require(Practice.nextHint(kind: .recognition, practiced: 99, attempts: 100, correct: 100) == nil, "last stage")
+// ADR-350：分阶段解锁——题库不足 30 时按题库数；已有进度不回锁；关闭开关全部解锁。
+require(Practice.requiredPractice(bankSize: 25) == 25, "small bank required")
+require(Practice.requiredPractice(bankSize: 100) == 30, "large bank capped")
+let freshStats: [PracticeKind: Practice.KindStats] = [:]
+let freshUnlocked = Practice.unlockedKinds(stats: freshStats, bankSizes: [:], staged: true)
+require(freshUnlocked == Set([PracticeKind.roots]), "fresh unlocks roots only")
+let banks: [PracticeKind: Int] = [.roots: 200, .code1: 25, .code2: 600, .code: 3000,
+                                  .phrase: 800, .recognition: 3000]
+let mastered: [PracticeKind: Practice.KindStats] = [
+    .roots: Practice.KindStats(practiced: 30, attempts: 30, correct: 28),
+    .code1: Practice.KindStats(practiced: 25, attempts: 25, correct: 24),
+]
+let staged = Practice.unlockedKinds(stats: mastered, bankSizes: banks, staged: true)
+require(staged == Set([PracticeKind.roots, .code1, .code2]), "staged unlock chain")
+let grandfathered: [PracticeKind: Practice.KindStats] = [
+    .code: Practice.KindStats(practiced: 2, attempts: 2, correct: 1),
+]
+let kept = Practice.unlockedKinds(stats: grandfathered, bankSizes: banks, staged: true)
+require(kept.contains(.code) && !kept.contains(.phrase), "existing progress not locked")
+require(Practice.unlockedKinds(stats: freshStats, bankSizes: [:], staged: false)
+    == Set(PracticeKind.allCases), "staged off unlocks all")
 
 // ADR-341：五笔连续单字造词——2–4 字、2 秒窗口、3 次阈值、标点打断、词码推导。
 var phrase = AutoPhraseRule()

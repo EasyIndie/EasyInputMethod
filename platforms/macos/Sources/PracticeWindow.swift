@@ -76,6 +76,61 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private var pendingStructure: String?
     private var lastAnswer: String?
 
+    /// 题库规模缓存：只有一级简码题库可能小于 30，其余题库均 >30（ADR-350）。
+    private var bankSizeCache: [PracticeKind: Int] = [:]
+
+    private func bankSizeFor(_ kind: PracticeKind) -> Int {
+        if let cached = bankSizeCache[kind] { return cached }
+        let size: Int
+        if kind == .code1 {
+            size = Practice.bank(kind: .code1).count
+        } else if kind == self.kind {
+            size = session.bank.count
+        } else {
+            size = 30
+        }
+        let normalized = max(1, size)
+        bankSizeCache[kind] = normalized
+        return normalized
+    }
+
+    private func unlockedKinds() -> Set<PracticeKind> {
+        var stats: [PracticeKind: Practice.KindStats] = [:]
+        var sizes: [PracticeKind: Int] = [:]
+        for kind in PracticeKind.allCases {
+            let row = progress.stats(kind: kind)
+            stats[kind] = Practice.KindStats(
+                practiced: row.practiced, attempts: row.attempts, correct: row.correct)
+            sizes[kind] = bankSizeFor(kind)
+        }
+        return Practice.unlockedKinds(
+            stats: stats, bankSizes: sizes,
+            staged: ImeConfig.bool("practice.staged_unlock"))
+    }
+
+    /// 禁用未解锁题型；若当前题型被锁（例如刚重置），回到第一个可用题型。
+    private func applyStagedUnlock() {
+        let unlocked = unlockedKinds()
+        for (index, candidate) in PracticeKind.allCases.enumerated() {
+            let enabled = unlocked.contains(candidate)
+            kindControl.setEnabled(enabled, forSegment: index)
+            kindControl.setToolTip(enabled ? nil : lockedHint(for: candidate), forSegment: index)
+        }
+        if !unlocked.contains(kind), let index = PracticeKind.allCases.firstIndex(where: unlocked.contains) {
+            kindControl.selectedSegment = index
+        }
+    }
+
+    private func lockedHint(for kind: PracticeKind) -> String {
+        let kinds = PracticeKind.allCases
+        guard let index = kinds.firstIndex(of: kind), index > 0 else { return "" }
+        let previous = kinds[index - 1]
+        let stats = progress.stats(kind: previous)
+        let required = Practice.requiredPractice(bankSize: bankSizeFor(previous))
+        let rate = stats.attempts > 0 ? stats.correct * 100 / stats.attempts : 0
+        return "先完成「\(previous.title)」：\(required) 字、正确率 ≥90%（当前 \(stats.practiced) 字、\(rate)%）"
+    }
+
     private var progress: PracticeProgress {
         if let practiceProgress { return practiceProgress }
         let created = PracticeProgress(url: PracticeProgress.defaultURL())
@@ -92,6 +147,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     func show() {
         if window == nil { build() }
         kindControl.selectedSegment = 0
+        applyStagedUnlock()
         applyKindVisibility()
         reload()
         // 输入法宿主是 LSBackgroundOnly：普通窗口不一定能成为 key/前台，
@@ -348,6 +404,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     // MARK: 交互
 
     @objc private func kindChanged() {
+        applyStagedUnlock()
         applyKindVisibility()
         relayout()
         reload()
@@ -381,10 +438,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let percent = Int((Double(stats.practiced) / Double(bankSize) * 100).rounded())
         progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
             + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
-        // ADR-344：达标后建议下一题型，不锁定、不自动切换。
+        // ADR-344/350：达标后建议下一题型；未达标时显示解锁门槛。
         if let next = Practice.nextHint(kind: kind, practiced: stats.practiced,
-                                        attempts: stats.attempts, correct: stats.correct) {
+                                        attempts: stats.attempts, correct: stats.correct,
+                                        bankSize: bankSizeFor(kind)) {
             progressLabel.stringValue += " · 可以试试「\(next)」了"
+        } else {
+            let kinds = PracticeKind.allCases
+            if let index = kinds.firstIndex(of: kind), index + 1 < kinds.count {
+                let next = kinds[index + 1]
+                if !unlockedKinds().contains(next) {
+                    let required = Practice.requiredPractice(bankSize: bankSizeFor(kind))
+                    progressLabel.stringValue += " · 下一阶段「\(next.title)」需 \(kind.title) "
+                        + "\(required) 字、正确率 ≥90%（当前 \(stats.practiced) 字、\(rate)%）"
+                }
+            }
         }
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
         progressBar.setAccessibilityValue("\(percent)%")
@@ -511,6 +579,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progress.reset()
         WeakChars.shared.reset()
         session.reload()
+        kindControl.selectedSegment = 0
+        applyStagedUnlock()
+        applyKindVisibility()
         showCurrent()
     }
 
@@ -555,9 +626,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     /// 测试用：返回构建好的内容视图（用于离屏或真实窗口截图）。
+    /// 测试用：当前进度下解锁的题型与分段启用状态。
+    func unlockedKindsForTesting() -> [PracticeKind] {
+        let unlocked = unlockedKinds()
+        return PracticeKind.allCases.filter { unlocked.contains($0) }
+    }
+
+    func kindEnabledForTesting(_ kind: PracticeKind) -> Bool {
+        guard let index = PracticeKind.allCases.firstIndex(of: kind) else { return false }
+        return kindControl.isEnabled(forSegment: index)
+    }
+
     func contentViewForTesting(kind: PracticeKind, revealed: Bool = false) -> NSView? {
         let view = buildContent()
         kindControl.selectedSegment = PracticeKind.allCases.firstIndex(of: kind) ?? 0
+        applyStagedUnlock()
         applyKindVisibility()
         showCurrent()
         updateStats()

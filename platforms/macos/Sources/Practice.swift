@@ -68,10 +68,46 @@ enum Practice {
     static let strokes = ["横", "竖", "撇", "捺", "折"]
     static let structures = ["左右", "上下", "杂合"]
 
-    /// 进阶提示（ADR-344）：某题型练过至少 30 个字、正确率不低于 90% 时，建议进入下一题型。
-    /// 不锁定、不强制，返回下一题型的标题；未达标或已是最后一档返回 `nil`。
-    static func nextHint(kind: PracticeKind, practiced: Int, attempts: Int, correct: Int) -> String? {
-        guard practiced >= 30, attempts > 0, correct * 10 >= attempts * 9 else { return nil }
+    struct KindStats {
+        let practiced: Int
+        let attempts: Int
+        let correct: Int
+    }
+
+    /// 掌握一个题型需要的不同字数：最多 30；题库不足 30 时按题库数（一级简码只有 25 字）。
+    static func requiredPractice(bankSize: Int) -> Int {
+        min(30, max(1, bankSize))
+    }
+
+    /// 「掌握」口径（ADR-344/350）：练过的不同字数达到要求，且正确率 ≥90%。
+    static func isMastered(_ stats: KindStats, bankSize: Int) -> Bool {
+        guard stats.attempts > 0 else { return false }
+        return stats.practiced >= requiredPractice(bankSize: bankSize)
+            && stats.correct * 10 >= stats.attempts * 9
+    }
+
+    /// 分阶段解锁（ADR-350）：按题型顺序逐级解锁；已有练习记录的题型不会回锁。
+    /// `staged == false` 时全部解锁（旧行为）。
+    static func unlockedKinds(stats: [PracticeKind: KindStats], bankSizes: [PracticeKind: Int],
+                              staged: Bool) -> Set<PracticeKind> {
+        let kinds = PracticeKind.allCases
+        guard staged else { return Set(kinds) }
+        var unlocked: Set<PracticeKind> = []
+        var previousMastered = true
+        for kind in kinds {
+            let current = stats[kind] ?? KindStats(practiced: 0, attempts: 0, correct: 0)
+            if previousMastered || current.attempts > 0 { unlocked.insert(kind) }
+            previousMastered = isMastered(current, bankSize: bankSizes[kind] ?? 30)
+        }
+        return unlocked
+    }
+
+    /// 进阶提示（ADR-344）：某题型达到「掌握」时，建议进入下一题型。
+    /// 不强制；返回下一题型的标题；未达标或已是最后一档返回 `nil`。
+    static func nextHint(kind: PracticeKind, practiced: Int, attempts: Int, correct: Int,
+                         bankSize: Int = 30) -> String? {
+        let stats = KindStats(practiced: practiced, attempts: attempts, correct: correct)
+        guard isMastered(stats, bankSize: bankSize) else { return nil }
         let kinds = PracticeKind.allCases
         guard let index = kinds.firstIndex(of: kind), index + 1 < kinds.count else { return nil }
         return kinds[index + 1].title
