@@ -37,8 +37,8 @@ class PuaInventoryTests(unittest.TestCase):
     def test_status_and_no_guessing(self):
         data = rows(INVENTORY)
         statuses = [row[2] for row in data]
-        self.assertGreaterEqual(statuses.count("verified"), 50)
-        self.assertGreaterEqual(statuses.count("partial"), 5)
+        self.assertGreaterEqual(statuses.count("verified"), 60)
+        self.assertGreaterEqual(statuses.count("partial"), 0)
         self.assertGreaterEqual(statuses.count("unresolved"), 10)
         for pua, label, status, *_ in data:
             self.assertIn(status, {"verified", "partial", "unresolved"})

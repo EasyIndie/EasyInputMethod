@@ -1,69 +1,131 @@
 # N1-d 补充区 PUA → 五笔86 字根（ADR-353，报告 280）。
 # 由 D2 位序、全码键位与公开五笔86字根表逐条核验；只收在对应键位可解释的条目，不猜。
 # pua	key	label	status	evidence
+U+F0000	*	井	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0000	f	井	verified	D2位序+键位+标准86字根；样本 噻蹇骞搴觏遘褰篝
+U+F0001	*	弋	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0001	a	弋	verified	D2位序+键位+标准86字根；样本 低岱弑底轼拭鹉诋
+U+F0002	*	七	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0002	a	七	verified	D2位序+键位+标准86字根；样本 拣岈炼邪粼舛既迓
+U+F000A	*	马	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F000A	c	马	verified	D2位序+键位+标准86字根；样本 骐骈骀驼驵骤骇驴
+U+F0010	*	月	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0010	e	月	verified	D2位序+键位+标准86字根；样本 阻姐粗雎狙蛆祖菹
+U+F0013	*	豕	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0013	e	豕	verified	D2位序+键位+标准86字根；样本 椽喙篆彖毅蠡象燹
+U+F0014	*	衣	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0014	e	衣	verified	D2位序+键位+标准86字根；样本 侬裒脓表农依锿哝
 U+F0015	e	𠂢	verified	D2位序+键位+标准86字根；样本 派旅
+U+F0017	*	舁	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0017	w	舁	verified	D2位序+键位+标准86字根；样本 璺舆爨
+U+F0019	*	雨	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0019	f	雨	verified	D2位序+键位+标准86字根；样本 孀霏雪霆霪蠕蕾嚅
+U+F001C	*	革	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F001C	f	革	verified	D2位序+键位+标准86字根；样本 靼鞘鞣靴鞍鞅靳鞔
 U+F001E	g	一	verified	D2位序+键位+标准86字根；样本 鲭鳙鲤鲴鲈鳇鲳雎
+U+F001F	*	聿	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F001F	f	聿	verified	D2位序+键位+标准86字根；样本 建楗健肆腱键奉
+U+F0020	*	丰	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0020	d	丰	verified	D2位序+键位+标准86字根；样本 蜣槎叛着判羟羰羚
+U+F0023	*	具	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0023	h	具	verified	D2位序+键位+标准86字根；样本 镇矗阗癫滇惧犋颠
+U+F0024	*	少	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0024	i	少	verified	D2位序+键位+标准86字根；样本 骘陟濒频颦涉步
+U+F0025	*	卜	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0025	h	卜	verified	D2位序+键位+标准86字根；样本 瀣苫贴卣浈鲈鹾觇
+U+F0027	*	丷	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0027	i	丷	verified	D2位序+键位+标准86字根；样本 学觉誉搅敛
+U+F0029	*	水	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0029	i	水	verified	D2位序+键位+标准86字根；样本 卺蒸拯丞承昶永
+U+F002F	*	刂	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F002F	j	刂	verified	D2位序+键位+标准86字根；样本 齐艴怫弗济阱界费
+U+F0037	*	卌	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0037	l	卌	verified	D2位序+键位+标准86字根；样本 舞
+U+F0039	*	罒	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0039	l	罒	verified	D2位序+键位+标准86字根；样本 熏柬黥黢黜黪墨黝
+U+F003A	*	田	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F003A	l	田	verified	D2位序+键位+标准86字根；样本 憎罾甑噌僧增缯曾
+U+F003C	*	冂	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F003C	m	冂	verified	D2位序+键位+标准86字根；样本 惆栅跚坍雕丹册删
+U+F003D	*	冂	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F003D	m	冂	verified	D2位序+键位+标准86字根；样本 身躬躲谢躯射躺榭
+U+F003E	*	骨	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F003E	m	骨	verified	D2位序+键位+标准86字根；样本 骼髀髅骺骱髓骰髂
+U+F0041	*	己	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0041	n	己	verified	D2位序+键位+标准86字根；样本 改凯剀觊
 U+F0043	n	コ	verified	D2位序+键位+标准86字根；样本 镳暇卣苣愍鏖缗麇
+U+F0045	*	户	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0045	n	户	verified	D2位序+键位+标准86字根；样本 媚镅磬楣謦馨声猸
+U+F0048	*	乛	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0048	n	乛	verified	D2位序+键位+标准86字根；样本 巴彐囗喎辶虫纽巳
+U+F004E	*	凵	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F004E	m	凵	verified	D2位序+键位+标准86字根；样本 凹兕
+U+F0050	*	乚	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0050	n	乚	verified	D2位序+键位+标准86字根；样本 鼬以馐饼馈赳钺饴
+U+F0053	*	乛	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0053	n	乛	verified	D2位序+键位+标准86字根；样本 转砖传专抟
+U+F0056	*	亦	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0056	o	亦	verified	D2位序+键位+标准86字根；样本 赤螫赫奕迹哧赧赭
+U+F0057	*	亦	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0057	o	亦	verified	D2位序+键位+标准86字根；样本 娈变湾兼孪脔恋挛
+U+F005C	*	儿	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F005C	q	儿	verified	D2位序+键位+标准86字根；样本 魈槐蚬鬼免枕抚笕
+U+F005D	*	夕	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F005D	q	夕	verified	D2位序+键位+标准86字根；样本 炙燃然
+U+F0062	*	鱼	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0062	q	鱼	verified	D2位序+键位+标准86字根；样本 鲭鳙鲤鲴鲈鳇鲳癣
+U+F0065	*	丿	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0065	t	丿	verified	D2位序+键位+标准86字根；样本 狱猸获獐犳猓
+U+F0066	*	丷	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0066	u	丷	verified	D2位序+键位+标准86字根；样本 鼬卖抖料鼢鼷鼠鼯
+U+F006A	*	舟	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F006A	e	舟	verified	D2位序+键位+标准86字根；样本 舴搬舣舢瘢舡艘航
+U+F006C	*	彐	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F006C	v	彐	verified	D2位序+键位+标准86字根；样本 螗挣睫棣裙兼珺潇
+U+F006D	*	彐	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F006D	v	彐	verified	D2位序+键位+标准86字根；样本 碌禄逯渌录剥氯绿
+U+F006F	*	癶	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F006F	w	癶	verified	D2位序+键位+标准86字根；样本 傺檫蔡嚓擦瘵礤察
+U+F0072	*	纟	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0072	x	纟	verified	D2位序+键位+标准86字根；样本 芗雍壅蕹臃飨乡丝
+U+F0074	*	匕	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0074	x	匕	verified	D2位序+键位+标准86字根；样本 枇毗皆庇筚妣棍绲
+U+F0076	*	丶	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0076	y	丶	verified	D2位序+键位+标准86字根；样本 礼祗禚祖祢视禧祥
+U+F0077	*	隹	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0077	y	隹	verified	D2位序+键位+标准86字根；样本 隼鹤椎携戳集鹪睢
+U+F0078	*	亠	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0078	y	亠	verified	D2位序+键位+标准86字根；样本 熟膏亭淳敲嚎嚆享
+U+F007A	*	龷	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F007A	a	龷	verified	D2位序+键位+标准86字根；样本 碘借腆蕻曲辗爆错
+U+F007B	*	マ	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F007B	c	マ	verified	D2位序+键位+标准86字根；样本 杼邻领甬纾鞣翎婺
+U+F007E	*	龰	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F007E	h	龰	verified	D2位序+键位+标准86字根；样本 题糈足赳韪趣陡趱
+U+F0083	*	乀	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0083	y	乀	verified	D2位序+键位+标准86字根；样本 丈玖籴咫仗呎赆尺
+U+F009E	*	镸	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F009E	d	镸	verified	D2位序+键位+标准86字根；样本 鬈蕻髻鬣鬏肆髡髫
+U+F0103	*	乚	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0103	n	乚	verified	D2位序+键位+标准86字根；样本 虻揲渫戕邙簖赢世
+U+F0142	*	毌	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0142	x	毌	verified	D2位序+键位+标准86字根；样本 橼彘毋彝惯掼冱互
+U+F0146	*	丰	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0146	d	丰	verified	D2位序+键位+标准86字根；样本 膳善洋咩蛘羼详鄯
+U+F0147	*	小	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0147	i	小	verified	D2位序+键位+标准86字根；样本 柬洙株耔藕赖蹩耪
+U+F014A	*	业	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014A	o	业	verified	D2位序+键位+标准86字根；样本 缙噗邺亚痖黻垩幞
+U+F014B	*	虍	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014B	h	虍	verified	D2位序+键位+标准86字根；样本 嘘噱虍篪罅彪唬虏
+U+F014C	*	𠂇	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014C	h	𠂇	verified	D2位序+键位+标准86字根；样本 破披玻疲婆坡菠皮
+U+F014D	*	斤	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014D	r	斤	verified	D2位序+键位+标准86字根；样本 镔浜嫔蚯傧兵宾邱
+U+F014E	*	𠂉	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014E	r	𠂉	verified	D2位序+键位+标准86字根；样本 徭年缶轶洙掏摇忾
+U+F014F	*	小	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F014F	i	小	verified	D2位序+键位+标准86字根；样本 啸肃萧箫憋瞥敝鳖
+U+F0151	*	尤	verified	同一 PUA 在所有已见语境均为该部件；星号兜底
 U+F0151	d	尤	verified	D2位序+键位+标准86字根；样本 就
 U+F0157	i	丷	verified	D2位序+键位+标准86字根；样本 举

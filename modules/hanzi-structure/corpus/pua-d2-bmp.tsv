@@ -1,0 +1,6 @@
+# D2 BMP PUA（U+E0xx）→ 可读字根，按 (PUA, 键位) 核验（N1-d 扩展，ADR-353/355）。
+# 只收 D2 实际使用、且样本字/码位/标准字根表可解释的条目；不猜。
+# pua	key	label	status	evidence
+U+E816	d	𠂇	verified	D2 位序：有/若/爱/龙/随/贼/希/布 的 D 位均为「𠂇/丆」形
+U+E826	r	手	verified	D2 位序：拜 的 R 位为「手」
+U+E826	d	三	verified	D2 位序：养 的 D 位为「三」

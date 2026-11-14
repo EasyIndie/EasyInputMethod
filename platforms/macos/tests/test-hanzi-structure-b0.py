@@ -42,7 +42,7 @@ class B0CorpusTests(unittest.TestCase):
         self.assertEqual(full.returncode, 0, full.stderr)
         self.assertIn('识别码 g', full.stdout)
         # U3-4/N1-d 后「是」已 full；用一个仍有占位字根的字验证降级契约。
-        partial = subprocess.run(query + ['我'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        partial = subprocess.run(query + ['武'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(partial.returncode, 0, partial.stderr)
         self.assertIn('拆解待核验', partial.stdout)
 
@@ -62,10 +62,10 @@ class B0CorpusTests(unittest.TestCase):
             text = json.dumps(entry, ensure_ascii=False)
             self.assertNotIn('\ue000', ''.join(c for c in text if 0xE000 <= ord(c) <= 0xF8FF))
         query = [sys.executable, str(MODULE / 'tools/b0_query.py')]
-        result = subprocess.run(query + ['有'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        result = subprocess.run(query + ['万'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stderr)
-        self.assertIn('？(d)', result.stdout)
-        self.assertIn('参考识别码 f', result.stdout)
+        self.assertIn('？(n)', result.stdout)
+        self.assertIn('参考识别码 v', result.stdout)
 
     def test_component_counts_align_with_codes(self):
         """v4：合体字的组件数必须与码长自洽（n 或 n-1），且成字字根带笔画（报告 244）。"""

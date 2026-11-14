@@ -116,6 +116,26 @@ def load_root_strokes(path: Path) -> dict[str, list[str]]:
     return out
 
 
+def load_pua_context(path: Path) -> dict[tuple[str, str, str], str]:
+    """PUA 语境表：字 + PUA + 键位 → 字根（同一 PUA 在不同字里指不同部件）。"""
+    out: dict[tuple[str, str, str], str] = {}
+    for parts in read_rows(path, 4):
+        if len(parts) >= 4:
+            pua = chr(int(parts[1].strip().upper().removeprefix('U+'), 16))
+            out[(parts[0], pua, parts[2].strip().lower())] = parts[3].strip()
+    return out
+
+
+def load_pua_d2_bmp(path: Path) -> dict[tuple[str, str], str]:
+    """D2 BMP PUA → 可读字根（按 PUA+键位；N1-d 扩展）。"""
+    out: dict[tuple[str, str], str] = {}
+    for parts in read_rows(path, 3):
+        if len(parts) >= 3:
+            out[(chr(int(parts[0].strip().upper().removeprefix('U+'), 16)),
+                 parts[1].strip().lower())] = parts[2].strip()
+    return out
+
+
 def load_manual_decomp(path: Path) -> dict[str, list[str]]:
     """D18：D2 漏拆字的完整拆字（字 -> 可读组件列表）。"""
     out: dict[str, list[str]] = {}
@@ -156,7 +176,10 @@ def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
 def decode(glyphs: list[str], pua_map: dict[str, str],
            drop_tail_pua: bool = False,
            keys: list[str | None] | None = None,
-           supp_map: dict[tuple[str, str], str] | None = None) -> tuple[list[str | None], int]:
+           supp_map: dict[tuple[str, str], str] | None = None,
+           d2_bmp_map: dict[tuple[str, str], str] | None = None,
+           char: str | None = None,
+           context_map: dict[tuple[str, str, str], str] | None = None) -> tuple[list[str | None], int]:
     """把一组字形解码成可读字形；解不出的私有区字形变成占位组件 None。
 
     - BMP 私有区（D3 字形）：查 ``pua_map``（D2/D3 对齐学出）。
@@ -168,12 +191,16 @@ def decode(glyphs: list[str], pua_map: dict[str, str],
     unknown = 0
     last = len(glyphs) - 1
     supp_map = supp_map or {}
+    d2_bmp_map = d2_bmp_map or {}
+    context_map = context_map or {}
     for index, g in enumerate(glyphs):
         if drop_tail_pua and index == last and is_pua(g):
             continue  # 末位私有区字形 = 识别码槽，不是字根
         key = keys[index] if keys and index < len(keys) else None
         if ord(g) >= 0xF0000:
-            readable = (supp_map.get((g, key)) if key else None) or supp_map.get((g, '*'))
+            readable = ((context_map.get((char, g, key)) if char and key else None)
+                        or (supp_map.get((g, key)) if key else None)
+                        or supp_map.get((g, '*')))
             if readable:
                 out.append(readable)
             else:
@@ -181,7 +208,9 @@ def decode(glyphs: list[str], pua_map: dict[str, str],
                 unknown += 1
             continue
         if 0xE000 <= ord(g) <= 0xF8FF:
-            readable = pua_map.get(g)
+            readable = ((context_map.get((char, g, key)) if char and key else None)
+                        or (d2_bmp_map.get((g, key)) if key else None)
+                        or pua_map.get(g))
             if readable:
                 out.append(readable)
             else:
@@ -285,11 +314,15 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           ids: dict[str, str] | None = None,
           supp_map: dict[tuple[str, str], str] | None = None,
           root_strokes: dict[str, list[str]] | None = None,
-          manual_decomp: dict[str, list[str]] | None = None) -> dict:
+          manual_decomp: dict[str, list[str]] | None = None,
+          d2_bmp_map: dict[tuple[str, str], str] | None = None,
+          context_map: dict[tuple[str, str, str], str] | None = None) -> dict:
     pua_map = pua_map or {}
     supp_map = supp_map or {}
     root_strokes = root_strokes or {}
     manual_decomp = manual_decomp or {}
+    d2_bmp_map = d2_bmp_map or {}
+    context_map = context_map or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
     ids = ids or {}
@@ -395,10 +428,16 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         glyphs = list(manual)
         notes.append('使用 D18 完整拆字（补 D2 漏拆）')
     per_position = bool(glyphs) and len(code) >= 3 and len(glyphs) == len(code)
-    keys2 = (list(code[: len(glyphs)])
-             if glyphs and len(glyphs) in (len(code), len(code) - 1) else None)
+    if glyphs and len(glyphs) in (len(code), len(code) - 1):
+        keys2 = list(code[: len(glyphs)])
+    elif glyphs and len(glyphs) > len(code):
+        # 多出的尾部通常是识别码槽；按码位给前 len(code) 位键位，解码后统一截断。
+        keys2 = list(code) + [None] * (len(glyphs) - len(code))
+    else:
+        keys2 = None
     decoded2, unknown2 = (decode(glyphs, pua_map, drop_tail_pua=per_position,
-                                 keys=keys2, supp_map=supp_map)
+                                 keys=keys2, supp_map=supp_map, d2_bmp_map=d2_bmp_map,
+                                 char=char, context_map=context_map)
                           if glyphs else ([], 0))
 
     # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
@@ -522,6 +561,10 @@ def main() -> int:
                         help='N2 成字字根真实笔顺（D18，可选）')
     parser.add_argument('--manual-decomp',
                         help='N4 D2 漏拆字的完整拆字（D18，可选）')
+    parser.add_argument('--pua-d2-bmp',
+                        help='D2 BMP PUA→字根核验表（按 PUA+键位，可选）')
+    parser.add_argument('--pua-context',
+                        help='PUA 语境表（字+PUA+键位，可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
@@ -538,6 +581,10 @@ def main() -> int:
         paths['root_strokes'] = Path(args.root_strokes)
     if args.manual_decomp:
         paths['manual_decomp'] = Path(args.manual_decomp)
+    if args.pua_d2_bmp:
+        paths['pua_d2_bmp'] = Path(args.pua_d2_bmp)
+    if args.pua_context:
+        paths['pua_context'] = Path(args.pua_context)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -560,6 +607,8 @@ def main() -> int:
                 if args.pua_supplementary else {})
     root_strokes = load_root_strokes(Path(args.root_strokes)) if args.root_strokes else {}
     manual_decomp = load_manual_decomp(Path(args.manual_decomp)) if args.manual_decomp else {}
+    d2_bmp_map = load_pua_d2_bmp(Path(args.pua_d2_bmp)) if args.pua_d2_bmp else {}
+    context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -589,7 +638,8 @@ def main() -> int:
                              pua_map=pua_map,
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
                              ids=ids, supp_map=supp_map,
-                             root_strokes=root_strokes, manual_decomp=manual_decomp))
+                             root_strokes=root_strokes, manual_decomp=manual_decomp,
+                             d2_bmp_map=d2_bmp_map, context_map=context_map))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
