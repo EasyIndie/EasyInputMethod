@@ -4,7 +4,7 @@
 
 - 更新：2026-11-13 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `b8dd20f`（PR #295/#296/#297/#298 完整引导与首次触发修复）；`dev` 已快进同步，顶部为复验文档提交。
+- 分支：`main` = `ec75332`（PR #295–#298 完整引导 + PR #299 复验文档）；`dev` 已快进同步，顶部为本条交接提交。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（504 产物零网络符号）、`make macos-offline-tests` **66 文件 / 343 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
