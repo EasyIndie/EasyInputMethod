@@ -136,6 +136,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**快速 UI 回路修复（报告 286）**。`make macos-ui-snapshots` 因
+  `CandidateWindow` 新增 `CaretPlacement`/`LearningHints` 依赖而编译失败；补全源码清单，新增
+  `test-ui-snapshots.py` 防清单漂移。离线回归 68 文件/337 例 PASS；快照可重新产出（候选 6 / 面板 14 / HUD 6）。
+  日常 UI/功能验收优先 `make macos-ui-snapshots` + `make macos-dev`，不必每次换包。
 - 2026-11-15 / Claude Code（air）：**PR #314、#315 已合入 main（`7014346`、`7b95ba6`）**。PR #314 = 86 专注 +
   标准变体（240→241 条 root/key，98/新世纪仅留 profile）；PR #315 = D2 字形别名（ADR-359，报告 285）。
   当前 B0 3,000 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；1,000 `full` 928。CI 全绿后均为 merge commit。

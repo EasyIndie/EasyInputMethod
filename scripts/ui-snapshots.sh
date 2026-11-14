@@ -21,11 +21,15 @@ cp assets/icons/yinghuo-official-app.icns "$TMP/icon.icns"
 CANDIDATE_SOURCES=(
     platforms/macos/Sources/ImeSession.swift
     platforms/macos/Sources/Config.swift
+    platforms/macos/Sources/CaretPlacement.swift
+    platforms/macos/Sources/LearningHints.swift
     platforms/macos/Sources/CandidateWindow.swift
 )
 PANEL_SOURCES=(
     platforms/macos/Sources/ImeSession.swift
     platforms/macos/Sources/Config.swift
+    platforms/macos/Sources/CaretPlacement.swift
+    platforms/macos/Sources/LearningHints.swift
     platforms/macos/Sources/CandidateWindow.swift
     platforms/macos/Sources/Settings.swift
     platforms/macos/Sources/Feedback.swift
