@@ -18,7 +18,7 @@
 | `code` | string | 五笔86 全码（来自 D1 生成码表） |
 | `class` | enum | `key-name`（键名字）/ `radical-char`（成字字根）/ `compound`（合体字） |
 | `components` | (string\|null)[] | 字根序列（可读字形；**不含任何 PUA 字形**）。`null` = **占位组件**：位置已知、字形未识别，键位见 `keys` |
-| `componentsSource` | enum | `D2` / `D3` / `null`：组件来自哪一份拆字源（报告 241：D2 优先，D3 兜底） |
+| `componentsSource` | enum | `D1` / `D2` / `null`：组件来自哪一份拆字源（ADR-310：D3 只作 oracle，不作来源） |
 | `keys` | string[] | 每个字根对应的键位字母（取全码同位置；含占位组件时同样成立，故 `len(keys) == len(components)`） |
 | `strokes` | (string\|null)[] \| null | **成字字根**的笔画序列（首→末，可读字形）；其它类为 `null` |
 | `ids` | string \| null | IDS 分解序列（D19，MIT），如 `⿰禾口` |
@@ -41,8 +41,10 @@
    - 其它 → `quality=partial`，`notes` 记录 `code_len` 与 `n` 的具体数值。
 4. **PUA 处理（v4 规则）**：私有区字形（BMP 与补充区）**一律不得进入产物**。
    - D2 序列与全码等长时（「每码位一形」），**末位**私有区字形是**识别码槽**，整位丢弃；
-   - 其余位置先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出），查不到则保留为**占位组件 `null`**，
-     键位取自码位（第 i 个组件 ↔ `code[i]`），notes 写明「第 k 个字根（键 x）字形未识别」；
+   - 其余位置：BMP PUA 先查 `pua-map`（`tools/decode_pua.py` 从 D2/D3 对齐学出）；
+     补充区 PUA（D2 的 U+F00xx）先按 **(PUA, 键位)** 查 `pua-supplementary.tsv`（N1-d 核验表，ADR-353），
+     再查 `(PUA, '*')`。查不到则保留为**占位组件 `null`**，键位取自码位（第 i 个组件 ↔ `code[i]`），
+     notes 写明「第 k 个字根（键 x）字形未识别」；
    - 含占位组件**不得**判 `full`。
 5. **IDS 填占位（v5）**：IDS（D19，MIT）叶子数与组件数相同、已知位字形一致（或键位一致）、
    且填入字形的键位与码位相符时，才用 IDS 叶子替换占位 `null`；不满足一律保留占位并写 notes。

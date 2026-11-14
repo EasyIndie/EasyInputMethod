@@ -18,7 +18,7 @@ B0 当前 1,000 字：`full` 735 / `partial` 257 / `unknown` 8；3,000 字里约
 | **cjkvi-ids / CHISE IDS** | IDS 分解（`⿰⿱…`） | CHISE 为 **GPL-2+**；`ids-ext-cde.txt` 不受 GPL 限制 | 近乎全 CJK | 可作 IDS 交叉校验；GPL 数据与项目 GPL-3 代码可共存，但需单独登记 |
 | **Unicode Unihan** | `kIDS` / `kRSUnicode` / `kTotalStrokes` | **Unicode License V3** | 全 CJK | 结构/部首交叉校验；**不含字形图形** |
 | **HNG（汉字字体规范史）** | 历史字形图片 + 元数据 | **CC BY-SA 4.0 / GPL-2+** | 历史字形 | 可作字形参考，不直接给字根身份 |
-| **WindInput / qingg 等五笔字根字体** | 五笔字根字体 | **未声明/非商业**（论坛字体、`wmwb06.ttf` 明确教育用途） | 86/98/新世纪 | **不采用**（许可不明/不可商用） |
+| **WindInput / qingg 等五笔字根字体** | 五笔字根字体 | qingg 2019 版 `98WB-2.otf` 名称表为 **SIL OFL 1.1**（Source Han Sans 派生、已改保留字名）；2024 版 `98WB-3.otf` 无许可记录；WindInput / `wmwb06.ttf` 未声明/非商业 | 86/98/新世纪 | **仅 98WB-2 可作构建期字形参考**，不随包分发、不复制轮廓；其余不采用 |
 | **Noto Sans CJK / Source Han** | 标准 CJK 字形 | **SIL OFL 1.1** | 全 CJK | 只能渲染 Unicode 部件，不能渲染私有区；可用于**自绘字根 SVG**的参考 |
 | **Make Me a Hanzi / hanzi-writer-data / KanjiVG** | 笔顺/字形 | Arphic / CC BY-SA 3.0 | 常用字 | **不采用**（Arphic 非 GPL 兼容；KanjiVG 简体覆盖差） |
 
@@ -77,3 +77,15 @@ B0 当前 1,000 字：`full` 735 / `partial` 257 / `unknown` 8；3,000 字里约
 必须引入 Academia Sinica 的字根/部件字形身份（N1-a）或自绘字根。**
 
 本次只在 `/tmp` 操作，未下载数据入库、未改 B0/D2。
+
+## 7. N1-d 实测结果（2026-11-14，已入库）
+
+初版清单误用 D3（BMP PUA）；更正为 D2 补充区后：
+
+- 3,000 字 B0 里可逐位定位的 **D2 补充区 PUA 79 个**；
+- 按 `(PUA, 键位)` 核验 **66 条**，清单 `verified 58 / partial 8 / unresolved 13`；
+- 接入 `build_b0.py` 后，B0 1,000 字 `full` 732→919，运行时 3,000 字 `full` 1,904→2,454；
+- 仍未解决的 13 个（如 U+F005A 氏/卯、U+F001B 才/亅、U+F0145 乚/匕）保持占位，不猜。
+
+详见报告 280、`corpus/pua-supplementary.tsv`、`corpus/pua-inventory.tsv`。
+ADR-353 的 Academia Sinica / 自绘路线仍是未解决项的后续兜底；本轮没有导入 Academia Sinica 数据。
