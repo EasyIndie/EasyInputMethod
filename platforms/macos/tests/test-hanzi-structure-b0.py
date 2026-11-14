@@ -216,6 +216,30 @@ class B0CorpusTests(unittest.TestCase):
             self.assertEqual(entry['componentsSource'], 'D18', char)
             self.assertEqual(entry['quality'], 'full', char)
 
+    def test_d2_glyph_aliases_are_normalized(self):
+        """ADR-359：D2 的假名/注音字形别名归一化为标准字根，产物里不得再出现别名。"""
+        import json
+        aliases = {}
+        for line in (MODULE / 'corpus/d2-glyph-aliases.tsv').read_text(encoding='utf-8').splitlines():
+            if line and not line.startswith('#'):
+                alias, canonical, _evidence = line.split('\t')
+                aliases[alias] = canonical
+        self.assertTrue(aliases, '别名表不能为空')
+        entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
+        for entry in entries:
+            for glyph in entry['components']:
+                self.assertFalse(isinstance(glyph, str) and glyph in aliases,
+                                 f"{entry['char']}: 组件仍是 D2 别名 {glyph}")
+        expected = {
+            '师': ['刂', '一', '冂', '丨'], '归': ['刂', '彐'], '节': ['艹', '卩'],
+            '爷': ['八', '乂', '卩'], '久': ['夕', '乀'], '仍': ['亻', '乃'],
+        }
+        by_char = {e['char']: e for e in entries}
+        for char, components in expected.items():
+            entry = by_char[char]
+            self.assertEqual(entry['components'], components, char)
+            self.assertEqual(entry['quality'], 'full', char)
+
     def test_provenance_records_hashes(self):
         text = (MODULE / 'provenance/B0.md').read_text(encoding='utf-8')
         for marker in ('D2', 'D17-bis', 'SHA-256', 'CC-BY-SA-4.0'):

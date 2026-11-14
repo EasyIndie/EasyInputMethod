@@ -8103,34 +8103,34 @@
   "componentsSource": "D2",
   "components": [
    "亻",
-   "乃",
-   "ノ"
+   "乃"
   ],
   "keys": [
    "w",
-   "e",
-   "n"
+   "e"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰亻乃",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": "we",
   "pinyin": "reng",
   "frequency": 18627,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 3 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -11382,35 +11382,35 @@
   "components": [
    "二",
    "厶",
-   "力",
-   "ノ"
+   "力"
   ],
   "keys": [
    "f",
    "c",
-   "l",
-   "n"
+   "l"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰云力",
   "idsStructure": "左右",
-  "positionMismatch": [
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "dong",
   "frequency": 12509,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 4 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -11573,7 +11573,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   "リ",
+   "刂",
    "一",
    "冂",
    "丨"
@@ -11592,17 +11592,14 @@
   "structureConflict": false,
   "ids": "⿰リ帀",
   "idsStructure": "左右",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "pinyin": "shi",
   "frequency": 12194,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 1 个（リ，键 j）",
    "字根已够四码，无识别码"
   ]
  },
@@ -17606,7 +17603,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   "ク",
+   "夕",
    "乀"
   ],
   "keys": [
@@ -17621,9 +17618,7 @@
   "structureConflict": false,
   "ids": "⿸丿ス",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "i",
    "stroke": "捺",
@@ -17634,10 +17629,8 @@
   "short2": "qy",
   "pinyin": "jiu",
   "frequency": 7645,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 1 个（ク，键 q）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "史",
@@ -18295,35 +18288,35 @@
   "components": [
    "亻",
    "𠂉",
-   "力",
-   "ノ"
+   "力"
   ],
   "keys": [
    "w",
    "t",
-   "l",
-   "n"
+   "l"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰亻𱐩",
   "idsStructure": "左右",
-  "positionMismatch": [
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "shang",
   "frequency": 7363,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 4 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -18373,7 +18366,7 @@
   "class": "compound",
   "componentsSource": "D2",
   "components": [
-   "リ",
+   "刂",
    "彐"
   ],
   "keys": [
@@ -18388,9 +18381,7 @@
   "structureConflict": false,
   "ids": "⿰リ𫜹",
   "idsStructure": "左右",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "g",
    "stroke": "横",
@@ -18401,10 +18392,8 @@
   "short2": "jv",
   "pinyin": "gui",
   "frequency": 7299,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 1 个（リ，键 j）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "退",
@@ -23627,34 +23616,34 @@
   "componentsSource": "D2",
   "components": [
    "工",
-   "力",
-   "ノ"
+   "力"
   ],
   "keys": [
    "a",
-   "l",
-   "n"
+   "l"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰工力",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": "al",
   "pinyin": "gong",
   "frequency": 5641,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 3 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -26505,7 +26494,7 @@
   "componentsSource": "D2",
   "components": [
    "艹",
-   "ㄗ"
+   "卩"
   ],
   "keys": [
    "a",
@@ -26519,9 +26508,7 @@
   "structureConflict": false,
   "ids": "⿱艹𰆊",
   "idsStructure": "上下",
-  "positionMismatch": [
-   2
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "j",
    "stroke": "竖",
@@ -26532,10 +26519,8 @@
   "short2": "ab",
   "pinyin": "jie",
   "frequency": 4822,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 2 个（ㄗ，键 b）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "升",
@@ -27275,35 +27260,35 @@
   "components": [
    "纟",
    "禾",
-   "乃",
-   "ノ"
+   "乃"
   ],
   "keys": [
    "x",
    "t",
-   "e",
-   "n"
+   "e"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰纟秀",
   "idsStructure": "左右",
-  "positionMismatch": [
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "xiu",
   "frequency": 4645,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 4 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -34401,34 +34386,34 @@
   "componentsSource": "D2",
   "components": [
    "又",
-   "力",
-   "ノ"
+   "力"
   ],
   "keys": [
    "c",
-   "l",
-   "n"
+   "l"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰又力",
   "idsStructure": "左右",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": "cl",
   "pinyin": "quan",
   "frequency": 3543,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 3 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -37255,35 +37240,35 @@
   "components": [
    "ス",
    "工",
-   "力",
-   "ノ"
+   "力"
   ],
   "keys": [
    "c",
    "a",
-   "l",
-   "n"
+   "l"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰𢀖力",
   "idsStructure": "左右",
-  "positionMismatch": [
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "n",
+   "stroke": "折",
+   "structure": "左右",
+   "because": "3 个字根不足四码：末笔折 + 结构左右 ⇒ 识别码 n"
+  },
   "short1": null,
   "short2": null,
   "pinyin": "jin",
   "frequency": 3175,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 4 个（ノ，键 n）",
-   "字根已够四码，无识别码"
+   "末位为识别码槽（可读字形），已丢弃"
   ]
  },
  {
@@ -37334,7 +37319,7 @@
   "components": [
    "八",
    "乂",
-   "ㄗ"
+   "卩"
   ],
   "keys": [
    "w",
@@ -37349,9 +37334,7 @@
   "structureConflict": false,
   "ids": "⿱父𰆊",
   "idsStructure": "上下",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "j",
    "stroke": "竖",
@@ -37362,10 +37345,8 @@
   "short2": null,
   "pinyin": "ye",
   "frequency": 3172,
-  "quality": "partial",
-  "notes": [
-   "标准字根/键位不符：第 3 个（ㄗ，键 b）"
-  ]
+  "quality": "full",
+  "notes": []
  },
  {
   "char": "魔",
