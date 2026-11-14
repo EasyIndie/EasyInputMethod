@@ -68,14 +68,22 @@ guard let server = IMKServer(name: "cn.jokerhub.lampyris.probe." + UUID().uuidSt
 }
 // IMK may request its menu before this controller has a text session.
 let coldMenu = controller.menu()!
-require(coldMenu.items.count == 10, "five rows plus separator, update, settings, about and guide")
+require(coldMenu.items.count == 14, "five rows + learning/practice/symbols/guide + update/settings/about")
 require(coldMenu.items.prefix(5).allSatisfy { $0.submenu == nil }, "no nested menus")
 require(coldMenu.items[1...4].allSatisfy { !$0.isEnabled }, "session-only toggles stay disabled before activation")
-require(coldMenu.items[6].title == "检查更新…" && coldMenu.items[6].keyEquivalent == "g"
-    && coldMenu.items[6].keyEquivalentModifierMask == [.option], "update entry shows configured shortcut")
-require(coldMenu.items[7].keyEquivalent == "," && coldMenu.items[7].keyEquivalentModifierMask == [.option], "settings shortcut in menu")
-require(coldMenu.items[8].keyEquivalent == "a" && coldMenu.items[8].keyEquivalentModifierMask == [.option], "about shortcut in menu")
+require(coldMenu.items[5].isSeparatorItem && coldMenu.items[10].isSeparatorItem, "two fixed section separators")
+require(coldMenu.items[6].title == "显示学习区" && coldMenu.items[6].keyEquivalent == "l"
+    && coldMenu.items[6].keyEquivalentModifierMask == [.option] && coldMenu.items[6].state == .off,
+    "learning toggle shows configured shortcut and current check state")
+require(coldMenu.items[7].title == "练习…" && coldMenu.items[7].keyEquivalent == "k"
+    && coldMenu.items[7].keyEquivalentModifierMask == [.option], "practice entry shows configured shortcut")
+require(coldMenu.items[8].title == "符号与表情…" && coldMenu.items[8].keyEquivalent == "c"
+    && coldMenu.items[8].keyEquivalentModifierMask == [.option], "symbols entry shows option+c")
 require(coldMenu.items[9].title == "使用指南…" && coldMenu.items[9].keyEquivalent == "", "guide entry")
+require(coldMenu.items[11].title == "检查更新…" && coldMenu.items[11].keyEquivalent == "g"
+    && coldMenu.items[11].keyEquivalentModifierMask == [.option], "update entry shows configured shortcut")
+require(coldMenu.items[12].keyEquivalent == "," && coldMenu.items[12].keyEquivalentModifierMask == [.option], "settings shortcut in menu")
+require(coldMenu.items[13].keyEquivalent == "a" && coldMenu.items[13].keyEquivalentModifierMask == [.option], "about shortcut in menu")
 require(coldMenu.items[0].isEnabled, "mode row enabled before activation")
 require(coldMenu.items[0].tag == 1, "mode row carries the cycle command")
 require(LampyrisProbeDispatchMenuCommand(server, controller, coldMenu.items[0], 501), "cold row dispatches through the service boundary")

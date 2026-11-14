@@ -31,8 +31,10 @@ Claude Code 的 `!` / `Bash` 环境里 stdin 不是可 `select()` 的终端（�
 
 ## 4. 关于真实数据
 
-首次崩溃后的手工测试期间，真实 `user-dictionary.tsv` 从 2,046 行变为 2,060 行（新增 14 条五笔词条），
-`config.toml` 未变。该变化与已装输入法在其它窗口的正常学习一致，**未回滚**（属于用户真实数据）。
+手工验收期间，真实 `user-dictionary.tsv` 从 2,046 行变为 2,060 行（新增 14 条五笔词条），
+`config.toml` 的 `candidate.show_wubi_learning` 变为 `true`（02:20）。自动化隔离探针（同样会
+`ime_config_init(私有根)` 并 `setString("mode", …)`）仍 PASS：真实文件在预览进程外未被写入。
+因此这些变化与已装输入法在其它窗口的正常学习/⌥L 切换一致，**未回滚**（属于用户真实数据）。
 
 ## 5. 关联
 

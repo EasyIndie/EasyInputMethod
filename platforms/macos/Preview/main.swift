@@ -262,6 +262,19 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             menu.onCheckUpdates = { UpdateEntry.open() }
             menu.onSettings = { [weak self] in self?.openSettings() }
             menu.onAbout = { AboutUI.show() }
+            menu.onToggleLearning = { [weak self] in
+                let next = !ImeConfig.bool("candidate.show_wubi_learning")
+                if ImeConfig.setToml("candidate.show_wubi_learning", next ? "true" : "false") { self?.input?.refresh() }
+                self?.syncMenuControls()
+            }
+            menu.onPractice = { PracticeWindow.shared.show() }
+            menu.onGuide = { OnboardingWindow.shared.show() }
+            menu.onSymbols = { [weak self] in
+                guard let input = self?.input else { return }
+                SymbolPickerWindow.shared.show { [weak input] text in
+                    input?.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+                }
+            }
             previewMenu = menu
             input.stateChanged = { [weak self] in self?.syncMenuControls() }
             let menuButton = NSButton(title: "输入法菜单", target: self, action: #selector(openInputMenu(_:)))

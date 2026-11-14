@@ -11,6 +11,10 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     var onCheckUpdates: (() -> Void)?
     var onSettings: (() -> Void)?
     var onAbout: (() -> Void)?
+    var onToggleLearning: (() -> Void)?
+    var onPractice: (() -> Void)?
+    var onSymbols: (() -> Void)?
+    var onGuide: (() -> Void)?
     lazy var menu: NSMenu = makeMenu()
 
     init(session: ImeSession) {
@@ -32,24 +36,41 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     private func makeMenu() -> NSMenu {
         let result = InputStateMenu.make(state: state, target: self)
         result.delegate = self
-        result.addItem(.separator())
-        for (title, action) in [("检查更新…", #selector(checkUpdates(_:))),
-                                ("设置", #selector(showSettings(_:))), ("关于", #selector(showAbout(_:)))] {
-            let item = NSMenuItem(title: title, action: action, keyEquivalent: "")
-            item.target = self
-            result.addItem(item)
+        // ADR-360：与正式宿主共用同一份动作区顺序。
+        for section in InputMenuAction.sections {
+            result.addItem(.separator())
+            for action in section {
+                let item = NSMenuItem(title: action.title, action: selector(for: action), keyEquivalent: "")
+                item.tag = action.rawValue
+                item.target = self
+                result.addItem(item)
+            }
         }
         return result
     }
 
+    private func selector(for action: InputMenuAction) -> Selector {
+        switch action {
+        case .toggleLearning: return #selector(toggleLearning(_:))
+        case .practice: return #selector(showPractice(_:))
+        case .symbols: return #selector(showSymbols(_:))
+        case .guide: return #selector(showGuide(_:))
+        case .update: return #selector(checkUpdates(_:))
+        case .settings: return #selector(showSettings(_:))
+        case .about: return #selector(showAbout(_:))
+        }
+    }
+
     func refresh() {
-        if menu.items.count >= 9 {
-            for (item, key) in [(menu.items[6], "hotkey.open_update"),
-                                (menu.items[7], "hotkey.open_settings"),
-                                (menu.items[8], "hotkey.open_about")] {
-                item.keyEquivalent = ""
-                item.keyEquivalentModifierMask = []
+        for item in menu.items where item.tag >= InputMenuAction.toggleLearning.rawValue {
+            guard let action = InputMenuAction(rawValue: item.tag) else { continue }
+            item.keyEquivalent = ""
+            item.keyEquivalentModifierMask = []
+            if let key = action.hotkeyKey {
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
+            }
+            if action == .toggleLearning {
+                item.state = ImeConfig.bool("candidate.show_wubi_learning") ? .on : .off
             }
         }
         for (item, key) in zip(menu.items.prefix(5), InputStateMenu.shortcuts) {
@@ -80,6 +101,10 @@ final class PreviewInputMenu: NSObject, NSMenuDelegate {
     }
 
     @objc private func checkUpdates(_ sender: Any?) { onCheckUpdates?() }
+    @objc private func toggleLearning(_ sender: Any?) { onToggleLearning?() }
+    @objc private func showPractice(_ sender: Any?) { onPractice?() }
+    @objc private func showSymbols(_ sender: Any?) { onSymbols?() }
+    @objc private func showGuide(_ sender: Any?) { onGuide?() }
 
     private func changed(_ success: Bool = true) {
         refresh()

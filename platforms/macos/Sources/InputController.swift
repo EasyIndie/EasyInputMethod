@@ -231,23 +231,17 @@ final class LampyrisInputController: IMKInputController {
         let menu = InputStateMenu.make(state: inputMenuState(), target: self)
         stateMenu = menu
         refreshStateMenu()
-        menu.addItem(NSMenuItem.separator())
-        let update = NSMenuItem(
-            title: "检查更新…", action: #selector(checkForUpdates), keyEquivalent: "")
-        update.target = self
-        menu.addItem(update)
-        let settings = NSMenuItem(
-            title: "设置", action: #selector(showSettings), keyEquivalent: "")
-        settings.target = self
-        menu.addItem(settings)
-        let about = NSMenuItem(
-            title: "关于", action: #selector(showAbout), keyEquivalent: "")
-        about.target = self
-        menu.addItem(about)
-        let guide = NSMenuItem(
-            title: "使用指南…", action: #selector(showGuide), keyEquivalent: "")
-        guide.target = self
-        menu.addItem(guide)
+        // ADR-360：动作区顺序由 InputMenuAction.sections 固定；新增入口只追加到所属组末尾。
+        for section in InputMenuAction.sections {
+            menu.addItem(NSMenuItem.separator())
+            for action in section {
+                let item = NSMenuItem(title: action.title, action: selector(for: action),
+                                      keyEquivalent: "")
+                item.tag = action.rawValue
+                item.target = self
+                menu.addItem(item)
+            }
+        }
         // 异常状态（仅在出错时出现）
         var alerts: [String] = []
         if let session, session.dictionaryError != IME_OK {
@@ -271,8 +265,52 @@ final class LampyrisInputController: IMKInputController {
         return menu
     }
 
+    private func selector(for action: InputMenuAction) -> Selector {
+        switch action {
+        case .toggleLearning: return #selector(toggleLearning)
+        case .practice: return #selector(showPractice)
+        case .symbols: return #selector(showSymbols)
+        case .guide: return #selector(showGuide)
+        case .update: return #selector(checkForUpdates)
+        case .settings: return #selector(showSettings)
+        case .about: return #selector(showAbout)
+        }
+    }
+
     @objc private func checkForUpdates() {
         UpdateEntry.open()
+    }
+
+    /// 菜单里的学习区开关与 ⌥L 同源：只改显示偏好，不提交当前组合。
+    @objc private func toggleLearning() {
+        let next = !ImeConfig.bool("candidate.show_wubi_learning")
+        if ImeConfig.setToml("candidate.show_wubi_learning", next ? "true" : "false") {
+            showStateFeedback(StateFeedback.learning(next))
+        } else {
+            presentConfigError()
+        }
+        refreshStateMenu()
+    }
+
+    @objc private func showPractice() {
+        cancelClientComposition()
+        PracticeWindow.shared.show()
+    }
+
+    /// 菜单入口与 ⌥C（原 ⌥S）同源：先提交当前组合，再把选中的符号插入原插入点。
+    @objc private func showSymbols() {
+        if SymbolPickerWindow.shared.isVisible {
+            SymbolPickerWindow.shared.close()
+            return
+        }
+        guard let client = activeClient else {
+            NSSound.beep()
+            return
+        }
+        if let session { commitForSymbolPanel(client, session: session) }
+        SymbolPickerWindow.shared.show { [client] text in
+            client.insertText(text, replacementRange: NSRange(location: NSNotFound, length: 0))
+        }
     }
 
     private var stateMenu: NSMenu?
@@ -294,13 +332,15 @@ final class LampyrisInputController: IMKInputController {
                 item.keyEquivalentModifierMask = []
             }
         }
-        if menu.items.count >= 8 {
-            for (item, key) in [(menu.items[6], "hotkey.open_update"),
-                                (menu.items[7], "hotkey.open_settings"),
-                                (menu.items[8], "hotkey.open_about")] {
-                item.keyEquivalent = ""
-                item.keyEquivalentModifierMask = []
+        for item in menu.items where item.tag >= InputMenuAction.toggleLearning.rawValue {
+            guard let action = InputMenuAction(rawValue: item.tag) else { continue }
+            item.keyEquivalent = ""
+            item.keyEquivalentModifierMask = []
+            if let key = action.hotkeyKey {
                 _ = item.applyConfiguredHotkey(ImeConfig.hotkey(key))
+            }
+            if action == .toggleLearning {
+                item.state = ImeConfig.bool("candidate.show_wubi_learning") ? .on : .off
             }
         }
         InputStateMenu.refresh(menu, state: inputMenuState())
