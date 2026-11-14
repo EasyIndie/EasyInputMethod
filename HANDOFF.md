@@ -136,6 +136,9 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**预览自动切输入源**。`make macos-dev` 启动时若当前是萤火虫，
+  自动切到 ABC 并在退出（含异常）后切回；实测双向 `tissrc select` 均生效，会话后已还原 Lampyris。
+  预览冒烟新增 ⌥M/⌥F/⌥P/⌥T 状态断言。
 - 2026-11-15 / Claude Code（air）：**人工验收三项修复（ADR-361，报告 289）**。指南窗口 380→260 并改两栏
   （右侧步骤图示）+ 新增离屏快照；隔离预览补齐 `symbols/emoji/B0-runtime/wubi86-core/level3` 资源，符号面板可搜可插；
   练习新增「三级简码」题型（只用 D17-ter 权威表，3 格作答）。离线回归 68 文件/337 例、`make verify` 全绿。

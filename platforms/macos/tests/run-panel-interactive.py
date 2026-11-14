@@ -42,10 +42,13 @@ for item in sorted(preview_resources.iterdir()):
 }))
 protected = [REAL / 'config.toml', REAL / 'user-dictionary.tsv']
 before = [stamp(path) for path in protected]
-def current_input_source():
-    probe = ROOT / 'tools/macos-probe/bin/tissrc'
+TISSRC = ROOT / 'tools/macos-probe/bin/tissrc'
+ABC = 'com.apple.keylayout.ABC'
+
+
+def input_source():
     try:
-        listed = subprocess.run([str(probe), 'list'], capture_output=True, text=True, timeout=5).stdout
+        listed = subprocess.run([str(TISSRC), 'list'], capture_output=True, text=True, timeout=5).stdout
     except (OSError, subprocess.SubprocessError):
         return None
     for line in listed.splitlines():
@@ -54,15 +57,32 @@ def current_input_source():
     return None
 
 
+def select_input_source(source):
+    if not TISSRC.is_file() or source is None:
+        return False
+    try:
+        result = subprocess.run([str(TISSRC), 'select', source],
+                                capture_output=True, text=True, timeout=5)
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0
+
+
 # 先查输入源再启动：TIS 枚举可能拉起已装宿主，不应发生在预览进程之后。
-source = current_input_source()
+# 已装萤火虫在系统层会先消费 ⌥M/⌥F/⌥P/⌥T，预览收不到；会话期间临时切到 ABC，结束时还原。
+original_source = input_source()
+switched_source = False
+if original_source and original_source.startswith('cn.jokerhub.inputmethod.'):
+    if select_input_source(ABC) and input_source() == ABC:
+        switched_source = True
+        print('已临时切到 ABC（预览才能收到 ⌥ 快捷键）；关闭窗口后自动切回。', flush=True)
+    else:
+        print('⚠️ 当前输入源是「萤火虫」，且无法自动切到 ABC：它会在系统层先消费 ⌥M/⌥F/⌥P/⌥T。\n'
+              '   请手动按 ⌃Space 切到 ABC 再测快捷键。', flush=True)
 process = subprocess.Popen([str(contents / 'MacOS/LampyrisIsolated'),
     '--panel-isolation-probe', 'interactive', str(work), str(ROOT / 'data/generated')])
-print(f'OWNED_APP={bundle}\nOWNED_PID={process.pid}\nOWNED_ROOT={work}\nINPUT_SOURCE={source or "unknown"}',
-      flush=True)
-if source and source.startswith('cn.jokerhub.inputmethod.'):
-    print('⚠️ 当前输入源是「萤火虫」（已装输入法）：它会在系统层先消费 ⌥M/⌥F/⌥P/⌥T 等快捷键，预览窗口收不到。\n'
-          '   测快捷键前请先按 ⌃Space 切到 ABC；关闭窗口后再切回萤火虫。', flush=True)
+print(f'OWNED_APP={bundle}\nOWNED_PID={process.pid}\nOWNED_ROOT={work}\n'
+      f'INPUT_SOURCE={input_source() or "unknown"}', flush=True)
 interactive_stdin = sys.stdin.isatty()
 if interactive_stdin:
     print('请在隔离窗口点击“输入法菜单”或“偏好设置”；关闭窗口或在此输入 close 结束。', flush=True)
@@ -109,3 +129,9 @@ finally:
             process.wait(timeout=5)
     if work.exists():
         print(f'RETAINED={work}', flush=True)
+    # 先确保预览进程已退出，再还原输入源，避免还原后又被残留窗口消费快捷键。
+    if switched_source and original_source:
+        if select_input_source(original_source) and input_source() == original_source:
+            print(f'已切回输入源：{original_source}', flush=True)
+        else:
+            print(f'未能自动切回输入源，请手动切回：{original_source}', flush=True)
