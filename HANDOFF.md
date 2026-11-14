@@ -138,7 +138,7 @@ make macos-offline-tests
 
 - 2026-11-15 / Claude Code（air）：**输入法菜单固定顺序 + 符号快捷键（ADR-360，报告 288）**。菜单动作区固定为
   「学习区 → 练习 → 符号与表情 → 使用指南 → 检查更新 → 设置 → 关于」，正式/预览共用 `InputMenuAction.sections`；
-  新增学习区/练习/符号入口；`hotkey.open_symbols` 默认 `alt+s` → `ctrl+alt+e`（已有显式配置不覆盖）。
+  新增学习区/练习/符号入口；`hotkey.open_symbols` 默认 `alt+s` → `alt+c`（C = Character；保持单修饰键队形，已有显式配置不覆盖）。
   三处菜单探针与设置页断言同步；快照缓存键加入 `libime_ffi.a`。
 - 2026-11-15 / Claude Code（air）：**交互式面板验收修复（报告 287）**。`make macos-dev` 在 Claude Code 的
   非 TTY stdin 下 `selectors.register` 崩溃；改为非 TTY 时只轮询子进程、关闭窗口即结束。交互会话中真实数据

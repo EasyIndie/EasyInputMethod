@@ -44,8 +44,8 @@ require(menu.items[6].title == "显示学习区" && menu.items[6].keyEquivalent 
     && menu.items[6].keyEquivalentModifierMask == [.option] && menu.items[6].state == .off, "learning toggle with shortcut")
 require(menu.items[7].title == "练习…" && menu.items[7].keyEquivalent == "k"
     && menu.items[7].keyEquivalentModifierMask == [.option], "practice entry shown with shortcut")
-require(menu.items[8].title == "符号与表情…" && menu.items[8].keyEquivalent == "e"
-    && menu.items[8].keyEquivalentModifierMask == [.control, .option], "symbols shortcut is ctrl+option+e")
+require(menu.items[8].title == "符号与表情…" && menu.items[8].keyEquivalent == "c"
+    && menu.items[8].keyEquivalentModifierMask == [.option], "symbols shortcut is option+c")
 require(menu.items[9].title == "使用指南…" && menu.items[9].keyEquivalent.isEmpty, "guide entry without shortcut")
 require(menu.items[11].title == "检查更新…" && menu.items[11].keyEquivalent == "g"
     && menu.items[11].keyEquivalentModifierMask == [.option], "update entry shown with shortcut")

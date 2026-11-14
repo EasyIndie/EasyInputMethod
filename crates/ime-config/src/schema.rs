@@ -296,9 +296,9 @@ pub static SCHEMA: &[OptionSpec] = &[
         key: "hotkey.open_symbols",
         value_type: ValueType::String,
         enum_labels_zh: &[],
-        default: "\"ctrl+alt+e\"",
+        default: "\"alt+c\"",
         title_zh: "符号与 emoji",
-        doc_zh: "打开符号 / emoji 选择面板（分类与中英文搜索）；默认 ctrl+alt+e（E = emoji；双修饰键避开应用快捷键，⌥E 是死键不可单用），留空 = 关闭。反引号 ` 可在候选窗中快速打开分类",
+        doc_zh: "打开符号 / emoji 选择面板（分类与中英文搜索）；默认 alt+c（C = Character/字符；单修饰键与其它状态键保持同队形，⌥E 是死键不可单用），留空 = 关闭。反引号 ` 可在候选窗中快速打开分类",
         scope: Scope::Hotkey,
     },
     OptionSpec {

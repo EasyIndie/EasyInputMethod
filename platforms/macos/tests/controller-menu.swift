@@ -77,8 +77,8 @@ require(coldMenu.items[6].title == "显示学习区" && coldMenu.items[6].keyEqu
     "learning toggle shows configured shortcut and current check state")
 require(coldMenu.items[7].title == "练习…" && coldMenu.items[7].keyEquivalent == "k"
     && coldMenu.items[7].keyEquivalentModifierMask == [.option], "practice entry shows configured shortcut")
-require(coldMenu.items[8].title == "符号与表情…" && coldMenu.items[8].keyEquivalent == "e"
-    && coldMenu.items[8].keyEquivalentModifierMask == [.control, .option], "symbols entry shows ctrl+option+e")
+require(coldMenu.items[8].title == "符号与表情…" && coldMenu.items[8].keyEquivalent == "c"
+    && coldMenu.items[8].keyEquivalentModifierMask == [.option], "symbols entry shows option+c")
 require(coldMenu.items[9].title == "使用指南…" && coldMenu.items[9].keyEquivalent == "", "guide entry")
 require(coldMenu.items[11].title == "检查更新…" && coldMenu.items[11].keyEquivalent == "g"
     && coldMenu.items[11].keyEquivalentModifierMask == [.option], "update entry shows configured shortcut")

@@ -297,7 +297,7 @@ final class LampyrisInputController: IMKInputController {
         PracticeWindow.shared.show()
     }
 
-    /// 菜单入口与 ⌥S（改为 ⌃⌥E）同源：先提交当前组合，再把选中的符号插入原插入点。
+    /// 菜单入口与 ⌥C（原 ⌥S）同源：先提交当前组合，再把选中的符号插入原插入点。
     @objc private func showSymbols() {
         if SymbolPickerWindow.shared.isVisible {
             SymbolPickerWindow.shared.close()
