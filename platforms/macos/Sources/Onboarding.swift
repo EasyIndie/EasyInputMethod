@@ -26,6 +26,9 @@ enum Onboarding {
         } catch {
             return
         }
-        OnboardingWindow.shared.show(firstRun: true)
+        // 激活回调里窗口系统可能还没就绪；延后一拍再弹，避免窗口不出现。
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            OnboardingWindow.shared.show(firstRun: true)
+        }
     }
 }
