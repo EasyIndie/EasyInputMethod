@@ -60,7 +60,6 @@ final class LampyrisInputController: IMKInputController {
     override func deactivateServer(_ sender: Any!) {
         rememberLanguage()
         autoPhrase.reset()
-        SymbolPickerWindow.shared.close()
         endSymbolComposition()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
         ConfigWatcher.shared.clear(owner: self)

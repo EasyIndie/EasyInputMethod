@@ -5,14 +5,15 @@
 
 ## 1. 做了什么
 
-- **⌥S 面板**：新增 `hotkey.open_symbols`（默认 `alt+s`）。非模态面板 = 分类下拉 + 中英文搜索 + 虚拟化表格；
-  双击 / 回车插入，Esc 关闭；面板关闭时零行为。
+- **⌥S 面板**：新增 `hotkey.open_symbols`（默认 `alt+s`）。非模态、非激活面板 = 分类下拉 + 搜索 + 虚拟化表格；
+  客户端焦点不丢，键盘事件由输入法控制器转发（字符进搜索、↑/↓ 选行、回车插入、Esc 关闭、Cmd+V 粘贴中文）；
+  双击 / 回车插入；面板关闭时零行为。
 - **反引号前缀**：中文、非组合状态下按 `` ` `` 进入宿主侧符号候选：标点 / 数学 / 货币 / 箭头 / 序号 / 其他 / emoji。
   数字、方向键、回车选择；`-`/`=`（及 `[`/`]`、`,`/`.`）翻页；Esc 取消；选 emoji 打开面板。
 - **数据**：
   - `data/symbols.tsv`（D23）：项目自编 277 个符号，六个分类，中英文搜索词。
-  - `data/generated/emoji.tsv`（D21/D22 派生）：3,781 个 fully-qualified emoji，9 个分组，全部有中文名、
-    英文名与中英文搜索词；CLDR 未收录的肤色/发型/旗帜组合由项目规则回退配名，**缺中文名 0**。
+  - `data/generated/emoji.tsv`（D5/D21/D22 派生）：3,781 个 fully-qualified emoji，9 个分组，全部有中文名、
+    英文名、中英文搜索词与拼音搜索词（`xiao` → 笑）；CLDR 未收录的肤色/发型/旗帜组合由项目规则回退配名，**缺中文名 0**。
   - `data/sources/fetch-emoji-data.sh` 固定 Unicode 16.0 / CLDR release-47 版本与 SHA；运行期不联网。
 - **许可**：符号表 CC-BY-SA-4.0；Unicode/CLDR 数据为 Unicode License V3（MIT 类，与 GPL-3 兼容）；
   原始文件下载不入库，派生 TSV 随包。
