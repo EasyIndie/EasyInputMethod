@@ -39,6 +39,8 @@
   `git tag -s v1.3.0`（`d9ca1b4`）→ Release run `43413483494` success（ZIP `66b01c64…`、DMG `fef49e86…`、appcast `43`）→ Pages run `43414150031`，站点回读 `v1.3.0 · 构建 43`；air 重装发版产物（执行 `9cb738c9…`）。
 - [x] **pro 升级**（2026-11-13）：用户手动经 `packaging/macos/upgrade.py` 从 1.2.0/39 升到 1.3.0/43（执行 `9cb738c9…`）；
   config `b8c7a351…` 未变，词库 962→963 行（真实键入），备份在 `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`。
+- [x] **验收自闭环**（2026-11-14）：移除 Safari/Chrome/Xcode/VS Code/微信的自动化验收、探针、fixture 与 `client-matrix`；
+  验收只保留系统自带 TextEdit（质量样本）与自建 `lampyris-imetype.app`；正式验收 APPLICATIONS 收敛为 TextEdit/Terminal。
 - [x] **1.2.0 候选**（Cargo 1.2.0 / build 39，候选 `31fdbcd`、执行 `ef25e92b…`）：B1 工程收口 → B2 数据地基 → B3 L3 提示 → B4 L4 练习 → B5 质量项 全部完成；
   练习页四题型 + 键位图/口诀（ADR-316–323）、学习区改版（ADR-311）、签名 tag/站点盖章等工程项（报告 251–262）。
   发版材料见 [`docs/releases/1.2.0.md`](docs/releases/1.2.0.md)；tag 待授权。

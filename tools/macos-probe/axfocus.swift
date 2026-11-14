@@ -1,4 +1,4 @@
-// 读取当前前台应用焦点元素的 AX 角色与文本，用于跨客户端验收（TextEdit/浏览器/终端/Xcode 通用）。
+// 读取当前前台应用焦点元素的 AX 角色与文本，用于跨客户端验收（当前只保留 TextEdit / Terminal）。
 import AppKit
 import ApplicationServices
 

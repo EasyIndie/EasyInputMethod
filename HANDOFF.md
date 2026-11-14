@@ -6,7 +6,7 @@
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
 - 分支：`main` = `1ce3fc5`（PR #300 交接文档）；`dev` 顶部为本批 U3-1 调研/ADR 文档（另开 PR）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **67 文件 / 348 例 PASS**、`build.sh --strict` PASS、
+- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **64 文件 / 323 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -111,7 +111,7 @@ make macos-offline-tests
 **air 已知平台差异（别当 bug）**
 
 - `q ` = 「多」（五笔一级简码），首个按键常被窗口激活吞掉 → 探针串看起来像「多你好。」。**1.1.0 起一级简码 25 字都是 1 键首选，探针串开头会多出简码字，属预期。**
-- Safari 的输入区要读 AX（macOS 27 标题不随输入更新）；TextEdit 焦点属性读不到时回退窗口文本区。
+- Safari/Chrome/Xcode 自动化已移除（2026-11-14）；TextEdit 焦点属性读不到时回退窗口文本区。
 - VoiceOver 掉 ABC 已复测**不可复现**（报告 215）；日志里 `Refusing connection name` 来自搜狗，与萤火虫无关。
 - 内存口径用**私有已提交**（ADR-292），`footprint` 只作参考。
 - 键入类验收必须在**本机图形会话**，不能 SSH。
@@ -131,6 +131,12 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-14 / Claude Code（air）：**验收自闭环收敛**。按用户要求移除 Safari/Chrome/Xcode/VS Code/微信
+  的自动化验收、探针、fixture 与 `client-matrix`；`acceptance-auto` 只保留热键/上屏 + 性能/网络，
+  `cleanup-windows.sh` 只清 TextEdit/imetype，preflight 只查 TextEdit 多实例；正式验收 APPLICATIONS
+  收敛为 TextEdit/Terminal。新增 `installed-probe-guards.py` 给 Terminal 共用保护；
+  `test-acceptance-portability.py` 改为“第三方客户端不得回流”门禁（ADR-354）。目标：本地迭代不再依赖第三方安装。
+  离线回归 67 文件/348 例 → **64 文件/323 例**；正式发版六客户端人工取证标准不变。
 - 2026-11-14 / Claude Code（air）：**N1-d 更正并接入（ADR-353，报告 280）**。初版清单误把 D3 BMP PUA
   当成 D2 源（266/156/110 不正确）；更正为 D2 补充区后，3,000 字可定位 79 个 PUA，按 `(PUA, 键位)`
   核验 66 条（`verified 58 / partial 8 / unresolved 13`）。`build_b0.py` 新增 `--pua-supplementary`；

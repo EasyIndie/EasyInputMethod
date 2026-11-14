@@ -63,10 +63,10 @@ SCENARIOS = (
      '记录原系统外观，在亮/暗及辅助显示下检查菜单、候选、设置；结束恢复原状态，多屏另项取证。',
      '无遮挡或裁切、对比可辨、状态对齐；组件指定appearance截图不能替代本项。',
      'system-appearance-before/after.json、原生桌面截图、观察结果'),
-    ('client-matrix', 'application-TextEdit', '逐客户端独立取证',
-     'TextEdit/Safari/Chrome/VSCode/WeChat/Terminal各自记录版本、所有权和焦点协议；安全字段、非US布局单列；没有安全适配器的客户端保持BLOCKED。',
-     '每客户端分别更新正式application-ID；禁止复用TextEdit通过覆盖其他客户端或真实聊天草稿。',
-     '各客户端独立步骤、输入/恢复结果；其他application-ID仍按实际状态填写'),
+    ('real-clients', 'application-TextEdit', '正式发版逐客户端独立取证',
+     'TextEdit/Safari/Chrome/VSCode/WeChat/Terminal 各自记录版本、所有权和焦点协议；安全字段、非US布局单列；没有安全适配器的客户端保持 BLOCKED。迭代自动化矩阵已移除，这里只列正式发版的人工取证步骤。',
+     '每客户端分别更新正式 application-ID；禁止复用 TextEdit 通过覆盖其他客户端或真实聊天草稿。',
+     '各客户端独立步骤、输入/恢复结果；其他 application-ID 仍按实际状态填写'),
 )
 
 
@@ -90,7 +90,7 @@ def prepare(output):
              '## 执行前条件', '',
              '当前合入/公证/安装暂停。恢复执行需明确范围及当时空闲；不能沿用历史空闲确认。',
              '先核验候选与运行宿主身份、权限、资源所有权、私有fixture与逐动作焦点保护，再允许动作。',
-             '现有TextEdit/Safari/Terminal驱动仅适用其独有隔离协议，不直接用于当前正式包或新菜单交互。',
+             '现有 TextEdit / Terminal 驱动仅适用其独有隔离协议，不直接用于当前正式包或新菜单交互；Safari/Chrome/VSCode/微信正式发版仍按人工步骤取证。',
              '未实现保护的步骤保持受控手工待验，不通过模板自动执行。', '',
              '## 停止与恢复', '',
              '焦点/输入源/对象身份变化、权限缺失、无法确认marked range或用户开始操作时停止后续动作。',
@@ -105,7 +105,7 @@ def prepare(output):
                   '- 实测 / 时间 / 操作者 / 候选身份：待记录', '']
     lines += ['## 记录规则', '',
               '每次动作记录预期与实际，失败保留原始证据并另建运行目录重测，未执行项不得填PASS。',
-              '清单是正式用例的子场景，单个子场景通过不能直接使父级通过。客户端矩阵只提供步骤，六个正式application-ID必须分别取证。',
+              '清单是正式用例的子场景，单个子场景通过不能直接使父级通过。迭代自动化矩阵已移除；正式发版仍按六个 application-ID 分别人工取证。',
               '长期组合、撤销、睡眠唤醒、性能、多屏、Intel设备、独立复现及五工作日仍须另行执行；不可由此清单推断通过。',
               'formal-report.json保持既有schema 2，完成真实观察后逐项填身份/状态/原因/相对证据路径，用acceptance-results.py check审核。',
               '验证器通过也需要人工审查证据真实性；本准备入口没有执行模式。', '']

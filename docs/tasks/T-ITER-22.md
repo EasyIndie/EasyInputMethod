@@ -33,7 +33,8 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 
 ---
 
-> **报告 230 精简：本表 65 项里 47 项已自动覆盖，人工只需 12 项（每次换包）+ 5 项（每版一次）。**
+> **报告 230 精简 + 2026-11-14 收敛**：自动覆盖与人工清单以 [`T-ITER-22-coverage.md`](T-ITER-22-coverage.md) 为准；
+> Safari/Chrome/Xcode/VS Code/微信的自动化已移除，迭代验收只保留系统自带 TextEdit 与自建 imetype。
 > 映射与人工清单见 [`T-ITER-22-coverage.md`](T-ITER-22-coverage.md)；
 > 自动化命令：`make verify` → `make macos-offline-tests` → `make macos-acceptance-full`（或 `FAST=1` 迭代档）。
 > 下面各表保留为"人工项参考"；标 🔁 的条目已由脚本/单测判过，除非怀疑回归，不必重复。
@@ -74,22 +75,18 @@ tools/macos-probe/walkthrough-evidence.sh --label it22-end      # 收尾
 | 2.9 | 切到 ABC 再切回萤火虫 | 输入源切换后仍可立即输入 | PASS| |
 | 2.10 | 睡眠 → 唤醒 → 立即输入 | 无需重启即可正常输入（宿主未崩溃） | PASS| |
 
-## 3. 客户端矩阵（必做，各 30 秒）
+## 3. 客户端抽查（只保留系统自带）
 
-> 🔁 **验收只依赖系统自带应用**（报告234）：3.1 TextEdit / 3.2 Safari 由 `client-matrix.sh` 自动回读（必需）；
-> 3.3 Chrome / 3.4 VS Code / 3.6 其它 App 都是**可选**（非系统自带，未安装就 SKIP，不算失败），
-> 3.4 VS Code 已从清单移除（不假定用户装了第三方编辑器）；3.5 Terminal 仍人工，因为自动投递会往用户 shell 打字。
+> **2026-11-14 收敛**：Safari / Chrome / Xcode / VS Code / 微信的自动化验收与探针已移除，
+> 不再要求用户安装第三方客户端。自动化只覆盖系统自带 TextEdit（`quality-samples.sh`）与
+> 自建 `lampyris-imetype.app` 测试窗口（`acceptance-auto.sh`）；Terminal 仅人工可选，不进门禁。
 
 | # | 客户端 | 预期 | 结果 | 现象 / 证据 |
 |---|---|---|---|---|
-| 3.1 | TextEdit（空白文档，系统自带） | 输入/翻页/撤销正常 | PASS| 自动：`client-matrix.sh`（required） |
-| 3.2 | Safari（文本框，系统自带；**不要用地址栏**） | 同上 | PASS| 自动：`client-matrix.sh`（required） |
-| 3.3 | Chrome（可选，非系统自带） | 同上 | | 装了才测；没装 SKIP，不计失败 |
-| 3.4 | ~~VS Code~~ | — | 已移除 | 报告234：不假定用户装了第三方编辑器 |
-| 3.5 | Terminal（普通 shell 提示符，人工） | 同上 | | 自动投递会往用户 shell 打字 |
-| 3.6 | 其它 App（可选，如已装） | 同上 | | 不必做；发现输入异常时再单独记 |
+| 3.1 | TextEdit（空白文档，系统自带） | 输入/翻页/撤销正常 | PASS | 自动：`quality-samples.sh`（TextEdit 正文输入） |
+| 3.2 | Terminal（系统自带；人工可选） | 普通编辑/组合取消正常 | | 不自动投递（会往用户 shell 打字）；需要时人工抽查 |
 
-> 地址栏残留预编辑属**已接受限制（UX-1）**：按 Esc 可取消；若出现丢字/错误提交，另记 `FAIL`，不能用旧限制覆盖。
+> Safari/Chrome 地址栏残留预编辑属**历史已接受限制（UX-1）**，**不再作为验收项**（浏览器自动化已移除）；若日常使用中发现丢字/错误提交，另记 `FAIL`。
 
 ## 4. 候选窗与视觉（必做）
 

@@ -13,8 +13,7 @@ PROBE_DIR = ROOT / 'tools/macos-probe'
 
 # 只要脚本里出现这些动作，就说明它会留下窗口或进程，必须自清场。
 GUI_MARKERS = (
-    'open -a TextEdit', 'open -a Safari', 'open -a "Google Chrome"',
-    'open -a "/Applications/Xcode', 'open -n /tmp/lampyris-imetype.app',
+    'open -a TextEdit', 'open -n /tmp/lampyris-imetype.app',
     'lampyris-imetype.app',
 )
 # 这些脚本本身就是"清理器/构建器/探测器"，不产生窗口，不需要接 trap。
@@ -55,13 +54,14 @@ class ProbeCleanupTests(unittest.TestCase):
         self.assertTrue(cleanup.is_file(), '缺少 cleanup-windows.sh')
         self.assertTrue(cleanup.stat().st_mode & 0o111, 'cleanup-windows.sh 必须可执行')
         text = cleanup.read_text(encoding='utf-8')
-        # 浏览器永不退出：用户可能开着真实会话，只允许关我们自己的标签。
-        self.assertIn('never-quit', text, '清理器必须显式拒绝退出浏览器')
         # 只在应用已在运行时才发 AppleScript，否则 `tell application` 会把应用重新拉起来。
         self.assertIn('is_running', text, '清理器必须先用 pgrep 判断应用是否在运行')
+        # 2026-11-14 收敛：Safari/Chrome/Xcode 自动化已移除，清理器不得再碰它们。
+        for app in ('Safari', 'Google Chrome', 'Xcode'):
+            self.assertNotIn(f'tell application "{app}"', text, f'清理器不应再操作 {app}')
 
     def test_entry_points_all_wire_cleanup(self):
-        for name in ('acceptance-auto.sh', 'quality-samples.sh', 'client-matrix.sh', 'acceptance-full.sh'):
+        for name in ('acceptance-auto.sh', 'quality-samples.sh', 'acceptance-full.sh'):
             text = (PROBE_DIR / name).read_text(encoding='utf-8')
             self.assertIn(CLEANUP_CALL, text, f'{name} 必须调用 {CLEANUP_CALL}')
             self.assertTrue(TRAP.search(text), f'{name} 必须 trap EXIT/INT')
