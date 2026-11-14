@@ -26,32 +26,6 @@ enum Onboarding {
         } catch {
             return
         }
-        show()
-    }
-
-    private static func show() {
-        let alert = NSAlert()
-        ImeAppearance.applyTheme(to: alert.window)
-        alert.messageText = "欢迎使用萤火虫输入法"
-        alert.informativeText = [
-            "默认混合输入：五笔优先，想不起编码时用拼音兜底。",
-            "\(hotkey("hotkey.toggle_mode")) 切换模式 · \(hotkey("hotkey.open_settings")) 设置"
-                + " · \(hotkey("hotkey.open_practice")) 练习 · \(hotkey("hotkey.toggle_wubi_learning")) 学习区",
-            "这些快捷键都可以在设置里修改；本提示只出现一次。",
-        ].joined(separator: "\n")
-        alert.addButton(withTitle: "开始使用")
-        alert.runModal()
-    }
-
-    /// 按 `config.toml` 的写法显示快捷键，例如 `⌥M`、`⇧Space`。
-    private static func hotkey(_ key: String) -> String {
-        let binding = ImeConfig.hotkey(key)
-        guard binding.kind == 2 else { return "—" }
-        var text = ""
-        if binding.modifiers.contains(.control) { text += "⌃" }
-        if binding.modifiers.contains(.option) { text += "⌥" }
-        if binding.modifiers.contains(.shift) { text += "⇧" }
-        if binding.modifiers.contains(.command) { text += "⌘" }
-        return text + binding.equivalent.uppercased()
+        OnboardingWindow.shared.show(firstRun: true)
     }
 }

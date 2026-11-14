@@ -245,6 +245,10 @@ final class LampyrisInputController: IMKInputController {
             title: "关于", action: #selector(showAbout), keyEquivalent: "")
         about.target = self
         menu.addItem(about)
+        let guide = NSMenuItem(
+            title: "使用指南…", action: #selector(showGuide), keyEquivalent: "")
+        guide.target = self
+        menu.addItem(guide)
         // 异常状态（仅在出错时出现）
         var alerts: [String] = []
         if let session, session.dictionaryError != IME_OK {
@@ -528,6 +532,11 @@ final class LampyrisInputController: IMKInputController {
         cancelClientComposition()
         SettingsPanel.shared.show(session: session)
         PerfTrace.shared.finishPanel(marks, panel: "settings")
+    }
+
+    @objc private func showGuide() {
+        cancelClientComposition()
+        OnboardingWindow.shared.show()
     }
 
     @objc private func showAbout() {

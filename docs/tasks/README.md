@@ -6,7 +6,7 @@
 > **本目录只放"还在做/还要做"的卡**（2026-11-06 起）：完成的卡一律 `git mv` 到
 > [`docs/archive/tasks/`](../archive/tasks/)，并保留原文件名，历史链接照旧可查。
 > 现在在册的只有：IT-22 走查相关三张（`T-ITER-22.md`、`T-ITER-22-coverage.md`、
-> `T-ITER-22-1.1.0-affected.md`）。清单外的文件出现即视为文档卫生违规
+> `T-ITER-22-1.1.0-affected.md`）与宿主内完整引导（`T-U1-4-host-guide.md`）。清单外的文件出现即视为文档卫生违规
 > （`platforms/macos/tests/test-docs-hygiene.py` 强制）。
 
 ## 在册任务卡
@@ -14,6 +14,7 @@
 | 卡 | 状态 | 说明 |
 |---|---|---|
 | `T-ITER-22.md` / `T-ITER-22-coverage.md` / `T-ITER-22-1.1.0-affected.md` | 待认领 | IT-22 人工走查 |
+| `T-U1-4-host-guide.md` | 进行中 | 宿主内完整引导（ADR-351） |
 
 ## 一、任务卡格式（每张卡固定结构）
 
