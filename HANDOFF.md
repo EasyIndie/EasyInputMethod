@@ -4,7 +4,7 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `2887c87`（PR #311 D24 cjk-decomp 已合入）；`dev` = `b3d3105` + 后续文档。
+- 分支：`main` = `a4f6a9c`（PR #312 cjk-decomp 83 条已合入）；`dev` = `cd9fa2b` + 后续文档。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **67 文件 / 335 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
@@ -33,7 +33,7 @@
 | **B0 schema v3（报告 243）** | 占位组件 `null` + 键位推断；修掉 D3 字根按字符解析（空格混入组件、BOM/CRLF）缺陷。 |
 | **13% 结构不一致归因（报告 242）** | 66/512 是两套**分类口径**差异（独体字判杂合、拆法不同、包围），不是数据错误；处置=五笔识别码为权威、IDS 只作校验、差异归档。 |
 | **corpus 数据来源调研（`docs/research/corpus-data-sources.md`）** | 主选 `yi-bai/ids`（MIT）+ Unihan 交叉校验；**不采用** Make Me a Hanzi 的 Arphic 图形、Hanzi Writer、KanjiVG、字典抓取。 |
-| **B0 现状（schema v6，2026-11-14）** | 1,000 字：`full` **965** / `partial` **31** / `unknown` **4**；含占位 23 条。3,000 字 B0：`full` **2,759** / `partial` **87** / `unknown` **154**；运行时 3,000 字：`full` **2,602** / `partial` **244** / `unknown` 154；N1-d 见 ADR-353/356、N2/N3/N4 见 ADR-355、D24 见 ADR-357；报告 280–283。 |
+| **B0 现状（schema v7，2026-11-15）** | 1,000 字：`full` **910** / `partial` **86** / `unknown` **4**。3,000 字：`full` **2,554** / `partial` **292** / `unknown` **154**；运行时同。标准 v1（ADR-358）下 `full` 必须通过标准字根/键位校验；报告 280–284。 |
 
 ### 2.2 发布线（2026-11-05，1.0.0 → 1.1.0/build 38）
 
@@ -132,6 +132,16 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**统一拆字标准 v1（ADR-358，报告 284）**。新增
+  `docs/standards/wubi-decomposition.md` 和 237 条标准字根清单；B0 schema v7 增加
+  `scheme`/`standardVersion`，`full` 必须无标准字根/键位不符。3,000 字 `full` 2,554、
+  `partial` 292、`unknown` 154；1,000 字 `full` 910。98/新世纪复用校验逻辑，但需各自字根/码表数据。
+- 2026-11-14 / Claude Code（air）：**PR #312 已合入 main（a4f6a9c）**。cjk-decomp 覆盖 64→83 条；
+  B0 3,000 字 `full` 2,759、`unknown` 154；运行时 `full` 2,602。新增 `--all-codes` 为全量 27,823 做准备。
+- 2026-11-14 / Claude Code（air）：**Academia Sinica 数据获取受阻**。官方 `cdp.sinica.edu.tw` 仍返回
+  Access Restricted/证书过期；Wayback 暂离线且无 `cdphanzi.mdb` 快照；未找到公开镜像。
+  `cjkvi-ids` 的 `ids-cdp.txt`（GPLv2，CDP PUA IDS）只增加约 1,077 个键位匹配候选，不足以覆盖 27,823。
+  需要用户提供 CDP 数据/镜像，或等官方站点恢复；在此之前不能宣称全量 canonical 拆字完成。
 - 2026-11-14 / Claude Code（air）：**PR #311 已合入 main（2887c87）**。D24 cjk-decomp（Apache-2.0）
   覆盖拆字 64 条；B0 3,000 字 `full` 2,740、`unknown` 172；运行时 `full` 2,583。无付费数据。
 - 2026-11-14 / Claude Code（air）：**PR #310 已合入 main（8d8fb27）**。覆盖扩量后 B0 1,000 字
