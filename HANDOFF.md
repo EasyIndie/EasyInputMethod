@@ -4,10 +4,10 @@
 
 - 更新：2026-11-15 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `7014346`（PR #314 86 专注 + 标准变体已合入）；`dev` = 本轮 D2 字形别名（ADR-359/报告 285）待开 PR。
+- 分支：`main` = `7b95ba6`（PR #314 86 专注 + 标准变体、PR #315 D2 字形别名均已合入）；`dev` = `8aa77f4`（与 origin 同步）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **67 文件 / 335 例 PASS**、`build.sh --strict` PASS、
-  `tools/check-level3-codes.py` PASS（3,362 条）。
+- 最近验证：`make verify` PASS（538 产物零网络符号）、`make macos-offline-tests` **67 文件 / 336 例 PASS**、`validate_b0.py` PASS（1,000 条）、
+  `build.sh --strict` PASS、`tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
@@ -16,7 +16,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `bda6f0903f95e07f9800577083eee452d46b0b9f3ca9520caab23d298a790df9`（U1-4 候选 `b8dd20f`，2026-11-14 装机；
-备份 `updates/install-backup-20261114T084240Z/`）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | config `3aea2bca…`、`practice.tsv` `2512f4…` 在样本前后不变；词库 1838 行 `8fa18a7d…`（build 41/42 隔离失效与性能/内存门禁的键入学习所致，行数 1784→1838） | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
+备份 `updates/install-backup-20261114T084240Z/`）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | 2026-11-15 01:19 采集：config `888ed018…`（mode=wubi / punctuation=chinese / full_width=half / chinese_variant=simplified，显式 hotkey 8 项）、词库 2046 行 `182ee41c…`；与 2026-11-14 样本时的 `3aea2bca…`/1838 行不同，属用户日常使用，非本轮改动 | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -67,7 +67,7 @@
   初版清单误用 D3 BMP PUA，已更正为 D2 补充区；可定位 79 个 PUA，按 `(PUA, 键位)` 核验 66 条，
   状态 `verified 58 / partial 8 / unresolved 13`。B0 1,000 字 `full` 735→919；运行时 3,000 字 `full` 1,904→2,454；
   D3 不再作 `componentsSource`；未解决项仍以 `？:键` 占位，不猜。
-- **P1 · 数据与方案**：corpus M2-1 调研 ✅、N1-d ✅、N2/N3/N4 ✅（ADR-355）、cjk-decomp 扩量 ✅（ADR-357）、标准 v1 ✅（ADR-358）、D2 字形别名 ✅（ADR-359）；余项是覆盖扩量（87.1%→98%，受许可数据限制）、13 个语境歧义 PUA、P1-5 拆字说明同步、多方案码表（TBD-2，98/新世纪暂不实现）。
+- **P1 · 数据与方案**：corpus M2-1 调研 ✅、N1-d ✅、N2/N3/N4 ✅（ADR-355）、cjk-decomp 扩量 ✅（ADR-357）、标准 v1 ✅（ADR-358）、D2 字形别名 ✅（ADR-359）；覆盖已到许可数据上限（87.1%），P1-5 已关闭；余项仅 13 个语境歧义 PUA（可选）与多方案码表（TBD-2，98/新世纪暂不实现）。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
 
@@ -87,10 +87,14 @@
 | 8 | ~~宿主内完整引导真机目视~~：候选 `b8dd20f`（执行 `bda6f090…`）菜单入口/翻页/首次自动弹窗 PASS；标记恢复、探针窗口与临时文档已清理 | ✅ 2026-11-14（报告 276） |
 | 9 | ~~U3-1 整句模型~~：原型未达 +5pp，**已关闭**（ADR-352，报告 278）；不再投入 | ✅ 2026-11-14 关闭 |
 | 10 | ~~U3-4/N1-d~~：已更正数据源并接入 66 条 `(PUA, 键位)` 核验；运行时 `full` 1,904→2,454，`partial` 876→326；剩余 13 个 PUA 保持占位 | ✅ 2026-11-14（报告 280） |
-| 11 | ~~N2/N3/N4 数据地基~~：56 个成字字根真实笔顺、结构覆盖 2,766、8 个 D2 漏拆补齐；schema v6 | ✅ 2026-11-14（ADR-355，报告 281；待提交 PR） |
+| 11 | ~~N2/N3/N4 数据地基~~：56 个成字字根真实笔顺、结构覆盖 2,766、8 个 D2 漏拆补齐；schema v6 | ✅ 2026-11-14（ADR-355，报告 281） |
+| 12 | ~~标准 v1 + 86 专注~~：schema v7、241 条 root/key、98/新世纪仅留 profile | ✅ 2026-11-15（ADR-358/359，报告 284/285；PR #314/#315） |
+| 13 | **集成验收（不发版）**：用当前 `main` 构建候选包，做自闭环验收（热键/上屏、TextEdit 实键入、性能/零外联、学习区数据回读），确认已合入改动无回归 | ⏳ 待授权换包 |
 
-剩余开发项：高频字拆解仅剩 13 个未解决 PUA（保持占位，后续才需要 Academia Sinica/自绘）；
-整句模型、多方案码表（依赖外部数据/许可）。符号 / emoji（U3-5）已真机 PASS。
+**发版决策（2026-11-15）**：功能迭代较多，**先不发版**，先做集成验收。
+剩余开发项：86 覆盖率已到**许可数据上限**——3,000 字 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；
+继续提升需要 canonical 五笔根序数据（公开可用的没有），或接入 CDP（GPL-3，结构/笔数，不补根序）。
+98/新世纪按用户要求暂不实现，只保留 `schemes/*.toml` 扩展点。整句模型已关闭。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -132,6 +136,9 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**PR #314、#315 已合入 main（`7014346`、`7b95ba6`）**。PR #314 = 86 专注 +
+  标准变体（240→241 条 root/key，98/新世纪仅留 profile）；PR #315 = D2 字形别名（ADR-359，报告 285）。
+  当前 B0 3,000 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；1,000 `full` 928。CI 全绿后均为 merge commit。
 - 2026-11-15 / Claude Code（air）：**D2 字形别名归一化（ADR-359，报告 285）**。逐条复查标准 v1 的
   73 条 `positionMismatch`，把 D2 用假名/注音符号代替部件的同形写法归一化（`リ→刂`、`ㄗ→卩`、`ク→夕`），
   另补 `彑`（X）到标准字根清单、`ノ` 作撇笔画。B0 1,000 字 `full` 916→**928**、`partial` 80→**68**；
