@@ -579,6 +579,8 @@ def main() -> int:
     parser.add_argument('--coverage-decomp',
                         help='D24 cjk-decomp 覆盖拆字（可选）')
     parser.add_argument('--limit', type=int, default=1000)
+    parser.add_argument('--all-codes', action='store_true',
+                        help='覆盖全码表全部字（27,823），忽略 --limit')
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
@@ -626,7 +628,11 @@ def main() -> int:
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
     coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
 
-    ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
+    if args.all_codes:
+        ranked = sorted(((char, 0) for char in codes),
+                        key=lambda kv: (-freq.get(kv[0], 0), kv[0]))
+    else:
+        ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
     for char, _weight in ranked:
         code = codes.get(char)
@@ -671,6 +677,7 @@ def main() -> int:
     report = {
         'schemaVersion': SCHEMA_VERSION,
         'entries': len(entries),
+        'allCodes': bool(args.all_codes),
         'quality': {'full': stats.get('full', 0), 'partial': stats.get('partial', 0),
                     'unknown': stats.get('unknown', 0)},
         'classes': {k.split(':', 1)[1]: v for k, v in stats.items() if k.startswith('class:')},

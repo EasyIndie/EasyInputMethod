@@ -25,22 +25,22 @@
 5. 多个候选视为歧义，跳过；CJK 笔画字形归一化为 `一丨丿丶乙`；
 6. 只对 B0 当前非 `full` 的字生成。
 
-产物 `data/learning/wubi86-cjkdecomp-coverage.tsv`（64 条，项目自编编排 CC-BY-SA-4.0）；B0 用 `componentsSource=D24`。
+产物 `data/learning/wubi86-cjkdecomp-coverage.tsv`（83 条，项目自编编排 CC-BY-SA-4.0）；B0 用 `componentsSource=D24`。
 
 ## 3. 结果
 
 | 指标 | 前（报告 282） | 后 |
 |---|---:|---:|
-| B0 1,000 字 `full` | 955 | **964** |
+| B0 1,000 字 `full` | 955 | **965** |
 | B0 1,000 字 `partial` | 37 | **31** |
-| B0 1,000 字 `unknown` | 8 | **5** |
-| B0 3,000 字 `full` | 2,676 | **2,740** |
-| B0 3,000 字 `partial` | 104 | **88** |
-| B0 3,000 字 `unknown` | 220 | **172** |
-| 运行时 `full` | 2,519 | **2,583** |
-| 运行时 `partial` | 261 | **245** |
+| B0 1,000 字 `unknown` | 8 | **4** |
+| B0 3,000 字 `full` | 2,676 | **2,759** |
+| B0 3,000 字 `partial` | 104 | **87** |
+| B0 3,000 字 `unknown` | 220 | **154** |
+| 运行时 `full` | 2,519 | **2,602** |
+| 运行时 `partial` | 261 | **244** |
 
-覆盖率：B0 **91.3%**、运行时 **86.1%**；仍未达 98% 门槛。
+覆盖率：B0 **92.0%**、运行时 **86.7%**；仍未达 98% 门槛。
 
 ## 4. 典型样例
 
@@ -55,7 +55,7 @@
 
 ## 5. 仍未完成
 
-- 172 个 `unknown`：cjk-decomp 的树切分无法给出 n/n-1 个键位全匹配的叶子（或结构不匹配）；
+- 154 个 `unknown`：cjk-decomp 的树切分无法给出 n/n-1 个键位全匹配的叶子（或结构不匹配）；
   多数是极生僻繁体/异体字。
 - 88 个 `partial`：主要是 13 个语境歧义 PUA、D2 缺根/位次问题。
 - 未用 D3 作来源；未引入付费数据。
@@ -63,7 +63,7 @@
 
 ## 6. 验证
 
-- `coverage_decomp.py` 生成报告：targets 324 / accepted 64 / ambiguous 5 / no_cut 187 / key_mismatch 60 / recognition_mismatch 8；
+- `coverage_decomp.py` 生成报告：targets 324 / accepted 83 / ambiguous 5 / no_cut 187 / key_mismatch 60 / recognition_mismatch 8；
 - `validate_b0.py`、`test-cjkdecomp-coverage.py`、`make macos-offline-tests`、`make verify`。
 
 ## 7. 关联

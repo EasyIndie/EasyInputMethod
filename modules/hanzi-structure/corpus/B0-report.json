@@ -1,22 +1,23 @@
 {
   "schemaVersion": 6,
   "entries": 1000,
+  "allCodes": false,
   "quality": {
-    "full": 964,
+    "full": 965,
     "partial": 31,
-    "unknown": 5
+    "unknown": 4
   },
   "classes": {
     "radical-char": 42,
-    "compound": 930,
+    "compound": 931,
     "key-name": 23,
-    "None": 5
+    "None": 4
   },
   "withRecognition": 636,
   "componentsSource": {
     "D18": 50,
     "D2": 913,
-    "D24": 9
+    "D24": 10
   },
   "puaMap": "corpus/pua-map.json",
   "placeholderEntries": 23,
@@ -24,10 +25,10 @@
   "recognitionSlotPua": 15,
   "withStrokes": 42,
   "withWritingStrokes": 42,
-  "structureCoverage": 988,
+  "structureCoverage": 989,
   "structureSource": {
     "recognition": 636,
-    "IDS": 352
+    "IDS": 353
   },
   "structureConflicts": 62,
   "manualDecomp": 50,
@@ -85,7 +86,7 @@
     },
     "coverage_decomp": {
       "path": "../../data/learning/wubi86-cjkdecomp-coverage.tsv",
-      "sha256": "22c439581feb938bf836340b05d70ad04d90c20226eb38290f909b81ed3fa88b"
+      "sha256": "914425748261989073c17b2486185917005858889da7169d9cb8bb9e04fcf9d5"
     }
   },
   "generator": "modules/hanzi-structure/tools/build_b0.py",
