@@ -638,6 +638,8 @@ final class LampyrisInputController: IMKInputController {
     /// 没有组合态时，IMK 会把带 Option 的按键当"文本"直接交给默认实现（于是文档里出现 ¬）。
     /// 这里先拦热键，其它文本原样交给系统。
     override func inputText(_ string: String!, client sender: Any!) -> Bool {
+        // 某些客户端在未组合态把按键走 inputText 而不是 handle；首次指南两条路径都触发。
+        DispatchQueue.main.async { Onboarding.presentIfNeeded() }
         if Self.hudDiagEnabled {
             let event = NSApp.currentEvent
             Self.hudDiag("inputText text=\(string ?? "-") event=\(event.map { "\($0.type.rawValue):\($0.characters ?? "-")" } ?? "nil")")
