@@ -22,7 +22,7 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 6  # v6：N2 真实笔顺 / N3 五笔结构 / N4 完整拆字（ADR-355）
+SCHEMA_VERSION = 7  # v7：统一拆字标准 v1（标准字根清单 + 键位校验，ADR-358）
 
 # 识别码反查表：末笔 × 结构（顺序：左右、上下、杂合）
 RECOGNITION = {
@@ -113,6 +113,15 @@ def load_root_strokes(path: Path) -> dict[str, list[str]]:
             strokes = [s for s in parts[1].split() if s]
             if strokes:
                 out[parts[0]] = strokes
+    return out
+
+
+def load_root_inventory(path: Path) -> dict[str, set[str]]:
+    """标准字根清单：root -> 允许的键位集合。"""
+    out: dict[str, set[str]] = {}
+    for parts in read_rows(path, 3):
+        if len(parts) >= 2 and len(parts[0]) == 1:
+            out.setdefault(parts[0], set()).add(parts[1].lower())
     return out
 
 
@@ -322,7 +331,8 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           manual_decomp: dict[str, list[str]] | None = None,
           d2_bmp_map: dict[tuple[str, str], str] | None = None,
           context_map: dict[tuple[str, str, str], str] | None = None,
-          coverage_decomp: dict[str, list[str]] | None = None) -> dict:
+          coverage_decomp: dict[str, list[str]] | None = None,
+          root_inventory: dict[str, set[str]] | None = None) -> dict:
     pua_map = pua_map or {}
     supp_map = supp_map or {}
     root_strokes = root_strokes or {}
@@ -330,6 +340,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     d2_bmp_map = d2_bmp_map or {}
     context_map = context_map or {}
     coverage_decomp = coverage_decomp or {}
+    root_inventory = root_inventory or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
     ids = ids or {}
@@ -338,6 +349,8 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     entry = {
         'char': char,
         'code': code,
+        'scheme': 'wubi86',
+        'standardVersion': 'wubi86-1.0',
         'class': None,
         'componentsSource': None,
         'components': [],
@@ -451,6 +464,30 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
                                  char=char, context_map=context_map)
                           if glyphs else ([], 0))
 
+    # 标准 v1：D2 与全码等长时，末位可能是「可读的识别码字形」（如 我 的末位 丶）。
+    # 只有当前 n-1 位全部符合标准字根/键位、且末位不是该键的标准字根时，才把它当识别码槽丢弃。
+    tail_pua_dropped = bool(per_position and glyphs and is_pua(glyphs[-1]))
+    if (per_position and not tail_pua_dropped and decoded2 and len(code) >= 3
+            and code[-1] in RECOGNITION):
+        last = decoded2[-1]
+        last_allowed = root_inventory.get(last) if isinstance(last, str) and root_inventory else None
+        last_is_root = bool(last_allowed and code[-1] in last_allowed)
+        stem = decoded2[:-1]
+        stem_ok = bool(stem) and all(c is not None for c in stem)
+        if stem_ok:
+            for c, k in zip(stem, code[:len(stem)]):
+                if root_inventory:
+                    if c not in root_inventory or k not in root_inventory[c]:
+                        stem_ok = False
+                        break
+                elif c in readable_keys and readable_keys[c] != k:
+                    stem_ok = False
+                    break
+        if stem_ok and not last_is_root and isinstance(last, str) and last in STROKES:
+            decoded2 = stem
+            unknown2 = 0
+            notes.append('末位为识别码槽（可读字形），已丢弃')
+
     # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
     # 解不出的字形保留占位，宁可 partial，也不把未许可来源写进产物。
     source, readable, unknown_glyphs = ('D24' if coverage else ('D18' if manual else 'D2')), decoded2, unknown2
@@ -480,10 +517,22 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             entry['components'] = readable
             unknown_glyphs = sum(1 for c in readable if c is None)
             notes.append(f'按 IDS（D19）补齐 {filled} 个占位字根：{entry["ids"]}')
-    mismatched = [i for i, (c, k) in enumerate(zip(readable, entry['keys']))
-                  if isinstance(c, str) and c in readable_keys and readable_keys[c] != k]
-    # 诊断用：字形键与码位不一致的位次（D14 只收常用字根，复合字形会误报，故不据此降级）
+    mismatched = []
+    for i, (c, k) in enumerate(zip(readable, entry['keys'])):
+        if c is None:
+            mismatched.append(i)
+        elif root_inventory:
+            allowed = root_inventory.get(c)
+            if not allowed or k not in allowed:
+                mismatched.append(i)
+        elif c in readable_keys and readable_keys[c] != k:
+            mismatched.append(i)
+    # 标准 v1：组件必须是标准字根清单里的字形，且键位与码位一致；否则 partial。
     entry['positionMismatch'] = [i + 1 for i in mismatched]
+    if mismatched:
+        notes.append('标准字根/键位不符：' +
+                     '、'.join(f'第 {i + 1} 个（{readable[i]}，键 {entry["keys"][i]}）'
+                               for i in mismatched))
     if any(c is None for c in readable):
         notes.append('占位字根：' +
                      '、'.join(f'第 {i + 1} 个（键 {k}）'
@@ -503,6 +552,8 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         entry['quality'] = 'partial' if unknown_glyphs else 'full'
     else:
         notes.append(f'字根数 {n} 与码长 {len(code)} 对不上，无法判定识别码')
+        entry['quality'] = 'partial'
+    if mismatched and entry['quality'] == 'full':
         entry['quality'] = 'partial'
     return finish(entry)
 
@@ -578,6 +629,8 @@ def main() -> int:
                         help='PUA 语境表（字+PUA+键位，可选）')
     parser.add_argument('--coverage-decomp',
                         help='D24 cjk-decomp 覆盖拆字（可选）')
+    parser.add_argument('--root-inventory',
+                        help='五笔86 标准字根清单（ADR-358，可选）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--all-codes', action='store_true',
                         help='覆盖全码表全部字（27,823），忽略 --limit')
@@ -602,6 +655,8 @@ def main() -> int:
         paths['pua_context'] = Path(args.pua_context)
     if args.coverage_decomp:
         paths['coverage_decomp'] = Path(args.coverage_decomp)
+    if args.root_inventory:
+        paths['root_inventory'] = Path(args.root_inventory)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -627,6 +682,7 @@ def main() -> int:
     d2_bmp_map = load_pua_d2_bmp(Path(args.pua_d2_bmp)) if args.pua_d2_bmp else {}
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
     coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
+    root_inventory = load_root_inventory(Path(args.root_inventory)) if args.root_inventory else {}
 
     if args.all_codes:
         ranked = sorted(((char, 0) for char in codes),
@@ -637,7 +693,8 @@ def main() -> int:
     for char, _weight in ranked:
         code = codes.get(char)
         if not code:
-            entries.append({'char': char, 'code': None, 'class': None, 'components': [],
+            entries.append({'char': char, 'code': None, 'scheme': 'wubi86',
+                            'standardVersion': 'wubi86-1.0', 'class': None, 'components': [],
                             'keys': [], 'strokes': None, 'strokesSource': None, 'strokesKind': None,
                             'structure': None, 'structureSource': None, 'structureConflict': False,
                             'recognition': None, 'short1': short1.get(char), 'short2': short2.get(char),
@@ -646,7 +703,8 @@ def main() -> int:
             continue
         glyphs = radicals.get(char) or []
         if not glyphs and char not in coverage_decomp and char not in manual_decomp:
-            entries.append({'char': char, 'code': code, 'class': None, 'componentsSource': None,
+            entries.append({'char': char, 'code': code, 'scheme': 'wubi86',
+                            'standardVersion': 'wubi86-1.0', 'class': None, 'componentsSource': None,
                             'components': [], 'keys': [], 'strokes': None,
                             'strokesSource': None, 'strokesKind': None,
                             'structure': None, 'structureSource': None, 'structureConflict': False,
@@ -662,7 +720,8 @@ def main() -> int:
                              ids=ids, supp_map=supp_map,
                              root_strokes=root_strokes, manual_decomp=manual_decomp,
                              d2_bmp_map=d2_bmp_map, context_map=context_map,
-                             coverage_decomp=coverage_decomp))
+                             coverage_decomp=coverage_decomp,
+                             root_inventory=root_inventory))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}
@@ -678,6 +737,9 @@ def main() -> int:
         'schemaVersion': SCHEMA_VERSION,
         'entries': len(entries),
         'allCodes': bool(args.all_codes),
+        'scheme': 'wubi86',
+        'standardVersion': 'wubi86-1.0',
+        'standardMismatchEntries': sum(1 for e in entries if e.get('positionMismatch')),
         'quality': {'full': stats.get('full', 0), 'partial': stats.get('partial', 0),
                     'unknown': stats.get('unknown', 0)},
         'classes': {k.split(':', 1)[1]: v for k, v in stats.items() if k.startswith('class:')},

@@ -1,8 +1,8 @@
 # B0 结构事实库 · 数据模型（试点 1,000 高频字）
 
 > 状态：**B0 试点**（ADR-189 的第一次落地）。只读事实库，不进入输入热路径，不改候选排序。
-> 版本：`schemaVersion: 6`（v6 新增 N2 真实笔顺 / N3 五笔结构 / N4 完整拆字，ADR-355/报告 281）
-> 上一版：`schemaVersion: 5`（v5 新增 `ids` / `idsStructure`，并用 IDS 填占位字根，见报告 245）；`schemaVersion: 4`（v4 新增 `strokes` / `positionMismatch`，并把 D2 的「每码位一形」对齐写成规则，见报告 244；
+> 版本：`schemaVersion: 7`（v7 统一拆字标准 v1，ADR-358/报告 284）
+> 上一版：`schemaVersion: 6`（v6 新增 N2 真实笔顺 / N3 五笔结构 / N4 完整拆字，ADR-355/报告 281）；`schemaVersion: 5`（v5 新增 `ids` / `idsStructure`，并用 IDS 填占位字根，见报告 245）；`schemaVersion: 4`（v4 新增 `strokes` / `positionMismatch`，并把 D2 的「每码位一形」对齐写成规则，见报告 244；
 > v3 = 占位组件（报告 243），v2 = `componentsSource`/`keys`（报告 241））。字段变更必须升版本并写报告。
 
 ## 1. 目的
@@ -16,6 +16,8 @@
 |---|---|---|
 | `char` | string | 单字 |
 | `code` | string | 五笔86 全码（来自 D1 生成码表） |
+| `scheme` | string | 方案 ID，当前固定 `wubi86` |
+| `standardVersion` | string | 拆字标准版本，当前 `wubi86-1.0` |
 | `class` | enum | `key-name`（键名字）/ `radical-char`（成字字根）/ `compound`（合体字） |
 | `components` | (string\|null)[] | 字根序列（可读字形；**不含任何 PUA 字形**）。`null` = **占位组件**：位置已知、字形未识别，键位见 `keys` |
 | `componentsSource` | enum | `D1` / `D2` / `D18` / `null`：组件来自哪一份拆字源（ADR-310：D3 只作 oracle，不作来源；D18 = 项目自编完整拆字） |
@@ -28,7 +30,7 @@
 | `structure` | string \| null | **五笔口径**的结构（左右/上下/杂合）；识别码优先，否则 IDS 参考 |
 | `structureSource` | enum | `recognition` / `IDS` / `null` |
 | `structureConflict` | bool | 识别码结构与 IDS 结构冲突（口径差异，记录不改） |
-| `positionMismatch` | int[] | 诊断用：字形键与码位不一致的位次（D14 只收常用字根，复合字形会误报，不据此降级） |
+| `positionMismatch` | int[] | 标准 v1 诊断：组件不在标准字根清单、或其键位与码位不一致的位次；`full` 必须为空 |
 | `recognition` | object \| null | `{key, stroke, structure, because}`：识别码字母、末笔、结构、判定依据 |
 | `short1` / `short2` | string \| null | 一级 / 二级简码（D17 / D17-bis） |
 | `pinyin` | string \| null | 首选读音（D5） |
@@ -77,7 +79,7 @@
 | `unknown` | 缺码或缺拆字数据 |
 
 **发布规则**：`partial` / `unknown` 允许存在，但必须带 `notes`；对外讲解时按等级降级表述，
-不得把 `partial` 当完整解释。
+不得把 `partial` 当完整解释。`full` 还必须满足 ADR-358 标准 v1：组件在 `root-inventory` 中、键位/识别码/结构一致、无 `positionMismatch`。
 
 ## 5. 产物
 

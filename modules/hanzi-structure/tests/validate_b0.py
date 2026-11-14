@@ -12,8 +12,8 @@ import json
 import sys
 from pathlib import Path
 
-SCHEMA_VERSION = 6  # v6：N2 真实笔顺 / N3 五笔结构 / N4 完整拆字（ADR-355）
-FIELDS = {'char', 'code', 'class', 'componentsSource', 'components', 'keys', 'strokes',
+SCHEMA_VERSION = 7  # v7：统一拆字标准 v1（ADR-358）
+FIELDS = {'char', 'code', 'scheme', 'standardVersion', 'class', 'componentsSource', 'components', 'keys', 'strokes',
           'strokesSource', 'strokesKind', 'structure', 'structureSource', 'structureConflict',
           'ids', 'idsStructure', 'positionMismatch', 'recognition', 'short1', 'short2',
           'pinyin', 'frequency', 'quality', 'notes'}
@@ -91,6 +91,12 @@ def main() -> int:
             problems.append(f'{char}: class 非法 {entry["class"]}')
         if entry['quality'] not in QUALITIES:
             problems.append(f'{char}: quality 非法 {entry["quality"]}')
+        if entry.get('scheme') != 'wubi86':
+            problems.append(f'{char}: scheme 非 wubi86')
+        if entry.get('standardVersion') != 'wubi86-1.0':
+            problems.append(f'{char}: standardVersion 非 wubi86-1.0')
+        if entry['quality'] == 'full' and entry.get('positionMismatch'):
+            problems.append(f'{char}: full 条目不得有标准字根/键位不符')
         if entry['code'] and codes.get(char) != entry['code']:
             problems.append(f'{char}: 全码与输入表不一致 {entry["code"]} != {codes.get(char)}')
         if entry['short1'] != short1.get(char):

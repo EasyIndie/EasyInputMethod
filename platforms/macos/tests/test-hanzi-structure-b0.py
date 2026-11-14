@@ -101,7 +101,7 @@ class B0CorpusTests(unittest.TestCase):
         entries = json.loads((MODULE / 'corpus/B0.json').read_text(encoding='utf-8'))
         report = json.loads((MODULE / 'corpus/B0-report.json').read_text(encoding='utf-8'))
         self.assertEqual(report['entries'], len(entries))
-        self.assertEqual(report['schemaVersion'], 6)
+        self.assertEqual(report['schemaVersion'], 7)
         recognition = {
             'g': ('横', '左右'), 'f': ('横', '上下'), 'd': ('横', '杂合'),
             'h': ('竖', '左右'), 'j': ('竖', '上下'), 'k': ('竖', '杂合'),

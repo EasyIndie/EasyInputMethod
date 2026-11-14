@@ -33,7 +33,7 @@
 | **B0 schema v3（报告 243）** | 占位组件 `null` + 键位推断；修掉 D3 字根按字符解析（空格混入组件、BOM/CRLF）缺陷。 |
 | **13% 结构不一致归因（报告 242）** | 66/512 是两套**分类口径**差异（独体字判杂合、拆法不同、包围），不是数据错误；处置=五笔识别码为权威、IDS 只作校验、差异归档。 |
 | **corpus 数据来源调研（`docs/research/corpus-data-sources.md`）** | 主选 `yi-bai/ids`（MIT）+ Unihan 交叉校验；**不采用** Make Me a Hanzi 的 Arphic 图形、Hanzi Writer、KanjiVG、字典抓取。 |
-| **B0 现状（schema v6，2026-11-14）** | 1,000 字：`full` **965** / `partial` **31** / `unknown` **4**；含占位 23 条。3,000 字 B0：`full` **2,759** / `partial` **87** / `unknown` **154**；运行时 3,000 字：`full` **2,602** / `partial` **244** / `unknown` 154；N1-d 见 ADR-353/356、N2/N3/N4 见 ADR-355、D24 见 ADR-357；报告 280–283。 |
+| **B0 现状（schema v7，2026-11-15）** | 1,000 字：`full` **910** / `partial` **86** / `unknown` **4**。3,000 字：`full` **2,554** / `partial` **292** / `unknown` **154**；运行时同。标准 v1（ADR-358）下 `full` 必须通过标准字根/键位校验；报告 280–284。 |
 
 ### 2.2 发布线（2026-11-05，1.0.0 → 1.1.0/build 38）
 
@@ -132,6 +132,10 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-15 / Claude Code（air）：**统一拆字标准 v1（ADR-358，报告 284）**。新增
+  `docs/standards/wubi-decomposition.md` 和 237 条标准字根清单；B0 schema v7 增加
+  `scheme`/`standardVersion`，`full` 必须无标准字根/键位不符。3,000 字 `full` 2,554、
+  `partial` 292、`unknown` 154；1,000 字 `full` 910。98/新世纪复用校验逻辑，但需各自字根/码表数据。
 - 2026-11-14 / Claude Code（air）：**PR #312 已合入 main（a4f6a9c）**。cjk-decomp 覆盖 64→83 条；
   B0 3,000 字 `full` 2,759、`unknown` 154；运行时 `full` 2,602。新增 `--all-codes` 为全量 27,823 做准备。
 - 2026-11-14 / Claude Code（air）：**Academia Sinica 数据获取受阻**。官方 `cdp.sinica.edu.tw` 仍返回
