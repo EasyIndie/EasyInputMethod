@@ -183,6 +183,15 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
+        key: "practice.staged_unlock",
+        value_type: ValueType::Bool,
+        enum_labels_zh: &[],
+        default: "true",
+        title_zh: "练习分阶段解锁",
+        doc_zh: "前一题型练满 30 字（题库不足 30 时按题库数）且正确率 ≥90% 后解锁下一题型；已有练习记录的题型不会回锁。默认开启",
+        scope: Scope::CandidateWindow,
+    },
+    OptionSpec {
         key: "appearance.theme",
         value_type: ValueType::Enum {
             values: &["auto", "light", "dark"],
