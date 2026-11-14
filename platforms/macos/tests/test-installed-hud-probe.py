@@ -41,7 +41,7 @@ class PanelKinds(unittest.TestCase):
     def test_frontmost_check_accepts_both_localisations(self):
         self.assertTrue(probe.client_frontmost({'frontmost': 'TextEdit'}))
         self.assertTrue(probe.client_frontmost({'frontmost': '文本编辑'}))
-        self.assertFalse(probe.client_frontmost({'frontmost': 'Safari'}))
+        self.assertFalse(probe.client_frontmost({'frontmost': 'Finder'}))
 
 
 class HelperContract(unittest.TestCase):

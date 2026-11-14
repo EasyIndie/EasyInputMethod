@@ -24,12 +24,11 @@ if [ -x "$BIN/session" ]; then
     "$BIN/session" 2>/dev/null | grep -q '"locked":true' \
         && check screen_lock fail "屏幕已锁定：先解锁再跑" || check screen_lock ok ""
 fi
-# 同一个客户端开多个实例会让「AppleScript 建文档」与「AX 读前台窗口」错位（报告207 §3.1）。
+# 同一个 TextEdit 开多个实例会让「AppleScript 建文档」与「AX 读前台窗口」错位（报告207 §3.1）。
+# 2026-11-14：Safari/Chrome/Xcode 自动化验收已移除，客户端只保留系统自带 TextEdit。
 dupes=""
-for name in TextEdit Safari "Google Chrome"; do
-    count=$(pgrep -x "$(echo "$name" | tr -d ' ')" 2>/dev/null | wc -l | tr -d ' ')
-    [ "${count:-0}" -gt 1 ] && dupes="${dupes}${name}x${count} "
-done
+count=$(pgrep -x TextEdit 2>/dev/null | wc -l | tr -d ' ')
+[ "${count:-0}" -gt 1 ] && dupes="TextEditx${count}"
 [ -z "$dupes" ] && check clients_single_instance ok "" || check clients_single_instance fail "客户端多实例：${dupes}"
 front=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)
 [ -n "$front" ] && check gui_session ok "" || check gui_session fail "无图形会话（无法取前台应用）"

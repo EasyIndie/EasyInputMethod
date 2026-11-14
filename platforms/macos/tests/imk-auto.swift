@@ -1,6 +1,6 @@
 // 萤火虫 macOS 自动化测试辅助工具（AX / 鼠标事件 / 输入源 / IME 菜单）。
 //
-// 供 `run-panel-acceptance.sh`（⑦⑧⑨）与 `run-input-apps.sh`（⑩）复用。
+// 供 `run-panel-acceptance.sh`（⑦⑧⑨）复用。
 // 只依赖系统框架（AppKit / ApplicationServices / Carbon），运行时由脚本用 swiftc 编译。
 //
 // 子命令：

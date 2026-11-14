@@ -10,7 +10,7 @@ OWNED_TEXTEDIT_SCRIPT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/owned-texte
 owned_record() {
     local app="$1" kind="$2" id="$3"
     case "$app:$kind" in
-        'TextEdit:window'|'Google Chrome:window'|'Safari:window'|'Terminal:window') ;;
+        'TextEdit:window'|'Terminal:window') ;;
         *) echo 'BLOCKED 未识别的测试资源类型' >&2; return 1 ;;
     esac
     case "$id" in ''|*[!0-9]*) echo 'BLOCKED 无法取得测试对象 ID；保留资源供人工检查' >&2; return 1 ;; esac
@@ -66,7 +66,6 @@ owned_do() {
     [ -n "${OWNED_ID:-}" ] || { echo 'BLOCKED 未登记输入目标' >&2; exit 1; }
     case "$OWNED_APP" in
         TextEdit|Terminal) role=AXTextArea ;;
-        'Google Chrome'|Safari) role=AXTextField ;;
         *) echo 'BLOCKED 未识别输入目标' >&2; exit 1 ;;
     esac
     case "$operation" in

@@ -304,7 +304,8 @@ case_refocus() {
     pid=$(front_pid)
     "$BIN/keytopid" "$pid" 'ctrl' 150 400 --hid >/dev/null 2>&1; sleep 0.5
     "$BIN/keytopid" "$pid" 'nihao ' 250 800 --hid >/dev/null 2>&1; sleep 1.2
-    open -a Safari >/dev/null 2>&1; sleep 2
+    # 切到 Finder 再回来模拟失焦（Finder 是系统自带；不再依赖 Safari/Chrome）。
+    open -a Finder >/dev/null 2>&1; sleep 2
     open -a TextEdit >/dev/null 2>&1; sleep 2
     got=$("$BIN/axtext" 2>/dev/null | head -1)
     if check 'exact:你好' "$got"; then printf '%-26s PASS  %s\n' "失焦再回来不丢字" "$got"; else printf '%-26s FAIL  期望 你好，实得 %s\n' "失焦再回来不丢字" "$got"; FAILED=$((FAILED + 1)); fi

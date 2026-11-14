@@ -41,7 +41,7 @@ def main():
     parser.add_argument('helper', type=Path)
     parser.add_argument('--scenario', choices=['normal', 'failure', 'INT', 'TERM'], default='normal')
     args = parser.parse_args()
-    spec = importlib.util.spec_from_file_location('guards', BASE / 'run-installed-safari-probe.py')
+    spec = importlib.util.spec_from_file_location('guards', BASE / 'installed-probe-guards.py')
     guards = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(guards)
     guards.require_ui_scripting()

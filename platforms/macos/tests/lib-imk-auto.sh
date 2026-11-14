@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # 萤火虫 macOS 自动化测试共享库。
 #
-# 被 `run-panel-acceptance.sh`（⑦⑧⑨）与 `run-input-apps.sh`（⑩）source。
+# 被 `run-panel-acceptance.sh`（⑦⑧⑨）source。
 # 调用方需先定义 ROOT（仓库根）与 WORK（临时目录）；本库负责编译并调用 `imk-auto`。
 #
 # 依赖：图形登录会话、终端已授权「辅助功能」、萤火虫已安装并启用。
@@ -50,7 +50,7 @@ activate_app() {
     sleep "${2:-1.0}"
 }
 
-# 通过剪贴板读取当前聚焦文本框内容（适用于不暴露 AX 的 App，如微信）。
+# 通过剪贴板读取当前聚焦文本框内容（适用于不暴露 AX 的 App）。
 # 先清空剪贴板，再 Cmd+A / Cmd+C，避免读到旧值。
 field_read_clipboard() {
     printf '' | pbcopy

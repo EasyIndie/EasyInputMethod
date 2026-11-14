@@ -98,7 +98,7 @@ class AcceptanceResultsTests(unittest.TestCase):
             command.write_text('#!/bin/bash\nprintf "%s\\n" "$0" >> "$GATE_CALLS"\nexit 99\n')
             command.chmod(0o700)
         env = dict(os.environ, PATH=str(self.root), GATE_CALLS=str(calls))
-        for entry in ("run-imk-acceptance.sh", "run-input-apps.sh"):
+        for entry in ("run-imk-acceptance.sh",):
             for args in ([], ["--force"], ["--isolated"]):
                 with self.subTest(entry=entry, args=args):
                     completed = subprocess.run(["/bin/bash", str(HERE / entry), *args], env=env,

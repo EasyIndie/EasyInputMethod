@@ -24,17 +24,15 @@ trap 'exit 143' TERM
 OWNED_FILE=/tmp/owned-fixture.txt
 OWNED_NAME=owned-fixture.txt
 owned_record TextEdit window 101 || exit 9
-owned_record 'Google Chrome' window 202 || exit 9
-owned_record Safari window 303 || exit 9
 owned_record Terminal window 404 || exit 9
 if owned_record TextEdit window '1; bad'; then exit 9; fi
 if owned_record Unknown window 5; then exit 9; fi
 '''
             result = subprocess.run(['bash', '-c', body + ending, 'test', str(LIB)], env=env, capture_output=True)
             calls = (root / 'calls').read_text().splitlines()
-            self.assertEqual(len(calls), 4)
+            self.assertEqual(len(calls), 2)
             self.assertIn('Terminal" to close window id 404', calls[0])
-            self.assertIn('owned-textedit.applescript close /tmp/owned-fixture.txt owned-fixture.txt 101', calls[3])
+            self.assertIn('owned-textedit.applescript close /tmp/owned-fixture.txt owned-fixture.txt 101', calls[1])
             self.assertFalse(any('front' in call or 'every' in call for call in calls))
             return result.returncode
 

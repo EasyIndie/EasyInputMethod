@@ -6,8 +6,8 @@
 
 ## 0. 一句话
 
-- **自动**：`make verify`（13s）+ `make macos-offline-tests`（62 文件/332 例，6 并发 ~35s）+ 一键探针 `make macos-acceptance-full`（约 5 分钟）。
-- **人工**：只剩 **15 项 + 1 项日常**——A 档每次换包 **10 项**（~10 分钟；报告234 移除了非系统自带的 VS Code 与「其它 App/微信」）、B 档每版一次 5 项（安装类 ~10 分钟）、C 档 1 项并入日常（11.1）。
+- **自动**：`make verify`（13s）+ `make macos-offline-tests`（并行）+ 一键探针 `make macos-acceptance-full`（约 5 分钟）。
+- **人工**：只剩 **约 14 项 + 1 项日常**——A 档每次换包 **约 9 项**（~10 分钟；2026-11-14 移除了 Safari/Chrome/Xcode/VS Code/微信等第三方客户端）、B 档每版一次 5 项（安装类 ~10 分钟）、C 档 1 项并入日常（11.1）。
 
 ## 1. 自动覆盖映射
 
@@ -19,7 +19,7 @@
 | 2.2–2.6 退格/Esc/Home/End/Delete/Tab | 核心与 FFI 单测（ADR-164） | `make test`（`ime-core`/`ime-ffi`） |
 | 2.4 撤销 | 质量样本「撤销回到空态」 | `quality-samples.sh` |
 | 2.8 失焦、2.9 切输入源 | 质量样本「失焦再回来不丢字」「切输入源不丢字」 | `quality-samples.sh` |
-| 3.1–3.2 TextEdit / Safari | 客户端矩阵（AX 回读） | `client-matrix.sh` |
+| 3.1 TextEdit | 质量样本在 TextEdit 正文中键入并 AX 回读 | `quality-samples.sh` |
 | 4.1–4.2 亮/暗、4.5 多页、4.6 边缘、4.7 HUD | 候选/光标几何单测 + 离屏快照对比度 | `make test`、`make macos-ui-contrast` |
 | 4.3 长候选 | `test-candidate-presentation.py`（long 场景） | `make macos-offline-tests` |
 | 5.1–5.4、5.6 设置面板结构与生效 | `test-settings-presentation.py` + 配置单测 | `make macos-offline-tests` |
@@ -32,17 +32,16 @@
 
 ## 2. 人工必做（17 项 + 1 项日常）
 
-### A 档：每次换包（10 项，约 10 分钟；A5/A7 已移除）
+### A 档：每次换包（约 9 项，约 10 分钟；第三方客户端项已移除）
 
 | # | 条目 | 为什么不能自动 | 判定 |
 |---|---|---|---|
 | A1 | 1.6 鼠标点选候选 | 需要真实鼠标轨迹 | 点哪上哪 |
 | A2 | 2.7 CapsLock 开关 | 系统级状态，探针发不出真 CapsLock 语义 | 不出错字 |
 | A3 | 2.10 睡眠→唤醒→输入 | 需要真实休眠 | 不重启即可输入 |
-| A4 | 3.3 Chrome（**可选**，非系统自带） | 未安装就不测；装了但回读不可靠按 BLOCKED 记 | 上屏正常 |
-| A5 | ~~3.4 VS Code~~ | **已移除**（报告234：不假定用户装了第三方编辑器） | — |
-| A6 | 3.5 Terminal | 自动化会往用户 shell 打字，已从矩阵移除 | 上屏正常 |
-| A7 | ~~3.6 其它 App（含微信）~~ | **已移除**（非系统自带，不假定存在） | — |
+| A4 | ~~Safari / Chrome / VS Code（第三方客户端）~~ | **2026-11-14 移除**：不再依赖第三方客户端 | — |
+| A5 | ~~3.6 其它 App（含微信）~~ | **已移除**（非系统自带，不假定存在） | — |
+| A6 | 3.2 Terminal（系统自带，人工可选） | 自动化会往用户 shell 打字；如需覆盖，人工抽查一次 | 上屏正常 |
 | A8 | 4.4 悬停候选视觉 | 视觉判断 | 悬停态可辨 |
 | A9 | 5.5 设置面板纯键盘操作 | 依赖系统「键盘导航」开关 | 可达、焦点可见 |
 | A10 | 9.1–9.3 VoiceOver 播报/浏览/设置面板 | 需要人耳 | 播报正确、焦点不被夺 |
@@ -69,14 +68,14 @@
 ```sh
 make verify                      # 13s，门禁
 make macos-offline-tests         # ~35s，62 文件/332 例（JOBS 默认可并行）
-make macos-acceptance-full       # ~5 分钟：preflight → 热键/上屏 → 客户端 → 质量样本 → 性能/网络
-# 三个探针脚本都带 trap：结束时自动关闭自己开的 TextEdit 文档/浏览器标签/Xcode 窗口（报告231）
-# 然后按 A 档 13 项人工走查（约 12 分钟），B 档只在发版时做
+make macos-acceptance-full       # ~5 分钟：preflight → 热键/上屏 → 质量样本 → 性能/网络
+# 探针都带 trap：结束时自动关闭自己开的 TextEdit 文档/imetype 测试窗口（报告231）
+# 然后按 A 档约 9 项人工走查（约 10 分钟），B 档只在发版时做
 ```
 
 ## 4. 与旧清单的差异（为什么能砍掉 47 项）
 
-0. **只依赖系统自带应用**（报告234）：TextEdit / Safari / Terminal 之外的一律 optional（装了才测、没装 SKIP），由 `test-acceptance-portability.py` 强制。
+0. **自闭环，不依赖第三方客户端**（2026-11-14）：自动化只覆盖系统自带 TextEdit 与自建 imetype 测试窗口；Safari/Chrome/Xcode/VS Code/微信的探针、fixture 与矩阵脚本已删除，由 `test-acceptance-portability.py` 防止回流。
 1. **同一件事此前被写了三遍**：`quality-samples.sh`（16 项）、`acceptance-auto.sh`（8 项）、IT-22 手工表（12 项重叠）。报告 230 之后两份脚本**按行为分工**：`quality-samples.sh` 断言打字产物（30 项；报告264/265 起含 ADR-325…337 的 13 条：数字后标点、Shift 标点、拼音补全、分号选词、以词定字、分段选词、双拼、薄弱字、按应用记住英文；ADR-342/345 起加日期/时间/星期/三级简码 4 条），`acceptance-auto.sh` 断言热键状态语义（7 项），重复项已删并由 `test-acceptance-map.py` 守住不再回流。
 2. **离屏单测已经断言了 GUI 结构**：候选/设置/关于/学习的布局与文案由 `test-*-presentation.py` 断言，手工"看一眼分组是否连续"不再重复。
 3. **几何/落点类**（多屏、边缘、翻页位置）已有 `CaretPlacement` 与离屏快照对比度自动判定（ADR-301、报告 197）。
