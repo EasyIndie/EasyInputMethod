@@ -11,8 +11,8 @@ let wins=(attr(ax,kAXWindowsAttribute) as? [AXUIElement]) ?? []
 let focused = el(ax, kAXFocusedWindowAttribute)
 guard let win = focused ?? el(ax,kAXMainWindowAttribute) ?? wins.first else { print("NO_WINDOW"); exit(1) }
 if CommandLine.arguments.count>3 { print("window:", str(win,kAXTitleAttribute)) }
-// Safari 的网页输入区在 macOS 27 上是 AXTextField，且地址栏也是 AXTextField；
-// 先找 AXTextArea，再退到「值不像 URL」的 AXTextField（报告209：只用标题回读在 air 上失败过）。
+// 历史浏览器探针：网页输入区与地址栏都可能是 AXTextField；先找 AXTextArea，
+// 再退到「值不像 URL」的 AXTextField。当前验收只保留 TextEdit/Terminal，此回退仍保留。
 func looksLikeURL(_ value:String) -> Bool {
     value.hasPrefix("file:") || value.hasPrefix("http:") || value.hasPrefix("https:") || value.hasPrefix("about:")
 }

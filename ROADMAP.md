@@ -39,6 +39,8 @@
   `git tag -s v1.3.0`（`d9ca1b4`）→ Release run `43413483494` success（ZIP `66b01c64…`、DMG `fef49e86…`、appcast `43`）→ Pages run `43414150031`，站点回读 `v1.3.0 · 构建 43`；air 重装发版产物（执行 `9cb738c9…`）。
 - [x] **pro 升级**（2026-11-13）：用户手动经 `packaging/macos/upgrade.py` 从 1.2.0/39 升到 1.3.0/43（执行 `9cb738c9…`）；
   config `b8c7a351…` 未变，词库 962→963 行（真实键入），备份在 `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`。
+- [x] **验收自闭环**（2026-11-14）：移除 Safari/Chrome/Xcode/VS Code/微信的自动化验收、探针、fixture 与 `client-matrix`；
+  验收只保留系统自带 TextEdit（质量样本）与自建 `lampyris-imetype.app`；正式验收 APPLICATIONS 收敛为 TextEdit/Terminal。
 - [x] **1.2.0 候选**（Cargo 1.2.0 / build 39，候选 `31fdbcd`、执行 `ef25e92b…`）：B1 工程收口 → B2 数据地基 → B3 L3 提示 → B4 L4 练习 → B5 质量项 全部完成；
   练习页四题型 + 键位图/口诀（ADR-316–323）、学习区改版（ADR-311）、签名 tag/站点盖章等工程项（报告 251–262）。
   发版材料见 [`docs/releases/1.2.0.md`](docs/releases/1.2.0.md)；tag 待授权。
@@ -331,8 +333,9 @@ ADR-147：Terminal正常实际提交“你”及wq前缀确认后的failure/INT/
 - [x] **1.1.0 发布预检（报告 247）**：候选 `393318c` 身份零偏差（版本 1.1.0/build 38、CI 双绿、ZIP `448d3170…` 与本地逐字节一致、站点仍 v1.0.2·37、无 v1.1.0 tag）。**缺口只剩「自用 3 天」（0/3）与 tag/Release/Pages/pro 四处授权**。
 - [ ] **自建汉字 corpus（ADR-309，已立项）**：M2-1 来源调研已完成（ADR-353，报告 279）：
   N1 主候选 Academia Sinica「漢字構形資料庫」（GPL-3/GFDL/CC BY-SA 2.5 TW）+ cjk-decomp（MIT/Apache-2.0）
-  交叉校验；不采用无许可五笔字根字体。N1-d 清单已入库：266 个 PUA 中 156 个已有映射、110 个待确认/自绘；
-  验收=高频 3,000 字 ≥98% 可解释、许可齐全、体积/延迟实测、模块内可独立构建。
+  交叉校验；不采用无许可五笔字根字体。N1-d 已更正并接入：3,000 字可定位 79 个 D2 补充区 PUA，
+  按 `(PUA, 键位)` 核验 66 条（verified 58 / partial 8 / unresolved 13）；运行时 full 1,904→2,454。
+  剩余 13 个保持占位；验收=高频 3,000 字 ≥98% 可解释、许可齐全、体积/延迟实测、模块内可独立构建。
       不属于发布阻塞；若要优化，先用 phase 钩子确认宿主侧占比，再决定是否立门禁。
 - [x] **整句/长词（n-gram）关闭（2026-11-14）**：ADR-352 + 报告 277/278 原型实测；
   Wikipedia bigram 在自编 100 句上首选 27/100 与基线相同，未达 +5pp，原型未合入；重启需口语语料与扩词表/分词。

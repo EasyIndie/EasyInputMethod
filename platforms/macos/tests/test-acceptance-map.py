@@ -19,7 +19,6 @@ MAKE_TARGETS = [
 REQUIRED = [
     'Makefile',
     'tools/macos-probe/quality-samples.sh',
-    'tools/macos-probe/client-matrix.sh',
     'tools/macos-probe/acceptance-auto.sh',
     'tools/macos-probe/perf-session.sh',
     'tools/macos-probe/cleanup-windows.sh',

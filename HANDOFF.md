@@ -4,9 +4,9 @@
 
 - 更新：2026-11-14 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `1ce3fc5`（PR #300 交接文档）；`dev` 顶部为本批 U3-1 调研/ADR 文档（另开 PR）。
+- 分支：`main` = `a196839`；`dev` = `09a424e`（PR #308 验收收敛已合入）。N1-d + 验收收敛的 `dev → main` **PR #307** 已更新、CI 全绿，待授权合并。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（504 产物零网络符号）、`make macos-offline-tests` **66 文件 / 343 例 PASS**、`build.sh --strict` PASS、
+- 最近验证：`make verify` PASS（528 产物零网络符号）、`make macos-offline-tests` **64 文件 / 323 例 PASS**、`build.sh --strict` PASS、
   `tools/check-level3-codes.py` PASS（3,362 条）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -27,13 +27,13 @@
 |---|---|
 | **corpus 第二阶段需求清单** | 新增 `docs/结构库第二阶段需求.md`：把缺口拆成 N1 字根字形身份库 / N2 笔画笔顺 / N3 结构标注 / N4 完整拆字，写清准入规格、已否决路线、四道验收门槛（3,000 字 ≥98%、许可齐全、运行资源 ≤512 KiB、离线查询 p95 ≤5ms）与 M2-1～M2-4 里程碑。**体积按现状 558 B/字 外推会超标 3 倍**，已写成第二阶段必做项。 |
 | **D3 许可更正（报告 246 / ADR-310）** | 上游 `NOTICE.md` 明确 `wubi86_chaizi.txt` 与 `HeiTiZiGen.ttf` **未附带任何版权声明**；登记从「MIT/低风险」改为「未声明/高风险/仅构建期 oracle」。B0 不再用 D3 作组件来源（`full` 737→735，8 条 D2 漏拆如实标 partial），新增门禁「产物不得出现 D3 来源」。 |
-| **字体路线关闭（报告 246）** | 两款候选字体均无许可（D2 的 etmon 还源自无许可的 `qingg`），且 D3 字体不含我们阻塞的 U+F00xx → 走不通。另记两条已证伪路线：私有区等价类传递、IDS 叶数投票。 |
+| **字体路线关闭（报告 246；2026-11-14 复核 qingg）** | WindInput / D3 字体无许可；D2 的 etmon 字体仍未声明，不能进产物。qingg 2019 版 `98WB-2.otf` 经复核为 **OFL 1.1**（Source Han Sans 派生、已改保留字名），仅作构建期字形参考，不随包分发；2024 版 `98WB-3.otf` 无许可记录，未采用。另记两条已证伪路线：私有区等价类传递、IDS 叶数投票。 |
 | **B0 schema v5 + D19（报告 245）** | 登记 `yi-bai/ids`（MIT，下载不入库）；`ids`/`idsStructure` 作结构参考（与识别码结构 559/619=90.3% 一致，不覆盖），严格条件补占位 23 条。 |
 | **B0 schema v4（报告 244）** | 查明 D2 是「每码位一形」：末位私有区=识别码槽、其余=占位字根；组件数↔码长 100% 对齐，识别码 622；41/42 成字字根有笔画（D14 补 了/也/上）。 |
 | **B0 schema v3（报告 243）** | 占位组件 `null` + 键位推断；修掉 D3 字根按字符解析（空格混入组件、BOM/CRLF）缺陷。 |
 | **13% 结构不一致归因（报告 242）** | 66/512 是两套**分类口径**差异（独体字判杂合、拆法不同、包围），不是数据错误；处置=五笔识别码为权威、IDS 只作校验、差异归档。 |
 | **corpus 数据来源调研（`docs/research/corpus-data-sources.md`）** | 主选 `yi-bai/ids`（MIT）+ Unihan 交叉校验；**不采用** Make Me a Hanzi 的 Arphic 图形、Hanzi Writer、KanjiVG、字典抓取。 |
-| **B0 现状（schema v5，1,000 字）** | `full` **735** / `partial` **257** / `unknown` 8；识别码可解释 **624**；含占位 243 条；产物 557,632 B（≈558 B/字）。 |
+| **B0 现状（schema v5，2026-11-14）** | 1,000 字：`full` **919** / `partial` **73** / `unknown` 8；含占位 55 条。运行时 3,000 字：`full` **2,454** / `partial` **326** / `unknown` 220；119,472 B（≈40 B/字）。N1-d 补充区映射见 ADR-353/报告 280。 |
 
 ### 2.2 发布线（2026-11-05，1.0.0 → 1.1.0/build 38）
 
@@ -63,8 +63,10 @@
 - **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 13 项已完成并真机复验；
   **U2-3 扩展词库真机 PASS**（ADR-348，报告 273）；**U3-5 符号 / emoji 真机 PASS**（ADR-349，报告 274）；
   **U2-5 分阶段解锁真机 PASS**（ADR-350，报告 275）；**宿主内完整引导真机 PASS**（ADR-351，报告 276）；
-  **U3-1 整句模型已关闭**（ADR-352，报告 277/278）；**U3-4 自绘清单已就绪（ADR-353，报告 279/280）**：
-  266 个 PUA 中 156 个已有映射、110 个待人工确认/自绘；清单/脚本入库，未猜填、未改 B0/D2。
+  **U3-1 整句模型已关闭**（ADR-352，报告 277/278）；**U3-4/N1-d 已接入（ADR-353，报告 279/280）**：
+  初版清单误用 D3 BMP PUA，已更正为 D2 补充区；可定位 79 个 PUA，按 `(PUA, 键位)` 核验 66 条，
+  状态 `verified 58 / partial 8 / unresolved 13`。B0 1,000 字 `full` 735→919；运行时 3,000 字 `full` 1,904→2,454；
+  D3 不再作 `componentsSource`；未解决项仍以 `？:键` 占位，不猜。
 - **P1 · 数据与方案**：corpus M2-1 调研 → N1 字根字形库 → N2/N3/N4、拆字说明扩充、多方案码表（TBD-2）、客户端自动回读缺口。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
@@ -84,10 +86,10 @@
 | 7 | ~~U2-5 分阶段解锁真机目视~~：候选 `13ec97b`（执行 `739bdf7a…`）私有根新进度仅字根 → 字根 30 字解锁一级简码 → 一级简码 25 字解锁二级简码 → 关闭开关六段全开 | ✅ 2026-11-14（报告 275） |
 | 8 | ~~宿主内完整引导真机目视~~：候选 `b8dd20f`（执行 `bda6f090…`）菜单入口/翻页/首次自动弹窗 PASS；标记恢复、探针窗口与临时文档已清理 | ✅ 2026-11-14（报告 276） |
 | 9 | ~~U3-1 整句模型~~：原型未达 +5pp，**已关闭**（ADR-352，报告 278）；不再投入 | ✅ 2026-11-14 关闭 |
-| 10 | **U3-4/N1-d**：清单已就绪（266 PUA，156 已知/110 待确认）；下一步按样本字人工确认或自绘，再重建 B0 | 需你提供参考字形或授权逐条人工确认 |
+| 10 | ~~U3-4/N1-d~~：已更正数据源并接入 66 条 `(PUA, 键位)` 核验；运行时 `full` 1,904→2,454，`partial` 876→326；剩余 13 个 PUA 保持占位 | ✅ 2026-11-14（报告 280） |
 
-剩余开发项：高频字拆解受阻（报告 268 §2，等字根字形许可来源）；整句模型、多方案码表
-（依赖外部数据/许可）。符号 / emoji（U3-5）代码与数据完成，待换包复验。
+剩余开发项：高频字拆解仅剩 13 个未解决 PUA（保持占位，后续才需要 Academia Sinica/自绘）；
+整句模型、多方案码表（依赖外部数据/许可）。符号 / emoji（U3-5）已真机 PASS。
 
 ## 4.1 换到 air 后怎么开工
 
@@ -109,7 +111,7 @@ make macos-offline-tests
 **air 已知平台差异（别当 bug）**
 
 - `q ` = 「多」（五笔一级简码），首个按键常被窗口激活吞掉 → 探针串看起来像「多你好。」。**1.1.0 起一级简码 25 字都是 1 键首选，探针串开头会多出简码字，属预期。**
-- Safari 的输入区要读 AX（macOS 27 标题不随输入更新）；TextEdit 焦点属性读不到时回退窗口文本区。
+- Safari/Chrome/Xcode 自动化已移除（2026-11-14）；TextEdit 焦点属性读不到时回退窗口文本区。
 - VoiceOver 掉 ABC 已复测**不可复现**（报告 215）；日志里 `Refusing connection name` 来自搜狗，与萤火虫无关。
 - 内存口径用**私有已提交**（ADR-292），`footprint` 只作参考。
 - 键入类验收必须在**本机图形会话**，不能 SSH。
@@ -129,10 +131,20 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
-- 2026-11-14 / Claude Code（air）：**N1-d 自绘清单完成（ADR-353，报告 280），未改 B0/D2**。3,000 字 partial
-  实际用到 266 个 PUA：156 个已有可读映射，**110 个待人工确认/自绘**；生成
-  `modules/hanzi-structure/corpus/pua-inventory.tsv` 与 `tools/pua_inventory.py`，回归
-  `test-pua-inventory.py` 守「不猜填」。下一步需参考字形或逐条人工确认后再重建 B0。
+- 2026-11-14 / Claude Code（air）：**验收自闭环收敛**。按用户要求移除 Safari/Chrome/Xcode/VS Code/微信
+  的自动化验收、探针、fixture 与 `client-matrix`；`acceptance-auto` 只保留热键/上屏 + 性能/网络，
+  `cleanup-windows.sh` 只清 TextEdit/imetype，preflight 只查 TextEdit 多实例；正式验收 APPLICATIONS
+  收敛为 TextEdit/Terminal。新增 `installed-probe-guards.py` 给 Terminal 共用保护；
+  `test-acceptance-portability.py` 改为“第三方客户端不得回流”门禁（ADR-354）。目标：本地迭代不再依赖第三方安装。
+  离线回归 67 文件/348 例 → **64 文件/323 例**；正式发版六客户端人工取证标准不变。
+- 2026-11-14 / Claude Code（air）：**N1-d 更正并接入（ADR-353，报告 280）**。初版清单误把 D3 BMP PUA
+  当成 D2 源（266/156/110 不正确）；更正为 D2 补充区后，3,000 字可定位 79 个 PUA，按 `(PUA, 键位)`
+  核验 66 条（`verified 58 / partial 8 / unresolved 13`）。`build_b0.py` 新增 `--pua-supplementary`；
+  B0 1,000 字 `full` 735→919、`partial` 257→73；运行时 3,000 字 `full` 1,904→2,454、`partial` 876→326；
+  `componentsSource` 仅 D1/D2（D3 不再作来源）。产物无 PUA，未解决项保持 `？:键`。
+- 2026-11-14 / Claude Code（air）：N1-d 初版清单（**后被上一条更正**）：3,000 字 partial 实际用到
+  266 个 PUA（数据源误用 D3）；生成 `pua-inventory.tsv` 与 `tools/pua_inventory.py`，
+  `test-pua-inventory.py` 守「不猜填」。
 - 2026-11-14 / Claude Code（air）：**P1-2/U3-4 字根字形来源调研完成（ADR-353，报告 279），未下载数据**。
   结论：没有许可干净的五笔字根字体；N1 主候选 Academia Sinica「漢字構形資料庫」（GPL-3/GFDL/CC BY-SA 2.5 TW，
   1,324 字根/4,766 部件）+ cjk-decomp（MIT/Apache-2.0）与 cjkvi-ids/CHISE 交叉校验；剩余 251 个 PUA 字形

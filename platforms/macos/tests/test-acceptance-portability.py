@@ -1,8 +1,7 @@
-"""验收只依赖系统自带应用（报告234）。
+"""验收自闭环：不再依赖 Safari / Chrome / Xcode / VS Code / 微信（2026-11-14）。
 
-用户机器不一定装了 Chrome / Xcode / VS Code / 微信；把这些当成必需客户端会让验收
-在干净系统上必然失败。规则：`open -a <App>` 里的非系统自带应用，必须在本文件里
-先用 `has_app` 判断（装了就测、没装 SKIP），并且不能写死版本路径。
+用户要求收敛外部依赖：自动化验收只允许系统自带 TextEdit 与自建 imetype 测试窗口；
+第三方客户端探针、fixture 与矩阵脚本已删除，且不得回流。
 """
 from pathlib import Path
 import re
@@ -10,16 +9,12 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 PROBE_DIR = ROOT / 'tools/macos-probe'
+TEST_DIR = ROOT / 'platforms/macos/tests'
 
-# macOS 每台机器都有的、可以作为门禁的应用。
-SYSTEM_DEFAULT = {
-    'TextEdit', 'Safari', 'Terminal', 'Finder', 'System Settings', 'System Preferences',
-}
-
-# 这些是被明确排除/降级的"用户自己装"的应用（出现在验收脚本里只允许作为 optional）。
+# 明确移除的自动化客户端（出现即失败；历史文档/报告不计）。
+REMOVED = ('Safari', 'Google Chrome', 'Chrome', 'Xcode', 'VS Code', 'VSCode', '微信', 'WeChat')
 OPEN_RE = re.compile(r'open\s+-n?a\s+"?([^"\s]+)"?')
-GUARD_RE = re.compile(r'has_app\s+"?([^";\s)]+)"?')
-HARDCODED_VERSION_PATH = re.compile(r'/Applications/[A-Za-z0-9 ._-]*-[0-9]+\.[0-9]+[^/]*\.app')
+CLIENT_MATRIX_RE = re.compile(r'client-matrix')
 
 
 def code_only(text: str) -> str:
@@ -28,44 +23,37 @@ def code_only(text: str) -> str:
 
 
 class AcceptancePortabilityTests(unittest.TestCase):
-    def test_non_default_apps_are_guarded(self):
+    def test_probe_scripts_do_not_open_removed_apps(self):
         problems = []
         for path in sorted(PROBE_DIR.glob('*.sh')):
             text = code_only(path.read_text(encoding='utf-8'))
-            guarded = set(GUARD_RE.findall(text))
             for app in OPEN_RE.findall(text):
-                if app in SYSTEM_DEFAULT or app.startswith('/'):
-                    continue
-                if app not in guarded:
-                    problems.append(f'{path.name}: 直接打开非系统自带应用 {app}，但没用 has_app 判断')
-        self.assertEqual(problems, [], '验收不能假定用户装了非系统自带应用：\n' + '\n'.join(problems))
+                if app in REMOVED or any(name in app for name in REMOVED):
+                    problems.append(f'{path.name}: 打开了已移除的客户端 {app}')
+            for name in REMOVED:
+                if re.search(rf'open\s+-n?a\s+"?[^"\n]*{re.escape(name)}', text):
+                    problems.append(f'{path.name}: 仍引用已移除的客户端 {name}')
+        self.assertEqual(problems, [], '验收不得再依赖第三方客户端：\n' + '\n'.join(problems))
 
-    def test_no_hardcoded_versioned_app_paths(self):
-        problems = []
-        for path in sorted(PROBE_DIR.glob('*.sh')):
-            text = code_only(path.read_text(encoding='utf-8'))
-            for hit in HARDCODED_VERSION_PATH.findall(text):
-                problems.append(f'{path.name}: 写死了版本化应用路径 {hit}（用 `open -a <Name>`）')
-        self.assertEqual(problems, [], '\n'.join(problems))
+    def test_client_matrix_is_gone(self):
+        self.assertFalse((PROBE_DIR / 'client-matrix.sh').exists(), 'client-matrix.sh 应已删除')
+        self.assertFalse((PROBE_DIR / 'client-matrix-verdict.py').exists(), 'client-matrix-verdict.py 应已删除')
+        auto = (PROBE_DIR / 'acceptance-auto.sh').read_text(encoding='utf-8')
+        self.assertNotRegex(code_only(auto), CLIENT_MATRIX_RE, 'acceptance-auto 不应再调用客户端矩阵')
 
-    def test_matrix_marks_required_versus_optional(self):
-        text = (PROBE_DIR / 'client-matrix.sh').read_text(encoding='utf-8')
-        self.assertIn('required_json', text, '矩阵必须区分必需/可选客户端')
-        self.assertIn('"required":false', text, '可选客户端必须显式标记 required:false')
-        # 必需集合只允许系统自带应用
-        verdict = (PROBE_DIR / 'client-matrix-verdict.py').read_text(encoding='utf-8')
-        self.assertIn('required', verdict, '判定脚本必须读取 required 字段')
+    def test_third_party_probe_files_are_gone(self):
+        for pattern in ('*safari*', '*chrome*', '*vscode*', '*input-apps*'):
+            self.assertEqual(list(TEST_DIR.glob(pattern)), [], f'第三方客户端探针应已删除：{pattern}')
 
-    def test_checklists_do_not_require_third_party_apps(self):
-        """清单里出现非系统自带应用时，必须显式写成可选/已移除，不能当必做。"""
-        markers = ('可选', '移除', '不再', 'SKIP', '非系统自带')
-        for name in ('docs/tasks/T-ITER-22.md', 'docs/tasks/T-ITER-22-coverage.md',
-                     'docs/reviews/234-1.1.0-walkthrough.md'):
+    def test_checklists_mark_third_party_apps_removed(self):
+        """清单提到第三方客户端时，必须显式写成已移除/非依赖，不能当必做。"""
+        markers = ('移除', '不再', '非依赖', '已删', '不依赖')
+        for name in ('docs/tasks/T-ITER-22.md', 'docs/tasks/T-ITER-22-coverage.md'):
             text = (ROOT / name).read_text(encoding='utf-8')
             for line in text.splitlines():
-                if 'VS Code' in line or 'Visual Studio' in line or '微信' in line:
+                if any(app in line for app in ('Safari', 'Chrome', 'Xcode', 'VS Code', '微信')):
                     self.assertTrue(any(marker in line for marker in markers),
-                                    f'{name}: 把非系统自带应用当成必做 → {line.strip()}')
+                                    f'{name}: 第三方客户端仍被当成必做 → {line.strip()}')
 
 
 if __name__ == '__main__':

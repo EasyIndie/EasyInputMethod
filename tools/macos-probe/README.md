@@ -32,9 +32,9 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `perf-session.sh` | 键入延迟 + 稳定态内存 + 网络采样，输出 JSON 并按阈值判定。**三段覆盖**：`basic`（词句）、`long-code`（长编码/四码字）、`paging`（翻页）；可用 `SEGMENTS='名|按键;名|按键'` 覆写。门禁：`THRESHOLD_MS`=稳态 p95、`RSS_LIMIT_MB`=增长上限、`FOOTPRINT_HARD_MB`=vmmap footprint 绝对硬顶（报告198/251） |
 | `soak-session.sh` | 久用验收：连续键入 `MINUTES` 分钟（发布候选用 `MINUTES=30`），采样网络/RSS/footprint，重启宿主核对词库；绝对硬顶用 **footprint**（`FOOTPRINT_HARD_MB`，报告251） |
 | `memory-gate.sh` | **ADR-263 的 30MB 门禁**：重启宿主 → marker → 冷态/首键后/六词后/静置 8s 四点采 `vmmap`，判定 physical footprint 与私有已提交同时 ≤30MiB（`ROUNDS` 默认 3，报告199） |
-| `acceptance-auto.sh` | 一键跑热键、上屏、五客户端、性能/网络；`make macos-auto-acceptance` 即调用它（`FAST=1` 迭代档） |
+| `acceptance-auto.sh` | 一键跑热键、上屏、性能/网络；`make macos-auto-acceptance` 即调用它（`FAST=1` 迭代档）。2026-11-14 起不再跑第三方客户端矩阵 |
 | `ime-state.sh` | 验收状态自归位（报告232）：`--snapshot` 记四项偏好、`--ensure` 收敛到 mixed/chinese/half/simplified、`--restore` 还原；收敛不了退 78 |
-| `cleanup-windows.sh` | 验收收尾：只回收探针自己开的窗口/进程（按 URL / 标题 / 未保存内容签名认领）；`--textedit` 才清 TextEdit，`--quit-app` 只对"本轮由我们启动且已无窗口"的应用；浏览器永不退出（报告231） |
+| `cleanup-windows.sh` | 验收收尾：只回收探针自己开的 TextEdit 文档/`lampyris-imetype.app` 窗口与残留 `keytopid`；`--textedit` 才清 TextEdit，`--quit-app` 只对"本轮由我们启动且已无窗口"的 TextEdit/Terminal 使用（报告231；2026-11-14 移除浏览器/Xcode 清理） |
 | `screens` | 打印每块屏幕的 frame/visibleFrame/缩放/主屏（多屏验收的坐标基准，报告202） |
 | `axwins [bundleID]` | 列出指定 App 的 AX 窗口位置/尺寸/角色；macOS 13 的候选窗是 `AXSystemDialog`，用它判落点（报告202） |
 | `axdump [bundleID] [depth]` | 递归打印 AX 角色/描述/值，判断辅助技术能读到什么（报告203） |
@@ -45,13 +45,16 @@ make -C tools/macos-probe        # 产物在 tools/macos-probe/bin/
 | `sleep-test.py [秒]` | 执行 `pmset sleepnow` 并用「进程挂起导致的时钟跳变」判定真的睡过+已唤醒，打印睡了多久（报告204） |
 | `type-session.sh '<按键串>' [--settle N]` | 一条命令跑完「起测试窗口 → 等前台 → 激活 → 投递 → 回读上屏文本」，输出 JSON（报告190） |
 
-### 一键矩阵（报告189）
+### 一键验收（报告189；2026-11-14 收敛）
 
 ```sh
-KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / Chrome / Ghostty
+make macos-acceptance-full          # preflight → 热键/上屏 → 质量样本 → 内存门禁 → 状态回读
+make macos-auto-acceptance          # 只跑热键/上屏 + 性能/网络
 ```
 
-脚本对每个客户端都先过 `guard-focus.sh`，不通过就 BLOCKED；结束后把输入源还原成 ABC。
+Safari / Chrome / Xcode 客户端矩阵已移除：它们不是系统自带、依赖第三方安装，且清理需要按
+URL/标题认领窗口。真实客户端只保留系统自带 TextEdit（由 `quality-samples.sh` 覆盖正文输入），
+IME 协议路径由自建 `lampyris-imetype.app` 覆盖。
 
 ### 自动化键入的组合方式（报告188）
 
@@ -72,14 +75,15 @@ KEYS='wq nihao .' ./tools/macos-probe/client-matrix.sh   # TextEdit / Safari / C
 
 ### 新增探针脚本检查清单（报告 231，机器强制）
 
-1. 只要脚本里出现 `open -a TextEdit|Safari|Chrome|Xcode` 或拉起 `lampyris-imetype.app`，
+1. 只要脚本里出现 `open -a TextEdit` 或拉起 `lampyris-imetype.app`，
    **必须**开头写 `cleanup_run() { "$PROBE/cleanup-windows.sh" --out "$OUT" --textedit; }` +
    `trap cleanup_run EXIT INT TERM`（失败与 Ctrl-C 也要清）。
-2. 只按"属于自己的证据"认领窗口：URL 指向本轮的 `page.html` / 标题含 `xcode.txt` / 未保存且内容命中探针签名。
-   **永远不要** `quit` Safari 或 Chrome（用户可能开着真实会话）。
-3. 收尾自检：`pgrep -x TextEdit` 为空、Safari/Chrome 标签数为 0、`pgrep -f lampyris-imetype.app` 为空。
+2. 只按"属于自己的证据"认领窗口：TextEdit 只关未保存且内容命中探针签名的文档；不要碰用户文档。
+3. 收尾自检：`pgrep -x TextEdit` 为空、`pgrep -f lampyris-imetype.app` 为空。
 4. 以上由 `platforms/macos/tests/test-probe-cleanup.py` 在离线回归里强制，包含一条反向自检
    （故意写一个没有 `trap` 的假脚本，必须被判违规）。
+5. Safari/Chrome/Xcode/VS Code/微信探针与 fixture 已删除；新增第三方客户端依赖会被
+   `test-acceptance-portability.py` 挡住。
 
 **内存只看稳态**：宿主 RSS 会在 3–58 MiB 间上下波动（页面回收/首次触碰），阈值只对尾部均值生效；重启后立刻读数会偏高 10 倍。
 
@@ -117,7 +121,7 @@ make macos-acceptance-full SKIP_MEMORY=1   # 跳过会重启宿主的内存门�
 `03-memory.log`、`steps.tsv`（每步状态）、`99-state.txt`（执行 SHA/build/宿主 PID/config/词库/连接数）。
 
 前置检查（`acceptance-preflight.sh`）会先挡掉三类会把时间浪费掉的环境问题：**屏幕锁定**、
-**客户端多实例**（TextEdit/Safari/Chrome）、**输入源未启用**；`session` 探针只读会话锁状态，也可单独跑。
+**TextEdit 多实例**、**输入源未启用**；`session` 探针只读会话锁状态，也可单独跑。
 
 ## 证据索引（ADR-293）
 

@@ -374,13 +374,31 @@ generator = "tools/prepare-emoji.py"
 notes = "U3-5；3,781 个 fully-qualified emoji，含中文名、英文名、中英文搜索词与拼音搜索词（D5 单字读音）；CLDR 未收录的肤色/发型组合由项目规则回退配名（缺中文名 0）；报告 data/generated/emoji-report.json；ADR-349"
 
 [[derived]]
+id = "wubi-pua-supplementary"
+path = "modules/hanzi-structure/corpus/pua-supplementary.tsv"
+source_ids = ["D1", "D2", "D14"]
+license = "CC-BY-SA-4.0"
+sha256 = "e3cb2cb1a9eb6f2fbea61f8e1f38ec4c5ca01ae9eebe34f4dbaaa4220c1b810b"
+generator = "manual/N1-d（报告 280；D2 位序 + 标准86字根 + OFL 参考字形）"
+notes = "N1-d 补充区 PUA→五笔86 字根核验表；按 PUA+键位（同一 PUA 在不同码位可指不同部件）；只收可解释条目、不猜；参考字体（OFL 1.1 的 98WB-2）不随包分发、不进产物；ADR-353"
+
+[[derived]]
+id = "pua-inventory"
+path = "modules/hanzi-structure/corpus/pua-inventory.tsv"
+source_ids = ["D1", "D2"]
+license = "CC-BY-SA-4.0"
+sha256 = "a26fe0cd5a80c523f3cf8f2b87aef6df0a6c788470014b381e9664237d0a30e7"
+generator = "modules/hanzi-structure/tools/pua_inventory.py"
+notes = "N1-d 自绘清单：B0 3,000 字可定位补充区 PUA 79 个（verified 58 / partial 8 / unresolved 13）；unresolved 不填猜测 label；ADR-353"
+
+[[derived]]
 id = "b0-runtime"
 path = "data/generated/B0-runtime.tsv"
 source_ids = ["D1", "D2", "D5", "D10", "D17", "D17-bis", "D19"]
 license = "CC-BY-SA-4.0"
-sha256 = "cf945098f7d69ff42105a05621e7a25c7e842013cb664454400180b10b0c0a93"
-generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out"
-notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 123 KB（40 B/字，预算 512 KiB）；无 PUA；只读提示，不改候选顺序"
+sha256 = "3328b11c9e36173ba36505127968261fe95cdc140a538cfd4de14f28a1fe2d2e"
+generator = "modules/hanzi-structure/tools/build_b0.py --limit 3000 --runtime-out --pua-supplementary"
+notes = "ADR-311 v2 学习区运行时资源：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)；3,000 字约 117 KB（40 B/字，预算 512 KiB）；full 2,454 / partial 326 / unknown 220；无 PUA；只读提示，不改候选顺序；N1-d 补充区映射（ADR-353）"
 
 # 键位字根分布（modules/keymap）：从 b0-runtime 派生，供练习/学习界面画键位图
 [[derived]]

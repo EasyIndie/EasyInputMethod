@@ -1,6 +1,9 @@
 # macOS 原生与离线验收
 
-当前IT-02独立面板隔离已完成；IT-01真实IMK学习数据隔离、Safari/Terminal协议仍未完成。`run-imk-acceptance.sh`和`run-input-apps.sh`在任何外部命令前BLOCKED/3退出，无绕过参数。不要用旧通过计数宣称最终候选达标。
+当前IT-02独立面板隔离已完成；IT-01真实IMK学习数据隔离、Terminal协议仍未完成。`run-imk-acceptance.sh`在任何外部命令前BLOCKED/3退出，无绕过参数。不要用旧通过计数宣称最终候选达标。
+
+> 2026-11-14 收敛：Safari / Chrome / Xcode / VS Code / 微信的自动化探针、fixture 与客户端矩阵已删除；
+> 验收只保留系统自带 TextEdit / Terminal 与自建 `lampyris-imetype.app`。历史 Safari 证据见 `docs/reviews/102–104`，不再作为当前门禁。
 
 ## 安全入口与范围
 
@@ -15,7 +18,7 @@
 | `dev-preview.sh --smoke-test`（上级目录） | 隔离预览/离屏亮暗截图、实际语义颜色合成对比度；不替代VoiceOver或真实IMK |
 | `run-perf.sh` | 引擎探针，不能代替IMK宿主延迟/内存/功耗 |
 
-面板测试不备份/覆盖真实词库，也不在已安装进程合成学习；配置通过ime-config初始化到自己的根目录。独立测试应用缺少隔离参数时拒绝启动。正常退出清理自己的PID和目录；超时/异常保留证据，不关闭用户应用。微信尚无安全隔离草稿，不投递按键。剪贴板工具self-test仅使用命名剪贴板，通用剪贴板恢复有跨进程竞争边界，真实环境测试须另有隔离条件。
+面板测试不备份/覆盖真实词库，也不在已安装进程合成学习；配置通过ime-config初始化到自己的根目录。独立测试应用缺少隔离参数时拒绝启动。正常退出清理自己的PID和目录；超时/异常保留证据，不关闭用户应用。第三方客户端（含微信）已移出自动验收，不再投递按键。剪贴板工具self-test仅使用命名剪贴板，通用剪贴板恢复有跨进程竞争边界，真实环境测试须另有隔离条件。
 
 ## 最终覆盖报告（ADR-110/125 / IT-03）
 
@@ -63,20 +66,6 @@ ADR-120/121：最新测试身份为cn.jokerhub.inputmethod.LampyrisIMKTest.<UUID
 ADR-139：`run-installed-textedit-probe.py <root> <helper> --scenario failure|INT|TERM`覆盖wq前缀之后、空格之前的恢复，成功状态只表示该场景验证通过，不表示正常提交或marked range已验。normal仍要求“你”提交。三条原生通过，原源/完整启用集合/真实数据保持；7项驱动回归加7项所有权回归通过。
 
 ADR-140：已装TextEdit探针现核验AXTextInputMarkedRange，固定空文档wq阶段AppleScript端点1,2、提交“你”后2,1；范围不可读不允许提交。normal及确认范围后的failure/INT/TERM原生通过。这里是AppleScript端点格式，不能当CFRange location/length。驱动回归8项+所有权7项，其他客户端仍待验。
-
-### Safari离线所有权夹具（ADR-141）
-
-`safari-fixture.py <工作目录>`生成0700独占目录及0600本地HTML；无脚本/外部资源，CSP禁止加载。`owned-safari.applescript create|check|close <精确file URL> [window ID]`核验新窗口ID、单标签及URL；导航/新增标签拒绝关闭，不读取既有页面，不发键或选择源。创建失败无法取得ID时保留现场，不以front window回收。
-
-设备B原生编译零诊断；首次create返回AppleEvent超时(-1712)，未取得ID，记BLOCKED，不宣称Safari覆盖通过。证据`build/safari-ownership-0uxjlkmp/result.json`。若窗口可能已创建，应先人工确认独有页面再清理；不要盲目重试创建。
-
-ADR-142授权后更新：Safari自动化响应恢复，独有页面身份检查通过；关闭后的窗口对象可继续存在且visible=false、tabs=0。专用close接受此空隐藏状态，不接受有标签或可见对象。修复后四次顺序创建/检查/关闭通过，证据`build/safari-ownership-0uxjlkmp/fixed-result.json`；这些是重复所有权验证，未注入failure/INT/TERM，不代表输入或中断恢复通过。
-
-### Safari正文实际输入（ADR-143）
-
-`run-installed-safari-probe.py <已核验私有根> <source-state helper> [--scenario normal|failure|INT|TERM]`沿用TextEdit包签名/绑定、源日志和真实数据摘要保护；先选独有源再创建离线页面。Safari初始焦点实测是智能搜索栏，不能仅依赖HTML autofocus；初次激活后只枚举自有窗口中描述为夹具唯一名称的AXTextArea并聚焦。read/key同调用核验页面、前台窗口及AX角色/唯一名称；只允许13/12/49。焦点丢失停止，不重新抢回。
-
-设备B正文正常wq+空格提交“你”（installed-safari-ryzelwii）；wq前缀核验后failure/INT/TERM通过（6fkc8ng0、ch4241os、3fc5ln2v）。原源/完整启用集合/真实数据摘要恢复，自有窗口关闭。未读取Safari marked range，因此只证明固定正文输入及前缀阶段恢复；不是完整预编辑协议、地址栏或最终产品候选验收。
 
 ### Terminal非执行接收器（ADR-144）
 

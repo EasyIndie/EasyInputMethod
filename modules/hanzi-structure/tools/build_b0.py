@@ -77,24 +77,32 @@ def load_radicals(path: Path) -> dict[str, list[str]]:
     return out
 
 
-def load_d3(path: Path) -> dict[str, list[str]]:
-    """D3（WindInput）：第二列是**空格分隔**的字根，必须 split()；U+E000 是空位占位。"""
-    out: dict[str, list[str]] = {}
-    for line in path.read_text(encoding='utf-8').splitlines():
-        line = line.lstrip('\ufeff').rstrip('\r')
-        if not line.strip() or line.startswith('#'):
-            continue
-        parts = line.split('\t')
-        if len(parts) >= 2:
-            glyphs = [g for g in parts[1].split() if g != '\ue000']
-            if glyphs:
-                out[parts[0]] = glyphs
-    return out
-
 
 def load_pua_map(path: Path) -> dict[str, str]:
     data = json.loads(path.read_text(encoding='utf-8'))
     return {pua: info['readable'] for pua, info in data.get('map', {}).items()}
+
+
+def load_pua_supplementary(path: Path) -> dict[tuple[str, str], str]:
+    """N1-d：补充区 PUA → 可读字根（项目核验，ADR-353）。
+
+    TSV 列：pua\tkey\tlabel\tstatus\tevidence。`key` 是五笔键位（a–y），
+    因为同一个 PUA 在不同码位可能是不同部件；只按 (PUA, 键位) 采纳。
+    `key=*` 表示不限键位。
+    """
+    out: dict[tuple[str, str], str] = {}
+    for parts in read_rows(path, 3):
+        if len(parts) < 3:
+            continue
+        if parts[0].startswith('#'):
+            continue
+        code = parts[0].strip().upper().removeprefix('U+')
+        pua = chr(int(code, 16))
+        key = parts[1].strip().lower()
+        label = parts[2].strip()
+        if label:
+            out[(pua, key)] = label
+    return out
 
 
 def load_short(path: Path, width: int) -> dict[str, str]:
@@ -124,21 +132,31 @@ def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
 
 
 def decode(glyphs: list[str], pua_map: dict[str, str],
-           drop_tail_pua: bool = False) -> tuple[list[str | None], int]:
-    """把一组字形解码成可读字形；解不出的 BMP 私有区字形变成占位组件 None。
+           drop_tail_pua: bool = False,
+           keys: list[str | None] | None = None,
+           supp_map: dict[tuple[str, str], str] | None = None) -> tuple[list[str | None], int]:
+    """把一组字形解码成可读字形；解不出的私有区字形变成占位组件 None。
 
-    补充区私有码位（D2 用它表示识别码字形）直接丢弃；BMP 私有区字形（D2/D3 的字根）
-    先查映射，查不到就记一个占位（v3）：位置仍在，键位可由码位推断，但字形不进入产物。
+    - BMP 私有区（D3 字形）：查 ``pua_map``（D2/D3 对齐学出）。
+    - 补充区私有区（D2 字形）：先按 ``(PUA, 键位)`` 查 N1-d 核验表，再查 ``(PUA, '*')``；
+      因为 D2 的同一个 PUA 在不同码位可能代表不同部件，不能只按码位映射。
+    - 查不到的私有区字形保留占位；末位识别码槽按 ``drop_tail_pua`` 丢弃。
     """
     out: list[str | None] = []
     unknown = 0
     last = len(glyphs) - 1
+    supp_map = supp_map or {}
     for index, g in enumerate(glyphs):
         if drop_tail_pua and index == last and is_pua(g):
             continue  # 末位私有区字形 = 识别码槽，不是字根
+        key = keys[index] if keys and index < len(keys) else None
         if ord(g) >= 0xF0000:
-            out.append(None)  # 其余私有区字形是"无法渲染的字根"，保留占位
-            unknown += 1
+            readable = (supp_map.get((g, key)) if key else None) or supp_map.get((g, '*'))
+            if readable:
+                out.append(readable)
+            else:
+                out.append(None)  # 其余私有区字形是"无法渲染的字根"，保留占位
+                unknown += 1
             continue
         if 0xE000 <= ord(g) <= 0xF8FF:
             readable = pua_map.get(g)
@@ -240,18 +258,16 @@ def is_pua(glyph: str) -> bool:
 
 def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           pinyin: dict, freq: dict, pua_map: dict[str, str] | None = None,
-          d3_glyphs: list[str] | None = None, rec_slot_pua: set[str] | None = None,
+          rec_slot_pua: set[str] | None = None,
           readable_keys: dict[str, str] | None = None,
-          ids: dict[str, str] | None = None) -> dict:
+          ids: dict[str, str] | None = None,
+          supp_map: dict[tuple[str, str], str] | None = None) -> dict:
     pua_map = pua_map or {}
+    supp_map = supp_map or {}
     rec_slot_pua = rec_slot_pua or set()
     readable_keys = readable_keys or {}
     ids = ids or {}
     notes: list[str] = []
-
-    def fits(components: list) -> bool:
-        n = len(components)
-        return n >= 2 and len(code) in (n, n + 1)
 
     entry = {
         'char': char,
@@ -317,23 +333,15 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
     # 3) 合体字
     per_position = bool(glyphs) and len(code) >= 3 and len(glyphs) == len(code)
-    decoded2, unknown2 = decode(glyphs, pua_map, drop_tail_pua=per_position) if glyphs else ([], 0)
-    decoded3, unknown3 = decode(d3_glyphs, pua_map) if d3_glyphs else ([], 0)
+    keys2 = (list(code[: len(glyphs)])
+             if glyphs and len(glyphs) in (len(code), len(code) - 1) else None)
+    decoded2, unknown2 = (decode(glyphs, pua_map, drop_tail_pua=per_position,
+                                 keys=keys2, supp_map=supp_map)
+                          if glyphs else ([], 0))
 
-    # D2 的强信号：一个码位一个字根字形（含占位），此时按码位对齐，并用"只在末位出现的
-    # 私有区字形"来判定识别码槽（报告 244）。
-    if per_position:
-        source, readable, unknown_glyphs = 'D2', decoded2, unknown2
-    else:
-        pool = []
-        if decoded3:
-            pool.append(('D3', decoded3, unknown3))
-        if decoded2:
-            pool.append(('D2', decoded2, unknown2))
-        pick = (next((c for c in pool if fits(c[1]) and c[2] == 0), None)
-                or next((c for c in pool if fits(c[1])), None)
-                or (pool[0] if pool else None))
-        source, readable, unknown_glyphs = pick if pick else (None, [], 0)
+    # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
+    # 解不出的字形保留占位，宁可 partial，也不把未许可来源写进产物。
+    source, readable, unknown_glyphs = 'D2', decoded2, unknown2
 
     if readable and len(code) >= 2 and len(readable) > len(code):
         dropped = len(readable) - len(code)
@@ -440,25 +448,26 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--codes', required=True)
     parser.add_argument('--radicals', required=True)
-    parser.add_argument('--d3', help='D3 拆字（可选，配合 --pua-map 提高覆盖率）')
-    parser.add_argument('--pua-map', help='PUA→可读字根映射（tools/decode_pua.py 生成）')
+    parser.add_argument('--pua-map', help='D3 BMP PUA→可读字根映射（tools/decode_pua.py 生成；只解码 BMP PUA）')
     parser.add_argument('--short1', required=True)
     parser.add_argument('--short2', required=True)
     parser.add_argument('--pinyin', required=True)
     parser.add_argument('--readable-keys', help='D14 可读字根键表（成字字根笔画推导用，可选）')
     parser.add_argument('--ids', help='IDS 分解（D19，MIT；填占位字根与结构参考，可选）')
+    parser.add_argument('--pua-supplementary',
+                        help='N1-d 补充区 PUA→字根核验表（ADR-353，可选；按 PUA+键位）')
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
 
     paths = {name: Path(getattr(args, name)) for name in ('codes', 'radicals', 'short1', 'short2', 'pinyin')}
-    if args.d3:
-        paths['d3'] = Path(args.d3)
     if args.readable_keys:
         paths['readable_keys'] = Path(args.readable_keys)
     if args.ids:
         paths['ids'] = Path(args.ids)
+    if args.pua_supplementary:
+        paths['pua_supplementary'] = Path(args.pua_supplementary)
     for name, path in paths.items():
         if not path.is_file():
             print(f'缺少输入文件 --{name} {path}', file=sys.stderr)
@@ -470,14 +479,15 @@ def main() -> int:
     short2 = load_short(paths['short2'], 2)
     pinyin, freq = load_pinyin_and_freq(paths['pinyin'])
     pua_map = load_pua_map(Path(args.pua_map)) if args.pua_map else {}
-    d3 = load_d3(Path(args.d3)) if args.d3 else {}
     readable_keys: dict[str, str] = {}
     if args.readable_keys:
         for parts in read_rows(Path(args.readable_keys)):
             for glyph in parts[1]:
                 readable_keys.setdefault(glyph, parts[0])
-    rec_slot_pua = recognition_slot_pua(radicals, codes) if args.d3 else set()
+    rec_slot_pua = recognition_slot_pua(radicals, codes)  # 诊断统计；不再依赖 D3
     ids = load_ids(Path(args.ids)) if args.ids else {}
+    supp_map = (load_pua_supplementary(Path(args.pua_supplementary))
+                if args.pua_supplementary else {})
 
     ranked = sorted(freq.items(), key=lambda kv: (-kv[1], kv[0]))[: args.limit]
     entries = []
@@ -500,9 +510,9 @@ def main() -> int:
                             'quality': 'unknown', 'notes': ['缺拆字数据']})
             continue
         entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
-                             pua_map=pua_map, d3_glyphs=d3.get(char),
+                             pua_map=pua_map,
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
-                             ids=ids))
+                             ids=ids, supp_map=supp_map))
 
     entries.sort(key=lambda e: (-e['frequency'], e['char']))
     stats: dict[str, int] = {}

@@ -1,5 +1,6 @@
 #!/bin/sh
-# 一键跑完可自动化的验收项（报告191）：热键与上屏 → 客户端矩阵 → 性能/网络。
+# 一键跑完可自动化的验收项（报告191；2026-11-14 收敛）：热键与上屏 → 性能/网络。
+# Safari / Chrome / Xcode 客户端矩阵已移除；真实客户端只保留系统自带 TextEdit（质量样本覆盖）。
 # 输出每项 PASS/FAIL 与最终 JSON 摘要；任一项失败则非零退出。
 # 前置：生产宿主已装、输入源已在系统里启用；结束把 mode 还原为 mixed、输入源还原为 ABC。
 set -u
@@ -73,7 +74,7 @@ assert_text "⌥T 繁简切换"     'opt+t;xuexi '          'exact:學習'
 assert_text "⌥T 切回简体"     'opt+t;xuexi '          'exact:学习'
 assert_text "⌥M 模式循环"     'opt+m;opt+m;opt+m;wq ' 'unicode:'
 
-# 3. 性能与网络（必须在客户端矩阵**之前**：矩阵结束会把输入源还原成 ABC，之后无法再程序化选回第三方源——报告229）
+# 3. 性能与网络（不再依赖客户端矩阵；矩阵已移除）
 PERF=$(ROUNDS="${ROUNDS:-10}" SETTLE="${SETTLE:-20}" OUT="$OUT/perf" "$PROBE/perf-session.sh" 2>/dev/null | tail -1)
 case "$PERF" in
     *'"result": "PASS"'*) report "性能/网络" "PASS $(printf '%s' "$PERF" | head -c 160)" ;;
@@ -81,21 +82,7 @@ case "$PERF" in
     *) report "性能/网络" "FAIL $(printf '%s' "$PERF" | head -c 160)"; FAILED=1 ;;
 esac
 
-# 4. 客户端矩阵（放最后：它会用系统 Terminal 开测试窗口并把输入源还原成 ABC）
-# 报告234：只有**系统自带**应用（TextEdit/Safari）算门禁；Chrome/Xcode/终端属 optional，
-# 没安装就 SKIP，装了但回读失败也不算产品 FAIL（按 BLOCKED 记账）。
-if KEYS='wq nihao .' OUT="$OUT/clients" "$PROBE/client-matrix.sh" > "$OUT/clients.log" 2>&1; then
-    verdict=$(python3 "$PROBE/client-matrix-verdict.py" "$OUT/clients")
-    case "$verdict" in
-        PASS*) report "客户端矩阵" "$verdict" ;;
-        BLOCKED*) report "客户端矩阵" "$verdict"; BLOCKED=1 ;;
-        *) report "客户端矩阵" "$verdict"; FAILED=1 ;;
-    esac
-else
-    report "客户端矩阵" "FAIL (见 $OUT/clients.log)"; FAILED=1
-fi
-
-# 4b. 久用（可选）：SOAK_MINUTES>0 时追加
+# 4. 久用（可选）：SOAK_MINUTES>0 时追加
 SOAK_MINUTES="${SOAK_MINUTES:-0}"
 if [ "$SOAK_MINUTES" -gt 0 ]; then
     SOAK=$(MINUTES="$SOAK_MINUTES" OUT="$OUT/soak" "$PROBE/soak-session.sh" 2>/dev/null | tail -1)

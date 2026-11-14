@@ -39,7 +39,7 @@ record() { # name status detail
     printf '%s\t%s\t%s\n' "$1" "$2" "$3" >> "$OUT/steps.tsv"
 }
 
-# 2. 热键/上屏 + 客户端矩阵 + 性能/网络
+# 2. 热键/上屏 + 性能/网络（Safari/Chrome/Xcode 矩阵已移除；TextEdit 由质量样本覆盖）
 acceptance_out=$(OUT="$OUT/auto" ROUNDS="${ROUNDS:-10}" "$PROBE/acceptance-auto.sh" 2>&1); auto_rc=$?
 printf '%s\n' "$acceptance_out" > "$OUT/01-auto.log"
 if [ "$auto_rc" -eq 0 ]; then
