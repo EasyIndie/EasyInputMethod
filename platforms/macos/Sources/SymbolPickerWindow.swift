@@ -129,7 +129,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
         search.placeholderString = "搜索符号或 emoji（中文 / 英文）"
         search.delegate = self
         search.setAccessibilityLabel("搜索符号或 emoji")
-        search.setAccessibilityHelp("输入中文或英文关键词过滤；结果可用方向键选择，回车插入。")
+        search.setAccessibilityHelp("可直接输入中文（拼音会先出候选，空格上屏）或英文关键词过滤；结果可用方向键选择，回车插入。")
         search.onDown = { [weak self] in
             guard let self, let table = self.table else { return }
             self.panel?.makeFirstResponder(table)
@@ -138,6 +138,8 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
             }
         }
         self.search = search
+        // ADR-363：宿主窗口不能用系统输入法，搜索框用进程内组合（同一引擎）打中文。
+        InHostTextInput.shared.attach(search)
 
         let table = SymbolTable()
         table.headerView = nil

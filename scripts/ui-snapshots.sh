@@ -31,6 +31,7 @@ PANEL_SOURCES=(
     platforms/macos/Sources/CaretPlacement.swift
     platforms/macos/Sources/LearningHints.swift
     platforms/macos/Sources/CandidateWindow.swift
+    platforms/macos/Sources/InHostTextInput.swift
     platforms/macos/Sources/Settings.swift
     platforms/macos/Sources/Feedback.swift
     platforms/macos/Sources/InfoWindow.swift
