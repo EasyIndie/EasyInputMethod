@@ -31,17 +31,16 @@ cat > "${APP}/Contents/Info.plist" <<'PLIST'
 </dict></plist>
 PLIST
 cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/Lampyris.icns"
-# 学习区结构化提示（ADR-311）：预览也需要，便于看真实渲染
-[ -f "${DATA}/B0-runtime.tsv" ] && cp "${DATA}/B0-runtime.tsv" "${APP}/Contents/Resources/B0-runtime.tsv"
-# 练习的词组题库直接读 Resources 下的码表。
-[ -f "${DATA}/wubi86-core.tsv" ] && cp "${DATA}/wubi86-core.tsv" "${APP}/Contents/Resources/wubi86-core.tsv"
-# 符号面板与正式包同源读取 Resources 下的 TSV，预览也要能打开。
-[ -f "${ROOT}/data/symbols.tsv" ] && cp "${ROOT}/data/symbols.tsv" "${APP}/Contents/Resources/symbols.tsv"
-[ -f "${DATA}/emoji.tsv" ] && cp "${DATA}/emoji.tsv" "${APP}/Contents/Resources/emoji.tsv"
-[ -f "${ROOT}/data/sources/wubi86-level3-codes.tsv" ] && cp "${ROOT}/data/sources/wubi86-level3-codes.tsv" "${APP}/Contents/Resources/wubi86-level3-codes.tsv"
-# 键位图字根与口诀（练习/学习区共用）：缺失时 KeyRootLayout 只回落到键名，
-# 预览里就会"只有键盘、没有字根和口诀"（报告 293）。
-cp "${ROOT}/modules/keymap/data/key-roots-wubi86.tsv" "${APP}/Contents/Resources/key-roots-wubi86.tsv"
+# 运行时数据统一按 platforms/macos/runtime-resources.txt 复制（与正式包同一清单，报告 294）。
+while read -r relative name; do
+  [ -n "${relative}" ] || continue
+  case "${relative}" in \#*) continue ;; esac
+  if [ -f "${ROOT}/${relative}" ]; then
+    cp "${ROOT}/${relative}" "${APP}/Contents/Resources/${name}"
+  else
+    echo "⚠️  预览缺少 ${relative}（对应面板会降级）" >&2
+  fi
+done < "${SCRIPT_DIR}/runtime-resources.txt"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"

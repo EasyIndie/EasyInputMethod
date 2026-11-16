@@ -142,6 +142,12 @@ make macos-offline-tests
 
 ## 9. 会话日志（最近）
 
+- 2026-11-16 / pi（air）：**预览与正式包同源（报告 294）**。数据复制清单从两份合并为
+  `platforms/macos/runtime-resources.txt`，`build.sh`/`dev-preview.sh` 共用并由 `test-runtime-resources.py` 拦截漂移；
+  预览启动时复制真实 `config.toml` 到私有根（私有副本），修复“预览学习区不出现/字根不显示”的表象；
+  实测 `B0-runtime.tsv` 三处 SHA 一致，预览 `wq` 候选窗显示 `完整码 WQIY` + `亻/⺈/小`，键位图口诀完整。
+  预览主窗口也改用 `WindowPlacement`。
+
 - 2026-11-16 / pi（air）：**练习重试 + 达标即时解锁（ADR-366，报告 292）**。答错 → 不揭晓答案、清空作答框、
   横向抖动、VoiceOver 播报「答错了，请再试一次」；回车在未通过时=提交、通过后才=下一题；`→` 始终跳过。
   判分后立即 `applyStagedUnlock()`，达标 tab 不再要切题型。离线断言（重试语义、键盘导航、29→30 字 tab 亮起、

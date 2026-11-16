@@ -323,7 +323,8 @@ final class PreviewDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
             ])
         }
         self.window = window
-        window.center()
+        // 与正式窗口一致：鼠标所在屏优先，避免预览窗口跑到副屏（报告 294）。
+        WindowPlacement.place(window)
         window.makeKeyAndOrderFront(nil)
         window.makeFirstResponder(input)
         NSApp.activate(ignoringOtherApps: true)

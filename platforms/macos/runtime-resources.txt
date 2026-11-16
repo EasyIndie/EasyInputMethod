@@ -1,0 +1,15 @@
+# 运行时数据文件：正式包与调试预览的唯一复制清单（报告 294）。
+# 每行：仓库内相对路径 <空格> bundle 内文件名；`#` 开头为注释。
+# 新增数据文件时只改这里，`build.sh` 与 `dev-preview.sh` 都按本清单复制，
+# 避免两份清单漂移（预览曾因此缺 key-roots，键位图没有字根/口诀）。
+data/generated/wubi86-core.tsv wubi86-core.tsv
+data/generated/pinyin-chars.tsv pinyin-chars.tsv
+data/generated/pinyin-core.tsv pinyin-core.tsv
+data/generated/wubi86-extended.tsv wubi86-extended.tsv
+data/generated/pinyin-extended.tsv pinyin-extended.tsv
+data/generated/emoji.tsv emoji.tsv
+data/generated/B0-runtime.tsv B0-runtime.tsv
+data/generated/variant-s2t.tsv variant-s2t.tsv
+data/symbols.tsv symbols.tsv
+data/sources/wubi86-level3-codes.tsv wubi86-level3-codes.tsv
+modules/keymap/data/key-roots-wubi86.tsv key-roots-wubi86.tsv
