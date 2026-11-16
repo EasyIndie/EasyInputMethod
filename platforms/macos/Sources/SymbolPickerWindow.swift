@@ -43,6 +43,7 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
     }
 
     func close() {
+        InHostTextInput.shared.cancel()
         panel?.orderOut(nil)
     }
 
@@ -62,6 +63,19 @@ final class SymbolPickerWindow: NSObject, NSTableViewDataSource, NSTableViewDele
             return false
         }
         if flags.contains(.control) || flags.contains(.option) { return false }
+        // ADR-363：面板保持客户端焦点时，按键由 IMK 转发到这里；先交给进程内组合，
+        // 否则搜索框只能收到裸 ASCII（已装包实测：`nihao` 无候选、找不到符号）。
+        if let field = search {
+            switch InHostTextInput.shared.handleForwardedKey(event, field: field) {
+            case .consumed:
+                return true
+            case .committed(let text):
+                appendSearch(text)
+                return true
+            case .ignored:
+                break
+            }
+        }
         if event.keyCode == 53 { close(); return true }
         if event.keyCode == 36 || event.keyCode == 76 { insertSelected(); return true }
         if event.keyCode == 125 { moveSelection(1); return true }
