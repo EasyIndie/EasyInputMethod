@@ -49,11 +49,49 @@
 | 数字直选 + 分段选词 | 重新输入 `nihao` 后按 `2` → 先上屏 `你`、余码 `hao` 继续组合（ADR-330）；空格后 `你好` |
 | 收尾 | 关闭面板与主窗口，进程正常退出（`PASS interactive cleanup`），输入源还原 `Lampyris.default` |
 
-## 5. 差异与遗留
+## 5. 本地开发包初验（`run-panel-interactive.py`，独立会话）
+
+同一套 Sources 的隔离预览进程（`LampyrisIsolated`，私有根 + `LAMPYRIS_SUPPORT_DIR`），输入源临时 ABC、
+结束 `PASS interactive cleanup … real files unchanged` 并还原 `Lampyris.default`。
+证据目录 `platforms/macos/build/acceptance-local-dev-1brtugym/`（本机产物，不入库）。
+
+| 项 | 观测 | 结果 |
+|---|---|---|
+| 预览菜单顺序 | 混输/中文/半角/简体/标点 → 显示学习区 → 练习… → 符号与表情… → 使用指南… → 检查更新… → 设置… → 关于 | PASS |
+| 练习基线（私有根） | `已练 0 字 · 0 次 · 0%`（证明练习数据写私有根，见 §6） | PASS |
+| ⌘↩ 看答案 | AX 出现拆解文本 `言，键 Y；键位 Y；三级 YYY`；统计仍 `0 次` | PASS |
+| 错误作答 | 输入 `a`+回车 → `✗ 再想想 · 你答 A`，`1 次`；上一题仍禁用（历史 1 条） | PASS |
+| 回车进下一题 | 题面换新（子），`1 次`（只 +1，无重复计分），上一题可用 | PASS |
+| 未作答按 ← | 题面不变（避免误跳过） | PASS |
+| ← 回看 | 答完第二题后按 ← → 题面回到「言」+ `✗ 再想想 · 你答 A`；tooltip 变「下一题（→，回到更新的题）」；统计仍 `2 次` | PASS |
+| → 前进 / 越过历史 | → 回到「子」保留当时的 ✗；再 → 得到未作答新题（看答案可用、无反馈） | PASS |
+| 鼠标「下一题 →」 | 点击换题，统计不变 | PASS |
+| 工具栏 | 只剩 文章跟打 / 键位图 / 重置进度 / 进度文件 | PASS |
+| 符号面板组字 | `nihao` → 搜索框预编辑 + 候选窗 504×98（`←→浏览 · 空格确认 · 数字直选`） | PASS |
+| Esc 取消组字 | 预编辑清空、候选窗收起、面板不关 | PASS |
+| 空格上屏 | 搜索框变 `你好`，状态「找到 6 项」，候选窗收起 | PASS |
+| 数字直选 + 分段选词 | `2` 先上屏 `你`、余码 `hao` 继续组合（ADR-330），再空格 → `你好` | PASS |
+| 指南 6 步与自适应高度 | 步 1 620×252、步 2 620×264、步 6 620×252；步 2 键帽 AX 文本 `⌥M 混合 / 五笔 / 拼音 循环`、`⌥P ⌥F ⌥T 标点 · 全半角 · 简繁`；末步按钮变「完成」 | PASS |
+| 收尾 | ⌘Q 退出 → `PASS interactive cleanup: owned process exited; real files unchanged`；输入源回到 `Lampyris.default` | PASS |
+
+中途「Herdr」抢过前台一次：按守则停在按键批次前，重新激活自有测试 App 并复核 `guard-focus` 后继续，
+未向其它应用投递按键。
+
+## 6. 本轮发现并修复的验收隔离缺口
+
+隔离预览只把 `config.toml` 指到私有根，**练习进度/薄弱字仍经 Swift 侧 `ImePaths` 落到真实目录**：
+初验第一轮把 6 条字根记录写进了真实 `~/Library/Application Support/Lampyris/practice.tsv`
+（该文件此前不存在，均为本轮测试生成，已删除还原）。
+修复：`run-panel-interactive.py` / `run-panel-isolation.py` 启动时加 `LAMPYRIS_SUPPORT_DIR=<私有根>`，
+并把 `practice.tsv` / `weak-chars.tsv` 纳入 protected 断言；`run-panel-isolation.py` 四模式复跑 PASS。
+另把 `PracticeExplanationView` 设为可读的无障碍元素（`AXStaticText`），否则「看答案/判分后」的拆解
+对 VoiceOver 不可见（本报告的 AX 证据也依赖它）。
+
+## 7. 差异与遗留
 
 - **未在已装包验证**：本机只能构建 ad-hoc 包（无本地 ASC 公证凭据），`install.sh` 的 Developer ID + 公证硬校验
   会拒绝安装；三项改动需随下一次 `dev → main` 的 CI 公证候选做一次真机复验（练习导航键、宿主内搜索中文、
-  指南版式）。本报告不把预览结论当已装包 PASS。
+  指南版式）。本报告不把预览（本地开发包）结论当已装包 PASS。
 - 宿主内组合刻意不复制 IMK 侧策略（热键、标点、学习区），只覆盖"中文字段能打出字"这一收敛点；
   以后引擎新增候选/分页能力会自动生效（同一 `ImeSession`）。
 - 符号搜索的"拼音/英文"索引仍按原数据（emoji 有拼音列、符号只有关键词列）；中文上屏后走中文关键词匹配。
