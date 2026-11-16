@@ -435,10 +435,34 @@ final class PracticeSession {
         let explanation: String
     }
 
+    /// 已作答的一条快照（ADR-362）：回看只读这份快照，不再读写 `practice.tsv`。
+    struct Entry {
+        let question: PracticeQuestion
+        /// 用户提交的答案：敲码题为字母串，识别码题为「末笔+结构」。
+        let answer: String
+        let result: Result
+    }
+
     private(set) var kind: PracticeKind
     private(set) var question: PracticeQuestion?
     private let progress: PracticeProgress
     private(set) var bank: [PracticeQuestion] = []
+    /// 本次练习窗口内已作答的题（按作答顺序）；`back()` / `next()` 在其中移动。
+    private(set) var history: [Entry] = []
+    /// 正在回看 `history` 的下标；`nil` = 停在最新题。
+    private(set) var reviewIndex: Int?
+    /// 当前显示的题已作答时的记录（刚答完或回看）；`nil` = 还没作答。
+    private(set) var currentEntry: Entry?
+
+    /// 是否处于回看状态（当前题不是「最新未作答题」）。
+    var isReviewing: Bool { reviewIndex != nil }
+
+    /// 能否回上一题：回看中看前面还有没有；停在最新题时看历史里有没有上一条。
+    var canGoBack: Bool {
+        if let reviewIndex { return reviewIndex > 0 }
+        guard !history.isEmpty else { return false }
+        return currentEntry == nil ? true : history.count > 1
+    }
 
     /// 薄弱字清单：「完整码」题型里这些字额外加权（ADR-335）；`nil` = 不用。
     private let weak: WeakChars?
@@ -460,6 +484,9 @@ final class PracticeSession {
     func reload() {
         bank = Practice.bank(kind: kind)
         question = nil
+        history.removeAll()
+        reviewIndex = nil
+        currentEntry = nil
         next()
     }
 
@@ -474,9 +501,45 @@ final class PracticeSession {
         return 1 + debt * 4
     }
 
-    /// 按权重抽下一题；题库多于一题时不连出同一个字。`pick` 仅供测试注入（参数为总权重，返回 `0..<总权重`）。
+    /// 下一题：回看中先往后翻历史，翻到最后一条后再抽新题（ADR-362）。
+    /// `pick` 仅供测试注入（参数为总权重，返回 `0..<总权重`）。
     @discardableResult
     func next(pick: (Int) -> Int = { Int.random(in: 0..<$0) }) -> PracticeQuestion? {
+        if let index = reviewIndex {
+            if index + 1 < history.count {
+                show(history[index + 1], review: index + 1)
+                return question
+            }
+            reviewIndex = nil
+        }
+        currentEntry = nil
+        question = pickNext(pick: pick)
+        return question
+    }
+
+    /// 回上一题：停在最新题时回最近一条作答；回看中再往前退一条。到头返回 `false`。
+    @discardableResult
+    func back() -> Bool {
+        if let index = reviewIndex {
+            guard index > 0 else { return false }
+            show(history[index - 1], review: index - 1)
+            return true
+        }
+        guard !history.isEmpty else { return false }
+        let target = currentEntry == nil ? history.count - 1 : history.count - 2
+        guard target >= 0 else { return false }
+        show(history[target], review: target)
+        return true
+    }
+
+    private func show(_ entry: Entry, review index: Int) {
+        reviewIndex = index
+        currentEntry = entry
+        question = entry.question
+    }
+
+    /// 按权重抽下一题；题库多于一题时不连出同一个字。
+    private func pickNext(pick: (Int) -> Int) -> PracticeQuestion? {
         let previous = question?.char
         let pool = bank.count > 1 ? bank.filter { $0.char != previous } : bank
         let weights = pool.map { question -> Int in
@@ -500,22 +563,32 @@ final class PracticeSession {
         return question
     }
 
-    /// 提交打字答案；`nil` 表示没有题目。
+    /// 提交打字答案；`nil` 表示没有题目或这一题已经答过（ADR-362：答题只记一次）。
     func submitCode(_ answer: String) -> Result? {
-        guard let question else { return nil }
+        guard let question, reviewIndex == nil, currentEntry == nil else { return nil }
         let correct = Practice.judgeCode(answer, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
         // 码值统一在答案区展示，这里只回对错，避免同一信息出现两次。
-        return Result(correct: correct, explanation: "")
+        let result = Result(correct: correct, explanation: "")
+        record(Entry(question: question, answer: answer, result: result))
+        return result
     }
 
     /// 提交识别码选择；证据说明用**正确**的末笔与结构，而不是用户选的。
     func submitRecognition(stroke: String, structure: String) -> Result? {
-        guard let question, let expected = question.recognition else { return nil }
+        guard let question, question.recognition != nil, reviewIndex == nil, currentEntry == nil else {
+            return nil
+        }
         let correct = Practice.judgeRecognition(stroke: stroke, structure: structure, question: question)
         progress.record(char: question.char, kind: kind, correct: correct)
-        _ = expected
-        return Result(correct: correct, explanation: "")
+        let result = Result(correct: correct, explanation: "")
+        record(Entry(question: question, answer: "\(stroke)+\(structure)", result: result))
+        return result
+    }
+
+    private func record(_ entry: Entry) {
+        currentEntry = entry
+        history.append(entry)
     }
 
     var summary: String { progress.summary }
