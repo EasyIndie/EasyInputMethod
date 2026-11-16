@@ -51,7 +51,9 @@ final class PassageWindow: NSObject, NSWindowDelegate {
         input.font = .systemFont(ofSize: 16)
         input.placeholderString = "照着上面的短句输入，回车判定"
         input.setAccessibilityLabel("跟打输入")
-        input.setAccessibilityHelp("按当前输入法输入上面的短句，回车判定；下一句会清空输入")
+        input.setAccessibilityHelp("输入上面的短句，回车判定；下一句会清空输入")
+        // ADR-363：跟打输入要打汉字，宿主内用进程内组合（同一引擎）而不是系统输入法。
+        InHostTextInput.shared.attach(input)
         input.target = self
         input.action = #selector(submit)
         content.addSubview(input)

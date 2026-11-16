@@ -20,6 +20,14 @@ final class PracticeExplanationView: NSView {
 
     override var isFlipped: Bool { true }
 
+    /// 纯绘制视图也必须是一个可读的无障碍元素：否则「看答案/判分后」的拆解
+    /// 对 VoiceOver 与 AX 取证都是不可见的（报告 290）。
+    override func viewDidMoveToWindow() {
+        super.viewDidMoveToWindow()
+        setAccessibilityElement(true)
+        setAccessibilityRole(.staticText)
+    }
+
     func showPlaceholder(_ text: String) {
         roots = []
         recognition = nil

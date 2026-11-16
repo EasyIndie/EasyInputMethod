@@ -20,6 +20,8 @@ final class DictionaryEntryForm: NSView {
         text.placeholderString = "例如 你好"
         text.setAccessibilityLabel("词条文本")
         text.setAccessibilityHelp("精确匹配的汉字或词组，最多256个UTF-8字节。")
+        // ADR-363：词条文本需要中文；宿主内用进程内组合（编码框仍只收字母）。
+        InHostTextInput.shared.attach(text)
         let labels = ["输入方案", "完整编码", "词条文本"].map { title -> NSTextField in
             let label = NSTextField(labelWithString: title)
             label.font = .systemFont(ofSize: 13)

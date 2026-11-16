@@ -16,8 +16,17 @@ final class PracticeAnswerView: NSView {
         }
     }
     var onReturn: ((String) -> Void)?
+    /// 已作答后再按回车：进入下一题（ADR-362；不自动跳，先让用户看清讲解）。
+    var onAdvance: (() -> Void)?
+    /// ← / →：回上一题 / 下一题（回看历史，不重复计分）。
+    var onBack: (() -> Void)?
+    var onForward: (() -> Void)?
+    /// ⌘↩：看答案（未作答时）。
+    var onReveal: (() -> Void)?
     /// 每次按键回调（a–z），用于点亮键位图。
     var onLetter: ((Character) -> Void)?
+    /// 本题是否已作答：决定回车是「提交」还是「下一题」。
+    var isAnswered = false
 
     private(set) var text = "" {
         didSet { needsDisplay = true }
@@ -43,6 +52,22 @@ final class PracticeAnswerView: NSView {
 
     override func keyDown(with event: NSEvent) {
         guard let characters = event.charactersIgnoringModifiers else { return }
+        // 回看/前进与「看答案」：键盘优先，不要求回到工具栏点按钮。
+        switch event.keyCode {
+        case 123:
+            guard isAnswered else { return }
+            onBack?()
+            return
+        case 124:
+            guard isAnswered else { return }
+            onForward?()
+            return
+        default: break
+        }
+        if event.modifierFlags.contains(.command), (0x0D...0x0D).contains(characters.unicodeScalars.first?.value ?? 0) {
+            onReveal?()
+            return
+        }
         // ⌘⌫ 一次清空
         if event.modifierFlags.contains(.command), (0x7F...0x7F).contains(characters.unicodeScalars.first?.value ?? 0) {
             clear()
@@ -51,7 +76,7 @@ final class PracticeAnswerView: NSView {
         for scalar in characters.unicodeScalars {
             switch scalar.value {
             case 0x0D, 0x03:
-                onReturn?(text)
+                if isAnswered { onAdvance?() } else { onReturn?(text) }
             case 0x1B:
                 clear()
             case 0x7F, 0x08:
@@ -70,6 +95,14 @@ final class PracticeAnswerView: NSView {
     }
 
     func clear() { text = "" }
+
+    /// 回看/已作答：把当时的答案填回格子（只读展示）。
+    func showAnswer(_ answer: String) {
+        text = String(answer.prefix(capacity)).lowercased()
+        isAnswered = true
+        isActive = false
+        needsDisplay = true
+    }
 
     func setActive(_ active: Bool) {
         isActive = active

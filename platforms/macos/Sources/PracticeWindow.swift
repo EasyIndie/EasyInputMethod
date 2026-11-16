@@ -24,6 +24,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let afterAnswer: CGFloat = 12
         static let feedbackHeight: CGFloat = 22
         static let afterFeedback: CGFloat = 10
+        static let navHeight: CGFloat = 28
+        static let afterNav: CGFloat = 12
         static let progressHeight: CGFloat = 16
         static let progressBarHeight: CGFloat = 6
         static let afterProgressLabel: CGFloat = 5
@@ -41,6 +43,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         height += PracticeExplanationView.height + Gap.afterExplanation
         height += Gap.cardPadding
         height += Gap.feedbackHeight + Gap.afterFeedback
+        height += Gap.navHeight + Gap.afterNav
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
         if showsKeymap {
             height += Gap.afterScheme + keymapPanel.height(forWidth: Self.contentWidth - Self.margin * 2)
@@ -62,6 +65,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressBar = NSProgressIndicator()
     private let card = NSBox()
     private let scrollView = NSScrollView()
+    /// 内容区导航（ADR-362）：键盘可直达，不再需要回工具栏点「下一题」。
+    private let backButton = NSButton(title: "← 上一题", target: nil, action: nil)
+    private let forwardButton = NSButton(title: "下一题 →", target: nil, action: nil)
+    private let revealButton = NSButton(title: "看答案", target: nil, action: nil)
     private var answered = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -164,8 +171,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func build() {
         let size = NSSize(width: Self.contentWidth, height: contentHeight())
-        let window = NSWindow(contentRect: NSRect(origin: .zero, size: size),
-                              styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        let window = PracticePanel(contentRect: NSRect(origin: .zero, size: size),
+                                   styleMask: [.titled, .closable], backing: .buffered, defer: false)
+        window.onKey = { [weak self] event in self?.handleNavigation(event) ?? false }
         window.title = "萤火虫 · 练习"
         window.isReleasedWhenClosed = false
         window.delegate = self
@@ -227,6 +235,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
         answerView.onLetter = { [weak self] letter in self?.keymapPanel.map.flash(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
+        answerView.onAdvance = { [weak self] in self?.nextQuestion() }
+        answerView.onBack = { [weak self] in self?.previousQuestion() }
+        answerView.onForward = { [weak self] in self?.nextQuestion() }
+        answerView.onReveal = { [weak self] in self?.revealAnswer() }
         content.addSubview(answerView)
 
         strokeTitle.font = .systemFont(ofSize: 11)
@@ -255,6 +267,23 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.alignment = .center
         feedbackLabel.font = .systemFont(ofSize: 12.5, weight: .semibold)
         content.addSubview(feedbackLabel)
+
+        for (button, action, label) in [
+            (backButton, #selector(previousQuestion), "上一题（←）"),
+            (revealButton, #selector(revealAnswer), "看答案（⌘↩）"),
+            (forwardButton, #selector(nextQuestion), "下一题（已作答后回车或 →）"),
+        ] as [(NSButton, Selector, String)] {
+            button.target = self
+            button.action = action
+            button.bezelStyle = .rounded
+            button.controlSize = .regular
+            button.font = .systemFont(ofSize: 12)
+            button.toolTip = label
+            button.setAccessibilityLabel(label)
+            content.addSubview(button)
+        }
+        revealButton.keyEquivalent = "\r"
+        revealButton.keyEquivalentModifierMask = [.command]
 
         progressLabel.font = .systemFont(ofSize: 11)
         progressLabel.textColor = .secondaryLabelColor
@@ -346,6 +375,15 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
 
+        // 导航行：← 上一题（左）｜ 看答案 · 下一题 →（右）。
+        let navWidth: CGFloat = 96
+        let revealWidth: CGFloat = 84
+        backButton.frame = NSRect(x: margin, y: y, width: navWidth, height: Gap.navHeight)
+        forwardButton.frame = NSRect(x: margin + inner - navWidth, y: y, width: navWidth, height: Gap.navHeight)
+        revealButton.frame = NSRect(x: margin + inner - navWidth - 8 - revealWidth, y: y,
+                                    width: revealWidth, height: Gap.navHeight)
+        y += Gap.navHeight + Gap.afterNav
+
         progressLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.progressHeight)
         progressBar.frame = NSRect(x: margin, y: y + Gap.progressHeight + Gap.afterProgressLabel,
                                    width: inner, height: Gap.progressBarHeight)
@@ -434,6 +472,22 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
+    /// 回上一题：回看历史，不重复计分（ADR-362）。
+    @objc private func previousQuestion() {
+        guard session.back() else { return }
+        showCurrent()
+    }
+
+    /// 窗口级键盘导航兑底：识别码题型答完后焦点不在作答框，← / → / 回车 落到这里。
+    private func handleNavigation(_ event: NSEvent) -> Bool {
+        guard session.currentEntry != nil else { return false }
+        switch event.keyCode {
+        case 123: previousQuestion(); return true
+        case 124, 36, 76: nextQuestion(); return true
+        default: return false
+        }
+    }
+
     /// 统计：题库字数、已练字数、次数、正确率、练习进度（沿用当前题型）。
     private func updateStats() {
         let bankSize = max(1, session.bank.count)
@@ -464,6 +518,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func showCurrent() {
         answered = false
+        answerView.isAnswered = false
         answerView.clear()
         keymapPanel.map.clearFlash()
         keymapPanel.map.markAnswer("")
@@ -480,19 +535,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                 ? "缺少键位字根表，无法出字根题"
                 : "当前没有可出题的完整条目（需要 quality=full）"
             progressLabel.stringValue = session.summary
+            updateNavigation()
             return
         }
         answerView.setActive(true)
-        answerView.capacity = {
-            switch kind {
-            case .roots, .code1: return 1
-            case .code2: return 2
-            case .code3: return 3
-            case .code: return min(4, max(3, question.code.count))
-            case .phrase: return 4
-            case .recognition: return 4
-            }
-        }()
+        answerView.capacity = capacity(for: question)
         questionLabel.stringValue = question.char
         promptLabel.stringValue = promptText(for: question)
         if kind == .recognition {
@@ -503,12 +550,64 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             explanation.isHidden = false
         }
         updateStats()
-        if kind.isTyping { window?.makeFirstResponder(answerView) }
+        // 回看已有记录：直接呈现当时的答案与对错，并把格子填回去。
+        if let entry = session.currentEntry { present(entry) }
+        updateNavigation()
+        if kind.isTyping, session.currentEntry == nil { window?.makeFirstResponder(answerView) }
+    }
+
+    private func capacity(for question: PracticeQuestion) -> Int {
+        switch kind {
+        case .roots, .code1: return 1
+        case .code2: return 2
+        case .code3: return 3
+        case .code: return min(4, max(3, question.code.count))
+        case .phrase, .recognition: return 4
+        }
+    }
+
+    /// 已作答（刚答完或回看）：展示答案与对错，不写进度。
+    private func present(_ entry: PracticeSession.Entry) {
+        answered = true
+        answerView.setActive(false)
+        keymapPanel.map.clearFlash()
+        if kind.isTyping {
+            answerView.showAnswer(entry.answer)
+        } else {
+            let parts = entry.answer.split(separator: "+").map(String.init)
+            if parts.count == 2 {
+                pendingStroke = parts[0]
+                pendingStructure = parts[1]
+                updateSelectionTitle()
+            }
+        }
+        showExplanation(entry.question, revealsAnswer: true)
+        explanation.isHidden = false
+        // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
+        if let expected = kind.answer(for: entry.question) {
+            keymapPanel.map.markAnswer(expected)
+        }
+        let headline = entry.result.correct ? "✓ 正确" : "✗ 再想想"
+        let typed = kind.isTyping && !entry.answer.isEmpty ? " · 你答 \(entry.answer.uppercased())" : ""
+        feedbackLabel.stringValue = headline + typed
+            + (entry.result.explanation.isEmpty ? "" : " · " + entry.result.explanation)
+        feedbackLabel.textColor = entry.result.correct ? .systemGreen : .systemOrange
+        updateStats()
+        updateNavigation()
+        // 识别码没有作答框可持焦点：交给窗口，← / → / 回车 才能继续导航。
+        if kind == .recognition { window?.makeFirstResponder(nil) }
+    }
+
+    private func updateNavigation() {
+        backButton.isEnabled = session.canGoBack
+        forwardButton.isEnabled = current != nil
+        revealButton.isEnabled = kind.isTyping && current != nil && session.currentEntry == nil
+        forwardButton.toolTip = session.isReviewing ? "下一题（→，回到更新的题）" : "下一题（已作答后回车或 →）"
     }
 
     @objc private func submitCode(_ text: String) {
-        guard let result = session.submitCode(text) else { return }
-        finish(result)
+        guard session.currentEntry == nil, session.submitCode(text) != nil else { return }
+        finish()
     }
 
     @objc private func pickStroke(_ sender: NSButton) {
@@ -539,39 +638,28 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             feedbackLabel.textColor = .secondaryLabelColor
             return
         }
-        guard let result = session.submitRecognition(stroke: stroke, structure: structure) else { return }
-        finish(result)
+        guard session.currentEntry == nil,
+              session.submitRecognition(stroke: stroke, structure: structure) != nil else { return }
+        finish()
     }
 
-    private func finish(_ result: PracticeSession.Result) {
-        answered = true
-        keymapPanel.map.clearFlash()
-        answerView.setActive(false)
-        if let question = current {
-            showExplanation(question, revealsAnswer: true)
-            explanation.isHidden = false
-        }
-        // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
-        if let question = current, let expected = kind.answer(for: question) {
-            keymapPanel.map.markAnswer(expected)
-        }
-        let headline = result.correct ? "✓ 正确" : "✗ 再想想"
-        feedbackLabel.stringValue = headline + (result.explanation.isEmpty ? "" : " · " + result.explanation)
+    private func finish() {
+        guard let entry = session.currentEntry else { return }
+        present(entry)
         // VoiceOver：判分结果直接播报，不必移动光标。
         NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested,
                              userInfo: [.announcement: feedbackLabel.stringValue,
                                          .priority: NSAccessibilityPriorityLevel.medium.rawValue])
-        feedbackLabel.textColor = result.correct ? .systemGreen : .systemOrange
-        updateStats()
     }
 
     @objc private func revealAnswer() {
-        guard let question = current else { return }
+        guard let question = current, session.currentEntry == nil else { return }
         // 字根已经在上面的字根行里（字形上、键位下），这里只给完整码，避免又变成行内交替写法。
         showExplanation(question, revealsAnswer: true)
         explanation.isHidden = false
         feedbackLabel.stringValue = ""
         feedbackLabel.textColor = .secondaryLabelColor
+        updateNavigation()
     }
 
     @objc private func resetProgress() {
@@ -633,6 +721,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     /// 测试用：返回构建好的内容视图（用于离屏或真实窗口截图）。
+    /// 测试用：内容区导航行（ADR-362）的标题与启用状态。
+    func navigationForTesting() -> [(title: String, enabled: Bool)] {
+        [backButton, revealButton, forwardButton].map { ($0.title, $0.isEnabled) }
+    }
+
     /// 测试用：当前进度下解锁的题型与分段启用状态。
     func unlockedKindsForTesting() -> [PracticeKind] {
         let unlocked = unlockedKinds()
@@ -725,12 +818,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 }
 
-// MARK: - 工具栏（五个动作统一放窗口顶部）
+// MARK: - 工具栏（四个持久动作放窗口顶部；导航与看答案在内容区，ADR-362）
 
 extension PracticeWindow: NSToolbarDelegate {
     private enum ToolbarID {
-        static let next = NSToolbarItem.Identifier("practice.next")
-        static let reveal = NSToolbarItem.Identifier("practice.reveal")
         static let reset = NSToolbarItem.Identifier("practice.reset")
         static let export = NSToolbarItem.Identifier("practice.export")
         static let keymap = NSToolbarItem.Identifier("practice.keymap")
@@ -738,8 +829,7 @@ extension PracticeWindow: NSToolbarDelegate {
     }
 
     func toolbarDefaultItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
-        [ToolbarID.next, ToolbarID.reveal, ToolbarID.passage, .flexibleSpace, ToolbarID.keymap,
-         ToolbarID.reset, ToolbarID.export]
+        [ToolbarID.passage, .flexibleSpace, ToolbarID.keymap, ToolbarID.reset, ToolbarID.export]
     }
 
     func toolbarAllowedItemIdentifiers(_ toolbar: NSToolbar) -> [NSToolbarItem.Identifier] {
@@ -750,18 +840,6 @@ extension PracticeWindow: NSToolbarDelegate {
                  willBeInsertedIntoToolbar flag: Bool) -> NSToolbarItem? {
         let item = NSToolbarItem(itemIdentifier: identifier)
         switch identifier {
-        case ToolbarID.next:
-            item.label = "下一题"
-            item.toolTip = "下一题（回车）"
-            item.image = NSImage(systemSymbolName: "arrow.right", accessibilityDescription: "下一题")
-            item.target = self
-            item.action = #selector(nextQuestion)
-        case ToolbarID.reveal:
-            item.label = "显示答案"
-            item.toolTip = "显示答案"
-            item.image = NSImage(systemSymbolName: "eye", accessibilityDescription: "显示答案")
-            item.target = self
-            item.action = #selector(revealAnswer)
         case ToolbarID.reset:
             item.label = "重置进度"
             item.toolTip = "重置练习进度"
@@ -797,4 +875,13 @@ extension PracticeWindow: NSToolbarDelegate {
 /// 顶部起算的容器：文字与控件按"距顶部"排，避免出界。
 private final class FlippedView: NSView {
     override var isFlipped: Bool { true }
+}
+
+/// 练习窗口：识别码题型答完后没有作答框持焦点，← / → / 回车 在窗口级兑底（ADR-362）。
+private final class PracticePanel: NSWindow {
+    var onKey: ((NSEvent) -> Bool)?
+    override func keyDown(with event: NSEvent) {
+        if onKey?(event) == true { return }
+        super.keyDown(with: event)
+    }
 }

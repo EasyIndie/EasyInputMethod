@@ -44,8 +44,34 @@ require(okResult.correct, "正确码应判对")
 require(flow.summary != before, "作答后进度摘要应变化")
 require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 1, "应记录 1 次作答")
 require(flowProgress.rows.values.reduce(0) { $0 + $1.correct } == 1, "应记录 1 次正确")
+require(flow.submitCode("zzzz") == nil, "同一题答过之后不能再记一次（ADR-362）")
+require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 1, "重复提交不重复计数")
+_ = flow.next()
+guard let wrongQuestion = flow.question else { exit(1) }
+require(wrongQuestion.char != firstQuestion.char, "下一题应换字")
 _ = flow.submitCode("zzzz")
 require(flowProgress.rows.values.reduce(0) { $0 + $1.attempts } == 2, "错误作答也应计数")
+// ADR-362：回上/下一题只在本次窗口的历史里移动，回看不写进度。
+let navProgress = PracticeProgress(url: flowDir.appendingPathComponent("nav.tsv"))
+let nav = PracticeSession(kind: .code, progress: navProgress)
+guard let navFirst = nav.question else { exit(1) }
+guard nav.submitCode(navFirst.code) != nil else { exit(1) }
+require(!nav.canGoBack, "只有一题时不能回退")
+_ = nav.next()
+guard let navSecond = nav.question else { exit(1) }
+require(nav.submitCode("zzzz") != nil, "第二题可以作答")
+require(nav.canGoBack, "答过两题后可以回退")
+require(nav.back(), "回上一题应成功")
+require(nav.question?.char == navFirst.char, "回看的是第一题")
+require(nav.isReviewing && nav.currentEntry?.answer == navFirst.code, "回看显示当时的答案")
+let navAttempts = navProgress.rows.values.reduce(0) { $0 + $1.attempts }
+require(nav.submitCode(navFirst.code) == nil, "回看时不能重新计分")
+require(nav.next()?.char == navSecond.char, "前进回到第二题")
+require(nav.currentEntry?.result.correct == false, "回看保留当时的判分")
+require(navProgress.rows.values.reduce(0) { $0 + $1.attempts } == navAttempts, "回看不写进度")
+_ = nav.next()
+require(!nav.isReviewing && nav.currentEntry == nil, "翻过历史末尾后回到未作答的新题")
+require(!nav.back() || nav.isReviewing, "新题回退进入回看而不是丢弃新题")
 // ADR-332：字根题——看字根打所在键；键名与其余字根各一题，Z 不出题，答案是 1 位键位。
 let rootBank = Practice.bank(kind: .roots)
 require(rootBank.count > 100, "应读到完整字根表而不是只有键名的兜底：\(rootBank.count)")
@@ -282,6 +308,9 @@ if let image = PracticeWindow.shared.renderForTesting(kind: .phrase, progressURL
    let data = image.representation(using: .png, properties: [:]) {
     try? data.write(to: flowDir.appendingPathComponent("practice-phrase-light.png"))
 }
+// ADR-362：导航行在内容区（← 上一题 / 看答案 / 下一题 →），不依赖工具栏。
+require(PracticeWindow.shared.navigationForTesting().map(\.title) == ["← 上一题", "看答案", "下一题 →"],
+        "内容区应有前后切换与看答案三个入口")
 for kind in [PracticeKind.roots, .code, .phrase, .recognition] {
     let problems = PracticeWindow.shared.layoutProblemsForTesting(kind: kind)
     require(problems.isEmpty, "练习窗口版式问题：\(problems.joined(separator: "; "))")

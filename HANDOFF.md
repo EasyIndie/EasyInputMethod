@@ -2,12 +2,12 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-15 / Claude Code（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
-  air 与 pro 均已装发版产物（执行 `9cb738c9…`），30/30 样本、性能、内存、IT-22 A 档 / N1–N5 全部 PASS。
-- 分支：`main` = `7b95ba6`（PR #314 86 专注 + 标准变体、PR #315 D2 字形别名均已合入）；`dev` = `8aa77f4`（与 origin 同步）。
+- 更新：2026-11-16 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
+  air 已换装 `c1d9a17` 的公证候选（执行 `e04e7802…`），`dev` 最新 `efd9a14`（ADR-362/363/364 三项交互修复 + 本地开发包初验与验收隔离修复，已推送待 PR）。
+- 分支：`main` = `c1d9a17`（PR #320 已合入）；`dev` = `efd9a14`（与 origin 同步；本批 commit `5bfbdb3`/`1d7cd0b`/`bf0eb23`/`257c04f`/`02e3932`/`19ae909`/`efd9a14`）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（538 产物零网络符号）、`make macos-offline-tests` **67 文件 / 336 例 PASS**、`validate_b0.py` PASS（1,000 条）、
-  `build.sh --strict` PASS、`tools/check-level3-codes.py` PASS（3,362 条）。
+- 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
+  `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
@@ -15,8 +15,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；本会话已有辅助功能/事件投递权限） | **1.3.0 / build 43**（2026-11-13 装机，报告 270），ZIP `a191b60d…`，宿主执行 `bda6f0903f95e07f9800577083eee452d46b0b9f3ca9520caab23d298a790df9`（U1-4 候选 `b8dd20f`，2026-11-14 装机；
-备份 `updates/install-backup-20261114T084240Z/`）；输入源 `Lampyris.default` 已启用并选中；**`mode=wubi`** | 2026-11-15 01:19 采集：config `888ed018…`（mode=wubi / punctuation=chinese / full_width=half / chinese_variant=simplified，显式 hotkey 8 项）、词库 2046 行 `182ee41c…`；与 2026-11-14 样本时的 `3aea2bca…`/1838 行不同，属用户日常使用，非本轮改动 | build 42 `5d75e2fd…` 在 `updates/install-backup-20261113T051338Z/`；build 41 `aa040adc…` 在 `updates/install-backup-20261113T044337Z/`；`main` 候选 `2610d1f` 在 `updates/install-backup-20261113T041111Z/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.0 / build 43**，宿主执行 **`e04e780233d762f3fad9238935a1ff045bfbd8ee3d90a591bb8ff0d844ba7394`**（源码提交 `c1d9a17` 的 CI 公证候选，2026-11-16 装机；旧包备份 `~/Library/Application Support/Lampyris/uninstalled/bundle.LXisY4`）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-16 采集：config `248f4591…`（`--keep-data` 保留）、词库 2212 行（试打 `wq ` 触发一条学习写入）；`mode=mixed` 为用户设置 | 上一包 `b8dd20f`（执行 `bda6f090…`）在 `~/Library/Application Support/Lampyris/uninstalled/bundle.LXisY4`；build 42/41 备份见 `updates/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -70,8 +69,12 @@
 - **P1 · 数据与方案**：corpus M2-1 调研 ✅、N1-d ✅、N2/N3/N4 ✅（ADR-355）、cjk-decomp 扩量 ✅（ADR-357）、标准 v1 ✅（ADR-358）、D2 字形别名 ✅（ADR-359）；覆盖已到许可数据上限（87.1%），P1-5 已关闭；余项仅 13 个语境歧义 PUA（可选）与多方案码表（TBD-2，98/新世纪暂不实现）。
 - **P2 · 有证据才做**：排序观察期、位置记忆、冷首键、拼音后端评估、n-gram（均写触发条件）。
 - **明确不做**：云/账号/广告/统计/剪贴板/语音；平台扩展单独立项，不与 macOS 同批。
+- **待真机复验（本批三项，ADR-362/363/364，报告 290）**：练习 `←`/`→`/回车导航与回看不计分、
+  宿主内中文字段（符号搜索 / 词条文本 / 跟打输入）的进程内组合、使用指南键帽版式。
+  目前只在**隔离预览**验证过（私有根、输入源临时切 ABC）；已装包仍是 `c1d9a17` 之前的代码，
+  等下一次 `dev → main` 的 CI 公证候选换包后补真机 PASS。
 
-建议：先在「产品可感 B」（U2-3 扩展词库 / U3-5 符号）与「数据地基 C」（P1-2 调研）之间选一条主线。
+建议：本批先合入 `dev → main` 拿公证候选，完成这三项真机复验后再决定下一版范围。
 
 ## 4. 下一步
 
@@ -90,6 +93,9 @@
 | 11 | ~~N2/N3/N4 数据地基~~：56 个成字字根真实笔顺、结构覆盖 2,766、8 个 D2 漏拆补齐；schema v6 | ✅ 2026-11-14（ADR-355，报告 281） |
 | 12 | ~~标准 v1 + 86 专注~~：schema v7、241 条 root/key、98/新世纪仅留 profile | ✅ 2026-11-15（ADR-358/359，报告 284/285；PR #314/#315） |
 | 13 | **集成验收（不发版）**：用当前 `main` 构建候选包，做自闭环验收（热键/上屏、TextEdit 实键入、性能/零外联、学习区数据回读），确认已合入改动无回归 | ⏳ 待授权换包 |
+| 14 | ~~三项交互修复（ADR-362/363/364）~~：练习键盘前后切换与回看、宿主内中文组合、指南结构化；`make verify` + 离线 68/337 + 隔离预览实机 PASS | ✅ 2026-11-16（报告 290） |
+| 15 | ~~本地开发包初验~~：隔离预览实机跑完练习导航/回看/不重复计分、符号搜索中文组合、指南 6 步版式；顺手修掉练习数据未隔离（写真实 `practice.tsv`）并补 AX 可读 | ✅ 2026-11-16（报告 290） |
+| 16 | **换公证候选做真机复验**：`dev → main` 后下载 CI 候选（含本批改动），按 `iterate-macos-ime` 换包；重点复验练习导航、符号搜索打中文、指南版式 | ⏳ 待换包 |
 
 **发版决策（2026-11-15）**：功能迭代较多，**先不发版**，先做集成验收。
 剩余开发项：86 覆盖率已到**许可数据上限**——3,000 字 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；
@@ -135,6 +141,20 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-16 / pi（air）：**本地开发包初验（报告 290）**。隔离预览跑通练习 `⌘↩` 看答案（AX 可读拆解）、
+  错误作答 → 回车进下一题（次数只 +1）→ `←` 回看保留当时判分且不计分 → `→` 前进/新题、鼠标「下一题 →」；
+  符号搜索 `nihao` → 候选 → 空格上屏 `你好`（找到 6 项）、Esc 取消组字、数字分段选词；指南 6 步、
+  键帽 AX 文本与自适应高度（252/264/252）。**发现并修复**：隔离预览只隔离了 config，练习进度仍写真实
+  `practice.tsv`（本轮测试生成的 6 条已删除还原）；两个 panel runner 补 `LAMPYRIS_SUPPORT_DIR` 与
+  protected 断言，`PracticeExplanationView` 补 AX 角色。`make verify` + 离线 68/337 PASS，`dev` → `efd9a14`。
+
+- 2026-11-16 / pi（air）：**换装 `c1d9a17` 公证候选**（执行 `e04e7802…`，`--keep-data` 保留配置/词库），
+  复验菜单固定顺序、⌥C 符号面板、设置页快捷键同源、`wq ` → 你；证据 `platforms/macos/build/acceptance-air-c1d9a17/`。
+  同会话实现并验证三项交互修复：练习键盘前后切换 + 答题只记一次（ADR-362）、
+  宿主内文本字段用同一 `ImeSession` 进程内组合（ADR-363，根因是 IMK 不能服务宿主自身，不是中英状态错乱）、
+  使用指南结构化 + 键帽版式（ADR-364）。`make verify`、离线 68 文件/337 例、`build.sh --strict`、
+  `make macos-ui-snapshots`、隔离预览实机全 PASS（报告 290）；已提交 `dev`（`5bfbdb3`/`1d7cd0b`/`bf0eb23`/`257c04f`）。
 
 - 2026-11-15 / Claude Code（air）：**预览自动切输入源**。`make macos-dev` 启动时若当前是萤火虫，
   自动切到 ABC 并在退出（含异常）后切回；实测双向 `tissrc select` 均生效，会话后已还原 Lampyris。
