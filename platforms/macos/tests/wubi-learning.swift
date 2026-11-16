@@ -308,6 +308,25 @@ if let image = PracticeWindow.shared.renderForTesting(kind: .phrase, progressURL
    let data = image.representation(using: .png, properties: [:]) {
     try? data.write(to: flowDir.appendingPathComponent("practice-phrase-light.png"))
 }
+// ADR-365 / 报告 290 P2-6：练习/指南/设置窗口按「鼠标所在屏 → 主屏」居中并夹进可见区域。
+let mainFrame = NSRect(x: 0, y: 0, width: 1440, height: 900)
+let upperFrame = NSRect(x: -259, y: 900, width: 1920, height: 1080)
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 500, y: 300),
+                                    frames: [mainFrame, upperFrame]) == 0, "鼠标在主屏选中主屏")
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 500, y: 1200),
+                                    frames: [mainFrame, upperFrame]) == 1, "鼠标在副屏选中副屏")
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 9000, y: 9000),
+                                    frames: [mainFrame, upperFrame]) == nil, "鼠标不在任何屏返回 nil")
+let mainVisible = NSRect(x: 0, y: 0, width: 1440, height: 870)
+let centered = WindowPlacement.origin(size: NSSize(width: 720, height: 500), visible: mainVisible)
+require(centered == NSPoint(x: 360, y: 185), "可见区域内居中（实际 \(centered)）")
+let upperVisible = NSRect(x: -259, y: 900, width: 1920, height: 1080)
+let upperOrigin = WindowPlacement.origin(size: NSSize(width: 620, height: 252), visible: upperVisible)
+require(upperVisible.contains(NSRect(origin: upperOrigin, size: NSSize(width: 620, height: 252))),
+        "副屏落点必须在副屏可见区域内")
+let clamped = WindowPlacement.origin(size: NSSize(width: 2000, height: 1200), visible: mainVisible)
+require(clamped == NSPoint(x: 0, y: 0), "超大窗口贴可见区域左上（实际 \(clamped)）")
+
 // ADR-362：导航行在内容区（← 上一题 / 看答案 / 下一题 →），不依赖工具栏。
 require(PracticeWindow.shared.navigationForTesting().map(\.title) == ["← 上一题", "看答案", "下一题 →"],
         "内容区应有前后切换与看答案三个入口")

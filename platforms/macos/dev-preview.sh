@@ -50,6 +50,7 @@ swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/InputMenu.swift" \
   "${SCRIPT_DIR}/Sources/ImeSession.swift" \
   "${SCRIPT_DIR}/Sources/CandidateWindow.swift" \
+  "${SCRIPT_DIR}/Sources/WindowPlacement.swift" \
   "${SCRIPT_DIR}/Sources/InHostTextInput.swift" \
   "${SCRIPT_DIR}/Sources/CaretPlacement.swift" \
   "${SCRIPT_DIR}/Sources/Config.swift" \

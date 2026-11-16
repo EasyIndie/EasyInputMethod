@@ -410,6 +410,7 @@ final class SettingsPanel: NSObject, NSWindowDelegate, NSToolbarDelegate {
         if let window { ImeAppearance.applyTheme(to: window) }
         setStatus("", isError: false)
         NSApp.activate(ignoringOtherApps: true)
+        if let window { WindowPlacement.place(window) }
         window?.makeKeyAndOrderFront(nil)
     }
 

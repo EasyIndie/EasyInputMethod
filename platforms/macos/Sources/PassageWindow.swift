@@ -21,6 +21,7 @@ final class PassageWindow: NSObject, NSWindowDelegate {
     func show() {
         if window == nil { build() }
         guard let window else { return }
+        WindowPlacement.place(window)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         window.makeFirstResponder(input)

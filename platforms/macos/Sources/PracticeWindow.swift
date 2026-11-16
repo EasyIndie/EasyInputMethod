@@ -164,6 +164,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 这里按既有设置面板的做法补一次 orderFrontRegardless（报告 262）。
         if NSApp.activationPolicy() == .prohibited { NSApp.setActivationPolicy(.accessory) }
         NSApp.activate(ignoringOtherApps: true)
+        if let window { WindowPlacement.place(window) }
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
         window?.makeFirstResponder(answerView)
@@ -190,7 +191,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         toolbar.allowsUserCustomization = false
         window.toolbar = toolbar
         if #available(macOS 11.0, *) { window.toolbarStyle = .unified }
-        window.center()
         self.window = window
     }
 

@@ -4,7 +4,7 @@
 
 - 更新：2026-11-16 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 已换装 `edb6d7c` 的公证候选（执行 `1d6bac79…`，含 ADR-362/363/364 三项交互修复 + 转发路径修复），三项真机复验 PASS。
-- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = `2d0c8a0`（仅多报告 290/HANDOFF 文档提交，随下批 PR 合入）。
+- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = 待推送（在 main 之上新增窗口落点 P2-6，ADR-365/报告 291）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
   `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290）。
@@ -15,7 +15,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.0 / build 43**，宿主执行 **`1d6bac797c3d75e01e1174d9eddf50d2e05fffa4cf29271defcee8e78c0b0ce6`**（源码提交 `edb6d7c` 的 CI 公证候选，2026-11-16 装机；`--keep-data`）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-16：config `248f4591…` 未变、词库 2240 行（日常学习）；测试写出的 `practice.tsv` 已删除 | 上一候选 `a925011`（执行 `b90ec496…`）与更早 `c1d9a17`/`b8dd20f` 备份见 `~/Library/Application Support/Lampyris/uninstalled/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.0 / build 43**，宿主执行 **`1d6bac797c3d75e01e1174d9eddf50d2e05fffa4cf29271defcee8e78c0b0ce6`**（源码提交 `edb6d7c` 的 CI 公证候选，2026-11-16 装机；`--keep-data`）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-16 20:44：config `248f4591…` 未变、词库 2240 行；`practice.tsv` 148 行（用户本人练习，**不要删**） | 上一候选 `a925011`（执行 `b90ec496…`）与更早 `c1d9a17`/`b8dd20f` 备份见 `~/Library/Application Support/Lampyris/uninstalled/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -141,6 +141,12 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-16 / pi（air）：**窗口落点 P2-6 已实现（ADR-365，报告 291）**。新增 `WindowPlacement`
+  （鼠标所在屏 → 主屏 → 第一块；可见区域内居中并夹取），练习/指南/设置/跟打统一使用；
+  离线纯函数断言 + 隔离预览实机：练习 `(360,215)`、指南步 1 `(410,339)`、步 2 仍在主屏、设置 `(395,171)`。
+  `make verify`、离线 68/337、`build.sh --strict` 全 PASS；待在下一批 `dev → main` 公证候选上复验。
+  另：真实 `practice.tsv` 20:36–20:43 有 148 行练习记录，判断为用户本人练习，未删除。
 
 - 2026-11-16 / pi（air）：**已装包真机复验两轮（报告 290）**。候选 `a925011`：练习导航/回看/不重复计分/
   看答案/工具栏精简 PASS，**符号面板仍只有裸 ASCII**——根因是非激活面板的按键由 IMK 转发到
