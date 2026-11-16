@@ -4,7 +4,7 @@
 
 - 更新：2026-11-16 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 已换装 `edb6d7c` 的公证候选（执行 `1d6bac79…`，含 ADR-362/363/364 三项交互修复 + 转发路径修复），三项真机复验 PASS。
-- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` 与 `main` 同步。
+- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = `2d0c8a0`（仅多报告 290/HANDOFF 文档提交，随下批 PR 合入）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
   `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290）。
