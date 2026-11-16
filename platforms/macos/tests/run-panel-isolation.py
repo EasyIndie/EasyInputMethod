@@ -1,5 +1,6 @@
 """Native resource isolation probe; does not automate the installed input method."""
 import hashlib
+import os
 from pathlib import Path
 import selectors
 import shutil
@@ -25,13 +26,15 @@ def run(mode):
     sentinel = work / 'lampyris-panel-export.tsv'
     sentinel.write_bytes(b'existing user export\x00')
     absent = work / 'lampyris-panel-bad.tsv'
-    protected = [REAL / 'config.toml', REAL / 'user-dictionary.tsv', sentinel, absent]
+    protected = [REAL / 'config.toml', REAL / 'user-dictionary.tsv',
+                 REAL / 'practice.tsv', REAL / 'weak-chars.tsv', sentinel, absent]
     before = [stamp(path) for path in protected]
     process = None
     try:
         process = subprocess.Popen(
             [str(BINARY), '--panel-isolation-probe', mode, str(work), str(ROOT / 'data/generated')],
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+            env={**os.environ, 'LAMPYRIS_SUPPORT_DIR': str(work)},
         )
         reader = selectors.DefaultSelector()
         reader.register(process.stdout, selectors.EVENT_READ)

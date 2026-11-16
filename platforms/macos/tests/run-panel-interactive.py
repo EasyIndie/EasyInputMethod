@@ -1,5 +1,6 @@
 """Create a unique native test app; own its process and files through the session."""
 import hashlib
+import os
 from pathlib import Path
 import plistlib
 import selectors
@@ -40,7 +41,8 @@ for item in sorted(preview_resources.iterdir()):
     'CFBundleName': 'LampyrisIsolated', 'CFBundlePackageType': 'APPL',
     'NSPrincipalClass': 'NSApplication',
 }))
-protected = [REAL / 'config.toml', REAL / 'user-dictionary.tsv']
+protected = [REAL / 'config.toml', REAL / 'user-dictionary.tsv',
+             REAL / 'practice.tsv', REAL / 'weak-chars.tsv']
 before = [stamp(path) for path in protected]
 TISSRC = ROOT / 'tools/macos-probe/bin/tissrc'
 ABC = 'com.apple.keylayout.ABC'
@@ -79,8 +81,11 @@ if original_source and original_source.startswith('cn.jokerhub.inputmethod.'):
     else:
         print('⚠️ 当前输入源是「萤火虫」，且无法自动切到 ABC：它会在系统层先消费 ⌥M/⌥F/⌥P/⌥T。\n'
               '   请手动按 ⌃Space 切到 ABC 再测快捷键。', flush=True)
+# 练习进度（practice.tsv）与薄弱字（weak-chars.tsv）走 Swift 侧的 ImePaths，
+# 只把 config 指到私有根还不够：必须同时给 LAMPYRIS_SUPPORT_DIR，否则会写进真实目录（报告 290）。
 process = subprocess.Popen([str(contents / 'MacOS/LampyrisIsolated'),
-    '--panel-isolation-probe', 'interactive', str(work), str(ROOT / 'data/generated')])
+    '--panel-isolation-probe', 'interactive', str(work), str(ROOT / 'data/generated')],
+    env={**os.environ, 'LAMPYRIS_SUPPORT_DIR': str(work)})
 print(f'OWNED_APP={bundle}\nOWNED_PID={process.pid}\nOWNED_ROOT={work}\n'
       f'INPUT_SOURCE={input_source() or "unknown"}', flush=True)
 interactive_stdin = sys.stdin.isatty()
