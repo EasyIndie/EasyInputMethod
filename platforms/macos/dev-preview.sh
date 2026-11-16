@@ -39,6 +39,9 @@ cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP}/Contents/Resources/L
 [ -f "${ROOT}/data/symbols.tsv" ] && cp "${ROOT}/data/symbols.tsv" "${APP}/Contents/Resources/symbols.tsv"
 [ -f "${DATA}/emoji.tsv" ] && cp "${DATA}/emoji.tsv" "${APP}/Contents/Resources/emoji.tsv"
 [ -f "${ROOT}/data/sources/wubi86-level3-codes.tsv" ] && cp "${ROOT}/data/sources/wubi86-level3-codes.tsv" "${APP}/Contents/Resources/wubi86-level3-codes.tsv"
+# 键位图字根与口诀（练习/学习区共用）：缺失时 KeyRootLayout 只回落到键名，
+# 预览里就会"只有键盘、没有字根和口诀"（报告 293）。
+cp "${ROOT}/modules/keymap/data/key-roots-wubi86.tsv" "${APP}/Contents/Resources/key-roots-wubi86.tsv"
 ln -sfn "${DATA}" "${APP}/Contents/Resources/data"
 export SWIFT_MODULECACHE_PATH="${BUILD}/module-cache"
 export CLANG_MODULE_CACHE_PATH="${BUILD}/module-cache"
