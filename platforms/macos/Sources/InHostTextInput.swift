@@ -20,6 +20,7 @@ final class InHostTextInput {
     private var candidates: CandidateWindow?
     private var selection = CandidateSelectionState()
     private weak var activeEditor: NSTextView?
+    private weak var anchorField: NSTextField?
 
     private init() {}
 
@@ -111,6 +112,90 @@ final class InHostTextInput {
     }
 
     private var candidateCount: Int { max(1, ImeConfig.int("candidate.count") ?? 9) }
+
+    /// 经 IMK 转发到面板的按键（面板保持客户端焦点、自己不是 key window 时走这条路）。
+    /// 与本地监视共用同一个 `ImeSession` 和候选窗；返回 `.committed(text)` 时调用方把文本写进搜索框。
+    enum ForwardedResult {
+        case ignored
+        case consumed
+        case committed(String)
+    }
+
+    func handleForwardedKey(_ event: NSEvent, field: NSTextField) -> ForwardedResult {
+        guard event.type == .keyDown else { return .ignored }
+        let flags = event.modifierFlags.intersection(.deviceIndependentFlagsMask)
+        if flags.contains(.command) || flags.contains(.control) || flags.contains(.option) { return .ignored }
+        if session == nil {
+            session = makeSession()
+            guard let session else { return .ignored }
+            syncMode(session)
+        }
+        guard let session else { return .ignored }
+        anchorField = field
+        if session.isComposing, let delta = candidates?.navigationDelta(for: event) {
+            let count = session.candidates(limit: candidateCount).count
+            _ = selection.move(delta, count: count)
+            session.setHighlight(selection.index)
+            refreshAnchored(session: session)
+            return .consumed
+        }
+        guard let scalar = typedScalar(event) else { return .ignored }
+        if !session.isComposing, !(scalar.isASCII && scalar.properties.isAlphabetic) { return .ignored }
+        if !session.isComposing, flags.contains(.shift) { return .ignored }
+        selection.reset()
+        session.setHighlight(0)
+        switch session.feed(feedCodepoint(scalar, session: session)) {
+        case .consumed:
+            refreshAnchored(session: session)
+            return .consumed
+        case .committed(let text):
+            // 分段选词（ADR-330）可能只上屏前半段；余码继续组合，候选保持可见。
+            if session.isComposing {
+                refreshAnchored(session: session)
+            } else {
+                hideComposition()
+            }
+            return .committed(text)
+        case .passThrough:
+            if session.isComposing {
+                refreshAnchored(session: session)
+                return .consumed
+            }
+            hideComposition()
+            return .ignored
+        case .failure:
+            return .ignored
+        }
+    }
+
+    private func refreshAnchored(session: ImeSession) {
+        guard let field = anchorField else { return }
+        let buffer = session.buffer
+        let window = candidates ?? CandidateWindow()
+        candidates = window
+        let values = session.candidates(limit: candidateCount)
+        guard !buffer.isEmpty, !values.isEmpty else {
+            window.hide()
+            return
+        }
+        window.update(candidates: values, pageIndex: session.pageIndex, pageCount: session.pageCount,
+                      selectedIndex: selection.index, input: buffer, showsNavigationHint: true)
+        window.show(at: caretRect(for: field))
+    }
+
+    private func caretRect(for field: NSTextField) -> NSRect {
+        guard let window = field.window else { return .zero }
+        let inWindow = field.convert(field.bounds, to: nil)
+        let screen = window.convertToScreen(NSRect(x: inWindow.minX, y: inWindow.minY,
+                                                   width: max(1, inWindow.width), height: 1))
+        return NSRect(x: screen.minX, y: screen.minY, width: 1, height: 1)
+    }
+
+    private func hideComposition() {
+        candidates?.hide()
+        selection.reset()
+        anchorField = nil
+    }
 
     private func attachedField(for event: NSEvent) -> NSTextField? {
         guard event.type == .keyDown, let window = NSApp.keyWindow else { return nil }
@@ -219,5 +304,6 @@ final class InHostTextInput {
         selection.reset()
         candidates?.hide()
         activeEditor = nil
+        anchorField = nil
     }
 }
