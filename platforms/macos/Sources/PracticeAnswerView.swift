@@ -59,7 +59,7 @@ final class PracticeAnswerView: NSView {
             onBack?()
             return
         case 124:
-            guard isAnswered else { return }
+            // → 始终是"下一题/跳过"：答错后想放弃重试也用它（ADR-366）。
             onForward?()
             return
         default: break
@@ -141,5 +141,21 @@ final class PracticeAnswerView: NSView {
             }
             x += cellWidth + gap
         }
+    }
+}
+
+/// 横向抖动（ADR-366）：答错时让输入框"抖一下"，用户不用读反馈也知道要重试。
+///
+/// 用 layer 的 transform 动画而不是改 frame：拍完即回到原布局，不和 `relayout()` 抢位置。
+enum Shake {
+    static func animate(_ view: NSView, distance: CGFloat = 7) {
+        view.wantsLayer = true
+        guard let layer = view.layer else { return }
+        let animation = CAKeyframeAnimation(keyPath: "transform.translation.x")
+        animation.values = [0, -distance, distance, -distance * 0.6, distance * 0.6, -distance * 0.3, 0]
+        animation.keyTimes = [0, 0.12, 0.32, 0.5, 0.68, 0.84, 1]
+        animation.duration = 0.34
+        animation.timingFunction = CAMediaTimingFunction(name: .easeOut)
+        layer.add(animation, forKey: "lampyris.shake")
     }
 }

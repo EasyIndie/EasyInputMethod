@@ -4,7 +4,7 @@
 
 - 更新：2026-11-16 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 已换装 `edb6d7c` 的公证候选（执行 `1d6bac79…`，含 ADR-362/363/364 三项交互修复 + 转发路径修复），三项真机复验 PASS。
-- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = 待推送（在 main 之上新增窗口落点 P2-6，ADR-365/报告 291）。
+- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = 待推送（在 main 之上新增窗口落点 ADR-365/报告 291、练习重试与即时解锁 ADR-366/报告 292）。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
   `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290）。
@@ -141,6 +141,12 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-16 / pi（air）：**练习重试 + 达标即时解锁（ADR-366，报告 292）**。答错 → 不揭晓答案、清空作答框、
+  横向抖动、VoiceOver 播报「答错了，请再试一次」；回车在未通过时=提交、通过后才=下一题；`→` 始终跳过。
+  判分后立即 `applyStagedUnlock()`，达标 tab 不再要切题型。离线断言（重试语义、键盘导航、29→30 字 tab 亮起、
+  回车映射）全绿，隔离预览实机确认重试态；`make verify`、离线 68/337、`build.sh --strict` PASS。
+  真实 `practice.tsv`（148 行）未动。待下次公证候选复验已装包行为。
 
 - 2026-11-16 / pi（air）：**窗口落点 P2-6 已实现（ADR-365，报告 291）**。新增 `WindowPlacement`
   （鼠标所在屏 → 主屏 → 第一块；可见区域内居中并夹取），练习/指南/设置/跟打统一使用；
