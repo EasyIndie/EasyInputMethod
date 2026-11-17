@@ -2,12 +2,13 @@
 
 ## 0. 元信息
 
-- 更新：2026-11-16 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
-  air 已换装 `edb6d7c` 的公证候选（执行 `1d6bac79…`，含 ADR-362/363/364 三项交互修复 + 转发路径修复），三项真机复验 PASS。
-- 分支：`main` = `edb6d7c`（PR #321、#322 已合入）；`dev` = 待推送（在 main 之上新增窗口落点 ADR-365/报告 291、练习重试与即时解锁 ADR-366/报告 292）。
+- 更新：2026-11-17 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
+  air 仍在跑 `edb6d7c` 的公证候选（执行 `1d6bac79…`，ADR-362/363/364 三项真机复验 PASS）。
+- 分支：`origin/main` = `edb6d7c`（PR #321、#322）；`origin/dev` = `c8059ba`，**领先 main 11 个提交（7 实质 + 4 文档）、无开放 PR、最近 4 个提交未跑过 CI**。
+  待收口：窗口落点 ADR-365/报告 291、练习重试与即时解锁 ADR-366/报告 292、预览资源同源报告 293/294。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
-  `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290）。
+  `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290/292/293/294，`c8059ba` 上）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
@@ -15,7 +16,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.0 / build 43**，宿主执行 **`1d6bac797c3d75e01e1174d9eddf50d2e05fffa4cf29271defcee8e78c0b0ce6`**（源码提交 `edb6d7c` 的 CI 公证候选，2026-11-16 装机；`--keep-data`）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-16 20:44：config `248f4591…` 未变、词库 2240 行；`practice.tsv` 148 行（用户本人练习，**不要删**） | 上一候选 `a925011`（执行 `b90ec496…`）与更早 `c1d9a17`/`b8dd20f` 备份见 `~/Library/Application Support/Lampyris/uninstalled/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.0 / build 43**，宿主执行 **`1d6bac797c3d75e01e1174d9eddf50d2e05fffa4cf29271defcee8e78c0b0ce6`**（源码提交 `edb6d7c` 的 CI 公证候选，2026-11-16 装机；`--keep-data`）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-17 20:06：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2298 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 上一候选 `a925011`（执行 `b90ec496…`）与更早 `c1d9a17`/`b8dd20f` 备份见 `~/Library/Application Support/Lampyris/uninstalled/` |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -58,6 +59,11 @@
 
 剩余待办见 **`docs/待办与积压.md`**（2026-11-13 按 1.3.0 发布后对账）：
 
+- **待 `dev → main` 收口（2026-11-17 采集）**：`origin/dev` = `c8059ba` 领先 `origin/main`（`edb6d7c`）11 个提交；
+  **仓库无开放 PR，且 `48becd7`/`d582712`/`da80126`/`c8059ba` 四个提交没有任何 CI 运行记录**（只有开 PR 才会跑）。
+- **待已装包复验（需换包授权）**：ADR-365 双屏窗口落点、ADR-366 答错抖动重试 / 回车不跳题 / tab 达标即时亮起、
+  报告 293/294 预览与正式包同源——三项**只在隔离预览实机做过**，报告 292 §4 明写「未在已装包验证」。
+
 - **P0 · 已清零**：pro 升级与实键入确认均已由用户完成（2026-11-13，实打候选与切源正常）。
 - **P1-U · 输入体验与学练闭环（ADR-324）**：15 项里 13 项已完成并真机复验；
   **U2-3 扩展词库真机 PASS**（ADR-348，报告 273）；**U3-5 符号 / emoji 真机 PASS**（ADR-349，报告 274）；
@@ -96,6 +102,8 @@
 | 14 | ~~三项交互修复（ADR-362/363/364）~~：练习键盘前后切换与回看、宿主内中文组合、指南结构化；`make verify` + 离线 68/337 + 隔离预览实机 PASS | ✅ 2026-11-16（报告 290） |
 | 15 | ~~本地开发包初验~~：隔离预览实机跑完练习导航/回看/不重复计分、符号搜索中文组合、指南 6 步版式；顺手修掉练习数据未隔离（写真实 `practice.tsv`）并补 AX 可读 | ✅ 2026-11-16（报告 290） |
 | 16 | ~~换公证候选做真机复验~~：`a925011` 练习 PASS、符号 FAIL（转发路径）；修复后 `edb6d7c`（执行 `1d6bac79…`）三项全 PASS | ✅ 2026-11-16（报告 290） |
+| 17 | **`dev → main` PR**：本批文档提交 → 开 PR → CI 四项全绿 → merge commit 合并 → `dev` 快进同步 | ⏳ 本次进行 |
+| 18 | **公证候选复验**：从合并后的 `main` 出候选包，一次性复验 ADR-365 双屏落点、ADR-366 重试/回车/tab 即时亮起、报告 293/294 资源同源 | ⏳ 待换包授权 |
 
 **发版决策（2026-11-15）**：功能迭代较多，**先不发版**，先做集成验收。
 剩余开发项：86 覆盖率已到**许可数据上限**——3,000 字 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；
@@ -141,6 +149,11 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-17 / pi（air）：**交接采集 + 待办对账（未改代码、未换包）**。`origin/dev` = `c8059ba` 领先 `origin/main`（`edb6d7c`）
+  11 个提交，**无开放 PR，且 `48becd7`/`d582712`/`da80126`/`c8059ba` 无任何 CI 记录**；确认 ADR-365/366 与报告 293/294
+  只做过隔离预览实机（报告 292 §4 明写「未在已装包验证」）。采集：config `52af2b90…`（mode=mixed）、词库 2298 行、
+  **`practice.tsv` 已不存在**（原文记为 148 行，未重建不猜）。下一步 = 补 HANDOFF → 开 PR → CI → merge → 公证候选复验。
 
 - 2026-11-16 / pi（air）：**预览与正式包同源（报告 294）**。数据复制清单从两份合并为
   `platforms/macos/runtime-resources.txt`，`build.sh`/`dev-preview.sh` 共用并由 `test-runtime-resources.py` 拦截漂移；
