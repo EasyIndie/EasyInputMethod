@@ -586,6 +586,15 @@ final class PracticeSession {
         return result
     }
 
+    /// 答错后重试（ADR-366）：只清"当前题已作答"指针，历史里这次错答保留、进度不回收，
+    /// 用户可以重新作答；答对后 `retry()` 不再生效。
+    @discardableResult
+    func retry() -> Bool {
+        guard reviewIndex == nil, let entry = currentEntry, !entry.result.correct else { return false }
+        currentEntry = nil
+        return true
+    }
+
     private func record(_ entry: Entry) {
         currentEntry = entry
         history.append(entry)

@@ -140,6 +140,7 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
         update()
         if NSApp.activationPolicy() == .prohibited { NSApp.setActivationPolicy(.accessory) }
         NSApp.activate(ignoringOtherApps: true)
+        if let window { WindowPlacement.place(window) }
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
     }
@@ -266,7 +267,6 @@ final class OnboardingWindow: NSObject, NSWindowDelegate {
             illustration.heightAnchor.constraint(equalToConstant: 48),
         ])
         contentStack = content
-        panel.center()
         window = panel
     }
 

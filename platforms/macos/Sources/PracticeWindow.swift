@@ -70,6 +70,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let forwardButton = NSButton(title: "下一题 →", target: nil, action: nil)
     private let revealButton = NSButton(title: "看答案", target: nil, action: nil)
     private var answered = false
+    /// 答错后的重试态（ADR-366）：回车=重答，不跳题；→/按钮=放弃并下一题。
+    private var retrying = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
     private let strokeTitle = NSTextField(labelWithString: "末笔")
@@ -164,6 +166,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 这里按既有设置面板的做法补一次 orderFrontRegardless（报告 262）。
         if NSApp.activationPolicy() == .prohibited { NSApp.setActivationPolicy(.accessory) }
         NSApp.activate(ignoringOtherApps: true)
+        if let window { WindowPlacement.place(window) }
         window?.makeKeyAndOrderFront(nil)
         window?.orderFrontRegardless()
         window?.makeFirstResponder(answerView)
@@ -190,7 +193,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         toolbar.allowsUserCustomization = false
         window.toolbar = toolbar
         if #available(macOS 11.0, *) { window.toolbarStyle = .unified }
-        window.center()
         self.window = window
     }
 
@@ -480,11 +482,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 窗口级键盘导航兑底：识别码题型答完后焦点不在作答框，← / → / 回车 落到这里。
     private func handleNavigation(_ event: NSEvent) -> Bool {
-        guard session.currentEntry != nil else { return false }
         switch event.keyCode {
-        case 123: previousQuestion(); return true
-        case 124, 36, 76: nextQuestion(); return true
-        default: return false
+        case 123:
+            guard session.canGoBack else { return false }
+            previousQuestion()
+            return true
+        case 124:
+            // → 始终是下一题/跳过（答错后不想重试也用它）。
+            nextQuestion()
+            return true
+        case 36, 76:
+            guard session.currentEntry != nil, !retrying else { return false }
+            nextQuestion()
+            return true
+        default:
+            return false
         }
     }
 
@@ -518,6 +530,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func showCurrent() {
         answered = false
+        retrying = false
         answerView.isAnswered = false
         answerView.clear()
         keymapPanel.map.clearFlash()
@@ -567,41 +580,68 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     /// 已作答（刚答完或回看）：展示答案与对错，不写进度。
-    private func present(_ entry: PracticeSession.Entry) {
-        answered = true
-        answerView.setActive(false)
+    /// `retry == true` 时（答错，ADR-366）不揭晓答案，只抖动输入框并清空，让用户重答。
+    private func present(_ entry: PracticeSession.Entry, retry: Bool = false) {
+        answered = !retry
+        retrying = retry
+        answerView.isAnswered = !retry
+        answerView.setActive(!retry)
         keymapPanel.map.clearFlash()
         if kind.isTyping {
-            answerView.showAnswer(entry.answer)
+            if retry {
+                answerView.clear()
+            } else {
+                answerView.showAnswer(entry.answer)
+            }
         } else {
-            let parts = entry.answer.split(separator: "+").map(String.init)
-            if parts.count == 2 {
-                pendingStroke = parts[0]
-                pendingStructure = parts[1]
-                updateSelectionTitle()
+            if retry {
+                pendingStroke = nil
+                pendingStructure = nil
+            } else {
+                let parts = entry.answer.split(separator: "+").map(String.init)
+                if parts.count == 2 {
+                    pendingStroke = parts[0]
+                    pendingStructure = parts[1]
+                }
+            }
+            updateSelectionTitle()
+        }
+        if retry {
+            explanation.showPlaceholder(kind == .recognition
+                ? "答错了：重新选一个末笔和一个结构"
+                : "答错了：再试一次，答对后显示字根、识别码与完整码")
+            explanation.isHidden = false
+            keymapPanel.map.markAnswer("")
+        } else {
+            showExplanation(entry.question, revealsAnswer: true)
+            explanation.isHidden = false
+            // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
+            if let expected = kind.answer(for: entry.question) {
+                keymapPanel.map.markAnswer(expected)
             }
         }
-        showExplanation(entry.question, revealsAnswer: true)
-        explanation.isHidden = false
-        // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
-        if let expected = kind.answer(for: entry.question) {
-            keymapPanel.map.markAnswer(expected)
-        }
-        let headline = entry.result.correct ? "✓ 正确" : "✗ 再想想"
+        let headline = entry.result.correct ? "✓ 正确" : (retry ? "✗ 再试一次" : "✗ 再想想")
         let typed = kind.isTyping && !entry.answer.isEmpty ? " · 你答 \(entry.answer.uppercased())" : ""
         feedbackLabel.stringValue = headline + typed
             + (entry.result.explanation.isEmpty ? "" : " · " + entry.result.explanation)
         feedbackLabel.textColor = entry.result.correct ? .systemGreen : .systemOrange
         updateStats()
+        // ADR-366：达标后下一题型 tab 立即亮起（不必切题型/重开窗口）。
+        applyStagedUnlock()
         updateNavigation()
-        // 识别码没有作答框可持焦点：交给窗口，← / → / 回车 才能继续导航。
-        if kind == .recognition { window?.makeFirstResponder(nil) }
+        if retry {
+            Shake.animate(kind.isTyping ? answerView : card)
+            if kind.isTyping { window?.makeFirstResponder(answerView) }
+        } else if kind == .recognition {
+            // 识别码没有作答框可持焦点：交给窗口，← / → / 回车 才能继续导航。
+            window?.makeFirstResponder(nil)
+        }
     }
 
     private func updateNavigation() {
         backButton.isEnabled = session.canGoBack
         forwardButton.isEnabled = current != nil
-        revealButton.isEnabled = kind.isTyping && current != nil && session.currentEntry == nil
+        revealButton.isEnabled = kind.isTyping && current != nil && session.currentEntry == nil && !retrying
         forwardButton.toolTip = session.isReviewing ? "下一题（→，回到更新的题）" : "下一题（已作答后回车或 →）"
     }
 
@@ -645,10 +685,24 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private func finish() {
         guard let entry = session.currentEntry else { return }
+        if entry.result.correct {
+            present(entry)
+            announce(feedbackLabel.stringValue)
+            return
+        }
+        // 答错：清掉"已作答"指针进入重试态（历史与进度保留），抖动输入框并播报。
+        if session.retry() {
+            present(entry, retry: true)
+            announce("答错了，请再试一次")
+            return
+        }
         present(entry)
-        // VoiceOver：判分结果直接播报，不必移动光标。
+        announce(feedbackLabel.stringValue)
+    }
+
+    private func announce(_ text: String) {
         NSAccessibility.post(element: NSApp as Any, notification: .announcementRequested,
-                             userInfo: [.announcement: feedbackLabel.stringValue,
+                             userInfo: [.announcement: text,
                                          .priority: NSAccessibilityPriorityLevel.medium.rawValue])
     }
 
@@ -721,6 +775,40 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     /// 测试用：返回构建好的内容视图（用于离屏或真实窗口截图）。
+    /// 测试用：按当前题作答一次（走真实判分/进度/解锁刷新，ADR-366）。
+    @discardableResult
+    func answerForTesting(correct: Bool) -> Bool {
+        guard let question = current else { return false }
+        let answer = correct ? (kind.answer(for: question) ?? "") : "zzzz"
+        guard let result = session.submitCode(answer) else { return false }
+        _ = result
+        finish()
+        return result.correct
+    }
+
+    /// 测试用：跳到下一题（等同 → / 工具栏按钮）。
+    func nextForTesting() { nextQuestion() }
+
+    /// 测试用：走窗口级键盘导航（识别码题型/无作答框时用这条路）。
+    func navigateForTesting(_ keyCode: UInt16) -> Bool {
+        guard let event = NSEvent.keyEvent(
+            with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+            windowNumber: 0, context: nil, characters: "\u{1f}",
+            charactersIgnoringModifiers: "\u{1f}", isARepeat: false, keyCode: keyCode)
+        else { return false }
+        return handleNavigation(event)
+    }
+
+    /// 测试用：某题型的进度统计（已练/次数/正确）。
+    func statsForTesting(_ kind: PracticeKind) -> (practiced: Int, attempts: Int, correct: Int) {
+        progress.stats(kind: kind)
+    }
+
+    /// 测试用：是否处于"答错重试"态（回车不会跳题）。
+    var retryStateForTesting: Bool { retrying }
+    /// 测试用：当前题面字/词。
+    var questionForTesting: String { current?.char ?? "" }
+
     /// 测试用：内容区导航行（ADR-362）的标题与启用状态。
     func navigationForTesting() -> [(title: String, enabled: Bool)] {
         [backButton, revealButton, forwardButton].map { ($0.title, $0.isEnabled) }

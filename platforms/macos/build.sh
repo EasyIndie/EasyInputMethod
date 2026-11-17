@@ -125,13 +125,12 @@ printf 'APPL????' > "${APP_DIR}/Contents/PkgInfo"
 # 图标 + 本地化显示名
 cp "${ROOT}/assets/icons/yinghuo-official-app.icns" "${APP_DIR}/Contents/Resources/Lampyris.icns"
 cp "${SCRIPT_DIR}/Resources/"*.png "${APP_DIR}/Contents/Resources/"
-cp "${ROOT}/modules/keymap/data/key-roots-wubi86.tsv" "${APP_DIR}/Contents/Resources/"
 for lproj in "${SCRIPT_DIR}/Resources/"*.lproj; do
   [ -d "${lproj}" ] || continue
   cp -R "${lproj}" "${APP_DIR}/Contents/Resources/"
 done
 
-echo "▶ 3/5 复制数据文件（缺失的给出复现提示）"
+echo "▶ 3/5 复制数据文件（清单：runtime-resources.txt；缺失的给出复现提示）"
 copy_data() {
   local src="$1" name="$2"
   if [ -f "${src}" ]; then
@@ -141,17 +140,11 @@ copy_data() {
     printf '   ⚠️  缺少 %s（宿主将回退到样本/降级）\n' "${src}"
   fi
 }
-copy_data "${GENERATED}/wubi86-core.tsv" "wubi86-core.tsv"
-copy_data "${GENERATED}/pinyin-chars.tsv" "pinyin-chars.tsv"
-copy_data "${GENERATED}/pinyin-core.tsv" "pinyin-core.tsv"
-copy_data "${GENERATED}/wubi86-extended.tsv" "wubi86-extended.tsv"
-copy_data "${GENERATED}/pinyin-extended.tsv" "pinyin-extended.tsv"
-copy_data "${GENERATED}/emoji.tsv" "emoji.tsv"
-copy_data "${ROOT}/data/symbols.tsv" "symbols.tsv"
-# 三级简码练习（ADR-345 表，ADR-361 进入练习）：只用于题型题库，不参与候选顺序。
-copy_data "${ROOT}/data/sources/wubi86-level3-codes.tsv" "wubi86-level3-codes.tsv"
-copy_data "${GENERATED}/B0-runtime.tsv" "B0-runtime.tsv"
-copy_data "${GENERATED}/variant-s2t.tsv" "variant-s2t.tsv"
+while read -r relative name; do
+  [ -n "${relative}" ] || continue
+  case "${relative}" in \#*) continue ;; esac
+  copy_data "${ROOT}/${relative}" "${name}"
+done < "${SCRIPT_DIR}/runtime-resources.txt"
 if [ ! -f "${GENERATED}/pinyin-core.tsv" ]; then
   echo "      （可由 data/sources/fetch-*.sh + 'cargo run -p ime-pinyin --example generate_pinyin' 复现）"
 fi

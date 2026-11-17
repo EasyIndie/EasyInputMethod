@@ -24,6 +24,7 @@ CANDIDATE_SOURCES=(
     platforms/macos/Sources/CaretPlacement.swift
     platforms/macos/Sources/LearningHints.swift
     platforms/macos/Sources/CandidateWindow.swift
+    platforms/macos/Sources/WindowPlacement.swift
 )
 PANEL_SOURCES=(
     platforms/macos/Sources/ImeSession.swift
@@ -31,6 +32,7 @@ PANEL_SOURCES=(
     platforms/macos/Sources/CaretPlacement.swift
     platforms/macos/Sources/LearningHints.swift
     platforms/macos/Sources/CandidateWindow.swift
+    platforms/macos/Sources/WindowPlacement.swift
     platforms/macos/Sources/InHostTextInput.swift
     platforms/macos/Sources/Settings.swift
     platforms/macos/Sources/Feedback.swift

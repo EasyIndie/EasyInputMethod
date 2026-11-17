@@ -308,6 +308,25 @@ if let image = PracticeWindow.shared.renderForTesting(kind: .phrase, progressURL
    let data = image.representation(using: .png, properties: [:]) {
     try? data.write(to: flowDir.appendingPathComponent("practice-phrase-light.png"))
 }
+// ADR-365 / 报告 290 P2-6：练习/指南/设置窗口按「鼠标所在屏 → 主屏」居中并夹进可见区域。
+let mainFrame = NSRect(x: 0, y: 0, width: 1440, height: 900)
+let upperFrame = NSRect(x: -259, y: 900, width: 1920, height: 1080)
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 500, y: 300),
+                                    frames: [mainFrame, upperFrame]) == 0, "鼠标在主屏选中主屏")
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 500, y: 1200),
+                                    frames: [mainFrame, upperFrame]) == 1, "鼠标在副屏选中副屏")
+require(WindowPlacement.screenIndex(mouse: NSPoint(x: 9000, y: 9000),
+                                    frames: [mainFrame, upperFrame]) == nil, "鼠标不在任何屏返回 nil")
+let mainVisible = NSRect(x: 0, y: 0, width: 1440, height: 870)
+let centered = WindowPlacement.origin(size: NSSize(width: 720, height: 500), visible: mainVisible)
+require(centered == NSPoint(x: 360, y: 185), "可见区域内居中（实际 \(centered)）")
+let upperVisible = NSRect(x: -259, y: 900, width: 1920, height: 1080)
+let upperOrigin = WindowPlacement.origin(size: NSSize(width: 620, height: 252), visible: upperVisible)
+require(upperVisible.contains(NSRect(origin: upperOrigin, size: NSSize(width: 620, height: 252))),
+        "副屏落点必须在副屏可见区域内")
+let clamped = WindowPlacement.origin(size: NSSize(width: 2000, height: 1200), visible: mainVisible)
+require(clamped == NSPoint(x: 0, y: 0), "超大窗口贴可见区域左上（实际 \(clamped)）")
+
 // ADR-362：导航行在内容区（← 上一题 / 看答案 / 下一题 →），不依赖工具栏。
 require(PracticeWindow.shared.navigationForTesting().map(\.title) == ["← 上一题", "看答案", "下一题 →"],
         "内容区应有前后切换与看答案三个入口")
@@ -317,6 +336,8 @@ for kind in [PracticeKind.roots, .code, .phrase, .recognition] {
 }
 // ADR-350：新进度只解锁字根；字根 30 字全对后解锁一级简码。
 let stagedDir = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("lampyris-staged-unlock")
+// 每轮从干净目录开始：这些 TSV 会跨运行保留，否则上一轮的作答会污染本轮解锁断言。
+try? FileManager.default.removeItem(at: stagedDir)
 try? FileManager.default.createDirectory(at: stagedDir, withIntermediateDirectories: true)
 let freshURL = stagedDir.appendingPathComponent("fresh.tsv")
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: freshURL, light: true)
@@ -334,6 +355,80 @@ _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: seededURL,
 require(PracticeWindow.shared.unlockedKindsForTesting() == [.roots, .code1], "roots mastery unlocks code1")
 require(PracticeWindow.shared.kindEnabledForTesting(.code1), "code1 enabled after mastery")
 require(!PracticeWindow.shared.kindEnabledForTesting(.code2), "code2 still locked")
+
+// ADR-366：练习中达标后，下一题型 tab 立即亮起（不用切题型/重开窗口）。
+let unlockURL = stagedDir.appendingPathComponent("unlock.tsv")
+let unlockSeed = PracticeProgress(url: unlockURL)
+let rootChars = Set(Practice.bank(kind: .roots).map(\.char))
+var seededRoots: [String] = []
+for char in rootChars.sorted() where seededRoots.count < 29 { seededRoots.append(char) }
+for (index, char) in seededRoots.enumerated() {
+    unlockSeed.record(char: char, kind: .roots, correct: true, now: index)
+}
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: unlockURL, light: true)
+let seedStats = PracticeWindow.shared.statsForTesting(.roots)
+require(!PracticeWindow.shared.kindEnabledForTesting(.code1),
+        "29 字时一级简码仍未解锁（roots 已练 \(seedStats.practiced)/\(seedStats.attempts)，解锁：\(PracticeWindow.shared.unlockedKindsForTesting().map(\.title))）")
+var answered = 0
+while !PracticeWindow.shared.kindEnabledForTesting(.code1) && answered < 80 {
+    _ = PracticeWindow.shared.answerForTesting(correct: true)
+    PracticeWindow.shared.nextForTesting()
+    answered += 1
+}
+require(PracticeWindow.shared.kindEnabledForTesting(.code1),
+        "达标后一级简码 tab 应立即亮起（本轮答对 \(answered) 次）")
+
+// ADR-366：答错后抖动并停在原题重试；回车不再直接跳题。
+let retryURL = stagedDir.appendingPathComponent("retry-window.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: retryURL, light: true)
+let retryQuestion = PracticeWindow.shared.questionForTesting
+require(!retryQuestion.isEmpty, "重试题面")
+require(!PracticeWindow.shared.answerForTesting(correct: false), "错误答案判错")
+require(PracticeWindow.shared.retryStateForTesting, "答错后进入重试态")
+require(PracticeWindow.shared.questionForTesting == retryQuestion, "重试停留在同一题")
+require(PracticeWindow.shared.answerForTesting(correct: true), "重试可以答对")
+require(!PracticeWindow.shared.retryStateForTesting, "答对后退出重试态")
+
+// ADR-366：重试态下回车不跳题，→ 才跳过；← 回到刚才那道错题回看。
+let retryNavURL = stagedDir.appendingPathComponent("retry-nav.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: retryNavURL, light: true)
+let retryNavQuestion = PracticeWindow.shared.questionForTesting
+require(!PracticeWindow.shared.answerForTesting(correct: false), "错误答案判错（导航）")
+require(PracticeWindow.shared.retryStateForTesting, "进入重试态（导航）")
+require(!PracticeWindow.shared.navigateForTesting(36), "重试态回车不跳题")
+require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "回车后仍在原题")
+require(PracticeWindow.shared.navigateForTesting(124), "→ 可以跳过重试")
+require(PracticeWindow.shared.questionForTesting != retryNavQuestion, "→ 后换到新题")
+require(PracticeWindow.shared.navigateForTesting(123), "← 回到刚才那题")
+require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "← 后回到错题")
+
+// 作答框的键位映射：未通过时回车=提交，通过后回车=下一题。
+let answerMapping = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 60))
+var submits = 0
+var advances = 0
+answerMapping.onReturn = { _ in submits += 1 }
+answerMapping.onAdvance = { advances += 1 }
+func returnKey() -> NSEvent {
+    NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+                     windowNumber: 0, context: nil, characters: "\r",
+                     charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36)!
+}
+answerMapping.isAnswered = false
+answerMapping.keyDown(with: returnKey())
+require(submits == 1 && advances == 0, "未通过时回车是提交")
+answerMapping.isAnswered = true
+answerMapping.keyDown(with: returnKey())
+require(advances == 1, "通过后回车是下一题")
+
+// 会话层：答错可重试、答对后不可重试，两次作答都留在历史里。
+let retrySession = PracticeSession(kind: .code,
+                                   progress: PracticeProgress(url: stagedDir.appendingPathComponent("retry-session.tsv")))
+guard let retryQ = retrySession.question else { exit(1) }
+require(retrySession.submitCode("zzzz")?.correct == false, "错误答案判错（会话）")
+require(retrySession.retry(), "答错后允许重试")
+require(retrySession.submitCode(retryQ.code)?.correct == true, "重试可再作答")
+require(!retrySession.retry(), "答对后不再进入重试")
+require(retrySession.history.count == 2, "两次作答都留在历史里")
 let tmpProgress = PracticeProgress(url: URL(fileURLWithPath: NSTemporaryDirectory() + "lampyris-practice-test" + "/practice.tsv"))
 for index in 0..<3200 { tmpProgress.record(char: "字", kind: .code, correct: index % 2 == 0, now: index) }
 require(tmpProgress.rows.count <= PracticeProgress.maxRows, "进度行数有界")

@@ -83,6 +83,15 @@ if original_source and original_source.startswith('cn.jokerhub.inputmethod.'):
               '   请手动按 ⌃Space 切到 ABC 再测快捷键。', flush=True)
 # 练习进度（practice.tsv）与薄弱字（weak-chars.tsv）走 Swift 侧的 ImePaths，
 # 只把 config 指到私有根还不够：必须同时给 LAMPYRIS_SUPPORT_DIR，否则会写进真实目录（报告 290）。
+# 预览尽量贴近用户真实设置：把真实 config.toml 复制到私有根（私有副本可随意改，
+# 不写回真实文件）。否则预览永远用 Schema 默认值，行为和已装包不一致（报告 294）。
+real_config = REAL / 'config.toml'
+private_config = work / 'config.toml'
+if real_config.is_file():
+    shutil.copy2(real_config, private_config)
+    private_config.chmod(0o600)
+    print('已复制真实 config.toml 到私有根（预览只读写私有副本）', flush=True)
+
 process = subprocess.Popen([str(contents / 'MacOS/LampyrisIsolated'),
     '--panel-isolation-probe', 'interactive', str(work), str(ROOT / 'data/generated')],
     env={**os.environ, 'LAMPYRIS_SUPPORT_DIR': str(work)})
