@@ -165,15 +165,6 @@ pub static SCHEMA: &[OptionSpec] = &[
         scope: Scope::CandidateWindow,
     },
     OptionSpec {
-        key: "candidate.hint_wubi_code",
-        value_type: ValueType::Bool,
-        enum_labels_zh: &[],
-        default: "true",
-        title_zh: "拼音上屏后提示五笔码",
-        doc_zh: "混输模式下用拼音打出字词后，在光标旁短暂提示它的五笔码，帮助下次直接用五笔",
-        scope: Scope::CandidateWindow,
-    },
-    OptionSpec {
         key: "practice.collect_weak_chars",
         value_type: ValueType::Bool,
         enum_labels_zh: &[],
@@ -339,8 +330,8 @@ pub static SCHEMA: &[OptionSpec] = &[
         value_type: ValueType::Bool,
         enum_labels_zh: &[],
         default: "true",
-        title_zh: "数字后的 . 和 : 保持半角",
-        doc_zh: "数字后紧跟的 . 和 : 不转成中文标点，便于输入小数、版本号与时间（如 3.14、12:30）",
+        title_zh: "数字后的 . : , 保持半角",
+        doc_zh: "数字串里紧跟的 . : , 不转成中文标点，便于输入小数、时间与千分位（如 3.14、12:30、1,000）；其余标点仍按中文标点输出（ADR-368）",
         scope: Scope::Engine,
     },
     OptionSpec {

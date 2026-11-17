@@ -219,9 +219,6 @@ require(languageMemory.count == 2, "missing bundle ids are ignored")
 for index in 0..<(AppLanguageMemory.capacity + 5) { languageMemory.remember(true, for: "app.\(index)") }
 require(languageMemory.count == AppLanguageMemory.capacity && languageMemory.english(for: "com.apple.TextEdit") == nil,
         "bounded: the stalest apps are dropped")
-require(StateFeedback.wubiHint(text: "你好", code: "wqvb") == "你好 五笔 WQVB", "wubi code hint")
-require(StateFeedback.wubiHint(text: "你好", code: nil) == nil && StateFeedback.wubiHint(text: "中华人民共和国", code: "kwwl") == nil,
-        "no hint without a code or for long phrases")
 require(StateFeedback.punctuation(true) == "中文标点" && StateFeedback.punctuation(false) == "英文标点", "punctuation feedback")
 require(StateFeedback.variant(true) == "繁体" && StateFeedback.variant(false) == "简体", "variant feedback")
 require(StateFeedback.mode("mixed") == "混输模式" && StateFeedback.mode("wubi") == "五笔模式"
