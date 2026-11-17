@@ -67,9 +67,17 @@ class SymbolEmojiDataTests(unittest.TestCase):
                 self.assertTrue(item.get("fetch_script"))
 
     def test_build_copies_picker_data(self):
-        build = (ROOT / "platforms/macos/build.sh").read_text(encoding="utf-8")
+        # 报告 294：复制清单收敛到 runtime-resources.txt，build.sh 不再写死文件名。
+        manifest = (ROOT / "platforms/macos/runtime-resources.txt").read_text(encoding="utf-8")
+        names = {
+            line.split()[1]
+            for line in manifest.splitlines()
+            if line.strip() and not line.strip().startswith("#")
+        }
         for name in ("emoji.tsv", "symbols.tsv"):
-            self.assertIn(f'"{name}"', build)
+            self.assertIn(name, names, f"运行时清单缺少 {name}")
+        build = (ROOT / "platforms/macos/build.sh").read_text(encoding="utf-8")
+        self.assertIn("runtime-resources.txt", build, "build.sh 未读取统一复制清单")
 
 
 if __name__ == "__main__":
