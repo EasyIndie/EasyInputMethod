@@ -4,11 +4,12 @@
 
 - 更新：2026-11-17 / pi（**air 本机**）。阶段：**已发布 1.3.0 / build 43**（tag `v1.3.0`，Release、站点已上线）；
   air 仍在跑 `edb6d7c` 的公证候选（执行 `1d6bac79…`，ADR-362/363/364 三项真机复验 PASS）。
-- 分支：`origin/main` = `edb6d7c`（PR #321、#322）；`origin/dev` = `c8059ba`，**领先 main 11 个提交（7 实质 + 4 文档）、无开放 PR、最近 4 个提交未跑过 CI**。
-  待收口：窗口落点 ADR-365/报告 291、练习重试与即时解锁 ADR-366/报告 292、预览资源同源报告 293/294。
+- 分支：`origin/main` = `c8af13e`（PR #323 已合入：ADR-365/366、报告 291–294）；`dev` = 本批新增 ADR-367/368、报告 295，
+  **待开 PR**。air 已装 `c8af13e` 的公证候选（执行 `a0bde2ff…`）。
+- 待真机复验（下一次换包一轮做完）：ADR-365 双屏落点、ADR-366 重试/回车/tab、报告 293/294、ADR-367 无浮层、ADR-368 `3,14`/`1,000`。
 - 版本：`Cargo.toml` = **1.3.0**、`packaging/build-number` = **43**；最新 tag **`v1.3.0`**。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **68 文件 / 337 例 PASS**、
-  `build.sh --strict` PASS、`make macos-ui-snapshots` PASS、隔离预览实机 PASS（报告 290/292/293/294，`c8059ba` 上）。
+- 最近验证：`make verify` PASS（542 产物零网络符号）、`make macos-offline-tests` **69 文件 / 340 例 PASS**、
+  `build.sh --strict` PASS、`make macos-ui-snapshots` PASS（2026-11-17，ADR-367/368 之后）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
 
@@ -102,8 +103,9 @@
 | 14 | ~~三项交互修复（ADR-362/363/364）~~：练习键盘前后切换与回看、宿主内中文组合、指南结构化；`make verify` + 离线 68/337 + 隔离预览实机 PASS | ✅ 2026-11-16（报告 290） |
 | 15 | ~~本地开发包初验~~：隔离预览实机跑完练习导航/回看/不重复计分、符号搜索中文组合、指南 6 步版式；顺手修掉练习数据未隔离（写真实 `practice.tsv`）并补 AX 可读 | ✅ 2026-11-16（报告 290） |
 | 16 | ~~换公证候选做真机复验~~：`a925011` 练习 PASS、符号 FAIL（转发路径）；修复后 `edb6d7c`（执行 `1d6bac79…`）三项全 PASS | ✅ 2026-11-16（报告 290） |
-| 17 | **`dev → main` PR**：本批文档提交 → 开 PR → CI 四项全绿 → merge commit 合并 → `dev` 快进同步 | ⏳ 本次进行 |
-| 18 | **公证候选复验**：从合并后的 `main` 出候选包，一次性复验 ADR-365 双屏落点、ADR-366 重试/回车/tab 即时亮起、报告 293/294 资源同源 | ⏳ 待换包授权 |
+| 17 | ~~`dev → main` PR~~ | ✅ 2026-11-17（PR #323，CI 四项全绿，merge `c8af13e`；候选执行 `a0bde2ff…` 已装 air） |
+| 18 | **公证候选复验（下一轮）**：ADR-365 双屏落点、ADR-366 重试/回车/tab 即时亮起、报告 293/294 资源同源、ADR-367 无浮层、ADR-368 `3,14`/`1,000` | ⏳ 待换包 |
+| 19 | **ADR-367/368 代码提交**：删五笔码浮层、数字串逗号半角（报告 295）→ `dev → main` → 与上一轮候选合并成一次换包复验 | ⏳ 本次进行 |
 
 **发版决策（2026-11-15）**：功能迭代较多，**先不发版**，先做集成验收。
 剩余开发项：86 覆盖率已到**许可数据上限**——3,000 字 `full` 2,614（87.1%）/ `partial` 232 / `unknown` 154；
@@ -149,6 +151,11 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-17 / pi（air）：**删五笔码浮层（ADR-367）+ 数字串逗号半角（ADR-368，报告 295）**。`candidate.hint_wubi_code`
+  连同 `StateFeedback.wubiHint`、三处调用、设置页开关一起删除（Schema 34→33）；薄弱字记录抽成 `recordWeakChar`，条件不变。
+  `input.digit_punctuation` 判定扩到 `.` `:` `,`（`1,000`），样本改为 `3,14`。`make verify`、离线 69/340、
+  `build.sh --strict`、`make macos-ui-snapshots` 全 PASS；真实 config（`52af2b90…`）/词库未动。
 
 - 2026-11-17 / pi（air）：**交接采集 + 待办对账（未改代码、未换包）**。`origin/dev` = `c8059ba` 领先 `origin/main`（`edb6d7c`）
   11 个提交，**无开放 PR，且 `48becd7`/`d582712`/`da80126`/`c8059ba` 无任何 CI 记录**；确认 ADR-365/366 与报告 293/294

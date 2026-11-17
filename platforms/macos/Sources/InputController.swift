@@ -999,7 +999,7 @@ final class LampyrisInputController: IMKInputController {
                 commit(text, to: client)
                 candidateSelection.reset()
                 refreshAfterSelection(client, session: session)
-                hintWubiCode(for: text, offered: offered)
+                recordWeakChar(for: text, offered: offered)
                 return true
             }
         }
@@ -1008,7 +1008,7 @@ final class LampyrisInputController: IMKInputController {
         guard let codepoint else { return false }
 
         candidateSelection.reset()
-        // 上屏前先记下「此刻给出的候选」：上屏后据此判断选中的是不是拼音候选（ADR-331 / 337）。
+        // 上屏前先记下「此刻给出的候选」：上屏后据此判断选中的是不是拼音候选（ADR-335）。
         // 字母键只会继续组合、不会选词，不取；其余键才可能上屏，此时多取一次本页候选（至多 9 条）。
         let isLetter = scalar.isASCII && scalar.properties.isAlphabetic
         let offered = session.isComposing && !isLetter ? session.candidates(limit: candidateCount) : []
@@ -1037,7 +1037,7 @@ final class LampyrisInputController: IMKInputController {
                 candidateWindow?.hide()
             }
             PerfTrace.shared.finish(trace, engine: engineStamp, candidates: 1, committed: true)
-            hintWubiCode(for: text, offered: offered)
+            recordWeakChar(for: text, offered: offered)
             return true
         case .passThrough:
             return false
@@ -1101,32 +1101,17 @@ final class LampyrisInputController: IMKInputController {
         }
     }
 
-    /// 混输下用拼音打出一个字/词后，在光标旁提示它的五笔码（ADR-331）。
+    /// 薄弱字清单（ADR-335，默认关）：有五笔码却靠拼音打出来的单字，留给练习多出几次。
     ///
-    /// `offered` 是**上屏前**取到的本页候选：只在「刚上屏的文本正是其中一个拼音候选」时提示——
-    /// 五笔打出来的不提示，分段拼出的整句也不提示。每一步为什么没提示都写进诊断日志（ADR-337）。
-    private func hintWubiCode(for text: String, offered: [ImeCandidate]) {
-        let diag = Self.hudDiagEnabled
-        func skip(_ reason: String) {
-            if diag { Self.hudDiag("hint skip=\(reason) text=\(text) offered=\(offered.count)") }
-        }
-        guard !text.isEmpty else { return }
-        guard session?.mode == "mixed" else { return skip("mode=\(session?.mode ?? "nil")") }
-        guard offered.contains(where: { $0.text == text && $0.source == .pinyin }) else {
-            return skip("not-a-pinyin-candidate")
-        }
-        let hint = ImeConfig.bool("candidate.hint_wubi_code")
-        let collect = text.count == 1 && ImeConfig.bool("practice.collect_weak_chars")
-        guard hint || collect else { return skip("options-off") }
-        guard let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return skip("no-wubi-code") }
-        // 薄弱字清单（ADR-335，默认关）：有五笔码却靠拼音打出来的单字，留给练习多出几次。
-        if collect { WeakChars.shared.record(text) }
-        guard hint, let message = StateFeedback.wubiHint(text: text, code: code) else {
-            return skip(hint ? "too-long" : "hint-off")
-        }
-        let caret = hudCaretRect()
-        if diag { Self.hudDiag("hint show=\(message) caret=\(caret.map(NSStringFromRect) ?? "nil")") }
-        StateHUDController.shared.show(message, caret: caret)
+    /// `offered` 是**上屏前**取到的本页候选：只在「刚上屏的文本正是其中一个拼音候选」时记录——
+    /// 五笔打出来的不记，分段拼出的整句也不记。浮层提示（ADR-331）已在 ADR-367 删除。
+    private func recordWeakChar(for text: String, offered: [ImeCandidate]) {
+        guard ImeConfig.bool("practice.collect_weak_chars") else { return }
+        guard !text.isEmpty, text.count == 1 else { return }
+        guard session?.mode == "mixed" else { return }
+        guard offered.contains(where: { $0.text == text && $0.source == .pinyin }) else { return }
+        guard let code = WubiLearning.lookup(text)?.code, !code.isEmpty else { return }
+        WeakChars.shared.record(text)
     }
 
     /// 本次按键打出的字符。
@@ -1173,7 +1158,7 @@ final class LampyrisInputController: IMKInputController {
             }
             self.candidateSelection.reset()
             self.refreshAfterSelection(client, session: session)
-            if let text { self.hintWubiCode(for: text, offered: offered) }
+            if let text { self.recordWeakChar(for: text, offered: offered) }
         }
         window.onPage = { [weak self] delta in
             guard let self, let client = self.activeClient, let session = self.session else { return }

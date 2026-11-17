@@ -186,7 +186,7 @@ run "长文本不丢字"            'nihao nihao nihao nihao wqiy '         'con
 # 字面的 `;` 用命名键 semicolon，冒号是 shift+semicolon（按键串本身以分号分段）。
 ensure_cn >/dev/null 2>&1
 run "数字后句点保持半角"       '3.14'                                  'exact:3.14'
-run "数字后逗号仍是中文"       '3,'                                    'exact:3，'
+run "数字后逗号保持半角"       '3,14'                                  'exact:3,14'
 run "拼音没打完给补全"         'nih '                                  'exact:你好'
 run "以词定字取首字"           'nihao['                                'exact:你'
 run "以词定字取末字"           'nihao]'                                'exact:好'
