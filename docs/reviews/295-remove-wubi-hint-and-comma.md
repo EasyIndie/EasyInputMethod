@@ -41,6 +41,7 @@
 | `make macos-offline-tests` | **69 文件 / 340 例 PASS**（6 并发，46.8s） |
 | `./platforms/macos/build.sh --strict` | PASS（ad-hoc，仅本地开发验证） |
 | `make macos-ui-snapshots` | PASS（设置/关于/诊断/状态反馈离屏渲染，未显示窗口、未改真实配置） |
+| `./platforms/macos/dev-preview.sh --smoke-test` | PASS（**CI 首跑红**：`Preview/main.swift` 仍断言 34 个设置项，改 33 后通过——离线回归不含预览冒烟） |
 | `ime-core` 单测 | 31 PASS，含扩展后的数字串标点用例 |
 
 ## 4. 差异与遗留
