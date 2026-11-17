@@ -243,7 +243,7 @@ impl Session {
         self.full_width = full_width;
         self.chinese_punctuation = chinese_punctuation;
     }
-    /// 数字后紧跟的 `.` / `:` 是否保持半角（`3.14`、`12:30`，ADR-325）。
+    /// 数字串里紧跟的 `.` / `:` / `,` 是否保持半角（`3.14`、`12:30`、`1,000`，ADR-325/368）。
     pub fn set_digit_punctuation(&mut self, enabled: bool) {
         self.digit_punctuation = enabled;
     }
@@ -632,7 +632,8 @@ impl Session {
             }
             // 组合外直接上屏的数字才算数；组合内的数字是选词键，不走到这里。
             self.after_digit = key.is_ascii_digit();
-            let keep_ascii = after_digit && self.digit_punctuation && matches!(key, '.' | ':');
+            let keep_ascii =
+                after_digit && self.digit_punctuation && matches!(key, '.' | ':' | ',');
             if let Some(text) = self.translate_with(key, !keep_ascii) {
                 self.commit(&text);
                 return KeyOutcome::Committed(text);
@@ -1456,10 +1457,12 @@ mod tests {
             ('.', KeyOutcome::PassThrough),
             ('1', KeyOutcome::PassThrough),
             (':', KeyOutcome::PassThrough),
-            // Only `.` and `:` are kept; a comma after a digit is still Chinese.
             ('4', KeyOutcome::PassThrough),
-            (',', KeyOutcome::Committed("，".into())),
-            // Not immediately after a digit any more.
+            // ADR-368：数字串里的逗号也保持半角（千分位 `1,000`）。
+            (',', KeyOutcome::PassThrough),
+            ('0', KeyOutcome::PassThrough),
+            ('.', KeyOutcome::PassThrough),
+            // 数字外的句点仍中文（标记已被 `.` 消耗）。
             ('.', KeyOutcome::Committed("。".into())),
         ] {
             assert_eq!(s.handle_key(key), expected, "key {key:?}");
