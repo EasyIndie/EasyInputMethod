@@ -467,10 +467,12 @@ while celebrateRounds < 60 {
     PracticeWindow.shared.nextForTesting()
     celebrateRounds += 1
 }
-require(PracticeWindow.shared.unlockBannerForTesting.contains("一级简码"),
-        "达标解锁时应出现庆祝文案（实得「\(PracticeWindow.shared.unlockBannerForTesting)」）")
+let banner = PracticeWindow.shared.unlockBannerForTesting
+require(banner.contains("已达") && banner.contains("字根"), "达标后应有庆祝文案（实得「\(banner)」）")
+require(banner.contains("一级简码"), "达标解锁时应写出下一阶段（实得「\(banner)」）")
 PracticeWindow.shared.nextForTesting()
-require(PracticeWindow.shared.unlockBannerForTesting.isEmpty, "换题后庆祝文案收起")
+require(PracticeWindow.shared.unlockBannerForTesting.contains("已达"),
+        "达标状态是常驻的，换题后仍显示（ADR-373）")
 
 // ADR-369：字根题给「字根」标注 + 宋体字形，避免和占位方框混淆。
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: stagedDir.appendingPathComponent("glyph.tsv"), light: true)
