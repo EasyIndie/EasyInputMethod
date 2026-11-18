@@ -16,7 +16,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（发布产物，2026-11-18 装机）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 上一候选 `a925011`（执行 `b90ec496…`）与更早 `c1d9a17`/`b8dd20f` 备份见 `~/Library/Application Support/Lampyris/uninstalled/` |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（发布产物，2026-11-18 装机）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 回滚备份：`uninstalled/` 只保留最近两份（`bundle.R9h15t` 执行 `43a3fd8e…`、`bundle.fMBgZA` 执行 `9ef1135c…`；2026-11-18 清理了 6 份旧开发候选） |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
 
 ## 2. 本轮完成
@@ -159,6 +159,10 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-18 / pi（air）：**发布后清理**。远端只剩 `dev`/`main`、无开放 PR/issue；本地 `main` 快进到 `5464bea`、`dev` 已推送。
+  `~/Library/Application Support/Lampyris/uninstalled/` 从 8 份清到 2 份（37 MB）。**pro 核实仍未升级**：装机仍是 1.3.0/43（执行 `9cb738c9…`）、
+  最新回执停在 2026-11-13，11-17 之后没有任何文件变化——更新程序这一轮没有真正安装，待用户重试或授权我经 SSH 执行。
 
 - 2026-11-18 / pi（air）：**1.3.1 / build 44 已发布**。候选 `677e046`（执行 `68f892c5…`）验收 30/30；`git tag -s v1.3.1` →
   Release run `44290438460`（ZIP `0fbe7ff3…` 与候选逐字节一致、DMG `58a34268…` 公证+staple、更新程序 1.3.1、appcast `44`）→
