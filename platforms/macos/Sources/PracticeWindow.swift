@@ -287,7 +287,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         content.addSubview(card, positioned: .below, relativeTo: nil)
 
         answerView.onLetter = { [weak self] letter in self?.letterTyped(letter) }
-        answerView.onReturn = { [weak self] text in self?.submitCode(text) }
+        answerView.onComplete = { [weak self] text in self?.submitCode(text) }
         answerView.onAdvance = { [weak self] in self?.nextQuestion() }
         answerView.onBack = { [weak self] in self?.previousQuestion() }
         answerView.onForward = { [weak self] in self?.nextQuestion() }
@@ -889,6 +889,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         applyStagedUnlock()
         applyKindVisibility()
         if let question = current {
+            // 离屏渲染共用同一批控件对象：先清掉上一次渲染残留的作答内容。
+            answerView.clear()
+            answerView.isAnswered = false
             answerView.capacity = capacity(for: question)
             questionLabel.text = question.char
             applyQuestionChrome()
@@ -924,6 +927,28 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         finish(unlockedBefore: unlockedBefore)
         return result.correct
     }
+
+    /// 测试用：像真实键盘一样往作答框敲字母（打满位数即自动判分，ADR-370）。
+    func typeForTesting(_ letters: String) {
+        for character in letters {
+            let text = String(character)
+            guard let event = NSEvent.keyEvent(
+                with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+                windowNumber: 0, context: nil, characters: text,
+                charactersIgnoringModifiers: text, isARepeat: false, keyCode: 0)
+            else { continue }
+            answerView.keyDown(with: event)
+        }
+    }
+
+    /// 测试用：当前题的正确作答串（小写）。
+    var expectedAnswerForTesting: String {
+        guard let question = current else { return "" }
+        return (kind.answer(for: question) ?? "").lowercased()
+    }
+
+    /// 测试用：作答框当前内容。
+    var answerTextForTesting: String { answerView.text }
 
     /// 测试用：自动进位是否还在等（ADR-369）。
     var autoAdvancePendingForTesting: Bool { autoAdvanceItem != nil }
