@@ -588,6 +588,31 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
         progressBar.setAccessibilityValue("\(percent)%")
+        // ADR-373：本级达标（进度满 + 正确率 ≥90%）时常驻一行庆祝，不再只在"刚解锁"那一瞬间闪现。
+        unlockLabel.stringValue = masteryBanner()
+        relayout()
+    }
+
+    /// 当前题型是否达标（ADR-344/350 口径：练过的不同字数达到要求且正确率 ≥90%）。
+    private func isMasteredNow(_ kind: PracticeKind) -> Bool {
+        let stats = progress.stats(kind: kind)
+        return Practice.isMastered(.init(practiced: stats.practiced, attempts: stats.attempts,
+                                         correct: stats.correct),
+                                   bankSize: bankSizeFor(kind))
+    }
+
+    /// 达标横幅文案；未达标返回空串。达标后如果下一阶段这次才解锁，一并写出来。
+    private func masteryBanner() -> String {
+        guard isMasteredNow(kind) else { return "" }
+        let stats = progress.stats(kind: kind)
+        let rate = stats.attempts > 0 ? stats.correct * 100 / stats.attempts : 0
+        var text = "🎉 已达「\(kind.title)」目标：已练 \(stats.practiced) 字 · 正确率 \(rate)%"
+        let kinds = PracticeKind.allCases
+        if let index = kinds.firstIndex(of: kind), index + 1 < kinds.count {
+            let next = kinds[index + 1]
+            if unlockedKinds().contains(next) { text += " · 已解锁「\(next.title)」" }
+        }
+        return text
     }
 
     private func showCurrent() {
@@ -729,9 +754,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     @objc private func submitCode(_ text: String) {
         guard session.currentEntry == nil else { return }
-        let unlockedBefore = unlockedKinds()
+        let masteredBefore = isMasteredNow(kind)
         guard session.submitCode(text) != nil else { return }
-        finish(unlockedBefore: unlockedBefore)
+        finish(masteredBefore: masteredBefore)
     }
 
     @objc private func pickStroke(_ sender: NSButton) {
@@ -763,19 +788,20 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             return
         }
         guard session.currentEntry == nil else { return }
-        let unlockedBefore = unlockedKinds()
+        let masteredBefore = isMasteredNow(kind)
         guard session.submitRecognition(stroke: stroke, structure: structure) != nil else { return }
-        finish(unlockedBefore: unlockedBefore)
+        finish(masteredBefore: masteredBefore)
     }
 
-    private func finish(unlockedBefore: Set<PracticeKind>? = nil) {
+    private func finish(masteredBefore: Bool? = nil) {
         guard let entry = session.currentEntry else { return }
         if entry.result.correct {
             present(entry)
-            celebrateUnlock(before: unlockedBefore)
-            announce(unlockLabel.stringValue.isEmpty
-                ? feedbackLabel.stringValue
-                : feedbackLabel.stringValue + "。 " + unlockLabel.stringValue)
+            // 只有"本轮刚达标"才把庆祝一并播报，避免每题重复念同一句（ADR-373）。
+            let justMastered = (masteredBefore == false) && !unlockLabel.stringValue.isEmpty
+            announce(justMastered
+                ? feedbackLabel.stringValue + "。 " + unlockLabel.stringValue
+                : feedbackLabel.stringValue)
             return
         }
         // 答错：清掉"已作答"指针进入重试态（历史与进度保留），抖动输入框并播报。
@@ -786,17 +812,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         present(entry)
         announce(feedbackLabel.stringValue)
-    }
-
-    /// 刚解锁了新题型时给一句正向反馈（ADR-369）：进度行只写门槛，达标瞬间没有鼓励。
-    private func celebrateUnlock(before: Set<PracticeKind>?) {
-        guard let before else { return }
-        let newly = unlockedKinds().subtracting(before)
-        guard !newly.isEmpty else { return }
-        let titles = PracticeKind.allCases.filter { newly.contains($0) }.map(\.title)
-        unlockLabel.stringValue = "🎉 已解锁「" + titles.joined(separator: "」「") + "」"
-        unlockLabel.setAccessibilityLabel(unlockLabel.stringValue)
-        relayout()
     }
 
     private func announce(_ text: String) {
@@ -887,9 +902,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     func answerForTesting(correct: Bool) -> Bool {
         guard let question = current else { return false }
         let answer = correct ? (kind.answer(for: question) ?? "") : "zzzz"
-        let unlockedBefore = unlockedKinds()
+        let masteredBefore = isMasteredNow(kind)
         guard let result = session.submitCode(answer) else { return false }
-        finish(unlockedBefore: unlockedBefore)
+        finish(masteredBefore: masteredBefore)
         return result.correct
     }
 
