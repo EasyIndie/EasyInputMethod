@@ -403,9 +403,10 @@ _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: retryNavUR
 let retryNavQuestion = PracticeWindow.shared.questionForTesting
 require(!PracticeWindow.shared.answerForTesting(correct: false), "错误答案判错（导航）")
 require(PracticeWindow.shared.retryStateForTesting, "进入重试态（导航）")
+require(!PracticeWindow.shared.navigateForTesting(49), "重试态空格不跳题")
 require(!PracticeWindow.shared.navigateForTesting(36), "重试态回车不跳题")
-require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "回车后仍在原题")
-require(PracticeWindow.shared.navigateForTesting(124), "→ 可以跳过重试")
+require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "空格/回车后仍在原题")
+require(PracticeWindow.shared.navigateForTesting(124), "→ 可以跳过重试（答对后）")
 require(PracticeWindow.shared.questionForTesting != retryNavQuestion, "→ 后换到新题")
 require(PracticeWindow.shared.navigateForTesting(123), "← 回到刚才那题")
 require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "← 后回到错题")
@@ -434,7 +435,8 @@ PracticeWindow.shared.typeForTesting(String(wrongLetter))
 require(PracticeWindow.shared.retryStateForTesting, "打满位数判错后进入重试态")
 require(PracticeWindow.shared.answerTextForTesting.isEmpty, "判错后清空作答框")
 require(!PracticeWindow.shared.autoAdvancePendingForTesting, "判错不自动进位")
-require(!PracticeWindow.shared.navigateForTesting(36), "判错后回车不跳题")
+require(!PracticeWindow.shared.navigateForTesting(49), "判错后空格不跳题")
+require(!PracticeWindow.shared.navigateForTesting(36), "判错后回车也不跳题")
 require(PracticeWindow.shared.questionForTesting == wrongFirst, "判错后停在原题")
 
 // ADR-369：答对后自动进位，不用再按一次回车；答错不自动进位。
@@ -489,23 +491,25 @@ _ = PracticeWindow.shared.renderForTesting(kind: .code, progressURL: stagedDir.a
                                           light: true, allUnlocked: true)
 require(PracticeWindow.shared.glyphCaptionForTesting.isEmpty, "打码题不需要字根标注")
 
-// 作答框的键位映射（ADR-370）：回车只进位，不再提交。
+// 作答框的键位映射（ADR-370/371）：打满即判分，**空格**进位，回车不进位。
 let answerMapping = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 60))
 var submits = 0
 var advances = 0
 answerMapping.onComplete = { _ in submits += 1 }
 answerMapping.onAdvance = { advances += 1 }
-func returnKey() -> NSEvent {
+func namedKey(_ text: String, _ keyCode: UInt16) -> NSEvent {
     NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
-                     windowNumber: 0, context: nil, characters: "\r",
-                     charactersIgnoringModifiers: "\r", isARepeat: false, keyCode: 36)!
+                     windowNumber: 0, context: nil, characters: text,
+                     charactersIgnoringModifiers: text, isARepeat: false, keyCode: keyCode)!
 }
 answerMapping.isAnswered = false
-answerMapping.keyDown(with: returnKey())
-require(submits == 0 && advances == 0, "未作答时回车不提交也不进位")
+answerMapping.keyDown(with: namedKey(" ", 49))
+require(submits == 0 && advances == 0, "未作答时空格不提交也不进位")
 answerMapping.isAnswered = true
-answerMapping.keyDown(with: returnKey())
-require(submits == 0 && advances == 1, "已作答后回车进下一题")
+answerMapping.keyDown(with: namedKey("\r", 36))
+require(advances == 0, "回车在练习里不进位（输入法回车是上屏原始码）")
+answerMapping.keyDown(with: namedKey(" ", 49))
+require(submits == 0 && advances == 1, "已作答后空格进下一题")
 
 // 会话层：答错可重试、答对后不可重试，两次作答都留在历史里。
 let retrySession = PracticeSession(kind: .code,
