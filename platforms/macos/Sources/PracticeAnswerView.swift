@@ -4,7 +4,7 @@ import AppKit
 ///
 /// - 只接受 a–y 参与答案，`z`（万能键）只点亮键位图、不进答案；
 /// - 退格删一位，`Esc` / `⌘⌫` 一次清空；
-/// - **打满位数就自动判分**（ADR-370），回车只决定"是否进下一题"：
+/// - **打满位数就自动判分**（ADR-370），**空格**决定"是否进下一题"（与输入法上屏键一致，ADR-371）：
 /// - 样式参考系统验证码输入：当前格高亮描边，已填格显示大写字母。
 final class PracticeAnswerView: NSView {
     static let maxLength = 4
@@ -18,7 +18,7 @@ final class PracticeAnswerView: NSView {
     }
     /// 打满 `capacity` 位时自动提交（ADR-370）：不用等回车，判分立刻发生。
     var onComplete: ((String) -> Void)?
-    /// 已作答后再按回车：进入下一题（ADR-362；不自动跳，先让用户看清讲解）。
+    /// 已作答后再按空格：进入下一题（ADR-371，与输入法"空格上屏"一致；回车不再进位）。
     var onAdvance: (() -> Void)?
     /// ← / →：回上一题 / 下一题（回看历史，不重复计分）。
     var onBack: (() -> Void)?
@@ -27,7 +27,7 @@ final class PracticeAnswerView: NSView {
     var onReveal: (() -> Void)?
     /// 每次按键回调（a–z），用于点亮键位图。
     var onLetter: ((Character) -> Void)?
-    /// 本题是否已作答：决定回车是否有意义（只有已作答时回车才进位）。
+    /// 本题是否已作答：决定空格是否有意义（只有已作答时空格才进位）。
     var isAnswered = false
 
     private(set) var text = "" {
@@ -43,7 +43,7 @@ final class PracticeAnswerView: NSView {
         setAccessibilityElement(true)
         setAccessibilityRole(.textField)
         setAccessibilityLabel("编码输入")
-        setAccessibilityHelp("输入字母，打满位数自动判分；回车进入下一题；Esc 或 ⌘⌫ 清空")
+        setAccessibilityHelp("输入字母，打满位数自动判分；空格进入下一题；Esc 或 ⌘⌫ 清空")
     }
 
     override func accessibilityValue() -> Any? {
@@ -77,9 +77,12 @@ final class PracticeAnswerView: NSView {
         }
         for scalar in characters.unicodeScalars {
             switch scalar.value {
-            case 0x0D, 0x03:
-                // ADR-370：提交不再靠回车（打满位数即判定），回车只负责进位。
+            case 0x20:
+                // ADR-371：练习的"确认"用空格，与输入法"空格上屏"一致；回车不再进位。
                 if isAnswered { onAdvance?() }
+            case 0x0D, 0x03:
+                // 回车在输入法里是"上屏原始码"，练习里没有对应动作，忽略以免养成错乱习惯。
+                break
             case 0x1B:
                 clear()
             case 0x7F, 0x08:

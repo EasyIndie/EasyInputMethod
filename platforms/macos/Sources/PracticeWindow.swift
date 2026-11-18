@@ -113,7 +113,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let forwardButton = NSButton(title: "下一题 →", target: nil, action: nil)
     private let revealButton = NSButton(title: "看答案", target: nil, action: nil)
     private var answered = false
-    /// 答错后的重试态（ADR-366）：回车=重答，不跳题；→/按钮=放弃并下一题。
+    /// 答错后的重试态（ADR-366）：重打满位数即再判，空格/回车都不进位；→/按钮=放弃并下一题。
     private var retrying = false
     private let kindControl = NSSegmentedControl(labels: PracticeKind.allCases.map(\.title),
                                                  trackingMode: .selectOne, target: nil, action: nil)
@@ -330,7 +330,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         for (button, action, label) in [
             (backButton, #selector(previousQuestion), "上一题（←）"),
             (revealButton, #selector(revealAnswer), "看答案（⌘↩）"),
-            (forwardButton, #selector(nextQuestion), "下一题（已作答后回车或 →）"),
+            (forwardButton, #selector(nextQuestion), "下一题（已作答后空格或 →）"),
         ] as [(NSButton, Selector, String)] {
             button.target = self
             button.action = action
@@ -546,7 +546,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         showCurrent()
     }
 
-    /// 窗口级键盘导航兑底：识别码题型答完后焦点不在作答框，← / → / 回车 落到这里。
+    /// 窗口级键盘导航兑底：识别码题型答完后焦点不在作答框，← / → / 空格 落到这里（ADR-371）。
     private func handleNavigation(_ event: NSEvent) -> Bool {
         switch event.keyCode {
         case 123:
@@ -557,7 +557,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             // → 始终是下一题/跳过（答错后不想重试也用它）。
             nextQuestion()
             return true
-        case 36, 76:
+        case 49:
+            // ADR-371：空格=确认进位（输入法用空格上屏）；回车在练习里不再进位。
             guard session.currentEntry != nil, !retrying else { return false }
             nextQuestion()
             return true
@@ -720,7 +721,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             Shake.animate(kind.isTyping ? answerView : card)
             if kind.isTyping { window?.makeFirstResponder(answerView) }
         } else if kind == .recognition {
-            // 识别码没有作答框可持焦点：交给窗口，← / → / 回车 才能继续导航。
+            // 识别码没有作答框可持焦点：交给窗口，← / → / 空格 才能继续导航。
             window?.makeFirstResponder(nil)
         }
     }
@@ -729,7 +730,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         backButton.isEnabled = session.canGoBack
         forwardButton.isEnabled = current != nil
         revealButton.isEnabled = kind.isTyping && current != nil && session.currentEntry == nil && !retrying
-        forwardButton.toolTip = session.isReviewing ? "下一题（→，回到更新的题）" : "下一题（已作答后回车或 →）"
+        forwardButton.toolTip = session.isReviewing ? "下一题（→，回到更新的题）" : "下一题（已作答后空格或 →）"
     }
 
     @objc private func submitCode(_ text: String) {
@@ -988,7 +989,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progress.stats(kind: kind)
     }
 
-    /// 测试用：是否处于"答错重试"态（回车不会跳题）。
+    /// 测试用：是否处于"答错重试"态（空格/回车都不会跳题）。
     var retryStateForTesting: Bool { retrying }
     /// 测试用：当前题面字/词。
     var questionForTesting: String { current?.char ?? "" }
@@ -1149,7 +1150,7 @@ private final class FlippedView: NSView {
     override var isFlipped: Bool { true }
 }
 
-/// 练习窗口：识别码题型答完后没有作答框持焦点，← / → / 回车 在窗口级兑底（ADR-362）。
+/// 练习窗口：识别码题型答完后没有作答框持焦点，← / → / 空格 在窗口级兑底（ADR-362/371）。
 private final class PracticePanel: NSWindow {
     var onKey: ((NSEvent) -> Bool)?
     override func keyDown(with event: NSEvent) {
