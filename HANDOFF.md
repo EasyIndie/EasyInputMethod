@@ -17,7 +17,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（发布产物，2026-11-18 装机）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 回滚备份：`uninstalled/` 只保留最近两份（`bundle.R9h15t` 执行 `43a3fd8e…`、`bundle.fMBgZA` 执行 `9ef1135c…`；2026-11-18 清理了 6 份旧开发候选） |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.0 / build 43**，宿主执行 `9cb738c9…`（2026-11-13 用户经 `upgrade.py` 从 1.2.0/39 升级） | config `b8c7a351…` 未变、词库 963 行（962→963，真实键入；`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-13T11-40-50Z-AE6D4E61/`；更早备份见 `updates/` |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（= 发布 ZIP 内执行，2026-11-18 19:59 用户经更新程序升级；回执 `payloadSHA256=0fbe7ff3…`、更新程序同步升到 1.3.1） | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-18T11-59-28Z-D71946AC/backup/`；更早备份见 `updates/`（约占 153 MB，可按需清理） |
 
 ## 2. 本轮完成
 
@@ -112,7 +112,7 @@
 | 24 | ~~ADR-373 达标常驻横幅~~ | ✅ 2026-11-18（PR #329 → main `4ab4ceb`；候选执行 `43a3fd8e…` 已装 air） |
 | 25 | ~~ADR-374 字根辨识 + 未达标提示~~ | ✅ 2026-11-18（PR #330 → main `14739f6`；候选执行 `66d57e19…` 已装 air，用户验收通过） |
 | 26 | ~~1.3.1 / build 44 发版~~ | ✅ 2026-11-18（报告 302；tag `v1.3.1`、Release `44290438460`、Pages `44291719493`） |
-| 27 | **pro 升级到 1.3.1/44**（用户经更新程序，记录执行 SHA 与数据未变） | ⏳ 待用户执行 |
+| 27 | ~~pro 升级到 1.3.1/44~~ | ✅ 2026-11-18 19:59（执行 `68f892c5…`；config/词库未变） |
 | 28 | **候选真机复验**：ADR-367 无浮层、ADR-368 `3,14`/`1,000`、ADR-365 双屏落点、ADR-366 重试、ADR-369 三项、ADR-370 打满即判分、ADR-371 空格确认、ADR-372 判对不自动走、ADR-373 达标横幅、ADR-374 口/囗 辨识与未达标提示 | ⏳ 待换包 |
 
 **发版决策（2026-11-15）**：功能迭代较多，**先不发版**，先做集成验收。
@@ -159,6 +159,9 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-18 / pi（air）：**pro 升级核实通过**。`ssh pro` 回读：1.3.1/44、执行 `68f892c5…`（与发布 ZIP 内一致）、签名 Notarized Developer ID、
+  回执 `payloadSHA256=0fbe7ff3…`、更新程序同步到 1.3.1、宿主运行；config `b8c7a351…` 与 963 行词库均未变。air uninstalled 备份 8→2（37 MB）。
 
 - 2026-11-18 / pi（air）：**发布后清理**。远端只剩 `dev`/`main`、无开放 PR/issue；本地 `main` 快进到 `5464bea`、`dev` 已推送。
   `~/Library/Application Support/Lampyris/uninstalled/` 从 8 份清到 2 份（37 MB）。**pro 核实仍未升级**：装机仍是 1.3.0/43（执行 `9cb738c9…`）、
