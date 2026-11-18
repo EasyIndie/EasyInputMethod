@@ -402,6 +402,56 @@ require(PracticeWindow.shared.questionForTesting != retryNavQuestion, "→ 后�
 require(PracticeWindow.shared.navigateForTesting(123), "← 回到刚才那题")
 require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "← 后回到错题")
 
+// ADR-369：答对后自动进位，不用再按一次回车；答错不自动进位。
+let autoURL = stagedDir.appendingPathComponent("auto-advance.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
+let autoFirst = PracticeWindow.shared.questionForTesting
+require(PracticeWindow.shared.answerForTesting(correct: true), "自动进位：判对")
+require(PracticeWindow.shared.autoAdvancePendingForTesting, "答对后自动进位已排期")
+require(PracticeWindow.shared.questionForTesting == autoFirst, "0.7 秒内仍显示本题的 ✓ 与讲解")
+require(PracticeWindow.shared.flushAutoAdvanceForTesting(), "自动进位到点触发")
+require(PracticeWindow.shared.questionForTesting != autoFirst, "自动进位后换到下一题")
+
+// 答对后继续打字：这一次按键取消定时，并算作下一题的第一个字母（不丢键）。
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
+let letterFirst = PracticeWindow.shared.questionForTesting
+require(PracticeWindow.shared.answerForTesting(correct: true), "字母进位：判对")
+PracticeWindow.shared.letterForTesting("Q")
+require(!PracticeWindow.shared.autoAdvancePendingForTesting, "按键后取消自动进位")
+require(PracticeWindow.shared.questionForTesting != letterFirst, "按键直接进位")
+
+// 答错不自动进位（重试态停留原题）。
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
+require(!PracticeWindow.shared.answerForTesting(correct: false), "自动进位：判错")
+require(!PracticeWindow.shared.autoAdvancePendingForTesting, "答错不排自动进位")
+require(PracticeWindow.shared.retryStateForTesting, "答错仍在重试态")
+
+// ADR-369：解锁瞬间给正向反馈（进度行之外的一行庆祝文案）。
+let celebrateURL = stagedDir.appendingPathComponent("celebrate.tsv")
+let celebrateSeed = PracticeProgress(url: celebrateURL)
+let celebrateChars = Array(Practice.bank(kind: .roots).map(\.char).sorted())
+for (index, char) in celebrateChars.prefix(29).enumerated() {
+    celebrateSeed.record(char: char, kind: .roots, correct: true, now: index)
+}
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: celebrateURL, light: true)
+require(PracticeWindow.shared.unlockBannerForTesting.isEmpty, "未达标时没有庆祝文案")
+var celebrateRounds = 0
+while PracticeWindow.shared.unlockBannerForTesting.isEmpty && celebrateRounds < 40 {
+    _ = PracticeWindow.shared.answerForTesting(correct: true)
+    celebrateRounds += 1
+}
+require(PracticeWindow.shared.unlockBannerForTesting.contains("一级简码"),
+        "达标解锁时应出现庆祝文案（实得「\(PracticeWindow.shared.unlockBannerForTesting)」）")
+PracticeWindow.shared.nextForTesting()
+require(PracticeWindow.shared.unlockBannerForTesting.isEmpty, "换题后庆祝文案收起")
+
+// ADR-369：字根题给「字根」标注 + 宋体字形，避免和占位方框混淆。
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: stagedDir.appendingPathComponent("glyph.tsv"), light: true)
+require(PracticeWindow.shared.glyphCaptionForTesting == "字根", "字根题应有「字根」标注")
+_ = PracticeWindow.shared.renderForTesting(kind: .code, progressURL: stagedDir.appendingPathComponent("glyph-code.tsv"),
+                                          light: true, allUnlocked: true)
+require(PracticeWindow.shared.glyphCaptionForTesting.isEmpty, "打码题不需要字根标注")
+
 // 作答框的键位映射：未通过时回车=提交，通过后回车=下一题。
 let answerMapping = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 60))
 var submits = 0
