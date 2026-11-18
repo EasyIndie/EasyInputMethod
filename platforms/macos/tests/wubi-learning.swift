@@ -419,10 +419,12 @@ let judgeAnswer = PracticeWindow.shared.answerForTesting(correct: false)
 require(!judgeAnswer, "夹具：先答错一次以清空重试态")
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: judgeURL, light: true,
                                            allUnlocked: true)
+let judgeFirst = PracticeWindow.shared.questionForTesting
 PracticeWindow.shared.typeForTesting(PracticeWindow.shared.expectedAnswerForTesting)
-require(PracticeWindow.shared.autoAdvancePendingForTesting,
-        "打满位数就自动判分并排期进位（不需要回车）")
-_ = PracticeWindow.shared.flushAutoAdvanceForTesting()
+require(PracticeWindow.shared.questionForTesting == judgeFirst, "打满位数即判分，但停在原题等用户确认")
+require(!PracticeWindow.shared.retryStateForTesting, "打满正确码不算答错")
+require(PracticeWindow.shared.navigateForTesting(49), "空格确认后进位")
+require(PracticeWindow.shared.questionForTesting != judgeFirst, "空格后换到下一题")
 
 // 判错：抖动 + 清空，回车也不进位（要重新打）。
 let wrongURL = stagedDir.appendingPathComponent("auto-judge-wrong.tsv")
@@ -434,34 +436,20 @@ let wrongLetter = "abcdefghijklmnopqrstuvwxy"
 PracticeWindow.shared.typeForTesting(String(wrongLetter))
 require(PracticeWindow.shared.retryStateForTesting, "打满位数判错后进入重试态")
 require(PracticeWindow.shared.answerTextForTesting.isEmpty, "判错后清空作答框")
-require(!PracticeWindow.shared.autoAdvancePendingForTesting, "判错不自动进位")
 require(!PracticeWindow.shared.navigateForTesting(49), "判错后空格不跳题")
 require(!PracticeWindow.shared.navigateForTesting(36), "判错后回车也不跳题")
 require(PracticeWindow.shared.questionForTesting == wrongFirst, "判错后停在原题")
 
-// ADR-369：答对后自动进位，不用再按一次回车；答错不自动进位。
-let autoURL = stagedDir.appendingPathComponent("auto-advance.tsv")
-_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
-let autoFirst = PracticeWindow.shared.questionForTesting
-require(PracticeWindow.shared.answerForTesting(correct: true), "自动进位：判对")
-require(PracticeWindow.shared.autoAdvancePendingForTesting, "答对后自动进位已排期")
-require(PracticeWindow.shared.questionForTesting == autoFirst, "0.7 秒内仍显示本题的 ✓ 与讲解")
-require(PracticeWindow.shared.flushAutoAdvanceForTesting(), "自动进位到点触发")
-require(PracticeWindow.shared.questionForTesting != autoFirst, "自动进位后换到下一题")
-
-// 答对后继续打字：这一次按键取消定时，并算作下一题的第一个字母（不丢键）。
-_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
-let letterFirst = PracticeWindow.shared.questionForTesting
-require(PracticeWindow.shared.answerForTesting(correct: true), "字母进位：判对")
-PracticeWindow.shared.letterForTesting("Q")
-require(!PracticeWindow.shared.autoAdvancePendingForTesting, "按键后取消自动进位")
-require(PracticeWindow.shared.questionForTesting != letterFirst, "按键直接进位")
-
-// 答错不自动进位（重试态停留原题）。
-_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
-require(!PracticeWindow.shared.answerForTesting(correct: false), "自动进位：判错")
-require(!PracticeWindow.shared.autoAdvancePendingForTesting, "答错不排自动进位")
-require(PracticeWindow.shared.retryStateForTesting, "答错仍在重试态")
+// ADR-372：判对后不再定时自动进位，由用户按空格/→ 自己确认。
+let holdURL = stagedDir.appendingPathComponent("hold-after-correct.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: holdURL, light: true,
+                                           allUnlocked: true)
+let holdFirst = PracticeWindow.shared.questionForTesting
+require(PracticeWindow.shared.answerForTesting(correct: true), "判对")
+require(PracticeWindow.shared.questionForTesting == holdFirst, "判对后停在原题（不自动进位）")
+PracticeWindow.shared.typeForTesting("q")
+require(PracticeWindow.shared.questionForTesting == holdFirst, "未确认时打字母不会进位（要按空格）")
+require(PracticeWindow.shared.navigateForTesting(124), "→ 也能进位")
 
 // ADR-369：解锁瞬间给正向反馈（进度行之外的一行庆祝文案）。
 let celebrateURL = stagedDir.appendingPathComponent("celebrate.tsv")

@@ -132,9 +132,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private var bankSizeCache: [PracticeKind: Int] = [:]
     /// 离屏测试在 `ime_config_init` 之前渲染时使用；宿主运行期为 nil。
     private var stagedUnlockOverride: Bool?
-    /// 答对后自动进下一题的延迟（ADR-369）：看得见 ✓ 与讲解，又不逼用户再按一次回车。
-    private static let autoAdvanceDelay: TimeInterval = 0.7
-    private var autoAdvanceItem: DispatchWorkItem?
 
     private func bankSizeFor(_ kind: PracticeKind) -> Int {
         if let cached = bankSizeCache[kind] { return cached }
@@ -286,7 +283,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         card.borderWidth = 1
         content.addSubview(card, positioned: .below, relativeTo: nil)
 
-        answerView.onLetter = { [weak self] letter in self?.letterTyped(letter) }
+        answerView.onLetter = { [weak self] letter in self?.keymapPanel.map.flash(letter) }
         answerView.onComplete = { [weak self] text in self?.submitCode(text) }
         answerView.onAdvance = { [weak self] in self?.nextQuestion() }
         answerView.onBack = { [weak self] in self?.previousQuestion() }
@@ -534,14 +531,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     @objc private func nextQuestion() {
-        cancelAutoAdvance()
         session.next()
         showCurrent()
     }
 
     /// 回上一题：回看历史，不重复计分（ADR-362）。
     @objc private func previousQuestion() {
-        cancelAutoAdvance()
         guard session.back() else { return }
         showCurrent()
     }
@@ -607,7 +602,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         lastAnswer = nil
         feedbackLabel.stringValue = ""
         unlockLabel.stringValue = ""
-        cancelAutoAdvance()
         strokeTitle.stringValue = "末笔"
         structureTitle.stringValue = "结构"
         for button in strokeButtons + structureButtons { button.state = .off }
@@ -782,7 +776,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             announce(unlockLabel.stringValue.isEmpty
                 ? feedbackLabel.stringValue
                 : feedbackLabel.stringValue + "。 " + unlockLabel.stringValue)
-            scheduleAutoAdvance()
             return
         }
         // 答错：清掉"已作答"指针进入重试态（历史与进度保留），抖动输入框并播报。
@@ -793,35 +786,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         present(entry)
         announce(feedbackLabel.stringValue)
-    }
-
-    /// 答对后自动进下一题（ADR-369）：0.7 秒后进位；这期间按字母会取消定时，
-    /// 由 `onLetter` 把该字母直接算作下一题的第一个输入，不丢键。
-    private func scheduleAutoAdvance() {
-        cancelAutoAdvance()
-        guard session.currentEntry != nil, !retrying else { return }
-        let item = DispatchWorkItem { [weak self] in
-            guard let self else { return }
-            self.autoAdvanceItem = nil
-            guard self.session.currentEntry != nil, !self.retrying else { return }
-            self.nextQuestion()
-        }
-        autoAdvanceItem = item
-        DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoAdvanceDelay, execute: item)
-    }
-
-    private func cancelAutoAdvance() {
-        autoAdvanceItem?.cancel()
-        autoAdvanceItem = nil
-    }
-
-    /// 作答框收到一个字母：自动进位还没触发时，这次按键直接算作下一题的第一个字母。
-    private func letterTyped(_ letter: Character) {
-        if autoAdvanceItem != nil, session.currentEntry != nil, !retrying {
-            cancelAutoAdvance()
-            nextQuestion()
-        }
-        keymapPanel.map.flash(letter)
     }
 
     /// 刚解锁了新题型时给一句正向反馈（ADR-369）：进度行只写门槛，达标瞬间没有鼓励。
@@ -950,22 +914,6 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 测试用：作答框当前内容。
     var answerTextForTesting: String { answerView.text }
-
-    /// 测试用：自动进位是否还在等（ADR-369）。
-    var autoAdvancePendingForTesting: Bool { autoAdvanceItem != nil }
-
-    /// 测试用：立刻触发自动进位（等价于 0.7 秒到点）。
-    @discardableResult
-    func flushAutoAdvanceForTesting() -> Bool {
-        guard autoAdvanceItem != nil else { return false }
-        cancelAutoAdvance()
-        guard session.currentEntry != nil, !retrying else { return false }
-        nextQuestion()
-        return true
-    }
-
-    /// 测试用：模拟作答框收到一个字母（走与真实按键相同的分支）。
-    func letterForTesting(_ letter: Character) { letterTyped(letter) }
 
     /// 测试用：字根题的字形标注与解锁庆祝文案。
     var glyphCaptionForTesting: String { glyphCaption.isHidden ? "" : glyphCaption.stringValue }
