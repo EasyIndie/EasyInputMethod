@@ -43,7 +43,7 @@ class WubiLearningTests(unittest.TestCase):
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
                   *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in
                     ["ImeSession.swift", "Config.swift", "CandidateWindow.swift", "InHostTextInput.swift", "WindowPlacement.swift", "CaretPlacement.swift",
-                     "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PassageBank.swift", "PassageWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", *KEYMAP_SOURCES]],
+                     "LearningHints.swift", "Practice.swift", "PracticeWindow.swift", "PassageBank.swift", "PassageWindow.swift", "PracticeAnswerView.swift", "PracticeExplanationView.swift", "RootNotes.swift", *KEYMAP_SOURCES]],
                   str(ROOT / "target/release/libime_ffi.a"), "-framework", "AppKit",
                   "-o", str(temporary / "probe")], 90),
                 ([str(temporary / "probe"), str(temporary), str(output)], 30),

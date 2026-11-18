@@ -451,6 +451,19 @@ PracticeWindow.shared.typeForTesting("q")
 require(PracticeWindow.shared.questionForTesting == holdFirst, "未确认时打字母不会进位（要按空格）")
 require(PracticeWindow.shared.navigateForTesting(124), "→ 也能进位")
 
+// ADR-374：进度满但正确率不够时，进度行要明确写"还差正确率"，不能什么都不说。
+let missURL = stagedDir.appendingPathComponent("mastery-miss.tsv")
+let missSeed = PracticeProgress(url: missURL)
+let missChars = Array(Practice.bank(kind: .roots).map(\.char).sorted())
+for (index, char) in missChars.prefix(30).enumerated() {
+    missSeed.record(char: char, kind: .roots, correct: index % 5 != 0, now: index)  // 80% 正确率
+}
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: missURL, light: true,
+                                           allUnlocked: true)
+require(PracticeWindow.shared.unlockBannerForTesting.isEmpty, "正确率不够时不该显示达标横幅")
+require(PracticeWindow.shared.progressTextForTesting.contains("正确率需 ≥90%"),
+        "正确率不够时进度行要说清差什么（实得「\(PracticeWindow.shared.progressTextForTesting)」）")
+
 // ADR-369：解锁瞬间给正向反馈（进度行之外的一行庆祝文案）。
 let celebrateURL = stagedDir.appendingPathComponent("celebrate.tsv")
 let celebrateSeed = PracticeProgress(url: celebrateURL)
@@ -476,7 +489,12 @@ require(PracticeWindow.shared.unlockBannerForTesting.contains("已达"),
 
 // ADR-369：字根题给「字根」标注 + 宋体字形，避免和占位方框混淆。
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: stagedDir.appendingPathComponent("glyph.tsv"), light: true)
-require(PracticeWindow.shared.glyphCaptionForTesting == "字根", "字根题应有「字根」标注")
+require(PracticeWindow.shared.glyphCaptionForTesting.hasPrefix("字根"), "字根题应有「字根」标注")
+// ADR-374：容易同形的字根（口 / 囗）必须给出能区分它们的辨识短语。
+require(RootNotes.caption(for: "口").contains("嘴巴"), "口 要有辨识短语")
+require(RootNotes.caption(for: "囗").contains("包围"), "囗 要有辨识短语")
+require(RootNotes.caption(for: "口") != RootNotes.caption(for: "囗"), "口 与 囗 的标注不能相同")
+require(RootNotes.caption(for: "我") == "字根", "没有辨识短语时只写「字根」")
 _ = PracticeWindow.shared.renderForTesting(kind: .code, progressURL: stagedDir.appendingPathComponent("glyph-code.tsv"),
                                           light: true, allUnlocked: true)
 require(PracticeWindow.shared.glyphCaptionForTesting.isEmpty, "打码题不需要字根标注")
