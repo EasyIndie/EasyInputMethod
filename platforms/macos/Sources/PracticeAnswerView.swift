@@ -3,7 +3,8 @@ import AppKit
 /// 练习作答输入：4 个方框（五笔码最长 4 位），自己收键、不经过输入法。
 ///
 /// - 只接受 a–y 参与答案，`z`（万能键）只点亮键位图、不进答案；
-/// - 退格删一位，`Esc` / `⌘⌫` 一次清空，回车提交；
+/// - 退格删一位，`Esc` / `⌘⌫` 一次清空；
+/// - **打满位数就自动判分**（ADR-370），回车只决定"是否进下一题"：
 /// - 样式参考系统验证码输入：当前格高亮描边，已填格显示大写字母。
 final class PracticeAnswerView: NSView {
     static let maxLength = 4
@@ -15,7 +16,8 @@ final class PracticeAnswerView: NSView {
             needsDisplay = true
         }
     }
-    var onReturn: ((String) -> Void)?
+    /// 打满 `capacity` 位时自动提交（ADR-370）：不用等回车，判分立刻发生。
+    var onComplete: ((String) -> Void)?
     /// 已作答后再按回车：进入下一题（ADR-362；不自动跳，先让用户看清讲解）。
     var onAdvance: (() -> Void)?
     /// ← / →：回上一题 / 下一题（回看历史，不重复计分）。
@@ -25,7 +27,7 @@ final class PracticeAnswerView: NSView {
     var onReveal: (() -> Void)?
     /// 每次按键回调（a–z），用于点亮键位图。
     var onLetter: ((Character) -> Void)?
-    /// 本题是否已作答：决定回车是「提交」还是「下一题」。
+    /// 本题是否已作答：决定回车是否有意义（只有已作答时回车才进位）。
     var isAnswered = false
 
     private(set) var text = "" {
@@ -41,7 +43,7 @@ final class PracticeAnswerView: NSView {
         setAccessibilityElement(true)
         setAccessibilityRole(.textField)
         setAccessibilityLabel("编码输入")
-        setAccessibilityHelp("输入字母，回车提交；Esc 或 ⌘⌫ 清空")
+        setAccessibilityHelp("输入字母，打满位数自动判分；回车进入下一题；Esc 或 ⌘⌫ 清空")
     }
 
     override func accessibilityValue() -> Any? {
@@ -76,7 +78,8 @@ final class PracticeAnswerView: NSView {
         for scalar in characters.unicodeScalars {
             switch scalar.value {
             case 0x0D, 0x03:
-                if isAnswered { onAdvance?() } else { onReturn?(text) }
+                // ADR-370：提交不再靠回车（打满位数即判定），回车只负责进位。
+                if isAnswered { onAdvance?() }
             case 0x1B:
                 clear()
             case 0x7F, 0x08:
@@ -90,6 +93,8 @@ final class PracticeAnswerView: NSView {
                 // z 是万能键，不是任何码的一部分：只点亮键位，不写入答案。
                 guard typed != "Z", text.count < capacity else { continue }
                 text.append(Character(String(scalarLetter).lowercased()))
+                // 打满本题位数 → 立刻判分（ADR-370）；判分结果由窗口渲染。
+                if text.count == capacity { onComplete?(text) }
             }
         }
     }

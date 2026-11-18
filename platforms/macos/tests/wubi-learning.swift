@@ -278,10 +278,11 @@ require(keyboard.positionMarks(for: "D") == "④", "D 应是第 4 位")
 keyboard.markAnswer("qqqq")
 require(keyboard.positionMarks(for: "Q") == "①②③④", "重复码位应合并显示四个位次")
 require(keyboard.positionMarks(for: "W").isEmpty, "未用到的键不应有角标")
-// 输入视图只接受 a–y、退格与回车。
+// 输入视图只接受 a–y、退格与回车；打满位数自动判分（ADR-370）。
 let answer = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
 var submitted: String?
-answer.onReturn = { submitted = $0 }
+var autoSubmitted: String?
+answer.onComplete = { submitted = $0; autoSubmitted = $0 }
 func key(_ text: String) -> NSEvent? {
     NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
                      windowNumber: 0, context: nil, characters: text,
@@ -289,12 +290,19 @@ func key(_ text: String) -> NSEvent? {
 }
 for character in "GCft" { if let event = key(String(character)) { answer.keyDown(with: event) } }
 require(answer.text == "gcft", "只接受小写字母（实际 \(answer.text)）")
-if let event = key("\u{7F}") { answer.keyDown(with: event) }
-require(answer.text == "gcf", "退格删除")
-if let event = key("z") { answer.keyDown(with: event) }
-require(answer.text == "gcf", "z 不接受")
-if let event = key("\r") { answer.keyDown(with: event) }
-require(submitted == "gcf", "回车提交")
+require(submitted == "gcft", "打满 4 位自动提交（ADR-370）")
+
+// 没打满时不判分：退格、z、容量收窄都只改内容。
+let partial = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 30))
+var partialSubmit: String?
+partial.onComplete = { partialSubmit = $0 }
+for character in "Gcf" { if let event = key(String(character)) { partial.keyDown(with: event) } }
+require(partial.text == "gcf", "只接受小写字母（部分输入）")
+if let event = key("\u{7F}") { partial.keyDown(with: event) }
+require(partial.text == "gc", "退格删除")
+if let event = key("z") { partial.keyDown(with: event) }
+require(partial.text == "gc", "z 不接受")
+require(partialSubmit == nil, "没打满 4 位不判分")
 // ADR-313 练习窗口：版式自检（控件不越界、不与题型控件重叠）。
 // 字根题型的实拍（ADR-332）：亮/暗各一张，供人工目视。
 for light in [true, false] {
@@ -402,6 +410,33 @@ require(PracticeWindow.shared.questionForTesting != retryNavQuestion, "→ 后�
 require(PracticeWindow.shared.navigateForTesting(123), "← 回到刚才那题")
 require(PracticeWindow.shared.questionForTesting == retryNavQuestion, "← 后回到错题")
 
+// ADR-370：打满位数即判分，回车只决定是否进位（不必等回车）。
+let judgeURL = stagedDir.appendingPathComponent("auto-judge.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: judgeURL, light: true,
+                                           allUnlocked: true)
+let judgeAnswer = PracticeWindow.shared.answerForTesting(correct: false)
+require(!judgeAnswer, "夹具：先答错一次以清空重试态")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: judgeURL, light: true,
+                                           allUnlocked: true)
+PracticeWindow.shared.typeForTesting(PracticeWindow.shared.expectedAnswerForTesting)
+require(PracticeWindow.shared.autoAdvancePendingForTesting,
+        "打满位数就自动判分并排期进位（不需要回车）")
+_ = PracticeWindow.shared.flushAutoAdvanceForTesting()
+
+// 判错：抖动 + 清空，回车也不进位（要重新打）。
+let wrongURL = stagedDir.appendingPathComponent("auto-judge-wrong.tsv")
+_ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: wrongURL, light: true,
+                                           allUnlocked: true)
+let wrongFirst = PracticeWindow.shared.questionForTesting
+let wrongLetter = "abcdefghijklmnopqrstuvwxy"
+    .first { String($0) != PracticeWindow.shared.expectedAnswerForTesting } ?? "z"
+PracticeWindow.shared.typeForTesting(String(wrongLetter))
+require(PracticeWindow.shared.retryStateForTesting, "打满位数判错后进入重试态")
+require(PracticeWindow.shared.answerTextForTesting.isEmpty, "判错后清空作答框")
+require(!PracticeWindow.shared.autoAdvancePendingForTesting, "判错不自动进位")
+require(!PracticeWindow.shared.navigateForTesting(36), "判错后回车不跳题")
+require(PracticeWindow.shared.questionForTesting == wrongFirst, "判错后停在原题")
+
 // ADR-369：答对后自动进位，不用再按一次回车；答错不自动进位。
 let autoURL = stagedDir.appendingPathComponent("auto-advance.tsv")
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: autoURL, light: true)
@@ -436,8 +471,10 @@ for (index, char) in celebrateChars.prefix(29).enumerated() {
 _ = PracticeWindow.shared.renderForTesting(kind: .roots, progressURL: celebrateURL, light: true)
 require(PracticeWindow.shared.unlockBannerForTesting.isEmpty, "未达标时没有庆祝文案")
 var celebrateRounds = 0
-while PracticeWindow.shared.unlockBannerForTesting.isEmpty && celebrateRounds < 40 {
+while celebrateRounds < 60 {
     _ = PracticeWindow.shared.answerForTesting(correct: true)
+    if !PracticeWindow.shared.unlockBannerForTesting.isEmpty { break }
+    PracticeWindow.shared.nextForTesting()
     celebrateRounds += 1
 }
 require(PracticeWindow.shared.unlockBannerForTesting.contains("一级简码"),
@@ -452,11 +489,11 @@ _ = PracticeWindow.shared.renderForTesting(kind: .code, progressURL: stagedDir.a
                                           light: true, allUnlocked: true)
 require(PracticeWindow.shared.glyphCaptionForTesting.isEmpty, "打码题不需要字根标注")
 
-// 作答框的键位映射：未通过时回车=提交，通过后回车=下一题。
+// 作答框的键位映射（ADR-370）：回车只进位，不再提交。
 let answerMapping = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 200, height: 60))
 var submits = 0
 var advances = 0
-answerMapping.onReturn = { _ in submits += 1 }
+answerMapping.onComplete = { _ in submits += 1 }
 answerMapping.onAdvance = { advances += 1 }
 func returnKey() -> NSEvent {
     NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
@@ -465,10 +502,10 @@ func returnKey() -> NSEvent {
 }
 answerMapping.isAnswered = false
 answerMapping.keyDown(with: returnKey())
-require(submits == 1 && advances == 0, "未通过时回车是提交")
+require(submits == 0 && advances == 0, "未作答时回车不提交也不进位")
 answerMapping.isAnswered = true
 answerMapping.keyDown(with: returnKey())
-require(advances == 1, "通过后回车是下一题")
+require(submits == 0 && advances == 1, "已作答后回车进下一题")
 
 // 会话层：答错可重试、答对后不可重试，两次作答都留在历史里。
 let retrySession = PracticeSession(kind: .code,
