@@ -570,20 +570,16 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         let percent = Int((Double(stats.practiced) / Double(bankSize) * 100).rounded())
         progressLabel.stringValue = "题库 \(session.bank.count) 字 · 已练 \(stats.practiced) 字 · "
             + "\(stats.attempts) 次 · 正确率 \(rate)% · 进度 \(percent)%"
-        // ADR-344/350：达标后建议下一题型；未达标时显示解锁门槛。
-        if let next = Practice.nextHint(kind: kind, practiced: stats.practiced,
-                                        attempts: stats.attempts, correct: stats.correct,
-                                        bankSize: bankSizeFor(kind)) {
-            progressLabel.stringValue += " · 可以试试「\(next)」了"
-        } else {
-            let kinds = PracticeKind.allCases
-            if let index = kinds.firstIndex(of: kind), index + 1 < kinds.count {
-                let next = kinds[index + 1]
-                if !unlockedKinds().contains(next) {
-                    let required = Practice.requiredPractice(bankSize: bankSizeFor(kind))
-                    progressLabel.stringValue += " · 下一阶段「\(next.title)」需 \(kind.title) "
-                        + "\(required) 字、正确率 ≥90%（当前 \(stats.practiced) 字、\(rate)%）"
-                }
+        // ADR-374：未达标时**始终**写清还差什么（不再只在"下一阶段被锁"时才提示）。
+        // 用户 147 字全练过但正确率 86% 时，旧逻辑既不显示横幅、也不显示门槛，看起来像"没有反馈"。
+        if !isMasteredNow(kind) {
+            let required = Practice.requiredPractice(bankSize: bankSizeFor(kind))
+            if stats.practiced < required {
+                progressLabel.stringValue += " · 本级目标：还需练 \(required - stats.practiced) 字"
+                    + "（\(stats.practiced)/\(required)）且正确率 ≥90%（当前 \(rate)%）"
+            } else {
+                progressLabel.stringValue += " · 本级目标：正确率需 ≥90%（当前 \(rate)%），"
+                    + "再答对几题就能达标"
             }
         }
         progressBar.doubleValue = Double(stats.practiced) / Double(bankSize)
@@ -669,7 +665,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     /// 加一行「字根」标注并换用宋体，笔画粗细与衬线让它是「字」而不是「框」。
     private func applyQuestionChrome() {
         let isRoots = kind == .roots
-        glyphCaption.stringValue = isRoots ? "字根" : ""
+        glyphCaption.stringValue = isRoots ? RootNotes.caption(for: current?.char ?? "") : ""
         glyphCaption.isHidden = !isRoots
         questionLabel.font = isRoots
             ? (NSFont(name: "Songti SC", size: 44) ?? .systemFont(ofSize: 40, weight: .medium))
@@ -881,7 +877,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                 ? "✓ 正确 · \(kind.title) \(kind.answer(for: question)?.uppercased() ?? "")"
                 : "选一个末笔和一个结构"
         }
-        progressLabel.stringValue = progress.summary
+        updateStats()
         let host = NSWindow(contentRect: view.frame,
                             styleMask: [.titled], backing: .buffered, defer: false)
         if let appearance = NSAppearance(named: light ? .aqua : .darkAqua) { host.appearance = appearance }
@@ -929,6 +925,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 测试用：作答框当前内容。
     var answerTextForTesting: String { answerView.text }
+
+    /// 测试用：进度行文案（含达标/还差什么）。
+    var progressTextForTesting: String { progressLabel.stringValue }
 
     /// 测试用：字根题的字形标注与解锁庆祝文案。
     var glyphCaptionForTesting: String { glyphCaption.isHidden ? "" : glyphCaption.stringValue }

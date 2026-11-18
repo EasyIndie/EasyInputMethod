@@ -20,6 +20,22 @@ def stamp(path):
 
 @unittest.skipUnless(sys.platform == 'darwin', 'requires AppKit')
 class PreviewMenuTests(unittest.TestCase):
+    def test_preview_compiles_every_shared_source(self):
+        """新增 Sources/*.swift 后忘了加进 dev-preview.sh 会在 CI 才红（ADR-374 踩过两次）。
+
+        例外是只有正式宿主才需要的实现细节（IMK 控制器、符号组合、性能打点等）。
+        """
+        allowed_missing = {
+            'AppLanguageMemory.swift', 'AutoPhrase.swift', 'InputController.swift',
+            'PerfTrace.swift', 'SymbolComposition.swift',
+        }
+        script = (ROOT / 'platforms/macos/dev-preview.sh').read_text(encoding='utf-8')
+        unexpected = sorted(name for name in allowed_missing if name in script)
+        self.assertEqual(unexpected, [], 'dev-preview.sh 现在编译了这些源码，更新本测试的例外清单')
+        sources = sorted(path.name for path in (ROOT / 'platforms/macos/Sources').glob('*.swift'))
+        not_built = [name for name in sources if name not in allowed_missing and name not in script]
+        self.assertEqual(not_built, [], 'dev-preview.sh 漏编译：' + ', '.join(not_built))
+
     def test_real_shared_menu_and_private_session(self):
         # 断言读的是系统共享输入菜单；若本机还开着调试窗口（LampyrisPreview），菜单会多出条目，
         # 这条就会假失败（报告207 实测一次）。此时记 SKIP，不要当产品回归。
@@ -44,7 +60,7 @@ class PreviewMenuTests(unittest.TestCase):
                 (['swiftc', '-warnings-as-errors', '-I', str(ROOT / 'crates/ime-ffi/include'),
                   str(temporary / 'main.swift'),
                   str(ROOT / "platforms/macos/tests/LocalAcceptanceEvidence.swift"),
-                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'InHostTextInput.swift', 'WindowPlacement.swift', 'CaretPlacement.swift', 'LearningHints.swift', 'Practice.swift', 'PracticeWindow.swift', 'PassageBank.swift', 'PassageWindow.swift', 'PracticeAnswerView.swift', 'PracticeExplanationView.swift', *KEYMAP_SOURCES, 'InputMenu.swift']],
+                  *[str(ROOT / ("modules/keymap/Sources" if name.startswith("Keyboard") or name.startswith("KeymapPanel") or name == "KeyRootLayout.swift" else "platforms/macos/Sources") / name) for name in ['ImeSession.swift', 'Config.swift', 'CandidateWindow.swift', 'InHostTextInput.swift', 'WindowPlacement.swift', 'CaretPlacement.swift', 'LearningHints.swift', 'Practice.swift', 'PracticeWindow.swift', 'PassageBank.swift', 'PassageWindow.swift', 'PracticeAnswerView.swift', 'PracticeExplanationView.swift', 'RootNotes.swift', *KEYMAP_SOURCES, 'InputMenu.swift']],
                   str(ROOT / 'platforms/macos/Preview/InputMenuPreview.swift'),
                   str(ROOT / 'target/release/libime_ffi.a'), '-framework', 'AppKit', '-o', str(temporary / 'probe')], 90),
                 ([str(temporary / 'probe'), str(temporary), str(ROOT / 'data/generated')], 30),
