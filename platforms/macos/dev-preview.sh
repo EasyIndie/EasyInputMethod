@@ -69,6 +69,7 @@ swiftc -g -Onone -warnings-as-errors -module-name LampyrisPreview \
   "${SCRIPT_DIR}/Sources/PassageWindow.swift" \
   "${SCRIPT_DIR}/Sources/PracticeAnswerView.swift" \
   "${SCRIPT_DIR}/Sources/PracticeExplanationView.swift" \
+  "${SCRIPT_DIR}/Sources/RootNotes.swift" \
   "${SCRIPT_DIR}/Sources/Onboarding.swift" \
   "${SCRIPT_DIR}/Sources/OnboardingWindow.swift" \
   "${SCRIPT_DIR}/Sources/SymbolCatalog.swift" \

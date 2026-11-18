@@ -21,14 +21,14 @@
 | `PracticeWindow.applyQuestionChrome()` | 字根题题干上方写「字根 · 囗（包围外框，如「国」「园」）」；无短语时仍是「字根」 |
 | `PracticeWindow.updateStats()` | 未达标时始终写差什么：字数不够 → 「还需练 N 字（X/30）且正确率 ≥90%（当前 Z%）」；字数够但正确率不够 → 「正确率需 ≥90%（当前 Z%），再答对几题就能达标」 |
 | `renderForTesting` | 改用 `updateStats()`，离屏实拍与真实窗口的进度行一致 |
-| 测试 | 新增 `RootNotes` 与"正确率不够"两组断言；离屏测试的 Swift 源清单补 `RootNotes.swift` |
+| 测试 | 新增 `RootNotes` 与"正确率不够"两组断言；离屏测试与 `dev-preview.sh` 的 Swift 源清单补 `RootNotes.swift`；`test-preview-menu.py` 新增门禁：`Sources/*.swift` 必须要么被 `dev-preview.sh` 编译、要么在显式例外清单里（这条 CI 红已踩过两次） |
 
 ## 4. 验证
 
 | 检查 | 结果 |
 |---|---|
 | `make verify` | PASS（542 产物零网络符号） |
-| `make macos-offline-tests` | **69 文件 / 340 例 PASS** |
+| `make macos-offline-tests` | **69 文件 / 341 例 PASS** |
 | `build.sh --strict` / `dev-preview.sh --smoke-test` / `make macos-ui-snapshots` | PASS |
 | 实拍 | `practice-roots-light.png`：无短语字根只写「字根」；进度行显示「本级目标：还需练 30 字（0/30）且正确率 ≥90%（当前 0%）」 |
 
