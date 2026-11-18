@@ -1,5 +1,38 @@
 import AppKit
 
+/// 题干字形（ADR-369）：自绘并垂直居中。
+///
+/// 大字号字形用 `NSTextField` 放在翻转坐标的滚动内容里会被裁掉上半部分（宋体 44pt 实测），
+/// 自绘按 `boundingRect` 居中，字根「口」等方形字也能完整呈现。
+final class PracticeGlyphView: NSView {
+    var text: String = "" { didSet { needsDisplay = true; updateAccessibility() } }
+    var font: NSFont = .systemFont(ofSize: 40, weight: .medium) {
+        didSet { needsDisplay = true; updateAccessibility() }
+    }
+
+    override var isFlipped: Bool { true }
+
+    private func updateAccessibility() {
+        setAccessibilityElement(true)
+        setAccessibilityRole(.staticText)
+        setAccessibilityLabel(text)
+    }
+
+    override func draw(_ dirtyRect: NSRect) {
+        guard !text.isEmpty else { return }
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: font, .foregroundColor: NSColor.labelColor, .paragraphStyle: paragraph,
+        ]
+        let box = (text as NSString).boundingRect(
+            with: NSSize(width: bounds.width, height: .greatestFiniteMagnitude),
+            options: [.usesLineFragmentOrigin], attributes: attributes)
+        let rect = NSRect(x: 0, y: (bounds.height - box.height) / 2, width: bounds.width, height: box.height)
+        (text as NSString).draw(in: rect, withAttributes: attributes)
+    }
+}
+
 /// 练习窗口（ADR-313）：独立、非模态、可随时关闭；不碰候选窗，不常驻焦点。
 ///
 /// 布局用**翻转坐标**从顶部往下排，避免手动从底部算高度导致文字出界（报告 260）：
@@ -15,6 +48,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         static let afterKind: CGFloat = 14
         static let questionHeight: CGFloat = 48
         static let afterQuestion: CGFloat = 6
+        /// 字根题的「字根」标注行（ADR-369）：字形上方一行小字，避免把 口 当成占位方框。
+        static let captionHeight: CGFloat = 16
+        static let afterCaption: CGFloat = 2
+        /// 解锁庆祝行（ADR-369）：只在刚解锁时出现，占一行高度。
+        static let unlockHeight: CGFloat = 20
+        static let afterUnlock: CGFloat = 6
         static let promptHeight: CGFloat = 18
         static let afterPrompt: CGFloat = 12
         static let cardPadding: CGFloat = 14
@@ -37,12 +76,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     /// 当前状态下的内容高度（题型 + 详情区 + 口诀共同决定）。
     private func contentHeight() -> CGFloat {
         var height = Gap.top + Gap.kindHeight + Gap.afterKind
-        height += Gap.questionHeight + Gap.afterQuestion
+        height += Gap.captionHeight + Gap.afterCaption + questionHeight + Gap.afterQuestion
         height += Gap.cardPadding + Gap.promptHeight + Gap.afterPrompt
         height += (kind.isTyping ? Gap.codeAnswerHeight : Gap.recognitionAnswerHeight) + Gap.afterAnswer
         height += PracticeExplanationView.height + Gap.afterExplanation
         height += Gap.cardPadding
         height += Gap.feedbackHeight + Gap.afterFeedback
+        // 解锁庆祝行固定占位：出现/消失时不改变窗口高度，避免练习时窗口跳动（ADR-369）。
+        height += Gap.unlockHeight + Gap.afterUnlock
         height += Gap.navHeight + Gap.afterNav
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
         if showsKeymap {
@@ -53,7 +94,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     private var window: NSWindow?
     private var content: FlippedView?
-    private let questionLabel = NSTextField(labelWithString: "")
+    private let glyphCaption = NSTextField(labelWithString: "")
+    private let questionLabel = PracticeGlyphView()
+    private let unlockLabel = NSTextField(wrappingLabelWithString: "")
     private let promptLabel = NSTextField(labelWithString: "")
     private let feedbackLabel = NSTextField(wrappingLabelWithString: "")
     private let progressLabel = NSTextField(labelWithString: "")
@@ -89,6 +132,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private var bankSizeCache: [PracticeKind: Int] = [:]
     /// 离屏测试在 `ime_config_init` 之前渲染时使用；宿主运行期为 nil。
     private var stagedUnlockOverride: Bool?
+    /// 答对后自动进下一题的延迟（ADR-369）：看得见 ✓ 与讲解，又不逼用户再按一次回车。
+    private static let autoAdvanceDelay: TimeInterval = 0.7
+    private var autoAdvanceItem: DispatchWorkItem?
 
     private func bankSizeFor(_ kind: PracticeKind) -> Int {
         if let cached = bankSizeCache[kind] { return cached }
@@ -205,7 +251,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         kindControl.action = #selector(kindChanged)
         content.addSubview(kindControl)
 
-        questionLabel.alignment = .center
+        glyphCaption.alignment = .center
+        glyphCaption.font = .systemFont(ofSize: 11, weight: .semibold)
+        glyphCaption.textColor = .secondaryLabelColor
+        glyphCaption.setAccessibilityLabel("字根字形")
+        content.addSubview(glyphCaption)
+
         questionLabel.font = .systemFont(ofSize: 40, weight: .medium)
         content.addSubview(questionLabel)
 
@@ -235,7 +286,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         card.borderWidth = 1
         content.addSubview(card, positioned: .below, relativeTo: nil)
 
-        answerView.onLetter = { [weak self] letter in self?.keymapPanel.map.flash(letter) }
+        answerView.onLetter = { [weak self] letter in self?.letterTyped(letter) }
         answerView.onReturn = { [weak self] text in self?.submitCode(text) }
         answerView.onAdvance = { [weak self] in self?.nextQuestion() }
         answerView.onBack = { [weak self] in self?.previousQuestion() }
@@ -269,6 +320,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         feedbackLabel.alignment = .center
         feedbackLabel.font = .systemFont(ofSize: 12.5, weight: .semibold)
         content.addSubview(feedbackLabel)
+
+        unlockLabel.alignment = .center
+        unlockLabel.font = .systemFont(ofSize: 13, weight: .semibold)
+        unlockLabel.textColor = .systemGreen
+        unlockLabel.isHidden = true
+        content.addSubview(unlockLabel)
 
         for (button, action, label) in [
             (backButton, #selector(previousQuestion), "上一题（←）"),
@@ -319,8 +376,11 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         kindControl.frame = NSRect(x: margin, y: y, width: inner, height: Gap.kindHeight)
         y += Gap.kindHeight + Gap.afterKind
 
-        questionLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.questionHeight)
-        y += Gap.questionHeight + Gap.afterQuestion
+        glyphCaption.frame = NSRect(x: margin, y: y, width: inner, height: Gap.captionHeight)
+        y += Gap.captionHeight + Gap.afterCaption
+
+        questionLabel.frame = NSRect(x: margin, y: y, width: inner, height: questionHeight)
+        y += questionHeight + Gap.afterQuestion
 
         // 卡片：提示语 → 作答 → 讲解 → 开关，全都在同一张分组卡片里（识别码题型同构）。
         let cardTop = y
@@ -376,6 +436,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
         feedbackLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.feedbackHeight)
         y += Gap.feedbackHeight + Gap.afterFeedback
+
+        unlockLabel.isHidden = unlockLabel.stringValue.isEmpty
+        unlockLabel.frame = NSRect(x: margin, y: y, width: inner, height: Gap.unlockHeight)
+        y += Gap.unlockHeight + Gap.afterUnlock
 
         // 导航行：← 上一题（左）｜ 看答案 · 下一题 →（右）。
         let navWidth: CGFloat = 96
@@ -470,12 +534,14 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     @objc private func nextQuestion() {
+        cancelAutoAdvance()
         session.next()
         showCurrent()
     }
 
     /// 回上一题：回看历史，不重复计分（ADR-362）。
     @objc private func previousQuestion() {
+        cancelAutoAdvance()
         guard session.back() else { return }
         showCurrent()
     }
@@ -539,21 +605,27 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         pendingStructure = nil
         lastAnswer = nil
         feedbackLabel.stringValue = ""
+        unlockLabel.stringValue = ""
+        cancelAutoAdvance()
         strokeTitle.stringValue = "末笔"
         structureTitle.stringValue = "结构"
         for button in strokeButtons + structureButtons { button.state = .off }
         guard let question = current else {
-            questionLabel.stringValue = "题库为空"
+            questionLabel.text = "题库为空"
             promptLabel.stringValue = kind == .roots
                 ? "缺少键位字根表，无法出字根题"
                 : "当前没有可出题的完整条目（需要 quality=full）"
             progressLabel.stringValue = session.summary
+            glyphCaption.stringValue = ""
+            glyphCaption.isHidden = true
             updateNavigation()
+            relayout()
             return
         }
         answerView.setActive(true)
         answerView.capacity = capacity(for: question)
-        questionLabel.stringValue = question.char
+        questionLabel.text = question.char
+        applyQuestionChrome()
         promptLabel.stringValue = promptText(for: question)
         if kind == .recognition {
             showExplanation(question, revealsAnswer: false)
@@ -566,7 +638,22 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         // 回看已有记录：直接呈现当时的答案与对错，并把格子填回去。
         if let entry = session.currentEntry { present(entry) }
         updateNavigation()
+        relayout()
         if kind.isTyping, session.currentEntry == nil { window?.makeFirstResponder(answerView) }
+    }
+
+    /// 题干行高：宋体 44pt 的行距约 62pt，按系统字体 40pt 的 48pt 放会截掉字形（ADR-369）。
+    private var questionHeight: CGFloat { kind == .roots ? 64 : Gap.questionHeight }
+
+    /// 题干外观（ADR-369）：字根题的题干就是一个字形（例如「口」），40pt 渲染时和系统占位方框长得一样。
+    /// 加一行「字根」标注并换用宋体，笔画粗细与衬线让它是「字」而不是「框」。
+    private func applyQuestionChrome() {
+        let isRoots = kind == .roots
+        glyphCaption.stringValue = isRoots ? "字根" : ""
+        glyphCaption.isHidden = !isRoots
+        questionLabel.font = isRoots
+            ? (NSFont(name: "Songti SC", size: 44) ?? .systemFont(ofSize: 40, weight: .medium))
+            : .systemFont(ofSize: 40, weight: .medium)
     }
 
     private func capacity(for question: PracticeQuestion) -> Int {
@@ -646,8 +733,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     @objc private func submitCode(_ text: String) {
-        guard session.currentEntry == nil, session.submitCode(text) != nil else { return }
-        finish()
+        guard session.currentEntry == nil else { return }
+        let unlockedBefore = unlockedKinds()
+        guard session.submitCode(text) != nil else { return }
+        finish(unlockedBefore: unlockedBefore)
     }
 
     @objc private func pickStroke(_ sender: NSButton) {
@@ -678,16 +767,21 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
             feedbackLabel.textColor = .secondaryLabelColor
             return
         }
-        guard session.currentEntry == nil,
-              session.submitRecognition(stroke: stroke, structure: structure) != nil else { return }
-        finish()
+        guard session.currentEntry == nil else { return }
+        let unlockedBefore = unlockedKinds()
+        guard session.submitRecognition(stroke: stroke, structure: structure) != nil else { return }
+        finish(unlockedBefore: unlockedBefore)
     }
 
-    private func finish() {
+    private func finish(unlockedBefore: Set<PracticeKind>? = nil) {
         guard let entry = session.currentEntry else { return }
         if entry.result.correct {
             present(entry)
-            announce(feedbackLabel.stringValue)
+            celebrateUnlock(before: unlockedBefore)
+            announce(unlockLabel.stringValue.isEmpty
+                ? feedbackLabel.stringValue
+                : feedbackLabel.stringValue + "。 " + unlockLabel.stringValue)
+            scheduleAutoAdvance()
             return
         }
         // 答错：清掉"已作答"指针进入重试态（历史与进度保留），抖动输入框并播报。
@@ -698,6 +792,46 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         }
         present(entry)
         announce(feedbackLabel.stringValue)
+    }
+
+    /// 答对后自动进下一题（ADR-369）：0.7 秒后进位；这期间按字母会取消定时，
+    /// 由 `onLetter` 把该字母直接算作下一题的第一个输入，不丢键。
+    private func scheduleAutoAdvance() {
+        cancelAutoAdvance()
+        guard session.currentEntry != nil, !retrying else { return }
+        let item = DispatchWorkItem { [weak self] in
+            guard let self else { return }
+            self.autoAdvanceItem = nil
+            guard self.session.currentEntry != nil, !self.retrying else { return }
+            self.nextQuestion()
+        }
+        autoAdvanceItem = item
+        DispatchQueue.main.asyncAfter(deadline: .now() + Self.autoAdvanceDelay, execute: item)
+    }
+
+    private func cancelAutoAdvance() {
+        autoAdvanceItem?.cancel()
+        autoAdvanceItem = nil
+    }
+
+    /// 作答框收到一个字母：自动进位还没触发时，这次按键直接算作下一题的第一个字母。
+    private func letterTyped(_ letter: Character) {
+        if autoAdvanceItem != nil, session.currentEntry != nil, !retrying {
+            cancelAutoAdvance()
+            nextQuestion()
+        }
+        keymapPanel.map.flash(letter)
+    }
+
+    /// 刚解锁了新题型时给一句正向反馈（ADR-369）：进度行只写门槛，达标瞬间没有鼓励。
+    private func celebrateUnlock(before: Set<PracticeKind>?) {
+        guard let before else { return }
+        let newly = unlockedKinds().subtracting(before)
+        guard !newly.isEmpty else { return }
+        let titles = PracticeKind.allCases.filter { newly.contains($0) }.map(\.title)
+        unlockLabel.stringValue = "🎉 已解锁「" + titles.joined(separator: "」「") + "」"
+        unlockLabel.setAccessibilityLabel(unlockLabel.stringValue)
+        relayout()
     }
 
     private func announce(_ text: String) {
@@ -744,8 +878,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     // MARK: 测试
 
     /// 离屏渲染（测试用）：建一个不显示的窗口承载视图（AppKit 控件需要 window 才能绘制）。
-    func renderForTesting(kind: PracticeKind, progressURL: URL, light: Bool) -> NSBitmapImageRep? {
-        stagedUnlockOverride = true
+    func renderForTesting(kind: PracticeKind, progressURL: URL, light: Bool,
+                          allUnlocked: Bool = false) -> NSBitmapImageRep? {
+        // allUnlocked 只给"看非首个题型的版式/文案"用：否则未达标的题型会被锁回第一个。
+        stagedUnlockOverride = !allUnlocked
         practiceProgress = PracticeProgress(url: progressURL)
         session = PracticeSession(kind: kind, progress: practiceProgress!)
         let view = buildContent()
@@ -753,7 +889,10 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         applyStagedUnlock()
         applyKindVisibility()
         if let question = current {
-            questionLabel.stringValue = question.char
+            answerView.capacity = capacity(for: question)
+            questionLabel.text = question.char
+            applyQuestionChrome()
+            unlockLabel.stringValue = ""
             promptLabel.stringValue = promptText(for: question)
             feedbackLabel.stringValue = kind.isTyping
                 ? "✓ 正确 · \(kind.title) \(kind.answer(for: question)?.uppercased() ?? "")"
@@ -780,11 +919,31 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     func answerForTesting(correct: Bool) -> Bool {
         guard let question = current else { return false }
         let answer = correct ? (kind.answer(for: question) ?? "") : "zzzz"
+        let unlockedBefore = unlockedKinds()
         guard let result = session.submitCode(answer) else { return false }
-        _ = result
-        finish()
+        finish(unlockedBefore: unlockedBefore)
         return result.correct
     }
+
+    /// 测试用：自动进位是否还在等（ADR-369）。
+    var autoAdvancePendingForTesting: Bool { autoAdvanceItem != nil }
+
+    /// 测试用：立刻触发自动进位（等价于 0.7 秒到点）。
+    @discardableResult
+    func flushAutoAdvanceForTesting() -> Bool {
+        guard autoAdvanceItem != nil else { return false }
+        cancelAutoAdvance()
+        guard session.currentEntry != nil, !retrying else { return false }
+        nextQuestion()
+        return true
+    }
+
+    /// 测试用：模拟作答框收到一个字母（走与真实按键相同的分支）。
+    func letterForTesting(_ letter: Character) { letterTyped(letter) }
+
+    /// 测试用：字根题的字形标注与解锁庆祝文案。
+    var glyphCaptionForTesting: String { glyphCaption.isHidden ? "" : glyphCaption.stringValue }
+    var unlockBannerForTesting: String { unlockLabel.isHidden ? "" : unlockLabel.stringValue }
 
     /// 测试用：跳到下一题（等同 → / 工具栏按钮）。
     func nextForTesting() { nextQuestion() }
