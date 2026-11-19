@@ -4,12 +4,15 @@
 
 - 更新：2026-11-18 / pi（**air 本机**）。阶段：**已发布 1.3.1 / build 44**（tag `v1.3.1`，Release、站点已上线）；
   air 已装发布产物（执行 `68f892c5…`）。本版含 ADR-365…374 共 10 项行为修复，全部真机验收通过。
-- 分支：`main` = `2915198`（PR #323–#336 已合入）；`dev` 与 `main` 同步，工作树干净，无开放 PR/issue。
+- 分支：`main` = `f9cede3`（PR #323–#337 已合入）；`dev` 与 `main` 同步后再叠验收工具改动，无开放 PR/issue。
 - 下一步：**下一版范围决策**（1.3.1 已收口，无已立项批次）；可选：13 个语境歧义 PUA、练习窗口副屏居中细节；
   P2 各项按触发条件等证据。发版前须重新绑定候选身份。
 - 版本：`Cargo.toml` = **1.3.1**、`packaging/build-number` = **44**；最新 tag **`v1.3.1`**（`677e046`）。**下次正式发版前必须重新绑定候选身份。**
 - 最近验证：`make verify` PASS（686 产物零网络符号）、`make macos-offline-tests` **70 文件 / 349 例 PASS**、
-  `make macos-ui-snapshots` PASS、`build.sh --strict` PASS（2026-11-19，ADR-375–378 之后）。
+  `make macos-ui-snapshots` PASS、`build.sh --strict` PASS（2026-11-19，ADR-375–379 之后）。
+- **已装包 = main `f9cede3` 的验收包**（1.3.1/44，ZIP `c9ded725…`，宿主执行 `3344fcdd…`，公证）；
+  真机 PASS 见报告 305（学习区 F1/F2/F3、三级题池 3,362、完整码题池 5,021、质量样本 30/30、热键全 PASS、
+  p95 7.0 ms、heap live 21.0 MiB、零外联）。**注意：这是 main push 验收包，不是发版产物**，下次发版须重绑候选身份。
 - B0 覆盖（ADR-375/377，报告 303/304）：**学习字表 = GB2312 一级 ∪ 简码表用字 = 5,021 字**（运行时 233,052 B / 46.4 B/字）；
   `full` 4,546 / `partial` 475 / `unknown` 0。**对外覆盖率口径仍是 GB2312 一级：3,429（91.3%）**，缺口是 canonical 根序。
   旧“jieba top-3,000”口径的 87.1% 与 154 unknown 已作废（频次被污染 + 396 个常用字被挤出）。
@@ -20,7 +23,7 @@
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（发布产物，2026-11-18 装机）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 回滚备份：`uninstalled/` 只保留最近两份（`bundle.R9h15t` 执行 `43a3fd8e…`、`bundle.fMBgZA` 执行 `9ef1135c…`；2026-11-18 清理了 6 份旧开发候选） |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44（main `f9cede3` 验收包）**，宿主执行 **`3344fcddce3c2b153087417cad0596163ebe8373cb950512a232a51ec71569b1`**（2026-11-19 装机，报告 305）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 回滚备份：`uninstalled/` 只保留最近两份（`bundle.R9h15t` 执行 `43a3fd8e…`、`bundle.fMBgZA` 执行 `9ef1135c…`；2026-11-18 清理了 6 份旧开发候选） |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（= 发布 ZIP 内执行，2026-11-18 19:59 用户经更新程序升级；回执 `payloadSHA256=0fbe7ff3…`、更新程序同步升到 1.3.1） | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-18T11-59-28Z-D71946AC/backup/`；更早备份见 `updates/`（约占 153 MB，可按需清理） |
 
 ## 2. 本轮完成
@@ -167,6 +170,16 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-19 / pi（air）：**PR #337 合并 + 换包复验完成（报告 305）**。`gh pr merge 337 --merge` → main `f9cede3`；
+  `dev` 快进同步；无开放 PR/issue，远端只有 `dev`/`main`（无用分支已确认无）。下载 main push 验收包
+  （run 44471741816、ZIP `c9ded725…`、执行 `3344fcdd…`）覆盖安装：config `52af2b90…` 与 2,435 行词库未变、
+  `lsof` deleted=0。真机验证：`dcg`→「码」显示**识别码 横·左右 G**（F1）；`xgu`→「母」显示 `母 X` 与
+  `简码 三 XGU`（F2/F3）；`j`→「是」显示 `简码 一 J · 三 JGH`；私有根解锁后三级简码**题库 3,362**、完整码**题库 5,021**（F5/F8）；
+  `quality-samples` **30/30**；`make macos-auto-acceptance FAST=1 KEY_SETTLE=12` **全 PASS**；`memory-gate` PASS
+  （heap live 21.0，限 24）。两处 FAIL 已归因：⌥M 是探针时序（拆开会话/12s 全对），footprint 40.3 是字表 +34% 的
+  真实 +1.8 MiB（A/B 34.1→35.9），硬顶按 ADR-379 放到 44（heap_live 门禁不变）。**未改版本号/未发版/未打 tag**；
+  pro 仍是 1.3.1/44 发版产物 `68f892c5…`。
 
 - 2026-11-19 / pi（air）：**报告 304 的 8 个问题全部处理（ADR-377/378）**。① F1：不足四码的合体字只保留
   「码长−1」个字根、尾部按识别码槽丢弃，`矿/码/妈/冯/吗/蚂/扩/旷/杉` 9 条现在都有识别码行；② F2：`母 XGUI`
