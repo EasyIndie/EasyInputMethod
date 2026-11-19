@@ -482,3 +482,16 @@ license = "CC-BY-SA-4.0"
 sha256 = "ce8648ece3e8fee916f04de239c18e50404554641ccc64b89f62deab39eacd54"
 generator = "modules/keymap/tools/build_key_roots.py"
 notes = "ADR-315 键位字根表：scheme\tletter\tzone\tkeyname\troots(频次降序)；25 键 + 万能键 Z；只做呈现，不参与判分"
+
+[[source]]
+id = "D25"
+name = "五笔86 根序判定表（项目自编，报告 306）"
+path = "data/learning/wubi86-root-order.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi86-root-order.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "4f19db74527e62d38fe59cccd695136c71e491afd8690dda99ffebdfa8789171"
+used_for = ["b0-root-order"]
+added_at = "2026-11-19"
+notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 20 条（试点 30 字样本），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"

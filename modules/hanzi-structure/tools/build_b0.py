@@ -170,6 +170,15 @@ def load_manual_decomp(path: Path) -> dict[str, list[str]]:
     return out
 
 
+def load_root_order(path: Path) -> dict[str, list[str]]:
+    """D25：五笔86 根序判定表（`data/learning/wubi86-root-order.tsv`，报告 306）。
+
+    与 `--manual-decomp` 同格式（字 -> 可读组件），但语义是**纠正 D2 的根序**而不是补漏拆；
+    来源优先级最高，pilot 报告见 `docs/reviews/306-root-order-pilot.md`。
+    """
+    return load_manual_decomp(path)
+
+
 def load_short(path: Path, width: int) -> dict[str, str]:
     out: dict[str, str] = {}
     for parts in read_rows(path):
@@ -351,6 +360,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
           supp_map: dict[tuple[str, str], str] | None = None,
           root_strokes: dict[str, list[str]] | None = None,
           manual_decomp: dict[str, list[str]] | None = None,
+          root_order: dict[str, list[str]] | None = None,
           d2_bmp_map: dict[tuple[str, str], str] | None = None,
           context_map: dict[tuple[str, str, str], str] | None = None,
           coverage_decomp: dict[str, list[str]] | None = None,
@@ -360,6 +370,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     supp_map = supp_map or {}
     root_strokes = root_strokes or {}
     manual_decomp = manual_decomp or {}
+    root_order = root_order or {}
     d2_bmp_map = d2_bmp_map or {}
     context_map = context_map or {}
     coverage_decomp = coverage_decomp or {}
@@ -483,13 +494,14 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
     # 3) 合体字
     coverage = coverage_decomp.get(char)
-    manual = manual_decomp.get(char)
-    if coverage:
+    manual = root_order.get(char) or manual_decomp.get(char)
+    if coverage and not root_order.get(char):
         glyphs = list(coverage)
         notes.append('使用 D24 覆盖拆字（cjk-decomp 树切分 + 码位键位/IDS 校验）')
     elif manual:
         glyphs = list(manual)
-        notes.append('使用 D18 完整拆字（补 D2 漏拆）')
+        notes.append('使用根序判定表（报告 306）' if root_order.get(char)
+                     else '使用 D18 完整拆字（补 D2 漏拆）')
     # 不足四码的合体字 = (码长-1) 个字根 + 识别码。D2 仍按码位给字形时，尾部多出来的就是识别码槽
     # （码 DCG：D2 给 石/马/一/私有区，而码只有 3 位 = 石+马 + 识别码 G）。多留一个就会教出
     # 不存在的字根、并让「识别码」整行消失（报告 304 F1）。
@@ -703,6 +715,8 @@ def main() -> int:
                         help='N2 成字字根真实笔顺（D18，可选）')
     parser.add_argument('--manual-decomp',
                         help='N4 D2 漏拆字的完整拆字（D18，可选）')
+    parser.add_argument('--root-order',
+                        help='D25 五笔86 根序判定表（报告 306，可选；优先级高于 --manual-decomp）')
     parser.add_argument('--pua-d2-bmp',
                         help='D2 BMP PUA→字根核验表（按 PUA+键位，可选）')
     parser.add_argument('--pua-context',
@@ -736,6 +750,8 @@ def main() -> int:
         paths['root_strokes'] = Path(args.root_strokes)
     if args.manual_decomp:
         paths['manual_decomp'] = Path(args.manual_decomp)
+    if args.root_order:
+        paths['root_order'] = Path(args.root_order)
     if args.pua_d2_bmp:
         paths['pua_d2_bmp'] = Path(args.pua_d2_bmp)
     if args.pua_context:
@@ -769,6 +785,7 @@ def main() -> int:
                 if args.pua_supplementary else {})
     root_strokes = load_root_strokes(Path(args.root_strokes)) if args.root_strokes else {}
     manual_decomp = load_manual_decomp(Path(args.manual_decomp)) if args.manual_decomp else {}
+    root_order = load_root_order(Path(args.root_order)) if args.root_order else {}
     d2_bmp_map = load_pua_d2_bmp(Path(args.pua_d2_bmp)) if args.pua_d2_bmp else {}
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
     coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
@@ -803,7 +820,8 @@ def main() -> int:
                             'quality': 'unknown', 'notes': ['缺全码']})
             continue
         glyphs = radicals.get(char) or []
-        if not glyphs and char not in coverage_decomp and char not in manual_decomp:
+        if not glyphs and char not in coverage_decomp and char not in manual_decomp \
+                and char not in root_order:
             entries.append({'char': char, 'code': code, 'scheme': 'wubi86',
                             'standardVersion': 'wubi86-1.0', 'class': None, 'componentsSource': None,
                             'components': [], 'keys': [], 'strokes': None,
@@ -821,6 +839,7 @@ def main() -> int:
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
                              ids=ids, supp_map=supp_map,
                              root_strokes=root_strokes, manual_decomp=manual_decomp,
+                             root_order=root_order,
                              d2_bmp_map=d2_bmp_map, context_map=context_map,
                              coverage_decomp=coverage_decomp,
                              root_inventory=root_inventory, aliases=aliases))
