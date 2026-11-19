@@ -14940,16 +14940,18 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
    "氵",
    "亠",
-   "厶"
+   "厶",
+   "儿"
   ],
   "keys": [
    "i",
    "y",
-   "c"
+   "c",
+   "q"
   ],
   "strokes": null,
   "strokesSource": null,
@@ -14966,9 +14968,10 @@
   "short3": "iyc",
   "pinyin": "liu",
   "frequency": 9559,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "字根数 3 与码长 4 对不上，无法判定识别码"
+   "使用根序判定表（报告 306）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -37995,12 +37998,12 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
    "一",
    "乚",
-   null,
-   "丶"
+   "丶",
+   "乛"
   ],
   "keys": [
    "g",
@@ -38016,21 +38019,16 @@
   "structureConflict": false,
   "ids": "⿱一⿴⿰𠄌㇈丶",
   "idsStructure": "上下",
-  "positionMismatch": [
-   3,
-   4
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "short3": "gny",
   "pinyin": "wa",
   "frequency": 3228,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "标准字根/键位不符：第 3 个（None，键 y）、第 4 个（丶，键 n）",
-   "占位字根：第 3 个（键 y）",
+   "使用根序判定表（报告 306）",
    "字根已够四码，无识别码"
   ]
  },

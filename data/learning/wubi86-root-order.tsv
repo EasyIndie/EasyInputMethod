@@ -51,7 +51,7 @@
 除	阝 人 禾	bwt	bwty	左右	捺	fix	308	阝+余(人+禾) + Y（捺·左右）
 官	宀 コ 丨 コ	pnhn	pnhn	上下		fix-medium	312	宀+コ+丨+コ（U+F0043 在 pua-inventory 标为 コ，n:37；PNHN 四位自证）
 管	⺮ 宀 コ コ	tpnn	tpnn	上下		fix-medium	312	⺮+官，五根取一三末
-流			iycq			blocked	307	㐬 的内部（厶/川）取码未定
+流	氵 亠 厶 儿	iycq	iycq	左右		fix-medium	315	氵+㐬(亠+厶+儿)；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 藏			adnt			blocked	307	臧 内部的取码未定
 跳	口 止 儿 儿	khiq	khiq	左右		fix	313	足(口+止)+兆(儿+儿)，四根取尽（KHIQ）
 求	十 氺 丶	fiy	fiyi	杂合	捺	fix	310	十+氺+丶 + I（捺·杂合）；FIYI 自证
@@ -101,7 +101,7 @@
 咬	口 六 乂	kuq	kuqy	左右	捺	fix	307	口+交(六+乂) + Y（捺·左右）
 校	木 六 乂	suq	suqy	左右	捺	fix	307	木+交 + Y
 补	衤 丷 卜	puh	puhy	左右	捺	fix-medium	312	衤+丷+卜 + Y（捺·左右）；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
-瓦			gnyn			blocked	307	第 4 位不是可推导识别码，笔画序缺证据
+瓦	一 乚 丶 乛	gnyn	gnyn	上下		fix-medium	316	IDS ⿱一⿴⿰𠄌㇈丶：一+乚+丶+乛（GNYN 位序自证）
 斜	人 禾 丷 十	wtuf	wtuf	左右		fix	308	余(人+禾)+斗(丷+十)
 徐	彳 人 禾	twt	twty	左右	捺	fix	308	彳+余 + Y
 涂	氵 人 禾	iwt	iwty	左右	捺	fix	308	氵+余 + Y
@@ -109,11 +109,11 @@
 脊	丷 人 月	iwe	iwef	上下	横	fix-medium	311	丷+人+月 + F（横·上下）
 鞭	廿 十 亻 乂	afwq	afwq	左右		fix	310	革(廿+十)+便(亻+一+日+乂)，六根取一三末
 勒	廿 十 力	afl	afln	左右	折	fix	310	革(廿+十)+力 + N（折·左右）
-慌			nayq			blocked	307	亡 的取码（亠 y / 匚?）无法自证
+慌	忄 艹 亠 儿	nayq	nayq	左右		fix-medium	316	忄+荒，五根取一三末（末根是儿）；R2 只允许 Q 键字根，Q 键上对应「川形末段」的是儿
 赚	贝 䒑 彐 亦	muvo	muvo	左右		fix	313	贝+兼(䒑+彐+亦)，四根取尽（MU VO）
 嫌	女 䒑 彐 亦	vuvo	vuvo	左右		fix	313	女+兼(䒑+彐+亦)
 棺	木 宀 コ コ	spnn	spnn	左右		fix-medium	312	木+官
-疏			nhyq			blocked	307	𤴔/㐬 的取码无法自证
+疏	乛 止 亠 儿	nhyq	nhyq	左右		fix-medium	315	𤴔(乛+止)+㐬，五根取一三末；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 柔	マ 卩 丿 木	cbts	cbts	上下		fix	308	矛(マ+卩+丿)+木，四根取尽（CBTS 自证）
 添	氵 一 大 心	igdn	igdn	左右		fix	310	氵+忝(一+大+心)；第 4 位 N 上是心，不是识别码
 罪	罒 三 〢 三	ldjd	ldjd	上下		fix	307	罒+非(三+〢+三)，〢 在 J 键
@@ -155,10 +155,10 @@
 荡	艹 氵 𠃌 ⺁	ainr	ainr	上下		fix-medium	312	艹+汤，五根取一三末；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）
 繁	𠂉 母 一 小	txgi	txgi	上下		fix	308	每+攵+糸，五根取一三末（TXGI）
 摘	扌 六 冂 古	rumd	rumd	左右		fix	311	扌+啇(六+冂+古)
-兜			qrnq			blocked	307	上部（白/コ/儿）取码与 Q/R 位无法自证
+兜	⺈ 白 コ 儿	qrnq	qrnq	上下		fix	315	IDS ⿱⿲丿𠃊白コ儿：⺈+白+コ+儿（QRNQ 四位自证）
 予	マ 卩	cb	cbj	上下	竖	fix	308	マ+卩 + J（竖·上下）；卩 在 B 键，CBJ 自证
-伞			wuhj			blocked	307	第二位 U（丷）之后 H/J 两码无对应字根
-荒			aynq			blocked	307	亡 的取码（亠 y / 匚）无法自证
+伞	人 丷 丨	wuh	wuhj	上下	竖	fix	315	IDS ⿻个䒑：人+丷+亍末竖 + J（竖·上下）
+荒	艹 亠 乚 儿	aynq	aynq	上下		fix-medium	315	艹+亡(亠+乚)+巟末段；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 烫	氵 𠃌 ⺁ 火	inro	inro	上下		fix-medium	312	汤(氵+𠃌+⺁)+火；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）；ㄋ 按 d2-glyph-aliases 归一为 𠃌
 辣	立 一 口 小	ugki	ugki	左右		fix-medium	311	辛(立+一)+束(口+小)
 揉	扌 マ 卩 木	rcbs	rcbs	左右		fix	308	扌+柔(マ+卩+木)
@@ -197,11 +197,11 @@
 窥	宀 八 二 儿	pwfq	pwfq	上下		fix	307	穴(宀+八)+规(二+人? 见) ⇒ 宀/八/二/儿
 狭	犭 丿 一 人	qtgw	qtgw	左右		fix	307	犭+夹 五根取一三末：犭/丿/一/人（与「狡」互证）
 畅	日 丨 𠃌 ⺁	jhnr	jhnr	左右		fix-medium	312	申(日+丨)+𠃓(𠃌+⺁)；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）；ㄋ 按 d2-glyph-aliases 归一为 𠃌
-硫			dycq			blocked	307	㐬 的内部（厶/川）取码未定（同「流」）
+硫	石 亠 厶 儿	dycq	dycq	左右		fix-medium	315	石+㐬；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 茅	艹 マ 卩 丿	acbt	acbt	上下		fix	308	艹+矛(マ+卩+丿)，四根取尽（ACBT 自证）
 裕	衤 丷 八 口	puwk	puwk	左右		fix-medium	313	衤+丷+谷(八+口)，四根取尽
 预	マ 卩 丆 贝	cbdm	cbdm	左右		fix	308	予(マ+卩)+页(丆+贝)
-鹅			trng			blocked	307	我的取码（丿/扌/乙）与 T/R/N 位无自证组合
+鹅	丿 扌 乚 一	trng	trng	左右		fix	316	我(丿+扌+乚)+鸟，七根取一三末（末根是鸟的收笔一）
 薛			awnu			blocked	307	辟 的内部（尸/口/辛）取码与 W/N 位不符
 溅	氵 贝 戋	img	imgt	左右	撇	fix	313	氵+贱(贝+戋)：戋 在 G 键；三根 + T（撇·左右）
 褪	衤 丷 彐 辶	puvp	puvp	左右		fix-medium	312	衤+丷+退(彐+辶)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
@@ -210,7 +210,7 @@
 揽	扌 〢 丿 儿	rjtq	rjtq	左右		fix	311	扌+览，五根取一三末
 羌	䒑 三 乚	udn	udnb	上下	折	fix-medium	313	䒑+三+乚 + B（折·上下）
 裤	衤 丷 广 车	puyl	puyl	左右		fix-medium	312	衤+丷+库(广+车)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
-梳			sycq			blocked	307	㐬 的内部取码未定（同「流」）
+梳	木 亠 厶 儿	sycq	sycq	左右		fix-medium	315	木+㐬；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 矛	マ 卩 丿	cbt	cbtr	上下	撇	fix	308	マ+卩+丿 + R（撇·上下）
 啄	口 豕 丶	key	keyy	左右	捺	fix	310	口+豖(豕+丶) + Y（捺·左右）
 廉	广 䒑 彐 亦	yuvo	yuvo	半包围		fix	313	广+兼(䒑+彐+亦)
@@ -242,7 +242,7 @@
 豢	䒑 大 豕	ude	udeu	上下	捺	fix-medium	307	龹(䒑+大)+豕 + U（捺·上下）
 蹄	口 止 六 丨	khuh	khuh	左右		fix-medium	309	足(口+止)+帝，五根取一三末
 褂	衤 丷 土 卜	pufh	pufh	左右		fix-medium	312	衤+丷+卦(土+卜)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
-谎			yayq			blocked	307	荒(艹+亡+川) 的收尾与 Y/Q 位无法自证
+谎	讠 艹 亠 儿	yayq	yayq	左右		fix-medium	315	讠+荒，五根取一三末（末根是儿）；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 衬	衤 丷 寸	puf	pufy	左右	捺	fix-medium	312	衤+丷+寸 + Y；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
 袄	衤 丷 丿 大	putd	putd	左右		fix-medium	312	衤+丷+夭(丿+大)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
 怜	忄 人 丶 マ	nwyc	nwyc	左右		fix	309	忄+令
@@ -257,7 +257,7 @@
 啼	口 六 冖 丨	kuph	kuph	左右		fix-medium	309	口+帝
 伶	亻 人 丶 マ	wwyc	wwyc	左右		fix	309	亻+令
 骄			ctdj			blocked	307	乔 的收尾与 D/J 位不符（J 是竖·左右）
-琉			gycq			blocked	307	㐬 的内部（厶/川）取码未定
+琉	王 亠 厶 儿	gycq	gycq	左右		fix-medium	315	王+㐬；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 贸	卯 丶 刀 贝	qyvm	qyvm	上下		fix-medium	313	卯+丶+刀+贝（QYVM 四位自证；刀 位待复核）
 傲	亻 主 ⺈ 攵	wgqt	wgqt	左右		fix-medium	309	亻+敖(主+⺈+攵)
 琢	王 豕 丶 丶	geyy	geyy	左右		fix-medium	307	王+豖(豕+丶+丶)
@@ -295,10 +295,10 @@
 卯			qtbh			blocked	307	丿/卩 的取码顺序与 Q/T/B 位无法自证
 镰	钅 广 䒑 亦	qyuo	qyuo	左右		fix	313	钅+廉，五根取一三末
 墒	土 六 冂 口	fumk	fumk	左右		fix	311	土+商，五根取一三末
-戍			dynt			blocked	307	戊/丶/戈 的组合与 Y/N/T 位无法自证
+戍	厂 丶 乚 丿	dynt	dynt	杂合		fix-medium	315	戊(厂+乚+丿)+丶，按 DYNT 位序取 厂/丶/乚/丿
 榴	木 卯 丶 田	sqyl	sqyl	左右		fix	314	木+留(卯+丶+刀+田)，五根取一三末；PUA 0xf005a 由「卵/贸」同位证为 卯
 敖	主 ⺈ 攵	gqt	gqty	左右	捺	fix-medium	309	龶(主)+⺈+攵 + Y（捺·左右）
-戊			dnyt			blocked	307	戊 的丿/丶 顺序与 N/Y/T 位无法自证
+戊	厂 乚 丶 丿	dnyt	dnyt	杂合		fix-medium	315	IDS ⿺⿻㇂⿸厂丿丶：厂+㇂(乚)+丶+丿（DNYT 四位自证）
 赘	主 ⺈ 攵 贝	gqtm	gqtm	上下		fix-medium	309	敖+贝
 玲	王 人 丶 マ	gwyc	gwyc	左右		fix	309	王+令(人+丶+マ)
 袜	衤 丷 一 木	pugs	pugs	左右		fix-medium	312	衤+丷+末(一+木)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
@@ -308,7 +308,7 @@
 抒	扌 マ 卩	rcb	rcbh	左右	竖	fix	308	扌+予 + H（竖·左右）
 砾	石 ⺈ 小	dqi	dqiy	左右	捺	fix	309	石+乐(⺈+小) + Y（捺·左右）
 烁	火 ⺈ 小	oqi	oqiy	左右	捺	fix	309	火+乐 + Y
-蔬			anhq			blocked	307	疏/㐬 的内部取码未定
+蔬	艹 乛 止 儿	anhq	anhq	上下		fix-medium	315	艹+疏，六根取一三末；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 貉	爫 𠂢 夂 口	eetk	eetk	左右		fix	309	豸+各(夂+口)
 羚	䒑 丰 人 マ	udwc	udwc	左右		fix	309	羊(䒑+丰)+令，五根取一三末
 袒	衤 丷 日 一	pujg	pujg	左右		fix-medium	312	衤+丷+旦(日+一)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
