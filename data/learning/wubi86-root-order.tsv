@@ -121,3 +121,51 @@
 烂	火 丷 二	ouf	oufg	左右	横	fix	307	火+兰(丷+二) + G（横·左右）
 商			umwk			blocked	307	第 1 位 U 上的字形不确定（亠 在 Y），码与字根表冲突
 滴			iumd			blocked	307	氵+啇 五根取四时顺序与 IUMD 不自洽
+赋	贝 一 弋 止	mgah	mgah	左右		fix-medium	307	贝+武(一+弋+止)
+扭	扌 乛 土	rnf	rnfg	左右	横	fix-medium	307	扌+丑(乛+土) + G（横·左右）
+评	讠 一 丷 丨	yguh	yguh	左右		fix	307	讠+平(一+丷+丨)：平 收在竖，不是十
+砰	石 一 丷 丨	dguh	dguh	左右		fix	307	石+平
+坪	土 一 丷 丨	fguh	fguh	左右		fix	307	土+平
+腾	月 䒑 大 马	eudc	eudc	左右		fix-medium	307	月+𢏚(䒑+大)+马
+歪	一 小 一 止	gigh	gigh	上下		fix	307	不(一+小)+正(一+止)
+良	丶 彐 衣	yve	yvei	杂合	捺	fix-medium	307	丶+艮(彐+衣) + I（捺·杂合），与「退」同族
+恭	龷 八 心	awn	awnu	上下	捺	fix	307	共(龷+八)+心 + U（捺·上下）
+拦	扌 丷 二	ruf	rufg	左右	横	fix	307	扌+兰(丷+二) + G（横·左右）
+菲	艹 三 〢 三	adjd	adjd	上下		fix	307	艹+非(三+〢+三)
+舆	舁 二 车 八	wflw	wflw	上下		fix-medium	307	舁+车(二+车)+八，五根取一三末
+援	扌 爫 二 又	refc	refc	左右		fix	307	扌+爰(爫+二+又)
+勿	勹 ⺁	qr	qre	杂合	撇	fix-medium	307	勹+⺁ + E（撇·杂合），与「易/忽」互证
+否	一 小 口	gik	gikf	上下	横	fix	307	不(一+小)+口 + F（横·上下）
+侠	亻 一 丷 人	wguw	wguw	左右		fix	307	亻+夹(一+丷+人)
+挽	扌 ⺈ 口 儿	rqkq	rqkq	左右		fix	307	扌+免(⺈+口+儿)
+胶	月 六 乂	euq	euqy	左右	捺	fix	307	月+交(六+乂) + Y（捺·左右）
+效	六 乂 攵	uqt	uqty	左右	捺	fix	307	交(六+乂)+攵 + Y（捺·左右）
+伪	亻 丶 力 丶	wyly	wyly	左右		fix	307	亻+为(丶+力+丶)
+唇	厂 二 衣 口	dfek	dfek	杂合		fix	307	辰(厂+二+衣底)+口
+贷	亻 弋 贝	wam	wamu	上下	捺	fix	307	代(亻+弋)+贝 + U（捺·上下）
+叙			wtcy			blocked	307	余 的 3–4 位在 T/Y 键，字形只有 一/木（同「除/徐/涂」）
+敏			txgt			blocked	307	每 的笔画取码与 X/G 位冲突（母 族，同「每」）
+袍			puqn			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+袖			pumg			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+裙			puvk			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+衫			puet			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+熬			gqto			blocked	307	敖 的内部（士/方/攵）取码与 G/Q 位不符
+姆			vxgu			blocked	307	母 族：母 的笔画序列与字根取码冲突
+酶			sgtu			blocked	307	母 族：每 的底部（母 X）与码位 4 的 U 冲突
+荡			ainr			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
+繁			txgi			blocked	307	母 族：每 的笔画取码冲突
+摘			rumd			blocked	307	啇 五根取四与 RUMD 不自洽（同「滴」）
+兜			qrnq			blocked	307	上部（白/コ/儿）取码与 Q/R 位无法自证
+予			cbj			blocked	307	第二位落 B 键（了/⺋ 之争），无自证组合
+伞			wuhj			blocked	307	第二位 U（丷）之后 H/J 两码无对应字根
+荒			aynq			blocked	307	亡 的取码（亠 y / 匚）无法自证
+烫			inro			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
+辣			ugki			blocked	307	辛+束 的收尾与 I 位不符（I 是捺·杂合，辣是左右）
+揉			rcbs			blocked	307	矛 的拆法未定（同「柔」）
+肠			enrt			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
+鼎			hndn			blocked	307	上部 目/丆 之后 N/D 两码无对应字根
+豫			cbqe			blocked	307	予 族：第二位落 B 键，无自证组合
+序			ycbk			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争），无自证组合
+貌			eerq			blocked	307	豸 的取法与 EE 双 E 无法自证
+搅			ripq			blocked	307	觉 五根取四（丷/冖/冂/儿）与 RIPQ 不自洽
+途			wtpi			blocked	307	余 族：3–4 位在 T/Y 键，字形只有 一/木

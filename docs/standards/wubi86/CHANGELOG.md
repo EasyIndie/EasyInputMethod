@@ -3,10 +3,10 @@
 ## 1.0（草案，2026-11-19，ADR-381）
 
 - 首版规范：数据模型（`roots` / `chars` / `shortcodes`）、规则 **R1–R10**、识别码网格、一致性等级 **L1–L4**。
-- 范围：五笔86；GB2312-1980 一级 3,755 字（另含学习字表并集 5,021 字），`full` 3,514（93.6%，报告 307 逐批判定后），`partial` 241。
+- 范围：五笔86；GB2312-1980 一级 3,755 字（另含学习字表并集 5,021 字），`full` 3,536（94.2%，报告 307 逐批判定后），`partial` 219。
 - 数据来源：D2（MIT）+ 项目自编（D18）与标准 v1 校验；不新增来源、不含私有区字形。
 - 工具：`tools/wubi86-std-bundle.py`（生成数据包 + SHA256SUMS）、`tools/wubi86-std-check.py`（L1–L4 判定）。
-- 已知限制：`partial` 241 条待 86 canonical 根序（`docs/tasks/T-ROOT86.md`；试点 30 抽 20，报告 306）；`radical-char-exception` 仅 `母 XGUI` 一条；
+- 已知限制：`partial` 219 条待 86 canonical 根序（`docs/tasks/T-ROOT86.md`；试点 30 抽 20，报告 306）；`radical-char-exception` 仅 `母 XGUI` 一条；
   4 码字"3 字根+识别码"与"4 字根"的字形歧义按规则与码位判定，无法区分时保持 `partial`。
 - 待办：`wangma-diff.md`（与王码官方口径的逐字差异清单，抽样 50–100 字）、扩到 GB2312 二级（未立项）。
 
