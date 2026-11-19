@@ -432,16 +432,15 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     # 2a) 字根本身就是标准字根（`--root-inventory`），且全码 = 报户口 + 三个笔画键：
     #     D2 没把整个字当一个根时（如 马 CNNG、竹 TTGH、豕 EGTY），仍按 R9 判定。
     own_keys = root_inventory.get(char) if root_inventory else None
-    if own_keys and len(code) == 4 and code[0] in own_keys \
+    if own_keys and char in root_strokes and len(code) == 4 and code[0] in own_keys \
             and all(c in STROKE_KEY for c in code[1:]):
-        strokes_only = [STROKE_GLYPH[c] for c in code[1:]]
         entry['class'] = 'radical-char'
         entry['components'] = [char]
         entry['keys'] = [code[0]]
-        entry['strokes'] = list(root_strokes.get(char, strokes_only))
-        entry['strokesSource'] = 'D18' if char in root_strokes else 'code'
-        entry['strokesKind'] = 'writing' if char in root_strokes else 'code'
-        entry['componentsSource'] = 'D18' if char in root_strokes else 'root-inventory'
+        entry['strokes'] = list(root_strokes[char])
+        entry['strokesSource'] = 'D18'
+        entry['strokesKind'] = 'writing'
+        entry['componentsSource'] = 'D18'
         entry['quality'] = 'full'
         notes.append('成字字根：报户口 ' + code[0].upper() + '；后三位为笔画键（R9）')
         return finish(entry)

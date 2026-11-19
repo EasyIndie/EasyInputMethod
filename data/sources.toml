@@ -304,10 +304,10 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "7b0892dbb493487138bd0cd61b01376e69a93d556280a9d9f127f3e9249f0431"
+sha256 = "95e9d4cc1d53c3bff2596b49cf340aa43f423850c0e7514b608b1a98a0fc1fa1"
 used_for = ["b0-root-strokes", "b0-complete-decomposition"]
 added_at = "2026-11-14"
-notes = "ADR-355/报告 281：56 个 B0 成字字根 + 5 类基本笔画的真实书写笔顺（笔画用 一丨丿丶乙），另含 8 个 D2 漏拆字的完整拆字 data/learning/wubi86-complete-decomp.tsv（SHA 391052b5…）。笔数用 Unicode Unihan kTotalStrokes 校验（Unicode License V3，构建期临时下载、不入库）；不复制 Arphic/KanjiVG 字形数据；项目自编、可人工复核"
+notes = "ADR-355/报告 281：56 个 B0 成字字根 + 5 类基本笔画的真实书写笔顺（笔画用 一丨丿丶乙），新增 马/竹/豕 三条成字字根笔顺（报告 312）；另含 8 个 D2 漏拆字的完整拆字 data/learning/wubi86-complete-decomp.tsv（SHA 391052b5…）。笔数用 Unicode Unihan kTotalStrokes 校验（Unicode License V3，构建期临时下载、不入库）；不复制 Arphic/KanjiVG 字形数据；项目自编、可人工复核"
 
 [[source]]
 id = "D24"
@@ -491,7 +491,7 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "5358fd066a2ce827884abf404ad526d9f5d46d6b38bcd23f614269cfc41e3523"
+sha256 = "875bfea573f72692ea554959077d89199664d15535c670adf8d5e6974e85d3b1"
 used_for = ["b0-root-order"]
 added_at = "2026-11-19"
-notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 321 条（fix 249 / blocked 72，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
+notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 321 条（fix 292 / blocked 29，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
