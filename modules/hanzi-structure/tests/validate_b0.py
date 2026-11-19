@@ -15,7 +15,7 @@ from pathlib import Path
 SCHEMA_VERSION = 7  # v7：统一拆字标准 v1（ADR-358）
 FIELDS = {'char', 'code', 'scheme', 'standardVersion', 'class', 'componentsSource', 'components', 'keys', 'strokes',
           'strokesSource', 'strokesKind', 'structure', 'structureSource', 'structureConflict',
-          'ids', 'idsStructure', 'positionMismatch', 'recognition', 'short1', 'short2',
+          'ids', 'idsStructure', 'positionMismatch', 'recognition', 'short1', 'short2', 'short3',
           'pinyin', 'frequency', 'quality', 'notes'}
 IDS_OPS = set('⿰⿱⿲⿳⿴⿵⿶⿷⿸⿹⿺⿻')
 STROKE_GLYPHS = set('一丨丿丶乙')
