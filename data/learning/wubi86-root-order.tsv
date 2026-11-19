@@ -59,7 +59,7 @@
 球	王 十 氺 丶	gfiy	gfiy	左右		fix	310	王+求(十+氺+丶)
 交	六 乂	uq	uqu	上下	捺	fix	307	六(亠+八)+乂 + U（捺·上下）；交 UQU 自证
 旁	六 冖 方	upy	upyb	上下	折	fix	317	六+冖+方 + B（折·上下）；方 的末笔按 YYGN 是折，不是撇
-率			yxif			blocked	307	第 3 位 I（氵/小/丷）在字形上无对应；冫 在 U 键，与码位冲突
+率	亠 幺 氺 十	yxif	yxif	上下		fix-medium	318	亠+幺+氺+十；第 3 位 PUA 0xf002a 由同键位样本证为 氺（率的四点为氺）
 暖	日 爫 二 又	jefc	jefc	左右		fix	307	日+爰(爫+二+又)
 腿	月 彐 衣 辶	evep	evep	左右		fix	307	月+退：艮 收在 衣+辶
 易	日 勹 ⺁	jqr	jqrr	上下	撇	fix-medium	307	第 3 位是 D2 未解码 PUA（R 键），取 ⺁，待字形核验
@@ -88,8 +88,8 @@
 乐	⺈ 小	qi	qii	杂合	捺	fix-medium	307	⺈+小 + I（捺·杂合）
 马			cnng			blocked	307	成字字根四码（报户口+三个笔画），需 build 侧规则而非数据行
 竹			ttgh			blocked	307	成字字根四码（报户口+笔画），需 build 侧规则而非数据行
-迎			qbpk			blocked	307	首根 卬 不在 241 条标准字根清单（Q 键），需先定字根身份
-印			qgbh			blocked	307	卬 不在标准字根清单（Q 键），且 卩 取码未定
+迎	卯 卩 辶	qbp	qbpk	杂合	竖	fix	318	卯+卩+辶 + K（竖·杂合）；首位 PUA 0xf005a 由 仰/抑 同位证为 卯
+印	卯 一 卩	qgb	qgbh	左右	竖	fix	318	卯+一+卩 + H（竖·左右）；同上 PUA 同位证
 毒	主 母 一	gxg	gxgu	上下	捺	fix	308	龶(主)+母+一 + U（捺·上下）
 寨	宀 二 〢 木	pfjs	pfjs	上下		fix	307	宀+井(二+〢)+八+木，五根取一三末
 塞	宀 二 〢 土	pfjf	pfjf	上下		fix	307	同上（末根土）
@@ -292,7 +292,7 @@
 痞	疒 一 小 口	ugik	ugik	上下		fix	307	疒+否(一+小+口)
 抨	扌 一 丷 丨	rguh	rguh	左右		fix	307	扌+平(一+丷+丨)
 馏	⺈ 乚 卯 田	qnql	qnql	左右		fix-medium	307	饣(⺈+乚)+留(卯+田)
-卯			qtbh			blocked	307	丿/卩 的取码顺序与 Q/T/B 位无法自证
+卯	卯 丿 卩	qtb	qtbh	左右	竖	fix-medium	318	报户口 卯 + 丿 + 卩 + H（竖·左右）；PUA 0xf005a 在 仰/抑 已解为 卯，卯 本身按 R9-bis 取"报户口+部件尾"
 镰	钅 广 䒑 亦	qyuo	qyuo	左右		fix	313	钅+廉，五根取一三末
 墒	土 六 冂 口	fumk	fumk	左右		fix	311	土+商，五根取一三末
 戍	厂 丶 乚 丿	dynt	dynt	杂合		fix-medium	315	戊(厂+乚+丿)+丶，按 DYNT 位序取 厂/丶/乚/丿

@@ -417,7 +417,7 @@
 土	ffff	full			
 菜	aesu	full	艹:a 爫:e 木:s	U|捺|上下	-/ae/aes
 现	gmqn	full	王:g ㄇ:m 儿:q	N|折|左右	-/gm/gmq
-率	yxif	partial	亠:y ㄠ:x		-/yx/yxi
+率	yxif	full	亠:y 幺:x 氺:i 十:f		-/yx/yxi
 火	oooo	full			-/-/ooo
 桥	stdj	full	木:s 丿:t 大:d	J|竖|上下	-/-/std
 股	emcy	full	月:e 几:m 又:c	Y|捺|左右	-/-/emc
@@ -730,7 +730,7 @@
 素	gxiu	full	主:g ㄠ:x 小:i	U|捺|上下	-/-/gxi
 扑	rhy	full	扌:r 卜:h	Y|捺|左右	
 赶	fhfk	full	土:f 龰:h 干:f	K|竖|杂合	
-迎	qbpk	partial		K|竖|杂合	-/-/qbp
+迎	qbpk	full	卯:q 卩:b 辶:p	K|竖|杂合	-/-/qbp
 宝	pgyu	full	宀:p 王:g 丶:y	U|捺|上下	-/-/pgy
 果	jsi	full	日:j 木:s	I|捺|杂合	-/js/-
 贵	khgm	full	口:k 丨:h 一:g 贝:m		
@@ -905,7 +905,7 @@
 遇	jmhp	full	日:j 冂:m 丨:h 辶:p		-/jm/-
 谷	wwkf	full	八:w 人:w 口:k	F|横|上下	-/-/wwk
 猛	qtbl	full	犭:q ノ:t 子:b 皿:l		
-印	qgbh	partial		H|竖|左右	-/-/qgb
+印	qgbh	full	卯:q 一:g 卩:b	H|竖|左右	-/-/qgb
 异	naj	full	巳:n 廾:a	J|竖|上下	
 拖	rtbn	full	扌:r 𠂉:t 也:b	N|折|左右	-/-/rtb
 粮	oyve	full	米:o 丶:y 彐:v	E|撇|杂合	-/-/oyv
@@ -3319,7 +3319,7 @@
 讷	ymwy	full	讠:y 冂:m 人:w	Y|捺|左右	-/-/ymw
 亥	yntw	full	亠:y ㄥ:n 丿:t 人:w		
 傣	wdwi	full	亻:w 三:d 人:w 氺:i		-/-/wdw
-卯	qtbh	partial		H|竖|左右	
+卯	qtbh	full	卯:q 丿:t 卩:b	H|竖|左右	
 庖	yqnv	full	广:y 勹:q 巳:n	V|折|杂合	-/-/yqn
 绦	xtsy	full	纟:x 夂:t 木:s	Y|捺|左右	-/-/xts
 膊	egef	full	月:e 一:g 月:e 寸:f		

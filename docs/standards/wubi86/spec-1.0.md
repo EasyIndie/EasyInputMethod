@@ -74,6 +74,9 @@
    `code[1:]` MUST 全为笔画键（`g h t y n`）；单笔画字用 **R9a**：`码 = 键 ×2 + "ll"`。
    **R9e 官方特例**：`class = radical-char-exception` 时只要求 `code[0]` 等于报户口键，
    其余位 MUST 在 `evidence` 写明"官方特例取码，未由笔顺推导"（当前仅 `母 XGUI`）。
+   **R9-bis 部件尾**（ADR-383）：`class = radical-char` 时，`code[1:]` 也 MAY 是
+   "该字实际含有的标准部件序列 + 识别码"，前提是每个部件都在 `roots` 表内、键位逐位对齐、
+   识别码可推导，并在 `evidence` 写明"报户口+部件尾"（当前仅 `卯 QTBH`）。
 10. **R10 不冒充**：任何条目 MUST NOT 把 `radical-char-exception` 标成 `compound` 以绕过 R2/R3。
 
 **PUA/占位规则**：解析私有区字形时，若某字的字形序列长度 = `code` 长度且末位不是该键的标准字根，末位 MUST 视为识别码槽
