@@ -43,21 +43,21 @@
 忽	勹 ⺁ 心	qrn	qrnu	上下	捺	fix-medium	307	勿(勹+⺁)+心，三根 + U（捺·上下）
 被			puhc			blocked	307	衤 的第二位落在 U 键，是 D2 的未解码 PUA（`pua-inventory.tsv` 里 unresolved）
 初			puvn			blocked	307	同上（衤 的 U 位 PUA），另 刀 尾在 N 位
-较			luqy			blocked	307	交 的拆法未定（乂 q / 父 w 之争）
+较	车 六 乂	luq	luqy	左右	捺	fix	307	车+交 + Y
 每			txgu			blocked	307	母 的笔画序列与字根取码冲突（TXGU 第 3 位 G）
 既			vcaq			blocked	307	第 3 位 A（弋/戈）在字形上无对应部件
-杨			snrt			blocked	307	𠃓 尾 NRT 在标准字根表里无对应（场/杨/肠 同族卡点）
-场			fnrt			blocked	307	𠃓 尾 NRT 同「杨」，标准字根表无对应
-除			bwty			blocked	307	余 的 WTU 拆分（人 + 禾?）与码位 4 的 Y 不自洽
-官			pnhn			blocked	307	官下部 㠯 的拆分与 IDS 结构（上下）冲突
-管			tpnn			blocked	307	同「官」：官下部 㠯 的拆分与 IDS 结构冲突
+杨			snrt			blocked	307	第 3 位是 D2 未解码 PUA（R 键），同「场」
+场			fnrt			blocked	307	第 3 位是 D2 未解码 PUA（R 键），𠃓 的中段字形缺证据
+除			bwty			blocked	307	余 的 3–4 位在 T/Y 键，字形只有 一/木，与码表口径不符
+官			pnhn			blocked	307	第 3 位是 D2 未解码 PUA（N 键），官下部 㠯 缺字形
+管			tpnn			blocked	307	第 3 位是 D2 未解码 PUA（N 键），同「官」
 流			iycq			blocked	307	㐬 的内部（厶/川）取码未定
 藏			adnt			blocked	307	臧 内部的取码未定
 跳			khiq			blocked	307	兆 的 IQV 拆分未定
 求			fiyi			blocked	307	首根落在 F 键（十/寸/雨），字形上找不到对应部件
 救			fiyt			blocked	307	同「求」：首根落在 F 键但字形无对应部件
 球			gfiy			blocked	307	同「求」：首根落在 F 键但字形无对应部件
-交			uqu			blocked	307	亠 + 乂(q) 还是 父(w)，无自证组合
+交	六 乂	uq	uqu	上下	捺	fix	307	六(亠+八)+乂 + U（捺·上下）；交 UQU 自证
 旁			upyb			blocked	307	第 4 位 B（了/凵/卩/子/耳/阝）在字形上无对应
 率			yxif			blocked	307	第 3 位 I（氵/小/丷）在字形上无对应；冫 在 U 键，与码位冲突
 暖	日 爫 二 又	jefc	jefc	左右		fix	307	日+爰(爫+二+又)
@@ -91,20 +91,20 @@
 迎			qbpk			blocked	307	首根 卬 不在 241 条标准字根清单（Q 键），需先定字根身份
 印			qgbh			blocked	307	卬 不在标准字根清单（Q 键），且 卩 取码未定
 毒			gxgu			blocked	307	母 的笔画序列与字根取码冲突（与「每」同族）
-寨			pfjs			blocked	307	井/八 的拆分与 J 键冲突（寨/塞/赛/寒 同族）
-塞			pfjf			blocked	307	井/八 的拆分与 J 键冲突（同「寨」）
-赛			pfjm			blocked	307	井/八 的拆分与 J 键冲突（同「寨」）
-寒			pfju			blocked	307	井/八 的拆分与 J 键冲突（同「寨」）
-汤			inrt			blocked	307	𠃓 尾 NRT 无标准字根对应（场/杨/扬/肠 同族）
-扬			rnrt			blocked	307	𠃓 尾 NRT 无标准字根对应（同「汤」）
+寨	宀 二 〢 木	pfjs	pfjs	上下		fix	307	宀+井(二+〢)+八+木，五根取一三末
+塞	宀 二 〢 土	pfjf	pfjf	上下		fix	307	同上（末根土）
+赛	宀 二 〢 贝	pfjm	pfjm	上下		fix	307	同上（末根贝）
+寒	宀 二 〢 冫	pfju	pfju	上下		fix	307	同上（末根冫）
+汤			inrt			blocked	307	第 3 位是 D2 未解码 PUA（R 键），同「场」
+扬			rnrt			blocked	307	第 3 位是 D2 未解码 PUA（R 键），同「场」
 帝			upmh			blocked	307	冖/巾/丨 的取舍无法由码位自证
-咬			kuqy			blocked	307	交 的拆法未定（乂/父）
-校			suqy			blocked	307	交 的拆法未定（乂/父，同「咬」）
+咬	口 六 乂	kuq	kuqy	左右	捺	fix	307	口+交(六+乂) + Y（捺·左右）
+校	木 六 乂	suq	suqy	左右	捺	fix	307	木+交 + Y
 补			puhy			blocked	307	衤 第二位是 D2 未解码 PUA（U 键），见 pua-inventory
 瓦			gnyn			blocked	307	第 4 位不是可推导识别码，笔画序缺证据
-斜			wtuf			blocked	307	余 的 WTU 拆分未定（斜/除/徐/涂 同族）
-徐			twty			blocked	307	余 的 WTU 拆分未定（同「斜」）
-涂			iwty			blocked	307	余 的 WTU 拆分未定（同「斜」）
+斜			wtuf			blocked	307	余 的 3–4 位在 T/Y 键，字形只有 一/木，与码表口径不符
+徐			twty			blocked	307	余 的 3–4 位在 T/Y 键，字形只有 一/木，与码表口径不符
+涂			iwty			blocked	307	余 的 3–4 位在 T/Y 键，字形只有 一/木，与码表口径不符
 嘉			fkuk			blocked	307	壴 的内部（士口丷一）取码与 K 位不符
 脊			iwef			blocked	307	人/月 的取码与 I/W 位无法自证
 鞭			afwq			blocked	307	革 的拆分与 F 位不符（革 = 廿+口 才落 A）
@@ -112,7 +112,7 @@
 慌			nayq			blocked	307	亡 的取码（亠 y / 匚?）无法自证
 赚			muvo			blocked	307	兼 的收尾是 八(w) 而码位是 O，冲突
 嫌			vuvo			blocked	307	兼 的收尾是 八(w) 与码位 O 冲突（同「赚」）
-棺			spnn			blocked	307	官 下部 㠯 的拆分与结构标注冲突（官/管/棺 同族）
+棺			spnn			blocked	307	第 3 位是 D2 未解码 PUA（N 键），同「官」
 疏			nhyq			blocked	307	𤴔/㐬 的取码无法自证
 柔			cbts			blocked	307	矛 的 86 拆法（マ/乛/亅/丿）无自证组合
 添			igdn			blocked	307	忝 的收尾（心/⺗）与码位 N 冲突
