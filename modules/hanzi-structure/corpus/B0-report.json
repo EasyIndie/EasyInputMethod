@@ -85,7 +85,7 @@
     },
     "root_order": {
       "path": "../../data/learning/wubi86-root-order.tsv",
-      "sha256": "7bf11457e6437277d00ad3f7643be44c58efc5e50acf54857b3967b49d839ade"
+      "sha256": "8b24aa304fc4eec6b5e1902f2b184d32a49e6380e5a7132ce666fd3f3d4ff39d"
     },
     "code_errata": {
       "path": "../../data/learning/wubi86-code-errata.tsv",

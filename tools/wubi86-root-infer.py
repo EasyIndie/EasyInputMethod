@@ -28,6 +28,8 @@ LEDGER = ROOT / 'build/b0/B0.json'
 INVENTORY = ROOT / 'data/learning/wubi86-root-inventory.tsv'
 IDS_PATH = ROOT / 'data/sources/ids_lv1.txt'
 
+STROKE_GLYPHS = set('一丨丿丶乙乛亅ノ')
+
 STRUCT_OP = {'⿰': '左右', '⿲': '左右', '⿱': '上下', '⿳': '上下'}
 MODIFIER = set('⿴⿵⿶⿷⿸⿹⿺⿻⿼⿽⿾⿿')
 
@@ -146,9 +148,19 @@ def main() -> int:
     ids_of = load_ids()
 
     def expand(glyph: str, depth: int = 0) -> list[str] | None:
-        """叶子 → 根序：已知 full 字用其根序；标准字根用它自己；否则递归它的 IDS（限深）。"""
-        if glyph in rootseq and rootseq[glyph]:
-            return list(rootseq[glyph])
+        """叶子 → 根序。
+
+        规则：**成字字根/键名字在合体字里算一个根**（它们的根序是「自己 + 笔画」，那是单字取码，
+        不是部件拆法）。否则用该字的根序；再否则递归 IDS。
+        """
+        seq_of = rootseq.get(glyph)
+        if seq_of:
+            tail = seq_of[1:]
+            # 成字字根的尾巴若是「纯笔画」（一丨丿丶乙 等），合体内部算一个根；
+            # 若尾巴里含真部件（如 卯=[卯,丿,卩]），说明它是 R9-bis 的"报户口+部件尾"，要展开。
+            if seq_of[0] == glyph and tail and all(t in STROKE_GLYPHS for t in tail):
+                return [glyph]
+            return list(seq_of)
         if glyph in keys_of:
             return [glyph]
         if glyph in KNOWN_PARTS:
@@ -211,6 +223,11 @@ def main() -> int:
                 continue
             cand.append(f'识别码{strokes[0]}')
             derivation += f'；末笔 {strokes[0]}（{structure}）⇒ 识别码 {last}'
+        if len(cand) != len(code):
+            stats['长度不符'] += 1
+            rows.append((char, code, ' '.join(cand), '', structure, '', 'fail',
+                         f'根数+识别码 {len(cand)} 与码长 {len(code)} 不符（{derivation}）'))
+            continue
         # 校验键位
         keys = []
         bad = []
