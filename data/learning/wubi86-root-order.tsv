@@ -164,8 +164,8 @@
 揉			rcbs			blocked	307	矛 的拆法未定（同「柔」）
 肠			enrt			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
 鼎			hndn			blocked	307	上部 目/丆 之后 N/D 两码无对应字根
-豫			cbqe			blocked	307	予 族：第二位落 B 键，无自证组合
-序			ycbk			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争），无自证组合
+豫			cbqe			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争），无自证组合
+序			ycbk			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争）（了/卩/⺋ 之争），无自证组合
 貌			eerq			blocked	307	豸 的取法与 EE 双 E 无法自证
 搅			ripq			blocked	307	觉 五根取四（丷/冖/冂/儿）与 RIPQ 不自洽
 途			wtpi			blocked	307	余 族：3–4 位在 T/Y 键，字形只有 一/木
@@ -195,12 +195,12 @@
 痕	疒 彐 衣	uve	uvei	杂合	捺	fix	307	疒+艮(彐+衣) + I（捺·杂合）
 验	马 人 一 丷	cwgi	cwgi	左右		fix	307	马+佥(人+一+丷)
 窥	宀 八 二 儿	pwfq	pwfq	上下		fix	307	穴(宀+八)+规(二+人? 见) ⇒ 宀/八/二/儿
-狭			qtgw			blocked	307	第 2 位 T 上是「丿」，与夹(一+丷+人)的取码不一致
+狭	犭 丿 一 人	qtgw	qtgw	左右		fix	307	犭+夹 五根取一三末：犭/丿/一/人（与「狡」互证）
 畅			jhnr			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
 硫			dycq			blocked	307	㐬 的内部（厶/川）取码未定（同「流」）
 茅			acbt			blocked	307	矛 族：第二位落 B 键（了/⺋ 之争）
 裕			puwk			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
-预			cbdm			blocked	307	予 族：第二位落 B 键
+预			cbdm			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争）
 鹅			trng			blocked	307	我的取码（丿/扌/乙）与 T/R/N 位无自证组合
 薛			awnu			blocked	307	辟 的内部（尸/口/辛）取码与 W/N 位不符
 溅			imgt			blocked	307	贱 的戋(g)+戈? 与 M/G/T 位无自证组合
@@ -260,3 +260,63 @@
 琉			gycq			blocked	307	㐬 的内部（厶/川）取码未定
 贸			qyvm			blocked	307	卯/刀/贝 的取码与 Q/Y 位无法自证
 傲			wgqt			blocked	307	敖(士+方+攵) 的内部取码与 G/Q 位不符
+琢	王 豕 丶 丶	geyy	geyy	左右		fix-medium	307	王+豖(豕+丶+丶)
+狡	犭 丿 六 乂	qtuq	qtuq	左右		fix	307	犭+交，五根取一三末：犭/丿/六/乂
+骚	马 又 丶 虫	ccyj	ccyj	左右		fix-medium	307	马+蚤(又+丶+虫)
+盂	一 十 皿	gfl	gflf	上下	横	fix	307	于(一+十)+皿 + F（横·上下）
+曳	日 匕	jx	jxe	杂合	撇	fix-medium	307	日+匕 + E（撇·杂合）
+驹	马 勹 口	cqk	cqkg	左右	横	fix	307	马+句(勹+口) + G（横·左右）
+艰	又 彐 衣	cve	cvey	左右	捺	fix	307	又+艮(彐+衣) + Y（捺·左右）
+骏	马 厶 八 攵	ccwt	ccwt	左右		fix	307	马+夋(厶+八+攵)
+荚	艹 一 丷 人	aguw	aguw	上下		fix	307	艹+夹(一+丷+人)
+铰	钅 六 乂	quq	quqy	左右	捺	fix	307	钅+交 + Y
+剔	日 勹 ⺁ 刂	jqrj	jqrj	左右		fix	307	易(日+勹+⺁)+刂
+匆	勹 ⺁ 丶	qry	qryi	杂合	捺	fix	307	勹+⺁+丶 + I（捺·杂合）
+膀	月 丷 冖 方	eupy	eupy	左右		fix	307	月+旁
+芋	艹 一 十	agf	agfj	上下	竖	fix	307	艹+于(一+十) + J（竖·上下）
+饺	⺈ 乚 六 乂	qnuq	qnuq	左右		fix-medium	307	饣(⺈+乚)+交
+苹	艹 一 丷 丨	aguh	aguh	上下		fix	307	艹+平(一+丷+丨)
+诽	讠 三 〢 三	ydjd	ydjd	左右		fix	307	讠+非(三+〢+三)
+啡	口 三 〢 三	kdjd	kdjd	左右		fix	307	口+非
+徘	彳 三 〢 三	tdjd	tdjd	左右		fix	307	彳+非
+厩	厂 彐 厶 儿	dvcq	dvcq	左右		fix	307	厂+既(彐+厶+儿)
+溉	氵 彐 厶 儿	ivcq	ivcq	左右		fix	307	氵+既
+骋	马 由 一 乛	cmgn	cmgn	左右		fix-medium	307	马+甹(由+一+乙)
+钮	钅 乛 土	qnf	qnfg	左右	横	fix	307	钅+丑(乛+土) + G
+稼	禾 宀 豕	tpe	tpey	左右	捺	fix	307	禾+家(宀+豕) + Y（捺·左右）
+戌	厂 一 乛 丿	dgnt	dgnt	杂合		fix-medium	307	戊(厂+乛+丿)+一
+冕	曰 ⺈ 口 儿	jqkq	jqkq	上下		fix	307	曰+免(⺈+口+儿)
+娩	女 ⺈ 口 儿	vqkq	vqkq	左右		fix	307	女+免(⺈+口+儿)
+耪	三 小 丷 方	diuy	diuy	左右		fix	307	耒(三+小)+旁(丷+冖+方) 取一三末
+铆	钅 卯 丿 卩	qqtb	qqtb	左右		fix-medium	307	钅+卯+丿+卩（卯 是 Q 键字根）
+痞	疒 一 小 口	ugik	ugik	上下		fix	307	疒+否(一+小+口)
+抨	扌 一 丷 丨	rguh	rguh	左右		fix	307	扌+平(一+丷+丨)
+馏	⺈ 乚 卯 田	qnql	qnql	左右		fix-medium	307	饣(⺈+乚)+留(卯+田)
+卯			qtbh			blocked	307	丿/卩 的取码顺序与 Q/T/B 位无法自证
+镰			qyuo			blocked	307	兼 的收尾是 八(w) 与码位 O 冲突
+墒			fumk			blocked	307	商 族：第 1 位 U 上的字形不确定（亠 在 Y）
+戍			dynt			blocked	307	戊/丶/戈 的组合与 Y/N/T 位无法自证
+榴			sqyl			blocked	307	留 的上部（卯/⺈）与 Q 位取码不符
+敖			gqty			blocked	307	敖(士+方+攵) 的内部取码与 G/Q 位不符
+戊			dnyt			blocked	307	戊 的丿/丶 顺序与 N/Y/T 位无法自证
+赘			gqtm			blocked	307	敖(士+方+攵) 的内部取码与 G/Q 位不符（同「敖」，再加贝）
+玲			gwyc			blocked	307	令 的收尾（丶/乛）与 Y/C 位不符
+袜			pugs			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+孵			qytb			blocked	307	卵/孚 的取码与 Q/Y/T/B 位无法自证
+缆			xjtq			blocked	307	览 的内部（〢/丿/见）与 J/T/Q 位不符
+褥			pudf			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+抒			rcbh			blocked	307	予 族：第二位落 B 键（了/卩/⺋ 之争）
+砾			dqiy			blocked	307	乐 的取码（⺈/小/丶）与 I/Y 位不符
+烁			oqiy			blocked	307	乐 的取码（⺈/小/丶）与 I/Y 位不符（同「砾」）
+蔬			anhq			blocked	307	疏/㐬 的内部取码未定
+貉			eetk			blocked	307	豸 的取法与 EE 双 E 无法自证
+羚			udwc			blocked	307	令 的收尾与 W/C 位不符
+袒			pujg			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+豺			eeft			blocked	307	豸 族：与 EE 双 E 的取法无法自证
+缔			xuph			blocked	307	帝 族：亠/冖/巾/丨 的取舍无法自证
+滁			ibwt			blocked	307	余 族：3–4 位在 T/Y 键，字形只有 一/木
+眺			hiqn			blocked	307	兆（IQV）的拆分未定
+藐			aeeq			blocked	307	豸 族：与 EE 双 E 的取法无法自证
+疡			unre			blocked	307	𠃓 中段是未解码 PUA（R 键）
+豹			eeqy			blocked	307	豸 的取法与 EE 双 E 无法由字形自证（豸/貌/貉/豺/藐 同族）
+眠			hnan			blocked	307	民 的内部（コ/弋/乚）与 A 位组合无证据（民/抿 同族）
