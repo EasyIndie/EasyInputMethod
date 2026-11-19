@@ -491,7 +491,7 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "9ab0057c0deaf71315b7ba7f5d911067cc0e24784b0bdf1c9c1e6786461053b3"
+sha256 = "6dfded58d33d98f724b2f8c682acff27b556c429a0c1750bc0051540457f92f4"
 used_for = ["b0-root-order"]
 added_at = "2026-11-19"
 notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 321 条（fix 316 / blocked 5，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
@@ -504,7 +504,7 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "8cc00a828120c2a3c4d5e01e288c831da70153bdf4caaf0c41e263cdb4cfc6d9"
+sha256 = "0ae313a91d06a5ba2bca9338731556a79c76ad4a4905eb160c2339278da43e8b"
 used_for = ["b0-code-errata"]
 added_at = "2026-11-19"
 notes = "ADR-384/报告 318：只登记「同族 ≥3 字互证 + 规则完整解释」能证明的错码（酶 sgtu→sgtx（status=pending：需引擎码表同步后才生效，见 ADR-384））；不改 D1/D9 源文件，由 build_b0.py --code-errata 覆盖"

@@ -6,7 +6,7 @@
 
 [trim_rule]
 single_rows = 27823（全量保留）
-errata_applied = 1（D26 码表勘误，ADR-384；与教学数据同一份表）
+errata_applied = 0（D26 码表勘误，ADR-384；与教学数据同一份表）
 phrase_rows_full = 337344（含D16新组合）
 phrase_limit = 20000（0 = 全量；否则前 N 基础词+D15训练词+D16组合词；新词权重1，等权按 code/text 升序）
 phrase_rows_kept = 20189

@@ -151,7 +151,7 @@
 衫	衤 丷 彡	pue	puet	左右	撇	fix-medium	313	衤+丷+彡 + T（撇·左右）
 熬	主 ⺈ 攵 灬	gqto	gqto	上下		fix-medium	309	敖(主+⺈+攵)+灬
 姆	女 母 一 丷	vxgu	vxgu	左右		fix-medium	308	女+母+一+丷（VXGU 的第 4 位 U 是母内的两点）
-酶			sgtu			blocked	319	码表末位 u 无字形对应（母 在 X）；同族互证应作 sgtx，勘误见 D26（pending，需引擎码表同步）
+酶			sgtx			blocked	320	标准码 SGTU 已由外部 86 资料确认（2026-11-19），但我们的字根表推不出第 4 位 U（母 在 X 键）⇒ 属「模型缺规则」，不是码表错；勘误已撤销
 荡	艹 氵 𠃌 ⺁	ainr	ainr	上下		fix-medium	312	艹+汤，五根取一三末；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）
 繁	𠂉 母 一 小	txgi	txgi	上下		fix	308	每+攵+糸，五根取一三末（TXGI）
 摘	扌 六 冂 古	rumd	rumd	左右		fix	311	扌+啇(六+冂+古)
@@ -163,7 +163,7 @@
 辣	立 一 口 小	ugki	ugki	左右		fix-medium	311	辛(立+一)+束(口+小)
 揉	扌 マ 卩 木	rcbs	rcbs	左右		fix	308	扌+柔(マ+卩+木)
 肠	月 𠃌 ⺁ 丿	enrt	enrt	左右		fix-medium	312	月+𠃓(𠃌+⺁+丿)；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）；ㄋ 按 d2-glyph-aliases 归一为 𠃌
-鼎			hndn			blocked	307	上部 目/丆 之后 N/D 两码无对应字根
+鼎	目 乚 丆 乛	hndn	hndn	左右		fix-medium	320	外部 86 资料确认 HNDN，末字根为 乛；位序 目/乚/丆/乛 与码位 H/N/D/N 一致（中间两段逐笔仍建议人工复核）
 豫	マ 卩 ⺈ 豕	cbqe	cbqe	杂合		fix	308	予(マ+卩)+象(⺈+豕)
 序	广 マ 卩	ycb	ycbk	杂合	竖	fix	308	广+予(マ+卩) + K（竖·杂合）
 貌	爫 𠂢 白 儿	eerq	eerq	左右		fix	309	豸(爫+𠂢)+皃(白+儿)
@@ -202,7 +202,7 @@
 裕	衤 丷 八 口	puwk	puwk	左右		fix-medium	313	衤+丷+谷(八+口)，四根取尽
 预	マ 卩 丆 贝	cbdm	cbdm	左右		fix	308	予(マ+卩)+页(丆+贝)
 鹅	丿 扌 乚 一	trng	trng	左右		fix	316	我(丿+扌+乚)+鸟，七根取一三末（末根是鸟的收笔一）
-薛			awnu			blocked	307	辟 的内部（尸/口/辛）取码与 W/N 位不符
+薛	艹 亻 コ 辛	awnu	awnu	上下		fix-medium	320	外部 86 资料确认 AWNU；下部件按「𠂤 的拆分」取 亻+コ，末根是 辛(u)，与码位一致
 溅	氵 贝 戋	img	imgt	左右	撇	fix	313	氵+贱(贝+戋)：戋 在 G 键；三根 + T（撇·左右）
 褪	衤 丷 彐 辶	puvp	puvp	左右		fix-medium	312	衤+丷+退(彐+辶)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
 谦	讠 䒑 彐 亦	yuvo	yuvo	左右		fix	313	讠+兼(䒑+彐+亦)

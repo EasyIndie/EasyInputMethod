@@ -100,7 +100,7 @@ class RootOrderTests(unittest.TestCase):
         for parts in entries:
             char, wrong, right, family, status, evidence = (
                 parts[0], parts[1], parts[2], parts[3], parts[4], parts[5])
-            self.assertIn(status, ('active', 'pending'), f'{char} 的 status 非法')
+            self.assertIn(status, ('active', 'pending', 'withdrawn'), f'{char} 的 status 非法')
             self.assertEqual(len(char), 1)
             self.assertIn(char, self.codes, f'{char} 不在码表里')
             self.assertNotEqual(wrong, right, f'{char} 的勘误前后相同')
