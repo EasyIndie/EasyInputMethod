@@ -169,3 +169,51 @@
 貌			eerq			blocked	307	豸 的取法与 EE 双 E 无法自证
 搅			ripq			blocked	307	觉 五根取四（丷/冖/冂/儿）与 RIPQ 不自洽
 途			wtpi			blocked	307	余 族：3–4 位在 T/Y 键，字形只有 一/木
+颊	一 丷 人 贝	guwm	guwm	左右		fix	307	夹(一+丷+人)+贝
+栏	木 丷 二	suf	sufg	左右	横	fix	307	木+兰(丷+二) + G（横·左右）
+葱	艹 勹 ⺁ 心	aqrn	aqrn	上下		fix-medium	307	艹+匆(勹+⺁)+心
+辱	厂 二 衣 寸	dfef	dfef	上下		fix	307	辰(厂+二+衣底)+寸
+腻	月 弋 二 贝	eafm	eafm	左右		fix	307	月+贰(弋+二+贝)
+凹	凵 冂 一	mmg	mmgd	杂合	横	fix-medium	307	凵+冂+一 + D（横·杂合）
+检	木 人 一 丷	swgi	swgi	左右		fix-medium	307	木+佥(人+一+丷)
+磅	石 丷 冖 方	dupy	dupy	左右		fix	307	石+旁
+匪	匚 三 〢 三	adjd	adjd	上下		fix	307	匚+非(三+〢+三)
+陕	阝 一 丷 人	bguw	bguw	左右		fix	307	阝+夹(一+丷+人)
+畏	田 一 衣	lge	lgeu	上下	捺	fix-medium	307	田+一+衣底 + U（捺·上下）
+赫	土 亦 土 亦	fofo	fofo	左右		fix	307	赤+赤（赤=土+亦）
+斌	文 一 弋 止	ygah	ygah	左右		fix	307	文+武(一+弋+止)
+凸	丨 一 冂 一	hgmg	hgmg	杂合		fix	307	丨+一+冂+一
+骇	马 亠 乛 人	cynw	cynw	左右		fix-medium	307	马+亥(亠+乛+人)
+呸	口 一 小 一	kgig	kgig	左右		fix	307	口+丕(一+小+一)
+宇	宀 一 十	pgf	pgfj	上下	竖	fix	307	宀+于(一+十) + J（竖·上下）
+函	了 氺 凵	bib	bibk	杂合	竖	fix	307	了+氺+凵 + K（竖·杂合），与「涵」同族
+甭	一 小 用	gie	giej	上下	竖	fix	307	不(一+小)+用 + J（竖·上下）
+绞	纟 六 乂	xuq	xuqy	左右	捺	fix	307	纟+交(六+乂) + Y
+辉	⺌ 儿 冖 车	iqpl	iqpl	左右		fix	307	光(⺌+儿)+军(冖+车)
+郊	六 乂 阝	uqb	uqbh	左右	竖	fix	307	交(六+乂)+阝 + H（竖·左右）
+辰	厂 二 衣	dfe	dfei	杂合	捺	fix	307	厂+二+衣底 + I（捺·杂合）
+痕	疒 彐 衣	uve	uvei	杂合	捺	fix	307	疒+艮(彐+衣) + I（捺·杂合）
+验	马 人 一 丷	cwgi	cwgi	左右		fix	307	马+佥(人+一+丷)
+窥	宀 八 二 儿	pwfq	pwfq	上下		fix	307	穴(宀+八)+规(二+人? 见) ⇒ 宀/八/二/儿
+狭			qtgw			blocked	307	第 2 位 T 上是「丿」，与夹(一+丷+人)的取码不一致
+畅			jhnr			blocked	307	𠃓 中段是未解码 PUA（R 键），同「场」
+硫			dycq			blocked	307	㐬 的内部（厶/川）取码未定（同「流」）
+茅			acbt			blocked	307	矛 族：第二位落 B 键（了/⺋ 之争）
+裕			puwk			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+预			cbdm			blocked	307	予 族：第二位落 B 键
+鹅			trng			blocked	307	我的取码（丿/扌/乙）与 T/R/N 位无自证组合
+薛			awnu			blocked	307	辟 的内部（尸/口/辛）取码与 W/N 位不符
+溅			imgt			blocked	307	贱 的戋(g)+戈? 与 M/G/T 位无自证组合
+褪			puvp			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+谦			yuvo			blocked	307	兼 的收尾是 八(w) 与码位 O 冲突
+甫			gehy			blocked	307	一+用+丶 的收尾与 H 位（竖）不符
+揽			rjtq			blocked	307	览 的内部（〢/丿/见）取码与 J/T 位不符
+羌			udnb			blocked	307	三/丷/儿 的取码顺序与 U/D/N 位不符
+裤			puyl			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+梳			sycq			blocked	307	㐬 的内部取码未定（同「流」）
+矛			cbtr			blocked	307	矛 族：第二位落 B 键，且 亅/丿 取舍未定
+啄			keyy			blocked	307	豖(豕+丶) 的收尾与 Y/Y 两位不符
+廉			yuvo			blocked	307	兼 的收尾是 八(w) 与码位 O 冲突
+蒂			auph			blocked	307	帝 族：冖/巾/丨 的取舍无法自证
+裸			pujs			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+褐			pujn			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
