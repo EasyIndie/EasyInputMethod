@@ -304,10 +304,10 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "7b0892dbb493487138bd0cd61b01376e69a93d556280a9d9f127f3e9249f0431"
+sha256 = "95e9d4cc1d53c3bff2596b49cf340aa43f423850c0e7514b608b1a98a0fc1fa1"
 used_for = ["b0-root-strokes", "b0-complete-decomposition"]
 added_at = "2026-11-14"
-notes = "ADR-355/报告 281：56 个 B0 成字字根 + 5 类基本笔画的真实书写笔顺（笔画用 一丨丿丶乙），另含 8 个 D2 漏拆字的完整拆字 data/learning/wubi86-complete-decomp.tsv（SHA 391052b5…）。笔数用 Unicode Unihan kTotalStrokes 校验（Unicode License V3，构建期临时下载、不入库）；不复制 Arphic/KanjiVG 字形数据；项目自编、可人工复核"
+notes = "ADR-355/报告 281：56 个 B0 成字字根 + 5 类基本笔画的真实书写笔顺（笔画用 一丨丿丶乙），新增 马/竹/豕 三条成字字根笔顺（报告 312）；另含 8 个 D2 漏拆字的完整拆字 data/learning/wubi86-complete-decomp.tsv（SHA 391052b5…）。笔数用 Unicode Unihan kTotalStrokes 校验（Unicode License V3，构建期临时下载、不入库）；不复制 Arphic/KanjiVG 字形数据；项目自编、可人工复核"
 
 [[source]]
 id = "D24"
@@ -482,3 +482,29 @@ license = "CC-BY-SA-4.0"
 sha256 = "ce8648ece3e8fee916f04de239c18e50404554641ccc64b89f62deab39eacd54"
 generator = "modules/keymap/tools/build_key_roots.py"
 notes = "ADR-315 键位字根表：scheme\tletter\tzone\tkeyname\troots(频次降序)；25 键 + 万能键 Z；只做呈现，不参与判分"
+
+[[source]]
+id = "D25"
+name = "五笔86 根序判定表（项目自编，报告 306）"
+path = "data/learning/wubi86-root-order.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi86-root-order.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "903238d811af1dae6f5e663231e5edbafa8deac4f6a18a41b506756fad686a8e"
+used_for = ["b0-root-order"]
+added_at = "2026-11-19"
+notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 451 条（fix 449 / blocked 2，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
+
+[[source]]
+id = "D26"
+name = "五笔86 码表勘误表（项目自编）"
+path = "data/learning/wubi86-code-errata.tsv"
+url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi86-code-errata.tsv"
+upstream = "EasyIndie/EasyInputMethod contributors"
+license = "CC-BY-SA-4.0"
+risk = "low"
+sha256 = "0ae313a91d06a5ba2bca9338731556a79c76ad4a4905eb160c2339278da43e8b"
+used_for = ["b0-code-errata"]
+added_at = "2026-11-19"
+notes = "ADR-384/报告 318：只登记「同族 ≥3 字互证 + 规则完整解释」能证明的错码（酶 sgtu→sgtx（status=pending：需引擎码表同步后才生效，见 ADR-384））；不改 D1/D9 源文件，由 build_b0.py --code-errata 覆盖"

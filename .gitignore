@@ -49,3 +49,4 @@ docs/experiments/runs/sessions/
 __pycache__/
 *.py[cod]
 tools/eval/last-run.json
+/build/

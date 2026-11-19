@@ -15,7 +15,7 @@ KEYS="${KEYS:-wq nihao xuexi .}"
 SEGMENTS="${SEGMENTS:-basic|${KEYS};long-code|trnt wqiy khk;paging|wq = = - .}" 
 THRESHOLD_MS="${THRESHOLD_MS:-16}"
 RSS_LIMIT_MB="${RSS_LIMIT_MB:-30}"
-FOOTPRINT_HARD_MB="${FOOTPRINT_HARD_MB:-40}"
+FOOTPRINT_HARD_MB="${FOOTPRINT_HARD_MB:-44}"  # ADR-379：字表 3,755→5,021（+34%）实测 34.1→35.9 MiB；按同样相对余量放宽，heap_live 门禁（24 MiB）不变
 OUT="${OUT:-/tmp/lampyris-perf-$(date -u +%Y%m%dT%H%M%SZ)}"
 mkdir -p "$OUT"
 # 报告229：OUT 可能是相对路径，而测速 app 由 `open -n` 拉起、工作目录是 /，

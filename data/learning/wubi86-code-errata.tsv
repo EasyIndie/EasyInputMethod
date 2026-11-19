@@ -1,0 +1,7 @@
+# 五笔86 码表勘误表（项目自编，CC-BY-SA-4.0；ADR-384、报告 318）。
+# 只登记「同族互证 + 规则完整解释」能证明的码表错误；status=active 才生效。
+# 生效前提：引擎核心码表（data/generated/wubi86-core.tsv）与教学数据（B0）必须同时切换，否则破坏「学 = 用」。
+# 教训（2026-11-19）：同族互证会**假阳性**。酶 曾被据此判为 sgtu→sgtx，但外部 86 版资料确认 SGTU 正确，
+# 说明"我们的拆字模型缺一条规则"不等于"码表错"。勘误必须再有外部资料佐证才能 active。
+# char	erroneous	corrected	family	status	evidence
+酶	sgtu	sgtx	每	withdrawn	同族（每/海/梅/悔/霉）曾推出 sgtx，但外部 86 版资料确认 SGTU 正确 ⇒ 撤销勘误；真实缺口是我们的拆字模型解释不了第 4 位 U（母 在 X）

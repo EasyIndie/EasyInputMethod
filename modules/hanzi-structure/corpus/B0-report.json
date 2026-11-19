@@ -4,40 +4,40 @@
   "allCodes": false,
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
-  "standardMismatchEntries": 59,
+  "standardMismatchEntries": 1,
   "quality": {
-    "full": 930,
-    "partial": 66,
+    "full": 995,
+    "partial": 1,
     "unknown": 4
   },
   "classes": {
-    "radical-char": 42,
-    "compound": 931,
+    "radical-char": 44,
+    "compound": 929,
     "key-name": 23,
     "None": 4
   },
-  "withRecognition": 660,
+  "withRecognition": 653,
   "componentsSource": {
-    "D18": 50,
-    "D2": 913,
+    "D18": 117,
+    "D2": 846,
     "D24": 10
   },
   "puaMap": "corpus/pua-map.json",
-  "placeholderEntries": 23,
-  "placeholderComponents": 23,
+  "placeholderEntries": 0,
+  "placeholderComponents": 0,
   "recognitionSlotPua": 15,
-  "withStrokes": 42,
-  "withWritingStrokes": 42,
+  "withStrokes": 44,
+  "withWritingStrokes": 44,
   "structureCoverage": 989,
   "structureSource": {
-    "recognition": 660,
-    "IDS": 329
+    "recognition": 653,
+    "IDS": 336
   },
-  "structureConflicts": 65,
-  "manualDecomp": 50,
+  "structureConflicts": 60,
+  "manualDecomp": 117,
   "withIds": 990,
   "idsFilled": 1,
-  "positionMismatchEntries": 59,
+  "positionMismatchEntries": 1,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",
@@ -77,11 +77,19 @@
     },
     "root_strokes": {
       "path": "../../data/learning/wubi86-root-strokes.tsv",
-      "sha256": "7b0892dbb493487138bd0cd61b01376e69a93d556280a9d9f127f3e9249f0431"
+      "sha256": "95e9d4cc1d53c3bff2596b49cf340aa43f423850c0e7514b608b1a98a0fc1fa1"
     },
     "manual_decomp": {
       "path": "../../data/learning/wubi86-complete-decomp.tsv",
       "sha256": "391052b5602479b5fb2ce33b6813f9d1104ca50e58824368bde98db2c42ce240"
+    },
+    "root_order": {
+      "path": "../../data/learning/wubi86-root-order.tsv",
+      "sha256": "903238d811af1dae6f5e663231e5edbafa8deac4f6a18a41b506756fad686a8e"
+    },
+    "code_errata": {
+      "path": "../../data/learning/wubi86-code-errata.tsv",
+      "sha256": "0ae313a91d06a5ba2bca9338731556a79c76ad4a4905eb160c2339278da43e8b"
     },
     "pua_d2_bmp": {
       "path": "corpus/pua-d2-bmp.tsv",
@@ -101,10 +109,10 @@
     },
     "glyph_aliases": {
       "path": "corpus/d2-glyph-aliases.tsv",
-      "sha256": "d9b33de7ac6c2087cbf172c07c47bcff35ed1457603cb507b97789cf84ef23cf"
+      "sha256": "2f4f54fc5d60e9765c95f0ab37a2f90e8a97d9b8bff1f64b139ef6ab4a2919e6"
     }
   },
   "coverageSet": null,
   "generator": "modules/hanzi-structure/tools/build_b0.py",
-  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --pua-map corpus/pua-map.json --pua-supplementary corpus/pua-supplementary.tsv --pua-d2-bmp corpus/pua-d2-bmp.tsv --pua-context corpus/pua-context.tsv --coverage-decomp ../../data/learning/wubi86-cjkdecomp-coverage.tsv --root-inventory ../../data/learning/wubi86-root-inventory.tsv --root-strokes ../../data/learning/wubi86-root-strokes.tsv --manual-decomp ../../data/learning/wubi86-complete-decomp.tsv --glyph-aliases corpus/d2-glyph-aliases.tsv --readable-keys ../../data/learning/wubi86-readable-keys.tsv --ids ../../data/sources/ids_lv1.txt --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --short3 ../../data/sources/wubi86-level3-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
+  "command": "python3 tools/build_b0.py --codes ../../data/generated/wubi86-single.tsv --radicals ../../data/sources/wubi-lex-86.txt --pua-map corpus/pua-map.json --pua-supplementary corpus/pua-supplementary.tsv --pua-d2-bmp corpus/pua-d2-bmp.tsv --pua-context corpus/pua-context.tsv --coverage-decomp ../../data/learning/wubi86-cjkdecomp-coverage.tsv --root-inventory ../../data/learning/wubi86-root-inventory.tsv --root-strokes ../../data/learning/wubi86-root-strokes.tsv --manual-decomp ../../data/learning/wubi86-complete-decomp.tsv --root-order ../../data/learning/wubi86-root-order.tsv --code-errata ../../data/learning/wubi86-code-errata.tsv --glyph-aliases corpus/d2-glyph-aliases.tsv --readable-keys ../../data/learning/wubi86-readable-keys.tsv --ids ../../data/sources/ids_lv1.txt --short1 ../../data/sources/wubi86-level1-codes.tsv --short2 ../../data/sources/wubi86-level2-codes.tsv --short3 ../../data/sources/wubi86-level3-codes.tsv --pinyin ../../data/generated/pinyin-chars.tsv --limit 1000 --out-dir corpus"
 }
