@@ -179,6 +179,17 @@ def load_short(path: Path, width: int) -> dict[str, str]:
     return out
 
 
+def load_char_list(path: Path) -> list[str]:
+    """显式字表（每行一个或多个字，`#` 开头为注释）；顺序无关，最终按词频排。"""
+    chars: list[str] = []
+    for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        chars.extend(line.split())
+    return chars
+
+
 def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
     pinyin: dict[str, str] = {}
     freq: dict[str, int] = {}
@@ -647,6 +658,8 @@ def main() -> int:
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--all-codes', action='store_true',
                         help='覆盖全码表全部字（27,823），忽略 --limit')
+    parser.add_argument('--char-list',
+                        help='显式字表（如 GB2312 一级 3,755 字；ADR-375），与 --limit/--all-codes 互斥')
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
@@ -700,7 +713,16 @@ def main() -> int:
     root_inventory = load_root_inventory(Path(args.root_inventory)) if args.root_inventory else {}
     aliases = load_glyph_aliases(Path(args.glyph_aliases)) if args.glyph_aliases else {}
 
-    if args.all_codes:
+    if args.char_list:
+        requested = load_char_list(Path(args.char_list))
+        unknown_chars = [c for c in requested if c not in codes]
+        if unknown_chars:
+            print(f'--char-list 中有 {len(unknown_chars)} 个字缺全码：{"".join(unknown_chars[:20])}',
+                  file=sys.stderr)
+            return 2
+        ranked = sorted(((char, freq.get(char, 0)) for char in dict.fromkeys(requested)),
+                        key=lambda kv: (-kv[1], kv[0]))
+    elif args.all_codes:
         ranked = sorted(((char, 0) for char in codes),
                         key=lambda kv: (-freq.get(kv[0], 0), kv[0]))
     else:
