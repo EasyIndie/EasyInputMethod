@@ -12,6 +12,7 @@
 | [决策记录.md](决策记录.md) | ADR 冻结决策与理由（**设计变更先改这里**） |
 | [配置架构.md](配置架构.md) | 配置真值唯一、单一写入、实时生效、Schema 驱动 |
 | [数据来源与许可.md](数据来源与许可.md) | 数据准入、来源清单、自建流水线、许可兼容 |
+| [standards/README.md](standards/README.md) | **标准**：五笔拆字标准 v1、LWS-86（五笔86 拆字标准 1.0：规则/数据/一致性判定） |
 | [隐私与安全.md](隐私与安全.md) | 零网络承诺、威胁模型、可验证性 |
 | [故障恢复.md](故障恢复.md) | 配置/词库/数据的手工恢复步骤 |
 | [README.md](../README.md) · [CONTRIBUTING.md](../CONTRIBUTING.md) · [SECURITY.md](../SECURITY.md) | 项目介绍、贡献规范、漏洞披露 |
@@ -37,7 +38,7 @@
 |---|---|
 | [reviews/README.md](reviews/README.md) | 报告索引：编号口径、当前有效报告、按阶段回溯 |
 | [reviews/TEMPLATE-report.md](reviews/TEMPLATE-report.md) | 报告模板（只写新增结论 + 证据路径 + 差异） |
-| [tasks/README.md](tasks/README.md) | 任务卡机制；**本目录只放活跃卡**（当前只有 IT-22 走查三张） |
+| [tasks/README.md](tasks/README.md) | 任务卡机制；**本目录只放活跃卡**（当前：IT-22 走查三张 + 86 根序 `T-ROOT86.md`） |
 
 ## 协作与流程
 
