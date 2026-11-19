@@ -63,7 +63,7 @@ enum OnboardingGuide {
                 summary: "按掌握度逐级解锁，进度只存本机。",
                 bullets: [
                     OnboardingBullet(keys: [hotkey("hotkey.open_practice")], text: "打开练习"),
-                    OnboardingBullet(keys: [], text: "字根 → 一级 → 二级 → 三级 → 完整码 → 词组 → 识别码"),
+                    OnboardingBullet(keys: [], text: "字根 → 一级 → 二级 → 三级 → 完整码 → 词组 → 识别码（三级简码只对官方简码表内的字成立）"),
                     OnboardingBullet(keys: [], text: "练习窗口里可进入「文章跟打」；进度可一键重置"),
                 ]),
             OnboardingStep(

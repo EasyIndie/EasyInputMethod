@@ -172,6 +172,13 @@ def audit(runtime_path: pathlib.Path) -> str:
         extra_text = "、".join(f"{glyph}×{n}" for glyph, n in extra) or "—"
         lines.append(f"| {letter} | {POSITION[letter]} | {extra_text} | "
                      f"{'、'.join(missing) or '—'} |")
+    missing_total = sorted({glyph for letter in KEYNAME
+                            for glyph in CANONICAL[letter]
+                            if len(glyph) == 1 and glyph not in counts[letter]})
+    lines.append("")
+    lines.append(f"统计：{len(missing_total)} 个标准字根在随包学习语料里**没有例字**"
+                 f"（多为繁体/罕见形态）：{'、'.join(missing_total) or '—'}。"
+                 "字根题（按口诀顺序）仍会考它们，学习区不会有例句可看（报告 304 F6）。")
     lines.append("")
     lines.append("说明：语料里的拆分是「实际拆字结果」，包含复合部件与变形写法，不都是字根；"
                  "本表以标准字根表为展示真源，语料差异仅作回归线索，不改展示内容。")

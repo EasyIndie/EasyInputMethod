@@ -27,6 +27,7 @@
   "recognition": null,
   "short1": "b",
   "short2": null,
+  "short3": null,
   "pinyin": "le",
   "frequency": 883634,
   "quality": "full",
@@ -68,6 +69,7 @@
   },
   "short1": "j",
   "short2": null,
+  "short3": "jgh",
   "pinyin": "shi",
   "frequency": 796991,
   "quality": "full",
@@ -107,6 +109,7 @@
   },
   "short1": "d",
   "short2": null,
+  "short3": "dhf",
   "pinyin": "zai",
   "frequency": 727915,
   "quality": "full",
@@ -144,10 +147,13 @@
   },
   "short1": "t",
   "short2": null,
+  "short3": null,
   "pinyin": "he",
   "frequency": 555815,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "有",
@@ -181,10 +187,13 @@
   },
   "short1": "e",
   "short2": null,
+  "short3": null,
   "pinyin": "you",
   "frequency": 423765,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "他",
@@ -218,10 +227,13 @@
   },
   "short1": null,
   "short2": "wb",
+  "short3": null,
   "pinyin": "ta",
   "frequency": 401339,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "不",
@@ -257,10 +269,12 @@
   },
   "short1": "i",
   "short2": "gi",
+  "short3": null,
   "pinyin": "bu",
   "frequency": 360331,
   "quality": "partial",
   "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）",
    "标准字根/键位不符：第 2 个（卜，键 i）"
   ]
  },
@@ -298,6 +312,7 @@
   },
   "short1": "q",
   "short2": null,
+  "short3": "trn",
   "pinyin": "wo",
   "frequency": 328841,
   "quality": "full",
@@ -339,6 +354,7 @@
   },
   "short1": "r",
   "short2": null,
+  "short3": "rqy",
   "pinyin": "de",
   "frequency": 318825,
   "quality": "full",
@@ -367,6 +383,7 @@
   "recognition": null,
   "short1": "w",
   "short2": null,
+  "short3": null,
   "pinyin": "ren",
   "frequency": 313209,
   "quality": "full",
@@ -401,6 +418,7 @@
   "recognition": null,
   "short1": null,
   "short2": "bn",
+  "short3": null,
   "pinyin": "ye",
   "frequency": 307851,
   "quality": "full",
@@ -443,6 +461,7 @@
   "recognition": null,
   "short1": "o",
   "short2": "yl",
+  "short3": "yly",
   "pinyin": "wei",
   "frequency": 295952,
   "quality": "partial",
@@ -482,6 +501,7 @@
   "recognition": null,
   "short1": null,
   "short2": "yi",
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 273122,
   "quality": "full",
@@ -521,10 +541,13 @@
   },
   "short1": "p",
   "short2": "yp",
+  "short3": null,
   "pinyin": "zhe",
   "frequency": 261791,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "上",
@@ -555,6 +578,7 @@
   "recognition": null,
   "short1": "h",
   "short2": null,
+  "short3": null,
   "pinyin": "shang",
   "frequency": 258101,
   "quality": "full",
@@ -596,6 +620,7 @@
   },
   "short1": null,
   "short2": "rh",
+  "short3": null,
   "pinyin": "nian",
   "frequency": 248559,
   "quality": "full",
@@ -633,10 +658,13 @@
   },
   "short1": "k",
   "short2": "kh",
+  "short3": null,
   "pinyin": "zhong",
   "frequency": 243191,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "你",
@@ -672,6 +700,7 @@
   },
   "short1": null,
   "short2": "wq",
+  "short3": "wqi",
   "pinyin": "ni",
   "frequency": 234587,
   "quality": "full",
@@ -708,6 +737,7 @@
   "recognition": null,
   "short1": null,
   "short2": "yu",
+  "short3": "yuk",
   "pinyin": "shuo",
   "frequency": 219817,
   "quality": "full",
@@ -742,11 +772,12 @@
   "recognition": null,
   "short1": "g",
   "short2": null,
+  "short3": "ggl",
   "pinyin": "yi",
   "frequency": 217830,
   "quality": "full",
   "notes": [
-   "成字字根：真实笔顺（D18，Unihan 笔数校验）"
+   "成字字根：报户口 G；后 3 位为官方特例取码（未由笔顺推导）"
   ]
  },
  {
@@ -780,6 +811,7 @@
   "recognition": null,
   "short1": null,
   "short2": "gc",
+  "short3": null,
   "pinyin": "dao",
   "frequency": 205341,
   "quality": "full",
@@ -818,6 +850,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dou",
   "frequency": 202780,
   "quality": "full",
@@ -859,6 +892,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "deng",
   "frequency": 195934,
   "quality": "full",
@@ -898,6 +932,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "udh",
   "pinyin": "zhe",
   "frequency": 188584,
   "quality": "full",
@@ -935,10 +970,13 @@
   },
   "short1": null,
   "short2": "cf",
+  "short3": null,
   "pinyin": "dui",
   "frequency": 184674,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "来",
@@ -972,10 +1010,13 @@
   },
   "short1": null,
   "short2": "go",
+  "short3": null,
   "pinyin": "lai",
   "frequency": 161501,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "与",
@@ -1011,6 +1052,7 @@
   },
   "short1": null,
   "short2": "gn",
+  "short3": null,
   "pinyin": "yu",
   "frequency": 160984,
   "quality": "full",
@@ -1048,10 +1090,13 @@
   },
   "short1": "f",
   "short2": "fb",
+  "short3": null,
   "pinyin": "di",
   "frequency": 160541,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "还",
@@ -1089,6 +1134,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gip",
   "pinyin": "hai",
   "frequency": 157058,
   "quality": "partial",
@@ -1128,10 +1174,13 @@
   },
   "short1": "s",
   "short2": "sv",
+  "short3": null,
   "pinyin": "yao",
   "frequency": 156581,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "又",
@@ -1156,6 +1205,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ccc",
   "pinyin": "you",
   "frequency": 150749,
   "quality": "full",
@@ -1184,6 +1234,7 @@
   "recognition": null,
   "short1": null,
   "short2": "dd",
+  "short3": null,
   "pinyin": "da",
   "frequency": 144099,
   "quality": "full",
@@ -1223,6 +1274,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "er",
   "frequency": 143233,
   "quality": "full",
@@ -1251,6 +1303,7 @@
   "recognition": null,
   "short1": null,
   "short2": "pp",
+  "short3": "ppp",
   "pinyin": "zhi",
   "frequency": 140957,
   "quality": "full",
@@ -1287,6 +1340,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dao",
   "frequency": 140545,
   "quality": "full",
@@ -1328,6 +1382,7 @@
   },
   "short1": "c",
   "short2": null,
+  "short3": "nyw",
   "pinyin": "yi",
   "frequency": 136106,
   "quality": "full",
@@ -1364,6 +1419,7 @@
   "recognition": null,
   "short1": null,
   "short2": "tj",
+  "short3": "tjg",
   "pinyin": "de",
   "frequency": 134479,
   "quality": "full",
@@ -1403,10 +1459,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ta",
   "frequency": 134035,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "个",
@@ -1440,10 +1499,13 @@
   },
   "short1": null,
   "short2": "wh",
+  "short3": null,
   "pinyin": "ge",
   "frequency": 125538,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "后",
@@ -1479,6 +1541,7 @@
   },
   "short1": null,
   "short2": "rg",
+  "short3": "rgk",
   "pinyin": "hou",
   "frequency": 124793,
   "quality": "full",
@@ -1516,10 +1579,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qu",
   "frequency": 123402,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "将",
@@ -1555,6 +1621,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uqf",
   "pinyin": "jiang",
   "frequency": 122305,
   "quality": "full",
@@ -1594,6 +1661,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vfb",
   "pinyin": "na",
   "frequency": 111550,
   "quality": "full",
@@ -1633,6 +1701,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wjg",
   "pinyin": "dan",
   "frequency": 110709,
   "quality": "full",
@@ -1670,10 +1739,13 @@
   },
   "short1": null,
   "short2": "ww",
+  "short3": null,
   "pinyin": "cong",
   "frequency": 110435,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "月",
@@ -1698,6 +1770,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "eee",
   "pinyin": "yue",
   "frequency": 110207,
   "quality": "full",
@@ -1735,10 +1808,13 @@
   },
   "short1": null,
   "short2": "gh",
+  "short3": null,
   "pinyin": "xia",
   "frequency": 108294,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "把",
@@ -1772,10 +1848,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ba",
   "frequency": 108066,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "被",
@@ -1810,6 +1889,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bei",
   "frequency": 106845,
   "quality": "partial",
@@ -1852,10 +1932,12 @@
   },
   "short1": null,
   "short2": "gf",
+  "short3": null,
   "pinyin": "yu",
   "frequency": 106176,
   "quality": "full",
   "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
    "按 IDS（D19）补齐 1 个占位字根：⿱一𬺰"
   ]
@@ -1892,10 +1974,13 @@
   },
   "short1": null,
   "short2": "jf",
+  "short3": null,
   "pinyin": "shi",
   "frequency": 103735,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "只",
@@ -1929,10 +2014,13 @@
   },
   "short1": null,
   "short2": "kw",
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 101442,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "多",
@@ -1966,10 +2054,13 @@
   },
   "short1": null,
   "short2": "qq",
+  "short3": null,
   "pinyin": "duo",
   "frequency": 98900,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "过",
@@ -2003,10 +2094,13 @@
   },
   "short1": null,
   "short2": "fp",
+  "short3": null,
   "pinyin": "guo",
   "frequency": 97817,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "可",
@@ -2040,10 +2134,13 @@
   },
   "short1": null,
   "short2": "sk",
+  "short3": null,
   "pinyin": "ke",
   "frequency": 95892,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "并",
@@ -2077,10 +2174,13 @@
   },
   "short1": null,
   "short2": "ua",
+  "short3": null,
   "pinyin": "bing",
   "frequency": 93868,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "能",
@@ -2113,6 +2213,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ce",
+  "short3": "cex",
   "pinyin": "neng",
   "frequency": 93096,
   "quality": "full",
@@ -2152,10 +2253,13 @@
   },
   "short1": null,
   "short2": "vb",
+  "short3": null,
   "pinyin": "hao",
   "frequency": 92543,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "会",
@@ -2191,6 +2295,7 @@
   },
   "short1": null,
   "short2": "wf",
+  "short3": "wfc",
   "pinyin": "hui",
   "frequency": 92091,
   "quality": "full",
@@ -2228,10 +2333,13 @@
   },
   "short1": null,
   "short2": "bm",
+  "short3": null,
   "pinyin": "chu",
   "frequency": 85847,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "或",
@@ -2267,6 +2375,7 @@
   },
   "short1": null,
   "short2": "ak",
+  "short3": "akg",
   "pinyin": "huo",
   "frequency": 78942,
   "quality": "full",
@@ -2295,6 +2404,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ri",
   "frequency": 78695,
   "quality": "full",
@@ -2331,6 +2441,7 @@
   "recognition": null,
   "short1": null,
   "short2": "mh",
+  "short3": null,
   "pinyin": "you",
   "frequency": 78203,
   "quality": "full",
@@ -2370,10 +2481,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "li",
   "frequency": 77054,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "用",
@@ -2406,6 +2520,7 @@
   "recognition": null,
   "short1": null,
   "short2": "et",
+  "short3": null,
   "pinyin": "yong",
   "frequency": 76586,
   "quality": "full",
@@ -2447,6 +2562,7 @@
   },
   "short1": null,
   "short2": "rn",
+  "short3": null,
   "pinyin": "suo",
   "frequency": 76462,
   "quality": "full",
@@ -2486,6 +2602,7 @@
   },
   "short1": null,
   "short2": "tm",
+  "short3": "tmk",
   "pinyin": "xiang",
   "frequency": 75979,
   "quality": "full",
@@ -2514,6 +2631,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yi",
   "frequency": 72638,
   "quality": "full",
@@ -2553,6 +2671,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "adw",
   "pinyin": "qi",
   "frequency": 71322,
   "quality": "full",
@@ -2589,6 +2708,7 @@
   "recognition": null,
   "short1": null,
   "short2": "xw",
+  "short3": "xwg",
   "pinyin": "gei",
   "frequency": 69480,
   "quality": "full",
@@ -2632,6 +2752,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tve",
   "pinyin": "hen",
   "frequency": 69103,
   "quality": "partial",
@@ -2673,10 +2794,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "kan",
   "frequency": 66641,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "使",
@@ -2709,6 +2833,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 64655,
   "quality": "full",
@@ -2750,6 +2875,7 @@
   },
   "short1": null,
   "short2": "ue",
+  "short3": "uej",
   "pinyin": "qian",
   "frequency": 62779,
   "quality": "full",
@@ -2789,6 +2915,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "usr",
   "pinyin": "xin",
   "frequency": 62626,
   "quality": "full",
@@ -2828,6 +2955,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "shn",
   "pinyin": "xiang",
   "frequency": 61904,
   "quality": "full",
@@ -2867,6 +2995,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fcb",
   "pinyin": "que",
   "frequency": 61348,
   "quality": "full",
@@ -2904,10 +3033,13 @@
   },
   "short1": null,
   "short2": "px",
+  "short3": null,
   "pinyin": "ta",
   "frequency": 60864,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "最",
@@ -2943,6 +3075,7 @@
   },
   "short1": null,
   "short2": "jb",
+  "short3": "jbc",
   "pinyin": "zui",
   "frequency": 60450,
   "quality": "full",
@@ -2980,10 +3113,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 58965,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "起",
@@ -3019,6 +3155,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fhn",
   "pinyin": "qi",
   "frequency": 58684,
   "quality": "full",
@@ -3053,6 +3190,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ih",
+  "short3": "iht",
   "pinyin": "xiao",
   "frequency": 57969,
   "quality": "full",
@@ -3094,6 +3232,7 @@
   },
   "short1": null,
   "short2": "ym",
+  "short3": "ymk",
   "pinyin": "gao",
   "frequency": 57483,
   "quality": "full",
@@ -3133,6 +3272,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gjq",
   "pinyin": "geng",
   "frequency": 56478,
   "quality": "full",
@@ -3170,10 +3310,13 @@
   },
   "short1": null,
   "short2": "vk",
+  "short3": null,
   "pinyin": "ru",
   "frequency": 56065,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "再",
@@ -3209,6 +3352,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gmf",
   "pinyin": "zai",
   "frequency": 55507,
   "quality": "full",
@@ -3246,10 +3390,13 @@
   },
   "short1": null,
   "short2": "ft",
+  "short3": null,
   "pinyin": "cai",
   "frequency": 55415,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "便",
@@ -3282,6 +3429,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wgj",
   "pinyin": "bian",
   "frequency": 55339,
   "quality": "full",
@@ -3323,6 +3471,7 @@
   },
   "short1": null,
   "short2": "im",
+  "short3": "imc",
   "pinyin": "mei",
   "frequency": 52407,
   "quality": "full",
@@ -3362,10 +3511,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zou",
   "frequency": 50437,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "做",
@@ -3401,6 +3553,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wdt",
   "pinyin": "zuo",
   "frequency": 50331,
   "quality": "full",
@@ -3438,10 +3591,13 @@
   },
   "short1": null,
   "short2": "yh",
+  "short3": null,
   "pinyin": "rang",
   "frequency": 50310,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "内",
@@ -3475,10 +3631,13 @@
   },
   "short1": null,
   "short2": "mw",
+  "short3": null,
   "pinyin": "nei",
   "frequency": 50204,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "及",
@@ -3512,10 +3671,13 @@
   },
   "short1": null,
   "short2": "ey",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 49988,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "听",
@@ -3549,10 +3711,13 @@
   },
   "short1": null,
   "short2": "kr",
+  "short3": null,
   "pinyin": "ting",
   "frequency": 45776,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "成",
@@ -3588,6 +3753,7 @@
   },
   "short1": null,
   "short2": "dn",
+  "short3": "dnn",
   "pinyin": "cheng",
   "frequency": 44880,
   "quality": "full",
@@ -3627,10 +3793,13 @@
   },
   "short1": null,
   "short2": "tk",
+  "short3": null,
   "pinyin": "ge",
   "frequency": 44807,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "事",
@@ -3663,6 +3832,7 @@
   "recognition": null,
   "short1": null,
   "short2": "gk",
+  "short3": "gkv",
   "pinyin": "shi",
   "frequency": 44769,
   "quality": "full",
@@ -3704,6 +3874,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kgn",
   "pinyin": "hao",
   "frequency": 44621,
   "quality": "full",
@@ -3743,6 +3914,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gcf",
   "pinyin": "zhi",
   "frequency": 43708,
   "quality": "full",
@@ -3782,6 +3954,7 @@
   },
   "short1": null,
   "short2": "kn",
+  "short3": "knh",
   "pinyin": "jiao",
   "frequency": 43431,
   "quality": "full",
@@ -3818,6 +3991,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "liang",
   "frequency": 43011,
   "quality": "full",
@@ -3857,10 +4031,13 @@
   },
   "short1": null,
   "short2": "iv",
+  "short3": null,
   "pinyin": "dang",
   "frequency": 42694,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "三",
@@ -3891,6 +4068,7 @@
   "recognition": null,
   "short1": null,
   "short2": "dg",
+  "short3": "dgg",
   "pinyin": "san",
   "frequency": 42542,
   "quality": "full",
@@ -3930,10 +4108,13 @@
   },
   "short1": null,
   "short2": "sg",
+  "short3": null,
   "pinyin": "ben",
   "frequency": 42207,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "无",
@@ -3967,10 +4148,13 @@
   },
   "short1": null,
   "short2": "fq",
+  "short3": null,
   "pinyin": "wu",
   "frequency": 42181,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "此",
@@ -4004,10 +4188,13 @@
   },
   "short1": null,
   "short2": "hx",
+  "short3": null,
   "pinyin": "ci",
   "frequency": 41979,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "们",
@@ -4041,10 +4228,13 @@
   },
   "short1": null,
   "short2": "wu",
+  "short3": null,
   "pinyin": "men",
   "frequency": 41212,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "家",
@@ -4055,36 +4245,38 @@
   "componentsSource": "D2",
   "components": [
    "宀",
-   "一",
-   "豕"
+   "一"
   ],
   "keys": [
    "p",
-   "e",
-   "u"
+   "e"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱宀豕",
   "idsStructure": "上下",
   "positionMismatch": [
-   2,
-   3
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": "pe",
+  "short3": null,
   "pinyin": "jia",
   "frequency": 41022,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 2 个（一，键 e）、第 3 个（豕，键 u）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 2 个（一，键 e）"
   ]
  },
  {
@@ -4121,6 +4313,7 @@
   },
   "short1": null,
   "short2": "ta",
+  "short3": null,
   "pinyin": "zhang",
   "frequency": 40281,
   "quality": "full",
@@ -4160,6 +4353,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 40141,
   "quality": "full",
@@ -4194,6 +4388,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "uyh",
   "pinyin": "men",
   "frequency": 39823,
   "quality": "full",
@@ -4233,10 +4428,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zheng",
   "frequency": 37763,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "同",
@@ -4272,6 +4470,7 @@
   },
   "short1": "m",
   "short2": "mg",
+  "short3": "mgk",
   "pinyin": "tong",
   "frequency": 37578,
   "quality": "full",
@@ -4311,6 +4510,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ktn",
   "pinyin": "chi",
   "frequency": 36799,
   "quality": "full",
@@ -4348,10 +4548,13 @@
   },
   "short1": null,
   "short2": "gd",
+  "short3": null,
   "pinyin": "tian",
   "frequency": 35979,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "比",
@@ -4385,10 +4588,13 @@
   },
   "short1": null,
   "short2": "xx",
+  "short3": null,
   "pinyin": "bi",
   "frequency": 35305,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "米",
@@ -4422,6 +4628,7 @@
   "recognition": null,
   "short1": null,
   "short2": "oy",
+  "short3": "oyt",
   "pinyin": "mi",
   "frequency": 35136,
   "quality": "full",
@@ -4461,10 +4668,13 @@
   },
   "short1": null,
   "short2": "qh",
+  "short3": null,
   "pinyin": "wai",
   "frequency": 35084,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "即",
@@ -4500,6 +4710,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vcb",
   "pinyin": "ji",
   "frequency": 34677,
   "quality": "full",
@@ -4537,10 +4748,13 @@
   },
   "short1": null,
   "short2": "wv",
+  "short3": null,
   "pinyin": "fen",
   "frequency": 34660,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "问",
@@ -4574,10 +4788,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wen",
   "frequency": 34296,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "话",
@@ -4613,6 +4830,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ytd",
   "pinyin": "hua",
   "frequency": 34240,
   "quality": "full",
@@ -4650,10 +4868,13 @@
   },
   "short1": null,
   "short2": "rs",
+  "short3": null,
   "pinyin": "da",
   "frequency": 33853,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "老",
@@ -4689,6 +4910,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ftx",
   "pinyin": "lao",
   "frequency": 33423,
   "quality": "full",
@@ -4726,10 +4948,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zi",
   "frequency": 33152,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "副",
@@ -4762,6 +4987,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gkl",
   "pinyin": "fu",
   "frequency": 33113,
   "quality": "full",
@@ -4803,6 +5029,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "khv",
   "pinyin": "gen",
   "frequency": 32393,
   "quality": "full",
@@ -4842,6 +5069,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ttd",
   "pinyin": "xiao",
   "frequency": 32256,
   "quality": "full",
@@ -4879,10 +5107,13 @@
   },
   "short1": null,
   "short2": "mj",
+  "short3": null,
   "pinyin": "ze",
   "frequency": 32160,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "像",
@@ -4920,6 +5151,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wqj",
   "pinyin": "xiang",
   "frequency": 31874,
   "quality": "partial",
@@ -4962,6 +5194,7 @@
   "recognition": null,
   "short1": null,
   "short2": "lu",
+  "short3": "luq",
   "pinyin": "jiao",
   "frequency": 30431,
   "quality": "partial",
@@ -5004,6 +5237,7 @@
   },
   "short1": "l",
   "short2": null,
+  "short3": "lgy",
   "pinyin": "guo",
   "frequency": 29996,
   "quality": "full",
@@ -5043,6 +5277,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gqx",
   "pinyin": "si",
   "frequency": 29983,
   "quality": "full",
@@ -5082,6 +5317,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ith",
   "pinyin": "sheng",
   "frequency": 29951,
   "quality": "full",
@@ -5121,6 +5357,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhu",
   "frequency": 29609,
   "quality": "full",
@@ -5161,10 +5398,12 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wan",
   "frequency": 29391,
   "quality": "partial",
   "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）",
    "有 1 个字根字形未识别（占位，键位取自码位）",
    "标准字根/键位不符：第 1 个（一，键 d）、第 2 个（None，键 n）",
    "占位字根：第 2 个（键 n）"
@@ -5202,10 +5441,13 @@
   },
   "short1": null,
   "short2": "ld",
+  "short3": null,
   "pinyin": "yin",
   "frequency": 29186,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "曾",
@@ -5241,6 +5483,7 @@
   },
   "short1": null,
   "short2": "ul",
+  "short3": "ulj",
   "pinyin": "ceng",
   "frequency": 29107,
   "quality": "full",
@@ -5278,10 +5521,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yuan",
   "frequency": 28837,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "呢",
@@ -5317,6 +5563,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "knx",
   "pinyin": "ne",
   "frequency": 28623,
   "quality": "full",
@@ -5352,6 +5599,7 @@
   "recognition": null,
   "short1": null,
   "short2": "rt",
+  "short3": "rtg",
   "pinyin": "shou",
   "frequency": 28466,
   "quality": "full",
@@ -5391,10 +5639,13 @@
   },
   "short1": null,
   "short2": "dp",
+  "short3": null,
   "pinyin": "da",
   "frequency": 28255,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "头",
@@ -5428,10 +5679,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tou",
   "frequency": 28177,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "作",
@@ -5464,6 +5718,7 @@
   "recognition": null,
   "short1": null,
   "short2": "wt",
+  "short3": null,
   "pinyin": "zuo",
   "frequency": 28016,
   "quality": "full",
@@ -5502,6 +5757,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gai",
   "frequency": 27977,
   "quality": "full",
@@ -5532,6 +5788,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "vvv",
   "pinyin": "nv",
   "frequency": 27951,
   "quality": "full",
@@ -5569,10 +5826,13 @@
   },
   "short1": null,
   "short2": "ga",
+  "short3": null,
   "pinyin": "kai",
   "frequency": 27900,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "路",
@@ -5605,6 +5865,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "kht",
   "pinyin": "lu",
   "frequency": 27626,
   "quality": "full",
@@ -5646,6 +5907,7 @@
   },
   "short1": null,
   "short2": "xq",
+  "short3": "xqy",
   "pinyin": "yue",
   "frequency": 27535,
   "quality": "full",
@@ -5683,10 +5945,13 @@
   },
   "short1": null,
   "short2": "pl",
+  "short3": null,
   "pinyin": "jun",
   "frequency": 27200,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "称",
@@ -5722,6 +5987,7 @@
   },
   "short1": null,
   "short2": "tq",
+  "short3": "tqi",
   "pinyin": "cheng",
   "frequency": 26275,
   "quality": "full",
@@ -5759,10 +6025,13 @@
   },
   "short1": null,
   "short2": "qk",
+  "short3": null,
   "pinyin": "ming",
   "frequency": 26255,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "二",
@@ -5792,6 +6061,7 @@
   "recognition": null,
   "short1": null,
   "short2": "fg",
+  "short3": null,
   "pinyin": "er",
   "frequency": 26135,
   "quality": "full",
@@ -5835,6 +6105,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "txg",
   "pinyin": "mei",
   "frequency": 26048,
   "quality": "partial",
@@ -5875,6 +6146,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ntk",
   "pinyin": "shu",
   "frequency": 26010,
   "quality": "full",
@@ -5916,6 +6188,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shui",
   "frequency": 25842,
   "quality": "full",
@@ -5955,6 +6228,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "epc",
   "pinyin": "shou",
   "frequency": 25796,
   "quality": "full",
@@ -5991,6 +6265,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gkp",
   "pinyin": "dai",
   "frequency": 25733,
   "quality": "full",
@@ -6032,6 +6307,7 @@
   },
   "short1": null,
   "short2": "fj",
+  "short3": "fjp",
   "pinyin": "jin",
   "frequency": 25668,
   "quality": "full",
@@ -6071,6 +6347,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tfq",
   "pinyin": "xian",
   "frequency": 25558,
   "quality": "full",
@@ -6085,35 +6362,35 @@
   "componentsSource": "D2",
   "components": [
    "广",
-   "丷",
-   "一"
+   "丷"
   ],
   "keys": [
    "y",
-   "i",
-   "d"
+   "i"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "杂合",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿸广⿱𭕄一",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "d",
+   "stroke": "横",
+   "structure": "杂合",
+   "because": "2 个字根不足四码：末笔横 + 结构杂合 ⇒ 识别码 d"
+  },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ying",
   "frequency": 25537,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 3 个（一，键 d）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -6148,10 +6425,13 @@
   },
   "short1": null,
   "short2": "kc",
+  "short3": null,
   "pinyin": "ba",
   "frequency": 25526,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "县",
@@ -6187,6 +6467,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "egc",
   "pinyin": "xian",
   "frequency": 25322,
   "quality": "full",
@@ -6222,6 +6503,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ny",
+  "short3": null,
   "pinyin": "xin",
   "frequency": 25236,
   "quality": "full",
@@ -6261,10 +6543,13 @@
   },
   "short1": null,
   "short2": "hk",
+  "short3": null,
   "pinyin": "zhan",
   "frequency": 25139,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "处",
@@ -6298,10 +6583,13 @@
   },
   "short1": null,
   "short2": "th",
+  "short3": null,
   "pinyin": "chu",
   "frequency": 24967,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "区",
@@ -6335,10 +6623,13 @@
   },
   "short1": null,
   "short2": "aq",
+  "short3": null,
   "pinyin": "qu",
   "frequency": 24952,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "太",
@@ -6372,10 +6663,13 @@
   },
   "short1": null,
   "short2": "dy",
+  "short3": null,
   "pinyin": "tai",
   "frequency": 24899,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "点",
@@ -6411,6 +6705,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "hko",
   "pinyin": "dian",
   "frequency": 24685,
   "quality": "full",
@@ -6439,6 +6734,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ii",
+  "short3": "iii",
   "pinyin": "shui",
   "frequency": 24314,
   "quality": "full",
@@ -6475,6 +6771,7 @@
   "recognition": null,
   "short1": null,
   "short2": "fm",
+  "short3": "fmu",
   "pinyin": "nan",
   "frequency": 24296,
   "quality": "full",
@@ -6516,6 +6813,7 @@
   },
   "short1": null,
   "short2": "xt",
+  "short3": "xta",
   "pinyin": "zhang",
   "frequency": 23973,
   "quality": "full",
@@ -6555,6 +6853,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jin",
   "frequency": 23913,
   "quality": "full",
@@ -6592,10 +6891,13 @@
   },
   "short1": null,
   "short2": "uj",
+  "short3": null,
   "pinyin": "jian",
   "frequency": 23632,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "总",
@@ -6631,6 +6933,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ukn",
   "pinyin": "zong",
   "frequency": 23585,
   "quality": "full",
@@ -6668,10 +6971,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "hui",
   "frequency": 23572,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "山",
@@ -6696,6 +7002,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "mmm",
   "pinyin": "shan",
   "frequency": 23539,
   "quality": "full",
@@ -6735,6 +7042,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yge",
   "pinyin": "qing",
   "frequency": 23523,
   "quality": "full",
@@ -6774,6 +7082,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ftj",
   "pinyin": "zhe",
   "frequency": 23521,
   "quality": "full",
@@ -6810,6 +7119,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ipk",
   "pinyin": "dang",
   "frequency": 23403,
   "quality": "full",
@@ -6848,6 +7158,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wdm",
   "pinyin": "duan",
   "frequency": 23395,
   "quality": "full",
@@ -6889,6 +7200,7 @@
   },
   "short1": null,
   "short2": "if",
+  "short3": "ifc",
   "pinyin": "fa",
   "frequency": 23361,
   "quality": "full",
@@ -6926,10 +7238,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "lian",
   "frequency": 23315,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "站",
@@ -6965,6 +7280,7 @@
   },
   "short1": null,
   "short2": "uh",
+  "short3": null,
   "pinyin": "zhan",
   "frequency": 23194,
   "quality": "full",
@@ -7001,6 +7317,7 @@
   "recognition": null,
   "short1": null,
   "short2": "tx",
+  "short3": "txh",
   "pinyin": "di",
   "frequency": 23112,
   "quality": "full",
@@ -7040,10 +7357,13 @@
   },
   "short1": null,
   "short2": "aw",
+  "short3": null,
   "pinyin": "gong",
   "frequency": 22996,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "另",
@@ -7077,10 +7397,13 @@
   },
   "short1": null,
   "short2": "kl",
+  "short3": null,
   "pinyin": "ling",
   "frequency": 22635,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "生",
@@ -7114,10 +7437,13 @@
   },
   "short1": null,
   "short2": "tg",
+  "short3": null,
   "pinyin": "sheng",
   "frequency": 22579,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "全",
@@ -7151,10 +7477,13 @@
   },
   "short1": null,
   "short2": "wg",
+  "short3": null,
   "pinyin": "quan",
   "frequency": 22165,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "行",
@@ -7193,6 +7522,7 @@
   },
   "short1": null,
   "short2": "tf",
+  "short3": null,
   "pinyin": "xing",
   "frequency": 22128,
   "quality": "partial",
@@ -7231,6 +7561,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wgc",
   "pinyin": "dao",
   "frequency": 21994,
   "quality": "full",
@@ -7272,6 +7603,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nnw",
   "pinyin": "kuai",
   "frequency": 21973,
   "quality": "full",
@@ -7311,6 +7643,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ire",
   "pinyin": "pai",
   "frequency": 21853,
   "quality": "full",
@@ -7347,6 +7680,7 @@
   "recognition": null,
   "short1": null,
   "short2": "kb",
+  "short3": "kbs",
   "pinyin": "a",
   "frequency": 21810,
   "quality": "full",
@@ -7386,10 +7720,13 @@
   },
   "short1": null,
   "short2": "sh",
+  "short3": null,
   "pinyin": "xiang",
   "frequency": 21292,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "吗",
@@ -7400,32 +7737,35 @@
   "componentsSource": "D2",
   "components": [
    "口",
-   "马",
-   "一"
+   "马"
   ],
   "keys": [
    "k",
-   "c",
-   "g"
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰口马",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ma",
   "frequency": 21245,
   "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -7462,6 +7802,7 @@
   },
   "short1": "x",
   "short2": "xc",
+  "short3": "xca",
   "pinyin": "jing",
   "frequency": 21042,
   "quality": "full",
@@ -7501,6 +7842,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rpv",
   "pinyin": "an",
   "frequency": 21008,
   "quality": "full",
@@ -7538,10 +7880,13 @@
   },
   "short1": null,
   "short2": "ra",
+  "short3": null,
   "pinyin": "zhao",
   "frequency": 20856,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "口",
@@ -7566,6 +7911,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "kou",
   "frequency": 20778,
   "quality": "full",
@@ -7605,6 +7951,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fqu",
   "pinyin": "jun",
   "frequency": 20776,
   "quality": "full",
@@ -7644,6 +7991,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tkh",
   "pinyin": "zhong",
   "frequency": 20538,
   "quality": "full",
@@ -7681,10 +8029,13 @@
   },
   "short1": null,
   "short2": "pb",
+  "short3": null,
   "pinyin": "zi",
   "frequency": 20380,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "入",
@@ -7718,10 +8069,13 @@
   },
   "short1": null,
   "short2": "ty",
+  "short3": null,
   "pinyin": "ru",
   "frequency": 20209,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "真",
@@ -7757,6 +8111,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fhw",
   "pinyin": "zhen",
   "frequency": 19988,
   "quality": "full",
@@ -7793,6 +8148,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "na",
   "frequency": 19956,
   "quality": "full",
@@ -7834,6 +8190,7 @@
   },
   "short1": null,
   "short2": "fd",
+  "short3": "fdn",
   "pinyin": "cheng",
   "frequency": 19953,
   "quality": "full",
@@ -7878,6 +8235,7 @@
   },
   "short1": null,
   "short2": "cn",
+  "short3": "cnn",
   "pinyin": "ma",
   "frequency": 19918,
   "quality": "partial",
@@ -7916,6 +8274,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gan",
   "frequency": 19811,
   "quality": "full",
@@ -7946,6 +8305,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wang",
   "frequency": 19704,
   "quality": "full",
@@ -7985,6 +8345,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ju",
   "frequency": 19409,
   "quality": "full",
@@ -8021,6 +8382,7 @@
   "recognition": null,
   "short1": null,
   "short2": "lh",
+  "short3": null,
   "pinyin": "si",
   "frequency": 19090,
   "quality": "full",
@@ -8051,6 +8413,7 @@
   "recognition": null,
   "short1": null,
   "short2": "bb",
+  "short3": "bbb",
   "pinyin": "zi",
   "frequency": 19089,
   "quality": "full",
@@ -8087,6 +8450,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "nnh",
   "pinyin": "shu",
   "frequency": 18993,
   "quality": "full",
@@ -8126,11 +8490,12 @@
   },
   "short1": null,
   "short2": "we",
+  "short3": null,
   "pinyin": "reng",
   "frequency": 18627,
   "quality": "full",
   "notes": [
-   "末位为识别码槽（可读字形），已丢弃"
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -8167,6 +8532,7 @@
   },
   "short1": null,
   "short2": "cw",
+  "short3": "cwy",
   "pinyin": "nan",
   "frequency": 18505,
   "quality": "full",
@@ -8204,6 +8570,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xi",
   "frequency": 18324,
   "quality": "full",
@@ -8243,10 +8610,13 @@
   },
   "short1": null,
   "short2": "ai",
+  "short3": null,
   "pinyin": "dong",
   "frequency": 18279,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "少",
@@ -8280,10 +8650,13 @@
   },
   "short1": null,
   "short2": "it",
+  "short3": null,
   "pinyin": "shao",
   "frequency": 18155,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "次",
@@ -8319,6 +8692,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uqw",
   "pinyin": "ci",
   "frequency": 17947,
   "quality": "full",
@@ -8358,6 +8732,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "hxf",
   "pinyin": "xie",
   "frequency": 17919,
   "quality": "full",
@@ -8395,6 +8770,7 @@
   },
   "short1": null,
   "short2": "qg",
+  "short3": null,
   "pinyin": "qian",
   "frequency": 17871,
   "quality": "full",
@@ -8432,10 +8808,13 @@
   },
   "short1": null,
   "short2": "ux",
+  "short3": null,
   "pinyin": "bei",
   "frequency": 17860,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "气",
@@ -8469,10 +8848,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qi",
   "frequency": 17826,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "近",
@@ -8506,10 +8888,13 @@
   },
   "short1": null,
   "short2": "rp",
+  "short3": null,
   "pinyin": "jin",
   "frequency": 17557,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "杀",
@@ -8543,10 +8928,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sha",
   "frequency": 17552,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "清",
@@ -8582,6 +8970,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ige",
   "pinyin": "qing",
   "frequency": 17519,
   "quality": "full",
@@ -8621,6 +9010,7 @@
   },
   "short1": null,
   "short2": "ip",
+  "short3": null,
   "pinyin": "xue",
   "frequency": 17482,
   "quality": "full",
@@ -8660,6 +9050,7 @@
   },
   "short1": null,
   "short2": "xk",
+  "short3": "xkj",
   "pinyin": "qiang",
   "frequency": 17342,
   "quality": "full",
@@ -8696,6 +9087,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "pgn",
   "pinyin": "xie",
   "frequency": 17024,
   "quality": "full",
@@ -8732,6 +9124,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "vca",
   "pinyin": "ji",
   "frequency": 17016,
   "quality": "partial",
@@ -8773,6 +9166,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "adk",
   "pinyin": "ruo",
   "frequency": 17000,
   "quality": "full",
@@ -8812,6 +9206,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tyg",
   "pinyin": "wang",
   "frequency": 16974,
   "quality": "full",
@@ -8849,10 +9244,13 @@
   },
   "short1": null,
   "short2": "ck",
+  "short3": null,
   "pinyin": "tai",
   "frequency": 16964,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "原",
@@ -8888,6 +9286,7 @@
   },
   "short1": null,
   "short2": "dr",
+  "short3": "dri",
   "pinyin": "yuan",
   "frequency": 16926,
   "quality": "full",
@@ -8924,6 +9323,7 @@
   "recognition": null,
   "short1": "v",
   "short2": null,
+  "short3": "ntc",
   "pinyin": "fa",
   "frequency": 16840,
   "quality": "full",
@@ -8965,6 +9365,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wtf",
   "pinyin": "ren",
   "frequency": 16831,
   "quality": "full",
@@ -9004,6 +9405,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mei",
   "frequency": 16809,
   "quality": "full",
@@ -9041,10 +9443,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wei",
   "frequency": 16803,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "杨",
@@ -9080,6 +9485,7 @@
   "recognition": null,
   "short1": null,
   "short2": "sn",
+  "short3": "snr",
   "pinyin": "yang",
   "frequency": 16649,
   "quality": "partial",
@@ -9124,6 +9530,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rgw",
   "pinyin": "bing",
   "frequency": 16574,
   "quality": "full",
@@ -9163,6 +9570,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "djd",
   "pinyin": "fei",
   "frequency": 16318,
   "quality": "full",
@@ -9202,6 +9610,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "bwt",
   "pinyin": "chu",
   "frequency": 16316,
   "quality": "partial",
@@ -9242,10 +9651,13 @@
   },
   "short1": null,
   "short2": "lp",
+  "short3": null,
   "pinyin": "bian",
   "frequency": 16283,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "位",
@@ -9279,10 +9691,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wei",
   "frequency": 16243,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "鱼",
@@ -9316,10 +9731,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yu",
   "frequency": 16190,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "明",
@@ -9353,10 +9771,13 @@
   },
   "short1": null,
   "short2": "je",
+  "short3": null,
   "pinyin": "ming",
   "frequency": 16120,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "设",
@@ -9392,6 +9813,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ymc",
   "pinyin": "she",
   "frequency": 16042,
   "quality": "full",
@@ -9428,6 +9850,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhou",
   "frequency": 15951,
   "quality": "full",
@@ -9467,10 +9890,13 @@
   },
   "short1": null,
   "short2": "fh",
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 15928,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "定",
@@ -9506,6 +9932,7 @@
   },
   "short1": null,
   "short2": "pg",
+  "short3": "pgh",
   "pinyin": "ding",
   "frequency": 15882,
   "quality": "full",
@@ -9545,6 +9972,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fha",
   "pinyin": "yue",
   "frequency": 15864,
   "quality": "partial",
@@ -9584,6 +10012,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "tmd",
   "pinyin": "shen",
   "frequency": 15789,
   "quality": "full",
@@ -9622,6 +10051,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "tgj",
   "pinyin": "zhong",
   "frequency": 15718,
   "quality": "full",
@@ -9661,10 +10091,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sheng",
   "frequency": 15713,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "五",
@@ -9696,6 +10129,7 @@
   "recognition": null,
   "short1": null,
   "short2": "gg",
+  "short3": "ggh",
   "pinyin": "wu",
   "frequency": 15665,
   "quality": "full",
@@ -9734,6 +10168,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wqa",
   "pinyin": "di",
   "frequency": 15504,
   "quality": "full",
@@ -9775,6 +10210,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wwf",
   "pinyin": "zuo",
   "frequency": 15447,
   "quality": "full",
@@ -9808,6 +10244,7 @@
   "recognition": null,
   "short1": null,
   "short2": "qt",
+  "short3": null,
   "pinyin": "er",
   "frequency": 15411,
   "quality": "full",
@@ -9849,6 +10286,7 @@
   },
   "short1": null,
   "short2": "se",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 15314,
   "quality": "full",
@@ -9886,10 +10324,13 @@
   },
   "short1": null,
   "short2": "yt",
+  "short3": null,
   "pinyin": "fang",
   "frequency": 15161,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "金",
@@ -9914,6 +10355,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jin",
   "frequency": 15074,
   "quality": "full",
@@ -9951,10 +10393,13 @@
   },
   "short1": null,
   "short2": "xa",
+  "short3": null,
   "pinyin": "hong",
   "frequency": 14915,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "朝",
@@ -9990,6 +10435,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fje",
   "pinyin": "chao",
   "frequency": 14885,
   "quality": "full",
@@ -10026,6 +10472,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ep",
+  "short3": null,
   "pinyin": "ai",
   "frequency": 14878,
   "quality": "full",
@@ -10067,6 +10514,7 @@
   },
   "short1": null,
   "short2": "td",
+  "short3": "tdk",
   "pinyin": "zhi",
   "frequency": 14870,
   "quality": "full",
@@ -10104,10 +10552,13 @@
   },
   "short1": "y",
   "short2": "yg",
+  "short3": null,
   "pinyin": "zhu",
   "frequency": 14838,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "您",
@@ -10140,6 +10591,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nin",
   "frequency": 14737,
   "quality": "full",
@@ -10181,6 +10633,7 @@
   },
   "short1": null,
   "short2": "rb",
+  "short3": "rbc",
   "pinyin": "bao",
   "frequency": 14647,
   "quality": "full",
@@ -10218,10 +10671,13 @@
   },
   "short1": null,
   "short2": "od",
+  "short3": null,
   "pinyin": "lei",
   "frequency": 14536,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "早",
@@ -10255,6 +10711,7 @@
   "recognition": null,
   "short1": null,
   "short2": "jh",
+  "short3": "jhn",
   "pinyin": "zao",
   "frequency": 14429,
   "quality": "full",
@@ -10294,10 +10751,13 @@
   },
   "short1": null,
   "short2": "kj",
+  "short3": null,
   "pinyin": "sui",
   "frequency": 14338,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "面",
@@ -10330,6 +10790,7 @@
   "recognition": null,
   "short1": null,
   "short2": "dm",
+  "short3": null,
   "pinyin": "mian",
   "frequency": 14337,
   "quality": "full",
@@ -10371,6 +10832,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "klj",
   "pinyin": "bie",
   "frequency": 14132,
   "quality": "full",
@@ -10410,6 +10872,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "puv",
   "pinyin": "chu",
   "frequency": 14072,
   "quality": "partial",
@@ -10454,6 +10917,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ntg",
   "pinyin": "xing",
   "frequency": 13847,
   "quality": "full",
@@ -10490,6 +10954,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xing",
   "frequency": 13750,
   "quality": "full",
@@ -10531,6 +10996,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yfj",
   "pinyin": "jiang",
   "frequency": 13587,
   "quality": "full",
@@ -10570,6 +11036,7 @@
   },
   "short1": null,
   "short2": "uk",
+  "short3": "ukb",
   "pinyin": "bu",
   "frequency": 13579,
   "quality": "full",
@@ -10609,6 +11076,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "udp",
   "pinyin": "song",
   "frequency": 13539,
   "quality": "full",
@@ -10648,6 +11116,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fqp",
   "pinyin": "yuan",
   "frequency": 13523,
   "quality": "full",
@@ -10685,10 +11154,13 @@
   },
   "short1": null,
   "short2": "rc",
+  "short3": null,
   "pinyin": "fan",
   "frequency": 13500,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "指",
@@ -10724,6 +11196,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rxj",
   "pinyin": "zhi",
   "frequency": 13375,
   "quality": "full",
@@ -10761,10 +11234,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xiang",
   "frequency": 13348,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "方",
@@ -10796,6 +11272,7 @@
   "recognition": null,
   "short1": null,
   "short2": "yy",
+  "short3": null,
   "pinyin": "fang",
   "frequency": 13166,
   "quality": "full",
@@ -10837,6 +11314,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shen",
   "frequency": 13115,
   "quality": "full",
@@ -10876,6 +11354,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "pfq",
   "pinyin": "wan",
   "frequency": 13042,
   "quality": "full",
@@ -10912,6 +11391,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chang",
   "frequency": 13042,
   "quality": "full",
@@ -10953,6 +11433,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ujn",
   "pinyin": "yi",
   "frequency": 12995,
   "quality": "full",
@@ -10990,10 +11471,13 @@
   },
   "short1": null,
   "short2": "bw",
+  "short3": null,
   "pinyin": "dui",
   "frequency": 12982,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "涓",
@@ -11029,6 +11513,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ike",
   "pinyin": "juan",
   "frequency": 12958,
   "quality": "full",
@@ -11066,6 +11551,7 @@
   },
   "short1": null,
   "short2": "aa",
+  "short3": null,
   "pinyin": "shi",
   "frequency": 12938,
   "quality": "full",
@@ -11103,10 +11589,13 @@
   },
   "short1": null,
   "short2": "da",
+  "short3": null,
   "pinyin": "zuo",
   "frequency": 12823,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "拉",
@@ -11140,10 +11629,13 @@
   },
   "short1": null,
   "short2": "ru",
+  "short3": null,
   "pinyin": "la",
   "frequency": 12817,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "花",
@@ -11179,6 +11671,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "awx",
   "pinyin": "hua",
   "frequency": 12710,
   "quality": "full",
@@ -11216,10 +11709,13 @@
   },
   "short1": null,
   "short2": "jn",
+  "short3": null,
   "pinyin": "dian",
   "frequency": 12701,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "锛",
@@ -11252,6 +11748,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qdf",
   "pinyin": "ben",
   "frequency": 12605,
   "quality": "full",
@@ -11291,10 +11788,13 @@
   },
   "short1": null,
   "short2": "ts",
+  "short3": null,
   "pinyin": "tiao",
   "frequency": 12583,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "剑",
@@ -11327,6 +11827,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wgi",
   "pinyin": "jian",
   "frequency": 12553,
   "quality": "full",
@@ -11365,6 +11866,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "pyj",
   "pinyin": "shen",
   "frequency": 12550,
   "quality": "full",
@@ -11406,6 +11908,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fcl",
   "pinyin": "dong",
   "frequency": 12509,
   "quality": "full",
@@ -11447,6 +11950,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ide",
   "pinyin": "hu",
   "frequency": 12466,
   "quality": "full",
@@ -11486,6 +11990,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "isk",
   "pinyin": "he",
   "frequency": 12374,
   "quality": "full",
@@ -11514,6 +12019,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "rrr",
   "pinyin": "bai",
   "frequency": 12266,
   "quality": "full",
@@ -11556,6 +12062,7 @@
   },
   "short1": null,
   "short2": "pn",
+  "short3": "pnh",
   "pinyin": "guan",
   "frequency": 12197,
   "quality": "partial",
@@ -11596,6 +12103,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "jgm",
   "pinyin": "shi",
   "frequency": 12194,
   "quality": "full",
@@ -11635,10 +12143,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jin",
   "frequency": 12193,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "教",
@@ -11671,6 +12182,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jiao",
   "frequency": 12172,
   "quality": "full",
@@ -11709,6 +12221,7 @@
   "recognition": null,
   "short1": null,
   "short2": "kv",
+  "short3": "kvf",
   "pinyin": "na",
   "frequency": 12138,
   "quality": "full",
@@ -11750,6 +12263,7 @@
   },
   "short1": null,
   "short2": "yo",
+  "short3": "yoc",
   "pinyin": "bian",
   "frequency": 12121,
   "quality": "full",
@@ -11789,6 +12303,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ltu",
   "pinyin": "tu",
   "frequency": 12112,
   "quality": "full",
@@ -11830,6 +12345,7 @@
   },
   "short1": null,
   "short2": "gu",
+  "short3": "guh",
   "pinyin": "ping",
   "frequency": 12100,
   "quality": "partial",
@@ -11871,6 +12387,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ywf",
   "pinyin": "fu",
   "frequency": 11760,
   "quality": "full",
@@ -11907,6 +12424,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "re",
   "frequency": 11755,
   "quality": "full",
@@ -11945,6 +12463,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 11750,
   "quality": "full",
@@ -11983,6 +12502,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wang",
   "frequency": 11746,
   "quality": "full",
@@ -12022,10 +12542,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sui",
   "frequency": 11719,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "紝",
@@ -12061,6 +12584,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ren",
   "frequency": 11651,
   "quality": "full",
@@ -12099,6 +12623,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "lfn",
   "pinyin": "zhuan",
   "frequency": 11622,
   "quality": "full",
@@ -12137,6 +12662,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 11608,
   "quality": "partial",
@@ -12176,6 +12702,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ming",
   "frequency": 11603,
   "quality": "full",
@@ -12215,6 +12742,7 @@
   },
   "short1": null,
   "short2": "lk",
+  "short3": null,
   "pinyin": "jia",
   "frequency": 11537,
   "quality": "full",
@@ -12256,6 +12784,7 @@
   },
   "short1": null,
   "short2": "tp",
+  "short3": "tpn",
   "pinyin": "guan",
   "frequency": 11444,
   "quality": "partial",
@@ -12297,6 +12826,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chang",
   "frequency": 11435,
   "quality": "partial",
@@ -12338,6 +12868,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "khq",
   "pinyin": "pao",
   "frequency": 11414,
   "quality": "full",
@@ -12376,6 +12907,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chuan",
   "frequency": 11359,
   "quality": "full",
@@ -12417,6 +12949,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "www",
   "pinyin": "zhong",
   "frequency": 11353,
   "quality": "full",
@@ -12454,10 +12987,13 @@
   },
   "short1": null,
   "short2": "tc",
+  "short3": null,
   "pinyin": "me",
   "frequency": 11322,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "黑",
@@ -12493,6 +13029,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lfo",
   "pinyin": "hei",
   "frequency": 11296,
   "quality": "full",
@@ -12530,10 +13067,13 @@
   },
   "short1": null,
   "short2": "nr",
+  "short3": null,
   "pinyin": "pa",
   "frequency": 11213,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "风",
@@ -12567,10 +13107,13 @@
   },
   "short1": null,
   "short2": "mq",
+  "short3": null,
   "pinyin": "feng",
   "frequency": 11195,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "信",
@@ -12604,10 +13147,13 @@
   },
   "short1": null,
   "short2": "wy",
+  "short3": null,
   "pinyin": "xin",
   "frequency": 11188,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "置",
@@ -12643,6 +13189,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 11145,
   "quality": "full",
@@ -12682,6 +13229,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ji",
   "frequency": 11126,
   "quality": "full",
@@ -12718,6 +13266,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 11067,
   "quality": "full",
@@ -12759,6 +13308,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "amw",
   "pinyin": "huang",
   "frequency": 11062,
   "quality": "full",
@@ -12795,6 +13345,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhen",
   "frequency": 11036,
   "quality": "full",
@@ -12834,10 +13385,13 @@
   },
   "short1": null,
   "short2": "bc",
+  "short3": null,
   "pinyin": "qu",
   "frequency": 10965,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "光",
@@ -12848,36 +13402,38 @@
   "componentsSource": "D2",
   "components": [
    "⺌",
-   "一",
-   "儿"
+   "一"
   ],
   "keys": [
    "i",
-   "q",
-   "b"
+   "q"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱⺌兀",
   "idsStructure": "上下",
   "positionMismatch": [
-   2,
-   3
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "b",
+   "stroke": "折",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔折 + 结构上下 ⇒ 识别码 b"
+  },
   "short1": null,
   "short2": "iq",
+  "short3": null,
   "pinyin": "guang",
   "frequency": 10895,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 2 个（一，键 q）、第 3 个（儿，键 b）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 2 个（一，键 q）"
   ]
  },
  {
@@ -12914,6 +13470,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ujq",
   "pinyin": "jing",
   "frequency": 10875,
   "quality": "full",
@@ -12947,6 +13504,7 @@
   "recognition": null,
   "short1": null,
   "short2": "lt",
+  "short3": null,
   "pinyin": "li",
   "frequency": 10777,
   "quality": "full",
@@ -12988,6 +13546,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ovt",
   "pinyin": "shu",
   "frequency": 10689,
   "quality": "full",
@@ -13024,6 +13583,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yue",
   "frequency": 10675,
   "quality": "full",
@@ -13063,10 +13623,13 @@
   },
   "short1": null,
   "short2": "us",
+  "short3": null,
   "pinyin": "qin",
   "frequency": 10670,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "传",
@@ -13099,6 +13662,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chuan",
   "frequency": 10664,
   "quality": "full",
@@ -13137,6 +13701,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ipw",
   "pinyin": "shen",
   "frequency": 10646,
   "quality": "full",
@@ -13178,6 +13743,7 @@
   },
   "short1": null,
   "short2": "ew",
+  "short3": "ewg",
   "pinyin": "lian",
   "frequency": 10566,
   "quality": "full",
@@ -13219,6 +13785,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mai",
   "frequency": 10529,
   "quality": "full",
@@ -13258,6 +13825,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ruv",
   "pinyin": "jie",
   "frequency": 10515,
   "quality": "full",
@@ -13297,6 +13865,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "aws",
   "pinyin": "cha",
   "frequency": 10497,
   "quality": "full",
@@ -13334,10 +13903,13 @@
   },
   "short1": null,
   "short2": "eg",
+  "short3": null,
   "pinyin": "qie",
   "frequency": 10470,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "办",
@@ -13371,10 +13943,13 @@
   },
   "short1": null,
   "short2": "lw",
+  "short3": null,
   "pinyin": "ban",
   "frequency": 10314,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "待",
@@ -13410,6 +13985,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dai",
   "frequency": 10253,
   "quality": "full",
@@ -13445,6 +14021,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wen",
   "frequency": 10253,
   "quality": "full",
@@ -13486,6 +14063,7 @@
   },
   "short1": null,
   "short2": "rj",
+  "short3": null,
   "pinyin": "ti",
   "frequency": 10223,
   "quality": "full",
@@ -13525,6 +14103,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "txi",
   "pinyin": "xi",
   "frequency": 10196,
   "quality": "full",
@@ -13561,6 +14140,7 @@
   "recognition": null,
   "short1": null,
   "short2": "jg",
+  "short3": "jgj",
   "pinyin": "liang",
   "frequency": 10182,
   "quality": "full",
@@ -13602,6 +14182,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mang",
   "frequency": 10154,
   "quality": "full",
@@ -13641,6 +14222,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nyu",
   "pinyin": "jin",
   "frequency": 10117,
   "quality": "full",
@@ -13680,6 +14262,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kjq",
   "pinyin": "he",
   "frequency": 10053,
   "quality": "full",
@@ -13716,6 +14299,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jun",
   "frequency": 9988,
   "quality": "full",
@@ -13753,6 +14337,7 @@
   "recognition": null,
   "short1": null,
   "short2": "lg",
+  "short3": "lgn",
   "pinyin": "che",
   "frequency": 9985,
   "quality": "full",
@@ -13794,6 +14379,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kru",
   "pinyin": "la",
   "frequency": 9891,
   "quality": "full",
@@ -13833,6 +14419,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mqj",
   "pinyin": "gang",
   "frequency": 9881,
   "quality": "full",
@@ -13872,6 +14459,7 @@
   },
   "short1": null,
   "short2": "xe",
+  "short3": "xey",
   "pinyin": "ji",
   "frequency": 9853,
   "quality": "full",
@@ -13911,6 +14499,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uxe",
   "pinyin": "bei",
   "frequency": 9853,
   "quality": "full",
@@ -13947,6 +14536,7 @@
   "recognition": null,
   "short1": null,
   "short2": "yb",
+  "short3": "ybm",
   "pinyin": "li",
   "frequency": 9736,
   "quality": "full",
@@ -13986,10 +14576,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gu",
   "frequency": 9727,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "言",
@@ -14014,6 +14607,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yyy",
   "pinyin": "yan",
   "frequency": 9691,
   "quality": "full",
@@ -14053,6 +14647,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "itx",
   "pinyin": "hai",
   "frequency": 9676,
   "quality": "full",
@@ -14092,6 +14687,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ti",
   "frequency": 9670,
   "quality": "full",
@@ -14128,6 +14724,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yww",
   "pinyin": "zuo",
   "frequency": 9662,
   "quality": "full",
@@ -14169,6 +14766,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 9653,
   "quality": "full",
@@ -14208,6 +14806,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "cep",
   "pinyin": "tong",
   "frequency": 9628,
   "quality": "full",
@@ -14244,6 +14843,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "man",
   "frequency": 9603,
   "quality": "full",
@@ -14282,6 +14882,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ka",
+  "short3": "kah",
   "pinyin": "ya",
   "frequency": 9580,
   "quality": "full",
@@ -14321,10 +14922,13 @@
   },
   "short1": null,
   "short2": "sb",
+  "short3": null,
   "pinyin": "li",
   "frequency": 9566,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "令",
@@ -14360,6 +14964,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wyc",
   "pinyin": "ling",
   "frequency": 9565,
   "quality": "full",
@@ -14397,10 +15002,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "fei",
   "frequency": 9563,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "流",
@@ -14431,6 +15039,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "iyc",
   "pinyin": "liu",
   "frequency": 9559,
   "quality": "partial",
@@ -14469,6 +15078,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "tfl",
   "pinyin": "de",
   "frequency": 9549,
   "quality": "full",
@@ -14508,10 +15118,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zu",
   "frequency": 9485,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "瞧",
@@ -14544,6 +15157,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "hwy",
   "pinyin": "qiao",
   "frequency": 9467,
   "quality": "full",
@@ -14585,6 +15199,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wgk",
   "pinyin": "he",
   "frequency": 9453,
   "quality": "full",
@@ -14622,10 +15237,13 @@
   },
   "short1": null,
   "short2": "dk",
+  "short3": null,
   "pinyin": "you",
   "frequency": 9451,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "罢",
@@ -14661,6 +15279,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lfc",
   "pinyin": "ba",
   "frequency": 9424,
   "quality": "full",
@@ -14698,10 +15317,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yi",
   "frequency": 9343,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "改",
@@ -14735,10 +15357,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gai",
   "frequency": 9286,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "刀",
@@ -14768,6 +15393,7 @@
   "recognition": null,
   "short1": null,
   "short2": "vn",
+  "short3": null,
   "pinyin": "dao",
   "frequency": 9271,
   "quality": "full",
@@ -14809,6 +15435,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dhc",
   "pinyin": "po",
   "frequency": 9250,
   "quality": "full",
@@ -14823,35 +15450,35 @@
   "componentsSource": "D2",
   "components": [
    "𠂇",
-   "ヒ",
-   "丶"
+   "ヒ"
   ],
   "keys": [
    "d",
-   "x",
-   "v"
+   "x"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "杂合",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿺𡯃丶",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   3
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "v",
+   "stroke": "折",
+   "structure": "杂合",
+   "because": "2 个字根不足四码：末笔折 + 结构杂合 ⇒ 识别码 v"
+  },
   "short1": null,
   "short2": "dx",
+  "short3": null,
   "pinyin": "long",
   "frequency": 9197,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 3 个（丶，键 v）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -14885,6 +15512,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fdm",
   "pinyin": "xu",
   "frequency": 9183,
   "quality": "full",
@@ -14921,6 +15549,7 @@
   "recognition": null,
   "short1": null,
   "short2": "pa",
+  "short3": "pam",
   "pinyin": "kuan",
   "frequency": 9081,
   "quality": "partial",
@@ -14960,10 +15589,13 @@
   },
   "short1": null,
   "short2": "nt",
+  "short3": null,
   "pinyin": "bi",
   "frequency": 9063,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "病",
@@ -14996,6 +15628,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ugm",
   "pinyin": "bing",
   "frequency": 9053,
   "quality": "full",
@@ -15034,6 +15667,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "bde",
   "pinyin": "sui",
   "frequency": 9036,
   "quality": "full",
@@ -15075,6 +15709,7 @@
   },
   "short1": null,
   "short2": "ed",
+  "short3": "edm",
   "pinyin": "xu",
   "frequency": 8997,
   "quality": "full",
@@ -15112,10 +15747,13 @@
   },
   "short1": null,
   "short2": "nd",
+  "short3": null,
   "pinyin": "ju",
   "frequency": 8992,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "呈",
@@ -15149,10 +15787,13 @@
   },
   "short1": null,
   "short2": "kg",
+  "short3": null,
   "pinyin": "cheng",
   "frequency": 8976,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "汉",
@@ -15186,10 +15827,13 @@
   },
   "short1": null,
   "short2": "ic",
+  "short3": null,
   "pinyin": "han",
   "frequency": 8921,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "群",
@@ -15225,6 +15869,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vtk",
   "pinyin": "qun",
   "frequency": 8891,
   "quality": "full",
@@ -15264,6 +15909,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tha",
   "pinyin": "suan",
   "frequency": 8888,
   "quality": "full",
@@ -15303,6 +15949,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "hka",
   "pinyin": "zhan",
   "frequency": 8864,
   "quality": "full",
@@ -15344,6 +15991,7 @@
   },
   "short1": null,
   "short2": "hv",
+  "short3": "hve",
   "pinyin": "yan",
   "frequency": 8863,
   "quality": "partial",
@@ -15385,10 +16033,13 @@
   },
   "short1": null,
   "short2": "pv",
+  "short3": null,
   "pinyin": "an",
   "frequency": 8837,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "靠",
@@ -15421,6 +16072,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "kao",
   "frequency": 8829,
   "quality": "full",
@@ -15461,6 +16113,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "cang",
   "frequency": 8819,
   "quality": "partial",
@@ -15502,6 +16155,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ait",
   "pinyin": "luo",
   "frequency": 8776,
   "quality": "full",
@@ -15543,6 +16197,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "adm",
   "pinyin": "xiang",
   "frequency": 8766,
   "quality": "full",
@@ -15582,6 +16237,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uth",
   "pinyin": "shou",
   "frequency": 8747,
   "quality": "full",
@@ -15618,6 +16274,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhang",
   "frequency": 8714,
   "quality": "full",
@@ -15658,6 +16315,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jie",
   "frequency": 8680,
   "quality": "partial",
@@ -15700,6 +16358,7 @@
   },
   "short1": null,
   "short2": "qr",
+  "short3": "qrw",
   "pinyin": "tie",
   "frequency": 8654,
   "quality": "full",
@@ -15739,6 +16398,7 @@
   },
   "short1": null,
   "short2": "tr",
+  "short3": "trq",
   "pinyin": "wu",
   "frequency": 8620,
   "quality": "full",
@@ -15776,10 +16436,13 @@
   },
   "short1": null,
   "short2": "ss",
+  "short3": null,
   "pinyin": "lin",
   "frequency": 8581,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "土",
@@ -15804,6 +16467,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tu",
   "frequency": 8560,
   "quality": "full",
@@ -15843,6 +16507,7 @@
   },
   "short1": null,
   "short2": "ae",
+  "short3": "aes",
   "pinyin": "cai",
   "frequency": 8544,
   "quality": "full",
@@ -15882,6 +16547,7 @@
   },
   "short1": null,
   "short2": "gm",
+  "short3": "gmq",
   "pinyin": "xian",
   "frequency": 8541,
   "quality": "full",
@@ -15920,6 +16586,7 @@
   "recognition": null,
   "short1": null,
   "short2": "yx",
+  "short3": "yxi",
   "pinyin": "lv",
   "frequency": 8539,
   "quality": "partial",
@@ -15953,6 +16620,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ooo",
   "pinyin": "huo",
   "frequency": 8518,
   "quality": "full",
@@ -15992,6 +16660,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "std",
   "pinyin": "qiao",
   "frequency": 8499,
   "quality": "full",
@@ -16031,6 +16700,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "emc",
   "pinyin": "gu",
   "frequency": 8493,
   "quality": "full",
@@ -16072,6 +16742,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qje",
   "pinyin": "xiang",
   "frequency": 8475,
   "quality": "partial",
@@ -16110,6 +16781,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "dgh",
   "pinyin": "gu",
   "frequency": 8464,
   "quality": "full",
@@ -16146,6 +16818,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "khi",
   "pinyin": "tiao",
   "frequency": 8462,
   "quality": "partial",
@@ -16187,6 +16860,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "afs",
   "pinyin": "mou",
   "frequency": 8444,
   "quality": "full",
@@ -16226,6 +16900,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jing",
   "frequency": 8417,
   "quality": "full",
@@ -16262,6 +16937,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "rym",
   "pinyin": "gao",
   "frequency": 8414,
   "quality": "full",
@@ -16300,6 +16976,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ax",
+  "short3": "axq",
   "pinyin": "yao",
   "frequency": 8404,
   "quality": "full",
@@ -16341,6 +17018,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ukh",
   "pinyin": "chong",
   "frequency": 8402,
   "quality": "full",
@@ -16378,10 +17056,13 @@
   },
   "short1": null,
   "short2": "cc",
+  "short3": null,
   "pinyin": "shuang",
   "frequency": 8395,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "六",
@@ -16413,6 +17094,7 @@
   "recognition": null,
   "short1": null,
   "short2": "uy",
+  "short3": null,
   "pinyin": "liu",
   "frequency": 8392,
   "quality": "full",
@@ -16454,6 +17136,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nge",
   "pinyin": "qing",
   "frequency": 8363,
   "quality": "full",
@@ -16490,6 +17173,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "e",
   "frequency": 8347,
   "quality": "full",
@@ -16531,6 +17215,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rhj",
   "pinyin": "diao",
   "frequency": 8344,
   "quality": "full",
@@ -16559,6 +17244,7 @@
   "recognition": null,
   "short1": null,
   "short2": "uu",
+  "short3": "uuu",
   "pinyin": "li",
   "frequency": 8334,
   "quality": "full",
@@ -16598,6 +17284,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tdn",
   "pinyin": "luan",
   "frequency": 8329,
   "quality": "full",
@@ -16637,6 +17324,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mfk",
   "pinyin": "zhou",
   "frequency": 8326,
   "quality": "full",
@@ -16670,6 +17358,7 @@
   "recognition": null,
   "short1": null,
   "short2": "mt",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 8320,
   "quality": "full",
@@ -16711,6 +17400,7 @@
   },
   "short1": null,
   "short2": "bd",
+  "short3": "bdi",
   "pinyin": "cheng",
   "frequency": 8308,
   "quality": "full",
@@ -16748,10 +17438,13 @@
   },
   "short1": null,
   "short2": "sf",
+  "short3": null,
   "pinyin": "cun",
   "frequency": 8299,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "收",
@@ -16787,6 +17480,7 @@
   },
   "short1": null,
   "short2": "nh",
+  "short3": "nht",
   "pinyin": "shou",
   "frequency": 8235,
   "quality": "full",
@@ -16824,10 +17518,13 @@
   },
   "short1": null,
   "short2": "uf",
+  "short3": null,
   "pinyin": "ban",
   "frequency": 8201,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "供",
@@ -16863,6 +17560,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "waw",
   "pinyin": "gong",
   "frequency": 8136,
   "quality": "full",
@@ -16896,6 +17594,7 @@
   "recognition": null,
   "short1": null,
   "short2": "vt",
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 8003,
   "quality": "full",
@@ -16937,6 +17636,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "itd",
   "pinyin": "huo",
   "frequency": 8000,
   "quality": "full",
@@ -16976,6 +17676,7 @@
   },
   "short1": null,
   "short2": "nb",
+  "short3": "nbt",
   "pinyin": "gan",
   "frequency": 7965,
   "quality": "full",
@@ -17013,6 +17714,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yu",
   "frequency": 7959,
   "quality": "full",
@@ -17051,6 +17753,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "aqt",
   "pinyin": "huo",
   "frequency": 7931,
   "quality": "full",
@@ -17092,6 +17795,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uvo",
   "pinyin": "jian",
   "frequency": 7927,
   "quality": "full",
@@ -17125,6 +17829,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 7926,
   "quality": "full",
@@ -17163,6 +17868,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "trf",
   "pinyin": "te",
   "frequency": 7898,
   "quality": "full",
@@ -17201,6 +17907,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chuan",
   "frequency": 7819,
   "quality": "full",
@@ -17242,6 +17949,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "sdm",
   "pinyin": "ding",
   "frequency": 7797,
   "quality": "full",
@@ -17281,6 +17989,7 @@
   },
   "short1": null,
   "short2": "on",
+  "short3": "onr",
   "pinyin": "duan",
   "frequency": 7773,
   "quality": "full",
@@ -17317,6 +18026,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 7763,
   "quality": "full",
@@ -17358,6 +18068,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tfn",
   "pinyin": "mao",
   "frequency": 7753,
   "quality": "full",
@@ -17394,6 +18105,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ymf",
   "pinyin": "diao",
   "frequency": 7728,
   "quality": "full",
@@ -17435,6 +18147,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kgd",
   "pinyin": "wu",
   "frequency": 7711,
   "quality": "full",
@@ -17471,6 +18184,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gae",
   "pinyin": "xing",
   "frequency": 7698,
   "quality": "full",
@@ -17510,6 +18224,7 @@
   },
   "short1": null,
   "short2": "xg",
+  "short3": null,
   "pinyin": "xian",
   "frequency": 7688,
   "quality": "full",
@@ -17551,6 +18266,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qrn",
   "pinyin": "hu",
   "frequency": 7683,
   "quality": "partial",
@@ -17588,6 +18304,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ag",
+  "short3": null,
   "pinyin": "qi",
   "frequency": 7675,
   "quality": "full",
@@ -17627,10 +18344,13 @@
   },
   "short1": null,
   "short2": "qy",
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 7645,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "史",
@@ -17664,10 +18384,13 @@
   },
   "short1": null,
   "short2": "kq",
+  "short3": null,
   "pinyin": "shi",
   "frequency": 7637,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "辖",
@@ -17700,6 +18423,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xia",
   "frequency": 7589,
   "quality": "full",
@@ -17741,6 +18465,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "amd",
   "pinyin": "ying",
   "frequency": 7579,
   "quality": "full",
@@ -17777,6 +18502,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mai",
   "frequency": 7578,
   "quality": "full",
@@ -17816,10 +18542,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xue",
   "frequency": 7567,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "画",
@@ -17855,6 +18584,7 @@
   },
   "short1": null,
   "short2": "gl",
+  "short3": "glb",
   "pinyin": "hua",
   "frequency": 7559,
   "quality": "full",
@@ -17894,6 +18624,7 @@
   },
   "short1": null,
   "short2": "lc",
+  "short3": "lca",
   "pinyin": "qing",
   "frequency": 7559,
   "quality": "full",
@@ -17933,6 +18664,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xxr",
   "pinyin": "jie",
   "frequency": 7511,
   "quality": "full",
@@ -17972,6 +18704,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ick",
   "pinyin": "zhi",
   "frequency": 7500,
   "quality": "full",
@@ -18009,10 +18742,13 @@
   },
   "short1": null,
   "short2": "sc",
+  "short3": null,
   "pinyin": "quan",
   "frequency": 7482,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "哭",
@@ -18048,6 +18784,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ku",
   "frequency": 7478,
   "quality": "full",
@@ -18087,6 +18824,7 @@
   },
   "short1": null,
   "short2": "pw",
+  "short3": "pwa",
   "pinyin": "kong",
   "frequency": 7470,
   "quality": "full",
@@ -18124,10 +18862,13 @@
   },
   "short1": null,
   "short2": "yn",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 7460,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "男",
@@ -18161,10 +18902,13 @@
   },
   "short1": null,
   "short2": "ll",
+  "short3": null,
   "pinyin": "nan",
   "frequency": 7434,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "八",
@@ -18194,6 +18938,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ba",
   "frequency": 7422,
   "quality": "full",
@@ -18232,6 +18977,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fku",
   "pinyin": "xi",
   "frequency": 7380,
   "quality": "full",
@@ -18273,6 +19019,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ywx",
   "pinyin": "lun",
   "frequency": 7378,
   "quality": "full",
@@ -18312,6 +19059,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wtl",
   "pinyin": "shang",
   "frequency": 7363,
   "quality": "full",
@@ -18353,6 +19101,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lks",
   "pinyin": "jia",
   "frequency": 7352,
   "quality": "full",
@@ -18390,10 +19139,13 @@
   },
   "short1": null,
   "short2": "jv",
+  "short3": null,
   "pinyin": "gui",
   "frequency": 7299,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "退",
@@ -18431,6 +19183,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vep",
   "pinyin": "tui",
   "frequency": 7280,
   "quality": "partial",
@@ -18471,6 +19224,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "you",
   "frequency": 7272,
   "quality": "full",
@@ -18512,6 +19266,7 @@
   },
   "short1": null,
   "short2": "pu",
+  "short3": "pud",
   "pinyin": "shi",
   "frequency": 7258,
   "quality": "full",
@@ -18551,6 +19306,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uda",
   "pinyin": "cha",
   "frequency": 7254,
   "quality": "full",
@@ -18590,6 +19346,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vtg",
   "pinyin": "xing",
   "frequency": 7240,
   "quality": "full",
@@ -18627,10 +19384,13 @@
   },
   "short1": null,
   "short2": "ri",
+  "short3": null,
   "pinyin": "zhu",
   "frequency": 7218,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "网",
@@ -18666,6 +19426,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mqq",
   "pinyin": "wang",
   "frequency": 7209,
   "quality": "full",
@@ -18703,10 +19464,13 @@
   },
   "short1": null,
   "short2": "hc",
+  "short3": null,
   "pinyin": "pi",
   "frequency": 7184,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "刺",
@@ -18739,6 +19503,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gmi",
   "pinyin": "ci",
   "frequency": 7172,
   "quality": "full",
@@ -18777,6 +19542,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ht",
+  "short3": "htg",
   "pinyin": "shui",
   "frequency": 7171,
   "quality": "full",
@@ -18815,6 +19581,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xuan",
   "frequency": 7132,
   "quality": "full",
@@ -18856,6 +19623,7 @@
   },
   "short1": null,
   "short2": "tu",
+  "short3": null,
   "pinyin": "ke",
   "frequency": 7098,
   "quality": "full",
@@ -18893,10 +19661,13 @@
   },
   "short1": null,
   "short2": "ud",
+  "short3": null,
   "pinyin": "guan",
   "frequency": 7068,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "化",
@@ -18930,10 +19701,13 @@
   },
   "short1": null,
   "short2": "wx",
+  "short3": null,
   "pinyin": "hua",
   "frequency": 7067,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "浜",
@@ -18966,6 +19740,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bang",
   "frequency": 7066,
   "quality": "full",
@@ -19007,6 +19782,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kkc",
   "pinyin": "ma",
   "frequency": 7047,
   "quality": "full",
@@ -19045,6 +19821,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yqa",
   "pinyin": "di",
   "frequency": 7005,
   "quality": "full",
@@ -19073,6 +19850,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mo",
   "frequency": 6982,
   "quality": "unknown",
@@ -19111,6 +19889,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "bpf",
   "pinyin": "yuan",
   "frequency": 6957,
   "quality": "full",
@@ -19149,6 +19928,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "han",
   "frequency": 6950,
   "quality": "full",
@@ -19187,6 +19967,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dong",
   "frequency": 6944,
   "quality": "full",
@@ -19226,10 +20007,13 @@
   },
   "short1": null,
   "short2": "sm",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 6937,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "色",
@@ -19263,10 +20047,13 @@
   },
   "short1": null,
   "short2": "qc",
+  "short3": null,
   "pinyin": "se",
   "frequency": 6908,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "阿",
@@ -19302,6 +20089,7 @@
   },
   "short1": null,
   "short2": "bs",
+  "short3": "bsk",
   "pinyin": "a",
   "frequency": 6905,
   "quality": "full",
@@ -19341,6 +20129,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ufy",
   "pinyin": "zhuang",
   "frequency": 6904,
   "quality": "full",
@@ -19380,6 +20169,7 @@
   },
   "short1": null,
   "short2": "gj",
+  "short3": "gjf",
   "pinyin": "li",
   "frequency": 6890,
   "quality": "full",
@@ -19419,6 +20209,7 @@
   },
   "short1": null,
   "short2": "cy",
+  "short3": "cyg",
   "pinyin": "zhu",
   "frequency": 6848,
   "quality": "full",
@@ -19458,10 +20249,13 @@
   },
   "short1": "u",
   "short2": "ut",
+  "short3": null,
   "pinyin": "chan",
   "frequency": 6838,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "铺",
@@ -19494,6 +20288,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qge",
   "pinyin": "pu",
   "frequency": 6811,
   "quality": "full",
@@ -19532,6 +20327,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ling",
   "frequency": 6800,
   "quality": "full",
@@ -19573,6 +20369,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fnw",
   "pinyin": "kuai",
   "frequency": 6749,
   "quality": "full",
@@ -19609,6 +20406,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zen",
   "frequency": 6736,
   "quality": "full",
@@ -19650,6 +20448,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "feng",
   "frequency": 6721,
   "quality": "full",
@@ -19689,6 +20488,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yoo",
   "pinyin": "tan",
   "frequency": 6712,
   "quality": "full",
@@ -19725,6 +20525,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yft",
   "pinyin": "zhu",
   "frequency": 6711,
   "quality": "full",
@@ -19761,6 +20562,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jue",
   "frequency": 6705,
   "quality": "partial",
@@ -19802,6 +20604,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lft",
   "pinyin": "tuan",
   "frequency": 6703,
   "quality": "full",
@@ -19841,6 +20644,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mww",
   "pinyin": "rou",
   "frequency": 6683,
   "quality": "full",
@@ -19877,6 +20681,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qi",
   "frequency": 6681,
   "quality": "full",
@@ -19915,6 +20720,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dao",
   "frequency": 6677,
   "quality": "full",
@@ -19954,6 +20760,7 @@
   },
   "short1": null,
   "short2": "wa",
+  "short3": null,
   "pinyin": "dai",
   "frequency": 6666,
   "quality": "full",
@@ -19992,6 +20799,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "duan",
   "frequency": 6662,
   "quality": "full",
@@ -20031,10 +20839,13 @@
   },
   "short1": null,
   "short2": "hj",
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 6655,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "嘴",
@@ -20067,6 +20878,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "khx",
   "pinyin": "zui",
   "frequency": 6654,
   "quality": "full",
@@ -20108,6 +20920,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gua",
   "frequency": 6653,
   "quality": "full",
@@ -20144,6 +20957,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "liu",
   "frequency": 6648,
   "quality": "full",
@@ -20160,36 +20974,38 @@
   "componentsSource": "D2",
   "components": [
    "コ",
-   "乚",
-   "弋"
+   "乚"
   ],
   "keys": [
    "n",
-   "a",
-   "v"
+   "a"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "杂合",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿸巳𫠠",
   "idsStructure": "杂合",
   "positionMismatch": [
-   2,
-   3
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "v",
+   "stroke": "折",
+   "structure": "杂合",
+   "because": "2 个字根不足四码：末笔折 + 结构杂合 ⇒ 识别码 v"
+  },
   "short1": "n",
   "short2": "na",
+  "short3": null,
   "pinyin": "min",
   "frequency": 6640,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 2 个（乚，键 a）、第 3 个（弋，键 v）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 2 个（乚，键 a）"
   ]
  },
  {
@@ -20226,6 +21042,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tdt",
   "pinyin": "di",
   "frequency": 6610,
   "quality": "full",
@@ -20263,10 +21080,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jing",
   "frequency": 6583,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "诗",
@@ -20302,6 +21122,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yff",
   "pinyin": "shi",
   "frequency": 6567,
   "quality": "full",
@@ -20338,6 +21159,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yuan",
   "frequency": 6538,
   "quality": "full",
@@ -20376,6 +21198,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mu",
   "frequency": 6535,
   "quality": "full",
@@ -20415,10 +21238,13 @@
   },
   "short1": null,
   "short2": "an",
+  "short3": null,
   "pinyin": "shi",
   "frequency": 6523,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "举",
@@ -20454,6 +21280,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "iwf",
   "pinyin": "ju",
   "frequency": 6506,
   "quality": "full",
@@ -20490,6 +21317,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "naw",
   "pinyin": "dian",
   "frequency": 6506,
   "quality": "full",
@@ -20528,6 +21356,7 @@
   "recognition": null,
   "short1": null,
   "short2": "dt",
+  "short3": null,
   "pinyin": "bang",
   "frequency": 6493,
   "quality": "full",
@@ -20569,6 +21398,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhua",
   "frequency": 6491,
   "quality": "full",
@@ -20605,6 +21435,7 @@
   "recognition": null,
   "short1": null,
   "short2": "rq",
+  "short3": "rqm",
   "pinyin": "huan",
   "frequency": 6483,
   "quality": "full",
@@ -20646,6 +21477,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 6482,
   "quality": "full",
@@ -20689,6 +21521,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fiy",
   "pinyin": "qiu",
   "frequency": 6465,
   "quality": "partial",
@@ -20727,6 +21560,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jiao",
   "frequency": 6457,
   "quality": "full",
@@ -20768,6 +21602,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "fang",
   "frequency": 6407,
   "quality": "full",
@@ -20804,6 +21639,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qing",
   "frequency": 6399,
   "quality": "full",
@@ -20845,6 +21681,7 @@
   },
   "short1": null,
   "short2": "pk",
+  "short3": "pkk",
   "pinyin": "gong",
   "frequency": 6360,
   "quality": "full",
@@ -20882,6 +21719,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yun",
   "frequency": 6353,
   "quality": "full",
@@ -20923,6 +21761,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wyv",
   "pinyin": "shi",
   "frequency": 6350,
   "quality": "full",
@@ -20962,6 +21801,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qaj",
   "pinyin": "cuo",
   "frequency": 6340,
   "quality": "full",
@@ -20999,10 +21839,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "niu",
   "frequency": 6339,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "拜",
@@ -21038,6 +21881,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bai",
   "frequency": 6338,
   "quality": "full",
@@ -21074,6 +21918,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qnr",
   "pinyin": "fan",
   "frequency": 6331,
   "quality": "full",
@@ -21115,6 +21960,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tui",
   "frequency": 6324,
   "quality": "full",
@@ -21152,10 +21998,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhuang",
   "frequency": 6316,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "复",
@@ -21191,6 +22040,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tjt",
   "pinyin": "fu",
   "frequency": 6297,
   "quality": "full",
@@ -21228,10 +22078,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ju",
   "frequency": 6294,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "克",
@@ -21265,10 +22118,13 @@
   },
   "short1": null,
   "short2": "dq",
+  "short3": null,
   "pinyin": "ke",
   "frequency": 6270,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "救",
@@ -21303,6 +22159,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jiu",
   "frequency": 6268,
   "quality": "partial",
@@ -21345,6 +22202,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "sov",
   "pinyin": "lou",
   "frequency": 6245,
   "quality": "full",
@@ -21384,6 +22242,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "etg",
   "pinyin": "sheng",
   "frequency": 6242,
   "quality": "full",
@@ -21421,10 +22280,13 @@
   },
   "short1": null,
   "short2": "hw",
+  "short3": null,
   "pinyin": "ju",
   "frequency": 6228,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "斗",
@@ -21458,10 +22320,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dou",
   "frequency": 6215,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "层",
@@ -21497,6 +22362,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nfc",
   "pinyin": "ceng",
   "frequency": 6209,
   "quality": "full",
@@ -21536,6 +22402,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wys",
   "pinyin": "ji",
   "frequency": 6174,
   "quality": "full",
@@ -21572,6 +22439,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "aft",
   "pinyin": "zhu",
   "frequency": 6171,
   "quality": "full",
@@ -21613,6 +22481,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pian",
   "frequency": 6168,
   "quality": "full",
@@ -21652,6 +22521,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dfa",
   "pinyin": "ben",
   "frequency": 6140,
   "quality": "full",
@@ -21689,10 +22559,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhang",
   "frequency": 6128,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "届",
@@ -21726,10 +22599,13 @@
   },
   "short1": null,
   "short2": "nm",
+  "short3": null,
   "pinyin": "jie",
   "frequency": 6120,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "木",
@@ -21754,6 +22630,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mu",
   "frequency": 6114,
   "quality": "full",
@@ -21793,6 +22670,7 @@
   },
   "short1": null,
   "short2": "nc",
+  "short3": "ncf",
   "pinyin": "guai",
   "frequency": 6097,
   "quality": "full",
@@ -21830,10 +22708,13 @@
   },
   "short1": null,
   "short2": "ia",
+  "short3": null,
   "pinyin": "jiang",
   "frequency": 6083,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "抱",
@@ -21869,6 +22750,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rqn",
   "pinyin": "bao",
   "frequency": 6044,
   "quality": "full",
@@ -21908,6 +22790,7 @@
   },
   "short1": null,
   "short2": "bk",
+  "short3": "bkw",
   "pinyin": "zhi",
   "frequency": 6037,
   "quality": "full",
@@ -21945,10 +22828,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pai",
   "frequency": 6035,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "交",
@@ -21959,37 +22845,39 @@
   "componentsSource": "D2",
   "components": [
    "亠",
-   "八",
-   "乂"
+   "八"
   ],
   "keys": [
    "u",
-   "q",
-   "u"
+   "q"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱亠父",
   "idsStructure": "上下",
   "positionMismatch": [
    1,
-   2,
-   3
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": "uq",
+  "short3": null,
   "pinyin": "jiao",
   "frequency": 6026,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 1 个（亠，键 u）、第 2 个（八，键 q）、第 3 个（乂，键 u）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 1 个（亠，键 u）、第 2 个（八，键 q）"
   ]
  },
  {
@@ -22024,10 +22912,13 @@
   },
   "short1": null,
   "short2": "ge",
+  "short3": null,
   "pinyin": "biao",
   "frequency": 6017,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "降",
@@ -22060,6 +22951,7 @@
   "recognition": null,
   "short1": null,
   "short2": "bt",
+  "short3": "bta",
   "pinyin": "jiang",
   "frequency": 6014,
   "quality": "full",
@@ -22090,6 +22982,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "lll",
   "pinyin": "tian",
   "frequency": 6010,
   "quality": "full",
@@ -22126,6 +23019,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "apk",
   "pinyin": "ying",
   "frequency": 6010,
   "quality": "full",
@@ -22164,6 +23058,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wht",
   "pinyin": "xiu",
   "frequency": 6007,
   "quality": "full",
@@ -22202,6 +23097,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ftg",
   "pinyin": "kao",
   "frequency": 5973,
   "quality": "full",
@@ -22241,10 +23137,13 @@
   },
   "short1": null,
   "short2": "km",
+  "short3": null,
   "pinyin": "yuan",
   "frequency": 5970,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "银",
@@ -22282,6 +23181,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qve",
   "pinyin": "yin",
   "frequency": 5956,
   "quality": "partial",
@@ -22322,6 +23222,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yu",
   "frequency": 5942,
   "quality": "full",
@@ -22363,6 +23264,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wsk",
   "pinyin": "he",
   "frequency": 5940,
   "quality": "full",
@@ -22399,6 +23301,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wyp",
   "pinyin": "ting",
   "frequency": 5934,
   "quality": "full",
@@ -22440,6 +23343,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lwj",
   "pinyin": "jie",
   "frequency": 5931,
   "quality": "full",
@@ -22476,6 +23380,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qev",
   "pinyin": "jie",
   "frequency": 5923,
   "quality": "full",
@@ -22515,10 +23420,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "cao",
   "frequency": 5919,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "鐨",
@@ -22541,6 +23449,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "fei",
   "frequency": 5901,
   "quality": "unknown",
@@ -22569,6 +23478,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "cuo",
   "frequency": 5860,
   "quality": "unknown",
@@ -22607,6 +23517,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "hxx",
   "pinyin": "zi",
   "frequency": 5847,
   "quality": "full",
@@ -22646,10 +23557,13 @@
   },
   "short1": null,
   "short2": "yj",
+  "short3": null,
   "pinyin": "liu",
   "frequency": 5839,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "善",
@@ -22682,6 +23596,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shan",
   "frequency": 5835,
   "quality": "full",
@@ -22721,10 +23636,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xiang",
   "frequency": 5826,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "单",
@@ -22760,6 +23678,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dan",
   "frequency": 5823,
   "quality": "full",
@@ -22794,6 +23713,7 @@
   "recognition": null,
   "short1": null,
   "short2": "jq",
+  "short3": "jqk",
   "pinyin": "wan",
   "frequency": 5823,
   "quality": "partial",
@@ -22832,6 +23752,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "kgb",
   "pinyin": "dun",
   "frequency": 5810,
   "quality": "full",
@@ -22873,6 +23794,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gog",
   "pinyin": "ya",
   "frequency": 5789,
   "quality": "full",
@@ -22912,6 +23834,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rwb",
   "pinyin": "qiang",
   "frequency": 5785,
   "quality": "full",
@@ -22949,10 +23872,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nong",
   "frequency": 5784,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "列",
@@ -22988,6 +23914,7 @@
   },
   "short1": null,
   "short2": "gq",
+  "short3": "gqj",
   "pinyin": "lie",
   "frequency": 5778,
   "quality": "full",
@@ -23027,6 +23954,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rfm",
   "pinyin": "zhi",
   "frequency": 5760,
   "quality": "full",
@@ -23063,6 +23991,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tong",
   "frequency": 5739,
   "quality": "full",
@@ -23101,6 +24030,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ci",
   "frequency": 5735,
   "quality": "full",
@@ -23136,6 +24066,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chang",
   "frequency": 5728,
   "quality": "full",
@@ -23176,6 +24107,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nuan",
   "frequency": 5727,
   "quality": "partial",
@@ -23215,6 +24147,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gan",
   "frequency": 5722,
   "quality": "full",
@@ -23253,6 +24186,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ping",
   "frequency": 5717,
   "quality": "full",
@@ -23292,6 +24226,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhui",
   "frequency": 5675,
   "quality": "full",
@@ -23330,6 +24265,7 @@
   "recognition": null,
   "short1": null,
   "short2": "jc",
+  "short3": "jcx",
   "pinyin": "jin",
   "frequency": 5672,
   "quality": "full",
@@ -23368,6 +24304,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ti",
   "frequency": 5668,
   "quality": "full",
@@ -23406,6 +24343,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ahn",
   "pinyin": "chen",
   "frequency": 5666,
   "quality": "full",
@@ -23445,10 +24383,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "you",
   "frequency": 5665,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "读",
@@ -23481,6 +24422,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yfn",
   "pinyin": "du",
   "frequency": 5660,
   "quality": "full",
@@ -23521,6 +24463,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gfi",
   "pinyin": "qiu",
   "frequency": 5650,
   "quality": "partial",
@@ -23561,10 +24504,13 @@
   },
   "short1": null,
   "short2": "pf",
+  "short3": null,
   "pinyin": "shou",
   "frequency": 5648,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "俄",
@@ -23600,6 +24546,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wtr",
   "pinyin": "e",
   "frequency": 5645,
   "quality": "full",
@@ -23639,11 +24586,12 @@
   },
   "short1": null,
   "short2": "al",
+  "short3": null,
   "pinyin": "gong",
   "frequency": 5641,
   "quality": "full",
   "notes": [
-   "末位为识别码槽（可读字形），已丢弃"
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -23677,6 +24625,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "duan",
   "frequency": 5639,
   "quality": "full",
@@ -23718,6 +24667,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "san",
   "frequency": 5634,
   "quality": "full",
@@ -23755,10 +24705,13 @@
   },
   "short1": null,
   "short2": "yq",
+  "short3": null,
   "pinyin": "yi",
   "frequency": 5628,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "公",
@@ -23792,10 +24745,13 @@
   },
   "short1": null,
   "short2": "wc",
+  "short3": null,
   "pinyin": "gong",
   "frequency": 5628,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "攻",
@@ -23829,10 +24785,13 @@
   },
   "short1": null,
   "short2": "at",
+  "short3": null,
   "pinyin": "gong",
   "frequency": 5612,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "陈",
@@ -23868,6 +24827,7 @@
   },
   "short1": null,
   "short2": "ba",
+  "short3": "bai",
   "pinyin": "chen",
   "frequency": 5608,
   "quality": "full",
@@ -23907,6 +24867,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "li",
   "frequency": 5605,
   "quality": "full",
@@ -23944,10 +24905,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qing",
   "frequency": 5581,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "引",
@@ -23981,10 +24945,13 @@
   },
   "short1": null,
   "short2": "xh",
+  "short3": null,
   "pinyin": "yin",
   "frequency": 5550,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "投",
@@ -24020,6 +24987,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rmc",
   "pinyin": "tou",
   "frequency": 5530,
   "quality": "full",
@@ -24048,6 +25016,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mu",
   "frequency": 5518,
   "quality": "full",
@@ -24087,6 +25056,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "scf",
   "pinyin": "shu",
   "frequency": 5516,
   "quality": "full",
@@ -24124,10 +25094,13 @@
   },
   "short1": null,
   "short2": "ff",
+  "short3": null,
   "pinyin": "si",
   "frequency": 5512,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "岗",
@@ -24163,6 +25136,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mmq",
   "pinyin": "gang",
   "frequency": 5473,
   "quality": "full",
@@ -24199,6 +25173,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qiang",
   "frequency": 5461,
   "quality": "full",
@@ -24237,6 +25212,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "hcd",
   "pinyin": "po",
   "frequency": 5456,
   "quality": "full",
@@ -24278,6 +25254,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shang",
   "frequency": 5434,
   "quality": "full",
@@ -24315,10 +25292,13 @@
   },
   "short1": null,
   "short2": "my",
+  "short3": null,
   "pinyin": "fan",
   "frequency": 5431,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "邦",
@@ -24354,6 +25334,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dtb",
   "pinyin": "bang",
   "frequency": 5417,
   "quality": "full",
@@ -24395,6 +25376,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "sve",
   "pinyin": "gen",
   "frequency": 5413,
   "quality": "partial",
@@ -24436,10 +25418,13 @@
   },
   "short1": null,
   "short2": "gs",
+  "short3": null,
   "pinyin": "mo",
   "frequency": 5409,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "枪",
@@ -24475,6 +25460,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "swb",
   "pinyin": "qiang",
   "frequency": 5382,
   "quality": "full",
@@ -24514,6 +25500,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fcp",
   "pinyin": "yun",
   "frequency": 5366,
   "quality": "full",
@@ -24553,6 +25540,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 5361,
   "quality": "full",
@@ -24589,6 +25577,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gang",
   "frequency": 5353,
   "quality": "full",
@@ -24627,6 +25616,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ktm",
   "pinyin": "xiang",
   "frequency": 5346,
   "quality": "full",
@@ -24665,6 +25655,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "shi",
   "frequency": 5320,
   "quality": "full",
@@ -24706,6 +25697,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rqc",
   "pinyin": "gui",
   "frequency": 5314,
   "quality": "full",
@@ -24745,6 +25737,7 @@
   },
   "short1": null,
   "short2": "rx",
+  "short3": "rxx",
   "pinyin": "pi",
   "frequency": 5299,
   "quality": "full",
@@ -24782,10 +25775,13 @@
   },
   "short1": null,
   "short2": "qn",
+  "short3": null,
   "pinyin": "bao",
   "frequency": 5289,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "替",
@@ -24818,6 +25814,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fwf",
   "pinyin": "ti",
   "frequency": 5281,
   "quality": "full",
@@ -24859,6 +25856,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ngk",
   "pinyin": "si",
   "frequency": 5271,
   "quality": "full",
@@ -24898,6 +25896,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "juan",
   "frequency": 5269,
   "quality": "full",
@@ -24939,6 +25938,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "upy",
   "pinyin": "pang",
   "frequency": 5260,
   "quality": "partial",
@@ -24981,6 +25981,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dht",
   "pinyin": "xia",
   "frequency": 5257,
   "quality": "full",
@@ -25020,6 +26021,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rvk",
   "pinyin": "zhao",
   "frequency": 5248,
   "quality": "full",
@@ -25059,6 +26061,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gah",
   "pinyin": "wu",
   "frequency": 5241,
   "quality": "full",
@@ -25098,10 +26101,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mao",
   "frequency": 5231,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "族",
@@ -25134,6 +26140,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ytt",
   "pinyin": "zu",
   "frequency": 5215,
   "quality": "full",
@@ -25175,6 +26182,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tie",
   "frequency": 5204,
   "quality": "full",
@@ -25211,6 +26219,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "dgj",
   "pinyin": "ying",
   "frequency": 5193,
   "quality": "full",
@@ -25250,10 +26259,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "li",
   "frequency": 5167,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "坛",
@@ -25289,6 +26301,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ffc",
   "pinyin": "tan",
   "frequency": 5158,
   "quality": "full",
@@ -25325,6 +26338,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "leng",
   "frequency": 5144,
   "quality": "full",
@@ -25365,10 +26379,13 @@
   },
   "short1": null,
   "short2": "gy",
+  "short3": null,
   "pinyin": "yu",
   "frequency": 5140,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "腿",
@@ -25403,6 +26420,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "eve",
   "pinyin": "tui",
   "frequency": 5139,
   "quality": "partial",
@@ -25444,6 +26462,7 @@
   "recognition": null,
   "short1": null,
   "short2": "tw",
+  "short3": "twg",
   "pinyin": "da",
   "frequency": 5137,
   "quality": "full",
@@ -25485,6 +26504,7 @@
   },
   "short1": null,
   "short2": "wk",
+  "short3": "wks",
   "pinyin": "bao",
   "frequency": 5119,
   "quality": "full",
@@ -25521,6 +26541,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhao",
   "frequency": 5076,
   "quality": "full",
@@ -25559,6 +26580,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wnh",
   "pinyin": "jia",
   "frequency": 5051,
   "quality": "full",
@@ -25600,6 +26622,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "src",
   "pinyin": "ban",
   "frequency": 5049,
   "quality": "full",
@@ -25636,6 +26659,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "trh",
   "pinyin": "yu",
   "frequency": 5044,
   "quality": "full",
@@ -25679,6 +26703,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "jqr",
   "pinyin": "yi",
   "frequency": 5042,
   "quality": "partial",
@@ -25719,6 +26744,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zei",
   "frequency": 5032,
   "quality": "full",
@@ -25735,32 +26761,35 @@
   "componentsSource": "D2",
   "components": [
    "女",
-   "马",
-   "一"
+   "马"
   ],
   "keys": [
    "v",
-   "c",
-   "g"
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰女马",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": "vc",
+  "short3": null,
   "pinyin": "ma",
   "frequency": 5014,
   "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -25797,6 +26826,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yac",
   "pinyin": "du",
   "frequency": 4995,
   "quality": "full",
@@ -25834,10 +26864,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "song",
   "frequency": 4976,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "专",
@@ -25873,6 +26906,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fny",
   "pinyin": "zhuan",
   "frequency": 4975,
   "quality": "full",
@@ -25909,6 +26943,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ybv",
   "pinyin": "shu",
   "frequency": 4974,
   "quality": "full",
@@ -25948,10 +26983,13 @@
   },
   "short1": null,
   "short2": "yf",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 4965,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "忘",
@@ -25987,6 +27025,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wang",
   "frequency": 4957,
   "quality": "full",
@@ -26026,6 +27065,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fhh",
   "pinyin": "fu",
   "frequency": 4943,
   "quality": "full",
@@ -26062,6 +27102,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "she",
   "frequency": 4926,
   "quality": "full",
@@ -26101,10 +27142,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ye",
   "frequency": 4911,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "乃",
@@ -26134,6 +27178,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nai",
   "frequency": 4905,
   "quality": "full",
@@ -26172,6 +27217,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fpf",
   "pinyin": "yuan",
   "frequency": 4893,
   "quality": "full",
@@ -26209,6 +27255,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "cnh",
   "pinyin": "ba",
   "frequency": 4887,
   "quality": "full",
@@ -26250,6 +27297,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kth",
   "pinyin": "zan",
   "frequency": 4884,
   "quality": "full",
@@ -26287,10 +27335,13 @@
   },
   "short1": null,
   "short2": "fc",
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 4883,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "厚",
@@ -26326,6 +27377,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "djb",
   "pinyin": "hou",
   "frequency": 4878,
   "quality": "full",
@@ -26362,6 +27414,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "oat",
   "pinyin": "shao",
   "frequency": 4867,
   "quality": "full",
@@ -26400,6 +27453,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wei",
   "frequency": 4852,
   "quality": "full",
@@ -26441,6 +27495,7 @@
   },
   "short1": null,
   "short2": "ha",
+  "short3": "ham",
   "pinyin": "hu",
   "frequency": 4845,
   "quality": "full",
@@ -26480,6 +27535,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dmh",
   "pinyin": "bu",
   "frequency": 4827,
   "quality": "full",
@@ -26517,10 +27573,13 @@
   },
   "short1": null,
   "short2": "ab",
+  "short3": null,
   "pinyin": "jie",
   "frequency": 4822,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "升",
@@ -26554,10 +27613,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sheng",
   "frequency": 4813,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "依",
@@ -26593,6 +27655,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wye",
   "pinyin": "yi",
   "frequency": 4797,
   "quality": "full",
@@ -26630,10 +27693,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ku",
   "frequency": 4796,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "绝",
@@ -26669,6 +27735,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xqc",
   "pinyin": "jue",
   "frequency": 4795,
   "quality": "full",
@@ -26705,6 +27772,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "fan",
   "frequency": 4788,
   "quality": "full",
@@ -26746,6 +27814,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "iqp",
   "pinyin": "tao",
   "frequency": 4781,
   "quality": "full",
@@ -26782,6 +27851,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yvh",
   "pinyin": "tang",
   "frequency": 4769,
   "quality": "full",
@@ -26823,6 +27893,7 @@
   },
   "short1": null,
   "short2": "dw",
+  "short3": "dwj",
   "pinyin": "chun",
   "frequency": 4753,
   "quality": "full",
@@ -26860,10 +27931,13 @@
   },
   "short1": null,
   "short2": "ub",
+  "short3": null,
   "pinyin": "wen",
   "frequency": 4745,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "奇",
@@ -26899,6 +27973,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qi",
   "frequency": 4743,
   "quality": "full",
@@ -26938,6 +28013,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ltk",
   "pinyin": "lve",
   "frequency": 4740,
   "quality": "full",
@@ -26974,6 +28050,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jia",
   "frequency": 4733,
   "quality": "full",
@@ -27015,6 +28092,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ssn",
   "pinyin": "chu",
   "frequency": 4713,
   "quality": "full",
@@ -27054,6 +28132,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "han",
   "frequency": 4712,
   "quality": "full",
@@ -27095,6 +28174,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wwv",
   "pinyin": "fen",
   "frequency": 4674,
   "quality": "full",
@@ -27131,6 +28211,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gyt",
   "pinyin": "ban",
   "frequency": 4674,
   "quality": "full",
@@ -27167,6 +28248,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "guang",
   "frequency": 4658,
   "quality": "full",
@@ -27208,6 +28290,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nu",
   "frequency": 4653,
   "quality": "full",
@@ -27245,10 +28328,13 @@
   },
   "short1": null,
   "short2": "bi",
+  "short3": null,
   "pinyin": "sun",
   "frequency": 4645,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "绣",
@@ -27284,6 +28370,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xiu",
   "frequency": 4645,
   "quality": "full",
@@ -27322,6 +28409,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ban",
   "frequency": 4626,
   "quality": "full",
@@ -27365,6 +28453,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fgi",
   "pinyin": "huai",
   "frequency": 4624,
   "quality": "partial",
@@ -27406,6 +28495,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xeg",
   "pinyin": "zu",
   "frequency": 4621,
   "quality": "full",
@@ -27443,10 +28533,13 @@
   },
   "short1": null,
   "short2": "kf",
+  "short3": null,
   "pinyin": "ye",
   "frequency": 4617,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "轮",
@@ -27482,6 +28575,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lwx",
   "pinyin": "lun",
   "frequency": 4615,
   "quality": "full",
@@ -27518,6 +28612,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "sks",
   "pinyin": "ge",
   "frequency": 4609,
   "quality": "full",
@@ -27559,6 +28654,7 @@
   },
   "short1": null,
   "short2": "un",
+  "short3": "unw",
   "pinyin": "jue",
   "frequency": 4589,
   "quality": "full",
@@ -27595,6 +28691,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xi",
   "frequency": 4587,
   "quality": "full",
@@ -27637,6 +28734,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dfy",
   "pinyin": "ya",
   "frequency": 4586,
   "quality": "full",
@@ -27673,6 +28771,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "xuj",
   "pinyin": "dan",
   "frequency": 4578,
   "quality": "full",
@@ -27714,6 +28813,7 @@
   },
   "short1": null,
   "short2": "jo",
+  "short3": "jog",
   "pinyin": "xian",
   "frequency": 4574,
   "quality": "full",
@@ -27753,6 +28853,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ygk",
   "pinyin": "yu",
   "frequency": 4563,
   "quality": "full",
@@ -27789,6 +28890,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "pgc",
   "pinyin": "shi",
   "frequency": 4562,
   "quality": "full",
@@ -27828,10 +28930,13 @@
   },
   "short1": null,
   "short2": "og",
+  "short3": null,
   "pinyin": "ye",
   "frequency": 4553,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "摸",
@@ -27864,6 +28969,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mo",
   "frequency": 4552,
   "quality": "full",
@@ -27903,10 +29009,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "miao",
   "frequency": 4541,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "稍",
@@ -27942,6 +29051,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tie",
   "pinyin": "shao",
   "frequency": 4540,
   "quality": "full",
@@ -27981,6 +29091,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gxi",
   "pinyin": "su",
   "frequency": 4533,
   "quality": "full",
@@ -28018,10 +29129,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pu",
   "frequency": 4520,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "赶",
@@ -28057,6 +29171,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gan",
   "frequency": 4518,
   "quality": "full",
@@ -28098,6 +29213,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qbp",
   "pinyin": "ying",
   "frequency": 4509,
   "quality": "partial",
@@ -28139,6 +29255,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "pgy",
   "pinyin": "bao",
   "frequency": 4496,
   "quality": "full",
@@ -28176,10 +29293,13 @@
   },
   "short1": null,
   "short2": "js",
+  "short3": null,
   "pinyin": "guo",
   "frequency": 4482,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "贵",
@@ -28212,6 +29332,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gui",
   "frequency": 4478,
   "quality": "full",
@@ -28250,6 +29371,7 @@
   "recognition": null,
   "short1": null,
   "short2": "oi",
+  "short3": "oit",
   "pinyin": "chao",
   "frequency": 4473,
   "quality": "full",
@@ -28288,6 +29410,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "uym",
   "pinyin": "nao",
   "frequency": 4458,
   "quality": "full",
@@ -28329,6 +29452,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rck",
   "pinyin": "tai",
   "frequency": 4456,
   "quality": "full",
@@ -28368,6 +29492,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yu",
   "frequency": 4450,
   "quality": "full",
@@ -28407,10 +29532,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qi",
   "frequency": 4450,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "骑",
@@ -28443,6 +29571,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "cds",
   "pinyin": "qi",
   "frequency": 4437,
   "quality": "full",
@@ -28485,6 +29614,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fhl",
   "pinyin": "yan",
   "frequency": 4433,
   "quality": "full",
@@ -28521,6 +29651,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zu",
   "frequency": 4428,
   "quality": "full",
@@ -28562,6 +29693,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "jtg",
   "pinyin": "xing",
   "frequency": 4424,
   "quality": "full",
@@ -28601,6 +29733,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kjf",
   "pinyin": "li",
   "frequency": 4421,
   "quality": "full",
@@ -28640,6 +29773,7 @@
   },
   "short1": null,
   "short2": "pt",
+  "short3": "ptk",
   "pinyin": "ke",
   "frequency": 4415,
   "quality": "full",
@@ -28676,6 +29810,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bai",
   "frequency": 4413,
   "quality": "full",
@@ -28717,6 +29852,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "waj",
   "pinyin": "jie",
   "frequency": 4411,
   "quality": "full",
@@ -28754,10 +29890,13 @@
   },
   "short1": null,
   "short2": "rr",
+  "short3": null,
   "pinyin": "zhe",
   "frequency": 4410,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "负",
@@ -28791,10 +29930,13 @@
   },
   "short1": null,
   "short2": "qm",
+  "short3": null,
   "pinyin": "fu",
   "frequency": 4410,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "击",
@@ -28828,10 +29970,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ji",
   "frequency": 4400,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "戴",
@@ -28864,6 +30009,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "dai",
   "frequency": 4398,
   "quality": "full",
@@ -28903,10 +30049,13 @@
   },
   "short1": null,
   "short2": "xl",
+  "short3": null,
   "pinyin": "xi",
   "frequency": 4388,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "呆",
@@ -28940,10 +30089,13 @@
   },
   "short1": null,
   "short2": "ks",
+  "short3": null,
   "pinyin": "dai",
   "frequency": 4383,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "奉",
@@ -28979,6 +30131,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dwf",
   "pinyin": "feng",
   "frequency": 4375,
   "quality": "full",
@@ -29018,6 +30171,7 @@
   },
   "short1": null,
   "short2": "cm",
+  "short3": "cmq",
   "pinyin": "guan",
   "frequency": 4368,
   "quality": "full",
@@ -29057,6 +30211,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kjj",
   "pinyin": "chang",
   "frequency": 4365,
   "quality": "full",
@@ -29096,6 +30251,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wxf",
   "pinyin": "hua",
   "frequency": 4364,
   "quality": "full",
@@ -29137,6 +30293,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "du",
   "frequency": 4357,
   "quality": "partial",
@@ -29180,6 +30337,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "inx",
   "pinyin": "ni",
   "frequency": 4354,
   "quality": "full",
@@ -29219,6 +30377,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kfi",
   "pinyin": "wei",
   "frequency": 4348,
   "quality": "full",
@@ -29258,6 +30417,7 @@
   },
   "short1": null,
   "short2": "il",
+  "short3": "ilr",
   "pinyin": "jian",
   "frequency": 4325,
   "quality": "full",
@@ -29297,6 +30457,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vck",
   "pinyin": "shi",
   "frequency": 4321,
   "quality": "full",
@@ -29333,6 +30494,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "sam",
   "pinyin": "heng",
   "frequency": 4321,
   "quality": "full",
@@ -29374,6 +30536,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ypm",
   "pinyin": "liang",
   "frequency": 4307,
   "quality": "full",
@@ -29411,10 +30574,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tao",
   "frequency": 4300,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "兴",
@@ -29425,36 +30591,38 @@
   "componentsSource": "D2",
   "components": [
    "丷",
-   "一",
-   "八"
+   "一"
   ],
   "keys": [
    "i",
-   "w",
-   "u"
+   "w"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿱𭕄𬺢",
   "idsStructure": "上下",
   "positionMismatch": [
-   2,
-   3
+   2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "u",
+   "stroke": "捺",
+   "structure": "上下",
+   "because": "2 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
+  },
   "short1": null,
   "short2": "iw",
+  "short3": null,
   "pinyin": "xing",
   "frequency": 4294,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 2 个（一，键 w）、第 3 个（八，键 u）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 2 个（一，键 w）"
   ]
  },
  {
@@ -29489,10 +30657,13 @@
   },
   "short1": null,
   "short2": "hi",
+  "short3": null,
   "pinyin": "bu",
   "frequency": 4285,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "仙",
@@ -29526,10 +30697,13 @@
   },
   "short1": null,
   "short2": "wm",
+  "short3": null,
   "pinyin": "xian",
   "frequency": 4284,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "雪",
@@ -29563,10 +30737,13 @@
   },
   "short1": null,
   "short2": "fv",
+  "short3": null,
   "pinyin": "xue",
   "frequency": 4284,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "倍",
@@ -29602,6 +30779,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wuk",
   "pinyin": "bei",
   "frequency": 4282,
   "quality": "full",
@@ -29639,10 +30817,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "han",
   "frequency": 4274,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "耳",
@@ -29676,6 +30857,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "bgh",
   "pinyin": "er",
   "frequency": 4244,
   "quality": "full",
@@ -29717,6 +30899,7 @@
   },
   "short1": null,
   "short2": "st",
+  "short3": "stk",
   "pinyin": "ge",
   "frequency": 4237,
   "quality": "full",
@@ -29754,10 +30937,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ji",
   "frequency": 4236,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "核",
@@ -29790,6 +30976,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "he",
   "frequency": 4229,
   "quality": "full",
@@ -29831,6 +31018,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xww",
   "pinyin": "zong",
   "frequency": 4220,
   "quality": "full",
@@ -29867,6 +31055,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "kkd",
   "pinyin": "qi",
   "frequency": 4219,
   "quality": "full",
@@ -29905,6 +31094,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ou",
   "frequency": 4215,
   "quality": "full",
@@ -29946,6 +31136,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uep",
   "pinyin": "sui",
   "frequency": 4209,
   "quality": "full",
@@ -29985,6 +31176,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "gfq",
   "pinyin": "wan",
   "frequency": 4207,
   "quality": "full",
@@ -30021,6 +31213,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "xan",
   "pinyin": "lian",
   "frequency": 4197,
   "quality": "full",
@@ -30062,6 +31255,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ldj",
   "pinyin": "zui",
   "frequency": 4177,
   "quality": "partial",
@@ -30104,6 +31298,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ugl",
   "pinyin": "gai",
   "frequency": 4175,
   "quality": "full",
@@ -30143,6 +31338,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kha",
   "pinyin": "ju",
   "frequency": 4166,
   "quality": "full",
@@ -30181,6 +31377,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhai",
   "frequency": 4159,
   "quality": "partial",
@@ -30223,6 +31420,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kgh",
   "pinyin": "xia",
   "frequency": 4156,
   "quality": "full",
@@ -30262,6 +31460,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tux",
   "pinyin": "cheng",
   "frequency": 4150,
   "quality": "full",
@@ -30299,10 +31498,13 @@
   },
   "short1": null,
   "short2": "ds",
+  "short3": null,
   "pinyin": "ting",
   "frequency": 4146,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "叹",
@@ -30336,10 +31538,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tan",
   "frequency": 4144,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "恨",
@@ -30377,6 +31582,7 @@
   },
   "short1": null,
   "short2": "nv",
+  "short3": "nve",
   "pinyin": "hen",
   "frequency": 4139,
   "quality": "partial",
@@ -30420,6 +31626,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wfi",
   "pinyin": "ji",
   "frequency": 4139,
   "quality": "full",
@@ -30457,6 +31664,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "han",
   "frequency": 4132,
   "quality": "full",
@@ -30498,6 +31706,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yvk",
   "pinyin": "zhao",
   "frequency": 4127,
   "quality": "full",
@@ -30534,6 +31743,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 4123,
   "quality": "full",
@@ -30572,6 +31782,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "si",
   "frequency": 4120,
   "quality": "full",
@@ -30613,6 +31824,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kqw",
   "pinyin": "chui",
   "frequency": 4119,
   "quality": "full",
@@ -30649,6 +31861,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "hao",
   "pinyin": "xu",
   "frequency": 4112,
   "quality": "full",
@@ -30690,6 +31903,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "inr",
   "pinyin": "tang",
   "frequency": 4099,
   "quality": "partial",
@@ -30731,6 +31945,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gou",
   "frequency": 4088,
   "quality": "full",
@@ -30772,6 +31987,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ynf",
   "pinyin": "xun",
   "frequency": 4086,
   "quality": "full",
@@ -30808,6 +32024,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zi",
   "frequency": 4076,
   "quality": "full",
@@ -30847,10 +32064,13 @@
   },
   "short1": null,
   "short2": "fw",
+  "short3": null,
   "pinyin": "fu",
   "frequency": 4074,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "弦",
@@ -30886,6 +32106,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xyx",
   "pinyin": "xian",
   "frequency": 4072,
   "quality": "full",
@@ -30927,6 +32148,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ggi",
   "pinyin": "huan",
   "frequency": 4066,
   "quality": "partial",
@@ -30968,6 +32190,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "oge",
   "pinyin": "jing",
   "frequency": 4066,
   "quality": "full",
@@ -31005,10 +32228,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "hu",
   "frequency": 4053,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "挥",
@@ -31044,6 +32270,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rpl",
   "pinyin": "hui",
   "frequency": 4046,
   "quality": "full",
@@ -31080,6 +32307,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pa",
   "frequency": 4046,
   "quality": "full",
@@ -31119,10 +32347,13 @@
   },
   "short1": null,
   "short2": "mn",
+  "short3": null,
   "pinyin": "qi",
   "frequency": 4042,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "奏",
@@ -31155,6 +32386,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "dwg",
   "pinyin": "zou",
   "frequency": 4034,
   "quality": "full",
@@ -31196,6 +32428,7 @@
   },
   "short1": null,
   "short2": "rf",
+  "short3": "rff",
   "pinyin": "chi",
   "frequency": 4025,
   "quality": "full",
@@ -31222,6 +32455,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tuan",
   "frequency": 4025,
   "quality": "unknown",
@@ -31261,10 +32495,13 @@
   },
   "short1": null,
   "short2": "wn",
+  "short3": null,
   "pinyin": "yi",
   "frequency": 4023,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "夜",
@@ -31297,6 +32534,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ywt",
   "pinyin": "ye",
   "frequency": 4020,
   "quality": "full",
@@ -31335,6 +32573,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "idr",
   "pinyin": "yuan",
   "frequency": 4016,
   "quality": "full",
@@ -31373,6 +32612,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wei",
   "frequency": 4010,
   "quality": "full",
@@ -31414,6 +32654,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nnk",
   "pinyin": "ju",
   "frequency": 4001,
   "quality": "full",
@@ -31451,10 +32692,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sheng",
   "frequency": 3999,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "懂",
@@ -31487,6 +32731,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "nat",
   "pinyin": "dong",
   "frequency": 3998,
   "quality": "full",
@@ -31528,6 +32773,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dhb",
   "pinyin": "cun",
   "frequency": 3981,
   "quality": "full",
@@ -31564,6 +32810,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ti",
+  "short3": "tit",
   "pinyin": "miao",
   "frequency": 3981,
   "quality": "full",
@@ -31602,6 +32849,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "nian",
   "frequency": 3978,
   "quality": "full",
@@ -31643,6 +32891,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "vyv",
   "pinyin": "niang",
   "frequency": 3971,
   "quality": "full",
@@ -31680,10 +32929,13 @@
   },
   "short1": null,
   "short2": "me",
+  "short3": null,
   "pinyin": "gu",
   "frequency": 3946,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "插",
@@ -31716,6 +32968,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "rtf",
   "pinyin": "cha",
   "frequency": 3939,
   "quality": "full",
@@ -31754,6 +33007,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xian",
   "frequency": 3934,
   "quality": "full",
@@ -31792,6 +33046,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fuj",
   "pinyin": "jing",
   "frequency": 3916,
   "quality": "full",
@@ -31830,6 +33085,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "pnt",
   "pinyin": "mi",
   "frequency": 3911,
   "quality": "full",
@@ -31871,6 +33127,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhu",
   "frequency": 3911,
   "quality": "partial",
@@ -31910,6 +33167,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "wul",
   "pinyin": "seng",
   "frequency": 3908,
   "quality": "full",
@@ -31948,6 +33206,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "sgc",
   "pinyin": "suan",
   "frequency": 3899,
   "quality": "full",
@@ -31989,6 +33248,7 @@
   },
   "short1": null,
   "short2": "ol",
+  "short3": "old",
   "pinyin": "yan",
   "frequency": 3894,
   "quality": "full",
@@ -32025,6 +33285,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "fhv",
   "pinyin": "chao",
   "frequency": 3870,
   "quality": "full",
@@ -32066,6 +33327,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "alw",
   "pinyin": "su",
   "frequency": 3869,
   "quality": "full",
@@ -32105,6 +33367,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "nhj",
   "pinyin": "dan",
   "frequency": 3862,
   "quality": "full",
@@ -32141,6 +33404,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "bgk",
   "pinyin": "ge",
   "frequency": 3859,
   "quality": "full",
@@ -32183,6 +33447,7 @@
   "recognition": null,
   "short1": null,
   "short2": "um",
+  "short3": "umw",
   "pinyin": "shang",
   "frequency": 3853,
   "quality": "partial",
@@ -32225,6 +33490,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "rdj",
   "pinyin": "pai",
   "frequency": 3852,
   "quality": "partial",
@@ -32264,6 +33530,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tang",
   "frequency": 3849,
   "quality": "full",
@@ -32305,6 +33572,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tel",
   "pinyin": "pan",
   "frequency": 3846,
   "quality": "full",
@@ -32342,10 +33610,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "huang",
   "frequency": 3844,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "争",
@@ -32381,6 +33652,7 @@
   },
   "short1": null,
   "short2": "qv",
+  "short3": "qvh",
   "pinyin": "zheng",
   "frequency": 3841,
   "quality": "full",
@@ -32420,6 +33692,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yuan",
   "frequency": 3841,
   "quality": "full",
@@ -32456,6 +33729,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pian",
   "frequency": 3833,
   "quality": "full",
@@ -32494,6 +33768,7 @@
   "recognition": null,
   "short1": null,
   "short2": "db",
+  "short3": "dbd",
   "pinyin": "gu",
   "frequency": 3823,
   "quality": "full",
@@ -32532,6 +33807,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qtq",
   "pinyin": "gou",
   "frequency": 3801,
   "quality": "full",
@@ -32571,10 +33847,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "er",
   "frequency": 3788,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "鸡",
@@ -32607,6 +33886,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "cqy",
   "pinyin": "ji",
   "frequency": 3779,
   "quality": "full",
@@ -32648,6 +33928,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xiang",
   "frequency": 3778,
   "quality": "full",
@@ -32684,6 +33965,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "euk",
   "pinyin": "tuo",
   "frequency": 3778,
   "quality": "full",
@@ -32722,6 +34004,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "ruj",
   "pinyin": "zhuang",
   "frequency": 3773,
   "quality": "full",
@@ -32752,6 +34035,7 @@
   "recognition": null,
   "short1": "a",
   "short2": null,
+  "short3": "aaa",
   "pinyin": "gong",
   "frequency": 3771,
   "quality": "full",
@@ -32791,6 +34075,7 @@
   },
   "short1": null,
   "short2": "xf",
+  "short3": null,
   "pinyin": "jie",
   "frequency": 3761,
   "quality": "full",
@@ -32831,6 +34116,7 @@
   "recognition": null,
   "short1": null,
   "short2": "up",
+  "short3": "upm",
   "pinyin": "di",
   "frequency": 3756,
   "quality": "partial",
@@ -32870,6 +34156,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pian",
   "frequency": 3750,
   "quality": "full",
@@ -32908,6 +34195,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ting",
   "frequency": 3742,
   "quality": "full",
@@ -32949,6 +34237,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qtb",
   "pinyin": "fan",
   "frequency": 3742,
   "quality": "full",
@@ -32988,6 +34277,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ihc",
   "pinyin": "bo",
   "frequency": 3739,
   "quality": "full",
@@ -33027,6 +34317,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gao",
   "frequency": 3737,
   "quality": "full",
@@ -33064,10 +34355,13 @@
   },
   "short1": null,
   "short2": "lq",
+  "short3": null,
   "pinyin": "luo",
   "frequency": 3730,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "软",
@@ -33103,6 +34397,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "lqw",
   "pinyin": "ruan",
   "frequency": 3730,
   "quality": "full",
@@ -33140,10 +34435,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "qian",
   "frequency": 3728,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "纸",
@@ -33179,6 +34477,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xqa",
   "pinyin": "zhi",
   "frequency": 3727,
   "quality": "full",
@@ -33218,6 +34517,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yaa",
   "pinyin": "shi",
   "frequency": 3723,
   "quality": "full",
@@ -33257,6 +34557,7 @@
   },
   "short1": null,
   "short2": "qd",
+  "short3": "qdo",
   "pinyin": "ran",
   "frequency": 3720,
   "quality": "full",
@@ -33296,6 +34597,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ssq",
   "pinyin": "meng",
   "frequency": 3719,
   "quality": "full",
@@ -33335,6 +34637,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "swc",
   "pinyin": "song",
   "frequency": 3715,
   "quality": "full",
@@ -33372,10 +34675,13 @@
   },
   "short1": null,
   "short2": "bp",
+  "short3": null,
   "pinyin": "liao",
   "frequency": 3713,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "旗",
@@ -33408,6 +34714,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "yta",
   "pinyin": "qi",
   "frequency": 3704,
   "quality": "full",
@@ -33449,6 +34756,7 @@
   },
   "short1": null,
   "short2": "xv",
+  "short3": "xvi",
   "pinyin": "lv",
   "frequency": 3701,
   "quality": "full",
@@ -33488,6 +34796,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "uce",
   "pinyin": "tong",
   "frequency": 3680,
   "quality": "full",
@@ -33527,6 +34836,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhun",
   "frequency": 3672,
   "quality": "full",
@@ -33541,19 +34851,17 @@
   "componentsSource": "D2",
   "components": [
    "丿",
-   "乚",
-   "小"
+   "乚"
   ],
   "keys": [
    "q",
-   "i",
    "i"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "杂合",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿻[1:]亅⿱#",
   "idsStructure": "杂合",
@@ -33561,16 +34869,21 @@
    1,
    2
   ],
-  "recognition": null,
+  "recognition": {
+   "key": "i",
+   "stroke": "捺",
+   "structure": "杂合",
+   "because": "2 个字根不足四码：末笔捺 + 结构杂合 ⇒ 识别码 i"
+  },
   "short1": null,
   "short2": "qi",
+  "short3": null,
   "pinyin": "le",
   "frequency": 3667,
   "quality": "partial",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "标准字根/键位不符：第 1 个（丿，键 q）、第 2 个（乚，键 i）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）",
+   "标准字根/键位不符：第 1 个（丿，键 q）、第 2 个（乚，键 i）"
   ]
  },
  {
@@ -33605,10 +34918,13 @@
   },
   "short1": null,
   "short2": "fn",
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 3667,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "槸",
@@ -33641,6 +34957,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yi",
   "frequency": 3667,
   "quality": "full",
@@ -33681,10 +34998,13 @@
   },
   "short1": null,
   "short2": "rw",
+  "short3": null,
   "pinyin": "shi",
   "frequency": 3661,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "害",
@@ -33717,6 +35037,7 @@
   "recognition": null,
   "short1": null,
   "short2": "pd",
+  "short3": "pdh",
   "pinyin": "hai",
   "frequency": 3654,
   "quality": "full",
@@ -33758,6 +35079,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "buk",
   "pinyin": "pei",
   "frequency": 3654,
   "quality": "full",
@@ -33794,6 +35116,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sha",
   "frequency": 3651,
   "quality": "full",
@@ -33832,6 +35155,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 3645,
   "quality": "full",
@@ -33870,6 +35194,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ad",
+  "short3": null,
   "pinyin": "ji",
   "frequency": 3644,
   "quality": "full",
@@ -33911,6 +35236,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ygh",
   "pinyin": "zheng",
   "frequency": 3628,
   "quality": "full",
@@ -33947,6 +35273,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "duo",
   "frequency": 3628,
   "quality": "full",
@@ -33988,6 +35315,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dqe",
   "pinyin": "que",
   "frequency": 3623,
   "quality": "full",
@@ -34024,6 +35352,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bi",
   "frequency": 3617,
   "quality": "full",
@@ -34059,6 +35388,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ding",
   "frequency": 3607,
   "quality": "full",
@@ -34100,6 +35430,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ght",
   "pinyin": "zheng",
   "frequency": 3607,
   "quality": "full",
@@ -34136,6 +35467,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "oft",
   "pinyin": "kao",
   "frequency": 3606,
   "quality": "full",
@@ -34172,6 +35504,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 3600,
   "quality": "partial",
@@ -34213,6 +35546,7 @@
   },
   "short1": null,
   "short2": "oq",
+  "short3": "oqn",
   "pinyin": "pao",
   "frequency": 3599,
   "quality": "full",
@@ -34252,6 +35586,7 @@
   },
   "short1": null,
   "short2": "py",
+  "short3": null,
   "pinyin": "she",
   "frequency": 3573,
   "quality": "full",
@@ -34291,6 +35626,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhong",
   "frequency": 3570,
   "quality": "full",
@@ -34331,6 +35667,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "kuq",
   "pinyin": "yao",
   "frequency": 3558,
   "quality": "partial",
@@ -34370,6 +35707,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tang",
   "frequency": 3550,
   "quality": "full",
@@ -34409,11 +35747,12 @@
   },
   "short1": null,
   "short2": "cl",
+  "short3": null,
   "pinyin": "quan",
   "frequency": 3543,
   "quality": "full",
   "notes": [
-   "末位为识别码槽（可读字形），已丢弃"
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -34450,6 +35789,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "peg",
   "pinyin": "yi",
   "frequency": 3533,
   "quality": "full",
@@ -34489,6 +35829,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "esv",
   "pinyin": "yao",
   "frequency": 3532,
   "quality": "full",
@@ -34503,32 +35844,35 @@
   "componentsSource": "D2",
   "components": [
    "木",
-   "马",
-   "一"
+   "马"
   ],
   "keys": [
    "s",
-   "c",
-   "g"
+   "c"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "左右",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿰木马",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": null,
+  "recognition": {
+   "key": "g",
+   "stroke": "横",
+   "structure": "左右",
+   "because": "2 个字根不足四码：末笔横 + 结构左右 ⇒ 识别码 g"
+  },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ma",
   "frequency": 3505,
   "quality": "full",
   "notes": [
-   "拆字序列长于全码，已按码位截断（多出 1 个字形丢弃）",
-   "字根已够四码，无识别码"
+   "不足四码：只保留 2 个字根，尾部 2 个字形属识别码槽（已丢弃）"
   ]
  },
  {
@@ -34563,10 +35907,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mie",
   "frequency": 3504,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "箭",
@@ -34599,6 +35946,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "tue",
   "pinyin": "jian",
   "frequency": 3504,
   "quality": "full",
@@ -34640,6 +35988,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ce",
   "frequency": 3498,
   "quality": "full",
@@ -34677,10 +36026,13 @@
   },
   "short1": null,
   "short2": "vf",
+  "short3": null,
   "pinyin": "xun",
   "frequency": 3495,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "躺",
@@ -34713,6 +36065,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "tang",
   "frequency": 3481,
   "quality": "full",
@@ -34754,6 +36107,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ykk",
   "pinyin": "xiang",
   "frequency": 3478,
   "quality": "full",
@@ -34791,10 +36145,13 @@
   },
   "short1": null,
   "short2": "qe",
+  "short3": null,
   "pinyin": "jiao",
   "frequency": 3477,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "恩",
@@ -34830,6 +36187,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ldn",
   "pinyin": "en",
   "frequency": 3475,
   "quality": "full",
@@ -34869,6 +36227,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ktr",
   "pinyin": "o",
   "frequency": 3470,
   "quality": "full",
@@ -34907,6 +36266,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "gui",
   "frequency": 3466,
   "quality": "full",
@@ -34945,6 +36305,7 @@
   "recognition": null,
   "short1": null,
   "short2": "jm",
+  "short3": null,
   "pinyin": "yu",
   "frequency": 3465,
   "quality": "full",
@@ -34983,6 +36344,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chan",
   "frequency": 3462,
   "quality": "full",
@@ -35024,6 +36386,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wwk",
   "pinyin": "gu",
   "frequency": 3461,
   "quality": "full",
@@ -35060,6 +36423,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "meng",
   "frequency": 3459,
   "quality": "full",
@@ -35103,6 +36467,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "qgb",
   "pinyin": "yin",
   "frequency": 3458,
   "quality": "partial",
@@ -35142,10 +36507,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yi",
   "frequency": 3455,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "拖",
@@ -35181,6 +36549,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rtb",
   "pinyin": "tuo",
   "frequency": 3454,
   "quality": "full",
@@ -35220,6 +36589,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "oyv",
   "pinyin": "liang",
   "frequency": 3454,
   "quality": "full",
@@ -35256,6 +36626,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "han",
   "frequency": 3448,
   "quality": "full",
@@ -35297,6 +36668,7 @@
   },
   "short1": null,
   "short2": "sj",
+  "short3": "sjg",
   "pinyin": "cha",
   "frequency": 3443,
   "quality": "full",
@@ -35333,6 +36705,7 @@
   "recognition": null,
   "short1": null,
   "short2": "ky",
+  "short3": "kys",
   "pinyin": "ma",
   "frequency": 3437,
   "quality": "full",
@@ -35372,10 +36745,13 @@
   },
   "short1": null,
   "short2": "os",
+  "short3": null,
   "pinyin": "deng",
   "frequency": 3427,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "抗",
@@ -35411,6 +36787,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "kang",
   "frequency": 3426,
   "quality": "full",
@@ -35450,6 +36827,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wjh",
   "pinyin": "shen",
   "frequency": 3417,
   "quality": "full",
@@ -35489,6 +36867,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "yhk",
   "pinyin": "dian",
   "frequency": 3417,
   "quality": "full",
@@ -35526,10 +36905,13 @@
   },
   "short1": null,
   "short2": "bj",
+  "short3": null,
   "pinyin": "yang",
   "frequency": 3406,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "阵",
@@ -35563,10 +36945,13 @@
   },
   "short1": null,
   "short2": "bl",
+  "short3": null,
   "pinyin": "zhen",
   "frequency": 3405,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "兄",
@@ -35600,10 +36985,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xiong",
   "frequency": 3402,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "帐",
@@ -35639,6 +37027,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "mht",
   "pinyin": "zhang",
   "frequency": 3376,
   "quality": "full",
@@ -35675,6 +37064,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bian",
   "frequency": 3374,
   "quality": "full",
@@ -35713,6 +37103,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhi",
   "frequency": 3359,
   "quality": "full",
@@ -35754,6 +37145,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "imk",
   "pinyin": "yan",
   "frequency": 3356,
   "quality": "full",
@@ -35790,6 +37182,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "rkk",
   "pinyin": "cao",
   "frequency": 3353,
   "quality": "full",
@@ -35831,6 +37224,7 @@
   },
   "short1": null,
   "short2": "fa",
+  "short3": "fal",
   "pinyin": "zai",
   "frequency": 3349,
   "quality": "full",
@@ -35870,6 +37264,7 @@
   },
   "short1": null,
   "short2": "ju",
+  "short3": "juj",
   "pinyin": "an",
   "frequency": 3348,
   "quality": "full",
@@ -35907,10 +37302,13 @@
   },
   "short1": null,
   "short2": "vo",
+  "short3": null,
   "pinyin": "ling",
   "frequency": 3339,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "百",
@@ -35944,10 +37342,13 @@
   },
   "short1": null,
   "short2": "dj",
+  "short3": null,
   "pinyin": "bai",
   "frequency": 3336,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "遭",
@@ -35980,6 +37381,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zao",
   "frequency": 3334,
   "quality": "full",
@@ -36021,6 +37423,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "tqq",
   "pinyin": "yi",
   "frequency": 3331,
   "quality": "full",
@@ -36060,6 +37463,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "dqw",
   "pinyin": "kan",
   "frequency": 3318,
   "quality": "full",
@@ -36099,6 +37503,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ybb",
   "pinyin": "guo",
   "frequency": 3318,
   "quality": "full",
@@ -36138,6 +37543,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yang",
   "frequency": 3311,
   "quality": "full",
@@ -36175,10 +37581,13 @@
   },
   "short1": null,
   "short2": "de",
+  "short3": null,
   "pinyin": "hu",
   "frequency": 3307,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "呼",
@@ -36214,6 +37623,7 @@
   },
   "short1": null,
   "short2": "kt",
+  "short3": "ktu",
   "pinyin": "hu",
   "frequency": 3306,
   "quality": "full",
@@ -36250,6 +37660,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "tem",
   "pinyin": "ban",
   "frequency": 3306,
   "quality": "full",
@@ -36291,6 +37702,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rta",
   "pinyin": "tuo",
   "frequency": 3283,
   "quality": "full",
@@ -36330,6 +37742,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "pfi",
   "pinyin": "zong",
   "frequency": 3281,
   "quality": "full",
@@ -36367,10 +37780,13 @@
   },
   "short1": null,
   "short2": "ye",
+  "short3": null,
   "pinyin": "yi",
   "frequency": 3280,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "仗",
@@ -36406,6 +37822,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhang",
   "frequency": 3272,
   "quality": "full",
@@ -36442,6 +37859,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sou",
   "frequency": 3265,
   "quality": "full",
@@ -36480,6 +37898,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "sheng",
   "frequency": 3260,
   "quality": "full",
@@ -36523,6 +37942,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "puh",
   "pinyin": "bu",
   "frequency": 3259,
   "quality": "partial",
@@ -36567,6 +37987,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "yao",
   "frequency": 3254,
   "quality": "partial",
@@ -36607,10 +38028,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "wu",
   "frequency": 3250,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "笔",
@@ -36643,6 +38067,7 @@
   "recognition": null,
   "short1": null,
   "short2": "tt",
+  "short3": "ttf",
   "pinyin": "bi",
   "frequency": 3249,
   "quality": "full",
@@ -36684,6 +38109,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xjm",
   "pinyin": "fei",
   "frequency": 3247,
   "quality": "full",
@@ -36720,6 +38146,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "sgm",
   "pinyin": "bing",
   "frequency": 3239,
   "quality": "full",
@@ -36761,6 +38188,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "gny",
   "pinyin": "wa",
   "frequency": 3228,
   "quality": "partial",
@@ -36805,6 +38233,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jian",
   "frequency": 3221,
   "quality": "full",
@@ -36844,10 +38273,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "bai",
   "frequency": 3221,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "弟",
@@ -36880,6 +38312,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "uxh",
   "pinyin": "di",
   "frequency": 3217,
   "quality": "full",
@@ -36921,6 +38354,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "raw",
   "pinyin": "gong",
   "frequency": 3217,
   "quality": "full",
@@ -36957,6 +38391,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ling",
   "frequency": 3212,
   "quality": "full",
@@ -36999,6 +38434,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "xxf",
   "pinyin": "bi",
   "frequency": 3209,
   "quality": "full",
@@ -37036,10 +38472,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chuang",
   "frequency": 3204,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "洗",
@@ -37072,6 +38511,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "itf",
   "pinyin": "xi",
   "frequency": 3202,
   "quality": "full",
@@ -37109,6 +38549,7 @@
   "recognition": null,
   "short1": null,
   "short2": "hh",
+  "short3": "hhh",
   "pinyin": "zhi",
   "frequency": 3196,
   "quality": "full",
@@ -37147,6 +38588,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "qnq",
   "pinyin": "yin",
   "frequency": 3189,
   "quality": "full",
@@ -37185,6 +38627,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "pai",
   "frequency": 3184,
   "quality": "full",
@@ -37223,6 +38666,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "die",
   "frequency": 3182,
   "quality": "full",
@@ -37264,6 +38708,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "cal",
   "pinyin": "jin",
   "frequency": 3175,
   "quality": "full",
@@ -37302,6 +38747,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "dpq",
   "pinyin": "wan",
   "frequency": 3174,
   "quality": "full",
@@ -37343,6 +38789,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "ye",
   "frequency": 3172,
   "quality": "full",
@@ -37379,6 +38826,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mo",
   "frequency": 3172,
   "quality": "full",
@@ -37420,6 +38868,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jun",
   "frequency": 3153,
   "quality": "full",
@@ -37457,10 +38906,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "kong",
   "frequency": 3142,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "恶",
@@ -37493,6 +38945,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "e",
   "frequency": 3136,
   "quality": "full",
@@ -37531,6 +38984,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhou",
   "frequency": 3128,
   "quality": "full",
@@ -37572,6 +39026,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "jiang",
   "frequency": 3122,
   "quality": "full",
@@ -37609,10 +39064,13 @@
   },
   "short1": null,
   "short2": "sy",
+  "short3": null,
   "pinyin": "shu",
   "frequency": 3122,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "涔",
@@ -37645,6 +39103,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": "imw",
   "pinyin": "cen",
   "frequency": 3116,
   "quality": "full",
@@ -37686,6 +39145,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "svi",
   "pinyin": "di",
   "frequency": 3115,
   "quality": "full",
@@ -37725,6 +39185,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "kyb",
   "pinyin": "heng",
   "frequency": 3113,
   "quality": "full",
@@ -37762,10 +39223,13 @@
   },
   "short1": null,
   "short2": "df",
+  "short3": null,
   "pinyin": "duo",
   "frequency": 3112,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "猪",
@@ -37798,6 +39262,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "zhu",
   "frequency": 3108,
   "quality": "full",
@@ -37836,6 +39301,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "da",
   "frequency": 3107,
   "quality": "full",
@@ -37877,6 +39343,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "rfw",
   "pinyin": "fu",
   "frequency": 3105,
   "quality": "full",
@@ -37916,6 +39383,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "mai",
   "frequency": 3089,
   "quality": "full",
@@ -37955,6 +39423,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "fhq",
   "pinyin": "zhao",
   "frequency": 3084,
   "quality": "full",
@@ -37994,6 +39463,7 @@
   },
   "short1": null,
   "short2": "bu",
+  "short3": "bud",
   "pinyin": "lian",
   "frequency": 3081,
   "quality": "full",
@@ -38033,6 +39503,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "wxj",
   "pinyin": "fu",
   "frequency": 3080,
   "quality": "full",
@@ -38070,10 +39541,13 @@
   },
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "xue",
   "frequency": 3068,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）"
+  ]
  },
  {
   "char": "虫",
@@ -38107,6 +39581,7 @@
   "recognition": null,
   "short1": null,
   "short2": null,
+  "short3": null,
   "pinyin": "chong",
   "frequency": 3068,
   "quality": "full",
@@ -38148,6 +39623,7 @@
   },
   "short1": null,
   "short2": null,
+  "short3": "ajd",
   "pinyin": "mo",
   "frequency": 3065,
   "quality": "full",

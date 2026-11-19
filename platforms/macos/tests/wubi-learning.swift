@@ -24,7 +24,7 @@ require(LearningHints.hint(for: "我")?.roots.count == 3, "位次不符的条目
 let codeBank = Practice.bank(kind: .code)
 let recogBank = Practice.bank(kind: .recognition)
 require(codeBank.count > 500 && recogBank.count > 500, "题库应有足够 full 题")
-require(codeBank.allSatisfy { LearningHints.hint(for: $0.char)?.quality == "full" }, "只出 full 题")
+require(codeBank.allSatisfy { LearningHints.hint(for: $0.char)?.quality != "unknown" }, "只出有拆解的题")
 let sample = codeBank.first { $0.char == "和" } ?? codeBank[0]
 require(Practice.judgeCode(sample.code, question: sample), "正确码判对")
 require(Practice.judgeCode(sample.code.uppercased() + " ", question: sample), "大小写与空白不敏感")
@@ -192,6 +192,16 @@ if let sample = Practice.bank(kind: .code3, limit: 200).first, let short = sampl
     require(short.count == 3, "三级简码应为 3 位")
     require(Practice.judgeCode(short, question: sample), "三级简码应判对")
 }
+
+// ADR-377 学练用一致：简码题覆盖整张表、键名字能练完整码、三级简码与学习区同源。
+require(Practice.bank(kind: .code).contains { $0.char == "人" }, "键名字应能练完整码（连打四次）")
+require(Practice.bank(kind: .code2).count == 598, "二级简码题应覆盖整张表：\(Practice.bank(kind: .code2).count)")
+require(Practice.bank(kind: .code3).count == 3362, "三级简码题应覆盖整张表：\(Practice.bank(kind: .code3).count)")
+if let hint = LearningHints.hint(for: "是") {
+    require(hint.short3 == "JGH", "三级简码应来自运行时资源同一行：\(hint.short3 ?? "nil")")
+    require(hint.shortSummary?.contains("三") == true, "学习区简码文案必须带等级")
+}
+require(LearningHints.hint(for: "母")?.roots.first?.key == "X", "成字字根应显示报户口键位")
 
 // 作答框：4 格上限、z 只点亮不入答案、退格/Esc 清空
 let answerField = PracticeAnswerView(frame: NSRect(x: 0, y: 0, width: 300, height: 60))

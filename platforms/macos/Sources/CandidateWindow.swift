@@ -479,13 +479,13 @@ final class WubiLearningView: NSView {
             pending.frame = NSRect(x: max(0, width - 86), y: 9, width: 86, height: 16)
             pending.setAccessibilityLabel("拆解待核验")
             addSubview(pending)
-        } else if let short = (hint?.short1 ?? hint?.short2) {
-            let label = NSTextField(labelWithString: "简码 " + short)
+        } else if let shortText = hint?.shortSummary {
+            let label = NSTextField(labelWithString: shortText)
             label.font = .systemFont(ofSize: 10.5, weight: .medium)
             label.textColor = ImeAppearance.secondaryText
             label.alignment = .right
-            label.frame = NSRect(x: max(0, width - 86), y: 9, width: 86, height: 16)
-            label.setAccessibilityLabel("简码 \(short)")
+            label.frame = NSRect(x: max(0, width - 130), y: 9, width: 130, height: 16)
+            label.setAccessibilityLabel(shortText)
             addSubview(label)
         }
 

@@ -179,6 +179,18 @@ def load_short(path: Path, width: int) -> dict[str, str]:
     return out
 
 
+def load_char_list(path: Path) -> list[str]:
+    """显式字表：每行取第一列（可带 `字\t来源` 注释列），`#` 开头为注释；顺序无关，最终按词频排。"""
+    chars: list[str] = []
+    for line in path.read_text(encoding='utf-8').splitlines():
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        token = line.split()[0]
+        chars.extend(token if len(token) > 1 else [token])
+    return chars
+
+
 def load_pinyin_and_freq(path: Path) -> tuple[dict[str, str], dict[str, int]]:
     pinyin: dict[str, str] = {}
     freq: dict[str, int] = {}
@@ -332,7 +344,7 @@ def is_pua(glyph: str) -> bool:
 
 
 def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
-          pinyin: dict, freq: dict, pua_map: dict[str, str] | None = None,
+          short3: dict, pinyin: dict, freq: dict, pua_map: dict[str, str] | None = None,
           rec_slot_pua: set[str] | None = None,
           readable_keys: dict[str, str] | None = None,
           ids: dict[str, str] | None = None,
@@ -378,6 +390,7 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
         'recognition': None,
         'short1': short1.get(char),
         'short2': short2.get(char),
+        'short3': short3.get(char),
         'pinyin': pinyin.get(char),
         'frequency': freq.get(char, 0),
         'quality': 'unknown',
@@ -408,14 +421,21 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     if glyphs and glyphs[0] == char:
         entry['class'] = 'radical-char'
         entry['components'] = [char]
+        key = readable_keys.get(char)
+        follows_baohukou = bool(key) and len(code) in (3, 4) and code[0] == key \
+            and all(c in STROKE_KEY for c in code[1:])
         if char in root_strokes:
             entry['strokes'] = list(root_strokes[char])
             entry['strokesSource'] = 'D18'
             entry['strokesKind'] = 'writing'
             entry['componentsSource'] = 'D18'
-            key = readable_keys.get(char)
             entry['keys'] = [key] if key else []
-            notes.append('成字字根：真实笔顺（D18，Unihan 笔数校验）')
+            if key and not follows_baohukou:
+                # 例：母 XGUI —— 报户口键是 X，但后三位不是笔画键，属官方特例取码；
+                # 不臆造拆字（毌+一 只能解释 XG），只如实说明取码口径。
+                notes.append(f'成字字根：报户口 {key.upper()}；后 {len(code) - 1} 位为官方特例取码（未由笔顺推导）')
+            else:
+                notes.append('成字字根：真实笔顺（D18，Unihan 笔数校验）')
             entry['quality'] = 'full'
             return finish(entry)
         key = readable_keys.get(char)
@@ -424,7 +444,15 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             notes.append(f'单笔画：连打所在键 {key.upper()} 两次，再补 LL')
             entry['quality'] = 'full'
             return finish(entry)
-        if key and len(code) in (3, 4) and code[0] == key and all(c in STROKE_KEY for c in code[1:]):
+        if key and not follows_baohukou:
+            # 例：母 XGUI —— X 是它的报户口键，但后三位不是笔画键，属官方特例取码。
+            # 不臆造拆字（毌+一 只能解释 XG，解释不了 GUI），只如实标注取码口径。
+            entry['componentsSource'] = 'D1'
+            entry['keys'] = [key]
+            notes.append(f'成字字根：报户口 {key.upper()}；后 {len(code) - 1} 位为官方特例取码（未由笔顺推导）')
+            entry['quality'] = 'full'
+            return finish(entry)
+        if follows_baohukou:
             letters = code[1:]
             entry['strokes'] = [STROKE_GLYPH[c] for c in letters]
             entry['strokesSource'] = 'code'
@@ -462,6 +490,14 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
     elif manual:
         glyphs = list(manual)
         notes.append('使用 D18 完整拆字（补 D2 漏拆）')
+    # 不足四码的合体字 = (码长-1) 个字根 + 识别码。D2 仍按码位给字形时，尾部多出来的就是识别码槽
+    # （码 DCG：D2 给 石/马/一/私有区，而码只有 3 位 = 石+马 + 识别码 G）。多留一个就会教出
+    # 不存在的字根、并让「识别码」整行消失（报告 304 F1）。
+    if glyphs and len(code) < 4 and len(glyphs) > len(code) - 1:
+        extra = len(glyphs) - (len(code) - 1)
+        glyphs = list(glyphs[: len(code) - 1])
+        notes.append(f'不足四码：只保留 {len(glyphs)} 个字根，尾部 {extra} 个字形属识别码槽（已丢弃）')
+
     per_position = bool(glyphs) and len(code) >= 3 and len(glyphs) == len(code)
     if glyphs and len(glyphs) in (len(code), len(code) - 1):
         keys2 = list(code[: len(glyphs)])
@@ -498,6 +534,25 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
             decoded2 = stem
             unknown2 = 0
             notes.append('末位为识别码槽（可读字形），已丢弃')
+
+    # 不足四码的合体字只可能是「两个字根 + 识别码」：D2 逐位给 3 个字形时，末位就是识别码槽
+    # （矿 DYT = 石+广 + 识别码 T、码 DCG = 石+马 + 识别码 G）。它恰是可读字形时上面的规则不会丢，
+    # 会留下一个不存在的第三字根，把「识别码」整行教没了（报告 304 F1）。
+    if per_position and len(code) == 3 and len(decoded2) == 3 and code[-1] in RECOGNITION:
+        stem_ok = all(c is not None for c in decoded2[:-1])
+        if stem_ok:
+            for c, k in zip(decoded2[:-1], code[:2]):
+                if root_inventory:
+                    if c not in root_inventory or k not in root_inventory[c]:
+                        stem_ok = False
+                        break
+                elif c in readable_keys and readable_keys[c] != k:
+                    stem_ok = False
+                    break
+        if stem_ok:
+            decoded2 = decoded2[:-1]
+            unknown2 = 0
+            notes.append('末位为识别码槽（不足四码），已丢弃')
 
     # ADR-310：D3 只作构建期 oracle，**不得**成为 componentsSource。非逐位对齐时也用 D2；
     # 解不出的字形保留占位，宁可 partial，也不把未许可来源写进产物。
@@ -570,6 +625,18 @@ def build(char: str, code: str, glyphs: list[str], short1: dict, short2: dict,
 
 
 
+def coverage_summary(entries: list[dict], path: Path) -> dict:
+    """按给定字表统计 quality 分布（ADR-377：学练字表 ≠ 覆盖率口径）。"""
+    wanted = load_char_list(path)
+    quality = {e['char']: e['quality'] for e in entries}
+    counts = {'total': 0, 'full': 0, 'partial': 0, 'unknown': 0, 'absent': 0}
+    for char in dict.fromkeys(wanted):
+        counts['total'] += 1
+        counts[quality.get(char, 'absent')] += 1
+    counts['fullPercent'] = round(100.0 * counts['full'] / max(counts['total'], 1), 1)
+    return counts
+
+
 def render_explanation(entry: dict) -> str:
     """把一条 B0 记录渲染成运行时讲解文本（ADR-311：宿主只展示，不拼句子）。
 
@@ -625,6 +692,8 @@ def main() -> int:
     parser.add_argument('--pua-map', help='D3 BMP PUA→可读字根映射（tools/decode_pua.py 生成；只解码 BMP PUA）')
     parser.add_argument('--short1', required=True)
     parser.add_argument('--short2', required=True)
+    parser.add_argument('--short3', required=True,
+                        help='三级简码表（D17-ter）；运行时第 6 列第三个槽位（ADR-377）')
     parser.add_argument('--pinyin', required=True)
     parser.add_argument('--readable-keys', help='D14 可读字根键表（成字字根笔画推导用，可选）')
     parser.add_argument('--ids', help='IDS 分解（D19，MIT；填占位字根与结构参考，可选）')
@@ -647,11 +716,16 @@ def main() -> int:
     parser.add_argument('--limit', type=int, default=1000)
     parser.add_argument('--all-codes', action='store_true',
                         help='覆盖全码表全部字（27,823），忽略 --limit')
+    parser.add_argument('--coverage-set',
+                        help='覆盖率口径字表（如 GB2312 一级）；报告里单列该子集的 full/partial/unknown')
+    parser.add_argument('--char-list',
+                        help='显式字表（如 GB2312 一级 3,755 字；ADR-375），与 --limit/--all-codes 互斥')
     parser.add_argument('--runtime-out', help='教学运行时资源（TSV，ADR-311）：字\t全码\t质量\t讲解')
     parser.add_argument('--out-dir', required=True)
     args = parser.parse_args()
 
-    paths = {name: Path(getattr(args, name)) for name in ('codes', 'radicals', 'short1', 'short2', 'pinyin')}
+    paths = {name: Path(getattr(args, name))
+             for name in ('codes', 'radicals', 'short1', 'short2', 'short3', 'pinyin')}
     if args.readable_keys:
         paths['readable_keys'] = Path(args.readable_keys)
     if args.ids:
@@ -681,6 +755,7 @@ def main() -> int:
     radicals = load_radicals(paths['radicals'])
     short1 = load_short(paths['short1'], 1)
     short2 = load_short(paths['short2'], 2)
+    short3 = load_short(paths['short3'], 3)
     pinyin, freq = load_pinyin_and_freq(paths['pinyin'])
     pua_map = load_pua_map(Path(args.pua_map)) if args.pua_map else {}
     readable_keys: dict[str, str] = {}
@@ -700,7 +775,16 @@ def main() -> int:
     root_inventory = load_root_inventory(Path(args.root_inventory)) if args.root_inventory else {}
     aliases = load_glyph_aliases(Path(args.glyph_aliases)) if args.glyph_aliases else {}
 
-    if args.all_codes:
+    if args.char_list:
+        requested = load_char_list(Path(args.char_list))
+        unknown_chars = [c for c in requested if c not in codes]
+        if unknown_chars:
+            print(f'--char-list 中有 {len(unknown_chars)} 个字缺全码：{"".join(unknown_chars[:20])}',
+                  file=sys.stderr)
+            return 2
+        ranked = sorted(((char, freq.get(char, 0)) for char in dict.fromkeys(requested)),
+                        key=lambda kv: (-kv[1], kv[0]))
+    elif args.all_codes:
         ranked = sorted(((char, 0) for char in codes),
                         key=lambda kv: (-freq.get(kv[0], 0), kv[0]))
     else:
@@ -714,6 +798,7 @@ def main() -> int:
                             'keys': [], 'strokes': None, 'strokesSource': None, 'strokesKind': None,
                             'structure': None, 'structureSource': None, 'structureConflict': False,
                             'recognition': None, 'short1': short1.get(char), 'short2': short2.get(char),
+                            'short3': short3.get(char),
                             'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
                             'quality': 'unknown', 'notes': ['缺全码']})
             continue
@@ -727,10 +812,11 @@ def main() -> int:
                             'ids': ids.get(char), 'idsStructure': ids_structure(ids.get(char, '')),
                             'positionMismatch': [], 'recognition': None,
                             'short1': short1.get(char), 'short2': short2.get(char),
+                            'short3': short3.get(char),
                             'pinyin': pinyin.get(char), 'frequency': freq.get(char, 0),
                             'quality': 'unknown', 'notes': ['缺拆字数据']})
             continue
-        entries.append(build(char, code, glyphs, short1, short2, pinyin, freq,
+        entries.append(build(char, code, glyphs, short1, short2, short3, pinyin, freq,
                              pua_map=pua_map,
                              rec_slot_pua=rec_slot_pua, readable_keys=readable_keys,
                              ids=ids, supp_map=supp_map,
@@ -776,6 +862,7 @@ def main() -> int:
         'idsFilled': sum(1 for e in entries if any('按 IDS' in n for n in e['notes'])),
         'positionMismatchEntries': sum(1 for e in entries if e.get('positionMismatch')),
         'inputs': {name: {'path': str(path), 'sha256': sha256(path)} for name, path in paths.items()},
+        'coverageSet': coverage_summary(entries, Path(args.coverage_set)) if args.coverage_set else None,
         'generator': 'modules/hanzi-structure/tools/build_b0.py',
         'command': ' '.join(['python3', 'tools/build_b0.py'] + sys.argv[1:]),
     }
@@ -787,7 +874,7 @@ def main() -> int:
     if args.runtime_out:
         # ADR-311（v2）：结构化紧凑 TSV —— 学习区要画"字根格子 + 键位"，预渲染文本不够用。
         # 列：字 \t 全码 \t 质量 \t 字根(形:键 …) \t 识别码(字母|末笔|结构) \t 简码(一/二)
-        rows = ['# ADR-311 学习区运行时资源 v2：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二)']
+        rows = ['# ADR-311 学习区运行时资源 v3（ADR-377）：字\t全码\t质量\t字根(形:键)\t识别码(字母|末笔|结构)\t简码(一/二/三)']
         for entry in entries:
             # 位次不符（D2 序列尾部不可靠）时，从第一个不符位次起截断：
             # 宁可少显示，也不把"丶"标成 T 这种错误键位教给用户（报告 255）。
@@ -802,14 +889,15 @@ def main() -> int:
             roots = ' '.join(f'{(c or "？")}:{k}' for c, k in zip(components, keys))
             rec = entry['recognition']
             recognition = f'{rec["key"].upper()}|{rec["stroke"]}|{rec["structure"]}' if rec else ''
-            shorts = '/'.join(x for x in (entry['short1'], entry['short2']) if x)
+            slots = (entry['short1'], entry['short2'], entry['short3'])
+            shorts = '/'.join(x or '-' for x in slots) if any(slots) else ''
             rows.append('\t'.join([entry['char'], entry['code'] or '', quality,
                                     roots, recognition, shorts]))
         payload = '\n'.join(rows) + '\n'
         Path(args.runtime_out).write_text(payload, encoding='utf-8')
         size = len(payload.encode('utf-8'))
         print(f'写入 {args.runtime_out}（{len(entries)} 条，{size} 字节，约 {size / max(len(entries), 1):.1f} B/字）')
-        report['runtime'] = {'path': args.runtime_out, 'bytes': size, 'version': 2,
+        report['runtime'] = {'path': args.runtime_out, 'bytes': size, 'version': 3,
                              'bytesPerEntry': round(size / max(len(entries), 1), 1)}
 
     print(f'写入 {out_dir}/B0.json（{len(entries)} 条）')
