@@ -64,8 +64,8 @@ struct PracticeQuestion {
     let short1: String?
     let short2: String?
 
-    /// 三级简码（D17-ter 表）；表里没有该字时为 nil，出题会跳过。
-    var short3: String? { Practice.level3Codes[char] }
+    /// 三级简码（D17-ter）：来自运行时资源同一行（ADR-377），不再另读一张表。
+    let short3: String?
 }
 
 enum Practice {
@@ -125,41 +125,28 @@ enum Practice {
         return String(Array(row)[index])
     }
 
-    /// 三级简码表（D17-ter）：字 → 三码。首次用到时读一次；缺失时返回空表。
-    static let level3Codes: [String: String] = {
-        let name = "wubi86-level3-codes"
-        let bundle = Bundle.main
-        let candidates = [bundle.url(forResource: name, withExtension: "tsv"),
-                          bundle.resourceURL?.appendingPathComponent("\(name).tsv"),
-                          bundle.bundleURL.appendingPathComponent("Resources/\(name).tsv"),
-                          bundle.bundleURL.deletingLastPathComponent()
-                              .appendingPathComponent("Resources/\(name).tsv")]
-        guard let url = candidates.compactMap({ $0 }).first(where: { FileManager.default.fileExists(atPath: $0.path) }),
-              let text = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
-        var out: [String: String] = [:]
-        for line in text.split(separator: "\n") where !line.hasPrefix("#") {
-            let fields = line.split(separator: "\t")
-            guard fields.count >= 2, fields[0].count == 3, fields[1].count == 1 else { continue }
-            out[String(fields[1])] = String(fields[0])
-        }
-        return out
-    }()
-
-    /// 出题范围：`full` 且带完整码与字根（可判分）。
-    static func bank(kind: PracticeKind, limit: Int = 3000) -> [PracticeQuestion] {
+    /// 出题范围：有全码、且拆解不是 `unknown`（可判分、也讲得出为什么）。
+    ///
+    /// 覆盖口径（报告 304 F5/F8）：
+    /// - 简码题只要求对应简码槽存在 → 简码表里的字都能练，不因拆解 `partial` 被丢掉；
+    /// - `完整码`题允许无字根（键名字/成字字根），它们的规则是「连打四次」「报户口 + 笔画」；
+    /// - `识别码`题要求有识别码；`字根`题走键位图题库，不依赖运行时资源。
+    static func bank(kind: PracticeKind, limit: Int = 8000) -> [PracticeQuestion] {
         if kind == .roots { return rootBank(layout: KeyRootLayout.load()) }
         if kind == .phrase { return phraseBank }
         var out: [PracticeQuestion] = []
-        for char in LearningHints.fullCharacters.prefix(limit) {
-            guard let hint = LearningHints.hint(for: char), hint.quality == "full",
-                  let code = hint.code, !hint.roots.isEmpty else { continue }
+        for char in LearningHints.practiceCharacters.prefix(limit) {
+            guard let hint = LearningHints.hint(for: char), hint.quality != "unknown",
+                  let code = hint.code else { continue }
             if kind == .recognition, hint.recognition == nil { continue }
             if kind == .code1, hint.short1?.count != 1 { continue }
             if kind == .code2, hint.short2?.count != 2 { continue }
-            if kind == .code3, level3Codes[char] == nil { continue }
+            if kind == .code3, hint.short3?.count != 3 { continue }
+            if kind == .roots, hint.roots.isEmpty { continue }
             out.append(PracticeQuestion(kind: kind, char: char, code: code,
                                         roots: hint.roots, recognition: hint.recognition,
-                                        short1: hint.short1, short2: hint.short2))
+                                        short1: hint.short1, short2: hint.short2,
+                                        short3: hint.short3))
         }
         return out
     }
@@ -176,7 +163,7 @@ enum Practice {
             for glyph in [entry.keyName] + entry.roots where !glyph.isEmpty && seen.insert(glyph).inserted {
                 out.append(PracticeQuestion(kind: .roots, char: glyph, code: key.lowercased(),
                                             roots: [(glyph: glyph, key: key)], recognition: nil,
-                                            short1: nil, short2: nil))
+                                            short1: nil, short2: nil, short3: nil))
             }
         }
         return out
@@ -213,7 +200,7 @@ enum Practice {
             let word = String(row.text), code = String(row.code)
             out.append(PracticeQuestion(kind: .phrase, char: word, code: code,
                                         roots: phraseParts(word: word, code: code), recognition: nil,
-                                        short1: nil, short2: nil))
+                                        short1: nil, short2: nil, short3: nil))
             if out.count >= limit { break }
         }
         return out

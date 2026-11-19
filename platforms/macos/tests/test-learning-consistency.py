@@ -8,7 +8,7 @@
    `(码, 字)` 的形式存在于该表——否则学习区教出来的码在真实输入里打不出这个字。
 2. **学（拆字）**：`full` 条目的字根键位序列必须等于全码前缀（识别码另计），且条目数 = 码长 - 1；
    识别码字母必须能由「末笔 × 结构」表重新算出来（与 `Practice.recognitionLetter` 同一张表）。
-3. **练（题库）**：`full` 是练习出题的唯一来源（`LearningHints.fullCharacters`），因此 `full` 必须
+3. **练（题库）**：练习池 = `LearningHints.practiceCharacters`（`quality != unknown`，ADR-378），因此 `full` 必须
    自带全码；键名字（四同键，如 `wwww`）在学习区按「连打四次」讲解，允许无字根，其余有码必有字根。
    简码槽位必须与随包的 D17/D17-bis 表逐字相同，否则「一级/二级简码」题型会教出码表里不存在的简码
    （ADR-376 的 `一级/二级` 双槽位格式）。
@@ -21,6 +21,9 @@ RUNTIME = ROOT / 'data/generated/B0-runtime.tsv'
 ENGINE_TABLE = ROOT / 'data/generated/wubi86-core.tsv'
 LEVEL1 = ROOT / 'data/sources/wubi86-level1-codes.tsv'
 LEVEL2 = ROOT / 'data/sources/wubi86-level2-codes.tsv'
+LEVEL3 = ROOT / 'data/sources/wubi86-level3-codes.tsv'
+CHARSET = ROOT / 'data/generated/learning-chars.tsv'
+GB2312 = ROOT / 'data/generated/gb2312-level1.txt'
 
 STROKE_ROW = {'横': 'GFD', '竖': 'HJK', '撇': 'TRE', '捺': 'YUI', '折': 'NBV'}
 STRUCTURE_INDEX = {'左右': 0, '上下': 1, '杂合': 2}
@@ -67,6 +70,7 @@ class LearningConsistencyTests(unittest.TestCase):
         cls.pairs = code_pairs(ENGINE_TABLE)
         cls.level1 = short_table(LEVEL1)
         cls.level2 = short_table(LEVEL2)
+        cls.level3 = short_table(LEVEL3)
 
     def test_taught_codes_exist_in_engine_table(self):
         """学习区教的全码必须是引擎真能打出来的码（学 = 用）。"""
@@ -118,17 +122,38 @@ class LearningConsistencyTests(unittest.TestCase):
                              f'{row["char"]}: 识别码条目字根数应等于码长-1')
 
     def test_shortcode_slots_match_shipped_tables(self):
-        """简码槽位 `一级/二级`（缺项 `-`）必须与随包简码表逐字相同。"""
+        """简码槽位 `一级/二级/三级`（缺项 `-`）必须与随包简码表逐字相同。"""
         for row in self.rows:
-            slots = row['shorts'].split('/') if row['shorts'] else ['-', '-']
-            self.assertEqual(len(slots), 2, f'{row["char"]}: 简码列必须是两个槽位：{row["shorts"]!r}')
-            first, second = slots
-            if first != '-':
-                self.assertEqual(self.level1.get(row['char']), first,
-                                 f'{row["char"]}: 一级简码槽 {first} 与码表 {self.level1.get(row["char"])} 不符')
-            if second != '-':
-                self.assertEqual(self.level2.get(row['char']), second,
-                                 f'{row["char"]}: 二级简码槽 {second} 与码表 {self.level2.get(row["char"])} 不符')
+            slots = row['shorts'].split('/') if row['shorts'] else ['-', '-', '-']
+            self.assertEqual(len(slots), 3, f'{row["char"]}: 简码列必须是三个槽位：{row["shorts"]!r}')
+            for index, (level, table) in enumerate(((1, self.level1), (2, self.level2), (3, self.level3))):
+                slot = slots[index]
+                if slot == '-':
+                    continue
+                self.assertEqual(table.get(row['char']), slot,
+                                 f'{row["char"]}: {level} 级简码槽 {slot} 与码表 {table.get(row["char"])} 不符')
+
+    def test_shortcode_chars_are_in_learning_charset(self):
+        """简码表里的字必须在学习字表里，否则「练得到、学不到」（报告 304 F5）。"""
+        charset = {line.split('\t')[0] for line in CHARSET.read_text(encoding='utf-8').splitlines()
+                   if line and not line.startswith('#')}
+        for table, level in ((self.level1, 1), (self.level2, 2), (self.level3, 3)):
+            missing = [char for char in table if char not in charset]
+            self.assertEqual(missing, [], f'{level} 级简码有字不在学习字表：{missing[:5]}')
+
+    def test_sub_four_codes_use_recognition_slot(self):
+        """不足四码的合体字必须满足「字根数 = 码长 - 1」，否则会把识别码槽当成字根教（报告 304 F1）。"""
+        for row in self.rows:
+            if row['quality'] != 'full' or not row['roots'] or not row['code']:
+                continue
+            glyphs = [cell.rsplit(':', 1)[0] for cell in row['roots']]
+            if glyphs == [row['char']]:
+                continue  # 成字字根：报户口 + 笔画
+            if len(row['code']) < 4:
+                self.assertEqual(len(row['roots']), len(row['code']) - 1,
+                                 f'{row["char"]}: 码长 {len(row["code"])} 但字根数 {len(row["roots"])}'
+                                 f'（{row["roots"]}）——末位可能是识别码槽')
+                self.assertTrue(row['recognition'], f'{row["char"]}: 不足四码必须有识别码')
 
     def test_second_level_shortcodes_reach_practice(self):
         """二级简码必须落在二级槽位，否则「二级简码」题型永远出不到这些字（ADR-376）。"""

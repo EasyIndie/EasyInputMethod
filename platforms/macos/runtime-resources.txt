@@ -11,5 +11,4 @@ data/generated/emoji.tsv emoji.tsv
 data/generated/B0-runtime.tsv B0-runtime.tsv
 data/generated/variant-s2t.tsv variant-s2t.tsv
 data/symbols.tsv symbols.tsv
-data/sources/wubi86-level3-codes.tsv wubi86-level3-codes.tsv
 modules/keymap/data/key-roots-wubi86.tsv key-roots-wubi86.tsv

@@ -3,11 +3,11 @@
 
 资源是结构化紧凑 TSV：`字 / 全码 / 质量 / 字根(形:键) / 识别码(字母|末笔|结构) / 简码(一/二)`。
 宿主靠它画"字根格子 + 键位 + 识别码"，所以必须是结构而不是预渲染文本。这里钉死：
-1. 体积 ≤ 512 KiB（ADR-309/311 预算）；
+1. 体积 ≤ 512 KiB（ADR-309/311 预算；ADR-377 起字表 = 学习字表 5,021 字）；
 2. 六列、无制表符污染、无私有区字形、质量取值合法、字不重复；
 3. 字根格形如 `形:键`（未知字形用 `？`），识别码形如 `L|横|左右`，键位/字母大写；
-   简码列固定两个槽位 `一级/二级`，缺项写 `-`（ADR-376）——旧格式只写存在的槽位，会把
-   二级简码误当一级简码，导致「二级简码」题型永远出不到这些字；
+   简码列固定三个槽位 `一级/二级/三级`，缺项写 `-`（ADR-376/377）——旧格式只写存在的槽位，
+   会把二级简码误当一级简码；三级简码过去根本不在资源里，学习区因此无法显示、而练习却在考；
 4. `partial` 记录必须含至少一个 `？` 占位（不编造），`unknown` 不带字根。
 """
 from pathlib import Path
@@ -48,15 +48,15 @@ class B0RuntimeTests(unittest.TestCase):
                 self.assertRegex(recognition, RECOGNITION, line)
             if shorts:
                 slots = shorts.split('/')
-                self.assertEqual(len(slots), 2, f'简码列必须是两个槽位：{line}')
+                self.assertEqual(len(slots), 3, f'简码列必须是三个槽位：{line}')
                 for slot in slots:
                     if slot == '-':
                         continue
                     self.assertTrue(slot.isascii() and slot.islower(), line)
-                if slots[0] != '-':
-                    self.assertEqual(len(slots[0]), 1, f'一级简码应为 1 位：{line}')
-                if slots[1] != '-':
-                    self.assertEqual(len(slots[1]), 2, f'二级简码应为 2 位：{line}')
+                for index, width in enumerate((1, 2, 3)):
+                    if slots[index] != '-':
+                        self.assertEqual(len(slots[index]), width,
+                                         f'{width} 级简码应为 {width} 位：{line}')
 
     def test_no_private_use_characters(self):
         text = self.raw.decode('utf-8')
