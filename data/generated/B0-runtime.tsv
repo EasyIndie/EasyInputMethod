@@ -230,7 +230,7 @@
 学	ipbf	full	丷:i 冖:p 子:b	F|横|上下	-/ip/-
 强	xkjy	full	弓:x 口:k 虫:j	Y|捺|左右	-/xk/xkj
 写	pgng	full	冖:p 一:g ㄅ:n 一:g		-/-/pgn
-既	vcaq	partial	彐:v 厶:c 七:a		-/-/vca
+既	vcaq	full	彐:v 厶:c 弋:a 儿:q		-/-/vca
 若	adkf	full	艹:a 𠂇:d 口:k	F|横|上下	-/-/adk
 往	tygg	full	彳:t 丶:y 王:g	G|横|左右	-/-/tyg
 台	ckf	full	厶:c 口:k	F|横|上下	-/ck/-
@@ -540,7 +540,7 @@
 抓	rrhy	full	扌:r ⺁:r 丨:h	Y|捺|左右	
 换	rqmd	full	扌:r ⺈:q ㄇ:m 大:d		-/rq/rqm
 件	wrhh	full	亻:w 牛:r 丨:h	H|竖|左右	
-求	fiyi	partial		I|捺|杂合	-/-/fiy
+求	fiyi	full	十:f 氺:i 丶:y	I|捺|杂合	-/-/fiy
 脚	efcb	full	月:e 土:f 厶:c 卩:b		
 房	ynyv	full	丶:y 尸:n 方:y	V|折|杂合	
 宫	pkkf	full	宀:p 口:k 口:k	F|横|上下	-/pk/pkk
@@ -555,7 +555,7 @@
 复	tjtu	full	𠂉:t 日:j 夂:t	U|捺|上下	-/-/tjt
 句	qkd	full	勹:q 口:k	D|横|杂合	
 克	dqb	full	古:d 儿:q	B|折|上下	-/dq/-
-救	fiyt	partial			
+救	fiyt	full	十:f 氺:i 丶:y 攵:t		
 楼	sovg	full	木:s 米:o 女:v	G|横|左右	-/-/sov
 胜	etgg	full	月:e 丿:t 主:g	G|横|左右	-/-/etg
 具	hwu	full	具:h 八:w	U|捺|上下	-/hw/-
@@ -612,7 +612,7 @@
 臣	ahnh	full	匚:a 丨:h コ:n 丨:h		-/-/ahn
 油	img	full	氵:i 由:m	G|横|左右	
 读	yfnd	full	讠:y 十:f 乛:n 大:d		-/-/yfn
-球	gfiy	partial	王:g		-/-/gfi
+球	gfiy	full	王:g 十:f 氺:i 丶:y		-/-/gfi
 守	pfu	full	宀:p 寸:f	U|捺|上下	-/pf/-
 俄	wtrt	full	亻:w 丿:t 扌:r	T|撇|左右	-/-/wtr
 功	aln	full	工:a 力:l	N|折|左右	-/al/-
@@ -832,7 +832,7 @@
 苏	alwu	full	艹:a 力:l 八:w	U|捺|上下	-/-/alw
 蛋	nhju	full	乛:n 龰:h 虫:j	U|捺|上下	-/-/nhj
 隔	bgkh	full	阝:b 一:g 口:k 丨:h		-/-/bgk
-商	umwk	partial			-/um/umw
+商	umwk	full	六:u 冂:m 八:w 口:k		-/um/umw
 排	rdjd	full	扌:r 三:d 〢:j 三:d		-/-/rdj
 堂	ipkf	full	⺌:i 冖:p 口:k 土:f		
 盘	telf	full	丿:t 舟:e 皿:l	F|横|上下	-/-/tel
@@ -1105,7 +1105,7 @@
 愈	wgen	full	人:w 一:g 月:e 心:n		
 容	pwwk	full	宀:p 八:w 人:w 口:k		-/-/pww
 颁	wvdm	full	八:w 刀:v 丆:d 贝:m		-/-/wvd
-嘉	fkuk	partial	士:f 口:k 䒑:u		
+嘉	fkuk	full	士:f 口:k 丷:u 口:k		
 思	lnu	full	田:l 心:n	U|捺|上下	-/ln/-
 赤	fou	full	土:f 亦:o	U|捺|上下	-/fo/-
 征	tghg	full	彳:t 一:g 止:h	G|横|左右	-/-/tgh
@@ -1138,7 +1138,7 @@
 缺	rmnw	full	𠂉:r 山:m ユ:n 人:w		-/-/rmn
 谢	ytmf	full	讠:y 丿:t 冂:m 寸:f		-/-/ytm
 煎	uejo	full	䒑:u 月:e 刂:j 灬:o		
-脊	iwef	partial		F|横|上下	-/-/iwe
+脊	iwef	full	丷:i 人:w 月:e	F|横|上下	-/-/iwe
 吻	kqrt	full	口:k 勹:q ⺁:r	T|撇|左右	-/-/kqr
 尸	nngt	full	尸:n		
 柳	sqtb	full	木:s 卯:q 丿:t 卩:b		-/-/sqt
@@ -1313,7 +1313,7 @@
 邻	wycb	full	人:w 丶:y マ:c 阝:b		
 敲	ymkc	full	亠:y 冂:m 口:k 又:c		
 倾	wxdm	full	亻:w 匕:x 丆:d 贝:m		-/-/wxd
-鞭	afwq	partial	廿:a		-/-/afw
+鞭	afwq	full	廿:a 十:f 亻:w 乂:q		-/-/afw
 绘	xwfc	full	纟:x 人:w 二:f 厶:c		-/-/xwf
 扩	ryt	full	扌:r 广:y	T|撇|左右	-/ry/-
 岸	mdfj	full	山:m 厂:d 干:f	J|竖|上下	
@@ -1362,7 +1362,7 @@
 缓	xefc	full	纟:x 爫:e 二:f 又:c		-/-/xef
 瘦	uvhc	full	疒:u 臼:v 丨:h 又:c		-/-/uvh
 摩	yssr	full	广:y 木:s 木:s 手:r		
-勒	afln	partial	廿:a		-/-/afl
+勒	afln	full	廿:a 十:f 力:l	N|折|左右	-/-/afl
 踏	khij	full	口:k 止:h 水:i 日:j		
 鹿	ynjx	full	广:y コ:n 〢:j 匕:x		-/-/ynj
 瓶	uagn	full	䒑:u 廾:a 一:g	N|折|左右	
@@ -1541,7 +1541,7 @@
 优	wdnn	full	亻:w 𠂇:d 乚:n	N|折|左右	-/-/wdn
 扁	ynma	full	丶:y 尸:n 冂:m 艹:a		
 舍	wfkf	full	人:w 干:f 口:k	F|横|上下	-/-/wfk
-滴	iumd	partial	氵:i		-/-/ium
+滴	iumd	full	氵:i 六:u 冂:m 古:d		-/-/ium
 喀	kptk	full	口:k 宀:p 夂:t 口:k		-/-/kpt
 缝	xtdp	full	纟:x 夂:t 三:d 辶:p		
 野	jfcb	full	日:j 土:f マ:c	B|折|上下	-/-/jfc
@@ -1592,7 +1592,7 @@
 肺	egmh	full	月:e 一:g 冂:m 丨:h		-/-/egm
 乎	tuhk	full	丿:t 丷:u 亅:h	K|竖|杂合	-/-/tuh
 叉	cyi	full	又:c 丶:y	I|捺|杂合	
-添	igdn	partial	氵:i 一:g 大:d		-/-/igd
+添	igdn	full	氵:i 一:g 大:d 心:n		-/-/igd
 凑	udwd	full	冫:u 三:d 人:w 大:d		-/-/udw
 拾	rwgk	full	扌:r 人:w 一:g 口:k		
 怨	qbnu	full	夕:q ⺋:b 心:n	U|捺|上下	
@@ -1753,7 +1753,7 @@
 珍	gwet	full	王:g 人:w 彡:e ノ:t		-/gw/gwe
 染	ivsu	full	氵:i 九:v 木:s	U|捺|上下	-/-/ivs
 豪	ypeu	full	亠:y 冖:p 豕:e	U|捺|上下	
-摘	rumd	partial	扌:r		-/-/rum
+摘	rumd	full	扌:r 六:u 冂:m 古:d		-/-/rum
 棋	sadw	full	木:s 艹:a 三:d 八:w		-/-/sad
 撰	rnnw	full	扌:r 巳:n 巳:n 八:w		
 旋	ytnh	full	方:y 𠂉:t 乛:n	H|竖|左右	-/-/ytn
@@ -1872,7 +1872,7 @@
 枯	sdg	full	木:s 古:d	G|横|左右	-/sd/-
 烫	inro	partial	氵:i		
 硅	dffg	full	石:d 土:f 土:f	G|横|左右	
-辣	ugki	partial	立:u	I|捺|杂合	-/-/ugk
+辣	ugki	full	立:u 一:g 口:k 小:i		-/-/ugk
 雌	hxwy	full	止:h 匕:x 亻:w	Y|捺|左右	-/-/hxw
 沾	ihkg	full	氵:i 卜:h 口:k	G|横|左右	-/-/ihk
 泄	iann	full	氵:i 廿:a 乚:n	N|折|左右	
@@ -2040,7 +2040,7 @@
 蓉	apwk	full	艹:a 宀:p 八:w 口:k		-/-/apw
 嗣	kmak	full	口:k 冂:m 艹:a 口:k		-/-/kma
 丸	vyi	full	九:v 丶:y	I|捺|杂合	
-搅	ripq	partial	扌:r 丷:i 冖:p		
+搅	ripq	full	扌:r 丷:i 冖:p 儿:q		
 芳	ayb	full	艹:a 方:y	B|折|上下	-/ay/-
 镍	qths	full	钅:q 丿:t 目:h 木:s		-/-/qth
 扛	rag	full	扌:r 工:a	G|横|左右	
@@ -2365,7 +2365,7 @@
 瘤	uqyl	full	疒:u 卯:q 丶:y 田:l		
 仿	wyn	full	亻:w 方:y	N|折|左右	
 吟	kwyn	full	口:k 人:w 丶:y 乛:n		
-眠	hnan	partial	目:h コ:n		-/-/hna
+眠	hnan	full	目:h コ:n 弋:a	N|折|左右	-/-/hna
 儒	wfdj	full	亻:w 雨:f 丆:d 〢:j		-/-/wfd
 蕃	atol	full	艹:a 丿:t 米:o 田:l		-/-/ato
 溅	imgt	partial	氵:i 贝:m		
@@ -2445,7 +2445,7 @@
 辛	uygh	full	辛:u		
 植	sfhg	full	木:s 十:f 具:h	G|横|左右	
 猿	qtfe	full	犭:q ノ:t 土:f	E|撇|杂合	
-甫	gehy	partial	一:g 用:e	Y|捺|左右	-/-/geh
+甫	gehy	full	一:g 用:e 丨:h 丶:y		-/-/geh
 顽	fqdm	full	二:f 儿:q 丆:d 贝:m		-/-/fqd
 骇	cynw	full	马:c 亠:y 乛:n 人:w		
 旷	jyt	full	日:j 广:y	T|撇|左右	
@@ -2454,7 +2454,7 @@
 扰	rdnn	full	扌:r 𠂇:d 乚:n	N|折|左右	-/-/rdn
 庑	yfqv	full	广:y 二:f 儿:q	V|折|杂合	-/-/yfq
 拎	rwyc	full	扌:r 人:w 丶:y 厶:c		
-揽	rjtq	partial	扌:r 〢:j 𠂉:t		-/-/rjt
+揽	rjtq	full	扌:r 〢:j 丿:t 儿:q		-/-/rjt
 厌	ddi	full	厂:d 犬:d	I|捺|杂合	
 弊	umia	full	丷:u 冂:m 小:i 廾:a		
 捶	rtgf	full	扌:r ノ:t 一:g 士:f		
@@ -2606,7 +2606,7 @@
 蒜	afii	full	艹:a 二:f 小:i 小:i		-/-/afi
 灼	oqyy	full	火:o 勹:q 丶:y	Y|捺|左右	
 蹿	khph	full	口:k 止:h 宀:p 丨:h		
-啄	keyy	partial	口:k		
+啄	keyy	full	口:k 豕:e 丶:y	Y|捺|左右	
 姚	viqn	full	女:v 儿:i 儿:q	N|折|左右	-/-/viq
 泻	ipgg	full	氵:i 冖:p 一:g 一:g		
 芜	afqb	full	艹:a 二:f 儿:q	B|折|上下	
@@ -2902,7 +2902,7 @@
 迳	capd	full	ス:c 工:a 辶:p	D|横|杂合	-/-/cap
 勺	qyi	full	勹:q 丶:y	I|捺|杂合	
 泣	iug	full	氵:i 立:u	G|横|左右	
-舔	tdgn	partial	丿:t 古:d 一:g		
+舔	tdgn	full	丿:t 古:d 一:g 心:n		
 骡	clxi	full	马:c 田:l 幺:x 小:i		-/-/clx
 巳	nngn	full	巳:n		
 浊	ijy	full	氵:i 虫:j	Y|捺|左右	-/ij/-
@@ -2957,7 +2957,7 @@
 铭	qqkg	full	钅:q 夕:q 口:k	G|横|左右	-/-/qqk
 烙	otkg	full	火:o 夂:t 口:k	G|横|左右	-/-/otk
 襟	pusi	partial	衤:p		-/-/pus
-览	jtyq	partial	〢:j 𠂉:t 丶:y		
+览	jtyq	full	〢:j 丿:t 丶:y 儿:q		
 隘	buwl	full	阝:b 䒑:u 八:w 皿:l		-/-/buw
 涩	ivyh	full	氵:i 刀:v 丶:y 止:h		-/-/ivy
 釉	tomg	full	丿:t 米:o 由:m	G|横|左右	-/-/tom
@@ -2985,7 +2985,7 @@
 裔	yemk	full	亠:y 衣:e 冂:m 口:k		-/-/yem
 匈	qqbk	full	勹:q 乂:q 凵:b	K|竖|杂合	-/-/qqb
 苟	aqkf	full	艹:a 勹:q 口:k	F|横|上下	
-跋	khdc	partial	口:k 止:h 𠂇:d		
+跋	khdc	full	口:k 止:h 厂:d 又:c		
 泵	diu	full	石:d 水:i	U|捺|上下	
 甸	qld	full	勹:q 田:l	D|横|杂合	-/ql/-
 纠	xnhh	full	纟:x 乚:n 丨:h	H|竖|左右	-/-/xnh
@@ -3118,7 +3118,7 @@
 瘾	ubqn	full	疒:u 阝:b ⺈:q 心:n		-/-/ubq
 谑	yhag	full	讠:y 虍:h 七:a 一:g		-/-/yha
 鲩	qgpq	full	鱼:q 一:g 宀:p 儿:q		-/-/qgp
-嫡	vumd	partial	女:v		-/-/vum
+嫡	vumd	full	女:v 六:u 冂:m 古:d		-/-/vum
 淹	idjn	full	氵:i 大:d 日:j 乚:n		-/-/idj
 舀	evf	full	爫:e 臼:v	F|横|上下	
 颍	xidm	full	匕:x 水:i 丆:d 贝:m		-/-/xid
@@ -3382,7 +3382,7 @@
 绺	xthk	full	纟:x 夂:t 卜:h 口:k		-/-/xth
 谊	ypeg	full	讠:y 宀:p 月:e 一:g		-/-/ype
 僚	wdui	full	亻:w 大:d 丷:u 小:i		-/-/wdu
-墒	fumk	partial	土:f		-/-/fum
+墒	fumk	full	土:f 六:u 冂:m 口:k		-/-/fum
 壑	hpgf	full	卜:h 冖:p 一:g 土:f		-/-/hpg
 擎	aqkr	full	艹:a 勹:q 口:k 手:r		
 沼	ivkg	full	氵:i 刀:v 口:k	G|横|左右	-/-/ivk
@@ -3635,7 +3635,7 @@
 囤	lgbn	full	囗:l 一:g 凵:b 乚:n		-/-/lgb
 婕	vgvh	full	女:v 一:g 彐:v	H|竖|左右	-/-/vgv
 朽	sgnn	full	木:s 一:g ㄅ:n	N|折|左右	
-缆	xjtq	partial	纟:x 〢:j 𠂉:t		-/-/xjt
+缆	xjtq	full	纟:x 〢:j 丿:t 儿:q		-/-/xjt
 茉	agsu	full	艹:a 一:g 木:s	U|捺|上下	-/-/ags
 褥	pudf	partial	衤:p		
 癖	unku	full	疒:u 尸:n 口:k 辛:u		-/-/unk
