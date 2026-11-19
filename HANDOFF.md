@@ -174,6 +174,9 @@ make macos-offline-tests
   GB2312-1980 一级 3,755 字后：`full` **3,429（91.3%）** / `partial` 326 / `unknown` 0，资源 155,500 B；
   `key-roots-wubi86.tsv` 内容未变（仅 audit 语料统计刷新）。同时复核：N1-d 13 个 PUA **产物已无 `？` 占位**（只降级
   `partial`）、练习窗口副屏落点已由 ADR-365 关闭。`make verify`、离线 69/341、`ui-snapshots`、`validate_b0.py` 全绿。
+  P2 触发条件已量化（评测基线：`hit` 98.2% / `first` 83.9% / `avgPos` 0.15 / 4.29 键，取证=`make eval-candidates`
+  + `perf-session.sh`，仍无遥测）；P1-6 多方案按研究文档的「五件套」口径登记为暂缓（缺许可字根/码表）。
+  **开放 PR：[#337](https://github.com/EasyIndie/EasyInputMethod/pull/337)（dev → main）四项检查全绿，等合并授权。**
 
 - 2026-11-18 / pi（air）：**1.3.1 发布后文档对账（未改代码、未换包）**。收敛六处滞后状态：`ROADMAP` 发布列车抬头与
 pro 升级勾选（实际 11-18 19:59 已完成，执行 `68f892c5…`）；HANDOFF §0 分支头（`main` = `2915198`、PR #323–#336）与
