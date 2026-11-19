@@ -59,6 +59,11 @@ const LEVEL2_PATH: &str = "data/sources/wubi86-level2-codes.tsv";
 /// 三级简码表（D17-ter，由 D9 三字母条目筛选；ADR-345）。
 const LEVEL3_PATH: &str = "data/sources/wubi86-level3-codes.tsv";
 
+/// 码表勘误表（D26，ADR-384）：`char\terroneous\tcorrected\tfamily\tstatus\tevidence`，
+/// 只有 `status = active` 的行生效。勘误必须**同时**作用于本表与 B0 教学数据，
+/// 否则会破坏「学 = 用」不变量（`test-learning-consistency.py`）。
+const ERRATA_PATH: &str = "data/learning/wubi86-code-errata.tsv";
+
 /// 内置核心必须包含的验收样本单字（码写死）。
 const REQUIRED_SINGLES: &[(&str, &str)] = &[("你", "wqiy")];
 
@@ -108,7 +113,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let phrases_text = fs::read_to_string(&phrases_path)
         .map_err(|e| format!("读取词组码表失败（{}）：{e}", phrases_path.display()))?;
 
-    let singles = parse_rows(&single_text, "单字码表")?;
+    let mut singles = parse_rows(&single_text, "单字码表")?;
+    let errata_applied = apply_errata(&mut singles, &fs::read_to_string(root.join(ERRATA_PATH))?);
     let mut phrases = parse_rows(&phrases_text, "词组码表")?;
     if singles.is_empty() {
         return Err("单字码表为空".into());
@@ -149,6 +155,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         &singles,
         &phrases,
         &kept_phrases,
+        errata_applied,
         core_bytes,
         phrase_limit,
         budget_bytes,
@@ -196,6 +203,32 @@ fn parse_rows(input: &str, label: &str) -> Result<Vec<Row>, Box<dyn Error>> {
 
 /// 解析一级简码表并把每条转成码表行：`code` = 键位、`text` = 字、
 /// `weight` = 该字在全码表里的最大权重（简码组内只有它自己，权重只为保持刻度一致）。
+/// 应用 D26 码表勘误（ADR-384）：把 `erroneous` 改成 `corrected`，返回生效条数。
+///
+/// 只认 `status = active` 的行；`pending` 表示证据成立但下游未同步，这里**不**应用，
+/// 由人工在两层同时切换（本函数负责引擎侧，`build_b0.py --code-errata` 负责教学侧）。
+fn apply_errata(rows: &mut [Row], input: &str) -> usize {
+    let mut applied = 0;
+    for raw in input.lines() {
+        let line = raw.trim_start_matches('\u{feff}').trim();
+        if line.is_empty() || line.starts_with('#') {
+            continue;
+        }
+        let fields: Vec<&str> = line.split('\t').collect();
+        if fields.len() < 5 || fields[4] != "active" {
+            continue;
+        }
+        let (char, wrong, right) = (fields[0], fields[1], fields[2]);
+        for row in rows.iter_mut() {
+            if row.text == char && row.code == wrong {
+                row.code = right.to_string();
+                applied += 1;
+            }
+        }
+    }
+    applied
+}
+
 fn parse_level1(input: &str, singles: &[Row]) -> Result<Vec<Row>, Box<dyn Error>> {
     let mut weights: std::collections::HashMap<&str, u32> = std::collections::HashMap::new();
     for row in singles {
@@ -488,6 +521,7 @@ fn render_report(
     singles: &[Row],
     phrases: &[Row],
     kept_phrases: &[Row],
+    errata_applied: usize,
     core_bytes: usize,
     phrase_limit: usize,
     budget_bytes: usize,
@@ -516,6 +550,10 @@ fn render_report(
 
     let _ = writeln!(out, "[trim_rule]");
     let _ = writeln!(out, "single_rows = {}（全量保留）", singles.len());
+    let _ = writeln!(
+        out,
+        "errata_applied = {errata_applied}（D26 码表勘误，ADR-384；与教学数据同一份表）"
+    );
     let _ = writeln!(out, "phrase_rows_full = {}（含D16新组合）", phrases.len());
     let _ = writeln!(
         out,
