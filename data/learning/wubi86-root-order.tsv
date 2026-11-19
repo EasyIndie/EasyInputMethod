@@ -217,3 +217,46 @@
 蒂			auph			blocked	307	帝 族：冖/巾/丨 的取舍无法自证
 裸			pujs			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
 褐			pujn			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+概	木 彐 厶 儿	svcq	svcq	左右		fix	307	木+既(彐+厶+儿)
+驳	马 乂 乂	cqq	cqqy	左右	捺	fix	307	马+爻(乂+乂) + Y（捺·左右）
+傍	亻 丷 冖 方	wupy	wupy	左右		fix	307	亻+旁
+衙	彳 五 口 亅	tgkh	tgkh	左右		fix	307	彳+吾(五+口)+亍末笔，五根取一三末
+耀	⺌ 儿 羽 隹	iqny	iqny	左右		fix-medium	307	光(⺌+儿)+翟(羽+隹)
+慕	艹 日 大 心	ajdn	ajdn	上下		fix	307	艹+日+大+⺗
+抿	扌 コ 弋	rna	rnan	左右	折	fix	307	扌+民(コ+弋) + N（折·左右）
+纽	纟 乛 土	xnf	xnfg	左右	横	fix	307	纟+丑(乛+土) + G（横·左右）
+茂	艹 厂 乛 丿	adnt	adnt	上下		fix-medium	307	艹+戊(厂+乛+丿)
+恳	彐 衣 心	ven	venu	上下	捺	fix	307	艮(彐+衣)+心 + U（捺·上下）
+胚	月 一 小 一	egig	egig	左右		fix	307	月+丕(一+小+一)
+骡	马 田 幺 小	clxi	clxi	左右		fix	307	马+累(田+糸)，糸 拆成 幺+小
+骤	马 耳 又 氺	cbci	cbci	左右		fix	307	马+聚(耳+又+丿+氺)，五根取一三末
+恍	忄 ⺌ 儿	niq	niqn	左右	折	fix	307	忄+光(⺌+儿) + N（折·左右）
+吁	口 一 十	kgf	kgfh	左右	竖	fix	307	口+于(一+十) + H（竖·左右）
+衡	彳 鱼 大 亅	tqdh	tqdh	左右		fix-medium	307	彳+鱼+大+亍末笔（行 夹鱼大，五根取一三末）
+厉	厂 丆 乚	ddn	ddnv	杂合	折	fix	307	厂+万(丆+乚) + V（折·杂合）；与「励 DDNL」互证
+聋	丆 匕 耳	dxb	dxbf	上下	横	fix	307	龙(丆+匕)+耳 + F（横·上下）
+衍	彳 氵 二 亅	tifh	tifh	左右		fix-medium	307	彳+氵+亍(二+亅)
+垦	彐 衣 土	vef	veff	上下	横	fix	307	艮(彐+衣)+土 + F（横·上下）
+骆	马 夂 口	ctk	ctkg	左右	横	fix	307	马+各(夂+口) + G（横·左右）
+萍	艹 氵 一 丨	aigh	aigh	上下		fix	307	艹+氵+平(一+丷+丨)，五根取一三末
+豢	䒑 大 豕	ude	udeu	上下	捺	fix-medium	307	龹(䒑+大)+豕 + U（捺·上下）
+蹄			khuh			blocked	307	帝 族：亠/冖/巾/丨 的取舍无法自证
+褂			pufh			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+谎			yayq			blocked	307	荒(艹+亡+川) 的收尾与 Y/Q 位无法自证
+衬			pufy			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+袄			putd			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+怜			nwyc			blocked	307	令 的收尾（丶/乛）与 Y/C 位不符
+舔			tdgn			blocked	307	忝(一+大+⺗) 的取码与 G/N 位不符
+戚			dhit			blocked	307	戊/小/戈 的组合与 H/I/T 位无法自证
+襟			pusi			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+览			jtyq			blocked	307	〢/丿/见 的取码与 T/Y 位不符
+袱			puwd			blocked	307	衤 第二位是 D2 未解码 PUA（U 键）
+跋			khdc			blocked	307	犮(厂+又) 的拆分与 D/C 位无法自证
+拇			rxgu			blocked	307	母 族：母 的笔画序列与字根取码冲突
+嫡			vumd			blocked	307	啇 五根取四与 VUMD 不自洽
+啼			kuph			blocked	307	帝 族：亠/冖/巾/丨 的取舍无法自证
+伶			wwyc			blocked	307	令 的收尾（丶/乛）与 Y/C 位不符
+骄			ctdj			blocked	307	乔 的收尾与 D/J 位不符（J 是竖·左右）
+琉			gycq			blocked	307	㐬 的内部（厶/川）取码未定
+贸			qyvm			blocked	307	卯/刀/贝 的取码与 Q/Y 位无法自证
+傲			wgqt			blocked	307	敖(士+方+攵) 的内部取码与 G/Q 位不符
