@@ -113,3 +113,17 @@ cd modules/hanzi-structure && python3 tools/build_b0.py ... --root-order ../../d
 python3 platforms/macos/tests/test-wubi86-root-order.py                 # 契约：码位/键位/识别码
 python3 tools/wubi86-std-check.py --bundle build/wubi86-std-1.0 --level L4
 ```
+
+## 8. 全量推进（逐批，报告 307 起）
+
+| 批次 | 处理 | 定 | 卡点 | 累计 `full`（一级） |
+|---|---|---|---|---|
+| 306（试点） | 30 | 20 | 10 | 3,455（92.0%） |
+| 307-1 | 40 | 21 | 19 | 3,476（92.6%） |
+| 307-2 | 60 | 30 | 30 | **3,504（93.3%）** |
+
+- 判定表已扩到 **100 / 300**（`data/learning/wubi86-root-order.tsv`，`blocked` 行带卡点说明）；
+- 卡点已归成族：**衤 的 U 位 PUA**、**𠃓 尾 NRT**、**余 WTU**、**交 乂/父**、**井/八 族**、**革 的 F 位**、
+  **兼 收尾 八 vs O**、**官/棺 㠯**、**成字字根四码（马/竹/豕）需 build 规则**；
+  每族一旦补到证据，可一次解锁 3–20 个字。
+- 覆盖率曲线（一级 `full`）：91.5% → 92.0% → 92.6% → **93.3%**。

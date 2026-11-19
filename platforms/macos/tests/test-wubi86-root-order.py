@@ -43,7 +43,9 @@ def load_codes() -> dict[str, str]:
 class RootOrderTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.entries = list(rows(TABLE))
+        everything = list(rows(TABLE))
+        cls.blocked = [p for p in everything if p[6] == 'blocked']
+        cls.entries = [p for p in everything if p[6] != 'blocked']
         cls.codes = load_codes()
         cls.keys: dict[str, set[str]] = collections.defaultdict(set)
         for parts in rows(INVENTORY):
@@ -78,6 +80,17 @@ class RootOrderTests(unittest.TestCase):
             self.assertIn(structure, GRID[last], f'{char} 缺结构')
             self.assertEqual(GRID[last][structure], code[-1],
                              f'{char} 识别码应为 {GRID[last][structure]}，码表是 {code[-1]}')
+
+    def test_blocked_rows_are_explained(self):
+        self.assertGreater(len(self.blocked), 0, '没有 blocked 行，说明还没开始全量判定')
+        for parts in self.blocked:
+            self.assertEqual(parts[1], '', f'{parts[0]} 已 blocked 却带了字根')
+            self.assertGreaterEqual(len(parts[8].strip()), 8, f'{parts[0]} 的卡点说明太短')
+
+    def test_rows_are_unique(self):
+        chars = [p[0] for p in self.entries + self.blocked]
+        dup = {c for c in chars if chars.count(c) > 1}
+        self.assertEqual(dup, set(), f'重复条目：{dup}')
 
     def test_no_private_use_glyphs(self):
         text = TABLE.read_text(encoding='utf-8')

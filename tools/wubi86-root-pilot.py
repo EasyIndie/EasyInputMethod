@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
-"""五笔86 根序试点抽样（ADR-382 / T-ROOT86）。
+"""五笔86 根序工作台（ADR-382 / T-ROOT86 / 报告 306）。
 
-从 B0 账本里按「首个不符位次」分层抽样，输出一张待判定表：
-每条给出全码、D2 组件与键位、IDS、结构、每个码位上的标准字根候选，
-判定列留空，由人或模型补 `roots / decision / evidence / seconds`。
+两种用法：
+1) 抽样：`--mode sample`（默认）按「首个不符位次」分层抽样，出试点表；
+2) 全量：`--mode all` 输出范围内全部 `partial` 的待判定表，按词频从高到低排，
+   供逐批判定（`--offset/--limit` 分页）。
 
-只读本地数据，不联网；不修改任何产品数据。
+每条给出全码、D2 组件与键位、IDS、结构、每个码位上的候选字根（按该键在已知
+`full` 字里的使用频次排序），判定列留空由人或模型补。只读本地数据、不联网。
 """
 from __future__ import annotations
 
@@ -48,7 +50,10 @@ def main() -> int:
     parser.add_argument('--ledger', default='build/b0/B0.json')
     parser.add_argument('--bundle', default='build/wubi86-std-1.0')
     parser.add_argument('--scope', default='data/generated/gb2312-level1.txt')
+    parser.add_argument('--mode', choices=('sample', 'all'), default='sample')
     parser.add_argument('--per-group', default='3,12,10,3,2')
+    parser.add_argument('--offset', type=int, default=0)
+    parser.add_argument('--limit', type=int, default=0)
     parser.add_argument('--seed', type=int, default=86)
     parser.add_argument('--out', default='build/pilot/pilot-30.tsv')
     args = parser.parse_args()
@@ -58,21 +63,46 @@ def main() -> int:
     scope = load_scope(Path(args.scope))
     quotas = [int(x) for x in args.per_group.split(',')]
 
-    buckets: dict[str, list[dict]] = collections.defaultdict(list)
+    # 该键在已知 full 字里的字根使用频次（作为候选排序的先验）
+    usage: dict[tuple[str, str], collections.Counter] = collections.defaultdict(collections.Counter)
     for entry in ledger:
-        if entry['char'] not in scope or entry['quality'] != 'partial':
+        if entry['quality'] != 'full':
             continue
-        buckets[classify(entry)].append(entry)
+        code = entry['code']
+        for index, (glyph, key) in enumerate(zip(entry['components'] or [], entry['keys'] or [])):
+            if glyph and key and key in code:
+                usage[(str(index + 1), key)][glyph] += 1
+    def ordered(key: str, index: int) -> list[str]:
+        roots = sorted(by_key.get(key, []))
+        counter = usage.get((str(index + 1), key), collections.Counter())
+        roots.sort(key=lambda g: (-counter.get(g, 0), g))
+        return roots
 
-    rng = random.Random(args.seed)
-    picked: list[dict] = []
-    plan = []
-    for group, quota in zip(GROUPS, quotas):
-        pool = sorted(buckets.get(group, []), key=lambda e: e['char'])
-        take = rng.sample(pool, min(quota, len(pool)))
-        plan.append(f'{group}:{len(take)}/{len(pool)}')
-        picked.extend(take)
-    picked.sort(key=lambda e: e['char'])
+    if args.mode == 'all':
+        pool = [e for e in ledger if e['char'] in scope and e['quality'] == 'partial']
+        pool.sort(key=lambda e: (-int(e.get('frequency') or 0), e['char']))
+        if args.offset:
+            pool = pool[args.offset:]
+        if args.limit:
+            pool = pool[: args.limit]
+        plan = [f'all:{len(pool)}']
+        picked = pool
+    else:
+
+        buckets: dict[str, list[dict]] = collections.defaultdict(list)
+        for entry in ledger:
+            if entry['char'] not in scope or entry['quality'] != 'partial':
+                continue
+            buckets[classify(entry)].append(entry)
+        rng = random.Random(args.seed)
+        picked = []
+        plan = []
+        for group, quota in zip(GROUPS, quotas):
+            pool = sorted(buckets.get(group, []), key=lambda e: e['char'])
+            take = rng.sample(pool, min(quota, len(pool)))
+            plan.append(f'{group}:{len(take)}/{len(pool)}')
+            picked.extend(take)
+        picked.sort(key=lambda e: e['char'])
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -87,8 +117,7 @@ def main() -> int:
         positions = len(code) - (1 if entry.get('recognition') else 0)
         cand = []
         for i in range(min(positions, 4)):
-            options = sorted(by_key.get(code[i], []))
-            cand.append(f'{i + 1}:{"|".join(options[:8])}')
+            cand.append(f'{i + 1}:{"|".join(ordered(code[i], i)[:10])}')
         lines.append('\t'.join([
             str(index), entry['char'], code, entry['quality'],
             ','.join(str(x) for x in (entry.get('positionMismatch') or [])) or '-',
