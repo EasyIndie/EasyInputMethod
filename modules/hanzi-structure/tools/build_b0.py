@@ -824,7 +824,8 @@ def main() -> int:
             roots = ' '.join(f'{(c or "？")}:{k}' for c, k in zip(components, keys))
             rec = entry['recognition']
             recognition = f'{rec["key"].upper()}|{rec["stroke"]}|{rec["structure"]}' if rec else ''
-            shorts = '/'.join(x for x in (entry['short1'], entry['short2']) if x)
+            shorts = ('%s/%s' % (entry['short1'] or '-', entry['short2'] or '-')) \
+                if (entry['short1'] or entry['short2']) else ''
             rows.append('\t'.join([entry['char'], entry['code'] or '', quality,
                                     roots, recognition, shorts]))
         payload = '\n'.join(rows) + '\n'

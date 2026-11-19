@@ -137,16 +137,34 @@ enum LearningHints {
                 guard parts.count == 3, !parts[0].isEmpty else { return nil }
                 return (parts[0].uppercased(), String(parts[1]), String(parts[2]))
             }()
-            let shorts = (String(bytes: fields[5], encoding: .utf8) ?? "")
-                .split(separator: "/").map { $0.uppercased() }
+            // 简码列固定两个槽位 `一级/二级`，缺项写 `-`（ADR-376）。
+            // 旧数据只有“存在的那些槽位”（如只写 `wb` 表示二级简码），所以单槽时按长度兜底：
+            // 1 位=一级简码，2 位=二级简码——否则二级简码会被当成一级简码，练习永远出不到它。
+            let shortSlots = (String(bytes: fields[5], encoding: .utf8) ?? "")
+                .split(separator: "/", omittingEmptySubsequences: false)
+                .map { $0.uppercased() }
+            let short1: String?
+            let short2: String?
+            switch shortSlots.count {
+            case 0:
+                short1 = nil
+                short2 = nil
+            case 1:
+                let only = shortSlots[0]
+                short1 = only == "-" ? nil : (only.count == 1 ? only : nil)
+                short2 = only == "-" ? nil : (only.count == 2 ? only : nil)
+            default:
+                short1 = shortSlots[0] == "-" ? nil : shortSlots[0]
+                short2 = shortSlots[1] == "-" ? nil : shortSlots[1]
+            }
             let code = String(bytes: fields[1], encoding: .utf8)
             return LearningHint(char: char,
                                 code: (code?.isEmpty ?? true) ? nil : code?.uppercased(),
                                 quality: quality,
                                 roots: roots,
                                 recognition: recognition,
-                                short1: shorts.count > 0 ? shorts[0] : nil,
-                                short2: shorts.count > 1 ? shorts[1] : nil)
+                                short1: short1,
+                                short2: short2)
         }
     }
 }

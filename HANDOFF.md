@@ -8,10 +8,10 @@
 - 下一步：**下一版范围决策**（1.3.1 已收口，无已立项批次）；可选：13 个语境歧义 PUA、练习窗口副屏居中细节；
   P2 各项按触发条件等证据。发版前须重新绑定候选身份。
 - 版本：`Cargo.toml` = **1.3.1**、`packaging/build-number` = **44**；最新 tag **`v1.3.1`**（`677e046`）。**下次正式发版前必须重新绑定候选身份。**
-- 最近验证：`make verify` PASS（686 产物零网络符号）、`make macos-offline-tests` **69 文件 / 341 例 PASS**、
-  `make macos-ui-snapshots` PASS（2026-11-19，ADR-375 字表切换之后）。
+- 最近验证：`make verify` PASS（686 产物零网络符号）、`make macos-offline-tests` **70 文件 / 347 例 PASS**、
+  `make macos-ui-snapshots` PASS、`build.sh --strict` PASS（2026-11-19，ADR-375 字表 + ADR-376 简码槽位之后）。
 - B0 覆盖（ADR-375，报告 303）：字表 = **GB2312-1980 一级 3,755 字**；`full` **3,429（91.3%）** / `partial` 326 / `unknown` 0；
-  资源 155,500 B（预算 512 KiB）。旧“jieba top-3,000”口径的 87.1% 与 154 unknown 已作废（频次被污染 + 396 个常用字被挤出）。
+  资源 156,682 B（41.7 B/字，预算 512 KiB）。旧“jieba top-3,000”口径的 87.1% 与 154 unknown 已作废（频次被污染 + 396 个常用字被挤出）。
   98% 仍未达成，缺口是 canonical 根序（283 根序不符 + 43 组件数不符）。
 - 1.2.1 身份：提交 `168115e`、ZIP `102f4928…`、DMG `a6f4bdbd…`、更新程序 `b04049e3…`、appcast `40`、包内执行 `3eeeb0aa2ae4be0facd0120c854ea822ad1ba749dd3a22611f39a97db6fc32d9`（`docs/releases/1.2.1.md`）。
 - 1.2.0 候选身份：提交 `31fdbcd`、ZIP `64eeb90f…`、源码 `3dc6f717…`、宿主执行 `ef25e92ba085ea3f556e12d477fb1b6a6cd08ebbc3b74897fdb7b2d9f6eead64`（`docs/releases/1.2.0.md`）。
@@ -174,6 +174,10 @@ make macos-offline-tests
   GB2312-1980 一级 3,755 字后：`full` **3,429（91.3%）** / `partial` 326 / `unknown` 0，资源 155,500 B；
   `key-roots-wubi86.tsv` 内容未变（仅 audit 语料统计刷新）。同时复核：N1-d 13 个 PUA **产物已无 `？` 占位**（只降级
   `partial`）、练习窗口副屏落点已由 ADR-365 关闭。`make verify`、离线 69/341、`ui-snapshots`、`validate_b0.py` 全绿。
+  同日续：**ADR-376 简码槽位固定 `一级/二级`（缺项 `-`）**——旧格式把 577 个只有二级简码的字写成 `wb`，
+  宿主只能当一级简码解析，二级简码题永远出不到它们。新增 `test-learning-consistency.py`（6 例）钉死
+  「学练用同一套」：学习区全码必须在引擎 `wubi86-core.tsv` 里有 `(码,字)` 对、拆字键位 = 全码前缀、
+  识别码可由「末笔×结构」重算、简码槽位与 D17/D17-bis 逐字一致；离线升到 70 文件 / 347 例。
   P2 触发条件已量化（评测基线：`hit` 98.2% / `first` 83.9% / `avgPos` 0.15 / 4.29 键，取证=`make eval-candidates`
   + `perf-session.sh`，仍无遥测）；P1-6 多方案按研究文档的「五件套」口径登记为暂缓（缺许可字根/码表）。
   **开放 PR：[#337](https://github.com/EasyIndie/EasyInputMethod/pull/337)（dev → main）四项检查全绿，等合并授权。**

@@ -6,6 +6,8 @@
 1. 体积 ≤ 512 KiB（ADR-309/311 预算）；
 2. 六列、无制表符污染、无私有区字形、质量取值合法、字不重复；
 3. 字根格形如 `形:键`（未知字形用 `？`），识别码形如 `L|横|左右`，键位/字母大写；
+   简码列固定两个槽位 `一级/二级`，缺项写 `-`（ADR-376）——旧格式只写存在的槽位，会把
+   二级简码误当一级简码，导致「二级简码」题型永远出不到这些字；
 4. `partial` 记录必须含至少一个 `？` 占位（不编造），`unknown` 不带字根。
 """
 from pathlib import Path
@@ -45,8 +47,16 @@ class B0RuntimeTests(unittest.TestCase):
             if recognition:
                 self.assertRegex(recognition, RECOGNITION, line)
             if shorts:
-                for short in shorts.split('/'):
-                    self.assertTrue(short.isascii() and short.islower(), line)
+                slots = shorts.split('/')
+                self.assertEqual(len(slots), 2, f'简码列必须是两个槽位：{line}')
+                for slot in slots:
+                    if slot == '-':
+                        continue
+                    self.assertTrue(slot.isascii() and slot.islower(), line)
+                if slots[0] != '-':
+                    self.assertEqual(len(slots[0]), 1, f'一级简码应为 1 位：{line}')
+                if slots[1] != '-':
+                    self.assertEqual(len(slots[1]), 2, f'二级简码应为 2 位：{line}')
 
     def test_no_private_use_characters(self):
         text = self.raw.decode('utf-8')
