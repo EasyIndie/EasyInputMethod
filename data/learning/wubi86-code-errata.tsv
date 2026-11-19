@@ -1,0 +1,5 @@
+# 五笔86 码表勘误表（项目自编，CC-BY-SA-4.0；ADR-384、报告 318）。
+# 只登记「同族互证」能证明的码表错误；status=active 才生效，pending 表示"证据成立但下游未同步"。
+# 生效前提：引擎核心码表（data/generated/wubi86-core.tsv）必须同步，否则破坏「学 = 用」不变量。
+# char	erroneous	corrected	family	status	evidence
+酶	sgtu	sgtx	每	pending	每 txgu / 海 itxu / 梅 stxu / 悔 ntxu / 霉 ftxu 五字互证：每 在合成字里取 𠂉(t)+母(x)，故 酉(s,g)+每(t,x)=sgtx；码表末位 u 无字形对应。待引擎码表同步后启用

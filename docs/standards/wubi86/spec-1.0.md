@@ -49,6 +49,7 @@
 |---|---|---|
 | `roots` | 字根字形 | `glyph`, `key`, `kind` |
 | `chars` | 字 | `char`, `code`, `roots[]`, `class`, `recognition{key,stroke,structure}?`, `quality`, `evidence` |
+| `errata` | 码表勘误 | `char`, `erroneous`, `corrected`, `family`, `evidence`（可选层，见 §10.1） |
 | `shortcodes` | 字 | `char`, `level(1/2/3)`, `code` |
 
 - `keys` 列是**导出信息**（由 `roots` 表推得），判定时不采信实现方提供的 `keys`（防自证）。
@@ -134,3 +135,12 @@
 3. **末端歧义**：4 码字中"3 字根 + 识别码"与"4 字根"在字形数据上可能同构，本标准以 `code` 与规则约束判定，
    无法区分时标 `partial`（见 `docs/standards/wubi-decomposition.md` §2 第 6 条与报告 304 F7）。
 4. **不评价实现优劣**：L1–L4 只判一致性，不判输入体验与排序。
+
+## 10.1 码表勘误（ADR-384）
+
+标准允许**独立声明**的码表勘误层：若某一码被"同族 ≥3 字互证 + 规则完整解释"证明为错，
+可在 `errata` 层登记 `erroneous → corrected`，实现方 MUST 在数据包 `meta.json` 里声明勘误条数与 SHA；
+未声明勘误的实现，按原码判定（不影响其自身一致性）。
+
+当前勘误：`酶 sgtu → sgtx`（同族 每/海/梅/悔/霉）。
+

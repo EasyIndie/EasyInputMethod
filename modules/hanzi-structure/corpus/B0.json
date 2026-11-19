@@ -16010,12 +16010,12 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
    "艹",
    "厂",
-   null,
-   "ノ"
+   "乚",
+   "丿"
   ],
   "keys": [
    "a",
@@ -16031,20 +16031,16 @@
   "structureConflict": false,
   "ids": "⿱艹臧",
   "idsStructure": "上下",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": null,
   "short3": null,
   "pinyin": "cang",
   "frequency": 8819,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "标准字根/键位不符：第 3 个（None，键 n）",
-   "占位字根：第 3 个（键 n）",
+   "使用根序判定表（报告 306）",
    "字根已够四码，无识别码"
   ]
  },
@@ -16481,11 +16477,11 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
    "亠",
-   "ㄠ",
-   null,
+   "幺",
+   "氺",
    "十"
   ],
   "keys": [
@@ -16502,20 +16498,16 @@
   "structureConflict": false,
   "ids": "⿳亠⿲冫幺⿱丿丶十",
   "idsStructure": "上下",
-  "positionMismatch": [
-   3
-  ],
+  "positionMismatch": [],
   "recognition": null,
   "short1": null,
   "short2": "yx",
   "short3": "yxi",
   "pinyin": "lv",
   "frequency": 8539,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "有 1 个字根字形未识别（占位，键位取自码位）",
-   "标准字根/键位不符：第 3 个（None，键 i）",
-   "占位字根：第 3 个（键 i）",
+   "使用根序判定表（报告 306）",
    "字根已够四码，无识别码"
   ]
  },
@@ -25802,43 +25794,40 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
-   "亠",
-   "丷",
+   "六",
    "冖",
    "方"
   ],
   "keys": [
    "u",
    "p",
-   "y",
-   "b"
+   "y"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "IDS",
+  "structureSource": "recognition",
   "structureConflict": false,
   "ids": "⿳亠丷⿱冖方",
   "idsStructure": "上下",
-  "positionMismatch": [
-   1,
-   2,
-   3,
-   4
-  ],
-  "recognition": null,
+  "positionMismatch": [],
+  "recognition": {
+   "key": "b",
+   "stroke": "折",
+   "structure": "上下",
+   "because": "3 个字根不足四码：末笔折 + 结构上下 ⇒ 识别码 b"
+  },
   "short1": null,
   "short2": null,
   "short3": "upy",
   "pinyin": "pang",
   "frequency": 5260,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 1 个（亠，键 u）、第 2 个（丷，键 p）、第 3 个（冖，键 y）、第 4 个（方，键 b）",
-   "字根已够四码，无识别码"
+   "使用根序判定表（报告 306）"
   ]
  },
  {
@@ -29067,9 +29056,9 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
-   "卬",
+   "卯",
    "卩",
    "辶"
   ],
@@ -29086,9 +29075,7 @@
   "structureConflict": false,
   "ids": "⿺辶卬",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "k",
    "stroke": "竖",
@@ -29100,9 +29087,9 @@
   "short3": "qbp",
   "pinyin": "ying",
   "frequency": 4509,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 1 个（卬，键 q）"
+   "使用根序判定表（报告 306）"
   ]
  },
  {
@@ -36279,9 +36266,9 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
-   "爪",
+   "卯",
    "一",
    "卩"
   ],
@@ -36298,9 +36285,7 @@
   "structureConflict": false,
   "ids": "⿰𠀉卩",
   "idsStructure": "左右",
-  "positionMismatch": [
-   1
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "h",
    "stroke": "竖",
@@ -36312,9 +36297,9 @@
   "short3": "qgb",
   "pinyin": "yin",
   "frequency": 3458,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "标准字根/键位不符：第 1 个（爪，键 q）"
+   "使用根序判定表（报告 306）"
   ]
  },
  {

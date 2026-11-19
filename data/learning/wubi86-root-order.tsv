@@ -151,7 +151,7 @@
 衫	衤 丷 彡	pue	puet	左右	撇	fix-medium	313	衤+丷+彡 + T（撇·左右）
 熬	主 ⺈ 攵 灬	gqto	gqto	上下		fix-medium	309	敖(主+⺈+攵)+灬
 姆	女 母 一 丷	vxgu	vxgu	左右		fix-medium	308	女+母+一+丷（VXGU 的第 4 位 U 是母内的两点）
-酶			sgtu			blocked	307	母 族：每 的底部（母 X）与码位 4 的 U 冲突
+酶			sgtu			blocked	319	码表末位 u 无字形对应（母 在 X）；同族互证应作 sgtx，勘误见 D26（pending，需引擎码表同步）
 荡	艹 氵 𠃌 ⺁	ainr	ainr	上下		fix-medium	312	艹+汤，五根取一三末；U+F0064 未解码；按同族自证取 ⺁（「勿 QRE」「剔 JQRJ」的 R 位同为该 PUA）
 繁	𠂉 母 一 小	txgi	txgi	上下		fix	308	每+攵+糸，五根取一三末（TXGI）
 摘	扌 六 冂 古	rumd	rumd	左右		fix	311	扌+啇(六+冂+古)

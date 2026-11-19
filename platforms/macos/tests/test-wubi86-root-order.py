@@ -12,6 +12,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 TABLE = ROOT / 'data/learning/wubi86-root-order.tsv'
+ERRATA = ROOT / 'data/learning/wubi86-code-errata.tsv'
 INVENTORY = ROOT / 'data/learning/wubi86-root-inventory.tsv'
 CODES = ROOT / 'data/generated/wubi86-single.tsv'
 
@@ -91,6 +92,21 @@ class RootOrderTests(unittest.TestCase):
         chars = [p[0] for p in self.entries + self.blocked]
         dup = {c for c in chars if chars.count(c) > 1}
         self.assertEqual(dup, set(), f'重复条目：{dup}')
+
+    def test_code_errata_is_justified(self):
+        """ADR-384：勘误必须带同族字与推导，且不能与码表原值相同。"""
+        entries = list(rows(ERRATA))
+        self.assertGreaterEqual(len(entries), 1, '勘误表为空')
+        for parts in entries:
+            char, wrong, right, family, status, evidence = (
+                parts[0], parts[1], parts[2], parts[3], parts[4], parts[5])
+            self.assertIn(status, ('active', 'pending'), f'{char} 的 status 非法')
+            self.assertEqual(len(char), 1)
+            self.assertIn(char, self.codes, f'{char} 不在码表里')
+            self.assertNotEqual(wrong, right, f'{char} 的勘误前后相同')
+            self.assertEqual(len(wrong), len(right), f'{char} 勘误改变了码长')
+            self.assertGreaterEqual(len(family), 1, f'{char} 缺同族字')
+            self.assertGreaterEqual(len(evidence), 12, f'{char} 的勘误说明太短')
 
     def test_no_private_use_glyphs(self):
         text = TABLE.read_text(encoding='utf-8')

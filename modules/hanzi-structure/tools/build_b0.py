@@ -64,6 +64,19 @@ def load_full_codes(path: Path) -> dict[str, str]:
     return codes
 
 
+def load_code_errata(path: Path) -> dict[str, tuple[str, str]]:
+    """D26：码表勘误（字 -> (原码, 勘误码)）。只收同族互证能证明的码表错误（ADR-384）。
+
+    只有 `status = active` 的行生效；`pending` 表示证据成立但下游（引擎核心码表）尚未同步，
+    此时若单方面改 B0 会破坏「学 = 用」不变量（`test-learning-consistency.py` 会拦）。
+    """
+    out: dict[str, tuple[str, str]] = {}
+    for parts in read_rows(path, 6):
+        if len(parts) >= 5 and len(parts[0]) == 1 and parts[4] == 'active':
+            out[parts[0]] = (parts[1], parts[2])
+    return out
+
+
 def load_radicals(path: Path) -> dict[str, list[str]]:
     """D2（wubi-lex）：字根**连写**在第二列，逐字符取；容忍 BOM。"""
     out: dict[str, list[str]] = {}
@@ -733,6 +746,8 @@ def main() -> int:
                         help='N4 D2 漏拆字的完整拆字（D18，可选）')
     parser.add_argument('--root-order',
                         help='D25 五笔86 根序判定表（报告 306，可选；优先级高于 --manual-decomp）')
+    parser.add_argument('--code-errata',
+                        help='D26 码表勘误表（ADR-384，可选；覆盖 --codes 里的错误码）')
     parser.add_argument('--pua-d2-bmp',
                         help='D2 BMP PUA→字根核验表（按 PUA+键位，可选）')
     parser.add_argument('--pua-context',
@@ -768,6 +783,8 @@ def main() -> int:
         paths['manual_decomp'] = Path(args.manual_decomp)
     if args.root_order:
         paths['root_order'] = Path(args.root_order)
+    if args.code_errata:
+        paths['code_errata'] = Path(args.code_errata)
     if args.pua_d2_bmp:
         paths['pua_d2_bmp'] = Path(args.pua_d2_bmp)
     if args.pua_context:
@@ -802,6 +819,10 @@ def main() -> int:
     root_strokes = load_root_strokes(Path(args.root_strokes)) if args.root_strokes else {}
     manual_decomp = load_manual_decomp(Path(args.manual_decomp)) if args.manual_decomp else {}
     root_order = load_root_order(Path(args.root_order)) if args.root_order else {}
+    errata = load_code_errata(Path(args.code_errata)) if args.code_errata else {}
+    for errata_char, (wrong, right) in errata.items():
+        if codes.get(errata_char) == wrong:
+            codes[errata_char] = right
     d2_bmp_map = load_pua_d2_bmp(Path(args.pua_d2_bmp)) if args.pua_d2_bmp else {}
     context_map = load_pua_context(Path(args.pua_context)) if args.pua_context else {}
     coverage_decomp = load_coverage_decomp(Path(args.coverage_decomp)) if args.coverage_decomp else {}
