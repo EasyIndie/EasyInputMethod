@@ -135,7 +135,26 @@ python3 modules/hanzi-structure/tests/validate_b0.py \
 make eval-candidates
 ```
 
-## 6. 未验证
+## 6. 处理结果（2026-11-19 同批修复）
 
-- 真机：本轮只读数据与源码，未换包；F3 的显示问题需要在已装包上目视确认（学习区简码行）。
-- F1 的 9 条与 F2 的 `母`在 1,000 字账本（`corpus/B0.json`）里同样存在，修数据时要同时重生成两处产物。
+| 编号 | 处置 | 证据 |
+|---|---|---|
+| F1 | **已修**：不足四码的合体字只保留「码长−1」个字根，尾部字形按识别码槽丢弃并补识别码 | 9 条全部带上识别码（`矿 T|撇|左右`、`码 G|横|左右`…）；新增门禁断言 |
+| F2 | **已修**：成字字根必须满足「报户口 + 笔画键」，`母 XGUI` 如实标为官方特例取码，并补上 `母:X` 报户口键位 | `readable-keys` x 行补 `母`；学习区显示 `母:X` |
+| F3 | **已修**：运行时升 v3，简码列固定三槽位；学习区显示「简码 一 G · 二 GI · 三 GII」；练习三级题改读同一行 | `LearningHint.shortSummary`、`--short3`、bundle 不再单独带 level3 表 |
+| F4 | **已修（口径）**：使用指南写明「三级简码只对官方简码表内的字成立」；评测 README 口径不变 | `OnboardingWindow` bullet |
+| F5 | **已修**：学习字表 = GB2312 一级 ∪ 简码表用字（**5,021 字**）；练习池改 `quality != unknown` | 题池 25/598/3,362 全覆盖；`learning-chars.tsv` |
+| F6 | **已修（记录）**：字表扩大后仅剩 **6** 个标准字根无例字（`⺊ 卄 已 皮 竹 虎`），写进键位审计 | `key-roots-wubi86-audit.md` |
+| F7 | **已修（口径）**：拆字标准 v1 增补第 6 条「组件 = 取码字根，不是字面拆分」，明确末笔自证边界 | `docs/standards/wubi-decomposition.md` |
+| F8 | **已修**：完整码题允许无字根，键名字/成字字根（含 `母`/`羽`）进入题池 | `wubi-learning.swift` 断言 `人` 可练 |
+
+修复后现状：运行时 **5,021 条 / 233,052 B（46.4 B/字）**，`full` **4,546** / `partial` 475 / `unknown` 0；
+GB2312 一级口径 **3,429（91.3%）** 不变；台账 1,000 字 `full` 930 / `partial` 66 / `unknown` 4；
+PUA 清单 83 个（verified 64 / partial 2 / unresolved 17）；识别码题池 2,714。
+验证：`make verify`、离线 **70 文件 / 349 例**、`validate_b0.py`、`build.sh --strict`、`make macos-ui-snapshots` 全 PASS。
+决策见 ADR-377/378。
+
+## 7. 未验证
+
+- 真机：本轮未换包；F3 的显示（学习区简码带等级、三级简码行）与 F1 的识别码行需要在已装包上目视确认。
+- F1 的 9 条与 F2 的 `母`已同时重生成两处产物（`corpus/B0.json` 台账与 `data/generated/B0-runtime.tsv`）。
