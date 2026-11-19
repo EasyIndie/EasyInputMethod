@@ -85,7 +85,7 @@
     },
     "root_order": {
       "path": "../../data/learning/wubi86-root-order.tsv",
-      "sha256": "875bfea573f72692ea554959077d89199664d15535c670adf8d5e6974e85d3b1"
+      "sha256": "5084c763161dd03e7372e2357be6c777e514e5efb5f388f5483074915729b958"
     },
     "pua_d2_bmp": {
       "path": "corpus/pua-d2-bmp.tsv",

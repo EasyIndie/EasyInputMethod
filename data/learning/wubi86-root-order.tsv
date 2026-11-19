@@ -296,7 +296,7 @@
 镰	钅 广 䒑 亦	qyuo	qyuo	左右		fix	313	钅+廉，五根取一三末
 墒	土 六 冂 口	fumk	fumk	左右		fix	311	土+商，五根取一三末
 戍			dynt			blocked	307	戊/丶/戈 的组合与 Y/N/T 位无法自证
-榴			sqyl			blocked	307	留 的上部（卯/⺈）与 Q 位取码不符
+榴	木 卯 丶 田	sqyl	sqyl	左右		fix	314	木+留(卯+丶+刀+田)，五根取一三末；PUA 0xf005a 由「卵/贸」同位证为 卯
 敖	主 ⺈ 攵	gqt	gqty	左右	捺	fix-medium	309	龶(主)+⺈+攵 + Y（捺·左右）
 戊			dnyt			blocked	307	戊 的丿/丶 顺序与 N/Y/T 位无法自证
 赘	主 ⺈ 攵 贝	gqtm	gqtm	上下		fix-medium	309	敖+贝
