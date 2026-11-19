@@ -4,10 +4,10 @@
   "allCodes": false,
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
-  "standardMismatchEntries": 2,
+  "standardMismatchEntries": 1,
   "quality": {
-    "full": 994,
-    "partial": 2,
+    "full": 995,
+    "partial": 1,
     "unknown": 4
   },
   "classes": {
@@ -16,10 +16,10 @@
     "key-name": 23,
     "None": 4
   },
-  "withRecognition": 656,
+  "withRecognition": 653,
   "componentsSource": {
-    "D18": 115,
-    "D2": 848,
+    "D18": 117,
+    "D2": 846,
     "D24": 10
   },
   "puaMap": "corpus/pua-map.json",
@@ -30,14 +30,14 @@
   "withWritingStrokes": 44,
   "structureCoverage": 989,
   "structureSource": {
-    "recognition": 656,
-    "IDS": 333
+    "recognition": 653,
+    "IDS": 336
   },
-  "structureConflicts": 61,
-  "manualDecomp": 115,
+  "structureConflicts": 60,
+  "manualDecomp": 117,
   "withIds": 990,
   "idsFilled": 1,
-  "positionMismatchEntries": 2,
+  "positionMismatchEntries": 1,
   "inputs": {
     "codes": {
       "path": "../../data/generated/wubi86-single.tsv",
@@ -85,11 +85,11 @@
     },
     "root_order": {
       "path": "../../data/learning/wubi86-root-order.tsv",
-      "sha256": "861c269fa659285edf54ca0c6acf7309345116820d98347bf6b5954d2c5cb9fd"
+      "sha256": "7bf11457e6437277d00ad3f7643be44c58efc5e50acf54857b3967b49d839ade"
     },
     "code_errata": {
       "path": "../../data/learning/wubi86-code-errata.tsv",
-      "sha256": "62af304e2520d46da24c45d0dafaa1922836d52037f0c9899b9a022c6ab5f3d2"
+      "sha256": "0ae313a91d06a5ba2bca9338731556a79c76ad4a4905eb160c2339278da43e8b"
     },
     "pua_d2_bmp": {
       "path": "corpus/pua-d2-bmp.tsv",

@@ -491,10 +491,10 @@ url = "https://github.com/EasyIndie/EasyInputMethod/blob/main/data/learning/wubi
 upstream = "EasyIndie/EasyInputMethod contributors"
 license = "CC-BY-SA-4.0"
 risk = "low"
-sha256 = "6dfded58d33d98f724b2f8c682acff27b556c429a0c1750bc0051540457f92f4"
+sha256 = "7bf11457e6437277d00ad3f7643be44c58efc5e50acf54857b3967b49d839ade"
 used_for = ["b0-root-order"]
 added_at = "2026-11-19"
-notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 321 条（fix 316 / blocked 5，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
+notes = "ADR-382/报告 306：纠正 D2 根序的逐位判定（码位—字根—键位三元组必须对齐，根数符合 R3）。只收能由全码、字根清单与识别码网格自证的字；结构存疑的一律留在 partial。当前 326 条（fix 324 / blocked 2，卡点逐条写明），由 build_b0.py --root-order 读取，优先级高于 --manual-decomp"
 
 [[source]]
 id = "D26"

@@ -42,7 +42,7 @@ class B0CorpusTests(unittest.TestCase):
         self.assertEqual(full.returncode, 0, full.stderr)
         self.assertIn('识别码 g', full.stdout)
         # U3-4/N1-d 后「是」已 full；用一个仍有占位字根的字验证降级契约。
-        partial = subprocess.run(query + ['不'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        partial = subprocess.run(query + ['幺'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(partial.returncode, 0, partial.stderr)
         self.assertIn('拆解待核验', partial.stdout)
 
@@ -62,7 +62,7 @@ class B0CorpusTests(unittest.TestCase):
             text = json.dumps(entry, ensure_ascii=False)
             self.assertNotIn('\ue000', ''.join(c for c in text if 0xE000 <= ord(c) <= 0xF8FF))
         query = [sys.executable, str(MODULE / 'tools/b0_query.py')]
-        result = subprocess.run(query + ['不'], cwd=ROOT, capture_output=True, text=True, timeout=60)
+        result = subprocess.run(query + ['幺'], cwd=ROOT, capture_output=True, text=True, timeout=60)
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertIn('拆解待核验', result.stdout)
 

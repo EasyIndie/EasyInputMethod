@@ -241,10 +241,10 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
-   "丆",
-   "卜"
+   "一",
+   "小"
   ],
   "keys": [
    "g",
@@ -258,9 +258,7 @@
   "structureConflict": false,
   "ids": "⿸丆卜",
   "idsStructure": "杂合",
-  "positionMismatch": [
-   2
-  ],
+  "positionMismatch": [],
   "recognition": {
    "key": "i",
    "stroke": "捺",
@@ -272,10 +270,9 @@
   "short3": null,
   "pinyin": "bu",
   "frequency": 360331,
-  "quality": "partial",
+  "quality": "full",
   "notes": [
-   "不足四码：只保留 2 个字根，尾部 1 个字形属识别码槽（已丢弃）",
-   "标准字根/键位不符：第 2 个（卜，键 i）"
+   "使用根序判定表（报告 306）"
   ]
  },
  {
@@ -6049,29 +6046,26 @@
   "componentsSource": "D18",
   "components": [
    "𠂉",
-   "母",
-   "一"
+   "毌",
+   "一",
+   "丷"
   ],
   "keys": [
    "t",
    "x",
-   "g"
+   "g",
+   "u"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "recognition",
+  "structureSource": "IDS",
   "structureConflict": false,
   "ids": "⿱𠂉母",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": {
-   "key": "u",
-   "stroke": "捺",
-   "structure": "上下",
-   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "short3": "txg",
@@ -6079,7 +6073,8 @@
   "frequency": 26048,
   "quality": "full",
   "notes": [
-   "使用根序判定表（报告 306）"
+   "使用根序判定表（报告 306）",
+   "字根已够四码，无识别码"
   ]
  },
  {
@@ -14541,39 +14536,39 @@
   "scheme": "wubi86",
   "standardVersion": "wubi86-1.0",
   "class": "compound",
-  "componentsSource": "D2",
+  "componentsSource": "D18",
   "components": [
    "氵",
    "𠂉",
-   "母"
+   "毌",
+   "丷"
   ],
   "keys": [
    "i",
    "t",
-   "x"
+   "x",
+   "u"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
-  "structure": "上下",
-  "structureSource": "recognition",
-  "structureConflict": true,
+  "structure": "左右",
+  "structureSource": "IDS",
+  "structureConflict": false,
   "ids": "⿰氵每",
   "idsStructure": "左右",
   "positionMismatch": [],
-  "recognition": {
-   "key": "u",
-   "stroke": "捺",
-   "structure": "上下",
-   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "short3": "itx",
   "pinyin": "hai",
   "frequency": 9676,
   "quality": "full",
-  "notes": []
+  "notes": [
+   "使用根序判定表（报告 306）",
+   "字根已够四码，无识别码"
+  ]
  },
  {
   "char": "体",
@@ -30137,29 +30132,26 @@
   "componentsSource": "D18",
   "components": [
    "主",
-   "母",
-   "一"
+   "毌",
+   "一",
+   "丷"
   ],
   "keys": [
    "g",
    "x",
-   "g"
+   "g",
+   "u"
   ],
   "strokes": null,
   "strokesSource": null,
   "strokesKind": null,
   "structure": "上下",
-  "structureSource": "recognition",
+  "structureSource": "IDS",
   "structureConflict": false,
   "ids": "⿱龶母",
   "idsStructure": "上下",
   "positionMismatch": [],
-  "recognition": {
-   "key": "u",
-   "stroke": "捺",
-   "structure": "上下",
-   "because": "3 个字根不足四码：末笔捺 + 结构上下 ⇒ 识别码 u"
-  },
+  "recognition": null,
   "short1": null,
   "short2": null,
   "short3": null,
@@ -30167,7 +30159,8 @@
   "frequency": 4357,
   "quality": "full",
   "notes": [
-   "使用根序判定表（报告 306）"
+   "使用根序判定表（报告 306）",
+   "字根已够四码，无识别码"
   ]
  },
  {

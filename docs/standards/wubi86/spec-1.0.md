@@ -78,7 +78,10 @@
    **R9-bis 部件尾**（ADR-383）：`class = radical-char` 时，`code[1:]` 也 MAY 是
    "该字实际含有的标准部件序列 + 识别码"，前提是每个部件都在 `roots` 表内、键位逐位对齐、
    识别码可推导，并在 `evidence` 写明"报户口+部件尾"（当前仅 `卯 QTBH`）。
-10. **R10 不冒充**：任何条目 MUST NOT 把 `radical-char-exception` 标成 `compound` 以绕过 R2/R3。
+10. **R1-bis 部件内部拆分**：某字根在合体字内 MUST 按官方笔画段拆开时，以拆开后的段为取码单位。
+    当前已知一例：**母 = 毌(x) + 一(g) + 丷(u)**（单字「母」仍按成字字根 `XGUI`），
+    由此 `每 txgu` / `毒 gxgu` / `酶 sgtu` 等 11 字全部逐位可解释（ADR-384 附二）。
+11. **R10 不冒充**：任何条目 MUST NOT 把 `radical-char-exception` 标成 `compound` 以绕过 R2/R3。
 
 **PUA/占位规则**：解析私有区字形时，若某字的字形序列长度 = `code` 长度且末位不是该键的标准字根，末位 MUST 视为识别码槽
 （R3 的一种情形）；不足四码的合体字根数 MUST 为 `code` 长度 − 1（否则该字最多只能标 `partial`）。
