@@ -52,13 +52,13 @@
 官	宀 コ 丨 コ	pnhn	pnhn	上下		fix-medium	312	宀+コ+丨+コ（U+F0043 在 pua-inventory 标为 コ，n:37；PNHN 四位自证）
 管	⺮ 宀 コ コ	tpnn	tpnn	上下		fix-medium	312	⺮+官，五根取一三末
 流	氵 亠 厶 儿	iycq	iycq	左右		fix-medium	315	氵+㐬(亠+厶+儿)；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
-藏			adnt			blocked	307	臧 内部的取码未定
+藏	艹 厂 乚 丿	adnt	adnt	上下		fix	317	艹+臧(厂+乚+丆)，丆 拆一+丿 后五根取一三末 ⇒ 艹/厂/乚/丿
 跳	口 止 儿 儿	khiq	khiq	左右		fix	313	足(口+止)+兆(儿+儿)，四根取尽（KHIQ）
 求	十 氺 丶	fiy	fiyi	杂合	捺	fix	310	十+氺+丶 + I（捺·杂合）；FIYI 自证
 救	十 氺 丶 攵	fiyt	fiyt	左右		fix	310	求(十+氺+丶)+攵，四根取尽
 球	王 十 氺 丶	gfiy	gfiy	左右		fix	310	王+求(十+氺+丶)
 交	六 乂	uq	uqu	上下	捺	fix	307	六(亠+八)+乂 + U（捺·上下）；交 UQU 自证
-旁			upyb			blocked	307	第 4 位 B（了/凵/卩/子/耳/阝）在字形上无对应
+旁	六 冖 方	upy	upyb	上下	折	fix	317	六+冖+方 + B（折·上下）；方 的末笔按 YYGN 是折，不是撇
 率			yxif			blocked	307	第 3 位 I（氵/小/丷）在字形上无对应；冫 在 U 键，与码位冲突
 暖	日 爫 二 又	jefc	jefc	左右		fix	307	日+爰(爫+二+又)
 腿	月 彐 衣 辶	evep	evep	左右		fix	307	月+退：艮 收在 衣+辶
@@ -247,7 +247,7 @@
 袄	衤 丷 丿 大	putd	putd	左右		fix-medium	312	衤+丷+夭(丿+大)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
 怜	忄 人 丶 マ	nwyc	nwyc	左右		fix	309	忄+令
 舔	丿 古 一 心	tdgn	tdgn	左右		fix	310	舌(丿+古)+忝，五根取一三末
-戚			dhit			blocked	307	戊/小/戈 的组合与 H/I/T 位无法自证
+戚	厂 卜 小 丿	dhit	dhit	左右		fix-medium	317	戊(厂+丿)+尗(卜+小)，无识别码；位序按 DHIT
 襟	衤 丷 木 小	pusi	pusi	左右		fix-medium	312	衤+丷+禁(木+小)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
 览	〢 丿 丶 儿	jtyq	jtyq	上下		fix	311	〢+丿+丶+见(冂+儿)，五根取一三末
 袱	衤 丷 亻 犬	puwd	puwd	左右		fix-medium	312	衤+丷+伏(亻+犬)；U+F0067 未解码；按同族自证取 丷（「每 TXGU」与「姆 RXGU」的 U 位同为该 PUA）
@@ -256,7 +256,7 @@
 嫡	女 六 冂 古	vumd	vumd	左右		fix	311	女+啇(六+冂+古)
 啼	口 六 冖 丨	kuph	kuph	左右		fix-medium	309	口+帝
 伶	亻 人 丶 マ	wwyc	wwyc	左右		fix	309	亻+令
-骄			ctdj			blocked	307	乔 的收尾与 D/J 位不符（J 是竖·左右）
+骄	马 丿 大	ctd	ctdj	上下	竖	fix-medium	317	马+乔(丿+大)；码位 CTDJ 的末位 J 只在「上下」成立，结构以码位为准
 琉	王 亠 厶 儿	gycq	gycq	左右		fix-medium	315	王+㐬；R2 只允许 Q 键字根，Q 键上唯一能对应「川形末段」的是儿；按码表取儿（字形待核）
 贸	卯 丶 刀 贝	qyvm	qyvm	上下		fix-medium	313	卯+丶+刀+贝（QYVM 四位自证；刀 位待复核）
 傲	亻 主 ⺈ 攵	wgqt	wgqt	左右		fix-medium	309	亻+敖(主+⺈+攵)
