@@ -45,10 +45,23 @@ GRID = {
 # 已在本项目数据里确认过的「非字根部件」拆法（不是新猜测：每一条都在 D25 或既有 full 字里出现过）
 # 只收**已在 D25 或既有 full 字里确认过**的拆法；未确认的一律留空（推断要受控，不能自我循环）
 KNOWN_PARTS: dict[str, list[str]] = {
-    '豖': ['豕', '丶'],          # 啄 KEYY（D25）
-    '艮': ['彐', '衣', '丶'],    # 根/银/眼/限/退（D25，报告 306）
-    '氐': ['氏', '弋', '丶'],    # 柢 SQAY（D25）
-    '啇': ['六', '冂', '古'],    # 滴/摘/嫡（D25）
+    '豖': ['豕', '丶'],              # 啄 KEYY（D25）
+    '艮': ['彐', '衣', '丶'],        # 根/银/眼/限/退（D25，报告 306）
+    '氐': ['氏', '弋', '丶'],        # 柢 SQAY（D25）
+    '啇': ['六', '冂', '古'],        # 滴/摘/嫡（D25）
+    '衤': ['衤', '丷'],              # 补/初/袖/袍… 18 条（D25，ADR-384 附二同族）
+    '礻': ['礻', '丶'],              # 社/神/祝（D2 原始记录一致）
+    '𠃓': ['𠃌', '⺁', '丿'],          # 场/汤/杨/肠/扬（D25，报告 312）
+    '𥫗': ['⺮'],                    # 竹头变体（⺮ 是标准字根）
+    '饣': ['⺈', '乚'],              # 饺/馏（D25，报告 315）
+    '㠯': ['コ', '丨', 'コ'],         # 官 PNHN（D25，报告 312）
+    '爰': ['爫', '二', '又'],        # 暖/缓 JEFC（D25）
+    '豸': ['爫', '𠂢'],              # 豹/貌/豺/貉/藐（D25，报告 309）
+    '⺗': ['心'],                    # 心 的变体（慕/恭/添 已按 心 判定）
+    '犮': ['厂', '又'],              # 跋/KH 族（D25，报告 310）
+    '㣺': ['心'],                    # 心 的变体（忝/恭 同族）
+    '丕': ['一', '小', '一'],        # 坯/胚 FGIG（D25）
+    '不': ['一', '小'],              # 坏/环/杯/怀/歪/甭（D25）
 }
 
 
@@ -153,6 +166,8 @@ def main() -> int:
         规则：**成字字根/键名字在合体字里算一个根**（它们的根序是「自己 + 笔画」，那是单字取码，
         不是部件拆法）。否则用该字的根序；再否则递归 IDS。
         """
+        if glyph in KNOWN_PARTS:      # 人工确认过的拆法优先（衤/礻/𠃓 等覆盖自身根序）
+            return list(KNOWN_PARTS[glyph])
         seq_of = rootseq.get(glyph)
         if seq_of:
             tail = seq_of[1:]
@@ -204,49 +219,73 @@ def main() -> int:
             else:
                 seq.extend(part)
         structure = structure_of(ids)
+
+        def try_variant(roots: list[str]) -> tuple[list[str], list[str], list[str]]:
+            """返回（候选, 校验后的键位, 问题列表）。roots 里可用 '识别码X' 占位。"""
+            keys: list[str] = []
+            bad: list[str] = []
+            for index, glyph in enumerate(roots):
+                if glyph.startswith('识别码'):
+                    keys.append(code[index] if index < len(code) else '?')
+                    continue
+                options = keys_of.get(glyph, [])
+                if index >= len(code) or code[index] not in options:
+                    bad.append(f'第 {index + 1} 位 {glyph} 不在 {code[index] if index < len(code) else "?"} 键')
+                keys.append(code[index] if index < len(code) else '?')
+            return keys, keys, bad
+
         if len(seq) < 2:
             stats['根数不足'] += 1
             rows.append((char, code, '', '', structure, '', 'fail',
                          f'IDS 只解析出 {len(seq)} 段（{"".join(seq) or "空"}），不足以推断'))
             continue
-        # 按取码规则裁剪
-        cand = list(seq)
-        if len(cand) > 4:
-            cand = [cand[0], cand[1], cand[2], cand[-1]]
-        derivation = f'IDS 组合：{"+".join(flat)} → {"".join(cand)}（{len(seq)} 根取{"一二三末" if len(seq) > 4 else "全部"}）'
-        if len(cand) < 4:
-            last = code[-1]
-            strokes = [s for s, m in GRID.items() if m[structure] == last]
-            if len(strokes) != 1:
-                stats['末位非识别码'] += 1
-                rows.append((char, code, '', '', structure, '', 'fail', f'根数 {len(cand)} 且末位 {last} 不是 {structure} 结构的识别码'))
+
+        def variants(total: int) -> list[tuple[list[str], str]]:
+            """两种根数读法：满取码 / 少一根改用识别码（报告 304 F1 的识别码槽）。"""
+            out: list[tuple[list[str], str]] = []
+            bases: list[tuple[list[str], str]] = []
+            if total > 4:
+                bases.append(([seq[0], seq[1], seq[2], seq[-1]], f'{"+".join(flat)} 共 {total} 根取一二三末'))
+            else:
+                bases.append((list(seq), f'{"+".join(flat)} 共 {total} 根'))
+                if total >= 3:
+                    bases.append((list(seq[:-1]), f'{"+".join(flat)} 取前 {total - 1} 根'))
+            last_letter = code[-1]
+            strokes = [st for st, m in GRID.items() if m[structure] == last_letter]
+            for roots, why in bases:
+                if len(roots) == len(code):
+                    out.append((roots, why))
+                elif len(roots) + 1 == len(code) and len(strokes) == 1:
+                    out.append((roots + [f'识别码{strokes[0]}'],
+                                f'{why} + 末笔 {strokes[0]}（{structure}）⇒ 识别码 {last_letter}'))
+            return out
+
+        accepted = None
+        for cand_roots, why in variants(len(seq)):
+            if len(cand_roots) != len(code):
                 continue
-            cand.append(f'识别码{strokes[0]}')
-            derivation += f'；末笔 {strokes[0]}（{structure}）⇒ 识别码 {last}'
-        if len(cand) != len(code):
-            stats['长度不符'] += 1
-            rows.append((char, code, ' '.join(cand), '', structure, '', 'fail',
-                         f'根数+识别码 {len(cand)} 与码长 {len(code)} 不符（{derivation}）'))
-            continue
-        # 校验键位
-        keys = []
-        bad = []
-        for index, glyph in enumerate(cand):
-            if glyph.startswith('识别码'):
+            keys: list[str] = []
+            bad: list[str] = []
+            for index, glyph in enumerate(cand_roots):
+                if glyph.startswith('识别码'):
+                    keys.append(code[index])
+                    continue
+                options = keys_of.get(glyph, [])
+                if code[index] not in options:
+                    bad.append(f'第 {index + 1} 位 {glyph} 不在 {code[index]} 键')
                 keys.append(code[index])
-                continue
-            options = keys_of.get(glyph, [])
-            if code[index] not in options:
-                bad.append(f'第 {index + 1} 位 {glyph} 不在 {code[index]} 键')
-            keys.append(code[index] if code[index] in options else (options[0] if options else '?'))
-        if bad:
+            if not bad:
+                accepted = (cand_roots, ''.join(keys), why)
+                break
+        if accepted is None:
             stats['键位不符'] += 1
-            rows.append((char, code, ' '.join(cand), ''.join(keys), structure, '', 'fail',
-                         '；'.join(bad) + f'（未知部件：{"".join(unknown) or "无"}）'))
+            rows.append((char, code, '', '', structure, '', 'fail',
+                         f'两种读法都对不上码位（{"；".join(unknown) or "部件都在清单内"}）'))
             continue
-        decision = 'unique' if len(seq) <= 4 else 'unique-by-rule'
+        cand_roots, keys, why = accepted
+        decision = 'unique-by-rule' if len(seq) > 4 else 'unique'
         stats[decision] += 1
-        rows.append((char, code, ' '.join(cand), ''.join(keys), structure, '', decision, derivation))
+        rows.append((char, code, ' '.join(cand_roots), keys, structure, '', decision, why))
 
     out = Path(args.out)
     out.parent.mkdir(parents=True, exist_ok=True)
