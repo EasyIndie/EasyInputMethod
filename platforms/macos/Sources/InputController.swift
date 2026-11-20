@@ -61,6 +61,8 @@ final class LampyrisInputController: IMKInputController {
         autoPhrase.reset()
         endSymbolComposition()
         finishComposition(activeClient ?? (sender as? IMKTextInput) ?? client())
+        // 报告 327 / P1-W1：失活是"最该收窗"的时刻，不依赖 finishComposition 的分支是否走到。
+        candidateWindow?.hide()
         ConfigWatcher.shared.clear(owner: self)
         activeClient = nil
         super.deactivateServer(sender)
@@ -93,6 +95,16 @@ final class LampyrisInputController: IMKInputController {
     override func hidePalettes() {
         candidateWindow?.hide()
         super.hidePalettes()
+    }
+
+    /// 报告 327 / P1-W1 的第三层兜底：候选窗只服务「组合态」与「符号面板」两种状态。
+    /// 任何按键进来时若两者都不成立，可见的候选窗就是幽灵窗口，当场收掉。
+    /// 这里用 `session?.isComposing != true` 而不是 `== false`：拿不到会话时同样收窗（宁可少显示，不留浮窗）。
+    private func hideCandidateWindowIfIdle() {
+        guard let window = candidateWindow, window.isVisible,
+              symbolComposition.phase == nil,
+              session?.isComposing != true else { return }
+        window.hide()
     }
 
     private func finishComposition(_ textClient: (any IMKTextInput)?) {
@@ -871,6 +883,7 @@ final class LampyrisInputController: IMKInputController {
     }
 
     override func handle(_ event: NSEvent!, client sender: Any!) -> Bool {
+        hideCandidateWindowIfIdle()
         if dictionaryReloadPending, session?.isComposing != true {
             reloadDictionaryIfNeeded()
         }

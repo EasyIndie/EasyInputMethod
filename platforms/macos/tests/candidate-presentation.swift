@@ -245,6 +245,31 @@ window.onSelect = { index in
     selected = index
 }
 guard window.accessiblePressForTesting(at: 1), selected == 1 else { fail("rare glyph real FFI selection") }
+// 报告 327 / P1-W1：可见的候选窗必须有内容——三条兜底都要能单独把幽灵窗口收掉。
+window.update(candidates: values, input: "wq")
+window.layout(at: caret, within: area)
+window.show(at: caret)
+guard window.isVisible else { fail("visible panel after show") }
+window.update(candidates: [], relayout: false)          // 不变量 2：内容清空即收窗
+guard !window.isVisible else { fail("empty candidates must order the panel out") }
+window.update(candidates: values, input: "wq")
+window.layout(at: caret, within: area)
+window.show(at: caret)
+guard window.isVisible, window.enforceVisibilityInvariant() == false
+else { fail("invariant must not fire while content is present") }
+window.update(candidates: [], relayout: false)
+window.show(at: caret)                                   // 不变量 1：空内容拒绝显示
+guard !window.isVisible else { fail("show must refuse an empty panel") }
+window.update(candidates: values, input: "wq")
+window.layout(at: caret, within: area)
+window.show(at: caret)
+let invariantHidesBefore = window.visibilityInvariantHideCount
+window.update(candidates: [], relayout: true)
+guard !window.isVisible, window.visibilityInvariantHideCount == invariantHidesBefore + 1
+else { fail("invariant hide is counted once per leak") }
+LocalAcceptanceEvidence.record("candidate.visibility-invariant",
+    expected: "清空内容/空面板一律收窗，正常有内容时不误收",
+    actual: ["invariant_hides": window.visibilityInvariantHideCount, "visible": window.isVisible])
 let frameBeforeHide = window.frame
 window.hide()
 guard window.frame == frameBeforeHide else { fail("hidden clear must defer resizing") }
