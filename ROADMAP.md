@@ -21,6 +21,9 @@
 - [x] **坶**（`fxgu`）：母 拆三段接入推断表后自动可复核，学习表 `dev` 4,994 / `partial` 27。
 - [ ] **练习题库延迟构造**（P1-M1 触发条件已命中：长时 footprint +11.1 MiB）。
 - [ ] **残余 27 条根序**：成本评估见 `docs/tasks/T-ROOT86.md` §2（有参考 6–9 h，无参考不做）。
+- [x] **候选窗残留（P1-W1）已修复**（报告 327）：三层可见性不变量（`show()` 拒绝空内容 / 清空即 `orderOut` /
+      0.2 s 定时器自查）+ 控制器兜底（`hideCandidateWindowIfIdle`、`deactivateServer` 无条件收窗）；
+      用例 `candidate.visibility-invariant` 进离线回归。真机复现路径仍未拿到，装 1.3.3 候选后按报告 §5 观察。
 
 ## 标准（LWS-86，ADR-381）
 

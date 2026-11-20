@@ -925,6 +925,9 @@ final class CandidateWindow: NSObject {
     private func startThemeTimer() {
         guard themeTimer == nil else { return }
         themeTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: true) { [weak self] _ in
+            // 报告 327 / P1-W1：定时器是唯一「没有任何事件也会跑」的地方，先自查可见性不变量再重绘。
+            // 以前只重绘，于是任何漏掉 hide() 的路径都会让面板以 .popUpMenu 层永久浮在桌面上。
+            self?.enforceVisibilityInvariant()
             self?.refreshAppearance()
         }
     }
@@ -1061,6 +1064,8 @@ final class CandidateWindow: NSObject {
         document.selectedCandidateView = selectedView
         scrollView.selectedCandidateView = selectedView
         renderedCount = candidates.count
+        // 不变量 2：内容清空即收窗（relayout=false 是 hide() 的路径，此时面板已 orderOut，不会重复计数）。
+        if candidates.isEmpty { enforceVisibilityInvariant() }
         if relayout {
             timed(.layout) { arrange() }
         } else {
@@ -1271,6 +1276,11 @@ final class CandidateWindow: NSObject {
         return frames.firstIndex { $0.contains(center) } ?? 0
     }
     func show(at caret: NSRect) {
+        // 不变量 1：没有候选就不显示。空面板一旦 orderFront 就是幽灵窗口，没有任何内容可供用户关闭。
+        guard renderedCount > 0 else {
+            hide()
+            return
+        }
         refreshAppearance()
         if themeTimer == nil { startThemeTimer() }
         let screens = NSScreen.screens
@@ -1298,4 +1308,29 @@ final class CandidateWindow: NSObject {
         panel.orderOut(nil)
         update(candidates: [], relayout: false)
     }
+
+    // MARK: - 可见性不变量（报告 327 / P1-W1）
+
+    /// 「可见的候选窗必须有内容」。
+    ///
+    /// 面板是 `.popUpMenu` 层、`hidesOnDeactivate = false`、`.canJoinAllSpaces`——这几个属性是候选窗必须的
+    /// （IMK 进程长期不是 active app），但也意味着**任何漏掉 `hide()` 的路径都会永久浮在桌面上**，
+    /// 用户点它、切输入源、宿主失焦都不会自己消失（2026-11-20 真机取证：layer 101、进程未卡死）。
+    ///
+    /// 因此这里给三条彼此冗余的兜底，任一条成立就不会漏：
+    /// 1. `show(at:)` 拒绝显示空内容；
+    /// 2. `update(candidates:)` 在内容清空时立即收窗；
+    /// 3. 0.2 s 的主题定时器每次 tick 自查一次（覆盖"没有任何后续调用"的路径）。
+    @discardableResult
+    func enforceVisibilityInvariant() -> Bool {
+        guard panel.isVisible, renderedCount == 0 else { return false }
+        themeTimer?.invalidate()
+        themeTimer = nil
+        panel.orderOut(nil)
+        visibilityInvariantHideCount += 1
+        return true
+    }
+
+    /// 兜底触发次数（测试与现场取证用；正常输入路径下应为 0）。
+    private(set) var visibilityInvariantHideCount = 0
 }
