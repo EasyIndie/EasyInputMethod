@@ -1,25 +1,24 @@
 ## 0. 元信息
 
-- 更新：2026-11-20 / pi（**air 本机**）。阶段：**1.4.0 / build 48 候选已验收，待打 tag 发布**。
-- 范围：**LWS-86 1.0 转正**（S-1 数据包随 Release / S-2 站点标准页 / S-3 独立实现验证 / S-4 转正）+
-  **R-1 可靠性体检** + **D-1 文档对账**，全部完成；S-1~S-4 + D-1 已在 PR #354 合入 main。
-- 范围依据：2026-11-20 全量待办对账（`docs/待办与积压.md` §2 引言）。P1/P1-U/P1-M/P1-W **清零**；
-  P2 四项触发线**均未触发** → 本版不含排序或体验改动；残余 27 条根序与 GB2312 二级扩字仍卡"无可靠 86 字形参考"。
-- 用户已拍板（2026-11-20）：版本号 **1.4.0**；S-3 用**另写的最小独立解析器**；R-1 **同意跑**。
-- 候选：`ff14a6b` / run `44745646669` / ZIP `ac89d7fc…392f` / 执行 **`1162855f…061b`** / `Notarized Developer ID`；
-  air 已装，整套 acceptance **PASS**（30/30、堆 21.4、0 外联），体检四项全 PASS（报告 331）。
-- 体检抓到的两处问题都在**探针侧**（`vmmap` 采样会挂起宿主 → 假卡顿 300–600 ms；久用 footprint 硬门与冷窗口口径不符），
-  已按 **ADR-389** 修好 + 加契约测试 `test-soak-harness.py` + 复测（慢轮 24/174 → 0/178）。
-- 剩余：把探针修正 + 报告 331 + 发布稿合入 → main 重新产出候选（执行 SHA 应仍为 `1162855f…`）→
-  签名 tag `v1.4.0` → Release（含 `LWS-86-1.0.zip`）→ Pages 回读 `v1.4.0 · 构建 48` → 发布对账 PR。
-- 设备：air = 1.4.0/48 候选（执行 `1162855f…`）；pro = 1.3.4/47（执行 `70ab3d67…`）。
-- 最近验证：`make verify` PASS、离线 73 文件 / 368 例 PASS、docs 卫生/同步 PASS、`make wubi86-package` PASS。
+- 更新：2026-11-20 / pi（**air 本机**）。阶段：**1.4.0 / build 48 已发布**（tag `v1.4.0` → `80b4e6b`）。
+- 本版内容：**LWS-86 1.0 转正**（S-1 数据包随 Release / S-2 站点标准页 / S-3 独立实现验证 / S-4 转正）+
+  **R-1 可靠性体检** + **D-1 文档对账**；来源 ADR-381/382/388/389，报告 331。
+- 发布身份：ZIP `c83763f1…2af1`、执行 `76046088…2bc5`、DMG `6be2fa38…`（公证+装订）、
+  标准数据包 `LWS-86-1.0.zip` `e5050567…`（包内 SHA256SUMS 4/4 通过）、appcast `sparkle:version="48"`（`2345b3a4…`）、
+  Release run `44799400209`、Pages run `44801139669`、站点回读 **`v1.4.0 · 构建 48`**。
+- 真机验收绑定说明：设备验收跑在候选 `ff14a6b`（ZIP `ac89d7fc…`、执行 `1162855f…`）上；`ff14a6b → 80b4e6b`
+  之间只有文档/测试/探针改动，四次构建的可执行文件**去签名后逐字节相同**（`2ff10ad4…2422`），差异只在签名时间戳。
+- R-1 结论：产品侧**未发现需修问题**；两处问题都在久用探针（`vmmap` 采样会挂起宿主 → 假卡顿；
+  footprint 硬门与冷窗口口径不符），已按 ADR-389 修好 + 加 `test-soak-harness.py` 契约 + 复测（慢轮 24/174 → 0/178）。
+- 设备：air = 1.4.0/48 候选（执行 `1162855f…`，内容等同发布包）；pro = 1.3.4/47（`70ab3d67…`，可用更新程序升到 1.4.0）。
+- 一级外 27 字与 GB2312 二级扩字仍按证据阻塞（`docs/tasks/T-ROOT86.md` §2），不排期。
+- 最近验证：`make verify` PASS（1,197 产物）、离线 74 文件 / 371 例 PASS、docs 卫生/同步 PASS。
 
 ## 1. 设备与数据
 
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
-| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限；外接 LG HDR 4K） | **1.4.0 / build 48 候选**（`ff14a6b`），宿主执行 **`1162855f668be1970683b2a66bf424496759c9a292787811f8303d53e0c8061b`**（2026-11-21 装机，报告 331）；输入源 `Lampyris.default` 已启用并选中 | config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2,523 行；R-1 期间曾临时开 `[dict] extended`，已复原（配置 SHA 与体检前逐字节一致） | 回滚备份：`~/Library/Application Support/Lampyris/uninstalled/` 保留最近两份 |
+| **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限；外接 LG HDR 4K） | **1.4.0 / build 48 候选（内容 = 发布包）**（`ff14a6b`），宿主执行 **`1162855f668be1970683b2a66bf424496759c9a292787811f8303d53e0c8061b`**（发布包执行 `76046088…`，去签名后同字节；2026-11-21 装机，报告 331）；输入源 `Lampyris.default` 已启用并选中 | config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2,523 行；R-1 期间曾临时开 `[dict] extended`，已复原（配置 SHA 与体检前逐字节一致） | 回滚备份：`~/Library/Application Support/Lampyris/uninstalled/` 保留最近两份 |
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.4 / build 47**，宿主执行 **`70ab3d673c1beda1983d5138823ce10f12efdd7fa2e33b8ebe6f062f505519da`**（2026-11-20 20:53 经更新程序升级，回执 `2026-11-20T12-53-18Z.json`：payload `3acfcc43…5807e4` = 1.3.4 发布 ZIP、执行 `70ab3d67…` = 发布包内执行）；上两版 1.3.2/45 执行 `46cc4d7b…01dd5`（回执 `2026-11-20T02-41-30Z.json`，此处把一直悬着的执行 SHA 补上）、1.3.1/44 执行 `68f892c5…` | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置）；更新程序 `~/Applications/LampyrisUpdateCheck.app` = 1.3.4 | `updates/upgrade-2026-11-20T12-53-09Z-3EB514AA/backup/`（上一版 1.3.2）、更早见 `updates/` |
 
 ## 2. 本轮完成
@@ -171,6 +170,12 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-20 / pi（air）：**1.4.0 / build 48 已发布**。tag `v1.4.0` → `80b4e6b`；Release `44799400209`（11 资产，
+  含 `LWS-86-1.0.zip`）、ZIP `c83763f1…` 与候选逐字节一致、DMG 公证+装订、appcast `sparkle:version=48`；
+  Pages `44801139669` → 站点 `v1.4.0 · 构建 48`，`/standards.html` 上线。本版 = LWS-86 1.0 转正（数据包 + 站点
+  + 独立实现 3,746/3,755 一致）+ R-1 体检（30 min 久用 / 睡眠唤醒 / 双屏 / 扩展档 48.4 MiB）+ 文档对账；
+  体检只报出久用探针两处口径错误（ADR-389），产品零改动。
 
 - 2026-11-20 / pi（air）：**1.4.0 / build 48 候选验收 + R-1 体检完成**。S-1~S-4/D-1 已合入（PR #354）；
   候选 `ff14a6b` / ZIP `ac89d7fc…` / 执行 `1162855f…`；acceptance PASS（30/30、堆 21.4、0 外联）。
