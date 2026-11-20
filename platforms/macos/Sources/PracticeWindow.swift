@@ -86,7 +86,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         height += Gap.unlockHeight + Gap.afterUnlock
         height += Gap.navHeight + Gap.afterNav
         height += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
-        if showsKeymap {
+        if showsKeymap, keymapPanelBuilt {
             height += Gap.afterScheme + keymapPanel.height(forWidth: Self.contentWidth - Self.margin * 2)
         }
         return height + Gap.bottom
@@ -102,7 +102,24 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     private let progressLabel = NSTextField(labelWithString: "")
     private let answerView = PracticeAnswerView()
     private let explanation = PracticeExplanationView()
-    private let keymapPanel = KeymapPanelView(layout: KeyRootLayout.load())
+    /// 键位图面板本体：**默认不构造**（P1-M2 / 报告 330）。
+    /// 构造 + 首次布局实测约 4 MiB（含 CJK 字形与 25 键布局），而它默认是隐藏的。
+    private var keymapPanelStorage: KeymapPanelView?
+    /// 面板是否已构造（读它不会把面板建出来）。
+    private var keymapPanelBuilt: Bool { keymapPanelStorage != nil }
+    private var keymapPanel: KeymapPanelView {
+        if let keymapPanelStorage { return keymapPanelStorage }
+        let panel = KeymapPanelView(layout: KeyRootLayout.load())
+        panel.onHeightChange = { [weak self] in self?.relayout() }
+        panel.showsMnemonics = keymapMnemonics
+        panel.isHidden = !showsKeymap
+        keymapPanelStorage = panel
+        if let content { content.addSubview(panel) }
+        if showsKeymap { relayout() }
+        return panel
+    }
+    /// 口诀开关的记忆（面板延迟构造时也要保留用户的选择）。
+    private var keymapMnemonics = false
     /// 键位图面板是否显示（由顶部工具栏的「键位图」按钮切换）。
     private var showsKeymap = false
     private let progressBar = NSProgressIndicator()
@@ -215,6 +232,38 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         window?.makeFirstResponder(answerView)
     }
 
+    /// 关窗即拆（P1-M2 / 报告 330）：练习窗口是单例，`isReleasedWhenClosed = false`，
+    /// 关掉只是 orderOut——控件树、图层、字体布局与窗口后备存储会一直留在进程里。
+    /// 1.3.3 真机实测：开窗 +16.9 MiB，关窗后一分不收（38.8 → 55.7 → 55.8）。
+    /// 需要跨窗口留住的状态只有进度与题目位置，它们在 `PracticeProgress` / `PracticeSession` 里；
+    /// 视图片面按需重建即可，与设置、符号面板的做法一致。
+    func windowWillClose(_ notification: Notification) {
+        dismantle()
+    }
+
+    /// 拆掉窗口与视图层级，只保留进度、题库与题型位置。
+    private func dismantle() {
+        (window as? PracticePanel)?.onKey = nil
+        window?.delegate = nil
+        window?.toolbar = nil
+        scrollView.documentView = nil
+        window?.contentView = nil
+        content?.subviews.forEach { $0.removeFromSuperview() }
+        content = nil
+        window = nil
+        answered = false
+        retrying = false
+        pendingStroke = nil
+        pendingStructure = nil
+        lastAnswer = nil
+        // 键位图面板是最大的一块（实测约 7 MiB），关窗一并放掉；
+        // 「是否显示」与口诀开关是显示偏好，按原样留到下次开窗（面板按需重建）。
+        if let panel = keymapPanelStorage {
+            keymapMnemonics = panel.showsMnemonics
+            panel.removeFromSuperview()
+        }
+        keymapPanelStorage = nil
+    }
     private func build() {
         let size = NSSize(width: Self.contentWidth, height: contentHeight())
         let window = PracticePanel(contentRect: NSRect(origin: .zero, size: size),
@@ -283,7 +332,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         card.borderWidth = 1
         content.addSubview(card, positioned: .below, relativeTo: nil)
 
-        answerView.onLetter = { [weak self] letter in self?.keymapPanel.map.flash(letter) }
+        answerView.onLetter = { [weak self] letter in self?.flashKeymap(letter) }
         answerView.onComplete = { [weak self] text in self?.submitCode(text) }
         answerView.onAdvance = { [weak self] in self?.nextQuestion() }
         answerView.onBack = { [weak self] in self?.previousQuestion() }
@@ -354,10 +403,9 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         progressBar.setAccessibilityHelp("已练字数占题库的比例")
         content.addSubview(progressBar)
 
-        // 键位图面板（含方案名与口诀开关）自包含；是否显示由顶部工具栏决定。
-        keymapPanel.onHeightChange = { [weak self] in self?.relayout() }
-        keymapPanel.isHidden = !showsKeymap
-        content.addSubview(keymapPanel)
+        // 键位图面板（含方案名与口诀开关）自包含，**第一次点「键位图」时才构造**（P1-M2）；
+        // 上一轮关窗时用户正开着键位图，则按原样重建（开关是显示偏好，不因关窗被重置）。
+        if showsKeymap { _ = keymapPanel } else if keymapPanelBuilt { content.addSubview(keymapPanel) }
         relayout()
         return content
     }
@@ -452,8 +500,8 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                                    width: inner, height: Gap.progressBarHeight)
         y += Gap.progressHeight + Gap.afterProgressLabel + Gap.progressBarHeight + Gap.afterProgress
 
-        keymapPanel.isHidden = !showsKeymap
-        if showsKeymap {
+        if keymapPanelBuilt { keymapPanel.isHidden = !showsKeymap }
+        if showsKeymap, keymapPanelBuilt {
             let panelHeight = keymapPanel.height(forWidth: inner)
             keymapPanel.frame = NSRect(x: margin, y: y, width: inner, height: panelHeight)
         }
@@ -524,10 +572,24 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     @objc private func toggleKeymap(_ sender: Any?) {
         showsKeymap.toggle()
+        if showsKeymap { _ = keymapPanel } // 第一次点「键位图」才付出构造/布局开销（P1-M2）
         (sender as? NSButton)?.state = showsKeymap ? .on : .off
         // 提示语可能引用"上面的字根与键位"，需要跟着显隐改口。
         if let question = current { promptLabel.stringValue = promptText(for: question) }
         relayout()
+    }
+
+    /// 打字时闪一下对应键位：面板没建/没显示就什么都不做（别为了闪烁把 4 MiB 建出来）。
+    private func flashKeymap(_ letter: Character) {
+        guard showsKeymap, keymapPanelBuilt else { return }
+        keymapPanel.map.flash(letter)
+    }
+
+    /// 换题时清掉键位图上的闪烁与答案高亮。
+    private func resetKeymapHighlight() {
+        guard keymapPanelBuilt else { return }
+        keymapPanel.map.clearFlash()
+        keymapPanel.map.markAnswer("")
     }
 
     @objc private func nextQuestion() {
@@ -616,8 +678,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         retrying = false
         answerView.isAnswered = false
         answerView.clear()
-        keymapPanel.map.clearFlash()
-        keymapPanel.map.markAnswer("")
+        resetKeymapHighlight()
         pendingStroke = nil
         pendingStructure = nil
         lastAnswer = nil
@@ -689,7 +750,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
         retrying = retry
         answerView.isAnswered = !retry
         answerView.setActive(!retry)
-        keymapPanel.map.clearFlash()
+        if keymapPanelBuilt { keymapPanel.map.clearFlash() }
         if kind.isTyping {
             if retry {
                 answerView.clear()
@@ -714,12 +775,12 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
                 ? "答错了：重新选一个末笔和一个结构"
                 : "答错了：再试一次，答对后显示字根、识别码与完整码")
             explanation.isHidden = false
-            keymapPanel.map.markAnswer("")
+            if keymapPanelBuilt { keymapPanel.map.markAnswer("") }
         } else {
             showExplanation(entry.question, revealsAnswer: true)
             explanation.isHidden = false
             // 高亮的是本题要求的答案：一级/二级简码就高亮简码的键位，完整码才高亮全码。
-            if let expected = kind.answer(for: entry.question) {
+            if let expected = kind.answer(for: entry.question), keymapPanelBuilt {
                 keymapPanel.map.markAnswer(expected)
             }
         }
@@ -852,6 +913,30 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     }
 
     // MARK: 测试
+
+    /// 生命周期回归（P1-M2）：走真实构建 + 布局 + 首帧绘制，但不激活、不送前台。
+    /// 关窗必须走 `closeForTesting()`（= 用户点关闭），否则测不到 `windowWillClose` 的拆卸。
+    func prepareForTesting(progressURL: URL) {
+        practiceProgress = PracticeProgress(url: progressURL)
+        if window == nil { build() }
+        kindControl.selectedSegment = 0
+        applyStagedUnlock()
+        applyKindVisibility()
+        reload()
+        window?.contentView?.layoutSubtreeIfNeeded()
+        window?.displayIfNeeded()
+    }
+
+    /// 仍然活着的窗口（null 表示已拆卸）。
+    var windowForTesting: NSWindow? { window }
+
+    /// 键位图面板是否已付出构造 + 布局开销（P1-M2：默认应为 false）。
+    var keymapPanelBuiltForTesting: Bool { keymapPanelBuilt }
+
+    /// 走真实关窗路径：`close()` → `windowWillClose` → `dismantle()`。
+    func closeForTesting() {
+        window?.close()
+    }
 
     /// 离屏渲染（测试用）：建一个不显示的窗口承载视图（AppKit 控件需要 window 才能绘制）。
     func renderForTesting(kind: PracticeKind, progressURL: URL, light: Bool,
@@ -1015,6 +1100,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
 
     /// 测试用：展开面板里的口诀。
     func showMnemonicsForTesting(_ visible: Bool) {
+        keymapMnemonics = visible
         keymapPanel.showsMnemonics = visible
         relayout()
     }
@@ -1022,6 +1108,7 @@ final class PracticeWindow: NSObject, NSWindowDelegate {
     /// 测试用：显示/隐藏键位图面板（等同工具栏「键位图」）。
     func setKeymapVisibleForTesting(_ visible: Bool) {
         showsKeymap = visible
+        if visible { _ = keymapPanel }
         relayout()
     }
 
