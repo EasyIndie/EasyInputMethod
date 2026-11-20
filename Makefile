@@ -7,7 +7,7 @@ CLEAN ?= ./scripts/check-clean.sh   # 零诊断门禁：见 docs/开发工作流
 PYTHON ?= $(shell for p in python3.13 python3.12 python3.11 python3; do command -v $$p >/dev/null 2>&1 && { echo $$p; break; }; done)
 FUZZ_SECONDS ?= 30
 
-.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-probe-build macos-auto-acceptance macos-acceptance-full acceptance-evidence macos-soak macos-multi-display macos-ui-contrast macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build wubi86-standard handoff hooks
+.PHONY: help verify fast fmt fmt-check lint test deny verify-no-network fuzz clean check-workspace usage-report macos-preview macos-dev macos-imk-dev macos-offline-tests macos-local-acceptance macos-probe-build macos-auto-acceptance macos-acceptance-full acceptance-evidence macos-soak macos-multi-display macos-ui-contrast macos-ui-snapshots macos-clean-install macos-fast-reinstall macos-installer-build wubi86-standard wubi86-package handoff hooks
 
 macos-offline-tests: ## 执行 macOS/分发全部离线 Python 回归（不操作桌面）
 	PYTHONDONTWRITEBYTECODE=1 $(PYTHON) platforms/macos/tests/run-offline-tests.py
@@ -20,6 +20,11 @@ macos-local-acceptance: ## 已废弃的入口别名：等于 macos-offline-tests
 wubi86-standard: ## 生成 LWS-86 数据包并自检（ADR-381）
 	$(PYTHON) tools/wubi86-std-bundle.py --out build/wubi86-std-1.0
 	$(PYTHON) tools/wubi86-std-check.py --bundle build/wubi86-std-1.0 --level L4
+
+wubi86-package: wubi86-standard ## 打包成可复现的发布资产（zip + sha256）并做独立实现验证
+	$(PYTHON) tools/wubi86-std-package.py --bundle build/wubi86-std-1.0 --out packaging/out/release
+	rm -rf build/lws86-impl && $(PYTHON) tools/lws86-reference-impl.py --bundle build/wubi86-std-1.0 --out build/lws86-impl
+	$(PYTHON) tools/wubi86-std-check.py --bundle build/wubi86-std-1.0 --impl build/lws86-impl --level L4
 
 macos-probe-build: ## 构建 macOS 实机探针（tools/macos-probe/bin，不安装）
 	$(MAKE) -C tools/macos-probe
