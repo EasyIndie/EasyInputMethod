@@ -1311,7 +1311,7 @@ final class CandidateWindow: NSObject {
 
     // MARK: - 可见性不变量（报告 327 / P1-W1）
 
-    /// 「可见的候选窗必须有内容」。
+    /// 「可见的候选窗必须有内容，而且宿主仍然需要我们」。
     ///
     /// 面板是 `.popUpMenu` 层、`hidesOnDeactivate = false`、`.canJoinAllSpaces`——这几个属性是候选窗必须的
     /// （IMK 进程长期不是 active app），但也意味着**任何漏掉 `hide()` 的路径都会永久浮在桌面上**，
@@ -1320,14 +1320,26 @@ final class CandidateWindow: NSObject {
     /// 因此这里给三条彼此冗余的兜底，任一条成立就不会漏：
     /// 1. `show(at:)` 拒绝显示空内容；
     /// 2. `update(candidates:)` 在内容清空时立即收窗；
-    /// 3. 0.2 s 的主题定时器每次 tick 自查一次（覆盖"没有任何后续调用"的路径）。
+    /// 3. 0.2 s 的主题定时器每次 tick 自查一次（覆盖"没有任何后续调用"的路径），
+    ///    其中一个条件是 `shouldStayVisible`——由控制器回答"还在组合吗/输入源还是我吗"。
+    ///    报告 327 §6 的真机复现正是这一条：组合态里切走输入源，没有任何键盘事件，面板原地留着。
+    /// 面板该不该在，只能由"发起者"回答：候选窗不知道会话是否还在组合、不知道当前输入源是不是自己。
+    /// 定时器每次 tick 问一次；返回 false 就直接收窗（覆盖"用户切走输入源、没有任何键盘事件"这种漏法）。
+    var shouldStayVisible: (() -> Bool)?
+    /// 被兜底收窗时通知宿主收尾（清标记文本/结束组合），避免只收窗、留下悬空的预编辑。
+    var onStranded: (() -> Void)?
+
     @discardableResult
     func enforceVisibilityInvariant() -> Bool {
-        guard panel.isVisible, renderedCount == 0 else { return false }
+        guard panel.isVisible else { return false }
+        let stranded = renderedCount == 0 || shouldStayVisible?() == false
+        guard stranded else { return false }
         themeTimer?.invalidate()
         themeTimer = nil
         panel.orderOut(nil)
+        update(candidates: [], relayout: false)
         visibilityInvariantHideCount += 1
+        onStranded?()
         return true
     }
 
