@@ -11,7 +11,7 @@
   是进程级常驻，`MADV_FREE` 只标记"可复用"；改成状态判据（开窗不建键位图 / 关窗必须释放 / 反复开关不增长）。
 - 分支：`main` = `dev`（发布对账已合入）；无开放 PR。
 - 下一步：
-  1. **pro 升级** 1.3.2/45 → 1.3.4/47（更新程序；执行 SHA 待回读）；
+  1. **pro 已升级到 1.3.4/47**（执行 `70ab3d67…`，回执已核对，2026-11-20）；
   2. 残余 27 条根序（`docs/tasks/T-ROOT86.md` §2）不排期；LWS-86 1.0 转正等下一个大版本（ADR-382）；
   3. 待办/积压里 P1 段已清空，下一版范围待定。
 - 版本：`Cargo.toml` = **1.3.4**、`packaging/build-number` = **47**；最新已发布 tag **`v1.3.3`**。
@@ -23,7 +23,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.3 / build 46（发布产物）**，宿主执行 **`56c46afec889bc75df63cae1bf52125712b0e428ffd0c5709ab7db4a1ed1b193`**（2026-11-20 装机，报告 329）；输入源 `Lampyris.default` 已启用并选中 | config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2,487 行 | 回滚备份：`~/Library/Application Support/Lampyris/uninstalled/` 保留最近两份（1.3.1/44、1.3.2 与 1.3.3 候选各一份） |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.2 / build 45**（用户 2026-11-20 报告升级完成；**执行 SHA 待回读**，预期 `46cc4d7b6f7a8ef36b77e0f39c041983321cae9de14617a2514507ad8d701dd5`）；上一版为 1.3.1/44 执行 `68f892c5…`（2026-11-18 经更新程序升级） | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-18T11-59-28Z-D71946AC/backup/`；更早备份见 `updates/`（约占 153 MB，可按需清理） |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.4 / build 47**，宿主执行 **`70ab3d673c1beda1983d5138823ce10f12efdd7fa2e33b8ebe6f062f505519da`**（2026-11-20 20:53 经更新程序升级，回执 `2026-11-20T12-53-18Z.json`：payload `3acfcc43…5807e4` = 1.3.4 发布 ZIP、执行 `70ab3d67…` = 发布包内执行）；上两版 1.3.2/45 执行 `46cc4d7b…01dd5`（回执 `2026-11-20T02-41-30Z.json`，此处把一直悬着的执行 SHA 补上）、1.3.1/44 执行 `68f892c5…` | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置）；更新程序 `~/Applications/LampyrisUpdateCheck.app` = 1.3.4 | `updates/upgrade-2026-11-20T12-53-09Z-3EB514AA/backup/`（上一版 1.3.2）、更早见 `updates/` |
 
 ## 2. 本轮完成
 
@@ -169,6 +169,10 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-20 / pi（air）：**pro 升级到 1.3.4/47 已回读核对**：执行 `70ab3d67…`、更新程序 1.3.4、
+  config `b8c7a351…` 与 963 行词库未变；回执 payload `3acfcc43…` = 1.3.4 发布 ZIP。顺带用 02:41 的旧回执
+  补上了 1.3.2/45 一直悬着的执行 SHA `46cc4d7b…01dd5`。
 
 - 2026-11-20 / pi（air）：**1.3.4 / build 47 发布**。签名 tag `v1.3.4` → `7085486`；Release `44737775092`（ZIP `3acfcc43…`
   与候选逐字节一致、DMG `1882cc3f…` 公证 + staple、appcast `sparkle:version=47`）；Pages `44738701068` 回读 `v1.3.4 · 构建 47`。
