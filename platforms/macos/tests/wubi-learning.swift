@@ -1,4 +1,5 @@
 import Cocoa
+import Darwin
 import ime
 func require(_ condition: Bool, _ name: String) {
     if !condition { FileHandle.standardError.write(Data(("FAIL: " + name + "\n").utf8)); exit(1) }
@@ -21,6 +22,48 @@ require(LearningHints.hint(for: "和")?.recognition?.letter == "G", "按需解�
 require(LearningHints.materializedCount == 1, "只解析被查询的那一条")
 require(LearningHints.hint(for: "我")?.roots.count == 3, "位次不符的条目已截断")
 // ADR-313 练习：只出 full 题、判分与识别码表正确、进度有界。
+// 报告 328 / ADR-386：题库只常驻「题型 + 字」，答案/字根/简码用到才解析。
+do {
+    let before = LearningHints.materializedCount
+    let lazyCode = Practice.bank(kind: .code)
+    require(lazyCode.count == 5_021, "完整码题库应覆盖全部可练字：\(lazyCode.count)")
+    require(LearningHints.materializedCount == before, "建题库不应解析任何学习区条目")
+    let lazyThree = Practice.bank(kind: .code3)
+    require(lazyThree.count == 3_362, "三级简码题库应覆盖整张表：\(lazyThree.count)")
+    require(LearningHints.materializedCount == before, "按简码槽筛题也不应解析整行")
+    guard let sample = lazyThree.first else {
+        FileHandle.standardError.write(Data("FAIL: 三级简码题库为空\n".utf8)); exit(1)
+    }
+    require(sample.short3?.count == 3, "按需取到的三级简码应是 3 位")
+    require(LearningHints.materializedCount == before + 1, "只解析被访问的那一条")
+    require(sample.code.count == 4, "按需取到的全码应是 4 位")
+    // 内存口径：建完全部题库后，进程 physical footprint 的增量必须很小（旧实现每题存全套字段，约 +11 MiB）。
+    func footprintBytes() -> Int {
+        var info = rusage_info_v4()
+        let result = withUnsafeMutablePointer(to: &info) {
+            $0.withMemoryRebound(to: rusage_info_t?.self, capacity: 1) {
+                proc_pid_rusage(getpid(), RUSAGE_INFO_V4, $0)
+            }
+        }
+        return result == 0 ? Int(info.ri_phys_footprint) : -1
+    }
+    malloc_zone_pressure_relief(nil, 0)
+    let footprintBefore = footprintBytes()
+    var pools = 0
+    for kind in PracticeKind.allCases {
+        let n = Practice.bank(kind: kind).count
+        pools += n
+    }
+    // 释放 malloc 的空白页，剩下的才是"真正常驻"的增量（报告 328）。
+    malloc_zone_pressure_relief(nil, 0)
+    malloc_zone_pressure_relief(nil, 0)
+    let deltaMiB = Double(footprintBytes() - footprintBefore) / (1024 * 1024)
+    require(pools > 10_000, "各题型题库总数应大于一万：\(pools)")
+    require(deltaMiB < 3, "题库只存题面，全部建完的增量应远小于旧实现（实测 \(deltaMiB) MiB）")
+    FileHandle.standardError.write(Data(
+        "lazy-bank: pools=\(pools) delta=\(String(format: "%.2f", deltaMiB))MiB materialized=\(LearningHints.materializedCount - before)\n".utf8))
+    print("lazy-bank: code=\(lazyCode.count) code3=\(lazyThree.count) materialized=\(LearningHints.materializedCount - before)")
+}
 let codeBank = Practice.bank(kind: .code)
 let recogBank = Practice.bank(kind: .recognition)
 require(codeBank.count > 500 && recogBank.count > 500, "题库应有足够 full 题")

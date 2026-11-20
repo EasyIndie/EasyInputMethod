@@ -67,3 +67,4 @@
 | [325](325-candidate-1.3.2-acceptance.md) | 1.3.2/45 候选真机验收（`93df6cc`，执行 `46cc4d7b…`）：学习区根序/识别码、样本 30/30、热键 8/8、零外联、footprint 越界归因 |
 | [326](326-footprint-sampling-protocol.md) | footprint 采样协议（ADR-385）：三连取中位数 + 冷启动窗口；同刻离散 0.0，跨时刻 35.9→47.0 |
 | [327](327-candidate-panel-leak.md) | 候选窗残留（幽灵面板）根因与修复：三层可见性不变量 + 控制器兜底，窗口级用例回归 |
+| [328](328-lazy-practice-bank.md) | 练习题库延迟构造（ADR-386）：题库只存题面，全量建库增量 5.86→1.95 MiB |

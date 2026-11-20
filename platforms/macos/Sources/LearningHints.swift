@@ -42,6 +42,22 @@ enum LearningHints {
         return store.hint(for: text)
     }
 
+    /// 出题筛选只需要"哪几列非空"，不必解析整行（报告 328 / ADR-386）。
+    /// 以前 5,021 道题把码、字根、识别码、三条简码全常驻一份，宿主多占约 11 MiB；
+    /// 现在题库只留「题型 + 字」，这里按字节判断该字能出哪几种题。
+    struct Slots {
+        let hasRoots: Bool
+        let hasRecognition: Bool
+        let short1: Bool
+        let short2: Bool
+        let short3: Bool
+    }
+
+    static func slots(for text: String) -> Slots? {
+        guard text.count == 1 else { return nil }
+        return store.slots(for: text)
+    }
+
     /// 供测试与诊断：索引条目数（不等于已解析条数）。
     static var indexedCount: Int { store.indexedCount }
     static var materializedCount: Int { store.materializedCount }
@@ -117,6 +133,59 @@ enum LearningHints {
             out.sort(by: { (index[$0]?.lowerBound ?? 0) < (index[$1]?.lowerBound ?? 0) })
             practiceCache = out
             return out
+        }
+
+        /// 逐字节判断列是否非空，不建 String、不进缓存。
+        func slots(for char: String) -> Slots? {
+            guard let range = index[char] else { return nil }
+            var fields: [Range<Int>] = []
+            var start = range.lowerBound
+            var position = range.lowerBound
+            while position < range.upperBound {
+                if bytes[position] == 0x09 {
+                    fields.append(start..<position)
+                    start = position + 1
+                }
+                position += 1
+            }
+            fields.append(start..<range.upperBound)
+            guard fields.count == 6 else { return nil }
+            let recognition = fields[4]
+            let hasRecognition = recognition.lowerBound < recognition.upperBound
+                && bytes[recognition.lowerBound] != 0x7C   // '|'：空的识别码列是 `||`
+            var segments: [Range<Int>] = []
+            start = fields[5].lowerBound
+            position = start
+            while position < fields[5].upperBound {
+                if bytes[position] == 0x2F {                // '/'
+                    segments.append(start..<position)
+                    start = position + 1
+                }
+                position += 1
+            }
+            segments.append(start..<fields[5].upperBound)
+            func isDash(_ range: Range<Int>) -> Bool {
+                range.count == 1 && bytes[range.lowerBound] == 0x2D
+            }
+            var short1 = false, short2 = false, short3 = false
+            if segments.count == 1 {
+                let only = segments[0]
+                if !isDash(only) {
+                    switch only.count {
+                    case 1: short1 = true
+                    case 2: short2 = true
+                    case 3: short3 = true
+                    default: break
+                    }
+                }
+            } else {
+                short1 = !isDash(segments[0])
+                short2 = !isDash(segments[1])
+                short3 = segments.count > 2 && !isDash(segments[2])
+            }
+            return Slots(hasRoots: fields[3].lowerBound < fields[3].upperBound,
+                         hasRecognition: hasRecognition,
+                         short1: short1, short2: short2, short3: short3)
         }
 
         func hint(for char: String) -> LearningHint? {

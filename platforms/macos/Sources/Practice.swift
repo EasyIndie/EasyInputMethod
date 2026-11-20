@@ -58,14 +58,43 @@ enum PracticeKind: String, CaseIterable {
 struct PracticeQuestion {
     let kind: PracticeKind
     let char: String
-    let code: String
-    let roots: [(glyph: String, key: String)]
-    let recognition: (letter: String, stroke: String, structure: String)?
-    let short1: String?
-    let short2: String?
 
+    /// 固定答案：字根题是键位、词组题是 4 位词码。`nil` = 答案与讲解都从学习区资源按需取。
+    private let fixedCode: String?
+    private let fixedRoots: [(glyph: String, key: String)]
+    private let fixedRecognition: (letter: String, stroke: String, structure: String)?
+
+    /// 懒题（报告 328 / ADR-386）：题库只常驻「题型 + 字」，答案/字根/简码/识别码用到才解析。
+    /// 以前 5,021 道题每题都把码、字根数组、识别码、三条简码各存一份，宿主因此多占约 11 MiB。
+    init(kind: PracticeKind, char: String) {
+        self.kind = kind
+        self.char = char
+        self.fixedCode = nil
+        self.fixedRoots = []
+        self.fixedRecognition = nil
+    }
+
+    /// 固定答案的题（字根 / 词组）：这些题的答案不在学习区资源里。
+    init(kind: PracticeKind, char: String, code: String,
+         roots: [(glyph: String, key: String)],
+         recognition: (letter: String, stroke: String, structure: String)?) {
+        self.kind = kind
+        self.char = char
+        self.fixedCode = code
+        self.fixedRoots = roots
+        self.fixedRecognition = recognition
+    }
+
+    private var hint: LearningHint? { fixedCode == nil ? LearningHints.hint(for: char) : nil }
+    var code: String { fixedCode ?? hint?.code ?? "" }
+    var roots: [(glyph: String, key: String)] { fixedCode == nil ? (hint?.roots ?? []) : fixedRoots }
+    var recognition: (letter: String, stroke: String, structure: String)? {
+        fixedCode == nil ? hint?.recognition : fixedRecognition
+    }
+    var short1: String? { hint?.short1 }
+    var short2: String? { hint?.short2 }
     /// 三级简码（D17-ter）：来自运行时资源同一行（ADR-377），不再另读一张表。
-    let short3: String?
+    var short3: String? { hint?.short3 }
 }
 
 enum Practice {
@@ -135,18 +164,17 @@ enum Practice {
         if kind == .roots { return rootBank(layout: KeyRootLayout.load()) }
         if kind == .phrase { return phraseBank }
         var out: [PracticeQuestion] = []
+        out.reserveCapacity(min(limit, LearningHints.indexedCount))
         for char in LearningHints.practiceCharacters.prefix(limit) {
-            guard let hint = LearningHints.hint(for: char), hint.quality != "unknown",
-                  let code = hint.code else { continue }
-            if kind == .recognition, hint.recognition == nil { continue }
-            if kind == .code1, hint.short1?.count != 1 { continue }
-            if kind == .code2, hint.short2?.count != 2 { continue }
-            if kind == .code3, hint.short3?.count != 3 { continue }
-            if kind == .roots, hint.roots.isEmpty { continue }
-            out.append(PracticeQuestion(kind: kind, char: char, code: code,
-                                        roots: hint.roots, recognition: hint.recognition,
-                                        short1: hint.short1, short2: hint.short2,
-                                        short3: hint.short3))
+            guard let slots = LearningHints.slots(for: char) else { continue }
+            switch kind {
+            case .recognition: guard slots.hasRecognition else { continue }
+            case .code1: guard slots.short1 else { continue }
+            case .code2: guard slots.short2 else { continue }
+            case .code3: guard slots.short3 else { continue }
+            case .code, .roots, .phrase: break
+            }
+            out.append(PracticeQuestion(kind: kind, char: char))
         }
         return out
     }
@@ -162,8 +190,7 @@ enum Practice {
             let key = String(letter)
             for glyph in [entry.keyName] + entry.roots where !glyph.isEmpty && seen.insert(glyph).inserted {
                 out.append(PracticeQuestion(kind: .roots, char: glyph, code: key.lowercased(),
-                                            roots: [(glyph: glyph, key: key)], recognition: nil,
-                                            short1: nil, short2: nil, short3: nil))
+                                            roots: [(glyph: glyph, key: key)], recognition: nil))
             }
         }
         return out
@@ -185,23 +212,59 @@ enum Practice {
     }()
 
     /// 从码表文本挑词组题：2–4 个字、4 位码，按权重降序（同权重按码、词排，结果确定）。
+    ///
+    /// 报告 328：以前把整张表（5.2 万行）一次性 `split` 成数组再排序，峰值与残留让宿主多占约 5 MiB；
+    /// 现在逐行扫描 + 只保留权重最高的 `limit` 行（有界小顶堆），并只把入选行转成 String。
     static func phraseBank(tsv: String, limit: Int) -> [PracticeQuestion] {
-        var rows: [(code: Substring, text: Substring, weight: Int)] = []
-        for line in tsv.split(separator: "\n") where !line.hasPrefix("#") {
+        struct Row { let code: String; let text: String; let weight: Int }
+        // 「更差」= 权重更低；同权重时码更大；再同则词更大。堆顶永远是最差的那行。
+        func worse(_ a: Row, _ b: Row) -> Bool {
+            if a.weight != b.weight { return a.weight < b.weight }
+            if a.code != b.code { return a.code > b.code }
+            return a.text > b.text
+        }
+        guard limit > 0 else { return [] }
+        var heap: [Row] = []
+        heap.reserveCapacity(limit + 1)
+        var index = tsv.startIndex
+        while index < tsv.endIndex {
+            let end = tsv[index...].firstIndex(of: "\n") ?? tsv.endIndex
+            let line = tsv[index..<end]
+            index = end < tsv.endIndex ? tsv.index(after: end) : tsv.endIndex
+            guard !line.hasPrefix("#") else { continue }
             let fields = line.split(separator: "\t")
             guard fields.count >= 3, fields[0].count == 4, (2...4).contains(fields[1].count),
                   let weight = Int(fields[2]) else { continue }
-            rows.append((fields[0], fields[1], weight))
+            let candidate = Row(code: String(fields[0]), text: String(fields[1]), weight: weight)
+            if heap.count < limit {
+                heap.append(candidate)
+                var child = heap.count - 1
+                while child > 0 {
+                    let parent = (child - 1) / 2
+                    guard worse(heap[child], heap[parent]) else { break }
+                    heap.swapAt(child, parent)
+                    child = parent
+                }
+            } else if worse(heap[0], candidate) {
+                heap[0] = candidate
+                var parent = 0
+                while true {
+                    let left = parent * 2 + 1, right = left + 1
+                    var worst = parent
+                    if left < heap.count, worse(heap[left], heap[worst]) { worst = left }
+                    if right < heap.count, worse(heap[right], heap[worst]) { worst = right }
+                    if worst == parent { break }
+                    heap.swapAt(parent, worst)
+                    parent = worst
+                }
+            }
         }
-        rows.sort { ($1.weight, $0.code, $0.text) < ($0.weight, $1.code, $1.text) }
-        var seen = Set<Substring>()
+        heap.sort { worse($1, $0) }   // 权重降序、码升序、词升序
+        var seen = Set<String>()
         var out: [PracticeQuestion] = []
-        for row in rows where seen.insert(row.text).inserted {
-            let word = String(row.text), code = String(row.code)
-            out.append(PracticeQuestion(kind: .phrase, char: word, code: code,
-                                        roots: phraseParts(word: word, code: code), recognition: nil,
-                                        short1: nil, short2: nil, short3: nil))
-            if out.count >= limit { break }
+        for row in heap where seen.insert(row.text).inserted {
+            out.append(PracticeQuestion(kind: .phrase, char: row.text, code: row.code,
+                                        roots: phraseParts(word: row.text, code: row.code), recognition: nil))
         }
         return out
     }
