@@ -1,7 +1,8 @@
 # LWS-86：萤火虫五笔86 拆字标准 1.0（规范文本）
 
-> 状态：**1.0 草案（ADR-381，2026-11-19）**。本文件是规范正文；一致性判定见 [`conformance-1.0.md`](conformance-1.0.md)，
-> 数据格式见 [`schema/`](schema/)，变更见 [`CHANGELOG.md`](CHANGELOG.md)。
+> 状态：**1.0 正式（2026-11-20，ADR-381 / ADR-388；随萤火虫 1.4.0 发布）**。本文件是规范正文；
+> 一致性判定见 [`conformance-1.0.md`](conformance-1.0.md)，数据格式见 [`schema/`](schema/)，变更见 [`CHANGELOG.md`](CHANGELOG.md)。
+> 数据包随 Release 发布（`LWS-86-1.0.zip`，可复现：同一提交重新生成得到同一 SHA-256）。
 >
 > **免责与来源声明（规范性）**：本标准由 EasyInputMethod（萤火虫输入法）**独立制定**，不是王码（Wangma）或
 > 中央研究院（Academia Sinica）发布的官方标准，**不暗示任何机构背书**。规则依据是公开的五笔86 字根表与取码规则；
@@ -65,6 +66,10 @@
 
 1. **R1 字根合法**：`roots` 的每个字形 MUST 出现在 `roots` 表中。
 2. **R2 键位一致**：第 i 个根的字形在该表允许的键位 MUST 等于 `code[i]`（i 从 0 起）。
+   **多键位字根（R2-note）**：`roots` 表里有 7 个字形挂了两个键（`⺋` B/N、`凵` B/M、`丆` D/G、`𠂇` D/H、
+   `丷` I/U、`儿` I/Q、`𠂉` R/T），**静态字根表不足以判定某个字里该用哪个键**；此时以 `chars` 的
+   `keys` 列为准（1.0 数据里 755 个字含这类字根）。实现方 MUST NOT 自行按"常见键"猜；拿不到逐字键位时
+   该字 MUST 标 `partial`（ADR-388）。
 3. **R3 长度一致**：若无识别码，根数 MUST 等于 `code` 长度；若有识别码，根数 MUST 等于 `code` 长度 − 1。
 4. **R4 识别码一致**：`recognition.key` MUST 等于 `code` 末位；`(stroke, structure)` MUST 由 §6 的网格唯一推出该字母。
 5. **R5 码表一致**：`code` MUST 是该字在五笔86 下的官方全码（以发布数据包为准；实现方不得自行"修正"码）。
@@ -74,7 +79,11 @@
 9. **R9 成字字根**：`class = radical-char` 时，`code[0]` MUST 等于该字在 `roots` 表的键位，
    `code[1:]` MUST 全为笔画键（`g h t y n`）；单笔画字用 **R9a**：`码 = 键 ×2 + "ll"`。
    **R9e 官方特例**：`class = radical-char-exception` 时只要求 `code[0]` 等于报户口键，
-   其余位 MUST 在 `evidence` 写明"官方特例取码，未由笔顺推导"（当前仅 `母 XGUI`）。
+   其余位 MUST 在 `evidence` 写明"官方特例取码，未由笔顺推导"。1.0 共 4 例：
+   `母 XGUI`（报户口 + 特例）、`方 YYGN`、`车 LGNH`、`止 HHHG`——后三者的官方码无法由
+   "报户口 + 首笔 + 次笔 + 末笔" 从各自笔顺推出（`方` 丶一乙丿 → 应得 `yygt`，官方为 `yygn`；`车` 一乙丨一 →
+   应得 `lgng`，官方 `lgnh`；`止` 丨一丨一 → 应得 `hhgg`，官方 `hhhg`）。这类字 MUST 标
+   `radical-char-exception`，不得为了让规则"通过"而改写码或笔顺（ADR-388）。
    **R9-bis 部件尾**（ADR-383）：`class = radical-char` 时，`code[1:]` 也 MAY 是
    "该字实际含有的标准部件序列 + 识别码"，前提是每个部件都在 `roots` 表内、键位逐位对齐、
    识别码可推导，并在 `evidence` 写明"报户口+部件尾"（当前仅 `卯 QTBH`）。

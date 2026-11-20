@@ -9,17 +9,17 @@
 
 > 范围来源：2026-11-20 全量待办对账（`docs/待办与积压.md` §2 引言）。P2 四项触发线均未触发，故本版不含候选排序/体验改动。
 
-- [ ] **D-1 文档对账**：关掉 ROADMAP 两处过期行（G 批数据/教学、MVP 后结构库），修好冷首键断行，corpus / 拼音 FSA 挂到
+- [x] **D-1 文档对账**：关掉 ROADMAP 两处过期行（G 批数据/教学、MVP 后结构库），修好冷首键断行，corpus / 拼音 FSA 挂到
       P2 触发线；`docs/待办与积压.md` 补 §2 对账结论。
-- [ ] **S-1 LWS-86 数据包随 Release 发布**：`make wubi86-standard` 产物 + `SHA256SUMS`，Release 工作流作为 tag 绑定资产；
+- [x] **S-1 LWS-86 数据包随 Release 发布**：`make wubi86-standard` 产物 + `SHA256SUMS`，Release 工作流作为 tag 绑定资产；
       包内容 = 5,021 字 / 241 根 / 25·598·3,362 简码（L4 已通过 3,755 字 0 失败）。
-- [ ] **S-2 站点「标准」页**：规范摘要、判定器用法、数据包下载 + SHA-256、**独立实现/非背书声明**。
-- [ ] **S-3 独立实现验证**：另写一个只读 `spec-1.0.md` 的最小解析器（约 30 行、不引用本项目 checker），跑 L1–L3，
+- [x] **S-2 站点「标准」页**（`site/standards.html`，首页导航有入口）：规范摘要、判定器用法、数据包下载 + SHA-256、**独立实现/非背书声明**。
+- [x] **S-3 独立实现验证**（`tools/lws86-reference-impl.py`：3,746/3,755 一致、0 失败）：另写一个只读 `spec-1.0.md` 的最小解析器（约 30 行、不引用本项目 checker），跑 L1–L3，
       结果写进 `docs/standards/wubi86/CHANGELOG.md`（"已由独立实现验证"）。
-- [ ] **S-4 1.0 转正**：`spec-1.0.md` 状态改「1.0 正式」+ CHANGELOG 记一条 + `docs/standards/README.md` 与首页登记；
+- [x] **S-4 1.0 转正**（ADR-388）：`spec-1.0.md` 状态改「1.0 正式」+ CHANGELOG 记一条 + `docs/standards/README.md` 与首页登记；
       **必须写明覆盖范围 = GB2312 一级，一级外 27 字仍 `partial`**（ADR-382）。
 - [ ] **R-1 可靠性体检**：30 min soak、睡眠唤醒、多屏落点、`dict.extended` 档内存；跑出来的问题修在本版内。
-- [ ] **1.4.0 版本号**：`Cargo.toml` 1.3.4 → 1.4.0、`packaging/build-number` 47 → 48。
+- [x] **1.4.0 版本号**：`Cargo.toml` 1.3.4 → 1.4.0、`packaging/build-number` 47 → 48。
 - [ ] **1.4.0 候选与验收**（报告 331）：整套 acceptance + 标准数据包/站点回读 + 体检结果。
 - [ ] **1.4.0 tag → Release**：签名 tag → Release（ZIP/DMG/更新程序/appcast/标准数据包）。
 - [ ] **1.4.0 站点上线**：Pages 回读 `v1.4.0 · 构建 48`。

@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LWS-86 拆字标准 — 萤火虫 Lampyris</title>
+<meta name="description" content="LWS-86（萤火虫五笔86 拆字标准）1.0：独立制定的五笔86 拆字与识别码规范、一致性判定器与可复现数据包。">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f6faf8;
+    --surface: #ffffff;
+    --surface-soft: #eef7f3;
+    --text: #10231d;
+    --muted: #5c7169;
+    --line: #dce9e3;
+    --accent: #0b6b52;
+    --accent-strong: #08543f;
+    --accent-soft: #e2f3ec;
+    --warm: #c58a1c;
+    --glow: rgba(60, 179, 137, .18);
+    --shadow: 0 10px 30px rgba(16, 35, 29, .06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0c1411;
+      --surface: #111d18;
+      --surface-soft: #16251f;
+      --text: #eef7f2;
+      --muted: #9db3aa;
+      --line: #24362e;
+      --accent: #62d3ab;
+      --accent-strong: #8ce4c3;
+      --accent-soft: #17332a;
+      --warm: #edc16b;
+      --glow: rgba(46, 160, 122, .16);
+      --shadow: 0 10px 30px rgba(0, 0, 0, .3);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    color: var(--text);
+    background:
+      radial-gradient(1100px 620px at 50% -180px, var(--glow), transparent 72%),
+      var(--bg);
+    font: 16px/1.7 -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    overflow-x: clip;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { color: var(--accent-strong); }
+  a:focus-visible, .btn:focus-visible {
+    outline: 3px solid var(--accent); outline-offset: 3px; border-radius: 6px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .btn { transition: none; }
+  }
+  .wrap { width: min(1040px, calc(100% - 40px)); margin: 0 auto; }
+
+  .nav {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px; padding: 22px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; color: var(--text); font-weight: 650; }
+  .brand img { width: 32px; height: 32px; border-radius: 8px; box-shadow: var(--shadow); }
+  .brand small { color: var(--muted); font-weight: 500; }
+  .nav-links { display: flex; align-items: center; gap: 22px; font-size: 14px; }
+  .nav-links a { color: var(--muted); }
+  .nav-links a:hover { color: var(--accent); }
+
+  .hero {
+    display: grid; grid-template-columns: 1fr 300px; gap: 64px;
+    align-items: center; padding: 72px 0 84px;
+  }
+  .eyebrow {
+    display: inline-flex; align-items: center; gap: 8px;
+    margin: 0 0 18px; padding: 5px 12px; border: 1px solid var(--line);
+    border-radius: 999px; background: var(--surface);
+    color: var(--muted); font-size: 13px; letter-spacing: .02em;
+  }
+  .eyebrow::before {
+    content: ""; width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft);
+  }
+  h1 {
+    margin: 0; font-size: clamp(40px, 6vw, 60px); line-height: 1.16;
+    letter-spacing: -.035em; font-weight: 720;
+  }
+  h1 em { color: var(--accent); font-style: normal; }
+  .lead {
+    max-width: 34em; margin: 22px 0 0; color: var(--muted);
+    font-size: 18px; line-height: 1.75;
+  }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 30px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    min-height: 46px; padding: 0 20px; border-radius: 11px;
+    border: 1px solid var(--line); background: var(--surface);
+    color: var(--text); font-size: 15px; font-weight: 600;
+    transition: transform .15s ease, border-color .15s ease, background .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); border-color: var(--accent); }
+  .btn.primary {
+    border-color: var(--accent); background: var(--accent); color: #fff;
+    box-shadow: 0 8px 20px rgba(11, 107, 82, .18);
+  }
+  .btn.primary:hover { background: var(--accent-strong); color: #fff; }
+  .btn small { font-weight: 500; opacity: .8; }
+  .trust { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 18px; color: var(--muted); font-size: 13px; }
+  .trust span { display: inline-flex; align-items: center; gap: 6px; }
+  .trust span::before { content: "✓"; color: var(--accent); font-weight: 700; }
+
+  .app-icon {
+    width: 100%; max-width: 260px; aspect-ratio: 1;
+    border-radius: 58px; display: block; margin-left: auto;
+    box-shadow: 0 30px 70px rgba(11, 60, 46, .22);
+  }
+
+  .section { padding: 24px 0 78px; }
+  .section-head { max-width: 640px; margin-bottom: 28px; }
+  .section-label {
+    margin: 0 0 10px; color: var(--accent); font-size: 13px;
+    font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  }
+  h2 { margin: 0; font-size: clamp(26px, 3.4vw, 34px); letter-spacing: -.025em; line-height: 1.3; }
+  .section-head p { margin: 12px 0 0; color: var(--muted); }
+
+  .features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .feature {
+    padding: 22px; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .feature svg { width: 22px; height: 22px; color: var(--accent); }
+  .feature h3 { margin: 14px 0 6px; font-size: 16px; letter-spacing: -.01em; }
+  .feature p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.65; }
+
+  .install {
+    display: grid; grid-template-columns: 1fr 380px; gap: 28px; align-items: start;
+    padding: 30px; border: 1px solid var(--line); border-radius: 22px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .steps { display: grid; gap: 22px; margin: 0; padding: 0; list-style: none; }
+  .step { display: grid; grid-template-columns: 38px 1fr; gap: 14px; }
+  .step-num {
+    display: grid; place-items: center; width: 38px; height: 38px;
+    border-radius: 50%; background: var(--accent-soft); color: var(--accent);
+    font-size: 13px; font-weight: 700;
+  }
+  .step h3 { margin: 0 0 3px; font-size: 16px; }
+  .step p { margin: 0; color: var(--muted); font-size: 14px; }
+  .step code {
+    padding: .12em .4em; border-radius: 5px; background: var(--surface-soft);
+    font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; color: var(--text);
+  }
+  .side {
+    padding: 22px; border-radius: 16px; background: var(--surface-soft);
+    border: 1px solid var(--line);
+  }
+  .side h3 { margin: 0 0 12px; font-size: 15px; }
+  .side ul { margin: 0 0 18px; padding: 0; list-style: none; display: grid; gap: 9px; }
+  .side li { display: flex; gap: 9px; color: var(--muted); font-size: 14px; }
+  .side li::before { content: "·"; color: var(--accent); font-weight: 700; }
+  .side .btn { width: 100%; }
+  .side .meta { margin: 10px 0 0; color: var(--muted); font-size: 12px; text-align: center; }
+
+  .uninstall-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .choice {
+    padding: 24px; border: 1px solid var(--line); border-radius: 16px;
+    background: var(--surface); box-shadow: var(--shadow);
+  }
+  .choice h3 { margin: 0 0 8px; font-size: 16px; }
+  .choice p { margin: 0; color: var(--muted); font-size: 14px; }
+  .choice .tag {
+    display: inline-block; margin-bottom: 12px; padding: 3px 9px;
+    border-radius: 999px; background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 650;
+  }
+  .choice.warn .tag { background: rgba(197, 138, 28, .12); color: var(--warn); }
+  .note { margin: 16px 0 0; color: var(--muted); font-size: 13px; }
+
+  .platform {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 16px; padding: 20px 24px; border: 1px solid var(--line);
+    border-radius: 16px; background: var(--surface);
+  }
+  .platform strong { font-size: 15px; }
+  .platform p { margin: 2px 0 0; color: var(--muted); font-size: 13px; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px;
+    color: var(--muted); font-size: 12px; background: var(--surface-soft);
+  }
+  .pill.on { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+
+  .closing {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 22px; padding: 34px; border-radius: 22px;
+    border: 1px solid var(--line); background: var(--surface-soft);
+  }
+  .closing h2 { font-size: 24px; }
+  .closing p { margin: 8px 0 0; color: var(--muted); font-size: 14px; max-width: 46em; }
+
+  footer {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 14px; padding: 36px 0 46px; color: var(--muted); font-size: 13px;
+  }
+  footer nav { display: flex; flex-wrap: wrap; gap: 16px; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; gap: 36px; padding: 48px 0 64px; }
+    .app-icon { max-width: 150px; margin: 0; border-radius: 34px; }
+    .features { grid-template-columns: 1fr 1fr; }
+    .install { grid-template-columns: 1fr; padding: 22px; }
+    .uninstall-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+  }
+  @media (max-width: 560px) {
+    .features { grid-template-columns: 1fr; }
+    .hero { padding-top: 34px; }
+    .lead { font-size: 16px; }
+    .actions .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="nav">
+    <a class="brand" href="index.html">
+      <img src="assets/lampyris-icon.png" alt="">
+      <span>萤火虫 <small>Lampyris</small></span>
+    </a>
+    <nav class="nav-links" aria-label="页面导航">
+      <a href="index.html#features">特性</a>
+      <a href="index.html#install">安装</a>
+      <a href="standards.html" aria-current="page">标准</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod">源码</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">拆字标准 · 1.0 正式版</p>
+        <h1>LWS-86<br><em>萤火虫五笔86 拆字标准</em></h1>
+        <p class="lead">
+          五笔86 的取码规则谁都说得上几句，但「一个字到底怎么拆、识别码为什么是这个字母」缺少一份
+          可判定、可复现的公开文本。LWS-86 是我们自己用的那套口径，现在把它写清楚、配上一致性判定器，
+          连同数据包一起发布，供任何人引用与核对。
+        </p>
+        <div class="actions">
+          <a class="btn primary" href="https://github.com/EasyIndie/EasyInputMethod/releases/latest/download/LWS-86-1.0.zip">
+            下载数据包 <small>LWS-86-1.0.zip · CC-BY-SA-4.0</small>
+          </a>
+          <a class="btn" href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/standards/wubi86/spec-1.0.md">读规范原文</a>
+        </div>
+        <div class="trust">
+          <span>独立制定，非官方</span>
+          <span>数据 CC-BY-SA-4.0</span>
+          <span>判定器 GPL-3.0-or-later</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="scope">
+      <div class="section-head">
+        <p class="eyebrow">范围</p>
+        <h2>覆盖什么，不覆盖什么</h2>
+      </div>
+      <ul>
+        <li><strong>覆盖</strong>：GB2312 一级 3,755 字，<code>full</code> 3,755（100.0%）；标准字根表 241 条；
+          一级简码 25、二级 598、三级 3,362。</li>
+        <li><strong>不覆盖</strong>：GB2312 一级之外的字，其中 27 条拆解仍待核验，规范里标为 <code>partial</code>，
+          不给结论、也不猜。</li>
+        <li><strong>不做</strong>：不声称与王码官方码表或任何机构的标准一致，也不表示得到其认可。
+          LWS-86 是独立制定的口径，逐条可核对的是「规则与数据自洽」。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="rules">
+      <div class="section-head">
+        <p class="eyebrow">规则</p>
+        <h2>十条规范性规则（摘要）</h2>
+      </div>
+      <ul>
+        <li><strong>R1 字根合法</strong>：拆出的每个字根必须在标准字根表内。</li>
+        <li><strong>R2 键位一致</strong>：第 i 个根的键位等于码的第 i 位。</li>
+        <li><strong>R3 长度一致</strong>：根数等于码长，或等于码长减一（有识别码时）。</li>
+        <li><strong>R4 识别码</strong>：识别码字母由「末笔 × 结构」唯一推出。</li>
+        <li><strong>R5 取码</strong>：四根及以上取「一·二·三·末」；不足四根补识别码。</li>
+        <li><strong>R6 简码</strong>：一/二/三级简码分别是全码的 1/2/3 位前缀，同级唯一。</li>
+        <li><strong>R7 不猜</strong>：无法同时满足规则的字必须标 <code>partial</code> 并写原因。</li>
+        <li><strong>R8 键名字</strong>：该键连打四次（如 <code>王 gggg</code>）。</li>
+        <li><strong>R9 成字字根</strong>：报户口 + 首笔 + 次笔 + 末笔；官方特例（<code>母 xgui</code>、
+          <code>方 yygn</code>、<code>车 lgnh</code>、<code>止 hhhg</code>）以数据为准并在规范里列明。</li>
+        <li><strong>R10 不冒充</strong>：不得把特例标成合体字来绕过 R2/R3。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="bundle">
+      <div class="section-head">
+        <p class="eyebrow">数据包</p>
+        <h2>可复现，可与规范逐条对账</h2>
+      </div>
+      <ul>
+        <li><code>roots.tsv</code> — 标准字根表（字形 / 键位 / 类别）</li>
+        <li><code>chars.tsv</code> — 逐字根序、键位、识别码、简码槽位、是否在范围内、类别</li>
+        <li><code>shortcodes.tsv</code> — 一/二/三级简码表</li>
+        <li><code>meta.json</code> — 版本、范围、计数、源文件 SHA-256、生成命令</li>
+        <li><code>SHA256SUMS</code> — 上面各文件的校验和</li>
+      </ul>
+      <p>
+        数据包随每次发布随附（<code>LWS-86-1.0.zip</code> 与 <code>.sha256</code>），
+        同一提交重新生成必须得到同一个校验和：时间戳取自提交时间、打包条目按名称排序。
+        本仓库的判定器可直接核对：
+      </p>
+      <pre><code>python3 tools/wubi86-std-check.py --bundle LWS-86-1.0 --level L4</code></pre>
+    </section>
+
+    <section class="section" id="verification">
+      <div class="section-head">
+        <p class="eyebrow">验证</p>
+        <h2>独立实现与门禁</h2>
+      </div>
+      <ul>
+        <li><strong>自检</strong>：数据包自身跑 L4，3,755 字全部通过（0 失败）。</li>
+        <li><strong>独立实现</strong>：另写一个只读规范、不引用本判定器的最小实现，从「字根序列 + 末笔 + 结构」
+          重新推导全码与识别码，结果 3,746 / 3,755 逐字一致、0 失败；剩下 9 条是 4 个规范列明的
+          官方特例与 5 个缺笔顺数据的成字字根。</li>
+        <li><strong>反例门禁</strong>：改动任一位码或键位，判定器必须报错——这条也做成了回归测试。</li>
+      </ul>
+    </section>
+
+    <section class="section" id="license">
+      <div class="section-head">
+        <p class="eyebrow">许可</p>
+        <h2>怎么用</h2>
+      </div>
+      <ul>
+        <li>规范文本与数据包：<strong>CC-BY-SA-4.0</strong>（署名 + 相同方式共享）。</li>
+        <li>判定器与参考实现：<strong>GPL-3.0-or-later</strong>。</li>
+        <li>引用时请写清是 <em>LWS-86（萤火虫五笔86 拆字标准）1.0</em>，不要写成「王码标准」。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>
+    <span>© 2026 萤火虫 / Lampyris · GPL-3.0-or-later</span>
+    <nav>
+      <a href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/standards/wubi86/spec-1.0.md">规范</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod/blob/main/docs/standards/wubi86/conformance-1.0.md">一致性判定</a>
+      <a href="https://github.com/EasyIndie/EasyInputMethod">源码</a>
+    </nav>
+    <span>本页不加载第三方资源，不收集数据。</span>
+  </footer>
+</div>
+</body>
+</html>

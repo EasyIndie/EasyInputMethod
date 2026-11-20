@@ -15,6 +15,7 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[3]
 SITE = ROOT / "site/index.html"
+STANDARDS = ROOT / "site/standards.html"
 
 spec = importlib.util.spec_from_file_location("stamp_site", ROOT / "tools/stamp-site.py")
 stamp_site = importlib.util.module_from_spec(spec)
@@ -87,6 +88,29 @@ class StampRuleTests(unittest.TestCase):
                 '<a href="https://github.com/o/r/releases/latest/download/Lampyris-1.1.0-universal.dmg">新</a>\n'
                 '<a href="https://github.com/o/r/releases/latest/download/Lampyris-1.0.2-universal.dmg">旧</a>')
         self.assertTrue(problems(page))
+
+
+class StandardsPageTests(unittest.TestCase):
+    """LWS-86 标准页（S-2）：可发现、自包含、把边界写清楚。"""
+
+    def test_standards_page_exists_and_is_linked(self):
+        self.assertTrue(STANDARDS.is_file(), "缺少 site/standards.html")
+        index = SITE.read_text(encoding="utf-8")
+        self.assertIn('href="standards.html"', index, "首页导航必须链到标准页")
+
+    def test_standards_page_is_self_contained(self):
+        html = STANDARDS.read_text(encoding="utf-8")
+        self.assertNotRegex(html, r'src="https?://|href="https?://(?!github\.com/EasyIndie/EasyInputMethod)',
+                            "标准页不得加载第三方资源（只允许指向本仓库）")
+        self.assertNotRegex(html, r"<script", "标准页不需要脚本")
+        self.assertIn("LWS-86-1.0.zip", html, "必须给出数据包下载入口")
+
+    def test_standards_page_states_independence_and_scope(self):
+        html = STANDARDS.read_text(encoding="utf-8")
+        self.assertIn("独立制定", html, "必须声明独立制定、非官方")
+        self.assertIn("3,755", html, "必须写明覆盖范围（GB2312 一级 3,755 字）")
+        self.assertIn("partial", html, "必须写明范围外 27 条待核验（partial）")
+        self.assertIn("CC-BY-SA-4.0", html)
 
 
 if __name__ == "__main__":

@@ -132,6 +132,17 @@ jobs:
           shasum -a 256 "packaging/out/release/${name}" > "packaging/out/release/${name}.sha256"
           printf '%s\n' "packaging/out/release/${name}" "packaging/out/release/${name}.sha256" >> release-assets.txt
 
+      - name: Package the LWS-86 standard data bundle
+        run: |
+          set -euo pipefail
+          # 数据包可复现：generatedAt 取提交时间，打包时间戳固定；同一提交两次打包 SHA 相同。
+          python3 tools/wubi86-std-bundle.py --out build/wubi86-std-1.0
+          python3 tools/wubi86-std-check.py --bundle build/wubi86-std-1.0 --level L4
+          python3 tools/wubi86-std-package.py --bundle build/wubi86-std-1.0 --out packaging/out/release
+          bundle="$(ls packaging/out/release/LWS-86-*.zip)"
+          test -f "${bundle}.sha256"
+          printf '%s\n' "${bundle}" "${bundle}.sha256" >> release-assets.txt
+
       - name: Build and sign the DMG installer
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
@@ -202,6 +213,9 @@ jobs:
             || { echo "缺少二进制包。" >&2; exit 1; }
           printf '%s\n' "${assets[@]}" | grep -q 'appcast.xml$' \
             || { echo "缺少更新 appcast。" >&2; exit 1; }
+          # S-1（ADR-382）：标准数据包与 tag 绑定发布。
+          printf '%s\n' "${assets[@]}" | grep -q 'LWS-86-.*\.zip$' \
+            || { echo "缺少 LWS-86 标准数据包。" >&2; exit 1; }
           notes="$(mktemp)"
           cat > "${notes}" <<EOF
           Lampyris ${tag} — 默认离线的五笔/拼音混合输入法（macOS，GPL-3.0-or-later）。
@@ -211,6 +225,7 @@ jobs:
           - **对应源码**（GPL-3.0 §6(d)）：\`Lampyris-${tag#v}-source.tar.gz\`（与本页同一位置）。
           - **校验**：附件 \`.sha256\`。
           - **更新源**：\`appcast.xml\`（Ed25519 签名，客户端默认从本页 latest 获取）。
+          - **拆字标准**：\`LWS-86-1.0.zip\`（萤火虫五笔86 拆字标准数据包，CC-BY-SA-4.0；规范见站点「标准」页）。
           - **兼容**：universal（arm64 + x86_64），支持 macOS 13+；仅已记录环境经验证。
           EOF
           if [ "${{ inputs.dry_run }}" = "true" ]; then

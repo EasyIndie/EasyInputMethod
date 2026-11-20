@@ -20,7 +20,9 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import pathlib
+import subprocess
 import sys
 import time
 
@@ -29,13 +31,57 @@ VERSION = '1.0'
 SCOPE = ROOT / 'data/generated/gb2312-level1.txt'
 RUNTIME = ROOT / 'data/generated/B0-runtime.tsv'
 ROOTS = ROOT / 'data/learning/wubi86-root-inventory.tsv'
+STROKES = ROOT / 'data/learning/wubi86-root-strokes.tsv'
 SHORTCODES = [(1, ROOT / 'data/sources/wubi86-level1-codes.tsv'),
               (2, ROOT / 'data/sources/wubi86-level2-codes.tsv'),
               (3, ROOT / 'data/sources/wubi86-level3-codes.tsv')]
 
 
+def source_date() -> str:
+    """可复现的时间戳：优先 SOURCE_DATE_EPOCH，其次 git 提交时间，最后当前时间。
+
+    数据包要能被第三方重建并比对 SHA-256，所以默认值不能是"生成那一刻"。
+    """
+    epoch = os.environ.get('SOURCE_DATE_EPOCH')
+    if epoch and epoch.isdigit():
+        return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(epoch)))
+    try:
+        out = subprocess.run(['git', 'log', '-1', '--format=%ct'], cwd=ROOT,
+                             capture_output=True, text=True, timeout=10)
+        if out.returncode == 0 and out.stdout.strip().isdigit():
+            return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(int(out.stdout.strip())))
+    except (OSError, subprocess.SubprocessError):
+        pass
+    return time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime())
+
+
 def sha256(path: pathlib.Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+STROKE_LETTER = {'横': 'g', '竖': 'h', '撇': 't', '捺': 'y', '折': 'n'}
+STROKE_GLYPH = {'一': '横', '丨': '竖', '丿': '撇', '丶': '捺', '乙': '折'}
+
+
+def stroke_order() -> dict[str, list[str]]:
+    """D18 成字字根笔顺（项目自编，CC-BY-SA-4.0）。"""
+    out = {}
+    for row in rows(STROKES):
+        if len(row) >= 2:
+            out[row[0]] = [ch for ch in row[1].replace(' ', '') if ch in STROKE_GLYPH]
+    return out
+
+
+def chengzi_code(char: str, key: str, strokes: list[str]) -> str | None:
+    """R9 成字字根：报户口 + 首笔 + 次笔 + 末笔（R9a 单笔画：键×2 + ll）。"""
+    letters = [STROKE_LETTER[STROKE_GLYPH[ch]] for ch in strokes]
+    if len(letters) == 0:
+        return None
+    if len(letters) == 1:
+        return key + letters[0] + 'll'
+    if len(letters) == 2:
+        return key + letters[0] + letters[1]
+    return key + letters[0] + letters[1] + letters[-1]
 
 
 def rows(path: pathlib.Path) -> list[list[str]]:
@@ -63,6 +109,7 @@ def main() -> int:
     for row in root_rows:
         if len(row) >= 3 and len(row[0]) == 1:
             root_keys.setdefault(row[0], set()).add(row[1])
+    stroke_data = stroke_order()
     roots_out = ['# LWS-86 标准字根表（字形\t键位\t类别）']
     for row in root_rows:
         if len(row) >= 3 and len(row[0]) == 1:
@@ -85,10 +132,18 @@ def main() -> int:
         if code and len(code) == 4 and len(set(code)) == 1:
             klass = 'key-name'
         elif glyphs in (char, ''):
-            klass = 'radical-char'
-            # 官方特例（如 母 XGUI）：报户口之后的位不是笔画键
-            if code and code[0] in root_keys.get(char, set()) \
-                    and not all(letter in 'ghtyn' for letter in code[1:]):
+            # R9 推得出来且一致 → radical-char；有笔顺却推不出（如 母、方、车、止）→ 官方特例；
+            # 缺笔顺数据时不冒充「推导通过」，但也不判成特例（退回旧的形状校验）。
+            derived = ''
+            strokes = stroke_data.get(char, [])
+            if code and code[0] in root_keys.get(char, set()) and strokes:
+                derived = chengzi_code(char, code[0], strokes) or ''
+            if derived:
+                klass = 'radical-char' if derived == code else 'radical-char-exception'
+            elif code and code[0] in root_keys.get(char, set()) \
+                    and all(letter in 'ghtyn' for letter in code[1:]):
+                klass = 'radical-char'
+            else:
                 klass = 'radical-char-exception'
         else:
             klass = 'compound'
@@ -126,7 +181,7 @@ def main() -> int:
         'shortcodes': counts,
         'sources': {str(p.relative_to(ROOT)): sha256(p)
                     for p in [SCOPE, RUNTIME, ROOTS] + [p for _, p in SHORTCODES]},
-        'generatedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+        'generatedAt': source_date(),
         'generator': 'tools/wubi86-std-bundle.py',
         'license': {'spec': 'CC-BY-SA-4.0', 'data': 'CC-BY-SA-4.0', 'code': 'GPL-3.0-or-later'},
     }
