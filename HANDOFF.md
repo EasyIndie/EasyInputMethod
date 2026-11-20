@@ -28,7 +28,7 @@
 | 设备 | 已装包与执行 SHA | 数据 / 输入源 | 恢复点 |
 |---|---|---|---|
 | **air**（arm64 / macOS 27.2 / Xcode 27，用户 `joker`；已有辅助功能/事件投递权限） | **1.3.1 / build 44（main `f9cede3` 验收包）**，宿主执行 **`3344fcddce3c2b153087417cad0596163ebe8373cb950512a232a51ec71569b1`**（2026-11-19 装机，报告 305）；输入源 `Lampyris.default` 已启用并选中 | 2026-11-18 17:50：config `52af2b90…`（mode=mixed / punctuation=chinese / half / simplified，显式 hotkey 8 项）、词库 2391 行；**`practice.tsv` 已不存在**（2026-11-16 记为 148 行用户练习，本次采集时确认不在；如需旧进度先查 `uninstalled/` 与 `updates/` 备份，不凭记忆重建） | 回滚备份：`uninstalled/` 只保留最近两份（`bundle.R9h15t` 执行 `43a3fd8e…`、`bundle.fMBgZA` 执行 `9ef1135c…`；2026-11-18 清理了 6 份旧开发候选） |
-| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.1 / build 44**，宿主执行 **`68f892c501a4f0b3031ccce0afe4aa75a50e239bcaecffc42bbc2f1fda12f370`**（= 发布 ZIP 内执行，2026-11-18 19:59 用户经更新程序升级；回执 `payloadSHA256=0fbe7ff3…`、更新程序同步升到 1.3.1） | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-18T11-59-28Z-D71946AC/backup/`；更早备份见 `updates/`（约占 153 MB，可按需清理） |
+| **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.2 / build 45**（用户 2026-11-20 报告升级完成；**执行 SHA 待回读**，预期 `46cc4d7b6f7a8ef36b77e0f39c041983321cae9de14617a2514507ad8d701dd5`）；上一版为 1.3.1/44 执行 `68f892c5…`（2026-11-18 经更新程序升级） | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置） | `updates/upgrade-2026-11-18T11-59-28Z-D71946AC/backup/`；更早备份见 `updates/`（约占 153 MB，可按需清理） |
 
 ## 2. 本轮完成
 
