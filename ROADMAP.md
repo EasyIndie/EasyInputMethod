@@ -23,7 +23,8 @@
 - [ ] **残余 27 条根序**：成本评估见 `docs/tasks/T-ROOT86.md` §2（有参考 6–9 h，无参考不做）。
 - [x] **候选窗残留（P1-W1）已修复**（报告 327）：三层可见性不变量（`show()` 拒绝空内容 / 清空即 `orderOut` /
       0.2 s 定时器自查）+ 控制器兜底（`hideCandidateWindowIfIdle`、`deactivateServer` 无条件收窗）；
-      用例 `candidate.visibility-invariant` 进离线回归。真机复现路径仍未拿到，装 1.3.3 候选后按报告 §5 观察。
+      用例 `candidate.visibility-invariant` / `candidate.stranded-panel` 进离线回归。
+      **真机已复验（报告 327 §8）**：复现路径 = 组合态里切走输入源；换包后 0.6 s 内自愈，整套验收 PASS。随 1.3.3 发布。
 
 ## 标准（LWS-86，ADR-381）
 
