@@ -11,6 +11,8 @@
      有字形参考约 6–9 h、无参考不要做（自证循环）。**不排期**，等有 86 字形资料或挑常用字时再做；
   4. **LWS-86 1.0 转正**：等下一个大版本、五笔输入实现比较完备时再转（ADR-382 口径不变）。
 - 待合入：无。
+- **候选窗残留已修复**（报告 327，PR #343，main `3edc611`）：三层可见性不变量 + 控制器兜底；
+  air 上装的还是 1.3.2（未修），修复随下一个候选包（1.3.3）生效。
 - 版本：`Cargo.toml` = **1.3.2**、`packaging/build-number` = **45**；最新 tag **`v1.3.2`**（`93df6cc`，签名已验）。
 - 最近验证（`93df6cc` 候选）：`make verify` PASS（810 产物零网络符号）、`make macos-offline-tests` 72/360 PASS、
   真机验收见报告 325（样本 30/30、热键 8/8、零外联、heap live 21.3/24）。
@@ -170,6 +172,12 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-20 / pi（air）：**修复候选窗残留（幽灵面板）**（报告 327，PR #343）。真机取证：面板以 `layer 101` 永久浮空、
+  进程未卡死（`STAT S`/`%CPU 0.0`）；根因是 `hidesOnDeactivate=false` + `.popUpMenu` + `.canJoinAllSpaces` 让"漏一次 `hide()`"
+  就永久可见。修复给了三层冗余兜底（`show()` 拒绝空内容 / 清空即 `orderOut` / 0.2 s 定时器自查）+ 控制器侧
+  `hideCandidateWindowIfIdle()` 与 `deactivateServer` 无条件收窗；窗口级用例 `candidate.visibility-invariant` 进离线回归
+  （72 文件 / 360 例全绿）。真机复现路径仍未拿到（kill 客户端窗口那条被系统兜住了），装 1.3.3 候选后按报告 §5 观察。
 
 - 2026-11-20 / pi（air）：**footprint 采样协议（ADR-385 / 报告 326）** + **残余 27 条成本评估**。协议：静置后三连采样取中位数、
   绝对值只在宿主 uptime ≤ 900 s 的冷启动窗口内判 FAIL，超窗写 `footprint_note` 作参考；实测同刻离散 **0.0**（原来 35.9–57.3 的

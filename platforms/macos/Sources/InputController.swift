@@ -3,6 +3,7 @@
 // 事件路线：handle(_:client:) → ImeSession.feed → （更新预编辑 / 上屏 / 显示候选）。
 // 引擎逻辑全在 Rust；本文件只做「事件 <> 引擎 <> 文本客户端」的桥接。
 
+import Carbon
 import Cocoa
 import InputMethodKit
 import ime
@@ -46,7 +47,7 @@ final class LampyrisInputController: IMKInputController {
         } else {
             reloadDictionaryIfNeeded()
         }
-        if candidateWindow == nil { candidateWindow = CandidateWindow() }
+        if candidateWindow == nil { candidateWindow = configuredCandidateWindow() }
         restoreLanguage()
         ConfigWatcher.shared.observe(owner: self) { [weak self] key in
             self?.configChanged(key)
@@ -95,6 +96,33 @@ final class LampyrisInputController: IMKInputController {
     override func hidePalettes() {
         candidateWindow?.hide()
         super.hidePalettes()
+    }
+
+    /// 建一个带「自愈」约束的候选窗：由控制器回答"现在还需要我吗"。
+    ///
+    /// 报告 327 §6：真机上复现到的漏法是**组合态里切走输入源**——没有任何键盘事件，`deactivateServer` 也不一定被调用，
+    /// 于是没有人叫候选窗收起来。这里把判断权交给控制器，0.2 s 的定时器每次 tick 问一次。
+    private func configuredCandidateWindow() -> CandidateWindow {
+        let window = CandidateWindow()
+        window.shouldStayVisible = { [weak self] in
+            guard let self else { return false }
+            guard self.session?.isComposing == true || self.symbolComposition.phase != nil else { return false }
+            return Self.isOwnInputSourceCurrent()
+        }
+        window.onStranded = { [weak self] in
+            guard let self else { return }
+            self.finishComposition(self.activeClient)
+        }
+        return window
+    }
+
+    /// 当前系统输入源是不是本输入法（含 `.default` 等子源）。取不到时按"是"处理：
+    /// 宁可让面板多留一会儿，也不要因为 TIS 读不到就把面板闪掉。
+    static func isOwnInputSourceCurrent() -> Bool {
+        guard let source = TISCopyCurrentKeyboardInputSource()?.takeRetainedValue(),
+              let pointer = TISGetInputSourceProperty(source, kTISPropertyInputSourceID) else { return true }
+        let identifier = Unmanaged<CFString>.fromOpaque(pointer).takeUnretainedValue() as String
+        return identifier.hasPrefix("cn.jokerhub.inputmethod.Lampyris")
     }
 
     /// 报告 327 / P1-W1 的第三层兜底：候选窗只服务「组合态」与「符号面板」两种状态。
@@ -772,7 +800,7 @@ final class LampyrisInputController: IMKInputController {
         let (candidates, pages) = symbolCandidates()
         guard !candidates.isEmpty else { endSymbolComposition(); return }
         symbolComposition.page = min(symbolComposition.page, pages - 1)
-        let window = candidateWindow ?? CandidateWindow()
+        let window = candidateWindow ?? configuredCandidateWindow()
         candidateWindow = window
         window.onSelect = { [weak self] index in
             guard let self, let client = self.activeClient else { return }
@@ -1160,7 +1188,7 @@ final class LampyrisInputController: IMKInputController {
             candidateWindow?.hide()
             return 0
         }
-        let window = candidateWindow ?? CandidateWindow()
+        let window = candidateWindow ?? configuredCandidateWindow()
         candidateWindow = window
         window.onSelect = { [weak self] index in
             guard let self, let client = self.activeClient, let session = self.session else { return }

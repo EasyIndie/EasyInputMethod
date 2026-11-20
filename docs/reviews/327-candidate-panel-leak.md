@@ -108,3 +108,50 @@ t=3 {"layer":101,"owner":"萤火虫","bounds":[245,543,504,182]}
   看 `visibilityInvariantHideCount`（可从 `PerfTrace` 或一次性日志导出）判断是哪一层没生效。
 - **不要**因为这次修复就把 `hidesOnDeactivate` 打开，也不要给面板加"多久没动就自己关"的超时——
   那会把真实状态机的问题变成时间竞猜。
+
+## 6. 真机复现（装第一版修复后立刻抓到，2026-11-20 12:0x）
+
+第一版修复（`77fb38f0…`，只有"可见必须有内容"这一条）装上后，按下面三步**稳定复现**了幽灵面板：
+
+```
+# 1) 起一次组合态（探针投递 khk，不提交）
+type-session.sh 'khk' --settle 14 &
+# 2) 组合态还在时切走输入源
+tissrc select com.apple.keylayout.ABC
+# 3) 观察
+cgwins 萤火虫
+{"windows":[{"bounds":[245,543,504,182],"layer":101,"owner":"萤火虫"}]}   ← 7 秒后仍在
+```
+
+结论：**根因不是"内容为空没被收"，而是"没人告诉窗口该收了"**。
+
+- 面板里**还有内容**（`renderedCount > 0`），所以"可见必须有内容"这条不变量成立、不会触发；
+- 切输入源**不产生键盘事件**，`handle()` 里的空闲兜底也不会跑；
+- 这次实测 `deactivateServer` 也没有被调用（`activeClient` 仍是旧宿主），所以"失活时无条件 `hide()`"同样落空；
+- 模块自己无从判断"宿主还要不要显示"——它不知道会话、不知道当前输入源。
+
+### 6.1 修正后的修复：把判断权交回控制器
+
+```swift
+// CandidateWindow：定时器每次 tick 问一次「现在还需要我吗」
+var shouldStayVisible: (() -> Bool)?
+var onStranded: (() -> Void)?          // 真该收了：收窗 + 清内容 + 通知宿主收尾
+
+// InputController：答案 = 还在组合（或符号面板） && 当前输入源仍是自己
+window.shouldStayVisible = { [weak self] in
+    guard let self else { return false }
+    guard self.session?.isComposing == true || self.symbolComposition.phase != nil else { return false }
+    return Self.isOwnInputSourceCurrent()      // TISCopyCurrentKeyboardInputSource + id 前缀
+}
+window.onStranded = { [weak self] in self?.finishComposition(self?.activeClient) }
+```
+
+`isOwnInputSourceCurrent()` 读不到时**按"是"处理**：宁可面板多留一会儿，也不因为 TIS 查询失败就把面板闪掉。
+
+这样三层兜底的第三层从"内容是否为空"升级为"内容是否为空 **或** 宿主不再需要"，覆盖了
+"无键击、无失活回调、面板有内容"这种最刁的漏法；而且 **0.2 s 内自愈**，不依赖任何外部调用。
+
+## 7. 为什么始终不加超时
+
+"多久没动就自己关"看起来更省事，但它把状态机的问题变成时间竞猜：用户思考 5 秒和真的失焦没有任何区别，
+误关会直接打断输入。判据必须是**状态**（还在组合吗、输入源还是我吗），不是**时间**。

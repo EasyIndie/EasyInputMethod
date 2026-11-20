@@ -267,6 +267,23 @@ let invariantHidesBefore = window.visibilityInvariantHideCount
 window.update(candidates: [], relayout: true)
 guard !window.isVisible, window.visibilityInvariantHideCount == invariantHidesBefore + 1
 else { fail("invariant hide is counted once per leak") }
+// 报告 327 §6：组合态里切走输入源时没有任何键盘事件，只能靠定时器问"还需要我吗"。
+var strandedCalls = 0
+window.shouldStayVisible = { true }
+window.onStranded = { strandedCalls += 1 }
+window.update(candidates: values, input: "khk")
+window.layout(at: caret, within: area)
+window.show(at: caret)
+guard window.isVisible, !window.enforceVisibilityInvariant() else { fail("needed panel must stay") }
+window.shouldStayVisible = { false }                      // 模拟"输入源已经不是自己"
+guard window.enforceVisibilityInvariant(), !window.isVisible, strandedCalls == 1
+else { fail("a stranded panel must be ordered out and reported once") }
+guard window.displayedCandidateTexts.isEmpty else { fail("stranded panel must clear its content") }
+window.shouldStayVisible = nil
+window.onStranded = nil
+LocalAcceptanceEvidence.record("candidate.stranded-panel",
+    expected: "宿主不再需要时收窗、清内容并回调一次",
+    actual: ["stranded_calls": strandedCalls, "visible": window.isVisible])
 LocalAcceptanceEvidence.record("candidate.visibility-invariant",
     expected: "清空内容/空面板一律收窗，正常有内容时不误收",
     actual: ["invariant_hides": window.visibilityInvariantHideCount, "visible": window.isVisible])
