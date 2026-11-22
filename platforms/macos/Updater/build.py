@@ -142,8 +142,8 @@ resources = contents / 'Resources'
 resources.mkdir(exist_ok=True)
 for name in ('ORZ-LICENSE', 'PROVENANCE.json'):
     shutil.copy2(ROOT / 'Vendor' / name, resources / name)
-icon = root / 'assets/icons/yinghuo-official-app.icns'
+icon = root / 'assets/icons/yinghuo-updater-app.icns'
 if not icon.is_file():
-    parser.error('缺少应用图标 assets/icons/yinghuo-official-app.icns')
+    parser.error('缺少应用图标 assets/icons/yinghuo-updater-app.icns')
 shutil.copy2(icon, resources / 'AppIcon.icns')
 print(('仅构建隔离测试检查程序，未安装/启动/联网：' if isolated else '仅构建独立检查程序，未安装/启动/联网：') + str(app))

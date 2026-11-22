@@ -54,8 +54,8 @@ info = {
 (contents / "Info.plist").write_bytes(plistlib.dumps(info))
 resources = contents / "Resources"
 resources.mkdir(exist_ok=True)
-icon = REPO_ROOT / "assets/icons/yinghuo-official-app.icns"
+icon = REPO_ROOT / "assets/icons/yinghuo-uninstaller-app.icns"
 if not icon.is_file():
-    raise SystemExit("缺少应用图标 assets/icons/yinghuo-official-app.icns")
+    raise SystemExit("缺少应用图标 assets/icons/yinghuo-uninstaller-app.icns")
 shutil.copy2(icon, resources / "AppIcon.icns")
 print("仅构建 DMG 卸载器（不卸载/不联网）：" + str(app))
