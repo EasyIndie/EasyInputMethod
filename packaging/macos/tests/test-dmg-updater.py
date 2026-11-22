@@ -85,8 +85,16 @@ class DmgBuilderContract(unittest.TestCase):
         self.assertIn('DefaultInstallEnvironment.make(target: .updater)', installer)
         core = (ROOT / 'platforms/macos/InstallCore/Sources/LampyrisInstallCore/'
                 'DefaultInstallEnvironment.swift').read_text()
-        for check in ('stapler', 'spctl', 'Authority=Developer ID Application:', 'runtime'):
+        for check in ('Contents/CodeResources', 'spctl', 'Authority=Developer ID Application:', 'runtime'):
             self.assertIn(check, core)
+        # ADR-390：校验链不得再依赖 Xcode 命令行工具——普通帐户的 Mac 上没有 xcrun。
+        self.assertNotIn('/usr/bin/xcrun', core)
+
+    def test_updater_opens_the_window_when_launched_from_finder(self):
+        # ADR-390：Finder 双击不带参数；以前直接 return，用户看到的是「打不开」。
+        source = (ROOT / 'platforms/macos/Updater/Sources/WebsiteUpdateCheck/'
+                  'WebsiteUpdateCheck.swift').read_text()
+        self.assertIn('if arguments.isEmpty || arguments == ["--ui"]', source)
 
     def test_dmg_readme_mentions_where_the_updater_lands(self):
         text = (ROOT / 'packaging/macos/make-dmg.sh').read_text()

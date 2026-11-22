@@ -44,7 +44,9 @@ struct WebsiteUpdateCheck {
             runUninstall(purgeData: arguments.contains("--purge-data"))
             return
         }
-        if arguments == ["--ui"] {
+        // 双击（Finder 不带参数）与输入法菜单的「检查更新…」都进窗口；进窗口本身不联网，
+        // 检查要用户按一下才会发请求。无参数时若直接 return，用户看到的是「点不开」（报告 332）。
+        if arguments.isEmpty || arguments == ["--ui"] {
             let app = NSApplication.shared
             let delegate = UpdateAppDelegate()
             app.delegate = delegate
