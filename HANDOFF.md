@@ -13,6 +13,8 @@
 - 设备：air = 1.4.0/48 候选（执行 `1162855f…`，内容等同发布包）；pro = 1.3.4/47（`70ab3d67…`，可用更新程序升到 1.4.0）。
 - 一级外 27 字与 GB2312 二级扩字仍按证据阻塞（`docs/tasks/T-ROOT86.md` §2），不排期。
 - 最近验证：`make verify` PASS（1,197 产物）、离线 74 文件 / 371 例 PASS、docs 卫生/同步 PASS。
+- **2026-11-23 追加（ADR-390 / 报告 332，未发版）**：另一台 MacBook Air 普通帐户的首次真实安装暴露四处问题，已在 `dev` 修好：
+  `xcrun` 依赖（安装必失败）/ 更新程序双击不开窗 / 安装器窗口顶部被裁 / 四个 app 图标同图且有白边。待下一候选包做干净机器复验（`docs/待办与积压.md` P0-6）。
 
 ## 1. 设备与数据
 
@@ -22,6 +24,17 @@
 | **pro**（Intel / macOS 13.7.8，用户 `bot`，SSH 别名 `pro`） | **1.3.4 / build 47**，宿主执行 **`70ab3d673c1beda1983d5138823ce10f12efdd7fa2e33b8ebe6f062f505519da`**（2026-11-20 20:53 经更新程序升级，回执 `2026-11-20T12-53-18Z.json`：payload `3acfcc43…5807e4` = 1.3.4 发布 ZIP、执行 `70ab3d67…` = 发布包内执行）；上两版 1.3.2/45 执行 `46cc4d7b…01dd5`（回执 `2026-11-20T02-41-30Z.json`，此处把一直悬着的执行 SHA 补上）、1.3.1/44 执行 `68f892c5…` | config `b8c7a351…` 未变、词库 963 行未变（`show_wubi_learning=true` 是用户有意设置）；更新程序 `~/Applications/LampyrisUpdateCheck.app` = 1.3.4 | `updates/upgrade-2026-11-20T12-53-09Z-3EB514AA/backup/`（上一版 1.3.2）、更早见 `updates/` |
 
 ## 2. 本轮完成
+
+### 2.0 安装体验修复（2026-11-23，ADR-390，报告 332）
+
+| 范围 | 结果 |
+|---|---|
+| **安装失败（xcrun）** | `DefaultInstallEnvironment` 与 `install.sh` 不再调 `xcrun stapler validate`：公证票据就是 bundle 里的 `Contents/CodeResources`，安装期只查它在且非空，「Apple 是否认可」交给 `spctl --assess`（离线只认票据）。发布侧继续用 xcrun（那里一定有 Xcode）。 |
+| **更新程序双击打不开** | `LampyrisUpdateCheck` 无参数启动（Finder 双击）与 `--ui` 同一入口，直接进窗口；**进窗口不联网**，仍只有用户按「检查更新」才发请求（`--check` 无头路径不变）。 |
+| **安装器窗口顶部被裁** | 窗口内容改为约束钉在内容视图（宽度固定 520），高度取 `fittingSize` 与 286pt 的较大值并在文案变化后重算、保持左上角不动；本机实测 520×314，头像/标题/页脚完整可见（准备安装、无法安装两态都验过）。 |
+| **图标无区分度 / 白边** | ICNS 母版改用 full-bleed 的 `yinghuo-official-icon.png`（旧 `yinghuo-official-macos.png` 自带白边，macOS 26 会塞白色托板）；安装器/卸载器/更新程序各出一张「萤火虫 + 角色角标」（`arrow.down` / `trash` / `arrow.triangle.2.circlepath`），新增 `tools/render-role-icon.swift`，`tools/build-macos-icons.sh` 一次重建四张。DMG 预览实测四个图标可区分、无白边。 |
+| 契约测试 | `test-install.py` 新增「校验链不得调 xcrun + 缺票据必须拒绝」；`test-dmg-updater.py` 断言核心里是 `Contents/CodeResources` 且无 `/usr/bin/xcrun`、更新程序无参数等同 `--ui`。 |
+
 
 ### 2.1 结构库 / corpus 线（2026-11-06，报告 240–246）
 
@@ -58,6 +71,9 @@
 | **自动探针（报告 229）** | 用户授权后跑 `acceptance-auto.sh`：热键/上屏 **8/8 PASS**、TextEdit 实键入 `你你好。` PASS、已装包=候选包与数据表 25 条简码 PASS；**性能门禁改判 BLOCKED**（自投递不计 IME，见 §3），Safari/Chrome/Xcode 回读为空 BLOCKED。工具链三处缺陷已修：相对 `OUT` 导致测速空结果、性能项排在客户端矩阵之后（矩阵结尾还原 ABC 会抢源）、终端项误投用户 shell。 |
 
 ## 3. 未决
+
+- **P0-6（2026-11-23）**：ADR-390 的四处修复只在本机（有 Xcode）验过布局与图标；**干净普通帐户（无 Xcode/CLT）上的真机复验要等下一个候选包**：
+  下载 → 安装不报「候选校验失败」、`LampyrisUpdateCheck` 双击出窗口。见 `docs/待办与积压.md` P0-6。
 
 **2026-11-20 现状（1.4.0 收口前）**：`docs/待办与积压.md` §2 的 P1/体检段已清空；本版只剩发布动作
 （探针修正与报告 331 合入 → 重新产出候选 → 校验执行 SHA 是否仍为 `1162855f…` → tag/Release/Pages/对账）。
@@ -170,6 +186,14 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-23 / pi（air）：**另一台 MacBook Air 普通帐户首次真实安装失败，修完四处（ADR-390，未发版）**。
+  四处根因：① 安装期用 `xcrun stapler validate` 做公证校验，而 `xcrun` 只在装了 CLT 的机器上可用 → 安装必失败
+  （改查 `Contents/CodeResources` 票据 + `spctl`，`install.sh` 同口径）；② 更新程序无参数（Finder 双击）直接退出
+  → 与 `--ui` 同一入口进窗口，仍不联网；③ 安装器手写 stack frame 326pt 放进 286pt 内容视图，超出的 40pt 被标题栏裁掉
+  → 约束 + 按内容 fit（实测 520×314，两态都不裁）；④ 四个 app 共用带白边的旧 ICNS → 换 full-bleed 母版 + 角色角标
+  （`tools/render-role-icon.swift`）。验证：`make verify` PASS、`test-install.py` 16 例 / `test-dmg-updater.py` 19 例 /
+  docs 卫生与同步 / `test-install-core.py` 全 PASS；DMG 预览四个图标可区分无白边。**待干净机器复验（P0-6）**。
 
 - 2026-11-20 / pi（air）：**1.4.0 / build 48 已发布**。tag `v1.4.0` → `80b4e6b`；Release `44799400209`（11 资产，
   含 `LWS-86-1.0.zip`）、ZIP `c83763f1…` 与候选逐字节一致、DMG 公证+装订、appcast `sparkle:version=48`；
