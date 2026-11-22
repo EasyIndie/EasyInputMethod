@@ -34,8 +34,10 @@ public enum DefaultInstallEnvironment {
             guard details.contains("Authority=Developer ID Application:"), details.contains("runtime") else {
                 throw InstallError.candidateInvalid("缺少 Developer ID 或 hardened runtime")
             }
-            try require("/usr/bin/xcrun", ["stapler", "validate", app.path])
-            try require("/usr/sbin/spctl", ["--assess", "--type", "execute", app.path])
+            try requireTicket(app)
+            // Gatekeeper 是最终裁决：票据装订过就必须能离线通过（ADR-390）。
+            try require("/usr/sbin/spctl", ["--assess", "--type", "execute", app.path],
+                        failure: "Gatekeeper 未接受该应用（缺少公证票据或签名无效）")
         }, stopHost: { executable in
             guard stopsRunningInstance(target) else { return }
             let holders = run("/usr/sbin/lsof", ["-t", executable.path])
@@ -61,6 +63,20 @@ public enum DefaultInstallEnvironment {
         })
     }
 
+    /// 公证票据（`stapler` 装订物）落在 bundle 的 `Contents/CodeResources`。
+    ///
+    /// 不调用 `xcrun stapler validate`：`xcrun` 只在装了 Command Line Tools 的机器上可用，
+    /// 普通帐户的 Mac 上没有它就是"校验失败"，一次正常安装会被判成候选不合格（报告 332）。
+    /// 票据内容是否被 Apple 认可不在这里解析，交给下面的 `spctl`（离线只认票据）。
+    private static func requireTicket(_ app: URL) throws {
+        let ticket = app.appendingPathComponent("Contents/CodeResources")
+        let attributes = try? FileManager.default.attributesOfItem(atPath: ticket.path)
+        let size = (attributes?[.size] as? NSNumber)?.intValue ?? 0
+        guard size > 0 else {
+            throw InstallError.candidateInvalid("缺少公证票据（未装订公证）")
+        }
+    }
+
     private static func run(_ tool: String, _ arguments: [String], stderr: Bool = false) -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
@@ -74,7 +90,7 @@ public enum DefaultInstallEnvironment {
         return String(decoding: data, as: UTF8.self)
     }
 
-    private static func require(_ tool: String, _ arguments: [String]) throws {
+    private static func require(_ tool: String, _ arguments: [String], failure: String? = nil) throws {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: tool)
         process.arguments = arguments
@@ -83,7 +99,7 @@ public enum DefaultInstallEnvironment {
         do { try process.run() } catch { throw InstallError.candidateInvalid(tool) }
         process.waitUntilExit()
         guard process.terminationStatus == 0 else {
-            throw InstallError.candidateInvalid("\(tool) 校验失败")
+            throw InstallError.candidateInvalid(failure ?? "\(tool) 校验失败")
         }
     }
 }

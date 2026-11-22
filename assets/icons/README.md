@@ -34,6 +34,18 @@
 
 `yinghuo-official-app.icns` 由官方飞行萤火虫母版生成；正式与独立调试窗口共用，原V4 ICNS保留为历史资产。菜单栏采用 [菜单V5飞行萤火虫模板](menu-v5/yinghuo-menu-v5-master.png)，18pt/36px Retina衍生为 platforms/macos/Resources/LampyrisTemplate.png 与 @2x 文件，输入源 plist 对应引用并声明 `TISIconIsTemplate=true`，由系统适配亮暗菜单栏与选中状态。
 
+**辅助程序的图标（ADR-390）**：DMG 里的安装器、卸载器、更新程序不再共用输入法图标，各出一张「同一只萤火虫 + 右下角角色角标」的 ICNS：
+
+| 程序 | ICNS | 角标 |
+|---|---|---|
+| 安装萤火虫 | `yinghuo-installer-app.icns` | `arrow.down` |
+| 卸载萤火虫 | `yinghuo-uninstaller-app.icns` | `trash` |
+| 萤火虫更新 | `yinghuo-updater-app.icns` | `arrow.triangle.2.circlepath` |
+
+角标母版由 `tools/render-role-icon.swift` 离线合成（底图固定为 full-bleed 的 `yinghuo-official-icon.png`），
+再经 `iconutil` 打包；`tools/build-macos-icons.sh` 一次重建全部四张 ICNS 与菜单栏资源。
+因为辅助程序的角色不同，图标不得只用同一张 `yinghuo-official-app.icns`。
+
 运行 `./tools/build-macos-icons.sh` 用系统 sips/iconutil 重建 ICNS 与菜单栏资源。原图及修订提示词：保留既有主体和内部背景，去掉外部白框，内部背景延展到四边；菜单版保留V4轮廓，简化为透明底黑色线条，不含发光和底色。
 
 完整历史与备选资产保留于Git仓库。发布源码归档通过 export-ignore 排除非构建所需的历史/备选PNG；保留官方应用母版、菜单V5母版、官方ICNS及生成脚本，第三方仍可离线重建当前应用及图标。归档内指向备选图稿的链接可能不含对应文件。
@@ -54,7 +66,7 @@
 
 ## 官方统一标识（2026-10-09）
 
-用户指定当前菜单V5飞行轮廓为官方标识。[官方应用母版](yinghuo-official-icon.png)采用相同姿态的深松石绿底、浅玉白主体、柔蜂蜜金尾部；[macOS导出母版](yinghuo-official-macos.png)保留圆角外围透明，[官方ICNS](yinghuo-official-app.icns)由该导出母版经生成脚本衍生，项目README/正式应用/独立预览均已接入。菜单使用menu-v5单色透明母版与系统模板着色，保持同一品牌轮廓。此前应用V4与所有备选均保留为历史资产。
+用户指定当前菜单V5飞行轮廓为官方标识。[官方应用母版](yinghuo-official-icon.png)采用相同姿态的深松石绿底、浅玉白主体、柔蜂蜜金尾部；[macOS导出母版](yinghuo-official-macos.png)保留圆角外围透明（ADR-390 起**只作历史资产**，不再用于生成 ICNS——它自带白边，macOS 26 会把旧式图标放进白色托板），[官方ICNS](yinghuo-official-app.icns)改由 full-bleed 母版经生成脚本衍生，项目README/正式应用/独立预览均已接入。菜单使用menu-v5单色透明母版与系统模板着色，保持同一品牌轮廓。此前应用V4与所有备选均保留为历史资产。
 
 应用母版由imagegen以菜单V5为唯一几何参考生成；菜单亮暗模式不改变姿态，仅由系统适配前景着色。已安装包的菜单资源与仓库一致、TISIconIsTemplate=true；用户反馈暗黑模式样式不变，颜色对比是否异常尚待明确，不判定着色验收通过。
 

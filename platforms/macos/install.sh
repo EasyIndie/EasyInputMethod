@@ -24,8 +24,10 @@ codesign --verify --strict "${APP}"
 DETAILS="$(codesign -dv --verbose=4 "${APP}" 2>&1)"
 [[ "${DETAILS}" == *"Authority=Developer ID Application:"* ]] || { echo "需要 Developer ID 签名的正式候选；ad-hoc 构建不可安装" >&2; exit 1; }
 [[ "${DETAILS}" == *"runtime"* ]] || { echo "缺少 hardened runtime" >&2; exit 1; }
-xcrun stapler validate "${APP}"
-spctl --assess --type execute --verbose=2 "${APP}"
+# ADR-390：不调 xcrun——普通帐户的 Mac 上没有 Command Line Tools，xcrun 一定失败；
+# 公证票据就在 bundle 的 Contents/CodeResources，是否被接受交给 spctl（离线只认票据）。
+[ -s "${APP}/Contents/CodeResources" ] || { echo "缺少公证票据（未装订公证）" >&2; exit 1; }
+spctl --assess --type execute --verbose=2 "${APP}" || { echo "Gatekeeper 未接受该应用（缺少公证票据或签名无效）" >&2; exit 1; }
 DEST="${DOMAIN}/Lampyris.app"
 [ ! -L "${DOMAIN}" ] && [ ! -L "${DEST}" ] || { echo "拒绝通过符号链接安装" >&2; exit 1; }
 if [ -e "${DEST}" ]; then
@@ -121,8 +123,8 @@ install_updater() {
   details="$(codesign -dv --verbose=4 "${source}" 2>&1)"
   [[ "${details}" == *"Authority=Developer ID Application:"* ]] || { echo "更新程序需要 Developer ID 签名" >&2; exit 1; }
   [[ "${details}" == *"runtime"* ]] || { echo "更新程序缺少 hardened runtime" >&2; exit 1; }
-  xcrun stapler validate "${source}"
-  spctl --assess --type execute --verbose=2 "${source}"
+  [ -s "${source}/Contents/CodeResources" ] || { echo "更新程序缺少公证票据（未装订公证）" >&2; exit 1; }
+  spctl --assess --type execute --verbose=2 "${source}" || { echo "Gatekeeper 未接受更新程序（缺少公证票据或签名无效）" >&2; exit 1; }
   [ ! -L "${apps}" ] || { echo "~/Applications 是符号链接，已停止安装更新程序" >&2; exit 1; }
   mkdir -p "${apps}"
   if [ -e "${destination}" ] && diff -qr "${source}" "${destination}" >/dev/null 2>&1; then

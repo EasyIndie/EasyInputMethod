@@ -172,7 +172,7 @@ class UninstallerFreshStart(unittest.TestCase):
 class InstallerBranches(unittest.TestCase):
     """报告263 的三条安装器分支：自动重启旧宿主、打开键盘设置、同版本强制覆盖。
 
-    全部在临时 HOME 里跑，系统命令（codesign/xcrun/spctl/pgrep/open）换成记录调用的桩，
+    全部在临时 HOME 里跑，系统命令（codesign/spctl/pgrep/open）换成记录调用的桩，
     不碰真实的输入法目录、宿主进程或系统设置。"""
 
     STUB = """#!/bin/sh
@@ -199,7 +199,7 @@ exit 0
         self.bin = self.work / 'bin'
         self.bin.mkdir()
         self.log = self.work / 'calls.log'
-        for name in ('codesign', 'xcrun', 'spctl', 'pgrep', 'open'):
+        for name in ('codesign', 'spctl', 'pgrep', 'open'):
             path = self.bin / name
             path.write_text(self.STUB)
             path.chmod(0o755)
@@ -220,6 +220,8 @@ exit 0
         listed = 'cn.jokerhub.inputmethod.Lampyris,cn.jokerhub.inputmethod.Lampyris.default' if helper_lists_source else ''
         helper.write_text(f'#!/bin/sh\n[ "$1" = status ] && echo "enabled {listed}"\nexit 0\n')
         helper.chmod(0o755)
+        # ADR-390：公证票据就是 bundle 里的 Contents/CodeResources，安装器只检查它在不在。
+        (app / 'Contents/CodeResources').write_bytes(b'ticket')
         return app
 
     def install(self, app=None, **env):
@@ -240,6 +242,18 @@ exit 0
     def backups(self):
         root = self.home / 'Library/Application Support/Lampyris/updates'
         return sorted(p.name for p in root.glob('install-backup-*')) if root.exists() else []
+
+    def test_verification_never_needs_the_xcode_toolchain(self):
+        """ADR-390：普通帐户的 Mac 上没有 Command Line Tools，校验链不能调 xcrun。"""
+        installer = (ROOT / 'platforms/macos/install.sh').read_text()
+        self.assertNotIn('xcrun stapler', installer)
+        self.assertIn('${APP}/Contents/CodeResources', installer)
+        app = self.make_app(self.work / 'verified', helper_lists_source=True)
+        (app / 'Contents/CodeResources').unlink()
+        result = self.install(app=app)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('缺少公证票据', result.stderr)
+        self.assertFalse((self.home / 'Library/Input Methods/Lampyris.app').exists())
 
     def test_same_version_is_skipped_unless_forced(self):
         first = self.install()

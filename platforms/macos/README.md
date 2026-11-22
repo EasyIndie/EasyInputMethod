@@ -177,7 +177,7 @@ make macos-preview
 
 ## 应用图标
 
-正式宿主和独立调试应用使用飞行萤火虫官方图标，构建时从 `assets/icons/yinghuo-official-app.icns` 复制。项目保留全部设计版本及原图，见 `assets/icons/README.md`。
+正式宿主和独立调试应用使用飞行萤火虫官方图标，构建时从 `assets/icons/yinghuo-official-app.icns` 复制。DMG 里的安装器、卸载器、更新程序各用带角色角标的 `yinghuo-installer-app.icns` / `yinghuo-uninstaller-app.icns` / `yinghuo-updater-app.icns`（ADR-390，避免四个 app 长得一模一样）。项目保留全部设计版本及原图，见 `assets/icons/README.md`。
 
 ## CI 覆盖
 
