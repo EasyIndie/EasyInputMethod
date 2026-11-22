@@ -201,6 +201,7 @@ private enum InstallEngine {
 @MainActor
 private final class InstallerWindowController: NSObject, NSWindowDelegate {
     private var window: NSWindow?
+    private var stack: NSStackView?
     private let status = NSTextField(labelWithString: "准备安装")
     private let detail = NSTextField(wrappingLabelWithString: "")
     private let footer = NSTextField(labelWithString: "安装后按 ⌃Space，或在输入法菜单中选择「萤火虫」。")
@@ -286,9 +287,17 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
         stack.alignment = .leading
         stack.spacing = 12
         stack.edgeInsets = NSEdgeInsets(top: 22, left: 24, bottom: 20, right: 24)
-        stack.translatesAutoresizingMaskIntoConstraints = true
-        stack.frame = NSRect(x: 0, y: 0, width: 520, height: 326)
+        stack.translatesAutoresizingMaskIntoConstraints = false
         content.addSubview(stack)
+        // 顶部/底部必须真的钉在内容视图上：以前是手写 frame（326pt）放在 286pt 的内容视图里，
+        // 超出的那 40pt 从 y=0 往上长，正好是头像和「萤火虫」标题，被标题栏裁掉（报告 332）。
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(equalTo: content.leadingAnchor),
+            stack.topAnchor.constraint(equalTo: content.topAnchor),
+            stack.bottomAnchor.constraint(equalTo: content.bottomAnchor),
+            // 宽度固定 520：只钉四边时 AppKit 会把窗口缩到内容的理想宽度，正文被挤成窄条。
+            stack.widthAnchor.constraint(equalToConstant: 520),
+        ])
         NSLayoutConstraint.activate([
             separator.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -48),
             detail.widthAnchor.constraint(equalTo: stack.widthAnchor, constant: -48),
@@ -298,6 +307,7 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
         panel.setContentSize(NSSize(width: 520, height: 286))
         stack.layoutSubtreeIfNeeded()
         panel.center()
+        self.stack = stack
 
         do {
             let payload = try InstallEngine.readPayload(at: payloadURL, updaterURL: updaterPayloadURL)
@@ -312,8 +322,20 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
         }
 
         window = panel
+        fitContentHeight()
         panel.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+    }
+
+    /// 窗口高度跟着内容走。安装完成后文案会从两行变成四行，固定高度会再次把顶部挤出去。
+    private func fitContentHeight() {
+        guard let window, let stack else { return }
+        detail.preferredMaxLayoutWidth = 520 - 48
+        stack.layoutSubtreeIfNeeded()
+        let topLeft = NSPoint(x: window.frame.minX, y: window.frame.maxY)
+        window.setContentSize(NSSize(width: 520, height: max(286, ceil(stack.fittingSize.height))))
+        window.setFrameTopLeftPoint(topLeft)
+        stack.layoutSubtreeIfNeeded()
     }
 
     private func finish() {
@@ -390,6 +412,7 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
             status.stringValue = "安装失败"
             detail.stringValue = error.localizedDescription
         }
+        fitContentHeight()
     }
 
     func windowWillClose(_ notification: Notification) {
