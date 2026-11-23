@@ -32,6 +32,25 @@ while [ "$#" -gt 0 ]; do
     *) echo "用法：$0 [--cleanup] [--app <path.app>] [--also <path.app>]... [--installer <path.app>] [--uninstaller <path.app>] [--sign-only] [--dmg <path.dmg>]" >&2; exit 2 ;;
   esac
 done
+# 提交公证并读回结论：Apple 判 Invalid 时打印它自己的诊断（否则只看到 stapler 报错，
+# 只能靠猜——2026-11-23 的 v1.4.2 就卡在这里）。
+notarize() {
+  local target="$1" output status id
+  output="$(xcrun notarytool submit "${target}" --key "${WORK}/api-key.p8" \
+    --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" \
+    --wait --timeout 45m --output-format json)" || return 1
+  status="$(printf '%s' "${output}" | sed -n 's/.*"status"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+  id="$(printf '%s' "${output}" | sed -n 's/.*"id"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p')"
+  if [ "${status}" != "Accepted" ]; then
+    echo "公证未通过（status=${status:-unknown}, id=${id:-unknown}）" >&2
+    if [ -n "${id}" ]; then
+      xcrun notarytool log "${id}" --key "${WORK}/api-key.p8" \
+        --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" >&2 || true
+    fi
+    return 1
+  fi
+}
+
 if [ -n "${DMG}" ]; then
   [ -f "${DMG}" ] && [ ! -L "${DMG}" ] || { echo "待签名 DMG 不存在：${DMG}" >&2; exit 1; }
 else
@@ -93,7 +112,7 @@ sign_app() {
 }
 if [ -n "${DMG}" ]; then
   codesign --force --timestamp --keychain "${KEYCHAIN}" --sign "${IDENTITY_HASH}" "${DMG}"
-  xcrun notarytool submit "${DMG}" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m
+  notarize "${DMG}"
   xcrun stapler staple "${DMG}"
   xcrun stapler validate "${DMG}"
   spctl --assess --type open --context context:primary-signature --verbose=2 "${DMG}"
@@ -113,7 +132,7 @@ for extra in "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do
   ditto "${extra}" "${NOTARIZE}/$(basename "${extra}")"
 done
 ditto -c -k --keepParent "${NOTARIZE}" "${WORK}/notarization.zip"
-xcrun notarytool submit "${WORK}/notarization.zip" --key "${WORK}/api-key.p8" --key-id "${ASC_API_KEY_ID}" --issuer "${ASC_API_ISSUER_ID}" --wait --timeout 45m
+notarize "${WORK}/notarization.zip"
 for notarized in "${APP}" "${EXTRA_APPS[@]+"${EXTRA_APPS[@]}"}"; do
   xcrun stapler staple "${notarized}"
   xcrun stapler validate "${notarized}"
