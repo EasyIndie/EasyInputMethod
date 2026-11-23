@@ -17,6 +17,9 @@
   输入行为/词库/配置零改动。身份：ZIP `b5c08b8b…c927`、执行 `f4dd993b…5eb6`、DMG `ad95d108…4017`（公证+装订）、
   appcast `sparkle:version=49`、Acceptance run `45085690335`、Release run `45086754221`、Pages run `45087400204`，
   站点回读 **`v1.4.1 · 构建 49`**。
+- **2026-11-23 / 进行中：发 1.4.2 / build 50**（ADR-391）——DMG 顶层只留「安装/卸载/说明」，输入法本体与更新程序
+  改为安装器载荷（`安装萤火虫.app/Contents/Resources/Payload/`），载荷在**签名之前**装入，安装器/卸载器顺带各自 staple。
+  本地已验预览 DMG 顶层三个条目、从该 DMG 直接开安装器读到载荷版本；`test-dmg-updater.py` 22 例。待 CI 验签名链路 + 真机复验（P0-7）。
 - **1.4.1 真机验收 PASS（2026-11-23，P0-6 关闭）**：用户在这台 MacBook Air（普通帐户、无 Xcode/CLT）走产品页真实下载：
   安装完成不再报 xcrun、更新程序双击出窗口、安装器窗口顶部完整、四个图标可区分无白边，四项全 PASS
   （`docs/releases/1.4.1.md` §4、报告 332 §5）。证据边界：人工功能确认，未采该机执行 SHA。
@@ -81,7 +84,7 @@
 
 - **P0-6 已关闭（2026-11-23）**：ADR-390 的四处修复已在 1.4.1 上用干净普通帐户真机 PASS（`docs/releases/1.4.1.md` §4）。
   当前无阻塞；`docs/待办与积压.md` §2 的 P0/P1 段已清空，下一版范围按该文件 P2 触发线决定。
-- **未决策（不阻塞）**：是否把背景程序 `Lampyris.app` 从 DMG 顶层挪进安装器 bundle（用户会点它、点了没窗口）。
+- **已决策（ADR-391）**：`Lampyris.app` 挪进安装器 bundle；1.4.2 待验的是签名/公证链路与真机（P0-7）。
 
 **2026-11-20 现状（1.4.0 收口前）**：`docs/待办与积压.md` §2 的 P1/体检段已清空；本版只剩发布动作
 （探针修正与报告 331 合入 → 重新产出候选 → 校验执行 SHA 是否仍为 `1162855f…` → tag/Release/Pages/对账）。
@@ -194,6 +197,13 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-23 / pi（air）：**做 ADR-391（1.4.2 / build 50，未发）**：DMG 顶层只留「安装萤火虫/卸载萤火虫/说明」，
+  `Lampyris.app` 与 `LampyrisUpdateCheck.app` 变成安装器载荷（`Contents/Resources/Payload/`），新增
+  `packaging/macos/stage-installer-payload.sh`；`make-dmg.sh` 只接受已含载荷的安装器。发布流程改为「装载荷 → 签安装器/卸载器/
+  更新程序（一次公证提交）→ 打 DMG → 签/公证 DMG」，顺带补上安装器/卸载器此前没有公证票据的缺口。
+  本地：预览 DMG 顶层正好三样、从 DMG 开安装器读到载荷版本（520×314）、`test-dmg-updater.py` 22 例 PASS。
+  **待办**：CI 出候选 → `v1.4.2` → 真机复验（P0-7）→ 站点。
 
 - 2026-11-23 / pi（air）：**1.4.1 真机验收 PASS，P0-6 关闭**。用户在 MacBook Air（普通帐户、无 Xcode/CLT）走产品页真实下载，
   四项全过：安装不再报 `候选校验失败：/usr/bin/xcrun 校验失败`、`LampyrisUpdateCheck` 双击出窗口、安装器窗口顶部完整、
