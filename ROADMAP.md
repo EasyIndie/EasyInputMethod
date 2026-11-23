@@ -17,7 +17,7 @@
 - [x] **本地验证**：`make verify` PASS（1,287 产物）、离线 74 文件 / 373 例 PASS；DMG 预览四图标可区分、窗口 520×314 不裁。
 - [x] **1.4.1 候选与验收**：commit `8d0416a`，Acceptance run `45085690335` success（ZIP `b5c08b8b…`、执行 `f4dd993b…`）。
 - [x] **1.4.1 tag → Release**：`v1.4.1` → `8d0416a`；Release run `45086754221` success；DMG `ad95d108…`（公证+装订）、appcast `sparkle:version=49`。
-- [ ] **干净机器真机复验（P0-6）**：普通帐户、无 Xcode/CLT，走真实下载链路验四项。
+- [x] **干净机器真机复验（P0-6）**：2026-11-23 用户在这台 MacBook Air（普通帐户、无 Xcode/CLT）走真实下载链路，四项全 **PASS**（`docs/releases/1.4.1.md` §4）。
 - [x] **1.4.1 站点上线**：Pages run `45087400204`；回读 `v1.4.1 · 构建 49`。
 
 ## 上一列车：1.4.0 已发布（2026-11-20；LWS-86 1.0 转正 + 可靠性体检）
