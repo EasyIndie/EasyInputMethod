@@ -48,8 +48,12 @@
 - `test-dmg-updater.py`：核心里是 `Contents/CodeResources` + `spctl` 且无 `/usr/bin/xcrun`；
   更新程序无参数时与 `--ui` 同一入口。
 
-## 5. 未完成（P0-6）
+## 5. 真机复验（P0-6，已完成）
 
-- 干净普通帐户（无 Xcode / CLT）真机复验：下载 → 安装不报「候选校验失败」、`LampyrisUpdateCheck` 双击出窗口。
-  必须在**下一个签名候选包**上做，本地未签名构建不构成证据。
-- 未决定是否把 `Lampyris.app`（背景程序，双击无窗口）从 DMG 顶层挪进安装器 bundle：这是交互/打包结构变更，另行评估。
+1.4.1 / build 49（tag `v1.4.1` → `8d0416a`，DMG `ad95d108…`）发布后，用户在这台 MacBook Air（**普通帐户、无 Xcode/CLT**）
+走产品页真实下载链路复验，四项全 **PASS**：安装完成且不再报 xcrun、更新程序双击出窗口、安装器窗口顶部完整、四个图标可区分无白边。
+记录见 `docs/releases/1.4.1.md` §4。证据边界：只做人工功能确认，未在该机采集执行 SHA。
+
+## 6. 仍未决策
+
+- 是否把 `Lampyris.app`（背景程序，双击无窗口）从 DMG 顶层挪进安装器 bundle：交互/打包结构变更，另行评估。
