@@ -111,9 +111,25 @@ jobs:
           python3 platforms/macos/Installer/build.py
           python3 platforms/macos/Uninstaller/build.py
 
+      - name: Sign and notarize the updater and the uninstaller
+        # 顺序有讲究（ADR-391）：载荷是**复制**的二进制，必须在更新程序签名+公证+装订之后才复制；
+        # 否则安装器里会带着一份签名无效/无时间戳的副本，公证直接判 Invalid。
+        env:
+          MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ vars.MACOS_SIGNING_IDENTITY }}
+          ASC_API_KEY_P8: ${{ secrets.APPLE_ASC_API_KEY }}
+          ASC_API_KEY_ID: ${{ secrets.APPLE_ASC_API_KEY_ID }}
+          ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          bash packaging/macos/ci-sign.sh \
+            --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app \
+            --also platforms/macos/build/uninstaller/LampyrisUninstaller.app
+
       - name: Stage the installer payload
-        # ADR-391：载荷必须在签名**之前**放进安装器 bundle，否则签名封印会把后加的
-        # 文件当成篡改。DMG 顶层因此只剩「安装萤火虫」「卸载萤火虫」「说明」三样。
+        # 主机来自验收 ZIP（已签名+公证），更新程序来自上一步（已签名+公证+装订）；
+        # 脚本会拒绝缺票据的载荷，避免再把未签名副本塞进安装器。
         run: |
           set -euo pipefail
           zip="$(grep -E 'Lampyris-.*-universal\.zip$' release-assets.txt | head -1)"
@@ -129,7 +145,7 @@ jobs:
             --out "platforms/macos/build/installer-staged/安装萤火虫.app"
           rm -rf "$work"
 
-      - name: Sign and notarize the updater app and the DMG apps
+      - name: Sign and notarize the DMG installer app
         env:
           MACOS_CERTIFICATE_P12_BASE64: ${{ secrets.APPLE_CERTIFICATE_P12_BASE64 }}
           MACOS_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_P12_PASSWORD }}
@@ -139,10 +155,7 @@ jobs:
           ASC_API_ISSUER_ID: ${{ secrets.APPLE_ASC_ISSUER_ID }}
         run: |
           set -euo pipefail
-          bash packaging/macos/ci-sign.sh \
-            --app platforms/macos/build/website-updater/LampyrisUpdateCheck.app \
-            --also "platforms/macos/build/installer-staged/安装萤火虫.app" \
-            --also platforms/macos/build/uninstaller/LampyrisUninstaller.app
+          bash packaging/macos/ci-sign.sh --app "platforms/macos/build/installer-staged/安装萤火虫.app"
 
       - name: Package the updater app as a release asset
         run: |
