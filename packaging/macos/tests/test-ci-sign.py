@@ -86,3 +86,41 @@ esac
     assert result.returncode == 0, result.stderr
     subprocess.run(["bash", str(SCRIPT), "--cleanup"], env=env, check=True)
 print("签名脚本模拟验证通过：缺失配置、成功、失败、DMG/安装器模式及清理；未访问真实凭据或Apple")
+
+
+def _ci_sign_blocks():
+    """按工作流取出每个真正执行 ci-sign.sh 的步骤前 20 行（含 env 块）。"""
+    workflows = Path(__file__).resolve().parents[3] / ".github/workflows"
+    for workflow in sorted(workflows.glob("*.yml")):
+        lines = workflow.read_text().splitlines()
+        for index, line in enumerate(lines):
+            if "ci-sign.sh" not in line or "--cleanup" in line:
+                continue
+            yield workflow.name, "\n".join(lines[max(0, index - 20):index])
+
+
+def test_workflows_pass_every_credential_to_ci_sign():
+    """工作流喂给 ci-sign.sh 的 env 要给全 7 个变量，且 secret/var 名对得上。
+
+    2026-11-23 把 secrets.APPLE_ASC_ISSUER_ID 误写成 APPLE_ASC_API_ISSUER_ID，
+    release 在签名步骤直接失败（缺 ASC_API_ISSUER_ID）；光检查键名存在拦不住。
+    """
+    expected = {
+        "MACOS_CERTIFICATE_P12_BASE64": "secrets.APPLE_CERTIFICATE_P12_BASE64",
+        "MACOS_CERTIFICATE_PASSWORD": "secrets.APPLE_CERTIFICATE_P12_PASSWORD",
+        "MACOS_SIGNING_IDENTITY": "vars.MACOS_SIGNING_IDENTITY",
+        "ASC_API_KEY_P8": "secrets.APPLE_ASC_API_KEY",
+        "ASC_API_KEY_ID": "secrets.APPLE_ASC_API_KEY_ID",
+        "ASC_API_ISSUER_ID": "secrets.APPLE_ASC_ISSUER_ID",
+    }
+    checked = 0
+    for name, block in _ci_sign_blocks():
+        for key, reference in expected.items():
+            assert f"{key}: ${{{{ {reference} }}}}" in block, (
+                f"{name} 的 ci-sign 步骤里 {key} 必须绑定 {reference}")
+        checked += 1
+    assert checked >= 5, f"没找到足够的 ci-sign.sh 调用（找到 {checked} 处）"
+
+
+test_workflows_pass_every_credential_to_ci_sign()
+print("PASS test-ci-sign")
