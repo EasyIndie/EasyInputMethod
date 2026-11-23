@@ -17,9 +17,15 @@
   输入行为/词库/配置零改动。身份：ZIP `b5c08b8b…c927`、执行 `f4dd993b…5eb6`、DMG `ad95d108…4017`（公证+装订）、
   appcast `sparkle:version=49`、Acceptance run `45085690335`、Release run `45086754221`、Pages run `45087400204`，
   站点回读 **`v1.4.1 · 构建 49`**。
-- **2026-11-23 / 进行中：发 1.4.2 / build 50**（ADR-391）——DMG 顶层只留「安装/卸载/说明」，输入法本体与更新程序
-  改为安装器载荷（`安装萤火虫.app/Contents/Resources/Payload/`），载荷在**签名之前**装入，安装器/卸载器顺带各自 staple。
-  本地已验预览 DMG 顶层三个条目、从该 DMG 直接开安装器读到载荷版本；`test-dmg-updater.py` 22 例。待 CI 验签名链路 + 真机复验（P0-7）。
+- **2026-11-23 / pi（air）：1.4.2 / build 50 已发布**（ADR-391，PR #361/#362/#363/#364）。DMG 顶层只留「安装/卸载/说明」，
+  输入法本体与更新程序改为安装器载荷（`安装萤火虫.app/Contents/Resources/Payload/`）。身份：ZIP `339fc6c2…`、
+  执行 `fba74cb6…`、DMG `ff84f620…`（18,213,533 B，公证+装订）、appcast `sparkle:version=50`、Acceptance `45100296923`、
+  Release `45101361140`、Pages `45101967142`，站点回读 **`v1.4.2 · 构建 50`**。
+- **发布时踩坑并修好（顺序问题）**：第一版把载荷在更新程序签名**之前**复制 → 公证 `Invalid`（`no secure timestamp` /
+  `hardened runtime not enabled` / `signature invalid`）。现在顺序是「签更新程序+卸载器 → 装载荷 → 签安装器 → 打 DMG」，
+  `stage-installer-payload.sh` 直接拒绝缺票据/签名无效的载荷，`ci-sign.sh` 公证非 Accepted 时打印 Apple 日志。
+- **安装器与卸载器现在也有公证票据**（此前只有主应用与更新程序有），发布后回读四个 bundle 全部 `sig-ok + ticket=yes`。
+- **待用户真机复验（P0-7）**：普通帐户走真实下载，确认 DMG 只有三样、安装全流程正常、更新程序双击出窗口。
 - **1.4.1 真机验收 PASS（2026-11-23，P0-6 关闭）**：用户在这台 MacBook Air（普通帐户、无 Xcode/CLT）走产品页真实下载：
   安装完成不再报 xcrun、更新程序双击出窗口、安装器窗口顶部完整、四个图标可区分无白边，四项全 PASS
   （`docs/releases/1.4.1.md` §4、报告 332 §5）。证据边界：人工功能确认，未采该机执行 SHA。
@@ -84,7 +90,9 @@
 
 - **P0-6 已关闭（2026-11-23）**：ADR-390 的四处修复已在 1.4.1 上用干净普通帐户真机 PASS（`docs/releases/1.4.1.md` §4）。
   当前无阻塞；`docs/待办与积压.md` §2 的 P0/P1 段已清空，下一版范围按该文件 P2 触发线决定。
-- **已决策（ADR-391）**：`Lampyris.app` 挪进安装器 bundle；1.4.2 待验的是签名/公证链路与真机（P0-7）。
+- **1.4.2 已发布，待真机复验（P0-7）**：确认 DMG 顶层只有「安装/卸载/说明」、安装全流程正常、更新程序双击出窗口。
+- **已知 CI 抖动（2026-11-23，未修）**：`packaging/macos/tests/test-sandbox-config.py` 在 runner 上偶发
+  `open -W` 失败（`kevent() failed: No such process`），重跑即绿；如需彻底修，可给该测试加重试或改用 `open -g` + 轮询。
 
 **2026-11-20 现状（1.4.0 收口前）**：`docs/待办与积压.md` §2 的 P1/体检段已清空；本版只剩发布动作
 （探针修正与报告 331 合入 → 重新产出候选 → 校验执行 SHA 是否仍为 `1162855f…` → tag/Release/Pages/对账）。
@@ -197,6 +205,14 @@ make macos-offline-tests
 - 只用自建文档与自有会话；失败即停并保留证据。
 
 ## 9. 会话日志（最近）
+
+- 2026-11-23 / pi（air）：**1.4.2 / build 50 已发布**（ADR-391；PR #361–#364；Release `45101361140`；站点 `v1.4.2 · 构建 50`）。
+  DMG 顶层收敛为「安装萤火虫 / 卸载萤火虫 / 说明」，输入法本体与更新程序作为载荷放进安装器 bundle，
+  可「显示包内容」审计。踩了两个坑都留守卫：① 新签名步骤把 issuer secret 名写错（`ci-sign.sh` 立即失败，
+  已加工作流凭据守卫 + 变异验证）；② 载荷在更新程序签名前被复制 → 公证 `Invalid`（已把顺序钉死为
+  「签更新程序+卸载器 → 装载荷 → 签安装器 → 打 DMG」，脚本拒绝无票据载荷，`ci-sign.sh` 打印 Apple 日志）。
+  发布后回读：DMG 顶层三项、四个 bundle 都 `sig-ok + ticket=yes`、安装器 520×318 读到 `1.4.2 · 构建 50`、
+  载荷里的更新程序双击出窗口。**剩真机复验（P0-7）**。
 
 - 2026-11-23 / pi（air）：**做 ADR-391（1.4.2 / build 50，未发）**：DMG 顶层只留「安装萤火虫/卸载萤火虫/说明」，
   `Lampyris.app` 与 `LampyrisUpdateCheck.app` 变成安装器载荷（`Contents/Resources/Payload/`），新增
