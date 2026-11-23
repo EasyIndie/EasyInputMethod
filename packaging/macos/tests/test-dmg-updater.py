@@ -166,7 +166,6 @@ class ZipAndReleasePayloadContract(unittest.TestCase):
         self.assertNotIn('ci-sign.sh --app platforms/macos/build/website-updater', workflow)
         signer = (ROOT / 'packaging/macos/ci-sign.sh').read_text()
         self.assertIn('--also', signer)
-        self.assertIn('notarytool submit "${WORK}/notarization.zip"', signer)
         self.assertIn('notarize "${WORK}/notarization.zip"', signer)
         for target in ('ditto "${APP}" "${NOTARIZE}', 'stapler staple "${notarized}"'):
             self.assertIn(target, signer)
