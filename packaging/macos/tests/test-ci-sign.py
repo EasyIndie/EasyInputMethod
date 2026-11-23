@@ -37,7 +37,16 @@ security)
  if [ "$1" = create-keychain ]; then touch "${!#}"; fi
  if [ "$1" = delete-keychain ]; then rm -f "${!#}"; fi;;
 ditto) touch "${!#}";;
-xcrun) if [ "$1" = notarytool ] && [ "${MOCK_NOTARY_FAIL:-0}" = 1 ]; then exit 77; fi;;
+xcrun)
+ if [ "$1" = notarytool ]; then
+   case "$2" in
+     submit)
+       if [ "${MOCK_NOTARY_ERROR:-0}" = 1 ]; then exit 77; fi
+       if [ "${MOCK_NOTARY_FAIL:-0}" = 1 ]; then printf '{\n  "id" : "mock",\n  "status" : "Invalid"\n}\n';
+       else printf '{\n  "id" : "mock",\n  "status" : "Accepted"\n}\n'; fi;;
+     log) printf '{"issues":[{"message":"fixture rejection"}]}\n';;
+   esac
+ fi;;
 esac
 '''
     for name in ("security", "codesign", "ditto", "xcrun", "spctl"):
@@ -51,10 +60,14 @@ esac
         MACOS_SIGNING_IDENTITY="Developer ID Application: Fixture",
         ASC_API_KEY_P8_BASE64=fixture, ASC_API_KEY_ID="fixture", ASC_API_ISSUER_ID="fixture",
     )
-    for failure, expected in (("0", 0), ("1", 77)):
+    for failure, expected in (("0", 0), ("1", 1)):
         result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)],
             env=dict(env, MOCK_NOTARY_FAIL=failure), capture_output=True, text=True)
         assert result.returncode == expected, result.stderr
+        if failure == "1":
+            # Apple 判 Invalid 时必须把它自己的诊断打出来，否则只剩 stapler 报错。
+            assert "公证未通过" in result.stderr, result.stderr
+            assert "fixture rejection" in result.stderr, result.stderr
         assert not (root / "lampyris-signing").exists()
         assert (root / "search-list.log").read_text().splitlines()[-1] == "list-keychains -d user -s /fixture/login.keychain-db"
     result = subprocess.run(["bash", str(SCRIPT), "--app", str(app)],
