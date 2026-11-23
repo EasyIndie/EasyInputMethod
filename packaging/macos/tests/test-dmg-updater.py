@@ -50,8 +50,27 @@ class DmgBuilderContract(unittest.TestCase):
         result = subprocess.run(
             ['bash', str(ROOT / 'packaging/macos/stage-installer-payload.sh'),
              '--installer', str(installer), '--app', str(app), '--updater', str(updater),
-             '--out', str(staged)], capture_output=True, text=True, check=False, timeout=120)
+             '--out', str(staged), '--unsigned-ok'],
+            capture_output=True, text=True, check=False, timeout=120)
         return staged, result
+
+    def test_staging_refuses_unsigned_payloads(self):
+        """载荷是复制的二进制：未签名/未装订的副本会让公证判 Invalid（v1.4.2 的真实故障）。"""
+        with tempfile.TemporaryDirectory() as directory:
+            work = pathlib.Path(directory)
+            installer = work / '安装.app'
+            fake_app(installer, 'cn.jokerhub.Lampyris.Installer', executable='LampyrisInstaller')
+            app, updater = work / 'Lampyris.app', work / UPDATER_NAME
+            fake_app(app, 'cn.jokerhub.inputmethod.Lampyris')
+            fake_app(updater, UPDATER_ID, executable='LampyrisUpdateCheck')
+            staged = work / 'staged.app'
+            result = subprocess.run(
+                ['bash', str(ROOT / 'packaging/macos/stage-installer-payload.sh'),
+                 '--installer', str(installer), '--app', str(app), '--updater', str(updater),
+                 '--out', str(staged)], capture_output=True, text=True, check=False, timeout=120)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('缺少公证票据', result.stderr)
+            self.assertFalse(staged.exists())
 
     def test_staging_puts_both_payloads_inside_the_installer(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -108,13 +127,19 @@ class DmgBuilderContract(unittest.TestCase):
         self.assertNotIn('"$STAGE/' + UPDATER_NAME + '"', builder)
         self.assertIn('Contents/Resources/Payload', builder)
 
-    def test_workflow_stages_payload_before_signing(self):
+    def test_workflow_orders_signing_staging_and_resigning(self):
         workflow = (ROOT / '.github/workflows/release.yml').read_text()
+        updater_signed = workflow.index(
+            '--app platforms/macos/build/website-updater/LampyrisUpdateCheck.app')
         stage = workflow.index('stage-installer-payload.sh')
-        sign = workflow.index('--also "platforms/macos/build/installer-staged/安装萤火虫.app"')
-        self.assertLess(stage, sign, '载荷必须在签名之前装进安装器（否则签名失效）')
-        self.assertIn('--also "platforms/macos/build/installer-staged/安装萤火虫.app"', workflow)
+        installer_signed = workflow.index(
+            '--app "platforms/macos/build/installer-staged/安装萤火虫.app"')
+        # 载荷是复制品：先签更新程序 → 再装载荷 → 最后签安装器（把载荷封进安装器签名）。
+        self.assertLess(updater_signed, stage)
+        self.assertLess(stage, installer_signed)
         self.assertIn('--installer "platforms/macos/build/installer-staged/安装萤火虫.app"', workflow)
+        # 正式流程不得用 --unsigned-ok 绕过票据检查。
+        self.assertNotIn('--unsigned-ok', workflow)
 
     def test_installer_reads_the_payload_inside_its_bundle(self):
         installer = (ROOT / 'platforms/macos/Installer/Sources/LampyrisInstaller/main.swift').read_text()
