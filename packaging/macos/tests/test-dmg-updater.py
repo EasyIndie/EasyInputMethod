@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
-"""DMG ships the updater and the installer places it (ADR-295).
+"""DMG layout: the installer carries both payloads (ADR-295/391).
 
 The DMG is only built at release time, so the packaging contract is asserted
-statically: the DMG builder must refuse to run without an updater payload, the
-release workflow must pass one, and the installer must look for the same bundle
-identity and paths that the updater build produces (ADR-294/295).
+mostly statically: the payload staging script must place the host and the
+updater inside the installer bundle, the DMG builder must refuse to run without
+them, the release workflow must stage the payload *before* signing, and the
+installer must read the same paths and identities that the builds produce.
 """
 import os
 import pathlib
@@ -36,50 +37,93 @@ class DmgBuilderContract(unittest.TestCase):
         return subprocess.run(['bash', str(ROOT / 'packaging/macos/make-dmg.sh'), *args],
                               capture_output=True, text=True, check=False, timeout=120)
 
-    def test_updater_is_mandatory(self):
+    def stage_payload(self, work, payload_app=None, payload_updater=None):
+        installer = work / '安装.app'
+        fake_app(installer, 'cn.jokerhub.Lampyris.Installer', executable='LampyrisInstaller')
+        app = payload_app or work / 'Lampyris.app'
+        if payload_app is None:
+            fake_app(app, 'cn.jokerhub.inputmethod.Lampyris')
+        updater = payload_updater or work / UPDATER_NAME
+        if payload_updater is None:
+            fake_app(updater, UPDATER_ID, executable='LampyrisUpdateCheck')
+        staged = work / 'staged/安装萤火虫.app'
+        result = subprocess.run(
+            ['bash', str(ROOT / 'packaging/macos/stage-installer-payload.sh'),
+             '--installer', str(installer), '--app', str(app), '--updater', str(updater),
+             '--out', str(staged)], capture_output=True, text=True, check=False, timeout=120)
+        return staged, result
+
+    def test_staging_puts_both_payloads_inside_the_installer(self):
         with tempfile.TemporaryDirectory() as directory:
             work = pathlib.Path(directory)
-            app, installer, uninstaller = work / 'Lampyris.app', work / '安装.app', work / '卸载.app'
-            fake_app(app, 'cn.jokerhub.inputmethod.Lampyris')
-            fake_app(installer, 'cn.jokerhub.Lampyris.Installer')
-            fake_app(uninstaller, 'cn.jokerhub.Lampyris.Uninstaller')
-            result = self.run_builder('--app', str(app), '--installer', str(installer),
-                                      '--uninstaller', str(uninstaller), '--out', str(work / 'x.dmg'))
+            staged, result = self.stage_payload(work)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            payload = staged / 'Contents/Resources/Payload'
+            self.assertTrue((payload / 'Lampyris.app/Contents/Info.plist').is_file())
+            self.assertTrue((payload / UPDATER_NAME / 'Contents/Info.plist').is_file())
+
+    def test_staging_rejects_foreign_identities(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = pathlib.Path(directory)
+            foreign = work / 'Foreign.app'
+            fake_app(foreign, 'com.example.somethingElse')
+            _, result = self.stage_payload(work, payload_updater=foreign)
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn('更新程序', result.stderr)
+            self.assertIn('更新程序标识不符', result.stderr)
+
+    def test_builder_refuses_installer_without_payload(self):
+        with tempfile.TemporaryDirectory() as directory:
+            work = pathlib.Path(directory)
+            installer, uninstaller = work / '安装.app', work / '卸载.app'
+            fake_app(installer, 'cn.jokerhub.Lampyris.Installer', executable='LampyrisInstaller')
+            fake_app(uninstaller, 'cn.jokerhub.Lampyris.Uninstaller', executable='LampyrisUninstaller')
+            result = self.run_builder('--installer', str(installer), '--uninstaller', str(uninstaller),
+                                      '--out', str(work / 'x.dmg'))
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn('缺少载荷', result.stderr)
             self.assertFalse((work / 'x.dmg').exists())
 
-    def test_rejects_updater_with_foreign_identity(self):
+    def test_builder_rejects_payload_with_foreign_updater_identity(self):
         with tempfile.TemporaryDirectory() as directory:
             work = pathlib.Path(directory)
-            app, installer, uninstaller = work / 'Lampyris.app', work / '安装.app', work / '卸载.app'
-            fake_app(app, 'cn.jokerhub.inputmethod.Lampyris')
-            fake_app(installer, 'cn.jokerhub.Lampyris.Installer')
-            fake_app(uninstaller, 'cn.jokerhub.Lampyris.Uninstaller')
-            updater = work / UPDATER_NAME
-            fake_app(updater, 'com.example.somethingElse')
-            result = self.run_builder('--app', str(app), '--installer', str(installer),
-                                      '--uninstaller', str(uninstaller),
-                                      '--updater', str(updater), '--out', str(work / 'x.dmg'))
+            staged, _ = self.stage_payload(work)
+            information = staged / 'Contents/Resources/Payload' / UPDATER_NAME / 'Contents/Info.plist'
+            foreign = {'CFBundleIdentifier': 'com.example.somethingElse',
+                       'CFBundleExecutable': 'LampyrisUpdateCheck',
+                       'CFBundleShortVersionString': '0.0.1', 'CFBundleVersion': '1'}
+            information.write_bytes(plistlib.dumps(foreign))
+            uninstaller = work / '卸载.app'
+            fake_app(uninstaller, 'cn.jokerhub.Lampyris.Uninstaller', executable='LampyrisUninstaller')
+            result = self.run_builder('--installer', str(staged), '--uninstaller', str(uninstaller),
+                                      '--out', str(work / 'x.dmg'))
             self.assertNotEqual(result.returncode, 0)
-            self.assertIn('标识不符', result.stderr)
+            self.assertIn('更新程序标识不符', result.stderr)
 
-    def test_builder_and_workflow_stage_the_updater(self):
+    def test_dmg_top_level_holds_only_the_three_items(self):
         builder = (ROOT / 'packaging/macos/make-dmg.sh').read_text()
-        self.assertIn('--updater)', builder)
-        self.assertIn(f'ditto "$UPDATER" "$STAGE/{UPDATER_NAME}"', builder)
-        self.assertIn(UPDATER_ID, builder)
-        workflow = (ROOT / '.github/workflows/release.yml').read_text()
-        self.assertIn('--updater platforms/macos/build/website-updater/LampyrisUpdateCheck.app', workflow)
+        self.assertIn('ditto "$INSTALLER" "$STAGE/安装萤火虫.app"', builder)
+        self.assertIn('ditto "$UNINSTALLER" "$STAGE/卸载萤火虫.app"', builder)
+        # ADR-391：DMG 顶层不再直接摆输入法本体或更新程序。
+        self.assertNotIn('"$STAGE/Lampyris.app"', builder)
+        self.assertNotIn('"$STAGE/' + UPDATER_NAME + '"', builder)
+        self.assertIn('Contents/Resources/Payload', builder)
 
-    def test_installer_reads_the_updater_payload(self):
+    def test_workflow_stages_payload_before_signing(self):
+        workflow = (ROOT / '.github/workflows/release.yml').read_text()
+        stage = workflow.index('stage-installer-payload.sh')
+        sign = workflow.index('--also "platforms/macos/build/installer-staged/安装萤火虫.app"')
+        self.assertLess(stage, sign, '载荷必须在签名之前装进安装器（否则签名失效）')
+        self.assertIn('--also "platforms/macos/build/installer-staged/安装萤火虫.app"', workflow)
+        self.assertIn('--installer "platforms/macos/build/installer-staged/安装萤火虫.app"', workflow)
+
+    def test_installer_reads_the_payload_inside_its_bundle(self):
         installer = (ROOT / 'platforms/macos/Installer/Sources/LampyrisInstaller/main.swift').read_text()
         self.assertIn(f'"{UPDATER_ID}"', installer)
         self.assertIn(f'"{UPDATER_NAME}"', installer)
         self.assertIn('"Lampyris Update.app"', installer)
         self.assertIn('Contents/MacOS/LampyrisUpdateCheck', installer)
-        # Payload must sit next to the installer in the DMG, like Lampyris.app.
-        self.assertIn('bundleDirectory.appendingPathComponent(updaterBundleName)', installer)
+        self.assertIn('Contents/Resources/Payload', installer)
+        self.assertNotIn('bundleDirectory.appendingPathComponent(updaterBundleName)', installer)
         # Verification is delegated to the shared core, which owns the single check list (ADR-295).
         self.assertIn('import LampyrisInstallCore', installer)
         self.assertIn('DefaultInstallEnvironment.make(target: .updater)', installer)
@@ -99,6 +143,8 @@ class DmgBuilderContract(unittest.TestCase):
     def test_dmg_readme_mentions_where_the_updater_lands(self):
         text = (ROOT / 'packaging/macos/make-dmg.sh').read_text()
         self.assertIn('~/Applications/LampyrisUpdateCheck.app', text)
+        # 说明里要讲清顶层只有三样、载荷在安装器包里（ADR-391）。
+        self.assertIn('Contents/Resources/Payload', text)
 
 
 class ZipAndReleasePayloadContract(unittest.TestCase):

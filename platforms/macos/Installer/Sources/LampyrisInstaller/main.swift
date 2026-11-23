@@ -32,7 +32,7 @@ private enum InstallFailure: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .missingPayload:
-            return "安装包内缺少 Lampyris.app 或 LampyrisUpdateCheck.app。请从完整 DMG 中运行本安装器。"
+            return "安装包不完整：缺少 Payload/Lampyris.app 或 Payload/LampyrisUpdateCheck.app。请重新下载 DMG 后运行「安装萤火虫」。"
         case .invalidPayload(let reason): return reason
         case .installFailed(let reason): return reason
         }
@@ -215,9 +215,13 @@ private final class InstallerWindowController: NSObject, NSWindowDelegate {
     /// 安装完成后的上手提示；写默认快捷键，因为安装器不读用户配置。
     static let gettingStarted = "上手：切到萤火虫后，⌥K 练五笔，⌥L 边打边看拆字，⌥, 打开设置。"
 
-    private var bundleDirectory: URL { Bundle.main.bundleURL.deletingLastPathComponent() }
-    private var payloadURL: URL { bundleDirectory.appendingPathComponent("Lampyris.app") }
-    private var updaterPayloadURL: URL { bundleDirectory.appendingPathComponent(updaterBundleName) }
+    /// 载荷在安装器 bundle 里（ADR-391）：DMG 顶层不再摆背景程序 `Lampyris.app`，
+    /// 用户双击它只会得到"没反应"。Finder「显示包内容」仍能看到同一份已签名 app。
+    private var payloadDirectory: URL {
+        Bundle.main.bundleURL.appendingPathComponent("Contents/Resources/Payload")
+    }
+    private var payloadURL: URL { payloadDirectory.appendingPathComponent("Lampyris.app") }
+    private var updaterPayloadURL: URL { payloadDirectory.appendingPathComponent(updaterBundleName) }
 
     func show() {
         let panel = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 520, height: 340),

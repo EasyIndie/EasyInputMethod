@@ -1,41 +1,53 @@
 #!/usr/bin/env bash
-# Build the user-facing DMG around an already signed app and installer app.
+# Build the user-facing DMG around a prepared installer app (ADR-391).
+#
+# DMG 顶层只有三样：安装萤火虫.app / 卸载萤火虫.app / 安装与卸载说明.txt。
+# 输入法本体与更新程序作为载荷放在 安装萤火虫.app/Contents/Resources/Payload/ 里，
+# 由 packaging/macos/stage-installer-payload.sh 在**签名之前**装进去。
 set -euo pipefail
-APP=""
 INSTALLER=""
 UNINSTALLER=""
-UPDATER=""
 OUT=""
 while [ "$#" -gt 0 ]; do
   case "$1" in
-    --app) [ "$#" -ge 2 ] || exit 2; APP="$2"; shift 2 ;;
     --installer) [ "$#" -ge 2 ] || exit 2; INSTALLER="$2"; shift 2 ;;
     --uninstaller) [ "$#" -ge 2 ] || exit 2; UNINSTALLER="$2"; shift 2 ;;
-    --updater) [ "$#" -ge 2 ] || exit 2; UPDATER="$2"; shift 2 ;;
     --out) [ "$#" -ge 2 ] || exit 2; OUT="$2"; shift 2 ;;
-    *) echo "用法：$0 --app <Lampyris.app> --installer <安装萤火虫.app> --uninstaller <卸载萤火虫.app> --updater <LampyrisUpdateCheck.app> --out <x.dmg>" >&2; exit 2 ;;
+    *) echo "用法：$0 --installer <安装萤火虫.app（已含 Payload）> --uninstaller <卸载萤火虫.app> --out <x.dmg>" >&2; exit 2 ;;
   esac
 done
-[ -d "$APP" ] && [ ! -L "$APP" ] || { echo "输入法 app 不存在或为符号链接" >&2; exit 1; }
 [ -d "$INSTALLER" ] && [ ! -L "$INSTALLER" ] || { echo "安装器 app 不存在或为符号链接" >&2; exit 1; }
 [ -d "$UNINSTALLER" ] && [ ! -L "$UNINSTALLER" ] || { echo "卸载器 app 不存在或为符号链接" >&2; exit 1; }
-# ADR-295：更新程序随 DMG 分发，安装器会把它装到 ~/Applications；缺它就不出包。
-[ -d "$UPDATER" ] && [ ! -L "$UPDATER" ] || { echo "更新程序 app 不存在或为符号链接（ADR-295 要求随 DMG 分发）" >&2; exit 1; }
-[ "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$UPDATER/Contents/Info.plist")" = cn.jokerhub.Lampyris.WebsiteUpdateCheck ] || {
+PAYLOAD="$INSTALLER/Contents/Resources/Payload"
+APP="$PAYLOAD/Lampyris.app"
+UPDATER="$PAYLOAD/LampyrisUpdateCheck.app"
+# ADR-391：载荷必须已经在安装器 bundle 里（且是签名前装好的），否则 DMG 顶层又会
+# 出现一个点了没反应的 Lampyris.app。
+for bundle in "$APP" "$UPDATER"; do
+  [ -d "$bundle" ] && [ ! -L "$bundle" ] || {
+    echo "安装器里缺少载荷 ${bundle}；先运行 packaging/macos/stage-installer-payload.sh" >&2; exit 1; }
+done
+bundle_id() { /usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$1/Contents/Info.plist" 2>/dev/null || true; }
+[ "$(bundle_id "$APP")" = cn.jokerhub.inputmethod.Lampyris ] || { echo "载荷里的输入法标识不符" >&2; exit 1; }
+# ADR-295：更新程序随包装载，安装器会把它装到 ~/Applications；缺它就不出包。
+[ "$(bundle_id "$UPDATER")" = cn.jokerhub.Lampyris.WebsiteUpdateCheck ] || {
   echo "更新程序标识不符" >&2; exit 1; }
 [ -n "$OUT" ] || { echo "缺少 --out" >&2; exit 1; }
 STAGE="$(mktemp -d "${TMPDIR:-/tmp}/lampyris-dmg.XXXXXX")"
 trap 'rm -rf "$STAGE"' EXIT
-ditto "$APP" "$STAGE/Lampyris.app"
 ditto "$INSTALLER" "$STAGE/安装萤火虫.app"
 ditto "$UNINSTALLER" "$STAGE/卸载萤火虫.app"
-ditto "$UPDATER" "$STAGE/LampyrisUpdateCheck.app"
 VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist")"
 BUILD="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Contents/Info.plist")"
 cat > "$STAGE/安装与卸载说明.txt" <<TEXT
 萤火虫 Lampyris ${VERSION}（构建 ${BUILD}）
 默认离线的中文输入法 · 五笔优先，拼音兜底 · GPL-3.0-or-later
 系统要求：macOS 13 Ventura 或更高；universal（Apple Silicon / Intel）
+
+这个 DMG 里只有三样东西：安装萤火虫.app、卸载萤火虫.app、本说明。
+输入法本体与更新程序在「安装萤火虫.app/Contents/Resources/Payload/」里
+（Finder 右键「显示包内容」可见，仍是同一份已签名、已公证的 app）——
+它们是背景程序，双击不会出现窗口，所以不摆在顶层让人误点（ADR-391）。
 
 ────────────────────────────────
 安装
@@ -106,6 +118,8 @@ B. 彻底清理全部数据
 · 输入法菜单里没有「萤火虫」：注销并重新登录，再到
   「系统设置 → 键盘 → 文字输入」添加。
 · 提示应用已损坏：请重新下载本 DMG，不要用第三方解压工具修改内容。
+· 找不到 Lampyris.app：它在「安装萤火虫」包里当载荷，装完才会出现在
+  ~/Library/Input Methods/；不要在 DMG 里直接运行它（背景程序，没有窗口）。
 · macOS 阻止打开：本安装包已签名并公证；如仍被拦截，请在
   「系统设置 → 隐私与安全性」中允许本次打开。
 · 想验证下载：对照 Release 页面的 .sha256 文件。
